@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/stub/model";
+
+import 'model/audit.proto';
+import 'model/query.proto';
+import 'model/common.proto';
+
+message ResourcePropertyMappingSourceConfig {
+  string dataSource = 1;
+  string mapping = 2;
+}
+
+message ResourcePropertyComputedSourceConfig {
+  FunctionCall functionCall = 1;
+}
+
+message ResourceProperty {
+  string name = 1; // uniq(per resource) // name
+  oneof sourceConfig {
+    ResourcePropertyMappingSourceConfig mapping = 2;
+    ResourcePropertyComputedSourceConfig computed = 3;
+  }
+}
+
+message ResourceCheck {
+  BooleanExpression check = 1;
+  bool permissive = 2; // if permissive, instead of rejecting payload, we will log it
+}
+
+message ResourcePermissions {
+  bool create = 1;
+  bool read = 2;
+  bool update = 3;
+  bool delete = 4;
+}
+
+message ResourceRelation {
+  string propertyName = 1;
+  string relatedResource = 2;
+  string relatedResourcePropertyName = 3;
+  bool cascade = 4;
+}
+
+enum ResourceIndexType {
+  BTREE = 0;
+  HASH = 1;
+}
+
+message ResourceIndex {
+  repeated string propertyNames = 1;
+  bool unique = 2;
+  ResourceIndexType indexType = 3;
+}
+
+message ResourceSourceConfig {
+  string dataSource = 1;
+  string mapping = 2;
+}
+
+message ResourceFlags {
+  bool readOnlyRecords = 1;
+  bool uniqueRecord = 2;
+  bool keepHistory = 3;
+}
+
+
+message Resource {
+  string name = 1; // uniq(per workspace) // name
+  string workspace = 2; // create only?
+  DataType type = 3; // read only
+  ResourceSourceConfig sourceConfig = 4;
+  repeated ResourceProperty properties = 5;
+  repeated ResourceCheck checks = 6;
+  ResourcePermissions permissions = 7;
+  repeated ResourceRelation relations = 8;
+  repeated ResourceIndex indexes = 9;
+  ResourceFlags flags = 10;
+  AuditData auditData = 11;
+  uint32 version = 12;
+}

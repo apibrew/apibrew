@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "data-handler/stub";
+
+import 'model/error.proto';
+import 'model/token.proto';
+
+service AuthenticationService {
+  rpc Authenticate(AuthenticationRequest) returns(AuthenticationResponse) {}
+  rpc RenewToken(RenewTokenRequest) returns(RenewTokenResponse) {}
+}
+
+message AuthenticationRequest {
+  string username = 1;
+  string password = 2;
+  model.TokenTerm term = 3;
+}
+
+message AuthenticationResponse {
+  model.Token token = 1;
+
+  model.Error error = 2;
+}
+
+message RenewTokenRequest {
+  string token = 1;
+
+  model.TokenTerm term = 2;
+}
+
+message RenewTokenResponse {
+  model.Token token = 1;
+
+  model.Error error = 2;
+}

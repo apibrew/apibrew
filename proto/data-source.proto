@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "data-handler/stub";
+
+import 'model/data-source.proto';
+import 'model/error.proto';
+import 'model/resource.proto';
+
+service WorkSpaceService {
+  rpc Create(CreateDataSourceRequest) returns (CreateDataSourceResponse) {}
+  rpc List(ListDataSourceRequest) returns (ListDataSourceResponse) {}
+  rpc Update(UpdateDataSourceRequest) returns (UpdateDataSourceResponse) {}
+  rpc Delete(DeleteDataSourceRequest) returns (DeleteDataSourceResponse) {}
+  rpc Get(GetDataSourceRequest) returns (GetDataSourceResponse) {}
+  rpc TestConnection(TestConnectionRequest) returns (TestConnectionResponse) {}
+  rpc ListEntities(TestConnectionRequest) returns (TestConnectionResponse) {}
+  rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {}
+}
+
+message PrepareResourceFromEntityRequest {
+  string token = 1;
+  string id = 2;
+  string entity = 3;
+}
+
+message PrepareResourceFromEntityResponse {
+  model.Resource resource = 1;
+  model.Error error = 2;
+}
+
+message TestConnectionRequest {
+  string token = 1;
+  string id = 2;
+}
+
+message TestConnectionResponse {
+  model.Error error = 2;
+}
+
+message ListEntitiesRequest {
+  string token = 1;
+  string id = 2;
+}
+
+message ListEntitiesResponse {
+  repeated string entities = 1;
+  model.Error error = 2;
+}
+
+message ListDataSourceRequest {
+  string token = 1;
+}
+
+message ListDataSourceResponse {
+  int32 total = 1;
+  repeated model.DataSource content = 2;
+
+  model.Error error = 3;
+}
+
+message CreateDataSourceRequest {
+  string token = 1;
+  repeated model.DataSource dataSources = 2;
+}
+
+message CreateDataSourceResponse {
+  repeated model.DataSource dataSources = 1;
+
+  model.Error error = 2;
+}
+
+message UpdateDataSourceRequest {
+  string token = 1;
+  repeated model.DataSource dataSources = 2;
+}
+
+message UpdateDataSourceResponse {
+  repeated model.DataSource dataSources = 1;
+
+  model.Error error = 2;
+}
+
+message DeleteDataSourceRequest {
+  string token = 1;
+  repeated model.DataSource dataSources = 2;
+}
+
+message DeleteDataSourceResponse {
+  model.Error error = 2;
+}
+
+message GetDataSourceRequest {
+  string token = 1;
+  string id = 2;
+}
+
+message GetDataSourceResponse {
+  model.DataSource dataSource = 1;
+
+  model.Error error = 2;
+}

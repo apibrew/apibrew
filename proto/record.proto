@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "data-handler/stub";
+
+import 'model/record.proto';
+import 'model/query.proto';
+import 'model/error.proto';
+
+service RecordService {
+  // Sends a greeting
+  rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {}
+  rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {}
+  rpc Delete (DeleteRecordRequest) returns (DeleteRecordResponse) {}
+  rpc List (ListRecordRequest) returns (ListRecordResponse) {}
+  rpc Get (GetRecordRequest) returns (GetRecordResponse) {}
+}
+
+message ListRecordRequest {
+  string token = 1;
+  string resource = 2;
+  model.BooleanExpression query = 3;
+  uint32 limit = 4;
+  uint64 offset = 5;
+}
+
+message ListRecordResponse {
+  int32 total = 1;
+  repeated model.Record content = 2;
+  model.Error error = 3;
+}
+
+message CreateRecordRequest {
+  string token = 1;
+  repeated model.Record Record = 2;
+}
+
+message CreateRecordResponse {
+  repeated model.Record Record = 1;
+  model.Error error = 2;
+}
+
+message UpdateRecordRequest {
+  string token = 1;
+  repeated model.Record Record = 2;
+  string checkVersion = 3;
+}
+
+message UpdateRecordResponse {
+  repeated model.Record Record = 1;
+  model.Error error = 2;
+}
+
+message DeleteRecordRequest {
+  string token = 1;
+  repeated model.Record Record = 2;
+}
+
+message DeleteRecordResponse {
+  model.Error error = 1;
+}
+
+message GetRecordRequest {
+  string token = 1;
+  string resource = 2;
+  string id = 3;
+}
+
+message GetRecordResponse {
+  model.Record Record = 1;
+  model.Error error = 2;
+}

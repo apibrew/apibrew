@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/stub/model";
+
+import 'google/protobuf/struct.proto';
+import 'model/audit.proto';
+import 'model/common.proto';
+
+message User {
+  string id = 1;
+  DataType type = 2;
+  string username = 3;
+  string password = 4;
+  repeated string scopes = 5;
+  google.protobuf.Struct details = 6;
+  AuditData auditData = 7;
+  uint32 version = 8;
+}

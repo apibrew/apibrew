@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/stub/model";
+
+import 'model/audit.proto';
+import 'model/common.proto';
+
+message Workspace {
+  string name = 1;
+  DataType type = 2;
+
+  AuditData auditData = 3;
+  uint32 version = 4;
+}

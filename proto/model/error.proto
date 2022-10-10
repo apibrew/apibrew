@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/stub/model";
+
+enum ErrorCode {
+  RECORD_NOT_FOUND = 0;
+}
+
+message Error {
+  ErrorCode code = 1;
+  string message = 2;
+}

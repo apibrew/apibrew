@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/stub/model";
+
+import 'google/protobuf/timestamp.proto';
+
+enum TokenTerm {
+  SHORT = 0;      // 1 minute
+  MIDDLE = 1;     // 2 hours
+  LONG = 2;       // 2 days
+  VERY_LONG = 3;  // 2 years
+}
+
+message Token {
+  TokenTerm term = 1;                       // issue term
+  string content = 2;                       // jwt token
+  google.protobuf.Timestamp expiration = 3; // expiration time
+}

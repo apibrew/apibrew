@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/stub/model";
+
+import 'google/protobuf/timestamp.proto';
+
+message AuditData {
+  google.protobuf.Timestamp created_on = 1;
+  google.protobuf.Timestamp updated_on = 2;
+  string created_by = 3;
+  string updated_by = 4;
+}

@@ -4,6 +4,77 @@ package stub;
 
 option go_package = "data-handler/stub";
 
-message ResourceDef {
-  string name = 1;
+import 'model/error.proto';
+import 'model/resource.proto';
+
+service ResourceService {
+  rpc Create(CreateResourceRequest) returns(CreateResourceResponse) {}
+  rpc Update(UpdateResourceRequest) returns(UpdateResourceResponse) {}
+  rpc Delete(DeleteResourceRequest) returns(DeleteResourceResponse) {}
+  rpc List(ListResourceRequest) returns(ListResourceResponse) {}
+  rpc Get(GetResourceRequest) returns(GetResourceResponse) {}
 }
+
+message CreateResourceRequest {
+  model.Token token = 1;
+  repeated model.Resource resources = 2;
+
+  bool doMigration = 3;
+  bool forceMigration = 4;
+}
+
+message CreateResourceResponse {
+  repeated model.Resource resources = 1;
+
+  model.Error error = 2;
+}
+
+message UpdateResourceRequest {
+  model.Token token = 1;
+  repeated model.Resource resources = 2;
+
+  bool doMigration = 3;
+  bool forceMigration = 4;
+}
+
+message UpdateResourceResponse {
+  repeated model.Resource resources = 1;
+
+  model.Error error = 2;
+}
+
+
+message DeleteResourceRequest {
+  model.Token token = 1;
+  repeated model.Resource resources = 2;
+
+  bool doMigration = 3;
+  bool forceMigration = 4;
+}
+
+message DeleteResourceResponse {
+  model.Error error = 2;
+}
+
+message ListResourceRequest {
+  model.Token token = 1;
+}
+
+message ListResourceResponse {
+  repeated model.Resource resources = 1;
+
+  model.Error error = 2;
+}
+
+
+message GetResourceRequest {
+  model.Token token = 1;
+  string name = 2;
+}
+
+message GetResourceResponse {
+  model.Resource resource = 1;
+
+  model.Error error = 2;
+}
+

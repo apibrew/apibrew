@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/stub/model";
+
+import 'model/data-source.proto';
+import 'model/user.proto';
+import 'model/resource.proto';
+import 'model/record.proto';
+import 'model/workspace.proto';
+
+message InitData {
+  DataSource systemDataSource = 1;
+  Workspace systemWorkSpace = 2;
+  repeated DataSource initDataSources = 3;
+  repeated Workspace initWorkSpaces = 4;
+  repeated User initUsers = 5;
+  repeated Resource initResources = 6;
+  repeated Record initRecords = 7;
+}

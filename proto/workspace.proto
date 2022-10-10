@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "data-handler/stub";
+
+import 'model/workspace.proto';
+import 'model/error.proto';
+import 'model/token.proto';
+
+service WorkSpaceService {
+  rpc Create(CreateWorkspaceRequest) returns (CreateWorkspaceResponse) {}
+  rpc List(ListWorkspaceRequest) returns (ListWorkspaceResponse) {}
+  rpc Update(UpdateDataSourceRequest) returns (UpdateDataSourceResponse) {}
+  rpc Delete(DeleteDataSourceRequest) returns (DeleteDataSourceResponse) {}
+  rpc Get(GetDataSourceRequest) returns (GetDataSourceResponse) {}
+}
+
+message ListWorkspaceRequest {
+  string token = 1;
+}
+
+message ListWorkspaceResponse {
+  int32 total = 1;
+  repeated model.Workspace content = 2;
+
+  model.Error error = 3;
+}
+
+message CreateWorkspaceRequest {
+  string token = 1;
+  repeated model.Workspace workspaces = 2;
+}
+
+message CreateWorkspaceResponse {
+  repeated model.Workspace workspaces = 1;
+
+  model.Error error = 2;
+}
+
+message UpdateDataSourceRequest {
+  string token = 1;
+  repeated model.Workspace workspaces = 2;
+}
+
+message UpdateDataSourceResponse {
+  repeated model.Workspace workspaces = 1;
+
+  model.Error error = 2;
+}
+
+message DeleteDataSourceRequest {
+  string token = 1;
+  repeated model.Workspace workspaces = 2;
+}
+
+message DeleteDataSourceResponse {
+  repeated model.Workspace workspaces = 1;
+
+  model.Error error = 2;
+}
+
+message GetDataSourceRequest {
+  string token = 1;
+  string name = 2;
+}
+
+message GetDataSourceResponse {
+  repeated model.Workspace workspaces = 1;
+
+  model.Error error = 2;
+}

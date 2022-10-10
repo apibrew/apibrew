@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/stub/model";
+
+import 'google/protobuf/struct.proto';
+
+message CompoundBooleanExpression {
+  repeated BooleanExpression expressions = 1;
+}
+
+message FunctionCall {
+  string package = 1;
+  string name = 2;
+  repeated Expression arguments = 3;
+}
+
+message Expression {
+  oneof expression {
+    string property = 1;
+    FunctionCall functionCall = 2;
+    google.protobuf.Value value = 3;
+  }
+}
+
+message PairExpression {
+  Expression left = 1;
+  Expression right = 2;
+}
+
+message RegexMatchExpression {
+  string pattern = 1;
+  Expression expression = 2;
+}
+
+message BooleanExpression {
+  oneof expression {
+    // logical expressions
+    CompoundBooleanExpression and = 1;
+    CompoundBooleanExpression or = 2;
+    CompoundBooleanExpression not = 3;
+
+    // basic comparison
+    PairExpression equal = 4;
+    PairExpression lessThan = 5;
+    PairExpression greaterThan = 6;
+    PairExpression lessThanOrEqual = 7;
+    PairExpression greaterThanOrEqual = 8;
+
+    // other
+    RegexMatchExpression regexMatch = 9;
+  }
+}
