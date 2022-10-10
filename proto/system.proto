@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "proto/stub";
+
+service WorkSpaceService {
+  // Sends a greeting
+  rpc Create (CreateWorkspaceRequest) returns (CreateWorkspaceResponse) {}
+}
+
+message CreateWorkspaceRequest {
+
+}
+
+message CreateWorkspaceResponse {
+
+}

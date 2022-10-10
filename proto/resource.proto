@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "data-handler/stub";
+
+message ResourceDef {
+  string name = 1;
+}

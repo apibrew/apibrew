@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "proto/stub";
+
+//message Person {
+//  string name = 1;
+//  int32 id = 2;
+//  bool has_ponycopter = 3;
+//}
+//
+//service Greeter {
+//  // Sends a greeting
+//  rpc SayHello (Person) returns (Person) {}
+//}
