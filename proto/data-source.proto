@@ -8,7 +8,7 @@ import 'model/data-source.proto';
 import 'model/error.proto';
 import 'model/resource.proto';
 
-service WorkSpaceService {
+service DataSourceService {
   rpc Create(CreateDataSourceRequest) returns (CreateDataSourceResponse) {}
   rpc List(ListDataSourceRequest) returns (ListDataSourceResponse) {}
   rpc Update(UpdateDataSourceRequest) returns (UpdateDataSourceResponse) {}

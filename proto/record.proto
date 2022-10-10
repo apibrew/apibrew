@@ -44,7 +44,7 @@ message CreateRecordResponse {
 message UpdateRecordRequest {
   string token = 1;
   repeated model.Record Record = 2;
-  string checkVersion = 3;
+  bool checkVersion = 3;
 }
 
 message UpdateRecordResponse {

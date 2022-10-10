@@ -11,9 +11,9 @@ import 'model/token.proto';
 service WorkSpaceService {
   rpc Create(CreateWorkspaceRequest) returns (CreateWorkspaceResponse) {}
   rpc List(ListWorkspaceRequest) returns (ListWorkspaceResponse) {}
-  rpc Update(UpdateDataSourceRequest) returns (UpdateDataSourceResponse) {}
-  rpc Delete(DeleteDataSourceRequest) returns (DeleteDataSourceResponse) {}
-  rpc Get(GetDataSourceRequest) returns (GetDataSourceResponse) {}
+  rpc Update(UpdateWorkSpaceRequest) returns (UpdateWorkSpaceResponse) {}
+  rpc Delete(DeleteWorkSpaceRequest) returns (DeleteWorkSpaceResponse) {}
+  rpc Get(GetWorkSpaceRequest) returns (GetWorkSpaceResponse) {}
 }
 
 message ListWorkspaceRequest {
@@ -38,34 +38,34 @@ message CreateWorkspaceResponse {
   model.Error error = 2;
 }
 
-message UpdateDataSourceRequest {
+message UpdateWorkSpaceRequest {
   string token = 1;
   repeated model.Workspace workspaces = 2;
 }
 
-message UpdateDataSourceResponse {
+message UpdateWorkSpaceResponse {
   repeated model.Workspace workspaces = 1;
 
   model.Error error = 2;
 }
 
-message DeleteDataSourceRequest {
+message DeleteWorkSpaceRequest {
   string token = 1;
   repeated model.Workspace workspaces = 2;
 }
 
-message DeleteDataSourceResponse {
+message DeleteWorkSpaceResponse {
   repeated model.Workspace workspaces = 1;
 
   model.Error error = 2;
 }
 
-message GetDataSourceRequest {
+message GetWorkSpaceRequest {
   string token = 1;
   string name = 2;
 }
 
-message GetDataSourceResponse {
+message GetWorkSpaceResponse {
   repeated model.Workspace workspaces = 1;
 
   model.Error error = 2;
