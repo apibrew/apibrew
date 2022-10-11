@@ -25,6 +25,19 @@ func main() {
 		log.Fatalf("failed to load init data: %v", err)
 	}
 
+	authenticationService := service.NewAuthenticationService()
+	dataSourceService := service.NewDataSourceService()
+	resourceService := service.NewResourceService()
+	//workSpaceService := service.NewWorkSpaceService(resourceService)
+
+	dataSourceService.InjectResourceService(resourceService)
+	resourceService.InjectDataSourceService(dataSourceService)
+	resourceService.InjectAuthenticationService(authenticationService)
+
+	dataSourceService.Init(initData)
+	resourceService.Init(initData)
+	//workSpaceService.Init(initData)
+
 	var port = 9009
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
@@ -32,6 +45,13 @@ func main() {
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	stub.RegisterWorkSpaceServiceServer(grpcServer, service.NewWorkSpaceService())
-	grpcServer.Serve(lis)
+	stub.RegisterResourceServiceServer(grpcServer, resourceService)
+	stub.RegisterAuthenticationServiceServer(grpcServer, authenticationService)
+	stub.RegisterDataSourceServiceServer(grpcServer, dataSourceService)
+
+	err = grpcServer.Serve(lis)
+
+	if err != nil {
+		panic(err)
+	}
 }

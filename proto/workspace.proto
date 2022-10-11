@@ -6,7 +6,6 @@ option go_package = "data-handler/stub";
 
 import 'model/workspace.proto';
 import 'model/error.proto';
-import 'model/token.proto';
 
 service WorkSpaceService {
   rpc Create(CreateWorkspaceRequest) returns (CreateWorkspaceResponse) {}

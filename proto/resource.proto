@@ -16,7 +16,7 @@ service ResourceService {
 }
 
 message CreateResourceRequest {
-  model.Token token = 1;
+  string token = 1;
   repeated model.Resource resources = 2;
 
   bool doMigration = 3;
@@ -30,7 +30,7 @@ message CreateResourceResponse {
 }
 
 message UpdateResourceRequest {
-  model.Token token = 1;
+  string token = 1;
   repeated model.Resource resources = 2;
 
   bool doMigration = 3;
@@ -45,7 +45,7 @@ message UpdateResourceResponse {
 
 
 message DeleteResourceRequest {
-  model.Token token = 1;
+  string token = 1;
   repeated model.Resource resources = 2;
 
   bool doMigration = 3;
@@ -57,7 +57,7 @@ message DeleteResourceResponse {
 }
 
 message ListResourceRequest {
-  model.Token token = 1;
+  string token = 1;
 }
 
 message ListResourceResponse {
@@ -68,7 +68,7 @@ message ListResourceResponse {
 
 
 message GetResourceRequest {
-  model.Token token = 1;
+  string token = 1;
   string name = 2;
 }
 

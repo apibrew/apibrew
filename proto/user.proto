@@ -5,7 +5,6 @@ package stub;
 option go_package = "data-handler/stub";
 
 import 'model/error.proto';
-import 'model/token.proto';
 import 'model/user.proto';
 import 'model/query.proto';
 
@@ -17,7 +16,7 @@ service UserService {
 }
 
 message CreateUserRequest {
-  model.Token token = 1;
+  string token = 1;
   repeated model.User users = 2;
 }
 
@@ -28,7 +27,7 @@ message CreateUserResponse {
 }
 
 message UpdateUserRequest {
-  model.Token token = 1;
+  string token = 1;
   repeated model.User users = 2;
 }
 
@@ -40,7 +39,7 @@ message UpdateUserResponse {
 
 
 message DeleteUserRequest {
-  model.Token token = 1;
+  string token = 1;
   repeated model.User users = 2;
 }
 
@@ -49,7 +48,7 @@ message DeleteUserResponse {
 }
 
 message ListUserRequest {
-  model.Token token = 1;
+  string token = 1;
 
   model.BooleanExpression query = 3;
   uint32 limit = 4;

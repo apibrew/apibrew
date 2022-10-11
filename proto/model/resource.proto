@@ -17,12 +17,26 @@ message ResourcePropertyComputedSourceConfig {
   FunctionCall functionCall = 1;
 }
 
+enum ResourcePropertyType {
+  BOOL = 0;
+  STRING = 1;
+  FLOAT = 2;
+  DOUBLE = 3;
+  INT32 = 4;
+  INT64 = 5;
+  BYTES = 6;
+  TEXT = 7;
+}
+
 message ResourceProperty {
   string name = 1; // uniq(per resource) // name
+  ResourcePropertyType type = 2;
   oneof sourceConfig {
-    ResourcePropertyMappingSourceConfig mapping = 2;
-    ResourcePropertyComputedSourceConfig computed = 3;
+    string mapping = 3;
+    ResourcePropertyComputedSourceConfig computed = 4; // not implemented
   }
+  bool required = 5;
+  uint32 length = 6;
 }
 
 message ResourceCheck {
@@ -73,10 +87,10 @@ message Resource {
   DataType type = 3; // read only
   ResourceSourceConfig sourceConfig = 4;
   repeated ResourceProperty properties = 5;
-  repeated ResourceCheck checks = 6;
-  ResourcePermissions permissions = 7;
-  repeated ResourceRelation relations = 8;
-  repeated ResourceIndex indexes = 9;
+  repeated ResourceCheck checks = 6; // not implemented
+  ResourcePermissions permissions = 7; // not implemented
+  repeated ResourceRelation relations = 8; // not implemented
+  repeated ResourceIndex indexes = 9; // not implemented
   ResourceFlags flags = 10;
   AuditData auditData = 11;
   uint32 version = 12;

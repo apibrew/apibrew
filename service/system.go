@@ -13,6 +13,6 @@ func (receiver workSpaceService) Create(context.Context, *stub.CreateWorkspaceRe
 	return &stub.CreateWorkspaceResponse{}, nil
 }
 
-func NewWorkSpaceService() stub.WorkSpaceServiceServer {
+func NewWorkSpaceService(stub.ResourceServiceServer) stub.WorkSpaceServiceServer {
 	return &workSpaceService{}
 }
