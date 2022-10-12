@@ -73,7 +73,7 @@ func main() {
 func test(dataSourceService service.DataSourceService) {
 	var list []*model.DataSource
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 10000; i++ {
 		list = append(list, &model.DataSource{
 			Backend: model.DataSourceBackend_POSTGRESQL,
 			Options: &model.DataSource_PostgresqlParams{
