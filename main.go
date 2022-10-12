@@ -56,9 +56,7 @@ func main() {
 	stub.RegisterDataSourceServiceServer(grpcServer, dataSourceService)
 	stub.RegisterRecordServiceServer(grpcServer, recordService)
 
-	for i := 0; i < 1000; i++ {
-		test(dataSourceService)
-	}
+	test(dataSourceService)
 
 	// dead code
 	if true {
@@ -73,23 +71,27 @@ func main() {
 }
 
 func test(dataSourceService service.DataSourceService) {
-	res, err := dataSourceService.Create(context.TODO(), &stub.CreateDataSourceRequest{
-		Token: "empty-token",
-		DataSources: []*model.DataSource{
-			{
-				Backend: model.DataSourceBackend_POSTGRESQL,
-				Options: &model.DataSource_PostgresqlParams{
-					PostgresqlParams: &model.PostgresqlOptions{
-						Username:      "root",
-						Password:      "52fa536f0c5b85f9d806633937f06446",
-						Host:          "tiswork.tisserv.net",
-						Port:          5432,
-						DbName:        "market",
-						DefaultSchema: "public",
-					},
+	var list []*model.DataSource
+
+	for i := 0; i < 1000; i++ {
+		list = append(list, &model.DataSource{
+			Backend: model.DataSourceBackend_POSTGRESQL,
+			Options: &model.DataSource_PostgresqlParams{
+				PostgresqlParams: &model.PostgresqlOptions{
+					Username:      "root",
+					Password:      "52fa536f0c5b85f9d806633937f06446",
+					Host:          "tiswork.tisserv.net",
+					Port:          5432,
+					DbName:        "market",
+					DefaultSchema: "public",
 				},
 			},
-		},
+		})
+	}
+
+	res, err := dataSourceService.Create(context.TODO(), &stub.CreateDataSourceRequest{
+		Token:       "empty-token",
+		DataSources: list,
 	})
 
 	log.Println(res, err)
