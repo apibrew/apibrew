@@ -20,6 +20,14 @@ type postgresResourceServiceBackend struct {
 
 func (p *postgresResourceServiceBackend) Init(systemBackend backend.DataSourceBackend) {
 	p.systemBackend = systemBackend
+
+	err := p.withBackend(p.systemBackend, func(tx *sql.Tx) error {
+		return resourceSetupTables(tx)
+	})
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) (*model.Resource, error) {

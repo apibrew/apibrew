@@ -11,7 +11,8 @@ import (
 type DataSourceService interface {
 	stub.DataSourceServiceServer
 	InjectResourceService(service ResourceService)
-	Init(data *model.InitData)
+	InjectInitData(data *model.InitData)
+	Init()
 	GetDataSourceBackend(id string) (backend.DataSourceBackend, error)
 	LocateDataSource(id string) (*model.DataSource, error)
 	InjectRecordService(service RecordService)
@@ -85,9 +86,11 @@ func (d *dataSourceService) InjectRecordService(service RecordService) {
 	d.recordService = service
 }
 
-func (d *dataSourceService) Init(data *model.InitData) {
+func (d *dataSourceService) InjectInitData(data *model.InitData) {
 	d.systemDataSource = data.SystemDataSource
+}
 
+func (d *dataSourceService) Init() {
 	d.resourceService.InitResource(dataSourceResource)
 }
 

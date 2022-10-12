@@ -15,6 +15,39 @@ type QueryRunner interface {
 	Query(query string, args ...any) (*sql.Rows, error)
 }
 
+func resourceSetupTables(runner QueryRunner) error {
+	_, err := runner.Exec(`
+		create table if not exists public.resource (
+		  name character varying(64) primary key not null,
+		  workspace character varying(64) not null,
+		  type smallint not null,
+		  source_data_source character varying(64) not null,
+		  source_mapping character varying(64) not null,
+		  read_only_records boolean not null,
+		  unique_record boolean not null,
+		  keep_history boolean not null,
+		  created_on timestamp without time zone not null,
+		  updated_on timestamp without time zone,
+		  created_by character varying(64) not null,
+		  updated_by character varying(64),
+		  version integer not null
+		);
+		
+		create table if not exists public.resource_property (
+		  resource_name character varying(64) not null,
+		  property_name character varying(64) not null,
+		  type smallint,
+		  source_type smallint,
+		  source_mapping character varying(64),
+		  required boolean,
+		  length integer,
+		  primary key (resource_name, property_name)
+		);
+`)
+
+	return err
+}
+
 func resourceCountsByName(runner QueryRunner, resourceName string) (int, error) {
 	res := runner.QueryRow("select count(*) as count from resource where name = $1", resourceName)
 
