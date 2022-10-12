@@ -89,12 +89,12 @@ func test(dataSourceService service.DataSourceService) {
 		})
 	}
 
-	res, err := dataSourceService.Create(context.TODO(), &stub.CreateDataSourceRequest{
+	_, err := dataSourceService.Create(context.TODO(), &stub.CreateDataSourceRequest{
 		Token:       "empty-token",
 		DataSources: list,
 	})
 
-	log.Println(res, err)
+	log.Println(err)
 }
 
 func initServices(dataSourceService service.DataSourceService, resourceService service.ResourceService, recordService service.RecordService, authenticationService service.AuthenticationService, postgresResourceServiceBackend backend.ResourceServiceBackend, initData *model.InitData) {
