@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"data-handler/service/backend"
+	"data-handler/service/backend/postgres"
 	"data-handler/stub"
 	"data-handler/stub/model"
 )
@@ -51,6 +52,7 @@ func (r *resourceService) InitResource(resource *model.Resource) {
 	_, err = r.postgresResourceServiceBackend.AddResource(backend.AddResourceParams{
 		Backend:              b,
 		Resource:             resource,
+		IgnoreIfExists:       true,
 		AllowSystemAndStatic: true,
 		Migrate:              true,
 		ForceMigrate:         false,
@@ -121,6 +123,6 @@ func (r resourceService) Get(ctx context.Context, request *stub.GetResourceReque
 
 func NewResourceService() ResourceService {
 	return &resourceService{
-		postgresResourceServiceBackend: backend.NewPostgresResourceServiceBackend(),
+		postgresResourceServiceBackend: postgres.NewPostgresResourceServiceBackend(),
 	}
 }

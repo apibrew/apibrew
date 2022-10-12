@@ -2,6 +2,7 @@ package service
 
 import (
 	"data-handler/service/backend"
+	"data-handler/service/backend/postgres"
 	"data-handler/stub"
 	model "data-handler/stub/model"
 )
@@ -36,7 +37,7 @@ func (d *dataSourceService) GetDataSourceBackend(id string) (backend.DataSourceB
 
 	switch d.systemDataSource.Backend {
 	case model.DataSourceBackend_POSTGRESQL:
-		return backend.NewPostgresDataSourceBackend(id, d.systemDataSource.Options.(*model.DataSource_PostgresqlParams).PostgresqlParams), nil
+		return postgres.NewPostgresDataSourceBackend(id, d.systemDataSource.Options.(*model.DataSource_PostgresqlParams).PostgresqlParams), nil
 	case model.DataSourceBackend_MONGODB:
 		panic("mongodb data-source not init")
 	default:

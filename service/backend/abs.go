@@ -5,13 +5,14 @@ import (
 )
 
 type DataSourceBackend interface {
-	getDataSourceId() string
+	GetDataSourceId() string
 }
 
 type AddResourceParams struct {
 	Backend              DataSourceBackend
 	Resource             *model.Resource
 	AllowSystemAndStatic bool
+	IgnoreIfExists       bool
 	Migrate              bool
 	ForceMigrate         bool
 }
