@@ -4,6 +4,7 @@ import (
 	"data-handler/stub/model"
 	"database/sql"
 	"github.com/huandu/go-sqlbuilder"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"strconv"
 	"time"
 )
@@ -11,6 +12,7 @@ import (
 type QueryRunner interface {
 	QueryRow(query string, args ...any) *sql.Row
 	Exec(query string, args ...any) (sql.Result, error)
+	Query(query string, args ...any) (*sql.Rows, error)
 }
 
 func resourceCountsByName(runner QueryRunner, resourceName string) (int, error) {
@@ -98,6 +100,74 @@ func resourceInsert(runner QueryRunner, resource *model.Resource) error {
 	return err
 }
 
+func resourceLoadDetails(runner QueryRunner, resource *model.Resource, name string) error {
+	selectBuilder := sqlbuilder.Select(
+		"name",
+		"workspace",
+		"type",
+		"source_data_source",
+		"source_mapping",
+		"read_only_records",
+		"unique_record",
+		"keep_history",
+		"created_on",
+		"updated_on",
+		"created_by",
+		"updated_by",
+		"version",
+	).
+		From("resource").
+		Where("name='" + name + "'")
+
+	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+
+	sqlQuery, _ := selectBuilder.Build()
+
+	row := runner.QueryRow(sqlQuery)
+
+	if row.Err() != nil {
+		return row.Err()
+	}
+
+	resource.SourceConfig = &model.ResourceSourceConfig{}
+	resource.Flags = &model.ResourceFlags{}
+	resource.AuditData = &model.AuditData{}
+
+	var createdOn = new(time.Time)
+	var updatedOn = new(*time.Time)
+	var updatedBy = new(*string)
+
+	err := row.Scan(
+		&resource.Name,
+		&resource.Workspace,
+		&resource.Type,
+		&resource.SourceConfig.DataSource,
+		&resource.SourceConfig.Mapping,
+		&resource.Flags.ReadOnlyRecords,
+		&resource.Flags.UniqueRecord,
+		&resource.Flags.KeepHistory,
+		createdOn,
+		updatedOn,
+		&resource.AuditData.CreatedBy,
+		updatedBy,
+		&resource.Version,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	resource.AuditData.CreatedOn = timestamppb.New(*createdOn)
+	if *updatedOn != nil {
+		resource.AuditData.UpdatedOn = timestamppb.New(**updatedOn)
+	}
+	if *updatedBy != nil {
+		resource.AuditData.UpdatedBy = **updatedBy
+	}
+
+	return nil
+}
+
 func resourceInsertProperties(runner QueryRunner, resource *model.Resource) error {
 	for _, property := range resource.Properties {
 		propertyInsertBuilder := sqlbuilder.InsertInto("resource_property")
@@ -129,6 +199,64 @@ func resourceInsertProperties(runner QueryRunner, resource *model.Resource) erro
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func resourceLoadProperties(runner QueryRunner, resource *model.Resource, name string) error {
+	selectBuilder := sqlbuilder.Select(
+		"resource_name",
+		"property_name",
+		"type",
+		"source_type",
+		"source_mapping",
+		"required",
+		"length",
+	).
+		From("resource_property").
+		Where("resource_name='" + name + "'")
+
+	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+
+	sqlQuery, _ := selectBuilder.Build()
+
+	rows, err := runner.Query(sqlQuery)
+
+	if err != nil {
+		return err
+	}
+
+	if rows.Err() != nil {
+		return rows.Err()
+	}
+
+	for rows.Next() {
+		resourceProperty := new(model.ResourceProperty)
+
+		var sourceType = new(int)
+		var sourceMapping = new(string)
+		err = rows.Scan(
+			&resource.Name,
+			&resourceProperty.Name,
+			&resourceProperty.Type,
+			&sourceType,
+			&sourceMapping,
+			&resourceProperty.Required,
+			&resourceProperty.Length,
+		)
+
+		if *sourceType == 0 {
+			resourceProperty.SourceConfig = &model.ResourceProperty_Mapping{
+				Mapping: *sourceMapping,
+			}
+		}
+
+		if err != nil {
+			return err
+		}
+
+		resource.Properties = append(resource.Properties, resourceProperty)
 	}
 
 	return nil

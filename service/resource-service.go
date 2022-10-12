@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"data-handler/service/backend"
-	"data-handler/service/backend/postgres"
 	"data-handler/stub"
 	"data-handler/stub/model"
 )
@@ -15,23 +14,21 @@ type ResourceService interface {
 
 	InitResource(resource *model.Resource)
 	Init(data *model.InitData)
+	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
 }
 
 type resourceService struct {
 	stub.ResourceServiceServer
 	dataSourceService              DataSourceService
-	postgresResourceServiceBackend backend.ResourceServiceBackend
 	authenticationService          AuthenticationService
+	postgresResourceServiceBackend backend.ResourceServiceBackend
+}
+
+func (r *resourceService) InjectPostgresResourceServiceBackend(resourceServiceBackend backend.ResourceServiceBackend) {
+	r.postgresResourceServiceBackend = resourceServiceBackend
 }
 
 func (r *resourceService) Init(data *model.InitData) {
-	b, err := r.dataSourceService.GetDataSourceBackend("system")
-
-	if err != nil {
-		panic(err)
-	}
-
-	r.postgresResourceServiceBackend.Init(b)
 }
 
 func (r *resourceService) InjectDataSourceService(service DataSourceService) {
@@ -43,14 +40,8 @@ func (r *resourceService) InjectAuthenticationService(service AuthenticationServ
 }
 
 func (r *resourceService) InitResource(resource *model.Resource) {
-	b, err := r.dataSourceService.GetDataSourceBackend(resource.SourceConfig.DataSource)
-
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = r.postgresResourceServiceBackend.AddResource(backend.AddResourceParams{
-		Backend:              b,
+	_, err := r.postgresResourceServiceBackend.AddResource(backend.AddResourceParams{
+		Backend:              r.dataSourceService.GetSystemDataSourceBackend(),
 		Resource:             resource,
 		IgnoreIfExists:       true,
 		AllowSystemAndStatic: true,
@@ -122,7 +113,5 @@ func (r resourceService) Get(ctx context.Context, request *stub.GetResourceReque
 }
 
 func NewResourceService() ResourceService {
-	return &resourceService{
-		postgresResourceServiceBackend: postgres.NewPostgresResourceServiceBackend(),
-	}
+	return &resourceService{}
 }

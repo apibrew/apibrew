@@ -17,7 +17,15 @@ type AddResourceParams struct {
 	ForceMigrate         bool
 }
 
+type AddRecordsParams struct {
+	Backend  DataSourceBackend
+	Resource *model.Resource
+	Records  []*model.Record
+}
+
 type ResourceServiceBackend interface {
-	AddResource(params AddResourceParams) (*model.Resource, error)
 	Init(backend DataSourceBackend)
+	AddResource(params AddResourceParams) (*model.Resource, error)
+	AddRecords(params AddRecordsParams) ([]*model.Record, error)
+	GetResourceByName(resourceName string) (*model.Resource, error)
 }

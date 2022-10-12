@@ -7,47 +7,44 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	_ "github.com/lib/pq" // add this
+	_ "github.com/lib/pq"
+	log "github.com/sirupsen/logrus"
 )
 
 const DbNameType = "VARCHAR(64)"
 
 type postgresResourceServiceBackend struct {
 	connectionMap map[string]*sql.DB
+	systemBackend backend.DataSourceBackend
 }
 
-func (p *postgresResourceServiceBackend) Init(backend backend.DataSourceBackend) {
-	//err := p.withBackend(backend, func(tx *sql.Tx) error {
-	//	builder := sqlbuilder.CreateTable("resources")
-	//
-	//	builder.IfNotExists()
-	//
-	//	// basic properties
-	//	builder.Define("name", DbNameType, "NOT NULL", "PRIMARY KEY")
-	//	builder.Define("workspace", DbNameType, "NOT NULL")
-	//	builder.Define("type", "int2", "NOT NULL")
-	//	builder.Define("source_data_source", DbNameType, "NOT NULL")
-	//	builder.Define("source_mapping", DbNameType, "NOT NULL")
-	//	// flags
-	//	builder.Define("read_only_records", "bool", "NOT NULL")
-	//	builder.Define("unique_record", "bool", "NOT NULL")
-	//	builder.Define("keep_history", "bool", "NOT NULL")
-	//	// audit
-	//	builder.Define("created_on", "timestamp", "NOT NULL")
-	//	builder.Define("updated_on", "timestamp", "NULL")
-	//	builder.Define("created_by", DbNameType, "NOT NULL")
-	//	builder.Define("updated_by", DbNameType, "NULL")
-	//	// version
-	//	builder.Define("version", "int2", "NOT NULL")
-	//
-	//	_, err := tx.Exec(builder.Build())
-	//
-	//	return err
-	//})
-	//
-	//if err != nil {
-	//	panic(err)
-	//}
+func (p *postgresResourceServiceBackend) Init(systemBackend backend.DataSourceBackend) {
+	p.systemBackend = systemBackend
+}
+
+func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) (*model.Resource, error) {
+	var resource = new(model.Resource)
+
+	err := p.withBackend(p.systemBackend, func(tx *sql.Tx) error {
+		if err := resourceLoadDetails(tx, resource, resourceName); err != nil {
+			log.Error("Unable to load resource details", err)
+			return err
+		}
+
+		if err := resourceLoadProperties(tx, resource, resourceName); err != nil {
+			log.Error("Unable to load resource properties", err)
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		log.Error("Unable load resource", err)
+		return nil, err
+	}
+
+	return resource, nil
 }
 
 func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceParams) (*model.Resource, error) {
@@ -65,15 +62,18 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 
 		if params.Migrate {
 			if err := resourceCreateTable(tx, params.Resource); err != nil {
+				log.Error("Unable to create resource table", err)
 				return err
 			}
 		}
 
 		if err := resourceInsert(tx, params.Resource); err != nil {
+			log.Error("Unable to insert resource", err)
 			return err
 		}
 
 		if err := resourceInsertProperties(tx, params.Resource); err != nil {
+			log.Error("Unable to insert resource properties", err)
 			return err
 		}
 
@@ -100,6 +100,8 @@ func (p *postgresResourceServiceBackend) acquireConnection(backend backend.DataS
 		}
 
 		p.connectionMap[backend.GetDataSourceId()] = conn
+
+		log.Info("Connected to Datasource: ", backend.GetDataSourceId())
 	}
 
 	return p.connectionMap[backend.GetDataSourceId()], nil
@@ -115,12 +117,14 @@ func (p *postgresResourceServiceBackend) withBackend(backend backend.DataSourceB
 	conn, err := p.acquireConnection(backend)
 
 	if err != nil {
+		log.Error("Unable to acquire connection", err, backend.GetDataSourceId())
 		return err
 	}
 
 	tx, err := conn.BeginTx(context.TODO(), &sql.TxOptions{})
 
 	if err != nil {
+		log.Error("Unable to begin transaction", err, backend.GetDataSourceId())
 		return err
 	}
 
@@ -131,6 +135,8 @@ func (p *postgresResourceServiceBackend) withBackend(backend backend.DataSourceB
 	err = fn(tx)
 
 	if err != nil {
+		log.Error("Unable to execute code inside transaction", err)
+
 		return err
 	}
 

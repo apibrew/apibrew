@@ -33,28 +33,28 @@ message ListRecordResponse {
 
 message CreateRecordRequest {
   string token = 1;
-  repeated model.Record Record = 2;
+  repeated model.Record Records = 2;
 }
 
 message CreateRecordResponse {
-  repeated model.Record Record = 1;
+  repeated model.Record Records = 1;
   model.Error error = 2;
 }
 
 message UpdateRecordRequest {
   string token = 1;
-  repeated model.Record Record = 2;
+  repeated model.Record Records = 2;
   bool checkVersion = 3;
 }
 
 message UpdateRecordResponse {
-  repeated model.Record Record = 1;
+  repeated model.Record Records = 1;
   model.Error error = 2;
 }
 
 message DeleteRecordRequest {
   string token = 1;
-  repeated model.Record Record = 2;
+  repeated model.Record Records = 2;
 }
 
 message DeleteRecordResponse {

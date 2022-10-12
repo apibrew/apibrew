@@ -8,10 +8,6 @@ import 'model/audit.proto';
 import 'model/query.proto';
 import 'model/common.proto';
 
-message ResourcePropertyMappingSourceConfig {
-  string dataSource = 1;
-  string mapping = 2;
-}
 
 message ResourcePropertyComputedSourceConfig {
   FunctionCall functionCall = 1;

@@ -61,6 +61,7 @@ func prepareSystemWorkSpace() *model.Workspace {
 
 func prepareSystemDataSource() *model.DataSource {
 	return &model.DataSource{
+		Id:      "system",
 		Backend: model.DataSourceBackend_POSTGRESQL,
 		Type:    model.DataType_SYSTEM,
 		Options: &model.DataSource_PostgresqlParams{
