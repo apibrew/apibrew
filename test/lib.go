@@ -1,10 +1,14 @@
 package test
 
 import (
+	"context"
 	"data-handler/app"
 	"data-handler/stub"
+	"data-handler/stub/model"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"reflect"
+	"testing"
 	"time"
 )
 
@@ -70,4 +74,62 @@ func withApp(exec func(application *app.App)) {
 	exec(application)
 
 	defer application.Stop()
+}
+
+func withDataSource(t *testing.T, container *SimpleAppGrpcContainer, dataSource *model.DataSource, exec func(dataSource *model.DataSource)) {
+	res, err := container.dataSourceService.Create(context.TODO(), &stub.CreateDataSourceRequest{
+		Token:       "test-token",
+		DataSources: []*model.DataSource{dataSource},
+	})
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Error != nil {
+		t.Error(res.Error.Message)
+	}
+
+	if !reflect.DeepEqual(len(res.DataSources), 1) {
+		t.Error("Created datasource length is wrong", len(res.DataSources), 1)
+	}
+
+	exists := checkDataSourceExists(container, res.DataSources[0].Id)
+	if !exists {
+		t.Error("Datasource created but not exists")
+	}
+
+	exec(res.DataSources[0])
+
+	res2, err := container.dataSourceService.Delete(context.TODO(), &stub.DeleteDataSourceRequest{
+		Token:       "test-token",
+		DataSources: res.DataSources,
+	})
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res2.Error != nil {
+		t.Error(res.Error.Message)
+	}
+
+	exists = checkDataSourceExists(container, res.DataSources[0].Id)
+	if exists {
+		t.Error("Datasource removed but exists")
+	}
+}
+
+func checkDataSourceExists(container *SimpleAppGrpcContainer, id string) bool {
+	_, err := container.dataSourceService.Get(context.TODO(), &stub.GetDataSourceRequest{
+		Token: "test-token",
+		Id:    id,
+	})
+
+	if err != nil {
+		return false
+	}
+	return true
 }

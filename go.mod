@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/google/uuid v1.1.2
 	github.com/huandu/go-sqlbuilder v1.16.0
+	github.com/ktr0731/grpcdynamic v0.0.0-20200217085124-70a2c3229ec4
 	github.com/lib/pq v1.10.7
 	github.com/sirupsen/logrus v1.9.0
 	google.golang.org/grpc v1.50.0
@@ -12,10 +13,8 @@ require (
 )
 
 require (
-	github.com/fergusstrange/embedded-postgres v1.19.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
-	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	golang.org/x/text v0.3.6 // indirect

@@ -73,6 +73,23 @@ func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSource
 	}, nil
 }
 
+func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteDataSourceRequest) (*stub.DeleteDataSourceResponse, error) {
+	records := mapToRecord(request.DataSources, dataSourceToRecord)
+	systemCtx := withSystemContext(ctx)
+	record, err := d.recordService.Delete(systemCtx, &stub.DeleteRecordRequest{
+		Token:   request.Token,
+		Records: records,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.DeleteDataSourceResponse{
+		Error: record.Error,
+	}, nil
+}
+
 func (d *dataSourceService) LocateDataSource(dataSourceId string) (*model.DataSource, error) {
 	if dataSourceId == d.systemDataSource.Id {
 		return d.systemDataSource, nil

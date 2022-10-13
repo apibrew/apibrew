@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"data-handler/stub/model"
+	"data-handler/util"
 	"github.com/google/uuid"
 	"github.com/huandu/go-sqlbuilder"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -133,6 +134,23 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 	}
 
 	return record, nil
+}
+
+func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) error {
+	deleteBuilder := sqlbuilder.DeleteFrom(resource.SourceConfig.Mapping)
+	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+
+	deleteBuilder.Where(deleteBuilder.In("id", util.ArrayMapToInterface(ids)...))
+
+	sqlQuery, args := deleteBuilder.Build()
+
+	_, err := runner.Exec(sqlQuery, args...)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func prepareResourceRecordCols(resource *model.Resource) []string {

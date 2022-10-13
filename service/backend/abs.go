@@ -29,4 +29,5 @@ type ResourceServiceBackend interface {
 	AddRecords(params AddRecordsParams) ([]*model.Record, error)
 	GetResourceByName(resourceName string) (*model.Resource, error)
 	GetRecord(bck DataSourceBackend, resource *model.Resource, id string) (*model.Record, error)
+	DeleteResources(bck DataSourceBackend, resource *model.Resource, list []*model.Record) error
 }

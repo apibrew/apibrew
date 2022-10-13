@@ -95,6 +95,36 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 	}, nil
 }
 
+func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
+	var entityRecordMap = make(map[string][]*model.Record)
+
+	for _, record := range request.Records {
+		entityRecordMap[record.Resource] = append(entityRecordMap[record.Resource], record)
+	}
+
+	for resourceName, list := range entityRecordMap {
+		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
+
+		if err != nil {
+			return nil, err
+		}
+
+		bck, err := r.dataSourceService.GetDataSourceBackend(resource.SourceConfig.DataSource)
+
+		if err != nil {
+			return nil, err
+		}
+
+		err = r.postgresResourceServiceBackend.DeleteResources(bck, resource, list)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &stub.DeleteRecordResponse{}, nil
+}
+
 func (r *recordService) Init(data *model.InitData) {
 }
 
