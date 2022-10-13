@@ -57,10 +57,16 @@ func dataSourceToRecord(department *model.DataSource) *model.Record {
 }
 
 func dataSourceFromRecord(record *model.Record) *model.DataSource {
+	if record == nil {
+		return nil
+	}
+
+	backendNumnber := record.Properties.Fields["backend"].GetNumberValue()
+
 	result := &model.DataSource{
 		Id:        record.Id,
 		Type:      record.Type,
-		Backend:   model.DataSourceBackend(record.Properties.Fields["backend"].AsInterface().(float64)),
+		Backend:   model.DataSourceBackend(backendNumnber),
 		AuditData: record.AuditData,
 		Version:   record.Version,
 	}
@@ -72,7 +78,7 @@ func dataSourceFromRecord(record *model.Record) *model.DataSource {
 			Username:      record.Properties.Fields["options_postgres_username"].GetStringValue(),
 			Password:      record.Properties.Fields["options_postgres_password"].GetStringValue(),
 			Host:          record.Properties.Fields["options_postgres_host"].GetStringValue(),
-			Port:          uint32(record.Properties.Fields["options_postgres_port"].AsInterface().(float64)),
+			Port:          uint32(record.Properties.Fields["options_postgres_port"].GetNumberValue()),
 			DbName:        record.Properties.Fields["options_postgres_db_name"].GetStringValue(),
 			DefaultSchema: record.Properties.Fields["options_postgres_default_schema"].GetStringValue(),
 		}

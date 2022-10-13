@@ -59,10 +59,10 @@ func prepareSystemDataSource() *model.DataSource {
 		Type:    model.DataType_SYSTEM,
 		Options: &model.DataSource_PostgresqlParams{
 			PostgresqlParams: &model.PostgresqlOptions{
-				Username:      "postgres",
-				Password:      "postgres",
+				Username:      "root",
+				Password:      "root",
 				Host:          "127.0.0.1",
-				Port:          55432,
+				Port:          5432,
 				DbName:        "postgres",
 				DefaultSchema: "public",
 			},

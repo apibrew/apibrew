@@ -55,6 +55,24 @@ func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateData
 	}, err
 }
 
+func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSourceRequest) (*stub.GetDataSourceResponse, error) {
+	systemCtx := withSystemContext(ctx)
+	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
+		Token:    request.Token,
+		Resource: dataSourceResource.Name,
+		Id:       request.Id,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.GetDataSourceResponse{
+		DataSource: dataSourceFromRecord(record.Record),
+		Error:      record.Error,
+	}, nil
+}
+
 func (d *dataSourceService) LocateDataSource(dataSourceId string) (*model.DataSource, error) {
 	if dataSourceId == d.systemDataSource.Id {
 		return d.systemDataSource, nil

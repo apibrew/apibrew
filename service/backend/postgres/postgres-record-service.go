@@ -19,3 +19,15 @@ func (p *postgresResourceServiceBackend) AddRecords(params backend.AddRecordsPar
 
 	return params.Records, nil
 }
+
+func (p *postgresResourceServiceBackend) GetRecord(bck backend.DataSourceBackend, resource *model.Resource, id string) (*model.Record, error) {
+	var record *model.Record = nil
+	err := p.withBackend(bck, func(tx *sql.Tx) error {
+		var err error
+		record, err = readRecord(tx, resource, id)
+
+		return err
+	})
+
+	return record, err
+}

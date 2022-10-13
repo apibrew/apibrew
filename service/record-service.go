@@ -70,6 +70,31 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 	}, nil
 }
 
+func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
+	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
+
+	if err != nil {
+		return nil, err
+	}
+
+	bck, err := r.dataSourceService.GetDataSourceBackend(resource.SourceConfig.DataSource)
+
+	if err != nil {
+		return nil, err
+	}
+
+	record, err := r.postgresResourceServiceBackend.GetRecord(bck, resource, request.Id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.GetRecordResponse{
+		Record: record,
+		Error:  nil,
+	}, nil
+}
+
 func (r *recordService) Init(data *model.InitData) {
 }
 

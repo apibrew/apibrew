@@ -295,6 +295,28 @@ func resourceLoadProperties(runner QueryRunner, resource *model.Resource, name s
 	return nil
 }
 
+func dereferenceProperty(value interface{}, propertyType model.ResourcePropertyType, required bool) interface{} {
+	switch propertyType {
+	case model.ResourcePropertyType_INT32:
+		return *value.(*int32)
+	case model.ResourcePropertyType_STRING:
+		return *value.(*string)
+	default:
+		panic("unknown property type")
+	}
+}
+
+func getPropertyPointer(propertyType model.ResourcePropertyType, required bool) interface{} {
+	switch propertyType {
+	case model.ResourcePropertyType_INT32:
+		return new(int32)
+	case model.ResourcePropertyType_STRING:
+		return new(string)
+	default:
+		panic("unknown property type")
+	}
+}
+
 func getPsqlType(propertyType model.ResourcePropertyType, length uint32) string {
 	switch propertyType {
 	case model.ResourcePropertyType_INT32:
