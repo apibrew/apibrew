@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"data-handler/service/backend"
+	"data-handler/stub"
 	"data-handler/stub/model"
 	"database/sql"
 	"errors"
@@ -47,11 +48,29 @@ func (p *postgresResourceServiceBackend) Init() {
 	}
 }
 
-func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) (*model.Resource, error) {
-	var resource = new(model.Resource)
+func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (result *stub.StatusResponse, err error) {
+	result = new(stub.StatusResponse)
 
-	err := p.withSystemBackend(func(tx *sql.Tx) error {
-		if err := resourceLoadDetails(tx, resource, resourceName); err != nil {
+	result.ConnectionAlreadyInitiated = p.connectionMap[dataSourceId] != nil
+
+	conn, err := p.acquireConnection(dataSourceId)
+
+	if err != nil {
+		return
+	}
+
+	err = conn.Ping()
+
+	result.TestConnection = err == nil
+
+	return
+}
+
+func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) (resource *model.Resource, err error) {
+	resource = new(model.Resource)
+
+	err = p.withSystemBackend(func(tx *sql.Tx) error {
+		if err = resourceLoadDetails(tx, resource, resourceName); err != nil {
 			log.Error("Unable to load resource details", err)
 			return err
 		}
@@ -146,6 +165,14 @@ func NewPostgresResourceServiceBackend() backend.ResourceServiceBackend {
 
 func (p *postgresResourceServiceBackend) withSystemBackend(fn func(tx *sql.Tx) error) error {
 	return p.withBackend(p.systemBackend.GetDataSourceId(), fn)
+}
+
+func (p *postgresResourceServiceBackend) withBackend2(dataSourceId string, fn func(tx *sql.Tx)) {
+	_ = p.withBackend(dataSourceId, func(tx *sql.Tx) error {
+		fn(tx)
+
+		return nil
+	})
 }
 
 func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, fn func(tx *sql.Tx) error) error {

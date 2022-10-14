@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"data-handler/stub"
 	"data-handler/stub/model"
 )
 
@@ -21,6 +22,13 @@ type AddRecordsParams struct {
 	Records  []*model.Record
 }
 
+type ListRecordParams struct {
+	Resource *model.Resource
+	Query    *model.BooleanExpression
+	Limit    uint32
+	Offset   uint64
+}
+
 type DataSourceLocator interface {
 	GetDataSourceBackendById(dataSourceId string) (DataSourceBackend, error)
 	GetSystemDataSourceBackend() DataSourceBackend
@@ -35,4 +43,6 @@ type ResourceServiceBackend interface {
 	DeleteRecords(resource *model.Resource, list []string) error
 	DestroyDataSource(dataSourceId string)
 	InjectDataSourceService(service DataSourceLocator)
+	GetStatus(dataSourceId string) (*stub.StatusResponse, error)
+	ListRecords(params ListRecordParams) ([]*model.Record, uint32, error)
 }

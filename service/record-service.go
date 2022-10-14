@@ -29,6 +29,31 @@ func (r *recordService) InjectPostgresResourceServiceBackend(resourceServiceBack
 	r.postgresResourceServiceBackend = resourceServiceBackend
 }
 
+func (r *recordService) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
+	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
+
+	if err != nil {
+		return nil, err
+	}
+
+	records, total, err := r.postgresResourceServiceBackend.ListRecords(backend.ListRecordParams{
+		Resource: resource,
+		Query:    request.Query,
+		Limit:    request.Limit,
+		Offset:   request.Offset,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.ListRecordResponse{
+		Content: records,
+		Total:   total,
+		Error:   nil,
+	}, nil
+}
+
 func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	var entityRecordMap = make(map[string][]*model.Record)
 

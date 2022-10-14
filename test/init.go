@@ -53,19 +53,5 @@ func prepareSystemWorkSpace() *model.Workspace {
 }
 
 func prepareSystemDataSource() *model.DataSource {
-	return &model.DataSource{
-		Id:      "system",
-		Backend: model.DataSourceBackend_POSTGRESQL,
-		Type:    model.DataType_SYSTEM,
-		Options: &model.DataSource_PostgresqlParams{
-			PostgresqlParams: &model.PostgresqlOptions{
-				Username:      "root",
-				Password:      "root",
-				Host:          "127.0.0.1",
-				Port:          5432,
-				DbName:        "postgres",
-				DefaultSchema: "public",
-			},
-		},
-	}
+	return systemDataSource
 }

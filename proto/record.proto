@@ -26,7 +26,7 @@ message ListRecordRequest {
 }
 
 message ListRecordResponse {
-  int32 total = 1;
+  uint32 total = 1;
   repeated model.Record content = 2;
   model.Error error = 3;
 }

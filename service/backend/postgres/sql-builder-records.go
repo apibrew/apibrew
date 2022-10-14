@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"data-handler/service/backend"
 	"data-handler/stub/model"
 	"data-handler/util"
 	"github.com/google/uuid"
@@ -65,24 +66,55 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 	return err
 }
 
-func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, error) {
-	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(resource)...)
-	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	selectBuilder.From(resource.SourceConfig.Mapping)
-	selectBuilder.Where(selectBuilder.Equal("id", id))
+func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*model.Record, total uint32, err error) {
+	// find count
+	countBuilder := sqlbuilder.Select("count(*)")
+	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+	countBuilder.From(params.Resource.SourceConfig.Mapping)
+	applyCondition(params.Query, countBuilder)
+	countQuery, _ := countBuilder.Build()
+	countRow := runner.QueryRow(countQuery)
+	err = countRow.Scan(&total)
 
-	sqlQuery, _ := selectBuilder.Build()
-
-	row := runner.QueryRow(sqlQuery, id)
-
-	if row.Err() != nil {
-		return nil, row.Err()
+	if err != nil {
+		return
 	}
 
-	record := new(model.Record)
+	if total == 0 {
+		return
+	}
 
-	//row.Scan()
+	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(params.Resource)...)
+	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+	selectBuilder.From(params.Resource.SourceConfig.Mapping)
+	applyCondition(params.Query, selectBuilder)
+	sqlQuery, _ := selectBuilder.Build()
+	rows, err := runner.Query(sqlQuery)
 
+	defer rows.Close()
+
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		record := new(model.Record)
+		err = scanRecord(record, params.Resource, rows)
+		if err != nil {
+			return
+		}
+
+		result = append(result, record)
+	}
+
+	return
+}
+
+func applyCondition(query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) {
+
+}
+
+func scanRecord(record *model.Record, resource *model.Resource, scanner QueryResultScanner) error {
 	var rowScanFields []any
 
 	rowScanFields = append(rowScanFields, &record.Id)
@@ -109,7 +141,7 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 	rowScanFields = append(rowScanFields, updatedBy)
 	rowScanFields = append(rowScanFields, &record.Version)
 
-	err := row.Scan(rowScanFields...)
+	err := scanner.Scan(rowScanFields...)
 
 	for _, property := range resource.Properties {
 		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
@@ -122,7 +154,7 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 	record.Properties = propStruct
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	record.AuditData.CreatedOn = timestamppb.New(*createdOn)
@@ -131,6 +163,30 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 	}
 	if *updatedBy != nil {
 		record.AuditData.UpdatedBy = **updatedBy
+	}
+	return nil
+}
+
+func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, error) {
+	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(resource)...)
+	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+	selectBuilder.From(resource.SourceConfig.Mapping)
+	selectBuilder.Where(selectBuilder.Equal("id", id))
+
+	sqlQuery, _ := selectBuilder.Build()
+
+	row := runner.QueryRow(sqlQuery, id)
+
+	if row.Err() != nil {
+		return nil, row.Err()
+	}
+
+	record := new(model.Record)
+
+	err := scanRecord(record, resource, row)
+
+	if err != nil {
+		return nil, err
 	}
 
 	return record, nil

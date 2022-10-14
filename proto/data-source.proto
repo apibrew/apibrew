@@ -14,8 +14,8 @@ service DataSourceService {
   rpc Update(UpdateDataSourceRequest) returns (UpdateDataSourceResponse) {}
   rpc Delete(DeleteDataSourceRequest) returns (DeleteDataSourceResponse) {}
   rpc Get(GetDataSourceRequest) returns (GetDataSourceResponse) {}
-  rpc TestConnection(TestConnectionRequest) returns (TestConnectionResponse) {}
-  rpc ListEntities(TestConnectionRequest) returns (TestConnectionResponse) {}
+  rpc Status(StatusRequest) returns (StatusResponse) {}
+  rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {}
   rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {}
 }
 
@@ -30,13 +30,15 @@ message PrepareResourceFromEntityResponse {
   model.Error error = 2;
 }
 
-message TestConnectionRequest {
+message StatusRequest {
   string token = 1;
   string id = 2;
 }
 
-message TestConnectionResponse {
-  model.Error error = 2;
+message StatusResponse {
+  bool connectionAlreadyInitiated = 1;
+  bool testConnection = 2;
+  model.Error error = 3;
 }
 
 message ListEntitiesRequest {

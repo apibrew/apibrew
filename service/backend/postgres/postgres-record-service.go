@@ -8,6 +8,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordParams) (result []*model.Record, total uint32, err error) {
+	err = p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+		result, total, err = recordList(tx, params)
+
+		return err
+	})
+
+	if err != nil {
+		log.Error("Unable to insert records", err)
+		return
+	}
+
+	return
+}
+
 func (p *postgresResourceServiceBackend) AddRecords(params backend.AddRecordsParams) ([]*model.Record, error) {
 	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
 		return recordInsert(tx, params.Resource, params.Records)

@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+type QueryResultScanner interface {
+	Scan(dest ...any) error
+}
+
 type QueryRunner interface {
 	QueryRow(query string, args ...any) *sql.Row
 	Exec(query string, args ...any) (sql.Result, error)

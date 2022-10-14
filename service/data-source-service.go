@@ -28,8 +28,31 @@ type dataSourceService struct {
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 }
 
-func (d *dataSourceService) GetSystemDataSourceBackend() backend.DataSourceBackend {
-	return d.GetDataSourceBackend(d.systemDataSource)
+/*
+  rpc TestConnection(TestConnectionRequest) returns (TestConnectionResponse) {}
+  rpc ListEntities(TestConnectionRequest) returns (TestConnectionResponse) {}
+  rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {}
+*/
+
+func (d *dataSourceService) List(ctx context.Context, request *stub.ListDataSourceRequest) (*stub.ListDataSourceResponse, error) {
+	systemCtx := withSystemContext(ctx)
+	result, err := d.recordService.List(systemCtx, &stub.ListRecordRequest{
+		Resource: dataSourceResource.Name,
+		Token:    request.Token,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.ListDataSourceResponse{
+		Content: mapFromRecord(result.Content, dataSourceFromRecord),
+		Error:   result.Error,
+	}, err
+}
+
+func (d *dataSourceService) Status(ctx context.Context, request *stub.StatusRequest) (*stub.StatusResponse, error) {
+	return d.postgresResourceServiceBackend.GetStatus(request.Id)
 }
 
 func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateDataSourceRequest) (*stub.CreateDataSourceResponse, error) {
@@ -112,10 +135,6 @@ func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backe
 }
 
 func (d *dataSourceService) GetDataSourceBackend(dataSource *model.DataSource) backend.DataSourceBackend {
-	if dataSource.Id != d.systemDataSource.Id {
-		panic("not implemented")
-	}
-
 	switch d.systemDataSource.Backend {
 	case model.DataSourceBackend_POSTGRESQL:
 		return postgres.NewPostgresDataSourceBackend(dataSource.Id, dataSource.Options.(*model.DataSource_PostgresqlParams).PostgresqlParams)
@@ -124,6 +143,10 @@ func (d *dataSourceService) GetDataSourceBackend(dataSource *model.DataSource) b
 	default:
 		panic("unknown data-source type")
 	}
+}
+
+func (d *dataSourceService) GetSystemDataSourceBackend() backend.DataSourceBackend {
+	return d.GetDataSourceBackend(d.systemDataSource)
 }
 
 func (d *dataSourceService) InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend) {
