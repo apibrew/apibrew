@@ -75,7 +75,7 @@ func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) 
 			return err
 		}
 
-		if err := resourceLoadProperties(tx, resource, resourceName); err != nil {
+		if err = resourceLoadProperties(tx, resource, resourceName); err != nil {
 			log.Error("Unable to load resource properties", err)
 			return err
 		}
@@ -165,14 +165,6 @@ func NewPostgresResourceServiceBackend() backend.ResourceServiceBackend {
 
 func (p *postgresResourceServiceBackend) withSystemBackend(fn func(tx *sql.Tx) error) error {
 	return p.withBackend(p.systemBackend.GetDataSourceId(), fn)
-}
-
-func (p *postgresResourceServiceBackend) withBackend2(dataSourceId string, fn func(tx *sql.Tx)) {
-	_ = p.withBackend(dataSourceId, func(tx *sql.Tx) error {
-		fn(tx)
-
-		return nil
-	})
 }
 
 func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, fn func(tx *sql.Tx) error) error {

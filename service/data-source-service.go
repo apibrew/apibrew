@@ -74,6 +74,29 @@ func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateData
 	}, err
 }
 
+func (d *dataSourceService) Update(ctx context.Context, request *stub.UpdateDataSourceRequest) (*stub.UpdateDataSourceResponse, error) {
+	// insert records via resource service
+	records := mapToRecord(request.DataSources, dataSourceToRecord)
+	systemCtx := withSystemContext(ctx)
+	result, err := d.recordService.Update(systemCtx, &stub.UpdateRecordRequest{
+		Token:   request.Token,
+		Records: records,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range request.DataSources {
+		d.postgresResourceServiceBackend.DestroyDataSource(item.Id)
+	}
+
+	return &stub.UpdateDataSourceResponse{
+		DataSources: mapFromRecord(result.Records, dataSourceFromRecord),
+		Error:       result.Error,
+	}, err
+}
+
 func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSourceRequest) (*stub.GetDataSourceResponse, error) {
 	systemCtx := withSystemContext(ctx)
 	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
@@ -106,7 +129,7 @@ func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteData
 	}
 
 	for _, dataSourceId := range request.Ids {
-		d.AfterDelete(dataSourceId)
+		d.postgresResourceServiceBackend.DestroyDataSource(dataSourceId)
 	}
 
 	return &stub.DeleteDataSourceResponse{
@@ -167,10 +190,6 @@ func (d *dataSourceService) InjectInitData(data *model.InitData) {
 
 func (d *dataSourceService) Init() {
 	d.resourceService.InitResource(dataSourceResource)
-}
-
-func (d *dataSourceService) AfterDelete(dataSourceId string) {
-	d.postgresResourceServiceBackend.DestroyDataSource(dataSourceId)
 }
 
 func NewDataSourceService() DataSourceService {

@@ -45,3 +45,17 @@ var dataSource1WrongPassword = &model.DataSource{
 		},
 	},
 }
+
+var dataSourceDhTest = &model.DataSource{
+	Backend: model.DataSourceBackend_POSTGRESQL,
+	Options: &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlOptions{
+			Username:      "dh_test",
+			Password:      "dh_test",
+			Host:          "127.0.0.1",
+			Port:          5432,
+			DbName:        "dh_test",
+			DefaultSchema: "public",
+		},
+	},
+}

@@ -74,7 +74,7 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 			return nil, err
 		}
 
-		record, err := r.postgresResourceServiceBackend.AddRecords(backend.AddRecordsParams{
+		record, err := r.postgresResourceServiceBackend.AddRecords(backend.BulkRecordsParams{
 			Resource: resource,
 			Records:  list,
 		})
@@ -87,6 +87,44 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 	}
 
 	return &stub.CreateRecordResponse{
+		Records: result,
+		Error:   nil,
+	}, nil
+}
+
+func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
+	var entityRecordMap = make(map[string][]*model.Record)
+
+	for _, record := range request.Records {
+		entityRecordMap[record.Resource] = append(entityRecordMap[record.Resource], record)
+	}
+
+	var result []*model.Record
+
+	for resourceName, list := range entityRecordMap {
+		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		record, err := r.postgresResourceServiceBackend.UpdateRecords(backend.BulkRecordsParams{
+			Resource: resource,
+			Records:  list,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, record...)
+	}
+
+	return &stub.UpdateRecordResponse{
 		Records: result,
 		Error:   nil,
 	}, nil

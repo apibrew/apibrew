@@ -4,6 +4,7 @@ import (
 	"data-handler/service/backend"
 	"data-handler/stub/model"
 	"data-handler/util"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/huandu/go-sqlbuilder"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -64,6 +65,54 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 	}
 
 	return err
+}
+
+func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record) (err error) {
+	if resource.Flags == nil {
+		resource.Flags = &model.ResourceFlags{}
+	}
+
+	updateBuilder := sqlbuilder.Update(resource.SourceConfig.Mapping)
+	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+	updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))
+
+	now := time.Now()
+
+	record.AuditData.UpdatedOn = timestamppb.New(now)
+	record.AuditData.UpdatedBy = "test-user"
+
+	record.Version++
+
+	for _, property := range resource.Properties {
+		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+			val := record.Properties.AsMap()[property.Name]
+			updateBuilder.SetMore(updateBuilder.Equal(source.Mapping, val))
+		}
+	}
+
+	updateBuilder.SetMore(updateBuilder.Equal("updated_on", record.AuditData.UpdatedOn.AsTime()))
+	updateBuilder.SetMore(updateBuilder.Equal("updated_by", record.AuditData.UpdatedBy))
+	updateBuilder.SetMore(updateBuilder.Equal("version", record.Version))
+
+	sqlQuery, args := updateBuilder.Build()
+
+	result, err := runner.Exec(sqlQuery, args...)
+
+	if err != nil {
+		return
+	}
+
+	affected, err := result.RowsAffected()
+
+	if err != nil {
+		return
+	}
+
+	if affected == 0 {
+		return errors.New("record not found or version is wrong")
+	}
+
+	return
 }
 
 func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*model.Record, total uint32, err error) {

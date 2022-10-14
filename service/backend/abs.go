@@ -17,7 +17,7 @@ type AddResourceParams struct {
 	ForceMigrate         bool
 }
 
-type AddRecordsParams struct {
+type BulkRecordsParams struct {
 	Resource *model.Resource
 	Records  []*model.Record
 }
@@ -37,7 +37,8 @@ type DataSourceLocator interface {
 type ResourceServiceBackend interface {
 	Init()
 	AddResource(params AddResourceParams) (*model.Resource, error)
-	AddRecords(params AddRecordsParams) ([]*model.Record, error)
+	AddRecords(params BulkRecordsParams) ([]*model.Record, error)
+	UpdateRecords(params BulkRecordsParams) ([]*model.Record, error)
 	GetResourceByName(resourceName string) (*model.Resource, error)
 	GetRecord(resource *model.Resource, id string) (*model.Record, error)
 	DeleteRecords(resource *model.Resource, list []string) error

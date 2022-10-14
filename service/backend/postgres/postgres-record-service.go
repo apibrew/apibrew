@@ -23,9 +23,30 @@ func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordPa
 	return
 }
 
-func (p *postgresResourceServiceBackend) AddRecords(params backend.AddRecordsParams) ([]*model.Record, error) {
+func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsParams) ([]*model.Record, error) {
 	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
 		return recordInsert(tx, params.Resource, params.Records)
+	})
+
+	if err != nil {
+		log.Error("Unable to insert records", err)
+		return nil, err
+	}
+
+	return params.Records, nil
+}
+
+func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecordsParams) ([]*model.Record, error) {
+	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+		for _, record := range params.Records {
+			err := recordUpdate(tx, params.Resource, record)
+
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
 	})
 
 	if err != nil {
