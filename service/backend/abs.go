@@ -9,7 +9,6 @@ type DataSourceBackend interface {
 }
 
 type AddResourceParams struct {
-	Backend              DataSourceBackend
 	Resource             *model.Resource
 	AllowSystemAndStatic bool
 	IgnoreIfExists       bool
@@ -18,16 +17,22 @@ type AddResourceParams struct {
 }
 
 type AddRecordsParams struct {
-	Backend  DataSourceBackend
 	Resource *model.Resource
 	Records  []*model.Record
 }
 
+type DataSourceLocator interface {
+	GetDataSourceBackendById(dataSourceId string) (DataSourceBackend, error)
+	GetSystemDataSourceBackend() DataSourceBackend
+}
+
 type ResourceServiceBackend interface {
-	Init(backend DataSourceBackend)
+	Init()
 	AddResource(params AddResourceParams) (*model.Resource, error)
 	AddRecords(params AddRecordsParams) ([]*model.Record, error)
 	GetResourceByName(resourceName string) (*model.Resource, error)
-	GetRecord(bck DataSourceBackend, resource *model.Resource, id string) (*model.Record, error)
-	DeleteResources(bck DataSourceBackend, resource *model.Resource, list []*model.Record) error
+	GetRecord(resource *model.Resource, id string) (*model.Record, error)
+	DeleteRecords(resource *model.Resource, list []string) error
+	DestroyDataSource(dataSourceId string)
+	InjectDataSourceService(service DataSourceLocator)
 }

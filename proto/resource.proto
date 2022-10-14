@@ -46,7 +46,7 @@ message UpdateResourceResponse {
 
 message DeleteResourceRequest {
   string token = 1;
-  repeated model.Resource resources = 2;
+  repeated string ids = 2;
 
   bool doMigration = 3;
   bool forceMigration = 4;

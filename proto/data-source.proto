@@ -84,7 +84,7 @@ message UpdateDataSourceResponse {
 
 message DeleteDataSourceRequest {
   string token = 1;
-  repeated model.DataSource dataSources = 2;
+  repeated string ids = 2;
 }
 
 message DeleteDataSourceResponse {

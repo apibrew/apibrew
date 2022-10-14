@@ -13,27 +13,23 @@ type DataSourceService interface {
 	InjectResourceService(service ResourceService)
 	InjectInitData(data *model.InitData)
 	Init()
-	GetDataSourceBackend(id string) (backend.DataSourceBackend, error)
-	LocateDataSource(id string) (*model.DataSource, error)
+	GetDataSourceBackend(dataSource *model.DataSource) backend.DataSourceBackend
 	InjectRecordService(service RecordService)
 	GetSystemDataSourceBackend() backend.DataSourceBackend
+	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
+	GetDataSourceBackendById(dataSourceId string) (backend.DataSourceBackend, error)
 }
 
 type dataSourceService struct {
 	stub.DataSourceServiceServer
-	resourceService  ResourceService
-	recordService    RecordService
-	systemDataSource *model.DataSource
+	resourceService                ResourceService
+	recordService                  RecordService
+	systemDataSource               *model.DataSource
+	postgresResourceServiceBackend backend.ResourceServiceBackend
 }
 
 func (d *dataSourceService) GetSystemDataSourceBackend() backend.DataSourceBackend {
-	bck, err := d.GetDataSourceBackend(d.systemDataSource.Id)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return bck
+	return d.GetDataSourceBackend(d.systemDataSource)
 }
 
 func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateDataSourceRequest) (*stub.CreateDataSourceResponse, error) {
@@ -74,15 +70,20 @@ func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSource
 }
 
 func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteDataSourceRequest) (*stub.DeleteDataSourceResponse, error) {
-	records := mapToRecord(request.DataSources, dataSourceToRecord)
 	systemCtx := withSystemContext(ctx)
+
 	record, err := d.recordService.Delete(systemCtx, &stub.DeleteRecordRequest{
-		Token:   request.Token,
-		Records: records,
+		Token:    request.Token,
+		Resource: dataSourceResource.Name,
+		Ids:      request.Ids,
 	})
 
 	if err != nil {
 		return nil, err
+	}
+
+	for _, dataSourceId := range request.Ids {
+		d.AfterDelete(dataSourceId)
 	}
 
 	return &stub.DeleteDataSourceResponse{
@@ -90,27 +91,43 @@ func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteData
 	}, nil
 }
 
-func (d *dataSourceService) LocateDataSource(dataSourceId string) (*model.DataSource, error) {
+func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backend.DataSourceBackend, error) {
 	if dataSourceId == d.systemDataSource.Id {
-		return d.systemDataSource, nil
-	} else {
-		panic("not implemented")
+		return d.GetSystemDataSourceBackend(), nil
 	}
+
+	systemCtx := withSystemContext(context.TODO())
+	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
+		Resource: dataSourceResource.Name,
+		Id:       dataSourceId,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	dataSource := dataSourceFromRecord(record.Record)
+
+	return d.GetDataSourceBackend(dataSource), nil
 }
 
-func (d *dataSourceService) GetDataSourceBackend(id string) (backend.DataSourceBackend, error) {
-	if id != d.systemDataSource.Id {
+func (d *dataSourceService) GetDataSourceBackend(dataSource *model.DataSource) backend.DataSourceBackend {
+	if dataSource.Id != d.systemDataSource.Id {
 		panic("not implemented")
 	}
 
 	switch d.systemDataSource.Backend {
 	case model.DataSourceBackend_POSTGRESQL:
-		return postgres.NewPostgresDataSourceBackend(id, d.systemDataSource.Options.(*model.DataSource_PostgresqlParams).PostgresqlParams), nil
+		return postgres.NewPostgresDataSourceBackend(dataSource.Id, dataSource.Options.(*model.DataSource_PostgresqlParams).PostgresqlParams)
 	case model.DataSourceBackend_MONGODB:
 		panic("mongodb data-source not init")
 	default:
 		panic("unknown data-source type")
 	}
+}
+
+func (d *dataSourceService) InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend) {
+	d.postgresResourceServiceBackend = serviceBackend
 }
 
 func (d *dataSourceService) InjectResourceService(service ResourceService) {
@@ -127,6 +144,10 @@ func (d *dataSourceService) InjectInitData(data *model.InitData) {
 
 func (d *dataSourceService) Init() {
 	d.resourceService.InitResource(dataSourceResource)
+}
+
+func (d *dataSourceService) AfterDelete(dataSourceId string) {
+	d.postgresResourceServiceBackend.DestroyDataSource(dataSourceId)
 }
 
 func NewDataSourceService() DataSourceService {

@@ -28,5 +28,7 @@ func main() {
 
 	application.SetInitData(initData)
 
-	application.RunServer()
+	application.Init()
+
+	application.Serve()
 }

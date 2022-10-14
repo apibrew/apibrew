@@ -54,7 +54,8 @@ message UpdateRecordResponse {
 
 message DeleteRecordRequest {
   string token = 1;
-  repeated model.Record Records = 2;
+  string resource = 2;
+  repeated string ids = 3;
 }
 
 message DeleteRecordResponse {

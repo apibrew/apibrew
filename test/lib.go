@@ -5,6 +5,7 @@ import (
 	"data-handler/app"
 	"data-handler/stub"
 	"data-handler/stub/model"
+	"data-handler/util"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"reflect"
@@ -103,8 +104,10 @@ func withDataSource(t *testing.T, container *SimpleAppGrpcContainer, dataSource 
 	exec(res.DataSources[0])
 
 	res2, err := container.dataSourceService.Delete(context.TODO(), &stub.DeleteDataSourceRequest{
-		Token:       "test-token",
-		DataSources: res.DataSources,
+		Token: "test-token",
+		Ids: util.ArrayMap(res.DataSources, func(t *model.DataSource) string {
+			return t.Id
+		}),
 	})
 
 	if err != nil {

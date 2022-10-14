@@ -50,7 +50,7 @@ message UpdateWorkSpaceResponse {
 
 message DeleteWorkSpaceRequest {
   string token = 1;
-  repeated model.Workspace workspaces = 2;
+  repeated string ids = 2;
 }
 
 message DeleteWorkSpaceResponse {

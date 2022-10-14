@@ -45,14 +45,11 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 			return nil, err
 		}
 
-		bck, err := r.dataSourceService.GetDataSourceBackend(resource.SourceConfig.DataSource)
-
 		if err != nil {
 			return nil, err
 		}
 
 		record, err := r.postgresResourceServiceBackend.AddRecords(backend.AddRecordsParams{
-			Backend:  bck,
 			Resource: resource,
 			Records:  list,
 		})
@@ -77,13 +74,7 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 		return nil, err
 	}
 
-	bck, err := r.dataSourceService.GetDataSourceBackend(resource.SourceConfig.DataSource)
-
-	if err != nil {
-		return nil, err
-	}
-
-	record, err := r.postgresResourceServiceBackend.GetRecord(bck, resource, request.Id)
+	record, err := r.postgresResourceServiceBackend.GetRecord(resource, request.Id)
 
 	if err != nil {
 		return nil, err
@@ -96,30 +87,16 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 }
 
 func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
-	var entityRecordMap = make(map[string][]*model.Record)
+	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
-	for _, record := range request.Records {
-		entityRecordMap[record.Resource] = append(entityRecordMap[record.Resource], record)
+	if err != nil {
+		return nil, err
 	}
 
-	for resourceName, list := range entityRecordMap {
-		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
+	err = r.postgresResourceServiceBackend.DeleteRecords(resource, request.Ids)
 
-		if err != nil {
-			return nil, err
-		}
-
-		bck, err := r.dataSourceService.GetDataSourceBackend(resource.SourceConfig.DataSource)
-
-		if err != nil {
-			return nil, err
-		}
-
-		err = r.postgresResourceServiceBackend.DeleteResources(bck, resource, list)
-
-		if err != nil {
-			return nil, err
-		}
+	if err != nil {
+		return nil, err
 	}
 
 	return &stub.DeleteRecordResponse{}, nil

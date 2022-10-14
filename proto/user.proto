@@ -40,7 +40,7 @@ message UpdateUserResponse {
 
 message DeleteUserRequest {
   string token = 1;
-  repeated model.User users = 2;
+  repeated string ids = 2;
 }
 
 message DeleteUserResponse {

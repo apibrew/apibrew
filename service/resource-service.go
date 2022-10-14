@@ -41,7 +41,6 @@ func (r *resourceService) InjectAuthenticationService(service AuthenticationServ
 
 func (r *resourceService) InitResource(resource *model.Resource) {
 	_, err := r.postgresResourceServiceBackend.AddResource(backend.AddResourceParams{
-		Backend:              r.dataSourceService.GetSystemDataSourceBackend(),
 		Resource:             resource,
 		IgnoreIfExists:       true,
 		AllowSystemAndStatic: true,
@@ -65,14 +64,8 @@ func (r resourceService) Create(ctx context.Context, request *stub.CreateResourc
 	var result []*model.Resource
 
 	for _, resource := range request.Resources {
-		b, err := r.dataSourceService.GetDataSourceBackend(resource.SourceConfig.DataSource)
-
-		if err != nil {
-			panic(err)
-		}
 
 		res, err := r.postgresResourceServiceBackend.AddResource(backend.AddResourceParams{
-			Backend:              b,
 			Resource:             resource,
 			AllowSystemAndStatic: false,
 			Migrate:              request.DoMigration,

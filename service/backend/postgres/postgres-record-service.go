@@ -9,7 +9,7 @@ import (
 )
 
 func (p *postgresResourceServiceBackend) AddRecords(params backend.AddRecordsParams) ([]*model.Record, error) {
-	err := p.withBackend(params.Backend, func(tx *sql.Tx) error {
+	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
 		return recordInsert(tx, params.Resource, params.Records)
 	})
 
@@ -21,9 +21,9 @@ func (p *postgresResourceServiceBackend) AddRecords(params backend.AddRecordsPar
 	return params.Records, nil
 }
 
-func (p *postgresResourceServiceBackend) GetRecord(bck backend.DataSourceBackend, resource *model.Resource, id string) (*model.Record, error) {
+func (p *postgresResourceServiceBackend) GetRecord(resource *model.Resource, id string) (*model.Record, error) {
 	var record *model.Record = nil
-	err := p.withBackend(bck, func(tx *sql.Tx) error {
+	err := p.withBackend(resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
 		var err error
 		record, err = readRecord(tx, resource, id)
 
@@ -37,14 +37,8 @@ func (p *postgresResourceServiceBackend) GetRecord(bck backend.DataSourceBackend
 	return record, err
 }
 
-func (p *postgresResourceServiceBackend) DeleteResources(bck backend.DataSourceBackend, resource *model.Resource, list []*model.Record) error {
-	return p.withBackend(bck, func(tx *sql.Tx) error {
-		var ids []string
-
-		for _, item := range list {
-			ids = append(ids, item.Id)
-		}
-
+func (p *postgresResourceServiceBackend) DeleteRecords(resource *model.Resource, ids []string) error {
+	return p.withBackend(resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
 		return deleteRecords(tx, resource, ids)
 	})
 }

@@ -14,14 +14,31 @@ import (
 const DbNameType = "VARCHAR(64)"
 
 type postgresResourceServiceBackend struct {
-	connectionMap map[string]*sql.DB
-	systemBackend backend.DataSourceBackend
+	connectionMap     map[string]*sql.DB
+	systemBackend     backend.DataSourceBackend
+	dataSourceService backend.DataSourceLocator
 }
 
-func (p *postgresResourceServiceBackend) Init(systemBackend backend.DataSourceBackend) {
-	p.systemBackend = systemBackend
+func (p *postgresResourceServiceBackend) InjectDataSourceService(dataSourceService backend.DataSourceLocator) {
+	p.dataSourceService = dataSourceService
+}
 
-	err := p.withBackend(p.systemBackend, func(tx *sql.Tx) error {
+func (p *postgresResourceServiceBackend) DestroyDataSource(dataSourceId string) {
+	if p.connectionMap[dataSourceId] != nil {
+		err := p.connectionMap[dataSourceId].Close()
+
+		if err != nil {
+			log.Println("Cannot Close destroyed datasource connection: ", err)
+		}
+
+		delete(p.connectionMap, dataSourceId)
+	}
+}
+
+func (p *postgresResourceServiceBackend) Init() {
+	p.systemBackend = p.dataSourceService.GetSystemDataSourceBackend()
+
+	err := p.withBackend(p.systemBackend.GetDataSourceId(), func(tx *sql.Tx) error {
 		return resourceSetupTables(tx)
 	})
 
@@ -33,7 +50,7 @@ func (p *postgresResourceServiceBackend) Init(systemBackend backend.DataSourceBa
 func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) (*model.Resource, error) {
 	var resource = new(model.Resource)
 
-	err := p.withBackend(p.systemBackend, func(tx *sql.Tx) error {
+	err := p.withSystemBackend(func(tx *sql.Tx) error {
 		if err := resourceLoadDetails(tx, resource, resourceName); err != nil {
 			log.Error("Unable to load resource details", err)
 			return err
@@ -56,7 +73,7 @@ func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) 
 }
 
 func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceParams) (*model.Resource, error) {
-	err := p.withBackend(params.Backend, func(tx *sql.Tx) error {
+	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
 		// check if resource exists
 
 		if existingCount, err := resourceCountsByName(tx, params.Resource.Name); err != nil {
@@ -95,9 +112,15 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 	return params.Resource, nil
 }
 
-func (p *postgresResourceServiceBackend) acquireConnection(backend backend.DataSourceBackend) (*sql.DB, error) {
-	if p.connectionMap[backend.GetDataSourceId()] == nil {
-		bck := backend.(*postgresDataSourceBackend)
+func (p *postgresResourceServiceBackend) acquireConnection(dataSourceId string) (*sql.DB, error) {
+	if p.connectionMap[dataSourceId] == nil {
+		dsBck, err := p.dataSourceService.GetDataSourceBackendById(dataSourceId)
+
+		if err != nil {
+			return nil, err
+		}
+
+		bck := dsBck.(*postgresDataSourceBackend)
 
 		connStr := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", bck.Options.Username, bck.Options.Password, bck.Options.Host, bck.Options.Port, bck.Options.DbName)
 		// Connect to database
@@ -107,12 +130,12 @@ func (p *postgresResourceServiceBackend) acquireConnection(backend backend.DataS
 			return nil, err
 		}
 
-		p.connectionMap[backend.GetDataSourceId()] = conn
+		p.connectionMap[dataSourceId] = conn
 
-		log.Info("Connected to Datasource: ", backend.GetDataSourceId())
+		log.Info("Connected to Datasource: ", dataSourceId)
 	}
 
-	return p.connectionMap[backend.GetDataSourceId()], nil
+	return p.connectionMap[dataSourceId], nil
 }
 
 func NewPostgresResourceServiceBackend() backend.ResourceServiceBackend {
@@ -121,18 +144,22 @@ func NewPostgresResourceServiceBackend() backend.ResourceServiceBackend {
 	}
 }
 
-func (p *postgresResourceServiceBackend) withBackend(backend backend.DataSourceBackend, fn func(tx *sql.Tx) error) error {
-	conn, err := p.acquireConnection(backend)
+func (p *postgresResourceServiceBackend) withSystemBackend(fn func(tx *sql.Tx) error) error {
+	return p.withBackend(p.systemBackend.GetDataSourceId(), fn)
+}
+
+func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, fn func(tx *sql.Tx) error) error {
+	conn, err := p.acquireConnection(dataSourceId)
 
 	if err != nil {
-		log.Error("Unable to acquire connection", err, backend.GetDataSourceId())
+		log.Error("Unable to acquire connection", err, dataSourceId)
 		return err
 	}
 
 	tx, err := conn.BeginTx(context.TODO(), &sql.TxOptions{})
 
 	if err != nil {
-		log.Error("Unable to begin transaction", err, backend.GetDataSourceId())
+		log.Error("Unable to begin transaction", err, dataSourceId)
 		return err
 	}
 
