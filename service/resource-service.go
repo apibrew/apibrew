@@ -73,7 +73,7 @@ func (r resourceService) Create(ctx context.Context, request *stub.CreateResourc
 		})
 
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		result = append(result, res)
@@ -91,8 +91,13 @@ func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourc
 }
 
 func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	err := r.postgresResourceServiceBackend.DeleteResources(ctx, request.Ids)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.DeleteResourceResponse{}, nil
 }
 
 func (r resourceService) List(ctx context.Context, request *stub.ListResourceRequest) (*stub.ListResourceResponse, error) {

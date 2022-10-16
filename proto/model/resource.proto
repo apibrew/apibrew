@@ -13,26 +13,45 @@ message ResourcePropertyComputedSourceConfig {
   FunctionCall functionCall = 1;
 }
 
+enum AutoGenerationType {
+  NONE = 0;
+  IDENTITY = 1;
+  RANDOMIZED_UUID = 2;
+}
+
+message ResourcePropertyMappingConfig {
+  string mapping = 1;
+  string sourceDef = 2;
+  AutoGenerationType autoGeneration = 5;
+}
+
 enum ResourcePropertyType {
-  BOOL = 0;
-  STRING = 1;
-  FLOAT = 2;
-  DOUBLE = 3;
-  INT32 = 4;
-  INT64 = 5;
-  BYTES = 6;
-  TEXT = 7;
+  TYPE_BOOL = 0;
+  TYPE_STRING = 1;
+  TYPE_FLOAT = 2;
+  TYPE_DOUBLE = 3;
+  TYPE_INT32 = 4;
+  TYPE_INT64 = 5;
+  TYPE_BYTES = 6;
+  TYPE_TEXT = 7;
+  TYPE_UUID = 8;
+  TYPE_DATE = 9;
+  TYPE_TIME = 10;
+  TYPE_TIMESTAMP = 11;
+  TYPE_OBJECT = 12;
+  TYPE_NUMERIC = 13;
 }
 
 message ResourceProperty {
   string name = 1; // uniq(per resource) // name
   ResourcePropertyType type = 2;
   oneof sourceConfig {
-    string mapping = 3;
+    ResourcePropertyMappingConfig mapping = 3;
     ResourcePropertyComputedSourceConfig computed = 4; // not implemented
   }
   bool required = 5;
-  uint32 length = 6;
+  bool primary = 6;
+  uint32 length = 7;
 }
 
 message ResourceCheck {
@@ -74,8 +93,11 @@ message ResourceFlags {
   bool readOnlyRecords = 1;
   bool uniqueRecord = 2;
   bool keepHistory = 3;
+  bool autoCreated = 4;
+  bool disableMigration = 5;
+  bool disableAudit = 6;
+  bool doPrimaryKeyLookup = 7;
 }
-
 
 message Resource {
   string name = 1; // uniq(per workspace) // name

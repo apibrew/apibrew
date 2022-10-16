@@ -97,6 +97,19 @@ func (d *dataSourceService) Update(ctx context.Context, request *stub.UpdateData
 	}, err
 }
 
+func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, request *stub.PrepareResourceFromEntityRequest) (*stub.PrepareResourceFromEntityResponse, error) {
+	resource, err := d.postgresResourceServiceBackend.PrepareResourceFromEntity(ctx, request.Id, request.Entity)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.PrepareResourceFromEntityResponse{
+		Resource: resource,
+		Error:    nil,
+	}, nil
+}
+
 func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSourceRequest) (*stub.GetDataSourceResponse, error) {
 	systemCtx := withSystemContext(ctx)
 	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{

@@ -9,6 +9,7 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"strings"
 	"time"
 )
 
@@ -38,7 +39,9 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 
 		var row []interface{}
 
-		row = append(row, record.Id)
+		if checkHasOwnId(resource) {
+			row = append(row, record.Id)
+		}
 
 		for _, property := range resource.Properties {
 			if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
@@ -47,11 +50,13 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 			}
 		}
 
-		row = append(row, record.AuditData.CreatedOn.AsTime())
-		row = append(row, record.AuditData.UpdatedOn.AsTime())
-		row = append(row, record.AuditData.CreatedBy)
-		row = append(row, record.AuditData.UpdatedBy)
-		row = append(row, record.Version)
+		if !resource.Flags.DisableAudit {
+			row = append(row, record.AuditData.CreatedOn.AsTime())
+			row = append(row, record.AuditData.UpdatedOn.AsTime())
+			row = append(row, record.AuditData.CreatedBy)
+			row = append(row, record.AuditData.UpdatedBy)
+			row = append(row, record.Version)
+		}
 
 		insertBuilder.Values(row...)
 	}
@@ -86,7 +91,7 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
 			val := record.Properties.AsMap()[property.Name]
-			updateBuilder.SetMore(updateBuilder.Equal(source.Mapping, val))
+			updateBuilder.SetMore(updateBuilder.Equal(source.Mapping.Mapping, val))
 		}
 	}
 
@@ -140,11 +145,11 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	sqlQuery, _ := selectBuilder.Build()
 	rows, err := runner.Query(sqlQuery)
 
-	defer rows.Close()
-
 	if err != nil {
 		return
 	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 		record := new(model.Record)
@@ -166,36 +171,61 @@ func applyCondition(query *model.BooleanExpression, builder *sqlbuilder.SelectBu
 func scanRecord(record *model.Record, resource *model.Resource, scanner QueryResultScanner) error {
 	var rowScanFields []any
 
-	rowScanFields = append(rowScanFields, &record.Id)
+	var hasOwnId = checkHasOwnId(resource)
+
+	if hasOwnId {
+		rowScanFields = append(rowScanFields, &record.Id)
+	}
 
 	var propertyPointers = make(map[string]interface{})
 	var properties = make(map[string]interface{})
 	for _, property := range resource.Properties {
 		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			val := getPropertyPointer(property.Type, property.Required)
+			val := propertyPointer(property.Type, property.Required)
 			rowScanFields = append(rowScanFields, val)
 			propertyPointers[property.Name] = val
 		}
 	}
 
-	record.AuditData = &model.AuditData{}
-
 	var createdOn = new(time.Time)
 	var updatedOn = new(*time.Time)
 	var updatedBy = new(*string)
 
-	rowScanFields = append(rowScanFields, createdOn)
-	rowScanFields = append(rowScanFields, updatedOn)
-	rowScanFields = append(rowScanFields, &record.AuditData.CreatedBy)
-	rowScanFields = append(rowScanFields, updatedBy)
-	rowScanFields = append(rowScanFields, &record.Version)
+	if !resource.Flags.DisableAudit {
+		record.AuditData = &model.AuditData{}
+
+		rowScanFields = append(rowScanFields, createdOn)
+		rowScanFields = append(rowScanFields, updatedOn)
+		rowScanFields = append(rowScanFields, &record.AuditData.CreatedBy)
+		rowScanFields = append(rowScanFields, updatedBy)
+
+		rowScanFields = append(rowScanFields, &record.Version)
+	}
 
 	err := scanner.Scan(rowScanFields...)
 
+	var ids []string
 	for _, property := range resource.Properties {
 		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			properties[property.Name] = dereferenceProperty(propertyPointers[property.Name], property.Type, property.Required)
+			propP := propertyPointers[property.Name]
+			properties[property.Name] = dereference(propP)
+
+			if property.Primary {
+				ids = append(ids, stringifyProperty(propP, property.Type, property.Required))
+			}
 		}
+
+		if _, ok := properties[property.Name].(uuid.UUID); ok {
+			properties[property.Name] = properties[property.Name].(uuid.UUID).String()
+		}
+
+		if _, ok := properties[property.Name].(time.Time); ok {
+			properties[property.Name] = properties[property.Name].(time.Time).Format(time.RFC3339)
+		}
+	}
+
+	if !hasOwnId {
+		record.Id = strings.Join(ids, "-")
 	}
 
 	propStruct, err := structpb.NewStruct(properties)
@@ -206,6 +236,10 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 		return err
 	}
 
+	if record.AuditData == nil {
+		record.AuditData = new(model.AuditData)
+	}
+
 	record.AuditData.CreatedOn = timestamppb.New(*createdOn)
 	if *updatedOn != nil {
 		record.AuditData.UpdatedOn = timestamppb.New(**updatedOn)
@@ -213,7 +247,16 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 	if *updatedBy != nil {
 		record.AuditData.UpdatedBy = **updatedBy
 	}
+
+	if record.Id == "" {
+		return errors.New("record does not exists")
+	}
+
 	return nil
+}
+
+func checkHasOwnId(resource *model.Resource) bool {
+	return !resource.Flags.AutoCreated && !resource.Flags.DoPrimaryKeyLookup
 }
 
 func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, error) {
@@ -245,7 +288,17 @@ func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) e
 	deleteBuilder := sqlbuilder.DeleteFrom(resource.SourceConfig.Mapping)
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
-	deleteBuilder.Where(deleteBuilder.In("id", util.ArrayMapToInterface(ids)...))
+	if checkHasOwnId(resource) {
+		deleteBuilder.Where(deleteBuilder.In("id", util.ArrayMapToInterface(ids)...))
+	} else {
+		idField, err := locatePrimaryKey(resource)
+
+		if err != nil {
+			return err
+		}
+
+		deleteBuilder.Where(deleteBuilder.In(idField, util.ArrayMapToInterface(ids)...))
+	}
 
 	sqlQuery, args := deleteBuilder.Build()
 
@@ -258,21 +311,35 @@ func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) e
 	return nil
 }
 
-func prepareResourceRecordCols(resource *model.Resource) []string {
-	var cols []string
-
-	cols = append(cols, "id")
-
+func locatePrimaryKey(resource *model.Resource) (string, error) {
 	for _, property := range resource.Properties {
-		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			cols = append(cols, source.Mapping)
+		if property.Primary {
+			return property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping, nil
 		}
 	}
 
-	cols = append(cols, "created_on")
-	cols = append(cols, "updated_on")
-	cols = append(cols, "created_by")
-	cols = append(cols, "updated_by")
-	cols = append(cols, "version")
+	return "", errors.New("Unable to locate primary key")
+}
+
+func prepareResourceRecordCols(resource *model.Resource) []string {
+	var cols []string
+
+	if checkHasOwnId(resource) {
+		cols = append(cols, "id")
+	}
+
+	for _, property := range resource.Properties {
+		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+			cols = append(cols, source.Mapping.Mapping)
+		}
+	}
+
+	if !resource.Flags.DisableAudit {
+		cols = append(cols, "created_on")
+		cols = append(cols, "updated_on")
+		cols = append(cols, "created_by")
+		cols = append(cols, "updated_by")
+		cols = append(cols, "version")
+	}
 	return cols
 }

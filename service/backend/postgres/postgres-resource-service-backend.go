@@ -10,6 +10,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
+	"runtime/debug"
 )
 
 const DbNameType = "VARCHAR(64)"
@@ -66,6 +67,29 @@ func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (result 
 	return
 }
 
+func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (resource *model.Resource, err error) {
+	err = p.withBackend(dataSourceId, func(tx *sql.Tx) error {
+		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, entity); err != nil {
+			log.Error("Unable to load resource details", err)
+			return err
+		}
+
+		resource.SourceConfig = &model.ResourceSourceConfig{
+			DataSource: dataSourceId,
+			Mapping:    entity,
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		log.Error("Unable load resource", err)
+		return nil, err
+	}
+
+	return resource, nil
+}
+
 func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) (resource *model.Resource, err error) {
 	resource = new(model.Resource)
 
@@ -92,7 +116,7 @@ func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) 
 }
 
 func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceParams) (*model.Resource, error) {
-	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+	err := p.withSystemBackend(func(tx *sql.Tx) error {
 		// check if resource exists
 
 		if existingCount, err := resourceCountsByName(tx, params.Resource.Name); err != nil {
@@ -129,6 +153,12 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 	}
 
 	return params.Resource, nil
+}
+
+func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, ids []string) error {
+	return p.withSystemBackend(func(tx *sql.Tx) error {
+		return resourceDelete(ctx, tx, ids)
+	})
 }
 
 func (p *postgresResourceServiceBackend) acquireConnection(dataSourceId string) (*sql.DB, error) {
@@ -189,7 +219,8 @@ func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, fn fun
 	err = fn(tx)
 
 	if err != nil {
-		log.Error("Unable to execute code inside transaction", err)
+		log.Error("Rollback; Error: ", err)
+		debug.PrintStack()
 
 		return err
 	}

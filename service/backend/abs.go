@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"context"
 	"data-handler/stub"
 	"data-handler/stub/model"
 )
@@ -46,4 +47,6 @@ type ResourceServiceBackend interface {
 	InjectDataSourceService(service DataSourceLocator)
 	GetStatus(dataSourceId string) (*stub.StatusResponse, error)
 	ListRecords(params ListRecordParams) ([]*model.Record, uint32, error)
+	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, error)
+	DeleteResources(ctx context.Context, ids []string) error
 }

@@ -4,7 +4,6 @@ import (
 	"data-handler/service/backend"
 	"data-handler/stub/model"
 	"database/sql"
-	"errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -63,8 +62,8 @@ func (p *postgresResourceServiceBackend) GetRecord(resource *model.Resource, id 
 		var err error
 		record, err = readRecord(tx, resource, id)
 
-		if record.Id == "" {
-			return errors.New("record does not exists")
+		if err != nil {
+			return err
 		}
 
 		return err
