@@ -128,13 +128,6 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			return errors.New("resource is already exists")
 		}
 
-		if params.Migrate {
-			if err := resourceCreateTable(tx, params.Resource); err != nil {
-				log.Error("Unable to create resource table", err)
-				return err
-			}
-		}
-
 		if err := resourceInsert(tx, params.Resource); err != nil {
 			log.Error("Unable to insert resource", err)
 			return err
@@ -150,6 +143,16 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 
 	if err != nil {
 		return nil, err
+	}
+
+	if params.Migrate {
+		err = p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+			return resourceCreateTable(tx, params.Resource)
+		})
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return params.Resource, nil

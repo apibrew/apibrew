@@ -9,7 +9,6 @@ import (
 )
 
 func propertyPointer(propertyType model.ResourcePropertyType, required bool) interface{} {
-	val := new(interface{})
 	switch propertyType {
 	case model.ResourcePropertyType_TYPE_INT32:
 		if required {
@@ -18,6 +17,11 @@ func propertyPointer(propertyType model.ResourcePropertyType, required bool) int
 			return new(*int32)
 		}
 	case model.ResourcePropertyType_TYPE_TEXT:
+		if required {
+			return new(string)
+		} else {
+			return new(*string)
+		}
 	case model.ResourcePropertyType_TYPE_STRING:
 		if required {
 			return new(string)
@@ -39,7 +43,6 @@ func propertyPointer(propertyType model.ResourcePropertyType, required bool) int
 	default:
 		panic("unknown property type")
 	}
-	return val
 }
 
 func dereference(val interface{}) interface{} {
@@ -66,8 +69,7 @@ func stringifyProperty(value interface{}, propertyType model.ResourcePropertyTyp
 	case model.ResourcePropertyType_TYPE_STRING:
 		return *value.(*string)
 	case model.ResourcePropertyType_TYPE_UUID:
-		//return (*value.(*uuid.UUID)).String()
-		return "asd"
+		return (*value.(*uuid.UUID)).String()
 	case model.ResourcePropertyType_TYPE_DATE:
 		return (*value.(*time.Time)).Format(time.RFC3339)
 	case model.ResourcePropertyType_TYPE_TEXT:
@@ -81,10 +83,15 @@ func getPsqlTypeFromProperty(propertyType model.ResourcePropertyType, length uin
 	switch propertyType {
 	case model.ResourcePropertyType_TYPE_INT32:
 		return "INT"
+	case model.ResourcePropertyType_TYPE_UUID:
+		return "UUID"
 	case model.ResourcePropertyType_TYPE_STRING:
 		return "VARCHAR(" + strconv.Itoa(int(length)) + ")"
+	case model.ResourcePropertyType_TYPE_DATE:
+		return "DATE"
+	case model.ResourcePropertyType_TYPE_TEXT:
+		return "TEXT"
 	default:
-
 		panic("unknown property type")
 	}
 }
@@ -102,12 +109,15 @@ func getPropertyTypeFromPsql(columnType string) model.ResourcePropertyType {
 	case "time":
 		return model.ResourcePropertyType_TYPE_TIME
 	case "timestamp":
+		return model.ResourcePropertyType_TYPE_TIMESTAMP
 	case "timestampz":
 		return model.ResourcePropertyType_TYPE_TIMESTAMP
 	case "float4":
+		return model.ResourcePropertyType_TYPE_FLOAT
 	case "float8":
 		return model.ResourcePropertyType_TYPE_FLOAT
 	case "int2":
+		return model.ResourcePropertyType_TYPE_INT32
 	case "int4":
 		return model.ResourcePropertyType_TYPE_INT32
 	case "int8":
@@ -124,7 +134,7 @@ func getPropertyTypeFromPsql(columnType string) model.ResourcePropertyType {
 		return model.ResourcePropertyType_TYPE_TEXT
 	case "uuid":
 		return model.ResourcePropertyType_TYPE_UUID
+	default:
+		return model.ResourcePropertyType_TYPE_TEXT
 	}
-
-	return model.ResourcePropertyType_TYPE_TEXT
 }

@@ -318,7 +318,7 @@ func locatePrimaryKey(resource *model.Resource) (string, error) {
 		}
 	}
 
-	return "", errors.New("Unable to locate primary key")
+	return "", errors.New("unable to locate primary key")
 }
 
 func prepareResourceRecordCols(resource *model.Resource) []string {

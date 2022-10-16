@@ -111,8 +111,15 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) error {
 
 	builder.IfNotExists()
 
-	builder.Define("id", "uuid", "NOT NULL", "PRIMARY KEY")
+	if resource.Flags == nil {
+		resource.Flags = new(model.ResourceFlags)
+	}
 
+	if !resource.Flags.AutoCreated && !resource.Flags.DoPrimaryKeyLookup {
+		builder.Define("id", "uuid", "NOT NULL", "PRIMARY KEY")
+	}
+
+	var primaryKeys []string
 	for _, property := range resource.Properties {
 		if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
 			nullModifier := "NULL"
@@ -121,16 +128,25 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) error {
 			}
 			sqlType := getPsqlTypeFromProperty(property.Type, property.Length)
 			builder.Define(sourceConfig.Mapping.Mapping, sqlType, nullModifier)
+
+			if property.Primary {
+				primaryKeys = append(primaryKeys, sourceConfig.Mapping.Mapping)
+			}
 		}
+	}
+	if len(primaryKeys) > 0 {
+		builder.Define("PRIMARY KEY (" + strings.Join(primaryKeys, ",") + ")")
 	}
 
 	// audit
-	builder.Define("created_on", "timestamp", "NOT NULL")
-	builder.Define("updated_on", "timestamp", "NULL")
-	builder.Define("created_by", DbNameType, "NOT NULL")
-	builder.Define("updated_by", DbNameType, "NULL")
-	// version
-	builder.Define("version", "int2", "NOT NULL")
+	if !resource.Flags.DisableAudit {
+		builder.Define("created_on", "timestamp", "NOT NULL")
+		builder.Define("updated_on", "timestamp", "NULL")
+		builder.Define("created_by", DbNameType, "NOT NULL")
+		builder.Define("updated_by", DbNameType, "NULL")
+		// version
+		builder.Define("version", "int2", "NOT NULL")
+	}
 
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)
