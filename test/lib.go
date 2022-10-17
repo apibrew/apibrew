@@ -6,6 +6,7 @@ import (
 	"data-handler/stub"
 	"data-handler/stub/model"
 	"data-handler/util"
+	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"reflect"
@@ -78,6 +79,12 @@ func withApp(exec func(application *app.App)) {
 }
 
 func withDataSource(t *testing.T, container *SimpleAppGrpcContainer, dataSource *model.DataSource, exec func(dataSource *model.DataSource)) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+			t.Error(r)
+		}
+	}()
 	res, err := container.dataSourceService.Create(context.TODO(), &stub.CreateDataSourceRequest{
 		Token:       "test-token",
 		DataSources: []*model.DataSource{dataSource},
@@ -149,6 +156,7 @@ func withAutoLoadedResource(t *testing.T, container *SimpleAppGrpcContainer, dat
 		})
 
 		if err != nil {
+			t.Error(err)
 			return
 		}
 
@@ -169,6 +177,7 @@ func withAutoLoadedResource(t *testing.T, container *SimpleAppGrpcContainer, dat
 		})
 
 		if err != nil {
+			t.Error(err)
 			return
 		}
 	})

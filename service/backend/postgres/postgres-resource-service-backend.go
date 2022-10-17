@@ -10,7 +10,6 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
-	"runtime/debug"
 )
 
 const DbNameType = "VARCHAR(64)"
@@ -158,10 +157,39 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 	return params.Resource, nil
 }
 
-func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, ids []string) error {
-	return p.withSystemBackend(func(tx *sql.Tx) error {
+func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, ids []string, doMigration bool, forceMigration bool) error {
+	var sources []*model.ResourceSourceConfig
+
+	for _, id := range ids {
+		resource, err := p.GetResourceByName(id)
+
+		if err != nil {
+			return err
+		}
+
+		sources = append(sources, resource.SourceConfig)
+	}
+	err := p.withSystemBackend(func(tx *sql.Tx) error {
 		return resourceDelete(ctx, tx, ids)
 	})
+
+	if err != nil {
+		return err
+	}
+
+	if doMigration {
+		for _, source := range sources {
+			err = p.withBackend(source.DataSource, func(tx *sql.Tx) error {
+				return resourceDropTable(tx, source.Mapping)
+			})
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func (p *postgresResourceServiceBackend) acquireConnection(dataSourceId string) (*sql.DB, error) {
@@ -223,7 +251,7 @@ func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, fn fun
 
 	if err != nil {
 		log.Error("Rollback; Error: ", err)
-		debug.PrintStack()
+		//debug.PrintStack()
 
 		return err
 	}

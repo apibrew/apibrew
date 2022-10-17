@@ -154,6 +154,12 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) error {
 	return err
 }
 
+func resourceDropTable(runner QueryRunner, mapping string) error {
+	_, err := runner.Exec("DROP TABLE " + mapping)
+
+	return err
+}
+
 func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, entity string) (resource *model.Resource, err error) {
 	matchEntityName := func(ref string) string { return ref + `.table_schema || '.' || ` + ref + `.table_name = $1 ` }
 	// check if entity exists

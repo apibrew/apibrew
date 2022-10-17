@@ -48,5 +48,5 @@ type ResourceServiceBackend interface {
 	GetStatus(dataSourceId string) (*stub.StatusResponse, error)
 	ListRecords(params ListRecordParams) ([]*model.Record, uint32, error)
 	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, error)
-	DeleteResources(ctx context.Context, ids []string) error
+	DeleteResources(ctx context.Context, ids []string, migration bool, forceMigration bool) error
 }

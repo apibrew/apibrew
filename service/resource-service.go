@@ -91,7 +91,7 @@ func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourc
 }
 
 func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
-	err := r.postgresResourceServiceBackend.DeleteResources(ctx, request.Ids)
+	err := r.postgresResourceServiceBackend.DeleteResources(ctx, request.Ids, request.DoMigration, request.ForceMigration)
 
 	if err != nil {
 		return nil, err
