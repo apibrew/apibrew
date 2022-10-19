@@ -39,7 +39,7 @@ message BooleanExpression {
     // logical expressions
     CompoundBooleanExpression and = 1;
     CompoundBooleanExpression or = 2;
-    CompoundBooleanExpression not = 3;
+    BooleanExpression not = 3;
 
     // basic comparison
     PairExpression equal = 4;

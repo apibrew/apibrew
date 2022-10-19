@@ -5,6 +5,7 @@ import (
 	"data-handler/stub/model"
 	"data-handler/util"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/huandu/go-sqlbuilder"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -125,9 +126,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	countBuilder := sqlbuilder.Select("count(*)")
 	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	countBuilder.From(params.Resource.SourceConfig.Mapping)
-	applyCondition(params.Query, countBuilder)
-	countQuery, _ := countBuilder.Build()
-	countRow := runner.QueryRow(countQuery)
+	countBuilder.Where(applyCondition(params.Query, countBuilder))
+	countQuery, args := countBuilder.Build()
+	countRow := runner.QueryRow(countQuery, args...)
 	err = countRow.Scan(&total)
 
 	if err != nil {
@@ -141,9 +142,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(params.Resource)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	selectBuilder.From(params.Resource.SourceConfig.Mapping)
-	applyCondition(params.Query, selectBuilder)
-	sqlQuery, _ := selectBuilder.Build()
-	rows, err := runner.Query(sqlQuery)
+	selectBuilder.Where(applyCondition(params.Query, selectBuilder))
+	sqlQuery, args := selectBuilder.Build()
+	rows, err := runner.Query(sqlQuery, args...)
 
 	if err != nil {
 		return
@@ -164,8 +165,72 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	return
 }
 
-func applyCondition(query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) {
+func applyCondition(query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) string {
+	if and, ok := query.Expression.(*model.BooleanExpression_And); ok {
+		expressions := util.ArrayMap(and.And.Expressions, func(t *model.BooleanExpression) string {
+			return applyCondition(t, builder)
+		})
+		return builder.And(expressions...)
+	}
 
+	if and, ok := query.Expression.(*model.BooleanExpression_Or); ok {
+		expressions := util.ArrayMap(and.Or.Expressions, func(t *model.BooleanExpression) string {
+			return applyCondition(t, builder)
+		})
+		return builder.Or(expressions...)
+	}
+
+	if and, ok := query.Expression.(*model.BooleanExpression_Not); ok {
+		return applyCondition(and.Not, builder)
+	}
+
+	if equ, ok := query.Expression.(*model.BooleanExpression_Equal); ok {
+		left := applyExpression(equ.Equal.Left, builder)
+		right := applyExpression(equ.Equal.Right, builder)
+		return fmt.Sprintf("%s = %s", left, right)
+	}
+
+	if equ, ok := query.Expression.(*model.BooleanExpression_GreaterThan); ok {
+		left := applyExpression(equ.GreaterThan.Left, builder)
+		right := applyExpression(equ.GreaterThan.Right, builder)
+		return fmt.Sprintf("%s > %s", left, right)
+	}
+
+	if equ, ok := query.Expression.(*model.BooleanExpression_GreaterThanOrEqual); ok {
+		left := applyExpression(equ.GreaterThanOrEqual.Left, builder)
+		right := applyExpression(equ.GreaterThanOrEqual.Right, builder)
+		return fmt.Sprintf("%s >= %s", left, right)
+	}
+
+	if equ, ok := query.Expression.(*model.BooleanExpression_LessThan); ok {
+		left := applyExpression(equ.LessThan.Left, builder)
+		right := applyExpression(equ.LessThan.Right, builder)
+		return fmt.Sprintf("%s < %s", left, right)
+	}
+
+	if equ, ok := query.Expression.(*model.BooleanExpression_LessThanOrEqual); ok {
+		left := applyExpression(equ.LessThanOrEqual.Left, builder)
+		right := applyExpression(equ.LessThanOrEqual.Right, builder)
+		return fmt.Sprintf("%s <= %s", left, right)
+	}
+
+	if _, ok := query.Expression.(*model.BooleanExpression_RegexMatch); ok {
+		panic("not implemented")
+	}
+
+	panic("unknown boolean expression type: " + query.String())
+}
+
+func applyExpression(query *model.Expression, builder *sqlbuilder.SelectBuilder) string {
+	if propEx, ok := query.Expression.(*model.Expression_Property); ok {
+		return propEx.Property
+	}
+
+	if propEx, ok := query.Expression.(*model.Expression_Value); ok {
+		return builder.Var(propEx.Value.AsInterface())
+	}
+
+	panic("unknown expression type: " + query.String())
 }
 
 func scanRecord(record *model.Record, resource *model.Resource, scanner QueryResultScanner) error {

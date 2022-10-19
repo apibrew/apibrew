@@ -21,6 +21,7 @@ type recordService struct {
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	dataSourceService              DataSourceService
 	authenticationService          AuthenticationService
+	ServiceName                    string
 }
 
 func (r *recordService) InjectAuthenticationService(service AuthenticationService) {
@@ -36,6 +37,16 @@ func (r *recordService) InjectPostgresResourceServiceBackend(resourceServiceBack
 }
 
 func (r *recordService) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
+	err := r.authenticationService.Check(CheckParams{
+		Token:   request.Token,
+		Service: r.ServiceName,
+		Method:  "List",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
 	if err != nil {
@@ -61,6 +72,16 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 }
 
 func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
+	err := r.authenticationService.Check(CheckParams{
+		Token:   request.Token,
+		Service: r.ServiceName,
+		Method:  "Create",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	var entityRecordMap = make(map[string][]*model.Record)
 
 	for _, record := range request.Records {
@@ -99,6 +120,16 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 }
 
 func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
+	err := r.authenticationService.Check(CheckParams{
+		Token:   request.Token,
+		Service: r.ServiceName,
+		Method:  "Update",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	var entityRecordMap = make(map[string][]*model.Record)
 
 	for _, record := range request.Records {
@@ -137,6 +168,16 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 }
 
 func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
+	err := r.authenticationService.Check(CheckParams{
+		Token:   request.Token,
+		Service: r.ServiceName,
+		Method:  "Get",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
 	if err != nil {
@@ -156,6 +197,16 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 }
 
 func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
+	err := r.authenticationService.Check(CheckParams{
+		Token:   request.Token,
+		Service: r.ServiceName,
+		Method:  "Delete",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
 	if err != nil {
@@ -175,5 +226,5 @@ func (r *recordService) Init(data *model.InitData) {
 }
 
 func NewRecordService() RecordService {
-	return &recordService{}
+	return &recordService{ServiceName: "RecordService"}
 }
