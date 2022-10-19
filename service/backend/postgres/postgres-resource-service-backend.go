@@ -20,6 +20,26 @@ type postgresResourceServiceBackend struct {
 	dataSourceService backend.DataSourceLocator
 }
 
+func (p *postgresResourceServiceBackend) ListResources(ctx context.Context) (result []*model.Resource, err error) {
+	err = p.withSystemBackend(func(tx *sql.Tx) error {
+		result, err = resourceList(ctx, tx)
+
+		return err
+	})
+
+	return
+}
+
+func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context, dataSourceId string) (result []string, err error) {
+	err = p.withBackend(dataSourceId, func(tx *sql.Tx) error {
+		result, err = resourceListEntities(ctx, tx)
+
+		return err
+	})
+
+	return
+}
+
 func (p *postgresResourceServiceBackend) InjectDataSourceService(dataSourceService backend.DataSourceLocator) {
 	p.dataSourceService = dataSourceService
 }
@@ -137,6 +157,16 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			return err
 		}
 
+		if params.Migrate {
+			err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+				return resourceCreateTable(tx, params.Resource)
+			})
+
+			if err != nil {
+				return err
+			}
+		}
+
 		return nil
 	})
 
@@ -144,17 +174,37 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 		return nil, err
 	}
 
-	if params.Migrate {
-		err = p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
-			return resourceCreateTable(tx, params.Resource)
-		})
+	return params.Resource, nil
+}
 
-		if err != nil {
-			return nil, err
-		}
+func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error {
+	existingResource, err := p.GetResourceByName(resource.Name)
+
+	if err != nil {
+		return err
 	}
 
-	return params.Resource, nil
+	return p.withSystemBackend(func(tx *sql.Tx) error {
+		if err = resourceUpdate(ctx, tx, resource); err != nil {
+			return err
+		}
+
+		if err = resourceUpdateProperties(ctx, tx, resource); err != nil {
+			return err
+		}
+
+		if doMigration {
+			err = p.withBackend(existingResource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+				return resourceAlterTable(ctx, tx, existingResource, resource)
+			})
+
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
 
 func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, ids []string, doMigration bool, forceMigration bool) error {

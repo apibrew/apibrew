@@ -19,8 +19,11 @@ type QueryResultScanner interface {
 
 type QueryRunner interface {
 	QueryRow(query string, args ...any) *sql.Row
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 	Exec(query string, args ...any) (sql.Result, error)
+	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 	Query(query string, args ...any) (*sql.Rows, error)
+	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 }
 
 var resourceColumns = []string{
@@ -43,6 +46,50 @@ var resourceColumns = []string{
 	"version",
 }
 
+var resourceColumnMapFn = func(column string, resource *model.Resource) interface{} {
+	switch column {
+	case "name":
+		return resource.Name
+	case "workspace":
+		return resource.Workspace
+	case "type":
+		return resource.Type
+	case "source_data_source":
+		return resource.SourceConfig.DataSource
+	case "source_mapping":
+		return resource.SourceConfig.Mapping
+	case "read_only_records":
+		return resource.Flags.ReadOnlyRecords
+	case "unique_record":
+		return resource.Flags.UniqueRecord
+	case "keep_history":
+		return resource.Flags.KeepHistory
+	case "auto_created":
+		return resource.Flags.AutoCreated
+	case "disable_migration":
+		return resource.Flags.DisableMigration
+	case "disable_audit":
+		return resource.Flags.DisableAudit
+	case "do_primary_key_lookup":
+		return resource.Flags.DoPrimaryKeyLookup
+	case "created_on":
+		return resource.AuditData.CreatedOn.AsTime()
+	case "updated_on":
+		if resource.AuditData.UpdatedOn == nil {
+			return nil
+		}
+		return resource.AuditData.UpdatedOn.AsTime()
+	case "created_by":
+		return resource.AuditData.CreatedBy
+	case "updated_by":
+		return resource.AuditData.UpdatedBy
+	case "version":
+		return resource.Version
+	default:
+		panic("Unknown column: " + column)
+	}
+}
+
 var resourcePropertyColumns = []string{
 	"resource_name",
 	"property_name",
@@ -54,6 +101,41 @@ var resourcePropertyColumns = []string{
 	"source_auto_generation",
 	"required",
 	"length",
+}
+
+var resourcePropertyColumnMapFn = func(column string, resource *model.Resource, property *model.ResourceProperty) interface{} {
+	sourceType := 0
+
+	switch column {
+	case "resource_name":
+		return resource.Name
+	case "property_name":
+		return property.Name
+	case "type":
+		return property.Type
+	case "source_type":
+		return sourceType
+	case "source_mapping":
+		return property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping
+	case "source_def":
+		return property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.SourceDef
+	case "source_primary":
+		return property.Primary
+	case "source_auto_generation":
+		return property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.AutoGeneration
+	case "required":
+		return property.Required
+	case "length":
+		return property.Length
+	default:
+		panic("Unknown column: " + column)
+	}
+}
+
+func valuesFromCol[T interface{}](columns []string, data T, mapperFn func(col string, data T) interface{}) []interface{} {
+	return util.ArrayMap[string, interface{}](columns, func(col string) interface{} {
+		return mapperFn(col, data)
+	})
 }
 
 func resourceSetupTables(runner QueryRunner) error {
@@ -104,6 +186,10 @@ func resourceCountsByName(runner QueryRunner, resourceName string) (int, error) 
 	err := res.Scan(count)
 
 	return *count, err
+}
+
+func resourceAlterTable(ctx context.Context, runner QueryRunner, existingResource *model.Resource, resource *model.Resource) error {
+	panic("not implemented yet")
 }
 
 func resourceCreateTable(runner QueryRunner, resource *model.Resource) error {
@@ -158,6 +244,53 @@ func resourceDropTable(runner QueryRunner, mapping string) error {
 	_, err := runner.Exec("DROP TABLE " + mapping)
 
 	return err
+}
+
+func resourceListEntities(ctx context.Context, runner QueryRunner) (result []string, err error) {
+	rows, err := runner.QueryContext(ctx, `select table_schema || '.' || table_name from information_schema.tables`)
+
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var entityName = new(string)
+
+		err = rows.Scan(entityName)
+
+		if err != nil {
+			return
+		}
+
+		result = append(result, *entityName)
+	}
+
+	return
+}
+
+func resourceList(ctx context.Context, runner QueryRunner) (result []*model.Resource, err error) {
+	selectBuilder := sqlbuilder.Select(resourceColumns...).From("resource")
+
+	sqlQuery, args := selectBuilder.Build()
+
+	rows, err := runner.QueryContext(ctx, sqlQuery, args...)
+
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		resource := new(model.Resource)
+		err = ScanResource(resource, rows)
+
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, resource)
+	}
+
+	return
 }
 
 func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, entity string) (resource *model.Resource, err error) {
@@ -280,28 +413,16 @@ func resourceInsert(runner QueryRunner, resource *model.Resource) error {
 		resource.Flags = &model.ResourceFlags{}
 	}
 
+	if resource.AuditData != nil {
+		resource.AuditData = &model.AuditData{}
+	}
+	resource.AuditData.CreatedOn = timestamppb.New(time.Now())
+	resource.AuditData.CreatedBy = "test-usr"
+
 	insertBuilder := sqlbuilder.InsertInto("resource")
 	insertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	insertBuilder.Cols(resourceColumns...)
-	insertBuilder.Values(
-		resource.Name,
-		resource.Workspace,
-		resource.Type.Number(),
-		resource.SourceConfig.DataSource,
-		resource.SourceConfig.Mapping,
-		resource.Flags.ReadOnlyRecords,
-		resource.Flags.UniqueRecord,
-		resource.Flags.KeepHistory,
-		resource.Flags.AutoCreated,
-		resource.Flags.DisableMigration,
-		resource.Flags.DisableAudit,
-		resource.Flags.DoPrimaryKeyLookup,
-		time.Now(),
-		nil,
-		"test-usr",
-		nil,
-		1,
-	)
+	insertBuilder.Values(valuesFromCol(resourceColumns, resource, resourceColumnMapFn)...)
 
 	sqlQuery, args := insertBuilder.Build()
 
@@ -325,6 +446,16 @@ func resourceLoadDetails(runner QueryRunner, resource *model.Resource, name stri
 		return row.Err()
 	}
 
+	err := ScanResource(resource, row)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ScanResource(resource *model.Resource, row QueryResultScanner) error {
 	resource.SourceConfig = &model.ResourceSourceConfig{}
 	resource.Flags = &model.ResourceFlags{}
 	resource.AuditData = &model.AuditData{}
@@ -364,7 +495,6 @@ func resourceLoadDetails(runner QueryRunner, resource *model.Resource, name stri
 	if *updatedBy != nil {
 		resource.AuditData.UpdatedBy = **updatedBy
 	}
-
 	return nil
 }
 
@@ -373,19 +503,9 @@ func resourceInsertProperties(runner QueryRunner, resource *model.Resource) erro
 		propertyInsertBuilder := sqlbuilder.InsertInto("resource_property")
 		propertyInsertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 		propertyInsertBuilder.Cols(resourcePropertyColumns...)
-		sourceType := 0
-		propertyInsertBuilder.Values(
-			resource.Name,
-			property.Name,
-			property.Type,
-			sourceType,
-			property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping,
-			property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.SourceDef,
-			property.Primary,
-			property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.AutoGeneration,
-			property.Required,
-			property.Length,
-		)
+		propertyInsertBuilder.Values(util.ArrayMap(resourcePropertyColumns, func(col string) interface{} {
+			return resourcePropertyColumnMapFn(col, resource, property)
+		})...)
 
 		sql, args := propertyInsertBuilder.Build()
 
@@ -397,6 +517,45 @@ func resourceInsertProperties(runner QueryRunner, resource *model.Resource) erro
 	}
 
 	return nil
+}
+
+func resourceUpdateProperties(ctx context.Context, runner QueryRunner, resource *model.Resource) error {
+	for _, property := range resource.Properties {
+		propertyInsertBuilder := sqlbuilder.Update("resource_property")
+		propertyInsertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+
+		for _, col := range resourcePropertyColumns {
+			propertyInsertBuilder.SetMore(propertyInsertBuilder.Equal(col, resourcePropertyColumnMapFn(col, resource, property)))
+		}
+
+		sql, args := propertyInsertBuilder.Build()
+
+		_, err := runner.ExecContext(ctx, sql, args...)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func resourceUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource) error {
+	updateBuilder := sqlbuilder.Update("resource")
+	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+	const ResourceFieldName = "name"
+
+	updateBuilder.Where(updateBuilder.Equal(ResourceFieldName, resource.Name))
+
+	for _, col := range resourceColumns {
+		updateBuilder.SetMore(updateBuilder.Equal(col, resourceColumnMapFn(col, resource)))
+	}
+
+	sqlQuery, args := updateBuilder.Build()
+
+	_, err := runner.ExecContext(ctx, sqlQuery, args...)
+
+	return err
 }
 
 func resourceDelete(ctx context.Context, runner QueryRunner, ids []string) error {

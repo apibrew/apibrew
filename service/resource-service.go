@@ -22,6 +22,7 @@ type resourceService struct {
 	dataSourceService              DataSourceService
 	authenticationService          AuthenticationService
 	postgresResourceServiceBackend backend.ResourceServiceBackend
+	ServiceName                    string
 }
 
 func (r *resourceService) InjectPostgresResourceServiceBackend(resourceServiceBackend backend.ResourceServiceBackend) {
@@ -40,12 +41,11 @@ func (r *resourceService) InjectAuthenticationService(service AuthenticationServ
 }
 
 func (r *resourceService) InitResource(resource *model.Resource) {
-	_, err := r.postgresResourceServiceBackend.AddResource(backend.AddResourceParams{
-		Resource:             resource,
-		IgnoreIfExists:       true,
-		AllowSystemAndStatic: true,
-		Migrate:              true,
-		ForceMigrate:         false,
+	_, err := r.GetBackend().AddResource(backend.AddResourceParams{
+		Resource:       resource,
+		IgnoreIfExists: true,
+		Migrate:        true,
+		ForceMigrate:   false,
 	})
 
 	if err != nil {
@@ -54,8 +54,19 @@ func (r *resourceService) InitResource(resource *model.Resource) {
 }
 
 func (r resourceService) Create(ctx context.Context, request *stub.CreateResourceRequest) (*stub.CreateResourceResponse, error) {
+	err := r.authenticationService.Check(CheckParams{
+		Token:     request.Token,
+		Service:   r.ServiceName,
+		Method:    "Create",
+		Resources: request.Resources,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	// validate token
-	err := r.authenticationService.validateToken(request.Token)
+	err = r.authenticationService.validateToken(request.Token)
 
 	if err != nil {
 		return nil, err
@@ -65,11 +76,10 @@ func (r resourceService) Create(ctx context.Context, request *stub.CreateResourc
 
 	for _, resource := range request.Resources {
 
-		res, err := r.postgresResourceServiceBackend.AddResource(backend.AddResourceParams{
-			Resource:             resource,
-			AllowSystemAndStatic: false,
-			Migrate:              request.DoMigration,
-			ForceMigrate:         request.ForceMigration,
+		res, err := r.GetBackend().AddResource(backend.AddResourceParams{
+			Resource:     resource,
+			Migrate:      request.DoMigration,
+			ForceMigrate: request.ForceMigration,
 		})
 
 		if err != nil {
@@ -86,12 +96,44 @@ func (r resourceService) Create(ctx context.Context, request *stub.CreateResourc
 }
 
 func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourceRequest) (*stub.UpdateResourceResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	err := r.authenticationService.Check(CheckParams{
+		Token:     request.Token,
+		Service:   r.ServiceName,
+		Method:    "Update",
+		Resources: request.Resources,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, resource := range request.Resources {
+		err = r.GetBackend().UpdateResource(ctx, resource, request.DoMigration, request.ForceMigration)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &stub.UpdateResourceResponse{
+		Resources: request.Resources,
+		Error:     nil,
+	}, nil
 }
 
 func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
-	err := r.postgresResourceServiceBackend.DeleteResources(ctx, request.Ids, request.DoMigration, request.ForceMigration)
+	err := r.authenticationService.Check(CheckParams{
+		Token:     request.Token,
+		Service:   r.ServiceName,
+		Method:    "Delete",
+		Resources: request.Ids,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.GetBackend().DeleteResources(ctx, request.Ids, request.DoMigration, request.ForceMigration)
 
 	if err != nil {
 		return nil, err
@@ -101,8 +143,25 @@ func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourc
 }
 
 func (r resourceService) List(ctx context.Context, request *stub.ListResourceRequest) (*stub.ListResourceResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	err := r.authenticationService.Check(CheckParams{
+		Token:   request.Token,
+		Service: r.ServiceName,
+		Method:  "List",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	resources, err := r.GetBackend().ListResources(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.ListResourceResponse{
+		Resources: resources,
+	}, nil
 }
 
 func (r resourceService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
@@ -110,6 +169,12 @@ func (r resourceService) Get(ctx context.Context, request *stub.GetResourceReque
 	panic("implement me")
 }
 
+func (r resourceService) GetBackend() backend.ResourceServiceBackend {
+	return r.postgresResourceServiceBackend
+}
+
 func NewResourceService() ResourceService {
-	return &resourceService{}
+	return &resourceService{
+		ServiceName: "ResourceService",
+	}
 }

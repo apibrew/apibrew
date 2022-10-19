@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/dynamicpb"
 	"log"
 	"net"
 
@@ -13,19 +15,20 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-type req struct {
-	proto.Message
-	Name string
-}
-
-type res struct {
-	Message string
-}
-
 func main() {
 	service := grpcdynamic.NewService("api.Example")
-	service.RegisterUnaryMethod("Unary", new(proto.Message), new(res), func(ctx context.Context, in interface{}) (interface{}, error) {
+	service.RegisterUnaryMethod("Unary", new(dynamicpb.Message), new(dynamicpb.Message), func(ctx context.Context, in interface{}) (interface{}, error) {
 		req := in.(*proto.Message)
+		desc := descriptorpb.MethodDescriptorProto{
+			Name:            nil,
+			InputType:       nil,
+			OutputType:      nil,
+			Options:         nil,
+			ClientStreaming: nil,
+			ServerStreaming: nil,
+		}
+
+		message := dynamicpb.NewMessage()
 		return &res{Message: fmt.Sprintf("hi, %s", req)}, nil
 	})
 	srv := grpcdynamic.NewServer([]*grpcdynamic.Service{service})
@@ -67,22 +70,4 @@ func startServer(ctx context.Context, srv *grpc.Server) error {
 		return err
 	}
 	return nil
-}
-
-func callUnaryMethod(name string) (*res, error) {
-	conn, err := grpc.Dial(
-		":50051",
-		grpc.WithInsecure(),
-		grpc.WithDefaultCallOptions(grpc.CallContentSubtype(grpcdynamic.CodecName)),
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-
-	var res res
-	if err := conn.Invoke(context.Background(), name, &req{Name: "foo"}, &res); err != nil {
-		return nil, err
-	}
-	return &res, nil
 }

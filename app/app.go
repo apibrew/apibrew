@@ -54,6 +54,7 @@ func (app *App) Init() {
 	app.postgresResourceServiceBackend = postgres.NewPostgresResourceServiceBackend()
 	//workSpaceService := service.NewWorkSpaceService(resourceService)
 
+	app.InjectServices()
 	app.initServices()
 
 	var err error
@@ -83,22 +84,29 @@ func (app *App) Stop() {
 }
 
 func (app *App) initServices() {
-	app.dataSourceService.InjectResourceService(app.resourceService)
-	app.dataSourceService.InjectRecordService(app.recordService)
-	app.postgresResourceServiceBackend.InjectDataSourceService(app.dataSourceService)
-	app.resourceService.InjectDataSourceService(app.dataSourceService)
-	app.resourceService.InjectAuthenticationService(app.authenticationService)
-	app.resourceService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
-	app.recordService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
-	app.recordService.InjectDataSourceService(app.dataSourceService)
-	app.dataSourceService.InjectInitData(app.initData)
-	app.dataSourceService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
-
 	app.postgresResourceServiceBackend.Init()
 	app.dataSourceService.Init()
 	app.resourceService.Init(app.initData)
 	//workSpaceService.Init(initData)
 	app.recordService.Init(app.initData)
+}
+
+func (app *App) InjectServices() {
+	app.dataSourceService.InjectResourceService(app.resourceService)
+	app.dataSourceService.InjectRecordService(app.recordService)
+	app.dataSourceService.InjectInitData(app.initData)
+	app.dataSourceService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
+	app.dataSourceService.InjectAuthenticationService(app.authenticationService)
+
+	app.postgresResourceServiceBackend.InjectDataSourceService(app.dataSourceService)
+
+	app.resourceService.InjectDataSourceService(app.dataSourceService)
+	app.resourceService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
+	app.resourceService.InjectAuthenticationService(app.authenticationService)
+
+	app.recordService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
+	app.recordService.InjectDataSourceService(app.dataSourceService)
+	app.recordService.InjectAuthenticationService(app.authenticationService)
 }
 
 func (app *App) SetInitData(data *model.InitData) {

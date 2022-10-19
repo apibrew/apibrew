@@ -13,12 +13,18 @@ type RecordService interface {
 	Init(data *model.InitData)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
 	InjectDataSourceService(service DataSourceService)
+	InjectAuthenticationService(service AuthenticationService)
 }
 
 type recordService struct {
 	stub.RecordServiceServer
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	dataSourceService              DataSourceService
+	authenticationService          AuthenticationService
+}
+
+func (r *recordService) InjectAuthenticationService(service AuthenticationService) {
+	r.authenticationService = service
 }
 
 func (r *recordService) InjectDataSourceService(service DataSourceService) {

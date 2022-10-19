@@ -11,11 +11,10 @@ type DataSourceBackend interface {
 }
 
 type AddResourceParams struct {
-	Resource             *model.Resource
-	AllowSystemAndStatic bool
-	IgnoreIfExists       bool
-	Migrate              bool
-	ForceMigrate         bool
+	Resource       *model.Resource
+	IgnoreIfExists bool
+	Migrate        bool
+	ForceMigrate   bool
 }
 
 type BulkRecordsParams struct {
@@ -49,4 +48,7 @@ type ResourceServiceBackend interface {
 	ListRecords(params ListRecordParams) ([]*model.Record, uint32, error)
 	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, error)
 	DeleteResources(ctx context.Context, ids []string, migration bool, forceMigration bool) error
+	ListEntities(ctx context.Context, dataSourceId string) ([]string, error)
+	UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error
+	ListResources(ctx context.Context) ([]*model.Resource, error)
 }
