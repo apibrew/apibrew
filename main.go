@@ -24,7 +24,8 @@ func main() {
 
 	application := new(app.App)
 
-	application.Addr = fmt.Sprintf("localhost:%d", 9009)
+	application.GrpcAddr = fmt.Sprintf("localhost:%d", 9009)
+	application.HttpAddr = fmt.Sprintf("localhost:%d", 8008)
 
 	application.SetInitData(initData)
 

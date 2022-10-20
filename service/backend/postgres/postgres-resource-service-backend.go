@@ -114,6 +114,11 @@ func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) 
 
 	err = p.withSystemBackend(func(tx *sql.Tx) error {
 		if err = resourceLoadDetails(tx, resource, resourceName); err != nil {
+			if err == sql.ErrNoRows {
+				resource = nil
+				return nil
+			}
+
 			log.Error("Unable to load resource details", err)
 			return err
 		}

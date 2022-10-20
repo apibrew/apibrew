@@ -413,7 +413,7 @@ func resourceInsert(runner QueryRunner, resource *model.Resource) error {
 		resource.Flags = &model.ResourceFlags{}
 	}
 
-	if resource.AuditData != nil {
+	if resource.AuditData == nil {
 		resource.AuditData = &model.AuditData{}
 	}
 	resource.AuditData.CreatedOn = timestamppb.New(time.Now())
@@ -433,14 +433,14 @@ func resourceInsert(runner QueryRunner, resource *model.Resource) error {
 
 func resourceLoadDetails(runner QueryRunner, resource *model.Resource, name string) error {
 	selectBuilder := sqlbuilder.Select(resourceColumns...).
-		From("resource").
-		Where("name='" + name + "'")
+		From("resource")
+	selectBuilder.Where(selectBuilder.Equal("name", name))
 
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
-	sqlQuery, _ := selectBuilder.Build()
+	sqlQuery, args := selectBuilder.Build()
 
-	row := runner.QueryRow(sqlQuery)
+	row := runner.QueryRow(sqlQuery, args...)
 
 	if row.Err() != nil {
 		return row.Err()

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"data-handler/api"
 	"data-handler/service"
 	"data-handler/service/backend"
 	"data-handler/service/backend/postgres"
@@ -19,8 +20,13 @@ type App struct {
 	resourceService                service.ResourceService
 	recordService                  service.RecordService
 	postgresResourceServiceBackend backend.ResourceServiceBackend
-	Addr                           string
-	lis                            net.Listener
+	recordApi                      api.RecordApi
+	authenticationApi              api.AuthenticationApi
+	apiServer                      api.Server
+	GrpcAddr                       string
+	HttpAddr                       string
+	grpcLis                        net.Listener
+	httpLis                        net.Listener
 }
 
 type GrpcContainer interface {
@@ -53,12 +59,19 @@ func (app *App) Init() {
 	app.recordService = service.NewRecordService()
 	app.postgresResourceServiceBackend = postgres.NewPostgresResourceServiceBackend()
 	//workSpaceService := service.NewWorkSpaceService(resourceService)
+	app.recordApi = api.NewRecordApi()
+	app.authenticationApi = api.NewAuthenticationApi()
+	app.apiServer = api.NewServer()
 
 	app.InjectServices()
 	app.initServices()
 
 	var err error
-	app.lis, err = net.Listen("tcp", app.Addr)
+	app.grpcLis, err = net.Listen("tcp", app.GrpcAddr)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	app.httpLis, err = net.Listen("tcp", app.HttpAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -72,7 +85,9 @@ func (app *App) Init() {
 }
 
 func (app *App) Serve() {
-	err := app.grpcServer.Serve(app.lis)
+	go app.apiServer.Serve(app.httpLis)
+
+	err := app.grpcServer.Serve(app.grpcLis)
 
 	if err != nil {
 		panic(err)
@@ -107,6 +122,12 @@ func (app *App) InjectServices() {
 	app.recordService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
 	app.recordService.InjectDataSourceService(app.dataSourceService)
 	app.recordService.InjectAuthenticationService(app.authenticationService)
+
+	app.authenticationApi.InjectAuthenticationService(app.authenticationService)
+	app.recordApi.InjectRecordService(app.recordService)
+	app.recordApi.InjectResourceService(app.resourceService)
+	app.apiServer.InjectAuthenticationApi(app.authenticationApi)
+	app.apiServer.InjectRecordApi(app.recordApi)
 }
 
 func (app *App) SetInitData(data *model.InitData) {

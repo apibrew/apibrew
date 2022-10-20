@@ -37,6 +37,7 @@ func (d *dataSourceService) InjectAuthenticationService(service AuthenticationSe
 
 func (d *dataSourceService) ListEntities(ctx context.Context, request *stub.ListEntitiesRequest) (*stub.ListEntitiesResponse, error) {
 	err := d.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: d.ServiceName,
 		Method:  "ListEntities",
@@ -60,6 +61,7 @@ func (d *dataSourceService) ListEntities(ctx context.Context, request *stub.List
 
 func (d *dataSourceService) List(ctx context.Context, request *stub.ListDataSourceRequest) (*stub.ListDataSourceResponse, error) {
 	err := d.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: d.ServiceName,
 		Method:  "List",
@@ -87,6 +89,7 @@ func (d *dataSourceService) List(ctx context.Context, request *stub.ListDataSour
 
 func (d *dataSourceService) Status(ctx context.Context, request *stub.StatusRequest) (*stub.StatusResponse, error) {
 	err := d.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: d.ServiceName,
 		Method:  "Status",
@@ -101,6 +104,7 @@ func (d *dataSourceService) Status(ctx context.Context, request *stub.StatusRequ
 
 func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateDataSourceRequest) (*stub.CreateDataSourceResponse, error) {
 	err := d.authenticationService.Check(CheckParams{
+		Ctx:       ctx,
 		Token:     request.Token,
 		Service:   d.ServiceName,
 		Method:    "Create",
@@ -131,6 +135,7 @@ func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateData
 
 func (d *dataSourceService) Update(ctx context.Context, request *stub.UpdateDataSourceRequest) (*stub.UpdateDataSourceResponse, error) {
 	err := d.authenticationService.Check(CheckParams{
+		Ctx:       ctx,
 		Token:     request.Token,
 		Service:   d.ServiceName,
 		Method:    "Update",
@@ -165,6 +170,7 @@ func (d *dataSourceService) Update(ctx context.Context, request *stub.UpdateData
 
 func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, request *stub.PrepareResourceFromEntityRequest) (*stub.PrepareResourceFromEntityResponse, error) {
 	err := d.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: d.ServiceName,
 		Method:  "PrepareResourceFromEntity",
@@ -188,6 +194,7 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, reque
 
 func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSourceRequest) (*stub.GetDataSourceResponse, error) {
 	err := d.authenticationService.Check(CheckParams{
+		Ctx:       ctx,
 		Token:     request.Token,
 		Service:   d.ServiceName,
 		Method:    "Get",
@@ -217,6 +224,7 @@ func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSource
 
 func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteDataSourceRequest) (*stub.DeleteDataSourceResponse, error) {
 	err := d.authenticationService.Check(CheckParams{
+		Ctx:       ctx,
 		Token:     request.Token,
 		Service:   d.ServiceName,
 		Method:    "Get",

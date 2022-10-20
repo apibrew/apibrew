@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"data-handler/stub"
 )
 
@@ -8,6 +9,7 @@ type ResourceIdentifier interface {
 }
 
 type CheckParams struct {
+	Ctx       context.Context
 	Token     string
 	Service   string
 	Method    string

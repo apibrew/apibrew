@@ -126,7 +126,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	countBuilder := sqlbuilder.Select("count(*)")
 	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	countBuilder.From(params.Resource.SourceConfig.Mapping)
-	countBuilder.Where(applyCondition(params.Query, countBuilder))
+	if params.Query != nil {
+		countBuilder.Where(applyCondition(params.Query, countBuilder))
+	}
 	countQuery, args := countBuilder.Build()
 	countRow := runner.QueryRow(countQuery, args...)
 	err = countRow.Scan(&total)
@@ -142,7 +144,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(params.Resource)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	selectBuilder.From(params.Resource.SourceConfig.Mapping)
-	selectBuilder.Where(applyCondition(params.Query, selectBuilder))
+	if params.Query != nil {
+		selectBuilder.Where(applyCondition(params.Query, selectBuilder))
+	}
 	sqlQuery, args := selectBuilder.Build()
 	rows, err := runner.Query(sqlQuery, args...)
 
@@ -312,6 +316,8 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 	if *updatedBy != nil {
 		record.AuditData.UpdatedBy = **updatedBy
 	}
+
+	record.Resource = resource.Name
 
 	if record.Id == "" {
 		return errors.New("record does not exists")

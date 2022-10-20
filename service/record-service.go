@@ -38,6 +38,7 @@ func (r *recordService) InjectPostgresResourceServiceBackend(resourceServiceBack
 
 func (r *recordService) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: r.ServiceName,
 		Method:  "List",
@@ -50,6 +51,10 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
 	if err != nil {
+		return nil, err
+	}
+
+	if err = checkSystemResourceAccess(ctx, resource); err != nil {
 		return nil, err
 	}
 
@@ -73,6 +78,7 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 
 func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: r.ServiceName,
 		Method:  "Create",
@@ -94,6 +100,10 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
 
 		if err != nil {
+			return nil, err
+		}
+
+		if err = checkSystemResourceAccess(ctx, resource); err != nil {
 			return nil, err
 		}
 
@@ -121,6 +131,7 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 
 func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: r.ServiceName,
 		Method:  "Update",
@@ -142,6 +153,10 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
 
 		if err != nil {
+			return nil, err
+		}
+
+		if err = checkSystemResourceAccess(ctx, resource); err != nil {
 			return nil, err
 		}
 
@@ -169,6 +184,7 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 
 func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: r.ServiceName,
 		Method:  "Get",
@@ -181,6 +197,10 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
 	if err != nil {
+		return nil, err
+	}
+
+	if err = checkSystemResourceAccess(ctx, resource); err != nil {
 		return nil, err
 	}
 
@@ -198,6 +218,7 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 
 func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: r.ServiceName,
 		Method:  "Delete",
@@ -213,6 +234,10 @@ func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRe
 		return nil, err
 	}
 
+	if err = checkSystemResourceAccess(ctx, resource); err != nil {
+		return nil, err
+	}
+
 	err = r.postgresResourceServiceBackend.DeleteRecords(resource, request.Ids)
 
 	if err != nil {
@@ -223,6 +248,7 @@ func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRe
 }
 
 func (r *recordService) Init(data *model.InitData) {
+
 }
 
 func NewRecordService() RecordService {

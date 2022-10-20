@@ -41,7 +41,7 @@ func withClient(fn func(container *SimpleAppGrpcContainer)) {
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-		conn, err := grpc.Dial(application.Addr, opts...)
+		conn, err := grpc.Dial(application.GrpcAddr, opts...)
 
 		defer conn.Close()
 
@@ -64,7 +64,7 @@ func withClient(fn func(container *SimpleAppGrpcContainer)) {
 func withApp(exec func(application *app.App)) {
 	application := new(app.App)
 
-	application.Addr = "127.0.0.1:17912"
+	application.GrpcAddr = "127.0.0.1:17912"
 
 	application.SetInitData(prepareInitData())
 

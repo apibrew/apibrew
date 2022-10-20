@@ -5,6 +5,8 @@ import (
 	"data-handler/service/backend"
 	"data-handler/stub"
 	"data-handler/stub/model"
+	"github.com/jellydator/ttlcache/v3"
+	"time"
 )
 
 type ResourceService interface {
@@ -15,6 +17,7 @@ type ResourceService interface {
 	InitResource(resource *model.Resource)
 	Init(data *model.InitData)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
+	CheckResourceExists(name string) (bool, error)
 }
 
 type resourceService struct {
@@ -23,6 +26,24 @@ type resourceService struct {
 	authenticationService          AuthenticationService
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	ServiceName                    string
+	cache                          *ttlcache.Cache[string, *model.Resource]
+	existsCache                    *ttlcache.Cache[string, bool]
+}
+
+func (r *resourceService) CheckResourceExists(name string) (bool, error) {
+	if r.cache.Get(name) != nil {
+		return r.cache.Get(name).Value() != nil, nil
+	}
+
+	resource, err := r.postgresResourceServiceBackend.GetResourceByName(name)
+
+	if err != nil {
+		return false, err
+	}
+
+	r.cache.Set(name, resource, ttlcache.DefaultTTL)
+
+	return resource != nil, nil
 }
 
 func (r *resourceService) InjectPostgresResourceServiceBackend(resourceServiceBackend backend.ResourceServiceBackend) {
@@ -55,6 +76,7 @@ func (r *resourceService) InitResource(resource *model.Resource) {
 
 func (r resourceService) Create(ctx context.Context, request *stub.CreateResourceRequest) (*stub.CreateResourceResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:       ctx,
 		Token:     request.Token,
 		Service:   r.ServiceName,
 		Method:    "Create",
@@ -97,6 +119,7 @@ func (r resourceService) Create(ctx context.Context, request *stub.CreateResourc
 
 func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourceRequest) (*stub.UpdateResourceResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:       ctx,
 		Token:     request.Token,
 		Service:   r.ServiceName,
 		Method:    "Update",
@@ -123,6 +146,7 @@ func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourc
 
 func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:       ctx,
 		Token:     request.Token,
 		Service:   r.ServiceName,
 		Method:    "Delete",
@@ -144,6 +168,7 @@ func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourc
 
 func (r resourceService) List(ctx context.Context, request *stub.ListResourceRequest) (*stub.ListResourceResponse, error) {
 	err := r.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
 		Token:   request.Token,
 		Service: r.ServiceName,
 		Method:  "List",
@@ -165,8 +190,27 @@ func (r resourceService) List(ctx context.Context, request *stub.ListResourceReq
 }
 
 func (r resourceService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	err := r.authenticationService.Check(CheckParams{
+		Ctx:     ctx,
+		Token:   request.Token,
+		Service: r.ServiceName,
+		Method:  "List",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	resource, err := r.GetBackend().GetResourceByName(request.Name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stub.GetResourceResponse{
+		Resource: resource,
+		Error:    nil,
+	}, nil
 }
 
 func (r resourceService) GetBackend() backend.ResourceServiceBackend {
@@ -176,5 +220,8 @@ func (r resourceService) GetBackend() backend.ResourceServiceBackend {
 func NewResourceService() ResourceService {
 	return &resourceService{
 		ServiceName: "ResourceService",
+		cache: ttlcache.New[string, *model.Resource](
+			ttlcache.WithTTL[string, *model.Resource](1 * time.Minute),
+		),
 	}
 }
