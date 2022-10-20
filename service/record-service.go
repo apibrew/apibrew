@@ -96,6 +96,10 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 
 	var result []*model.Record
 
+	for _, item := range request.Records {
+		item.Type = model.DataType_USER
+	}
+
 	for resourceName, list := range entityRecordMap {
 		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
 

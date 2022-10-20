@@ -318,6 +318,7 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 	}
 
 	record.Resource = resource.Name
+	record.Type = model.DataType_USER
 
 	if record.Id == "" {
 		return errors.New("record does not exists")

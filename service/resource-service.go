@@ -98,6 +98,8 @@ func (r resourceService) Create(ctx context.Context, request *stub.CreateResourc
 
 	for _, resource := range request.Resources {
 
+		resource.Type = model.DataType_USER
+
 		res, err := r.GetBackend().AddResource(backend.AddResourceParams{
 			Resource:     resource,
 			Migrate:      request.DoMigration,

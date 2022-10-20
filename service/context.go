@@ -18,10 +18,16 @@ func isSystemContext(ctx context.Context) bool {
 	return ctx.Value(systemContextKey) != nil && ctx.Value(systemContextKey).(bool)
 }
 
-func checkSystemResourceAccess(ctx context.Context, resource *model.Resource) error {
-	if resource.Type == model.DataType_SYSTEM {
-		if !isSystemContext(ctx) {
-			return systemResourceAccessError
+type HasDataType interface {
+	GetType() model.DataType
+}
+
+func checkSystemResourceAccess(ctx context.Context, objs ...HasDataType) error {
+	for _, obj := range objs {
+		if obj.GetType() == model.DataType_SYSTEM {
+			if !isSystemContext(ctx) {
+				return systemResourceAccessError
+			}
 		}
 	}
 

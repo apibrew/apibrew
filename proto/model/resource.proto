@@ -10,7 +10,7 @@ import 'model/common.proto';
 
 
 message ResourcePropertyComputedSourceConfig {
-  FunctionCall functionCall = 1;
+//  FunctionCall functionCall = 1;
 }
 
 enum AutoGenerationType {

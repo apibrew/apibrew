@@ -3,9 +3,10 @@ package api
 import (
 	"data-handler/service"
 	"data-handler/stub"
+	"data-handler/stub/model"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/encoding/protojson"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -59,40 +60,44 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	resourceName := vars["resourceName"]
 
-	res, err := r.recordService.List(request.Context(), &stub.ListRecordRequest{
+	respondMessage(writer)(r.recordService.List(request.Context(), &stub.ListRecordRequest{
 		Token:    getToken(request),
 		Resource: resourceName,
 		Query:    nil,
 		Limit:    10,
 		Offset:   0,
-	})
-
-	if err != nil {
-		log.Error(err)
-	}
-
-	mo := protojson.MarshalOptions{
-		Multiline:       true,
-		EmitUnpopulated: true,
-	}
-
-	body, err := mo.Marshal(res)
-
-	if err != nil {
-		log.Error(err)
-	}
-
-	writer.Header().Set("Content-Type", "application/json")
-
-	writer.Write(body)
-}
-
-func getToken(request *http.Request) string {
-	return request.Header.Get("Authorization")
+	}))
 }
 
 func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	resourceName := vars["resourceName"]
 
+	data, err := io.ReadAll(request.Body)
+
+	if err != nil {
+		log.Error(err)
+		writer.WriteHeader(400)
+		return
+	}
+
+	record1 := new(model.Record)
+
+	err = umo.Unmarshal(data, record1)
+
+	record1.Resource = resourceName
+	record1.Type = model.DataType_USER
+
+	if err != nil {
+		log.Error(err)
+		writer.WriteHeader(400)
+		return
+	}
+
+	respondMessage(writer)(r.recordService.Create(request.Context(), &stub.CreateRecordRequest{
+		Token:   getToken(request),
+		Records: []*model.Record{record1},
+	}))
 }
 
 func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Request) {
