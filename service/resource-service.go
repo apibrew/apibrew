@@ -18,6 +18,7 @@ type ResourceService interface {
 	Init(data *model.InitData)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
 	CheckResourceExists(name string) (bool, error)
+	GetResourceByName(resource string) (*model.Resource, error)
 }
 
 type resourceService struct {
@@ -28,6 +29,22 @@ type resourceService struct {
 	ServiceName                    string
 	cache                          *ttlcache.Cache[string, *model.Resource]
 	existsCache                    *ttlcache.Cache[string, bool]
+}
+
+func (r *resourceService) GetResourceByName(resourceName string) (*model.Resource, error) {
+	if r.cache.Get(resourceName) != nil {
+		return r.cache.Get(resourceName).Value(), nil
+	}
+
+	resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	r.cache.Set(resourceName, resource, ttlcache.DefaultTTL)
+
+	return resource, nil
 }
 
 func (r *resourceService) CheckResourceExists(name string) (bool, error) {

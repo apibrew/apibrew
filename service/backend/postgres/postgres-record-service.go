@@ -4,7 +4,6 @@ import (
 	"data-handler/service/backend"
 	"data-handler/stub/model"
 	"database/sql"
-	log "github.com/sirupsen/logrus"
 )
 
 func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordParams) (result []*model.Record, total uint32, err error) {
@@ -13,11 +12,6 @@ func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordPa
 
 		return err
 	})
-
-	if err != nil {
-		log.Error("Unable to insert records", err)
-		return
-	}
 
 	return
 }
@@ -28,7 +22,6 @@ func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsPa
 	})
 
 	if err != nil {
-		log.Error("Unable to insert records", err)
 		return nil, err
 	}
 
@@ -49,7 +42,6 @@ func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecord
 	})
 
 	if err != nil {
-		log.Error("Unable to insert records", err)
 		return nil, err
 	}
 

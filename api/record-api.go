@@ -67,20 +67,17 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	resourceName := vars["resourceName"]
 
-	resourceResponse, err := r.resourceService.Get(request.Context(), &stub.GetResourceRequest{
-		Token: "",
-		Name:  resourceName,
-	})
+	resource, err := r.resourceService.GetResourceByName(resourceName)
 
-	if err != nil || resourceResponse.Error != nil {
-		handleServiceError(writer, resourceResponse, err)
+	if err != nil {
+		handleClientError(writer, err)
 		return
 	}
 
 	// handle query parameters
 
 	var criteria []*model.BooleanExpression
-	for _, property := range resourceResponse.Resource.Properties {
+	for _, property := range resource.Properties {
 		if request.URL.Query().Get(property.Name) != "" {
 			val, err := structpb.NewValue(request.URL.Query().Get(property.Name))
 			if err != nil {

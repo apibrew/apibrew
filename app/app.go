@@ -123,6 +123,7 @@ func (app *App) InjectServices() {
 	app.recordService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
 	app.recordService.InjectDataSourceService(app.dataSourceService)
 	app.recordService.InjectAuthenticationService(app.authenticationService)
+	app.recordService.InjectResourceService(app.resourceService)
 
 	app.authenticationApi.InjectAuthenticationService(app.authenticationService)
 

@@ -131,7 +131,12 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	countBuilder.From(params.Resource.SourceConfig.Mapping)
 	if params.Query != nil {
-		countBuilder.Where(applyCondition(params.Query, countBuilder))
+		var where = ""
+		where, err = applyCondition(params.Resource, params.Query, countBuilder)
+		if err != nil {
+			return nil, 0, err
+		}
+		countBuilder.Where(where)
 	}
 	countQuery, args := countBuilder.Build()
 	countRow := runner.QueryRow(countQuery, args...)
@@ -149,7 +154,12 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	selectBuilder.From(params.Resource.SourceConfig.Mapping)
 	if params.Query != nil {
-		selectBuilder.Where(applyCondition(params.Query, selectBuilder))
+		var where = ""
+		where, err = applyCondition(params.Resource, params.Query, selectBuilder)
+		if err != nil {
+			return nil, 0, err
+		}
+		countBuilder.Where(where)
 	}
 
 	if params.Limit == 0 || params.Limit > 10000 {
@@ -181,53 +191,89 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	return
 }
 
-func applyCondition(query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) string {
+func applyCondition(resource *model.Resource, query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) (string, error) {
 	if and, ok := query.Expression.(*model.BooleanExpression_And); ok {
-		expressions := util.ArrayMap(and.And.Expressions, func(t *model.BooleanExpression) string {
-			return applyCondition(t, builder)
+		expressions, err := util.ArrayMapWithError(and.And.Expressions, func(t *model.BooleanExpression) (string, error) {
+			return applyCondition(resource, t, builder)
 		})
-		return builder.And(expressions...)
+		if err != nil {
+			return "", err
+		}
+		return builder.And(expressions...), nil
 	}
 
 	if and, ok := query.Expression.(*model.BooleanExpression_Or); ok {
-		expressions := util.ArrayMap(and.Or.Expressions, func(t *model.BooleanExpression) string {
-			return applyCondition(t, builder)
+		expressions, err := util.ArrayMapWithError(and.Or.Expressions, func(t *model.BooleanExpression) (string, error) {
+			return applyCondition(resource, t, builder)
 		})
-		return builder.Or(expressions...)
+		if err != nil {
+			return "", err
+		}
+		return builder.Or(expressions...), nil
 	}
 
 	if and, ok := query.Expression.(*model.BooleanExpression_Not); ok {
-		return applyCondition(and.Not, builder)
+		return applyCondition(resource, and.Not, builder)
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_Equal); ok {
-		left := applyExpression(equ.Equal.Left, builder)
-		right := applyExpression(equ.Equal.Right, builder)
-		return fmt.Sprintf("%s = %s", left, right)
+		left, err := applyExpression(resource, equ.Equal.Left, builder)
+		if err != nil {
+			return "", err
+		}
+		right, err := applyExpression(resource, equ.Equal.Right, builder)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s = %s", left, right), nil
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_GreaterThan); ok {
-		left := applyExpression(equ.GreaterThan.Left, builder)
-		right := applyExpression(equ.GreaterThan.Right, builder)
-		return fmt.Sprintf("%s > %s", left, right)
+		left, err := applyExpression(resource, equ.GreaterThan.Left, builder)
+		if err != nil {
+			return "", err
+		}
+		right, err := applyExpression(resource, equ.GreaterThan.Right, builder)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s > %s", left, right), nil
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_GreaterThanOrEqual); ok {
-		left := applyExpression(equ.GreaterThanOrEqual.Left, builder)
-		right := applyExpression(equ.GreaterThanOrEqual.Right, builder)
-		return fmt.Sprintf("%s >= %s", left, right)
+		left, err := applyExpression(resource, equ.GreaterThanOrEqual.Left, builder)
+		if err != nil {
+			return "", err
+		}
+		right, err := applyExpression(resource, equ.GreaterThanOrEqual.Right, builder)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s >= %s", left, right), nil
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_LessThan); ok {
-		left := applyExpression(equ.LessThan.Left, builder)
-		right := applyExpression(equ.LessThan.Right, builder)
-		return fmt.Sprintf("%s < %s", left, right)
+		left, err := applyExpression(resource, equ.LessThan.Left, builder)
+		if err != nil {
+			return "", err
+		}
+		right, err := applyExpression(resource, equ.LessThan.Right, builder)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s < %s", left, right), nil
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_LessThanOrEqual); ok {
-		left := applyExpression(equ.LessThanOrEqual.Left, builder)
-		right := applyExpression(equ.LessThanOrEqual.Right, builder)
-		return fmt.Sprintf("%s <= %s", left, right)
+		left, err := applyExpression(resource, equ.LessThanOrEqual.Left, builder)
+		if err != nil {
+			return "", err
+		}
+		right, err := applyExpression(resource, equ.LessThanOrEqual.Right, builder)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s <= %s", left, right), nil
 	}
 
 	if _, ok := query.Expression.(*model.BooleanExpression_RegexMatch); ok {
@@ -237,13 +283,19 @@ func applyCondition(query *model.BooleanExpression, builder *sqlbuilder.SelectBu
 	panic("unknown boolean expression type: " + query.String())
 }
 
-func applyExpression(query *model.Expression, builder *sqlbuilder.SelectBuilder) string {
+func applyExpression(resource *model.Resource, query *model.Expression, builder *sqlbuilder.SelectBuilder) (string, error) {
 	if propEx, ok := query.Expression.(*model.Expression_Property); ok {
-		return propEx.Property
+		property := locatePropertyByName(resource, propEx.Property)
+
+		if property == nil {
+			return "", errors.PropertyNotFoundError.WithDetails(propEx.Property)
+		}
+
+		return propEx.Property, nil
 	}
 
 	if propEx, ok := query.Expression.(*model.Expression_Value); ok {
-		return builder.Var(propEx.Value.AsInterface())
+		return builder.Var(propEx.Value.AsInterface()), nil
 	}
 
 	panic("unknown expression type: " + query.String())

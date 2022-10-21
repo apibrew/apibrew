@@ -8,6 +8,7 @@ enum ErrorCode {
   RECORD_NOT_FOUND = 0;
   UNABLE_TO_LOCATE_PRIMARY_KEY = 1;
   INTERNAL_ERROR = 2;
+  PROPERTY_NOT_FOUND = 3;
 }
 
 message Error {

@@ -14,6 +14,7 @@ type RecordService interface {
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
 	InjectDataSourceService(service DataSourceService)
 	InjectAuthenticationService(service AuthenticationService)
+	InjectResourceService(service ResourceService)
 }
 
 type recordService struct {
@@ -22,10 +23,15 @@ type recordService struct {
 	dataSourceService              DataSourceService
 	authenticationService          AuthenticationService
 	ServiceName                    string
+	resourceService                ResourceService
 }
 
 func (r *recordService) InjectAuthenticationService(service AuthenticationService) {
 	r.authenticationService = service
+}
+
+func (r *recordService) InjectResourceService(service ResourceService) {
+	r.resourceService = service
 }
 
 func (r *recordService) InjectDataSourceService(service DataSourceService) {
@@ -50,7 +56,7 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 		}, nil
 	}
 
-	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
+	resource, err := r.resourceService.GetResourceByName(request.Resource)
 
 	if err != nil {
 		return &stub.ListRecordResponse{
@@ -109,7 +115,7 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 	}
 
 	for resourceName, list := range entityRecordMap {
-		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
+		resource, err := r.resourceService.GetResourceByName(resourceName)
 
 		if err != nil {
 			return nil, err
@@ -164,7 +170,7 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 	var result []*model.Record
 
 	for resourceName, list := range entityRecordMap {
-		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
+		resource, err := r.resourceService.GetResourceByName(resourceName)
 
 		if err != nil {
 			return &stub.UpdateRecordResponse{
@@ -215,7 +221,7 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 		return nil, err
 	}
 
-	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
+	resource, err := r.resourceService.GetResourceByName(request.Resource)
 
 	if err != nil {
 		return &stub.GetRecordResponse{
@@ -257,7 +263,7 @@ func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRe
 		}, nil
 	}
 
-	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
+	resource, err := r.resourceService.GetResourceByName(request.Resource)
 
 	if err != nil {
 		return &stub.DeleteRecordResponse{
