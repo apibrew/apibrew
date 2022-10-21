@@ -2,9 +2,9 @@ package postgres
 
 import (
 	"data-handler/service/backend"
+	"data-handler/service/errors"
 	"data-handler/stub/model"
 	"data-handler/util"
-	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/huandu/go-sqlbuilder"
@@ -73,14 +73,18 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 	return err
 }
 
-func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record) (err error) {
+func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) (err error) {
 	if resource.Flags == nil {
 		resource.Flags = &model.ResourceFlags{}
 	}
 
 	updateBuilder := sqlbuilder.Update(resource.SourceConfig.Mapping)
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))
+	if checkVersion {
+		updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))
+	} else {
+		updateBuilder.Where(updateBuilder.Equal("id", record.Id))
+	}
 
 	now := time.Now()
 
@@ -98,7 +102,7 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 
 	updateBuilder.SetMore(updateBuilder.Equal("updated_on", record.AuditData.UpdatedOn.AsTime()))
 	updateBuilder.SetMore(updateBuilder.Equal("updated_by", record.AuditData.UpdatedBy))
-	updateBuilder.SetMore(updateBuilder.Equal("version", record.Version))
+	updateBuilder.SetMore("version = version + 1")
 
 	sqlQuery, args := updateBuilder.Build()
 
@@ -115,7 +119,7 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 	}
 
 	if affected == 0 {
-		return errors.New("record not found or version is wrong")
+		return errors.NotFoundError
 	}
 
 	return
@@ -147,6 +151,14 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	if params.Query != nil {
 		selectBuilder.Where(applyCondition(params.Query, selectBuilder))
 	}
+
+	if params.Limit == 0 || params.Limit > 10000 {
+		params.Limit = 100
+	}
+
+	selectBuilder.Limit(int(params.Limit))
+	selectBuilder.Offset(int(params.Offset))
+
 	sqlQuery, args := selectBuilder.Build()
 	rows, err := runner.Query(sqlQuery, args...)
 
@@ -321,7 +333,7 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 	record.Type = model.DataType_USER
 
 	if record.Id == "" {
-		return errors.New("record does not exists")
+		return errors.NotFoundError
 	}
 
 	return nil
@@ -390,7 +402,7 @@ func locatePrimaryKey(resource *model.Resource) (string, error) {
 		}
 	}
 
-	return "", errors.New("unable to locate primary key")
+	return "", errors.UnableToLocatePrimaryKey
 }
 
 func prepareResourceRecordCols(resource *model.Resource) []string {

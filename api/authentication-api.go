@@ -20,7 +20,7 @@ func (r *authenticationApi) ConfigureRouter(router *mux.Router) {
 
 	subRouter.HandleFunc("/token", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("TOKENINGGGG"))
-	})
+	}).Methods("POST")
 }
 
 func (r *authenticationApi) InjectAuthenticationService(service service.AuthenticationService) {

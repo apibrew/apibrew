@@ -18,8 +18,9 @@ type AddResourceParams struct {
 }
 
 type BulkRecordsParams struct {
-	Resource *model.Resource
-	Records  []*model.Record
+	Resource     *model.Resource
+	Records      []*model.Record
+	CheckVersion bool
 }
 
 type ListRecordParams struct {

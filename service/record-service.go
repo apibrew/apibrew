@@ -45,17 +45,23 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 	})
 
 	if err != nil {
-		return nil, err
+		return &stub.ListRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
 	if err != nil {
-		return nil, err
+		return &stub.ListRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	if err = checkSystemResourceAccess(ctx, resource); err != nil {
-		return nil, err
+		return &stub.ListRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	records, total, err := r.postgresResourceServiceBackend.ListRecords(backend.ListRecordParams{
@@ -66,7 +72,9 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 	})
 
 	if err != nil {
-		return nil, err
+		return &stub.ListRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	return &stub.ListRecordResponse{
@@ -142,7 +150,9 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 	})
 
 	if err != nil {
-		return nil, err
+		return &stub.UpdateRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	var entityRecordMap = make(map[string][]*model.Record)
@@ -157,11 +167,15 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 		resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
 
 		if err != nil {
-			return nil, err
+			return &stub.UpdateRecordResponse{
+				Error: toProtoError(err),
+			}, nil
 		}
 
 		if err = checkSystemResourceAccess(ctx, resource); err != nil {
-			return nil, err
+			return &stub.UpdateRecordResponse{
+				Error: toProtoError(err),
+			}, nil
 		}
 
 		if err != nil {
@@ -169,12 +183,15 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 		}
 
 		record, err := r.postgresResourceServiceBackend.UpdateRecords(backend.BulkRecordsParams{
-			Resource: resource,
-			Records:  list,
+			Resource:     resource,
+			Records:      list,
+			CheckVersion: request.CheckVersion,
 		})
 
 		if err != nil {
-			return nil, err
+			return &stub.UpdateRecordResponse{
+				Error: toProtoError(err),
+			}, nil
 		}
 
 		result = append(result, record...)
@@ -201,17 +218,23 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
 	if err != nil {
-		return nil, err
+		return &stub.GetRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	if err = checkSystemResourceAccess(ctx, resource); err != nil {
-		return nil, err
+		return &stub.GetRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	record, err := r.postgresResourceServiceBackend.GetRecord(resource, request.Id)
 
 	if err != nil {
-		return nil, err
+		return &stub.GetRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	return &stub.GetRecordResponse{
@@ -229,23 +252,31 @@ func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRe
 	})
 
 	if err != nil {
-		return nil, err
+		return &stub.DeleteRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(request.Resource)
 
 	if err != nil {
-		return nil, err
+		return &stub.DeleteRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	if err = checkSystemResourceAccess(ctx, resource); err != nil {
-		return nil, err
+		return &stub.DeleteRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	err = r.postgresResourceServiceBackend.DeleteRecords(resource, request.Ids)
 
 	if err != nil {
-		return nil, err
+		return &stub.DeleteRecordResponse{
+			Error: toProtoError(err),
+		}, nil
 	}
 
 	return &stub.DeleteRecordResponse{}, nil

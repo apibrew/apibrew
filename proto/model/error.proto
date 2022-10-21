@@ -6,6 +6,8 @@ option go_package = "data-handler/stub/model";
 
 enum ErrorCode {
   RECORD_NOT_FOUND = 0;
+  UNABLE_TO_LOCATE_PRIMARY_KEY = 1;
+  INTERNAL_ERROR = 2;
 }
 
 message Error {

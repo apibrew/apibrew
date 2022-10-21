@@ -36,12 +36,14 @@ func (receiver SimpleAppGrpcContainer) GetDataSourceService() stub.DataSourceSer
 	return receiver.dataSourceService
 }
 
+var initData = prepareInitData()
+
 func withClient(fn func(container *SimpleAppGrpcContainer)) {
 	withApp(func(application *app.App) {
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-		conn, err := grpc.Dial(application.GrpcAddr, opts...)
+		conn, err := grpc.Dial(initData.Config.GrpcAddr, opts...)
 
 		defer conn.Close()
 
@@ -64,9 +66,7 @@ func withClient(fn func(container *SimpleAppGrpcContainer)) {
 func withApp(exec func(application *app.App)) {
 	application := new(app.App)
 
-	application.GrpcAddr = "127.0.0.1:17912"
-
-	application.SetInitData(prepareInitData())
+	application.SetInitData(initData)
 
 	application.Init()
 

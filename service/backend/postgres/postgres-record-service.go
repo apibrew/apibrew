@@ -38,7 +38,7 @@ func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsPa
 func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecordsParams) ([]*model.Record, error) {
 	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
 		for _, record := range params.Records {
-			err := recordUpdate(tx, params.Resource, record)
+			err := recordUpdate(tx, params.Resource, record, params.CheckVersion)
 
 			if err != nil {
 				return err
