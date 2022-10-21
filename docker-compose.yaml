@@ -3,9 +3,4 @@ services:
   data-handler:
     container_name: 'data-handler'
     build: '.'
-    expose:
-      - 9009
-      - 8008
-    ports:
-      - "9009:9009"
-      - "8008:8008"
+    network_mode: "host"
