@@ -120,6 +120,7 @@ var errorCodeHttpStatusMap = map[model.ErrorCode]int{
 	model.ErrorCode_UNABLE_TO_LOCATE_PRIMARY_KEY: 400,
 	model.ErrorCode_INTERNAL_ERROR:               500,
 	model.ErrorCode_PROPERTY_NOT_FOUND:           400,
+	model.ErrorCode_RECORD_VALIDATION_ERROR:      400,
 }
 
 func getToken(request *http.Request) string {

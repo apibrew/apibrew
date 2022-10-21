@@ -1,0 +1,31 @@
+package types
+
+import "strconv"
+
+type int32Type struct {
+}
+
+func (i int32Type) Default() any {
+	return int32(0)
+}
+
+func (i int32Type) Pointer(required bool) any {
+	if required {
+		return new(int32)
+	} else {
+		return new(*int32)
+	}
+}
+
+func (i int32Type) String(val any) string {
+	return strconv.Itoa(int(val.(int32)))
+}
+
+func (i int32Type) IsEmpty(value any) bool {
+	return value != nil
+}
+
+func (i int32Type) ValidateValue(value any) error {
+	//TODO implement me
+	panic("implement me")
+}

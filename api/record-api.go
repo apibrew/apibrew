@@ -208,14 +208,13 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 
 	err := parseRequestMessage(request, record)
 
-	record.Resource = resourceName
-	record.Id = id
-
 	if err != nil {
-		log.Error(err)
-		writer.WriteHeader(400)
+		handleClientError(writer, err)
 		return
 	}
+
+	record.Resource = resourceName
+	record.Id = id
 
 	ServiceResponder[*stub.UpdateRecordRequest, *stub.UpdateRecordResponse]().
 		Writer(writer).

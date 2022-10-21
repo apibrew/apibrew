@@ -9,9 +9,17 @@ enum ErrorCode {
   UNABLE_TO_LOCATE_PRIMARY_KEY = 1;
   INTERNAL_ERROR = 2;
   PROPERTY_NOT_FOUND = 3;
+  RECORD_VALIDATION_ERROR = 4;
+}
+
+message ErrorField {
+  string recordId = 1;
+  string property = 2;
+  string message = 3;
 }
 
 message Error {
   ErrorCode code = 1;
   string message = 2;
+  repeated ErrorField fields = 3;
 }

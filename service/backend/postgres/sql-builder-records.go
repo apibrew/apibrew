@@ -3,6 +3,7 @@ package postgres
 import (
 	"data-handler/service/backend"
 	"data-handler/service/errors"
+	"data-handler/service/types"
 	"data-handler/stub/model"
 	"data-handler/util"
 	"fmt"
@@ -314,7 +315,8 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 	var properties = make(map[string]interface{})
 	for _, property := range resource.Properties {
 		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			val := propertyPointer(property.Type, property.Required)
+			propertyType := types.ByResourcePropertyType(property.Type)
+			val := propertyType.Pointer(property.Required)
 			rowScanFields = append(rowScanFields, val)
 			propertyPointers[property.Name] = val
 		}
@@ -341,10 +343,11 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 	for _, property := range resource.Properties {
 		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
 			propP := propertyPointers[property.Name]
-			properties[property.Name] = dereference(propP)
+			properties[property.Name] = types.Dereference(propP)
 
 			if property.Primary {
-				ids = append(ids, stringifyProperty(propP, property.Type, property.Required))
+				propertyType := types.ByResourcePropertyType(property.Type)
+				ids = append(ids, propertyType.String(propP))
 			}
 		}
 

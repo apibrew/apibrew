@@ -1,0 +1,269 @@
+package main
+
+import (
+	"context"
+	"data-handler/stub"
+	"data-handler/stub/model"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+)
+
+func main() {
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("localhost:9009", opts...)
+
+	if err != nil {
+		panic(err)
+	}
+
+	resourceService := stub.NewResourceServiceClient(conn)
+	//recordService := stub.NewRecordServiceClient(conn)
+
+	prepareRichResource(resourceService)
+}
+
+func prepareRichResource(service stub.ResourceServiceClient) {
+	richResource := &model.Resource{
+		Name:      "rich-test-1",
+		Workspace: "default",
+		Type:      2,
+		SourceConfig: &model.ResourceSourceConfig{
+			DataSource: "1de2e946-4d48-11ed-9c3a-b29c4ac91271",
+			Mapping:    "rich_test_1",
+		},
+		Properties: []*model.ResourceProperty{
+			{
+				Name: "int32",
+				Type: model.ResourcePropertyType_TYPE_INT32,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "int32",
+					},
+				},
+				Required: false,
+			},
+			{
+				Name: "int32_r",
+				Type: model.ResourcePropertyType_TYPE_INT32,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "int32_r",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "int64",
+				Type: model.ResourcePropertyType_TYPE_INT64,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "int64",
+					},
+				},
+				Required: false,
+			},
+			{
+				Name: "int64_r",
+				Type: model.ResourcePropertyType_TYPE_INT64,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "int64_r",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "float",
+				Type: model.ResourcePropertyType_TYPE_FLOAT,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "float",
+					},
+				},
+				Required: false,
+			},
+			{
+				Name: "float_r",
+				Type: model.ResourcePropertyType_TYPE_FLOAT,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "float_r",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "double",
+				Type: model.ResourcePropertyType_TYPE_DOUBLE,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "double",
+					},
+				},
+				Required: false,
+			},
+			{
+				Name: "double_r",
+				Type: model.ResourcePropertyType_TYPE_DOUBLE,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "double_r",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "numeric",
+				Type: model.ResourcePropertyType_TYPE_NUMERIC,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "numeric",
+					},
+				},
+				Required: false,
+			},
+			{
+				Name: "numeric_r",
+				Type: model.ResourcePropertyType_TYPE_NUMERIC,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "numeric_r",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "text",
+				Type: model.ResourcePropertyType_TYPE_TEXT,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "text",
+					},
+				},
+				Required: false,
+			},
+			{
+				Name: "text_r",
+				Type: model.ResourcePropertyType_TYPE_TEXT,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "text_r",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "string",
+				Type: model.ResourcePropertyType_TYPE_STRING,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "string",
+					},
+				},
+				Required: false,
+				Length:   255,
+			},
+			{
+				Name: "string_r",
+				Type: model.ResourcePropertyType_TYPE_STRING,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "string_r",
+					},
+				},
+				Required: true,
+				Length:   255,
+			},
+
+			{
+				Name: "uuid",
+				Type: model.ResourcePropertyType_TYPE_UUID,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "uuid",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "date",
+				Type: model.ResourcePropertyType_TYPE_DATE,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "date",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "time",
+				Type: model.ResourcePropertyType_TYPE_TIME,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "time",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "timestamp",
+				Type: model.ResourcePropertyType_TYPE_TIMESTAMP,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "timestamp",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "bool",
+				Type: model.ResourcePropertyType_TYPE_BOOL,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "bool",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "object",
+				Type: model.ResourcePropertyType_TYPE_OBJECT,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "object",
+					},
+				},
+				Required: true,
+			},
+
+			{
+				Name: "bytes",
+				Type: model.ResourcePropertyType_TYPE_BYTES,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "bytes",
+					},
+				},
+				Required: true,
+			},
+		},
+	}
+
+	service.Create(context.TODO(), &stub.CreateResourceRequest{
+		Token:       "",
+		Resources:   []*model.Resource{richResource},
+		DoMigration: true,
+	})
+}

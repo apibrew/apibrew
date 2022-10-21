@@ -10,12 +10,14 @@ type ServiceError interface {
 	ProtoError() *model.Error
 	WithMessage(msg string) ServiceError
 	WithDetails(details string) ServiceError
+	WithErrorFields(errors []*model.ErrorField) ServiceError
 }
 
 type serviceError struct {
-	code    model.ErrorCode
-	message string
-	details string
+	code        model.ErrorCode
+	message     string
+	details     string
+	errorFields []*model.ErrorField
 }
 
 func (s serviceError) Error() string {
@@ -31,6 +33,7 @@ func (s serviceError) ProtoError() *model.Error {
 	return &model.Error{
 		Code:    s.code,
 		Message: message,
+		Fields:  s.errorFields,
 	}
 }
 
@@ -41,6 +44,11 @@ func (s serviceError) WithMessage(msg string) ServiceError {
 
 func (s serviceError) WithDetails(details string) ServiceError {
 	s.details = details
+	return s
+}
+
+func (s serviceError) WithErrorFields(errorFields []*model.ErrorField) ServiceError {
+	s.errorFields = errorFields
 	return s
 }
 

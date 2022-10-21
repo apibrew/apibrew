@@ -2,82 +2,8 @@ package postgres
 
 import (
 	"data-handler/stub/model"
-	"github.com/google/uuid"
-	"reflect"
 	"strconv"
-	"time"
 )
-
-func propertyPointer(propertyType model.ResourcePropertyType, required bool) interface{} {
-	switch propertyType {
-	case model.ResourcePropertyType_TYPE_INT32:
-		if required {
-			return new(int32)
-		} else {
-			return new(*int32)
-		}
-	case model.ResourcePropertyType_TYPE_TEXT:
-		if required {
-			return new(string)
-		} else {
-			return new(*string)
-		}
-	case model.ResourcePropertyType_TYPE_STRING:
-		if required {
-			return new(string)
-		} else {
-			return new(*string)
-		}
-	case model.ResourcePropertyType_TYPE_UUID:
-		if required {
-			return new(uuid.UUID)
-		} else {
-			return new(*uuid.UUID)
-		}
-	case model.ResourcePropertyType_TYPE_DATE:
-		if required {
-			return new(time.Time)
-		} else {
-			return new(*time.Time)
-		}
-	default:
-		panic("unknown property type")
-	}
-}
-
-func dereference(val interface{}) interface{} {
-	rfVal := reflect.ValueOf(val)
-
-	return dereferenceReflect(rfVal)
-}
-
-func dereferenceReflect(rfVal reflect.Value) interface{} {
-	if rfVal.Kind() == reflect.Pointer || rfVal.Kind() == reflect.Interface {
-		if rfVal.IsNil() {
-			return nil
-		}
-		return dereferenceReflect(rfVal.Elem())
-	} else {
-		return rfVal.Interface()
-	}
-}
-
-func stringifyProperty(value interface{}, propertyType model.ResourcePropertyType, required bool) string {
-	switch propertyType {
-	case model.ResourcePropertyType_TYPE_INT32:
-		return strconv.Itoa(int(*value.(*int32)))
-	case model.ResourcePropertyType_TYPE_STRING:
-		return *value.(*string)
-	case model.ResourcePropertyType_TYPE_UUID:
-		return (*value.(*uuid.UUID)).String()
-	case model.ResourcePropertyType_TYPE_DATE:
-		return (*value.(*time.Time)).Format(time.RFC3339)
-	case model.ResourcePropertyType_TYPE_TEXT:
-		return *value.(*string)
-	default:
-		panic("unknown property type")
-	}
-}
 
 func getPsqlTypeFromProperty(propertyType model.ResourcePropertyType, length uint32) string {
 	switch propertyType {
@@ -91,6 +17,26 @@ func getPsqlTypeFromProperty(propertyType model.ResourcePropertyType, length uin
 		return "DATE"
 	case model.ResourcePropertyType_TYPE_TEXT:
 		return "TEXT"
+
+	case model.ResourcePropertyType_TYPE_INT64:
+		return "INT8"
+	case model.ResourcePropertyType_TYPE_FLOAT:
+		return "FLOAT"
+	case model.ResourcePropertyType_TYPE_DOUBLE:
+		return "DOUBLE PRECISION"
+	case model.ResourcePropertyType_TYPE_NUMERIC:
+		return "NUMERIC"
+	case model.ResourcePropertyType_TYPE_TIME:
+		return "TIME"
+	case model.ResourcePropertyType_TYPE_TIMESTAMP:
+		return "TIMESTAMP"
+	case model.ResourcePropertyType_TYPE_BOOL:
+		return "BOOL"
+	case model.ResourcePropertyType_TYPE_OBJECT:
+		return "JSONB"
+	case model.ResourcePropertyType_TYPE_BYTES:
+		return "BYTEA"
+
 	default:
 		panic("unknown property type")
 	}

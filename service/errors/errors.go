@@ -6,3 +6,4 @@ var NotFoundError ServiceError = newServiceError(model.ErrorCode_RECORD_NOT_FOUN
 var UnableToLocatePrimaryKey ServiceError = newServiceError(model.ErrorCode_UNABLE_TO_LOCATE_PRIMARY_KEY, "unable to locate primary key")
 var InternalError ServiceError = newServiceError(model.ErrorCode_INTERNAL_ERROR, "Internal error")
 var PropertyNotFoundError ServiceError = newServiceError(model.ErrorCode_PROPERTY_NOT_FOUND, "Property not found")
+var RecordValidationError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Property not found")
