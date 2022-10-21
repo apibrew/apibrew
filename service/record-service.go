@@ -340,8 +340,9 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 		for _, property := range resource.Properties {
 			propertyType := types.ByResourcePropertyType(property.Type)
 			val := propertyMap[property.Name]
+			isEmpty := propertyType.IsEmpty(val)
 
-			if property.Required && propertyType.IsEmpty(val) {
+			if property.Required && isEmpty {
 				fieldErrors = append(fieldErrors, &model.ErrorField{
 					RecordId: record.Id,
 					Property: property.Name,
@@ -349,14 +350,16 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 				})
 			}
 
-			err := propertyType.ValidateValue(val)
+			if !isEmpty {
+				err := propertyType.ValidateValue(val)
 
-			if err != nil {
-				fieldErrors = append(fieldErrors, &model.ErrorField{
-					RecordId: record.Id,
-					Property: property.Name,
-					Message:  err.Error(),
-				})
+				if err != nil {
+					fieldErrors = append(fieldErrors, &model.ErrorField{
+						RecordId: record.Id,
+						Property: property.Name,
+						Message:  err.Error(),
+					})
+				}
 			}
 		}
 

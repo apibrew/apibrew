@@ -4,7 +4,11 @@ type objectType struct {
 }
 
 func (o objectType) Pointer(required bool) any {
-	return nil
+	if required {
+		return new(string)
+	} else {
+		return new(*string)
+	}
 }
 
 func (o objectType) String(val any) string {
@@ -12,7 +16,7 @@ func (o objectType) String(val any) string {
 }
 
 func (o objectType) IsEmpty(value any) bool {
-	return false
+	return value == nil
 }
 
 func (o objectType) ValidateValue(value any) error {

@@ -24,5 +24,5 @@ func (s stringType) IsEmpty(value any) bool {
 }
 
 func (s stringType) ValidateValue(value any) error {
-	return nil
+	return canCast[string]("string", value)
 }

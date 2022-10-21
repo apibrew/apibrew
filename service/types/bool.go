@@ -1,8 +1,6 @@
 package types
 
 import (
-	"errors"
-	"fmt"
 	"strconv"
 )
 
@@ -34,9 +32,5 @@ func (u boolType) IsEmpty(value any) bool {
 }
 
 func (u boolType) ValidateValue(value any) error {
-	if _, ok := value.(bool); ok {
-		return nil
-	} else {
-		return errors.New(fmt.Sprintf("value is not bool: %s", value))
-	}
+	return canCast[bool]("bool", value)
 }

@@ -1,6 +1,8 @@
 package types
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type int32Type struct {
 }
@@ -22,10 +24,9 @@ func (i int32Type) String(val any) string {
 }
 
 func (i int32Type) IsEmpty(value any) bool {
-	return value != nil
+	return value == nil
 }
 
 func (i int32Type) ValidateValue(value any) error {
-	//TODO implement me
-	panic("implement me")
+	return canCastNumber[int32]("int32", value)
 }

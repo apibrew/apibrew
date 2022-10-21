@@ -1,6 +1,8 @@
 package types
 
-import "time"
+import (
+	"time"
+)
 
 type dateType struct {
 }
@@ -26,5 +28,5 @@ func (u dateType) IsEmpty(value any) bool {
 }
 
 func (u dateType) ValidateValue(value any) error {
-	return nil
+	return ValidateDateTime(value)
 }

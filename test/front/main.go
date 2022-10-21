@@ -41,16 +41,6 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 						Mapping: "int32",
 					},
 				},
-				Required: false,
-			},
-			{
-				Name: "int32_r",
-				Type: model.ResourcePropertyType_TYPE_INT32,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: "int32_r",
-					},
-				},
 				Required: true,
 			},
 
@@ -60,16 +50,6 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 				SourceConfig: &model.ResourceProperty_Mapping{
 					Mapping: &model.ResourcePropertyMappingConfig{
 						Mapping: "int64",
-					},
-				},
-				Required: false,
-			},
-			{
-				Name: "int64_r",
-				Type: model.ResourcePropertyType_TYPE_INT64,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: "int64_r",
 					},
 				},
 				Required: true,
@@ -83,16 +63,6 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 						Mapping: "float",
 					},
 				},
-				Required: false,
-			},
-			{
-				Name: "float_r",
-				Type: model.ResourcePropertyType_TYPE_FLOAT,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: "float_r",
-					},
-				},
 				Required: true,
 			},
 
@@ -102,16 +72,6 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 				SourceConfig: &model.ResourceProperty_Mapping{
 					Mapping: &model.ResourcePropertyMappingConfig{
 						Mapping: "double",
-					},
-				},
-				Required: false,
-			},
-			{
-				Name: "double_r",
-				Type: model.ResourcePropertyType_TYPE_DOUBLE,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: "double_r",
 					},
 				},
 				Required: true,
@@ -125,16 +85,6 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 						Mapping: "numeric",
 					},
 				},
-				Required: false,
-			},
-			{
-				Name: "numeric_r",
-				Type: model.ResourcePropertyType_TYPE_NUMERIC,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: "numeric_r",
-					},
-				},
 				Required: true,
 			},
 
@@ -144,16 +94,6 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 				SourceConfig: &model.ResourceProperty_Mapping{
 					Mapping: &model.ResourcePropertyMappingConfig{
 						Mapping: "text",
-					},
-				},
-				Required: false,
-			},
-			{
-				Name: "text_r",
-				Type: model.ResourcePropertyType_TYPE_TEXT,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: "text_r",
 					},
 				},
 				Required: true,
@@ -167,21 +107,9 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 						Mapping: "string",
 					},
 				},
-				Required: false,
-				Length:   255,
-			},
-			{
-				Name: "string_r",
-				Type: model.ResourcePropertyType_TYPE_STRING,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: "string_r",
-					},
-				},
 				Required: true,
 				Length:   255,
 			},
-
 			{
 				Name: "uuid",
 				Type: model.ResourcePropertyType_TYPE_UUID,

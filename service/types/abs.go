@@ -2,7 +2,10 @@ package types
 
 import (
 	"data-handler/stub/model"
+	"errors"
+	"fmt"
 	"reflect"
+	"time"
 )
 
 type PropertyType interface {
@@ -14,6 +17,9 @@ type PropertyType interface {
 }
 
 func Dereference(val interface{}) interface{} {
+	if val == nil {
+		return nil
+	}
 	rfVal := reflect.ValueOf(val)
 
 	return dereferenceReflect(rfVal)
@@ -73,4 +79,43 @@ func GetAllResourcePropertyTypes() []model.ResourcePropertyType {
 	}
 
 	return types
+}
+
+func canCast[T interface{}](typeName string, val interface{}) error {
+	if _, ok := val.(T); ok {
+		return nil
+	} else {
+		return errors.New(fmt.Sprintf("value is not %s: %v", typeName, val))
+	}
+}
+
+type number interface {
+	float64 | float32 | int64 | int32 | int | int8 | uint64 | uint32 | uint8
+}
+
+func canCastNumber[T number](typeName string, val interface{}) error {
+	err := canCast[float64](typeName, val)
+
+	if err != nil {
+		return err
+	}
+
+	castedValue := float64(T(val.(float64)))
+	if val.(float64)-castedValue > 0.000001 {
+		return errors.New(fmt.Sprintf("value is not in type %s: %v", typeName, val))
+	}
+
+	return nil
+}
+
+func ValidateDateTime(value interface{}) error {
+	err := canCast[string]("string", value)
+
+	if err != nil {
+		return nil
+	}
+
+	_, err = time.Parse(time.RFC3339, value.(string))
+
+	return err
 }

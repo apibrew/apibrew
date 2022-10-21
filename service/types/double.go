@@ -1,29 +1,30 @@
 package types
 
+import "fmt"
+
 type doubleType struct {
 }
 
 func (d doubleType) Pointer(required bool) any {
-	//TODO implement me
-	panic("implement me")
+	if required {
+		return new(float64)
+	} else {
+		return new(*float64)
+	}
 }
 
 func (d doubleType) String(val any) string {
-	//TODO implement me
-	panic("implement me")
+	return fmt.Sprintf("%f", val)
 }
 
 func (d doubleType) IsEmpty(value any) bool {
-	//TODO implement me
-	panic("implement me")
+	return value == nil
 }
 
 func (d doubleType) ValidateValue(value any) error {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (d doubleType) Default() any {
-	//TODO implement me
-	panic("implement me")
+	return float64(0)
 }

@@ -339,6 +339,10 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 
 	err := scanner.Scan(rowScanFields...)
 
+	if err != nil {
+		return err
+	}
+
 	var ids []string
 	for _, property := range resource.Properties {
 		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {

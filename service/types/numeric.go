@@ -18,11 +18,11 @@ func (n numericType) String(val any) string {
 }
 
 func (n numericType) IsEmpty(value any) bool {
-	return value != nil
+	return value == nil
 }
 
 func (n numericType) ValidateValue(value any) error {
-	return nil
+	return canCastNumber[float64]("float64", value)
 }
 
 func (n numericType) Default() any {

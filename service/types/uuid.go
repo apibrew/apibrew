@@ -26,5 +26,13 @@ func (u uuidType) IsEmpty(value any) bool {
 }
 
 func (u uuidType) ValidateValue(value any) error {
-	return nil
+	err := canCast[string]("string", value)
+
+	if err != nil {
+		return nil
+	}
+
+	_, err = uuid.Parse(value.(string))
+
+	return err
 }
