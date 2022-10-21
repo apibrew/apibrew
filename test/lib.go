@@ -134,6 +134,32 @@ func checkDataSourceExists(container *SimpleAppGrpcContainer, id string) bool {
 	return res.Error == nil
 }
 
+func withResource(t testing.TB, resource *model.Resource, exec func()) {
+	container.resourceService.Create(context.TODO(), &stub.CreateResourceRequest{
+		Token:          "test-token",
+		Resources:      []*model.Resource{resource},
+		DoMigration:    true,
+		ForceMigration: true,
+	})
+
+	defer func() {
+		_, err := container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
+			Token:          "test-token",
+			Ids:            []string{resource.Name},
+			DoMigration:    true,
+			ForceMigration: true,
+		})
+
+		if err != nil {
+			t.Error(err)
+			return
+		}
+	}()
+
+	exec()
+
+}
+
 func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, mappingName string, exec func(resource *model.Resource)) {
 	withDataSource(t, container, dataSource, func(dataSource *model.DataSource) {
 		res, err := container.dataSourceService.PrepareResourceFromEntity(context.TODO(), &stub.PrepareResourceFromEntityRequest{

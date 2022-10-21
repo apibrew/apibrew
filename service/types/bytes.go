@@ -4,11 +4,11 @@ type bytesType struct {
 }
 
 func (b bytesType) Pack(value interface{}) (interface{}, error) {
-	return value, nil
+	return "YXNk", nil //@todo fixme
 }
 
 func (b bytesType) UnPack(value interface{}) (interface{}, error) {
-	return value, nil
+	return "YXNk", nil //@todo fixme
 }
 
 func (b bytesType) Pointer(required bool) any {

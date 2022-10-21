@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/stub"
 	"data-handler/stub/model"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -11,7 +12,7 @@ import (
 func main() {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	conn, err := grpc.Dial("localhost:9009", opts...)
+	conn, err := grpc.Dial("tw:9009", opts...)
 
 	if err != nil {
 		panic(err)
@@ -25,14 +26,25 @@ func main() {
 
 func prepareRichResource(service stub.ResourceServiceClient) {
 	richResource := &model.Resource{
-		Name:      "rich-test-1",
+		Name:      "rich-test-2",
 		Workspace: "default",
 		Type:      2,
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: "1de2e946-4d48-11ed-9c3a-b29c4ac91271",
+			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
 			Mapping:    "rich_test_1",
 		},
 		Properties: []*model.ResourceProperty{
+			{
+				Name: "int32_o",
+				Type: model.ResourcePropertyType_TYPE_INT32,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "int32_o",
+					},
+				},
+				Required: false,
+			},
+
 			{
 				Name: "int32",
 				Type: model.ResourcePropertyType_TYPE_INT32,
@@ -189,9 +201,11 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 		},
 	}
 
-	service.Create(context.TODO(), &stub.CreateResourceRequest{
+	res, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
 		Token:       "",
 		Resources:   []*model.Resource{richResource},
 		DoMigration: true,
 	})
+
+	log.Print(res, err)
 }
