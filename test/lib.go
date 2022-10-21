@@ -38,33 +38,11 @@ func (receiver SimpleAppGrpcContainer) GetDataSourceService() stub.DataSourceSer
 
 var initData = prepareInitData()
 
-func withClient(fn func(container *SimpleAppGrpcContainer)) {
-	withApp(func(application *app.App) {
-		var opts []grpc.DialOption
-		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+var container *SimpleAppGrpcContainer
+var application *app.App = new(app.App)
 
-		conn, err := grpc.Dial(initData.Config.GrpcAddr, opts...)
-
-		defer conn.Close()
-
-		container := &SimpleAppGrpcContainer{
-			recordService:         stub.NewRecordServiceClient(conn),
-			authenticationService: stub.NewAuthenticationServiceClient(conn),
-			resourceService:       stub.NewResourceServiceClient(conn),
-			dataSourceService:     stub.NewDataSourceServiceClient(conn),
-		}
-
-		fn(container)
-
-		if err != nil {
-			panic(err)
-		}
-
-	})
-}
-
-func withApp(exec func(application *app.App)) {
-	application := new(app.App)
+func init() {
+	application = new(app.App)
 
 	application.SetInitData(initData)
 
@@ -73,12 +51,24 @@ func withApp(exec func(application *app.App)) {
 	go application.Serve()
 	time.Sleep(10 * time.Millisecond)
 
-	exec(application)
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	defer application.Stop()
+	conn, err := grpc.Dial(initData.Config.GrpcAddr, opts...)
+
+	if err != nil {
+		panic(err)
+	}
+
+	container = &SimpleAppGrpcContainer{
+		recordService:         stub.NewRecordServiceClient(conn),
+		authenticationService: stub.NewAuthenticationServiceClient(conn),
+		resourceService:       stub.NewResourceServiceClient(conn),
+		dataSourceService:     stub.NewDataSourceServiceClient(conn),
+	}
 }
 
-func withDataSource(t *testing.T, container *SimpleAppGrpcContainer, dataSource *model.DataSource, exec func(dataSource *model.DataSource)) {
+func withDataSource(t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, exec func(dataSource *model.DataSource)) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in f", r)
@@ -136,18 +126,15 @@ func withDataSource(t *testing.T, container *SimpleAppGrpcContainer, dataSource 
 }
 
 func checkDataSourceExists(container *SimpleAppGrpcContainer, id string) bool {
-	_, err := container.dataSourceService.Get(context.TODO(), &stub.GetDataSourceRequest{
+	res, _ := container.dataSourceService.Get(context.TODO(), &stub.GetDataSourceRequest{
 		Token: "test-token",
 		Id:    id,
 	})
 
-	if err != nil {
-		return false
-	}
-	return true
+	return res.Error == nil
 }
 
-func withAutoLoadedResource(t *testing.T, container *SimpleAppGrpcContainer, dataSource *model.DataSource, mappingName string, exec func(resource *model.Resource)) {
+func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, mappingName string, exec func(resource *model.Resource)) {
 	withDataSource(t, container, dataSource, func(dataSource *model.DataSource) {
 		res, err := container.dataSourceService.PrepareResourceFromEntity(context.TODO(), &stub.PrepareResourceFromEntityRequest{
 			Token:  "test-token",

@@ -6,6 +6,10 @@ import (
 
 func prepareInitData() *model.InitData {
 	return &model.InitData{
+		Config: &model.AppConfig{
+			GrpcAddr: "localhost:17981",
+			HttpAddr: "localhost:17982",
+		},
 		SystemDataSource: prepareSystemDataSource(),
 		SystemWorkSpace:  prepareSystemWorkSpace(),
 		InitDataSources:  prepareInitDataSources(),
