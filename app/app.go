@@ -19,12 +19,12 @@ type App struct {
 	dataSourceService              service.DataSourceService
 	resourceService                service.ResourceService
 	recordService                  service.RecordService
+	workSpaceService               stub.WorkSpaceServiceServer
+	userService                    service.UserService
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	recordApi                      api.RecordApi
 	authenticationApi              api.AuthenticationApi
 	apiServer                      api.Server
-	GrpcAddr                       string
-	HttpAddr                       string
 	grpcLis                        net.Listener
 	httpLis                        net.Listener
 }
@@ -58,7 +58,8 @@ func (app *App) Init() {
 	app.resourceService = service.NewResourceService()
 	app.recordService = service.NewRecordService()
 	app.postgresResourceServiceBackend = postgres.NewPostgresResourceServiceBackend()
-	//workSpaceService := service.NewWorkSpaceService(resourceService)
+	app.workSpaceService = service.NewWorkSpaceService()
+	app.userService = service.NewUserService()
 	app.recordApi = api.NewRecordApi()
 	app.authenticationApi = api.NewAuthenticationApi()
 	app.apiServer = api.NewServer()
@@ -67,11 +68,11 @@ func (app *App) Init() {
 	app.initServices()
 
 	var err error
-	app.grpcLis, err = net.Listen("tcp", app.GrpcAddr)
+	app.grpcLis, err = net.Listen("tcp", app.initData.Config.GrpcAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	app.httpLis, err = net.Listen("tcp", app.HttpAddr)
+	app.httpLis, err = net.Listen("tcp", app.initData.Config.HttpAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -124,6 +125,7 @@ func (app *App) InjectServices() {
 	app.recordService.InjectAuthenticationService(app.authenticationService)
 
 	app.authenticationApi.InjectAuthenticationService(app.authenticationService)
+
 	app.recordApi.InjectRecordService(app.recordService)
 	app.recordApi.InjectResourceService(app.resourceService)
 	app.apiServer.InjectAuthenticationApi(app.authenticationApi)
@@ -132,4 +134,12 @@ func (app *App) InjectServices() {
 
 func (app *App) SetInitData(data *model.InitData) {
 	app.initData = data
+
+	app.CheckInitData(data)
+}
+
+func (app *App) CheckInitData(data *model.InitData) {
+	if data.SystemDataSource == nil {
+		log.Fatal("System dataSource is not set")
+	}
 }

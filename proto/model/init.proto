@@ -10,12 +10,20 @@ import 'model/resource.proto';
 import 'model/record.proto';
 import 'model/workspace.proto';
 
+message AppConfig {
+  string grpcAddr = 1;
+  string httpAddr = 2;
+  string jwtPrivateKey = 3;
+  string jwtPublicKey = 4;
+}
+
 message InitData {
-  DataSource systemDataSource = 1;
-  Workspace systemWorkSpace = 2;
-  repeated DataSource initDataSources = 3;
-  repeated Workspace initWorkSpaces = 4;
-  repeated User initUsers = 5;
-  repeated Resource initResources = 6;
-  repeated Record initRecords = 7;
+  AppConfig config = 1;
+  DataSource systemDataSource = 2;
+  Workspace systemWorkSpace = 3;
+  repeated DataSource initDataSources = 4;
+  repeated Workspace initWorkSpaces = 5;
+  repeated User initUsers = 6;
+  repeated Resource initResources = 7;
+  repeated Record initRecords = 8;
 }

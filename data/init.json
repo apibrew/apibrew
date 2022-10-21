@@ -1,0 +1,47 @@
+{
+  "config":  {
+    "grpcAddr":  "0.0.0.0:9009",
+    "httpAddr":  "0.0.0.0:8008",
+    "jwtPrivateKey":  "data/jwt.key",
+    "jwtPublicKey":  "data/jwt.key.pub"
+  },
+  "systemDataSource":  {
+    "id":  "system",
+    "backend":  "POSTGRESQL",
+    "type":  "SYSTEM",
+    "postgresqlParams":  {
+      "username":  "root",
+      "password":  "52fa536f0c5b85f9d806633937f06446",
+      "host":  "tiswork.tisserv.net",
+      "port":  5432,
+      "dbName":  "dh",
+      "defaultSchema":  "public"
+    },
+    "auditData":  null,
+    "version":  0
+  },
+  "systemWorkSpace":  {
+    "name":  "system",
+    "type":  "SYSTEM",
+    "auditData":  null,
+    "version":  0
+  },
+  "initDataSources":  [],
+  "initWorkSpaces":  [],
+  "initUsers":  [
+    {
+      "id":  "",
+      "type":  "STATIC",
+      "username":  "admin",
+      "password":  "admin",
+      "scopes":  [
+        "super-user"
+      ],
+      "details":  null,
+      "auditData":  null,
+      "version":  0
+    }
+  ],
+  "initResources":  [],
+  "initRecords":  []
+}

@@ -9,10 +9,12 @@ func main() {
 	initData := prepareInitData()
 
 	util.Write("/Users/taleh/Projects/tiswork/data-handler/data/init.pb", initData)
+	util.WriteJson("/Users/taleh/Projects/tiswork/data-handler/data/init.json", initData)
 }
 
 func prepareInitData() *model.InitData {
 	return &model.InitData{
+		Config:           prepareAppConfig(),
 		SystemDataSource: prepareSystemDataSource(),
 		SystemWorkSpace:  prepareSystemWorkSpace(),
 		InitDataSources:  prepareInitDataSources(),
@@ -20,6 +22,15 @@ func prepareInitData() *model.InitData {
 		InitUsers:        prepareInitUsers(),
 		InitResources:    prepareInitResources(),
 		InitRecords:      prepareInitRecords(),
+	}
+}
+
+func prepareAppConfig() *model.AppConfig {
+	return &model.AppConfig{
+		GrpcAddr:      "0.0.0.0:9009",
+		HttpAddr:      "0.0.0.0:8008",
+		JwtPrivateKey: "data/jwt.key",
+		JwtPublicKey:  "data/jwt.key.pub",
 	}
 }
 

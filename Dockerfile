@@ -14,5 +14,6 @@ COPY . .
 RUN #go generate
 RUN go build -o data-handler main.go
 EXPOSE 9009
+EXPOSE 8008
 
-CMD ["./app/data-handler"]
+CMD ["/app/data-handler", "-init", "data/init.json"]
