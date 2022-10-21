@@ -28,7 +28,6 @@ type resourceService struct {
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	ServiceName                    string
 	cache                          *ttlcache.Cache[string, *model.Resource]
-	existsCache                    *ttlcache.Cache[string, bool]
 }
 
 func (r *resourceService) GetResourceByName(resourceName string) (*model.Resource, error) {
@@ -155,6 +154,8 @@ func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourc
 		if err != nil {
 			return nil, err
 		}
+
+		r.cache.Delete(resource.Name)
 	}
 
 	return &stub.UpdateResourceResponse{
@@ -180,6 +181,10 @@ func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourc
 
 	if err != nil {
 		return nil, err
+	}
+
+	for _, id := range request.Ids {
+		r.cache.Delete(id)
 	}
 
 	return &stub.DeleteResourceResponse{}, nil
