@@ -77,14 +77,9 @@ func (s ServiceCaller[T, R]) Respond() {
 
 	s.writer.Header().Set("Content-Type", "application/json")
 
-	isSuccess := true
-	if err != nil {
-		log.Error(err)
-		s.writer.WriteHeader(500)
-		isSuccess = false
-	} else if serviceResult.GetError() != nil {
-		s.writer.WriteHeader(errorCodeHttpStatusMap[serviceResult.GetError().GetCode()])
-		isSuccess = false
+	isSuccess := err == nil && serviceResult.GetError() == nil
+	if !isSuccess {
+		handleServiceError(s.writer, serviceResult, err)
 	} else {
 		s.writer.WriteHeader(200)
 	}
@@ -101,6 +96,23 @@ func (s ServiceCaller[T, R]) Respond() {
 	}
 
 	s.writer.Write(body)
+}
+
+func handleServiceError(writer http.ResponseWriter, serviceResult service.Response, err error) {
+	if err != nil {
+		log.Error(err)
+		writer.WriteHeader(500)
+	} else if serviceResult.GetError() != nil {
+		writer.WriteHeader(errorCodeHttpStatusMap[serviceResult.GetError().GetCode()])
+	}
+}
+
+func handleClientError(writer http.ResponseWriter, err error) {
+	if err != nil {
+		log.Error(err)
+		writer.WriteHeader(500)
+		writer.Write([]byte("Invalid Request Data: " + err.Error()))
+	}
 }
 
 var errorCodeHttpStatusMap = map[model.ErrorCode]int{

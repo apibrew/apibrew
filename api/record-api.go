@@ -7,7 +7,9 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -65,6 +67,72 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	resourceName := vars["resourceName"]
 
+	resourceResponse, err := r.resourceService.Get(request.Context(), &stub.GetResourceRequest{
+		Token: "",
+		Name:  resourceName,
+	})
+
+	if err != nil || resourceResponse.Error != nil {
+		handleServiceError(writer, resourceResponse, err)
+		return
+	}
+
+	// handle query parameters
+
+	var criteria []*model.BooleanExpression
+	for _, property := range resourceResponse.Resource.Properties {
+		if request.URL.Query().Get(property.Name) != "" {
+			val, err := structpb.NewValue(request.URL.Query().Get(property.Name))
+			if err != nil {
+				handleClientError(writer, err)
+				return
+			}
+			criteria = append(criteria, &model.BooleanExpression{
+				Expression: &model.BooleanExpression_Equal{
+					Equal: &model.PairExpression{
+						Left: &model.Expression{
+							Expression: &model.Expression_Property{
+								Property: property.Name,
+							},
+						},
+						Right: &model.Expression{
+							Expression: &model.Expression_Value{
+								Value: val,
+							},
+						},
+					},
+				},
+			})
+		}
+	}
+
+	limit := 10
+	offset := 0
+
+	if request.URL.Query().Get("limit") != "" {
+		limit, err = strconv.Atoi(request.URL.Query().Get("limit"))
+
+		if err != nil {
+			handleClientError(writer, err)
+			return
+		}
+	}
+
+	if request.URL.Query().Get("offset") != "" {
+		offset, err = strconv.Atoi(request.URL.Query().Get("offset"))
+
+		if err != nil {
+			handleClientError(writer, err)
+			return
+		}
+	}
+
+	var query *model.BooleanExpression
+
+	if len(criteria) > 0 {
+		query = &model.BooleanExpression{Expression: &model.BooleanExpression_And{And: &model.CompoundBooleanExpression{Expressions: criteria}}}
+	}
+
 	ServiceResponder[*stub.ListRecordRequest, *stub.ListRecordResponse]().
 		Writer(writer).
 		Request(request).
@@ -72,9 +140,9 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		Payload(&stub.ListRecordRequest{
 			Token:    getToken(request),
 			Resource: resourceName,
-			Query:    nil,
-			Limit:    10,
-			Offset:   0,
+			Query:    query,
+			Limit:    uint32(limit),
+			Offset:   uint64(offset),
 		}).
 		Respond()
 }
@@ -88,8 +156,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	err := parseRequestMessage(request, record1)
 
 	if err != nil {
-		log.Error(err)
-		writer.WriteHeader(400)
+		handleClientError(writer, err)
 		return
 	}
 
@@ -97,8 +164,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	record1.Type = model.DataType_USER
 
 	if err != nil {
-		log.Error(err)
-		writer.WriteHeader(400)
+		handleClientError(writer, err)
 		return
 	}
 
@@ -196,8 +262,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 	listRecordRequest.Resource = resourceName
 
 	if err != nil {
-		writer.WriteHeader(400)
-		writer.Write([]byte(err.Error()))
+		handleClientError(writer, err)
 		return
 	}
 

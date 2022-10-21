@@ -6,7 +6,9 @@ import (
 	"net/http"
 )
 
-type ApiRouter interface {
+//import _ "net/http/pprof"
+
+type Router interface {
 	ConfigureRouter(router *mux.Router)
 }
 
@@ -29,6 +31,10 @@ func (s *server) Serve(lis net.Listener) {
 	r := mux.NewRouter()
 	s.recordApi.ConfigureRouter(r)
 	s.authenticationApi.ConfigureRouter(r)
+
+	//go func() {
+	//	log.Println(http.ListenAndServe("localhost:6060", nil))
+	//}()
 
 	if err := http.Serve(lis, r); err != nil {
 		panic(err)
