@@ -7,6 +7,14 @@ import (
 type int32Type struct {
 }
 
+func (i int32Type) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (i int32Type) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (i int32Type) Default() any {
 	return int32(0)
 }

@@ -7,6 +7,14 @@ import (
 type boolType struct {
 }
 
+func (u boolType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (u boolType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (u boolType) Default() any {
 	return false
 }

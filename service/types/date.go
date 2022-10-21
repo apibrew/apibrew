@@ -7,8 +7,16 @@ import (
 type dateType struct {
 }
 
+func (u dateType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (u dateType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (u dateType) Default() any {
-	return time.Now()
+	return time.Now().Format(time.RFC3339)
 }
 
 func (u dateType) Pointer(required bool) any {
@@ -20,7 +28,7 @@ func (u dateType) Pointer(required bool) any {
 }
 
 func (u dateType) String(val any) string {
-	return (val.(time.Time)).Format(time.RFC3339)
+	return val.(string)
 }
 
 func (u dateType) IsEmpty(value any) bool {

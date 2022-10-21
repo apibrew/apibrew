@@ -5,6 +5,14 @@ import "github.com/google/uuid"
 type uuidType struct {
 }
 
+func (u uuidType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (u uuidType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (u uuidType) Default() any {
 	return uuid.New()
 }

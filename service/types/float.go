@@ -7,6 +7,14 @@ import (
 type floatType struct {
 }
 
+func (f floatType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (f floatType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (f floatType) Pointer(required bool) any {
 	if required {
 		return new(float32)

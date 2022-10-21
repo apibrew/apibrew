@@ -1,8 +1,18 @@
 package types
 
-import "time"
+import (
+	"time"
+)
 
 type timestampType struct {
+}
+
+func (t timestampType) Pack(value interface{}) (interface{}, error) {
+	return t.String(value), nil
+}
+
+func (t timestampType) UnPack(value interface{}) (interface{}, error) {
+	return time.Parse(time.RFC3339, value.(string))
 }
 
 func (t timestampType) Pointer(required bool) any {
@@ -14,7 +24,7 @@ func (t timestampType) Pointer(required bool) any {
 }
 
 func (t timestampType) String(val any) string {
-	return ""
+	return val.(string)
 }
 
 func (t timestampType) IsEmpty(value any) bool {
@@ -26,5 +36,5 @@ func (t timestampType) ValidateValue(value any) error {
 }
 
 func (t timestampType) Default() any {
-	return time.Now()
+	return time.Now().Format(time.RFC3339)
 }

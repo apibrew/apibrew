@@ -3,6 +3,14 @@ package types
 type stringType struct {
 }
 
+func (s stringType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (s stringType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (s stringType) Default() any {
 	return ""
 }

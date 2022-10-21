@@ -7,6 +7,14 @@ import (
 type int64Type struct {
 }
 
+func (i int64Type) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (i int64Type) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (i int64Type) Default() any {
 	return int64(0)
 }

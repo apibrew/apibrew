@@ -13,6 +13,8 @@ type PropertyType interface {
 	String(val any) string
 	IsEmpty(value any) bool
 	ValidateValue(value any) error
+	Pack(value interface{}) (interface{}, error)
+	UnPack(value interface{}) (interface{}, error)
 	Default() any
 }
 
@@ -94,6 +96,9 @@ type number interface {
 }
 
 func canCastNumber[T number](typeName string, val interface{}) error {
+	if val == T(0) {
+		return nil
+	}
 	err := canCast[float64](typeName, val)
 
 	if err != nil {

@@ -5,6 +5,14 @@ import "fmt"
 type doubleType struct {
 }
 
+func (d doubleType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (d doubleType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (d doubleType) Pointer(required bool) any {
 	if required {
 		return new(float64)

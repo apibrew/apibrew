@@ -3,6 +3,14 @@ package types
 type bytesType struct {
 }
 
+func (b bytesType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (b bytesType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
 func (b bytesType) Pointer(required bool) any {
 	if required {
 		return new([]byte)
@@ -12,7 +20,7 @@ func (b bytesType) Pointer(required bool) any {
 }
 
 func (b bytesType) String(val any) string {
-	return string(val.([]byte))
+	return val.(string)
 }
 
 func (b bytesType) IsEmpty(val any) bool {
@@ -24,5 +32,5 @@ func (b bytesType) ValidateValue(value any) error {
 }
 
 func (b bytesType) Default() any {
-	return []byte("")
+	return ""
 }

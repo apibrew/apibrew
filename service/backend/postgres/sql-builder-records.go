@@ -48,7 +48,14 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 		for _, property := range resource.Properties {
 			if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
 				val := record.Properties.AsMap()[property.Name]
-				row = append(row, val)
+				propertyType := types.ByResourcePropertyType(property.Type)
+				unpackedVal, err := propertyType.UnPack(val)
+
+				if err != nil {
+					return err
+				}
+
+				row = append(row, unpackedVal)
 			}
 		}
 
@@ -97,7 +104,15 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
 			val := record.Properties.AsMap()[property.Name]
-			updateBuilder.SetMore(updateBuilder.Equal(source.Mapping.Mapping, val))
+
+			propertyType := types.ByResourcePropertyType(property.Type)
+			unpackedVal, err := propertyType.UnPack(val)
+
+			if err != nil {
+				return err
+			}
+
+			updateBuilder.SetMore(updateBuilder.Equal(source.Mapping.Mapping, unpackedVal))
 		}
 	}
 
@@ -347,11 +362,19 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 	for _, property := range resource.Properties {
 		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
 			propP := propertyPointers[property.Name]
-			properties[property.Name] = types.Dereference(propP)
+
+			propertyType := types.ByResourcePropertyType(property.Type)
+
+			packedValue, err := propertyType.Pack(types.Dereference(propP))
+
+			if err != nil {
+				return err
+			}
+
+			properties[property.Name] = packedValue
 
 			if property.Primary {
-				propertyType := types.ByResourcePropertyType(property.Type)
-				ids = append(ids, propertyType.String(propP))
+				ids = append(ids, propertyType.String(packedValue))
 			}
 		}
 
