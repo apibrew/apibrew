@@ -8,15 +8,15 @@ type dateType struct {
 }
 
 func (u dateType) Pack(value interface{}) (interface{}, error) {
-	return value, nil
+	return value.(time.Time).Format("2006-01-02"), nil
 }
 
 func (u dateType) UnPack(value interface{}) (interface{}, error) {
-	return value, nil
+	return time.Parse("2006-01-02", value.(string))
 }
 
 func (u dateType) Default() any {
-	return time.Now().Format(time.RFC3339)
+	return time.Now().Format("2006-01-02")
 }
 
 func (u dateType) Pointer(required bool) any {
@@ -36,5 +36,13 @@ func (u dateType) IsEmpty(value any) bool {
 }
 
 func (u dateType) ValidateValue(value any) error {
-	return ValidateDateTime(value)
+	err := canCast[string]("string", value)
+
+	if err != nil {
+		return nil
+	}
+
+	_, err = u.UnPack(value)
+
+	return err
 }

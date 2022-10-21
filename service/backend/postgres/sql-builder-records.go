@@ -48,6 +48,10 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 		for _, property := range resource.Properties {
 			if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
 				val := record.Properties.AsMap()[property.Name]
+				if val == nil {
+					row = append(row, nil)
+					continue
+				}
 				propertyType := types.ByResourcePropertyType(property.Type)
 				unpackedVal, err := propertyType.UnPack(val)
 
@@ -365,7 +369,13 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 
 			propertyType := types.ByResourcePropertyType(property.Type)
 
-			packedValue, err := propertyType.Pack(types.Dereference(propP))
+			val := types.Dereference(propP)
+
+			if val == nil {
+				continue
+			}
+
+			packedValue, err := propertyType.Pack(val)
 
 			if err != nil {
 				return err

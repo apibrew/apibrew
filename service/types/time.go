@@ -6,7 +6,7 @@ type timeType struct {
 }
 
 func (t timeType) Pack(value interface{}) (interface{}, error) {
-	return t.String(value), nil
+	return value.(time.Time).Format("15:04:05"), nil
 }
 
 func (t timeType) UnPack(value interface{}) (interface{}, error) {

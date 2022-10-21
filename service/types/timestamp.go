@@ -8,7 +8,7 @@ type timestampType struct {
 }
 
 func (t timestampType) Pack(value interface{}) (interface{}, error) {
-	return t.String(value), nil
+	return value.(time.Time).Format(time.RFC3339), nil
 }
 
 func (t timestampType) UnPack(value interface{}) (interface{}, error) {
@@ -32,7 +32,15 @@ func (t timestampType) IsEmpty(value any) bool {
 }
 
 func (t timestampType) ValidateValue(value any) error {
-	return ValidateDateTime(value)
+	err := ValidateDateTime(value)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = t.UnPack(value)
+
+	return err
 }
 
 func (t timestampType) Default() any {
