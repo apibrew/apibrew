@@ -84,22 +84,22 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 				handleClientError(writer, err)
 				return
 			}
-			criteria = append(criteria, &model.BooleanExpression{
-				Expression: &model.BooleanExpression_Equal{
-					Equal: &model.PairExpression{
-						Left: &model.Expression{
-							Expression: &model.Expression_Property{
-								Property: property.Name,
-							},
-						},
-						Right: &model.Expression{
-							Expression: &model.Expression_Value{
-								Value: val,
-							},
-						},
-					},
-				},
-			})
+			criteria = append(criteria, r.newEqualExpression(property.Name, val))
+		}
+	}
+
+	var additionalProperties = []string{
+		"id", "version",
+	}
+
+	for _, property := range additionalProperties {
+		if request.URL.Query().Get(property) != "" {
+			val, err := structpb.NewValue(request.URL.Query().Get(property))
+			if err != nil {
+				handleClientError(writer, err)
+				return
+			}
+			criteria = append(criteria, r.newEqualExpression(property, val))
 		}
 	}
 
@@ -135,13 +135,33 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		Request(request).
 		ServiceCall(r.recordService.List).
 		Payload(&stub.ListRecordRequest{
-			Token:    getToken(request),
-			Resource: resourceName,
-			Query:    query,
-			Limit:    uint32(limit),
-			Offset:   uint64(offset),
+			Token:      getToken(request),
+			Resource:   resourceName,
+			Query:      query,
+			Limit:      uint32(limit),
+			Offset:     uint64(offset),
+			UseHistory: getRequestBoolFlag(request, "useHistory"),
 		}).
 		Respond()
+}
+
+func (r *recordApi) newEqualExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
+	return &model.BooleanExpression{
+		Expression: &model.BooleanExpression_Equal{
+			Equal: &model.PairExpression{
+				Left: &model.Expression{
+					Expression: &model.Expression_Property{
+						Property: propertyName,
+					},
+				},
+				Right: &model.Expression{
+					Expression: &model.Expression_Value{
+						Value: val,
+					},
+				},
+			},
+		},
+	}
 }
 
 func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http.Request) {

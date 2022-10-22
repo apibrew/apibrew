@@ -161,7 +161,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	// find count
 	countBuilder := sqlbuilder.Select("count(*)")
 	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	countBuilder.From(params.Resource.SourceConfig.Mapping)
+	countBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory))
 	if params.Query != nil {
 		var where = ""
 		where, err = applyCondition(params.Resource, params.Query, countBuilder)
@@ -184,14 +184,14 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 
 	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(params.Resource)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	selectBuilder.From(params.Resource.SourceConfig.Mapping)
+	selectBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory))
 	if params.Query != nil {
 		var where = ""
 		where, err = applyCondition(params.Resource, params.Query, selectBuilder)
 		if err != nil {
 			return nil, 0, err
 		}
-		countBuilder.Where(where)
+		selectBuilder.Where(where)
 	}
 
 	if params.Limit == 0 || params.Limit > 10000 {
@@ -316,7 +316,16 @@ func applyCondition(resource *model.Resource, query *model.BooleanExpression, bu
 }
 
 func applyExpression(resource *model.Resource, query *model.Expression, builder *sqlbuilder.SelectBuilder) (string, error) {
+	var additionalProperties = []string{
+		"id", "version",
+	}
+
 	if propEx, ok := query.Expression.(*model.Expression_Property); ok {
+		for _, ap := range additionalProperties {
+			if ap == propEx.Property {
+				return ap, nil
+			}
+		}
 		property := locatePropertyByName(resource, propEx.Property)
 
 		if property == nil {

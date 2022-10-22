@@ -24,10 +24,11 @@ type BulkRecordsParams struct {
 }
 
 type ListRecordParams struct {
-	Resource *model.Resource
-	Query    *model.BooleanExpression
-	Limit    uint32
-	Offset   uint64
+	Resource   *model.Resource
+	Query      *model.BooleanExpression
+	Limit      uint32
+	Offset     uint64
+	UseHistory bool
 }
 
 type DataSourceLocator interface {

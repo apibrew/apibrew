@@ -73,10 +73,11 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 	}
 
 	records, total, err := r.postgresResourceServiceBackend.ListRecords(backend.ListRecordParams{
-		Resource: resource,
-		Query:    request.Query,
-		Limit:    request.Limit,
-		Offset:   request.Offset,
+		Resource:   resource,
+		Query:      request.Query,
+		Limit:      request.Limit,
+		Offset:     request.Offset,
+		UseHistory: request.UseHistory,
 	})
 
 	if err != nil {

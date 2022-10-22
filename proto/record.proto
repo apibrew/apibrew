@@ -23,6 +23,7 @@ message ListRecordRequest {
   model.BooleanExpression query = 3;
   uint32 limit = 4;
   uint64 offset = 5;
+  bool useHistory = 6;
 }
 
 message ListRecordResponse {
