@@ -15,12 +15,12 @@ import (
 	"time"
 )
 
-func recordInsert(runner QueryRunner, resource *model.Resource, records []*model.Record) error {
+func recordInsert(runner QueryRunner, resource *model.Resource, records []*model.Record, history bool) error {
 	if resource.Flags == nil {
 		resource.Flags = &model.ResourceFlags{}
 	}
 
-	insertBuilder := sqlbuilder.InsertInto(resource.SourceConfig.Mapping)
+	insertBuilder := sqlbuilder.InsertInto(getTableName(resource.SourceConfig.Mapping, history))
 	insertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	cols := prepareResourceRecordCols(resource)
@@ -28,16 +28,20 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 	insertBuilder.Cols(cols...)
 
 	for _, record := range records {
-		recordNewId, _ := uuid.NewUUID()
-		record.Id = recordNewId.String()
-		now := time.Now()
-		record.AuditData = &model.AuditData{
-			CreatedOn: timestamppb.New(now),
-			UpdatedOn: timestamppb.New(now),
-			CreatedBy: "test-user",
-			UpdatedBy: "",
+		if !history {
+			recordNewId, _ := uuid.NewUUID()
+			record.Id = recordNewId.String()
 		}
-		record.Version = 1
+		now := time.Now()
+		if !history {
+			record.AuditData = &model.AuditData{
+				CreatedOn: timestamppb.New(now),
+				UpdatedOn: timestamppb.New(now),
+				CreatedBy: "test-user",
+				UpdatedBy: "",
+			}
+			record.Version = 1
+		}
 
 		var row []interface{}
 
@@ -85,12 +89,20 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 	return err
 }
 
+func getTableName(mapping string, history bool) string {
+	if history {
+		return mapping + "_h"
+	} else {
+		return mapping
+	}
+}
+
 func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) (err error) {
 	if resource.Flags == nil {
 		resource.Flags = &model.ResourceFlags{}
 	}
 
-	updateBuilder := sqlbuilder.Update(resource.SourceConfig.Mapping)
+	updateBuilder := sqlbuilder.Update(getTableName(resource.SourceConfig.Mapping, false))
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	if checkVersion {
 		updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))

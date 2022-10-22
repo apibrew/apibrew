@@ -126,3 +126,7 @@ var errorCodeHttpStatusMap = map[model.ErrorCode]int{
 func getToken(request *http.Request) string {
 	return request.Header.Get("Authorization")
 }
+
+func getRequestBoolFlag(request *http.Request, s string) bool {
+	return request.URL.Query().Has(s)
+}

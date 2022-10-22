@@ -223,7 +223,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 		Payload(&stub.UpdateRecordRequest{
 			Token:        getToken(request),
 			Records:      []*model.Record{record},
-			CheckVersion: false,
+			CheckVersion: getRequestBoolFlag(request, "checkVersion"),
 		}).
 		ResponseMapper(func(response *stub.UpdateRecordResponse) proto.Message {
 			return response.Records[0]

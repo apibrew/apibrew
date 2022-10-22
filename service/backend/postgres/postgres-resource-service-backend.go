@@ -162,9 +162,23 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			return err
 		}
 
-		if params.Migrate {
+		if params.Migrate && !params.Resource.Flags.AutoCreated {
 			err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
-				return resourceCreateTable(tx, params.Resource)
+				err := resourceCreateTable(tx, params.Resource)
+				if err != nil {
+					return err
+				}
+
+				if params.Resource.Flags.KeepHistory {
+					if params.Resource.Flags.DisableAudit {
+						return errors.New("history cannot created while audit is disabled")
+					}
+					err = resourceCreateHistoryTable(tx, params.Resource)
+					if err != nil {
+						return err
+					}
+				}
+				return nil
 			})
 
 			if err != nil {

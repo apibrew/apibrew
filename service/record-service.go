@@ -211,6 +211,12 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 			}, nil
 		}
 
+		if resource.Flags.KeepHistory && !request.CheckVersion {
+			return &stub.UpdateRecordResponse{
+				Error: toProtoError(errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")),
+			}, nil
+		}
+
 		err = r.validateRecords(resource, list)
 
 		if err != nil {

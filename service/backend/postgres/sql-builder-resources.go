@@ -193,16 +193,35 @@ func resourceAlterTable(ctx context.Context, runner QueryRunner, existingResourc
 }
 
 func resourceCreateTable(runner QueryRunner, resource *model.Resource) error {
-	builder := sqlbuilder.CreateTable(resource.SourceConfig.Mapping)
+	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig.Mapping, false))
 
 	builder.IfNotExists()
 
-	if resource.Flags == nil {
-		resource.Flags = new(model.ResourceFlags)
-	}
-
 	if !resource.Flags.AutoCreated && !resource.Flags.DoPrimaryKeyLookup {
 		builder.Define("id", "uuid", "NOT NULL", "PRIMARY KEY")
+	}
+
+	prepareCreateTableQuery(resource, builder)
+
+	// audit
+	if !resource.Flags.DisableAudit {
+		builder.Define("created_on", "timestamp", "NOT NULL")
+		builder.Define("updated_on", "timestamp", "NULL")
+		builder.Define("created_by", DbNameType, "NOT NULL")
+		builder.Define("updated_by", DbNameType, "NULL")
+		// version
+		builder.Define("version", "int2", "NOT NULL")
+	}
+
+	sqlQuery, _ := builder.Build()
+	_, err := runner.Exec(sqlQuery)
+
+	return err
+}
+
+func prepareCreateTableQuery(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
+	if resource.Flags == nil {
+		resource.Flags = new(model.ResourceFlags)
 	}
 
 	var primaryKeys []string
@@ -223,16 +242,25 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) error {
 	if len(primaryKeys) > 0 {
 		builder.Define("PRIMARY KEY (" + strings.Join(primaryKeys, ",") + ")")
 	}
+}
 
-	// audit
-	if !resource.Flags.DisableAudit {
-		builder.Define("created_on", "timestamp", "NOT NULL")
-		builder.Define("updated_on", "timestamp", "NULL")
-		builder.Define("created_by", DbNameType, "NOT NULL")
-		builder.Define("updated_by", DbNameType, "NULL")
-		// version
-		builder.Define("version", "int2", "NOT NULL")
-	}
+func resourceCreateHistoryTable(runner QueryRunner, resource *model.Resource) error {
+	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig.Mapping, true))
+
+	builder.IfNotExists()
+
+	builder.Define("id", "uuid", "NOT NULL")
+
+	prepareCreateTableQuery(resource, builder)
+
+	builder.Define("created_on", "timestamp", "NOT NULL")
+	builder.Define("updated_on", "timestamp", "NULL")
+	builder.Define("created_by", DbNameType, "NOT NULL")
+	builder.Define("updated_by", DbNameType, "NULL")
+	// version
+	builder.Define("version", "int2", "NOT NULL")
+
+	builder.Define("PRIMARY KEY (id, version)")
 
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)

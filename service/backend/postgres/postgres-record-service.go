@@ -18,7 +18,21 @@ func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordPa
 
 func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsParams) ([]*model.Record, error) {
 	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
-		return recordInsert(tx, params.Resource, params.Records)
+		err := recordInsert(tx, params.Resource, params.Records, false)
+
+		if err != nil {
+			return err
+		}
+
+		if params.Resource.Flags.KeepHistory {
+			err = recordInsert(tx, params.Resource, params.Records, true)
+
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
 	})
 
 	if err != nil {
@@ -32,6 +46,14 @@ func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecord
 	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
 		for _, record := range params.Records {
 			err := recordUpdate(tx, params.Resource, record, params.CheckVersion)
+
+			if err != nil {
+				return err
+			}
+		}
+
+		if params.Resource.Flags.KeepHistory {
+			err := recordInsert(tx, params.Resource, params.Records, true)
 
 			if err != nil {
 				return err
