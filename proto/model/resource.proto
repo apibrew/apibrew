@@ -10,7 +10,7 @@ import 'model/common.proto';
 
 
 message ResourcePropertyComputedSourceConfig {
-//  FunctionCall functionCall = 1;
+  //  FunctionCall functionCall = 1;
 }
 
 enum AutoGenerationType {
@@ -40,6 +40,7 @@ enum ResourcePropertyType {
   TYPE_TIMESTAMP = 11;
   TYPE_OBJECT = 12;
   TYPE_NUMERIC = 13;
+  TYPE_PASSWORD = 14;
 }
 
 message ResourceProperty {
@@ -110,6 +111,7 @@ message Resource {
   repeated ResourceRelation relations = 8; // not implemented
   repeated ResourceIndex indexes = 9; // not implemented
   ResourceFlags flags = 10;
-  AuditData auditData = 11;
-  uint32 version = 12;
+
+  AuditData auditData = 101;
+  uint32 version = 102;
 }

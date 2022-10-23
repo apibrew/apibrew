@@ -13,6 +13,7 @@ service UserService {
   rpc Update(UpdateUserRequest) returns(UpdateUserResponse) {}
   rpc Delete(DeleteUserRequest) returns(DeleteUserResponse) {}
   rpc List(ListUserRequest) returns(ListUserResponse) {}
+  rpc Get(GetUserRequest) returns (GetUserResponse) {}
 }
 
 message CreateUserRequest {
@@ -56,5 +57,18 @@ message ListUserRequest {
 }
 
 message ListUserResponse {
+  repeated model.User content = 1;
+
+  model.Error error = 2;
+}
+
+message GetUserRequest {
+  string token = 1;
+  string id = 2;
+}
+
+message GetUserResponse {
+  model.User user = 1;
+
   model.Error error = 2;
 }

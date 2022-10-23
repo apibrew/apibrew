@@ -18,9 +18,10 @@ type AddResourceParams struct {
 }
 
 type BulkRecordsParams struct {
-	Resource     *model.Resource
-	Records      []*model.Record
-	CheckVersion bool
+	Resource       *model.Resource
+	Records        []*model.Record
+	CheckVersion   bool
+	IgnoreIfExists bool
 }
 
 type ListRecordParams struct {
@@ -39,7 +40,7 @@ type DataSourceLocator interface {
 type ResourceServiceBackend interface {
 	Init()
 	AddResource(params AddResourceParams) (*model.Resource, error)
-	AddRecords(params BulkRecordsParams) ([]*model.Record, error)
+	AddRecords(params BulkRecordsParams) ([]*model.Record, bool, error)
 	UpdateRecords(params BulkRecordsParams) ([]*model.Record, error)
 	GetResourceByName(resourceName string) (*model.Resource, error)
 	GetRecord(resource *model.Resource, id string) (*model.Record, error)

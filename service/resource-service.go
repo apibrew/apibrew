@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"data-handler/service/backend"
+	"data-handler/service/security"
+	"data-handler/service/system"
 	"data-handler/stub"
 	"data-handler/stub/model"
 	"github.com/jellydator/ttlcache/v3"
@@ -18,7 +20,7 @@ type ResourceService interface {
 	Init(data *model.InitData)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
 	CheckResourceExists(name string) (bool, error)
-	GetResourceByName(resource string) (*model.Resource, error)
+	GetResourceByName(ctx context.Context, resource string) (*model.Resource, error)
 }
 
 type resourceService struct {
@@ -30,7 +32,17 @@ type resourceService struct {
 	cache                          *ttlcache.Cache[string, *model.Resource]
 }
 
-func (r *resourceService) GetResourceByName(resourceName string) (*model.Resource, error) {
+func (r *resourceService) GetResourceByName(ctx context.Context, resourceName string) (*model.Resource, error) {
+	if security.IsSystemContext(ctx) {
+		if resourceName == system.UserResource.Name {
+			return system.UserResource, nil
+		} else if resourceName == system.DataSourceResource.Name {
+			return system.DataSourceResource, nil
+		} else if resourceName == system.WorkSpaceResource.Name {
+			return system.WorkSpaceResource, nil
+		}
+	}
+
 	if r.cache.Get(resourceName) != nil {
 		return r.cache.Get(resourceName).Value(), nil
 	}
@@ -91,25 +103,6 @@ func (r *resourceService) InitResource(resource *model.Resource) {
 }
 
 func (r resourceService) Create(ctx context.Context, request *stub.CreateResourceRequest) (*stub.CreateResourceResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:       ctx,
-		Token:     request.Token,
-		Service:   r.ServiceName,
-		Method:    "Create",
-		Resources: request.Resources,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	// validate token
-	err = r.authenticationService.validateToken(request.Token)
-
-	if err != nil {
-		return nil, err
-	}
-
 	var result []*model.Resource
 
 	for _, resource := range request.Resources {
@@ -136,18 +129,7 @@ func (r resourceService) Create(ctx context.Context, request *stub.CreateResourc
 }
 
 func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourceRequest) (*stub.UpdateResourceResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:       ctx,
-		Token:     request.Token,
-		Service:   r.ServiceName,
-		Method:    "Update",
-		Resources: request.Resources,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
+	var err error
 	for _, resource := range request.Resources {
 		err = r.GetBackend().UpdateResource(ctx, resource, request.DoMigration, request.ForceMigration)
 
@@ -165,18 +147,7 @@ func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourc
 }
 
 func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:       ctx,
-		Token:     request.Token,
-		Service:   r.ServiceName,
-		Method:    "Delete",
-		Resources: request.Ids,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
+	var err error
 	err = r.GetBackend().DeleteResources(ctx, request.Ids, request.DoMigration, request.ForceMigration)
 
 	if err != nil {
@@ -191,17 +162,6 @@ func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourc
 }
 
 func (r resourceService) List(ctx context.Context, request *stub.ListResourceRequest) (*stub.ListResourceResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: r.ServiceName,
-		Method:  "List",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
 	resources, err := r.GetBackend().ListResources(ctx)
 
 	if err != nil {
@@ -214,17 +174,6 @@ func (r resourceService) List(ctx context.Context, request *stub.ListResourceReq
 }
 
 func (r resourceService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: r.ServiceName,
-		Method:  "List",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
 	resource, err := r.GetBackend().GetResourceByName(request.Name)
 
 	if err != nil {

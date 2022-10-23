@@ -6,11 +6,17 @@ option go_package = "data-handler/stub/model";
 
 import 'model/audit.proto';
 import 'model/common.proto';
+import 'google/protobuf/struct.proto';
 
-message Workspace {
-  string name = 1;
-  DataType type = 2;
+message WorkSpace {
+  string id = 1;
+  string name = 2;
+  DataType type = 3;
 
-  AuditData auditData = 3;
-  uint32 version = 4;
+
+  string description = 4;
+  google.protobuf.Struct details = 5;
+
+  AuditData auditData = 101;
+  uint32 version = 102;
 }

@@ -7,8 +7,11 @@ import (
 func prepareInitData() *model.InitData {
 	return &model.InitData{
 		Config: &model.AppConfig{
-			GrpcAddr: "localhost:17981",
-			HttpAddr: "localhost:17982",
+			GrpcAddr:              "localhost:17981",
+			HttpAddr:              "localhost:17982",
+			JwtPrivateKey:         "../data/jwt.key",
+			JwtPublicKey:          "../data/jwt.key.pub",
+			DisableAuthentication: true,
 		},
 		SystemDataSource: prepareSystemDataSource(),
 		SystemWorkSpace:  prepareSystemWorkSpace(),
@@ -41,7 +44,7 @@ func prepareInitUsers() []*model.User {
 	}
 }
 
-func prepareInitWorkSpaces() []*model.Workspace {
+func prepareInitWorkSpaces() []*model.WorkSpace {
 	return nil
 }
 
@@ -49,8 +52,8 @@ func prepareInitDataSources() []*model.DataSource {
 	return nil
 }
 
-func prepareSystemWorkSpace() *model.Workspace {
-	return &model.Workspace{
+func prepareSystemWorkSpace() *model.WorkSpace {
+	return &model.WorkSpace{
 		Name: "system",
 		Type: model.DataType_SYSTEM,
 	}

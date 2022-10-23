@@ -4,15 +4,19 @@ import (
 	"context"
 	"data-handler/service/backend"
 	"data-handler/service/backend/postgres"
+	mapping "data-handler/service/mapping"
+	"data-handler/service/security"
+	"data-handler/service/system"
 	"data-handler/stub"
 	model "data-handler/stub/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type DataSourceService interface {
 	stub.DataSourceServiceServer
 	InjectResourceService(service ResourceService)
 	InjectInitData(data *model.InitData)
-	Init()
+	Init(*model.InitData)
 	GetDataSourceBackend(dataSource *model.DataSource) backend.DataSourceBackend
 	InjectRecordService(service RecordService)
 	GetSystemDataSourceBackend() backend.DataSourceBackend
@@ -36,17 +40,6 @@ func (d *dataSourceService) InjectAuthenticationService(service AuthenticationSe
 }
 
 func (d *dataSourceService) ListEntities(ctx context.Context, request *stub.ListEntitiesRequest) (*stub.ListEntitiesResponse, error) {
-	err := d.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: d.ServiceName,
-		Method:  "ListEntities",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
 	res, err := d.postgresResourceServiceBackend.ListEntities(ctx, request.Id)
 
 	if err != nil {
@@ -60,20 +53,9 @@ func (d *dataSourceService) ListEntities(ctx context.Context, request *stub.List
 }
 
 func (d *dataSourceService) List(ctx context.Context, request *stub.ListDataSourceRequest) (*stub.ListDataSourceResponse, error) {
-	err := d.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: d.ServiceName,
-		Method:  "List",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	systemCtx := withSystemContext(ctx)
+	systemCtx := security.WithSystemContext(ctx)
 	result, err := d.recordService.List(systemCtx, &stub.ListRecordRequest{
-		Resource: dataSourceResource.Name,
+		Resource: system.DataSourceResource.Name,
 		Token:    request.Token,
 	})
 
@@ -82,42 +64,19 @@ func (d *dataSourceService) List(ctx context.Context, request *stub.ListDataSour
 	}
 
 	return &stub.ListDataSourceResponse{
-		Content: mapFromRecord(result.Content, dataSourceFromRecord),
+		Content: mapping.MapFromRecord(result.Content, mapping.DataSourceFromRecord),
 		Error:   result.Error,
 	}, err
 }
 
 func (d *dataSourceService) Status(ctx context.Context, request *stub.StatusRequest) (*stub.StatusResponse, error) {
-	err := d.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: d.ServiceName,
-		Method:  "Status",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
 	return d.postgresResourceServiceBackend.GetStatus(request.Id)
 }
 
 func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateDataSourceRequest) (*stub.CreateDataSourceResponse, error) {
-	err := d.authenticationService.Check(CheckParams{
-		Ctx:       ctx,
-		Token:     request.Token,
-		Service:   d.ServiceName,
-		Method:    "Create",
-		Resources: request.DataSources,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
 	// insert records via resource service
-	records := mapToRecord(request.DataSources, dataSourceToRecord)
-	systemCtx := withSystemContext(ctx)
+	records := mapping.MapToRecord(request.DataSources, mapping.DataSourceToRecord)
+	systemCtx := security.WithSystemContext(ctx)
 	result, err := d.recordService.Create(systemCtx, &stub.CreateRecordRequest{
 		Token:   request.Token,
 		Records: records,
@@ -128,27 +87,15 @@ func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateData
 	}
 
 	return &stub.CreateDataSourceResponse{
-		DataSources: mapFromRecord(result.Records, dataSourceFromRecord),
+		DataSources: mapping.MapFromRecord(result.Records, mapping.DataSourceFromRecord),
 		Error:       result.Error,
 	}, err
 }
 
 func (d *dataSourceService) Update(ctx context.Context, request *stub.UpdateDataSourceRequest) (*stub.UpdateDataSourceResponse, error) {
-	err := d.authenticationService.Check(CheckParams{
-		Ctx:       ctx,
-		Token:     request.Token,
-		Service:   d.ServiceName,
-		Method:    "Update",
-		Resources: request.DataSources,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
 	// insert records via resource service
-	records := mapToRecord(request.DataSources, dataSourceToRecord)
-	systemCtx := withSystemContext(ctx)
+	records := mapping.MapToRecord(request.DataSources, mapping.DataSourceToRecord)
+	systemCtx := security.WithSystemContext(ctx)
 	result, err := d.recordService.Update(systemCtx, &stub.UpdateRecordRequest{
 		Token:   request.Token,
 		Records: records,
@@ -163,23 +110,12 @@ func (d *dataSourceService) Update(ctx context.Context, request *stub.UpdateData
 	}
 
 	return &stub.UpdateDataSourceResponse{
-		DataSources: mapFromRecord(result.Records, dataSourceFromRecord),
+		DataSources: mapping.MapFromRecord(result.Records, mapping.DataSourceFromRecord),
 		Error:       result.Error,
 	}, err
 }
 
 func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, request *stub.PrepareResourceFromEntityRequest) (*stub.PrepareResourceFromEntityResponse, error) {
-	err := d.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: d.ServiceName,
-		Method:  "PrepareResourceFromEntity",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
 	resource, err := d.postgresResourceServiceBackend.PrepareResourceFromEntity(ctx, request.Id, request.Entity)
 
 	if err != nil {
@@ -193,22 +129,10 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, reque
 }
 
 func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSourceRequest) (*stub.GetDataSourceResponse, error) {
-	err := d.authenticationService.Check(CheckParams{
-		Ctx:       ctx,
-		Token:     request.Token,
-		Service:   d.ServiceName,
-		Method:    "Get",
-		Resources: request.Id,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	systemCtx := withSystemContext(ctx)
+	systemCtx := security.WithSystemContext(ctx)
 	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
 		Token:    request.Token,
-		Resource: dataSourceResource.Name,
+		Resource: system.DataSourceResource.Name,
 		Id:       request.Id,
 	})
 
@@ -217,29 +141,17 @@ func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSource
 	}
 
 	return &stub.GetDataSourceResponse{
-		DataSource: dataSourceFromRecord(record.Record),
+		DataSource: mapping.DataSourceFromRecord(record.Record),
 		Error:      record.Error,
 	}, nil
 }
 
 func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteDataSourceRequest) (*stub.DeleteDataSourceResponse, error) {
-	err := d.authenticationService.Check(CheckParams{
-		Ctx:       ctx,
-		Token:     request.Token,
-		Service:   d.ServiceName,
-		Method:    "Get",
-		Resources: request.Ids,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	systemCtx := withSystemContext(ctx)
+	systemCtx := security.WithSystemContext(ctx)
 
 	record, err := d.recordService.Delete(systemCtx, &stub.DeleteRecordRequest{
 		Token:    request.Token,
-		Resource: dataSourceResource.Name,
+		Resource: system.DataSourceResource.Name,
 		Ids:      request.Ids,
 	})
 
@@ -261,9 +173,9 @@ func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backe
 		return d.GetSystemDataSourceBackend(), nil
 	}
 
-	systemCtx := withSystemContext(context.TODO())
+	systemCtx := security.WithSystemContext(context.TODO())
 	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
-		Resource: dataSourceResource.Name,
+		Resource: system.DataSourceResource.Name,
 		Id:       dataSourceId,
 	})
 
@@ -271,7 +183,7 @@ func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backe
 		return nil, err
 	}
 
-	dataSource := dataSourceFromRecord(record.Record)
+	dataSource := mapping.DataSourceFromRecord(record.Record)
 
 	return d.GetDataSourceBackend(dataSource), nil
 }
@@ -307,8 +219,19 @@ func (d *dataSourceService) InjectInitData(data *model.InitData) {
 	d.systemDataSource = data.SystemDataSource
 }
 
-func (d *dataSourceService) Init() {
-	d.resourceService.InitResource(dataSourceResource)
+func (d *dataSourceService) Init(data *model.InitData) {
+	d.resourceService.InitResource(system.DataSourceResource)
+
+	if len(data.InitDataSources) > 0 {
+		res, err := d.recordService.Create(security.SystemContext, &stub.CreateRecordRequest{
+			Records:        mapping.MapToRecord(data.InitDataSources, mapping.DataSourceToRecord),
+			IgnoreIfExists: true,
+		})
+
+		if err != nil || res.Error != nil {
+			log.Error(err, res.Error)
+		}
+	}
 }
 
 func NewDataSourceService() DataSourceService {

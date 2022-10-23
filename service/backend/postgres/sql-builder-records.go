@@ -11,11 +11,12 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"log"
 	"strings"
 	"time"
 )
 
-func recordInsert(runner QueryRunner, resource *model.Resource, records []*model.Record, history bool) error {
+func recordInsert(runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, history bool) (bool, error) {
 	if resource.Flags == nil {
 		resource.Flags = &model.ResourceFlags{}
 	}
@@ -60,7 +61,8 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 				unpackedVal, err := propertyType.UnPack(val)
 
 				if err != nil {
-					return err
+					log.Print("SQL ERROR: ", err)
+					return false, err
 				}
 
 				row = append(row, unpackedVal)
@@ -78,15 +80,20 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 		insertBuilder.Values(row...)
 	}
 
+	if ignoreIfExists {
+		insertBuilder.SQL("ON CONFLICT(id) DO NOTHING")
+	}
+
 	sqlQuery, args := insertBuilder.Build()
 
 	_, err := runner.Exec(sqlQuery, args...)
 
 	if err != nil {
-		return err
+		log.Print("SQL ERROR: ", err)
+		return false, err
 	}
 
-	return err
+	return true, err
 }
 
 func getTableName(mapping string, history bool) string {

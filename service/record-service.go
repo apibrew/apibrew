@@ -4,9 +4,11 @@ import (
 	"context"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
+	"data-handler/service/security"
 	"data-handler/service/types"
 	"data-handler/stub"
 	"data-handler/stub/model"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type RecordService interface {
@@ -17,6 +19,7 @@ type RecordService interface {
 	InjectDataSourceService(service DataSourceService)
 	InjectAuthenticationService(service AuthenticationService)
 	InjectResourceService(service ResourceService)
+	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, error)
 }
 
 type recordService struct {
@@ -45,12 +48,7 @@ func (r *recordService) InjectPostgresResourceServiceBackend(resourceServiceBack
 }
 
 func (r *recordService) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: r.ServiceName,
-		Method:  "List",
-	})
+	resource, err := r.resourceService.GetResourceByName(ctx, request.Resource)
 
 	if err != nil {
 		return &stub.ListRecordResponse{
@@ -58,15 +56,13 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 		}, nil
 	}
 
-	resource, err := r.resourceService.GetResourceByName(request.Resource)
-
-	if err != nil {
+	if resource == nil {
 		return &stub.ListRecordResponse{
-			Error: toProtoError(err),
+			Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + request.Resource)),
 		}, nil
 	}
 
-	if err = checkSystemResourceAccess(ctx, resource); err != nil {
+	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
 		return &stub.ListRecordResponse{
 			Error: toProtoError(err),
 		}, nil
@@ -93,20 +89,64 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 	}, nil
 }
 
-func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: r.ServiceName,
-		Method:  "Create",
-	})
+func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, error) {
+	var err error
 
-	if err != nil {
-		return &stub.CreateRecordResponse{
-			Error: toProtoError(err),
-		}, nil
+	var criteria []*model.BooleanExpression
+	for _, property := range resource.Properties {
+		if queryMap[property.Name] != nil {
+			var val *structpb.Value
+			val, err = structpb.NewValue(queryMap[property.Name])
+			if err != nil {
+				return nil, nil
+			}
+			criteria = append(criteria, r.newEqualExpression(property.Name, val))
+		}
 	}
 
+	var additionalProperties = []string{
+		"id", "version",
+	}
+
+	for _, property := range additionalProperties {
+		if queryMap[property] != nil {
+			var val *structpb.Value
+			val, err = structpb.NewValue(queryMap[property])
+			if err != nil {
+				return nil, nil
+			}
+			criteria = append(criteria, r.newEqualExpression(property, val))
+		}
+	}
+
+	var query *model.BooleanExpression
+
+	if len(criteria) > 0 {
+		query = &model.BooleanExpression{Expression: &model.BooleanExpression_And{And: &model.CompoundBooleanExpression{Expressions: criteria}}}
+	}
+	return query, err
+}
+
+func (r *recordService) newEqualExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
+	return &model.BooleanExpression{
+		Expression: &model.BooleanExpression_Equal{
+			Equal: &model.PairExpression{
+				Left: &model.Expression{
+					Expression: &model.Expression_Property{
+						Property: propertyName,
+					},
+				},
+				Right: &model.Expression{
+					Expression: &model.Expression_Value{
+						Value: val,
+					},
+				},
+			},
+		},
+	}
+}
+
+func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	var entityRecordMap = make(map[string][]*model.Record)
 
 	for _, record := range request.Records {
@@ -119,9 +159,12 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 		item.Type = model.DataType_USER
 	}
 
+	var insertedArray []bool
+	var err error
+
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
-		resource, err = r.resourceService.GetResourceByName(resourceName)
+		resource, err = r.resourceService.GetResourceByName(ctx, resourceName)
 
 		if err != nil {
 			return &stub.CreateRecordResponse{
@@ -129,7 +172,13 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 			}, nil
 		}
 
-		if err = checkSystemResourceAccess(ctx, resource); err != nil {
+		if resource == nil {
+			return &stub.CreateRecordResponse{
+				Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + resourceName)),
+			}, nil
+		}
+
+		if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
 			return nil, err
 		}
 
@@ -148,10 +197,14 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 		}
 
 		var records []*model.Record
-		records, err = r.postgresResourceServiceBackend.AddRecords(backend.BulkRecordsParams{
-			Resource: resource,
-			Records:  list,
+		var inserted bool
+		records, inserted, err = r.postgresResourceServiceBackend.AddRecords(backend.BulkRecordsParams{
+			Resource:       resource,
+			Records:        list,
+			IgnoreIfExists: request.IgnoreIfExists,
 		})
+
+		insertedArray = append(insertedArray, inserted)
 
 		if err != nil {
 			return &stub.CreateRecordResponse{
@@ -163,25 +216,13 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 	}
 
 	return &stub.CreateRecordResponse{
-		Records: result,
-		Error:   nil,
+		Records:  result,
+		Error:    nil,
+		Inserted: insertedArray,
 	}, nil
 }
 
 func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: r.ServiceName,
-		Method:  "Update",
-	})
-
-	if err != nil {
-		return &stub.UpdateRecordResponse{
-			Error: toProtoError(err),
-		}, nil
-	}
-
 	var entityRecordMap = make(map[string][]*model.Record)
 
 	for _, record := range request.Records {
@@ -189,10 +230,11 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 	}
 
 	var result []*model.Record
+	var err error
 
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
-		resource, err = r.resourceService.GetResourceByName(resourceName)
+		resource, err = r.resourceService.GetResourceByName(ctx, resourceName)
 
 		if err != nil {
 			return &stub.UpdateRecordResponse{
@@ -200,7 +242,13 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 			}, nil
 		}
 
-		if err = checkSystemResourceAccess(ctx, resource); err != nil {
+		if resource == nil {
+			return &stub.UpdateRecordResponse{
+				Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + resourceName)),
+			}, nil
+		}
+
+		if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
 			return &stub.UpdateRecordResponse{
 				Error: toProtoError(err),
 			}, nil
@@ -249,12 +297,7 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 }
 
 func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: r.ServiceName,
-		Method:  "Get",
-	})
+	resource, err := r.resourceService.GetResourceByName(ctx, request.Resource)
 
 	if err != nil {
 		return &stub.GetRecordResponse{
@@ -262,15 +305,13 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 		}, nil
 	}
 
-	resource, err := r.resourceService.GetResourceByName(request.Resource)
-
-	if err != nil {
+	if resource == nil {
 		return &stub.GetRecordResponse{
-			Error: toProtoError(err),
+			Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + request.Resource)),
 		}, nil
 	}
 
-	if err = checkSystemResourceAccess(ctx, resource); err != nil {
+	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
 		return &stub.GetRecordResponse{
 			Error: toProtoError(err),
 		}, nil
@@ -291,12 +332,7 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 }
 
 func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
-	err := r.authenticationService.Check(CheckParams{
-		Ctx:     ctx,
-		Token:   request.Token,
-		Service: r.ServiceName,
-		Method:  "Delete",
-	})
+	resource, err := r.resourceService.GetResourceByName(ctx, request.Resource)
 
 	if err != nil {
 		return &stub.DeleteRecordResponse{
@@ -304,15 +340,13 @@ func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRe
 		}, nil
 	}
 
-	resource, err := r.resourceService.GetResourceByName(request.Resource)
-
-	if err != nil {
+	if resource == nil {
 		return &stub.DeleteRecordResponse{
-			Error: toProtoError(err),
+			Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + request.Resource)),
 		}, nil
 	}
 
-	if err = checkSystemResourceAccess(ctx, resource); err != nil {
+	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
 		return &stub.DeleteRecordResponse{
 			Error: toProtoError(err),
 		}, nil

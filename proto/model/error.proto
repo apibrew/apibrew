@@ -10,6 +10,7 @@ enum ErrorCode {
   INTERNAL_ERROR = 2;
   PROPERTY_NOT_FOUND = 3;
   RECORD_VALIDATION_ERROR = 4;
+  AUTHENTICATION_FAILED = 5;
 }
 
 message ErrorField {

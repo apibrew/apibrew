@@ -16,16 +16,19 @@ func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordPa
 	return
 }
 
-func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsParams) ([]*model.Record, error) {
-	err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
-		err := recordInsert(tx, params.Resource, params.Records, false)
+func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsParams) ([]*model.Record, bool, error) {
+	var inserted bool
+	var err error
+
+	err = p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+		inserted, err = recordInsert(tx, params.Resource, params.Records, params.IgnoreIfExists, false)
 
 		if err != nil {
 			return err
 		}
 
-		if params.Resource.Flags.KeepHistory {
-			err = recordInsert(tx, params.Resource, params.Records, true)
+		if inserted && params.Resource.Flags.KeepHistory {
+			_, err = recordInsert(tx, params.Resource, params.Records, false, true)
 
 			if err != nil {
 				return err
@@ -36,10 +39,10 @@ func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsPa
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, inserted, err
 	}
 
-	return params.Records, nil
+	return params.Records, inserted, nil
 }
 
 func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecordsParams) ([]*model.Record, error) {
@@ -53,7 +56,7 @@ func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecord
 		}
 
 		if params.Resource.Flags.KeepHistory {
-			err := recordInsert(tx, params.Resource, params.Records, true)
+			_, err := recordInsert(tx, params.Resource, params.Records, false, false)
 
 			if err != nil {
 				return err

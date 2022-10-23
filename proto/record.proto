@@ -35,11 +35,13 @@ message ListRecordResponse {
 message CreateRecordRequest {
   string token = 1;
   repeated model.Record Records = 2;
+  bool ignoreIfExists = 3;
 }
 
 message CreateRecordResponse {
   repeated model.Record Records = 1;
   model.Error error = 2;
+  repeated bool inserted = 3;
 }
 
 message UpdateRecordRequest {

@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 	"net/http"
 	"strconv"
 	"strings"
@@ -67,7 +66,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	resourceName := vars["resourceName"]
 
-	resource, err := r.resourceService.GetResourceByName(resourceName)
+	resource, err := r.resourceService.GetResourceByName(request.Context(), resourceName)
 
 	if err != nil {
 		handleClientError(writer, err)
@@ -76,32 +75,13 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 
 	// handle query parameters
 
-	var criteria []*model.BooleanExpression
-	for _, property := range resource.Properties {
-		if request.URL.Query().Get(property.Name) != "" {
-			val, err := structpb.NewValue(request.URL.Query().Get(property.Name))
-			if err != nil {
-				handleClientError(writer, err)
-				return
-			}
-			criteria = append(criteria, r.newEqualExpression(property.Name, val))
-		}
+	queryMap := make(map[string]interface{})
+
+	for key := range request.URL.Query() {
+		queryMap[key] = request.URL.Query().Get(key)
 	}
 
-	var additionalProperties = []string{
-		"id", "version",
-	}
-
-	for _, property := range additionalProperties {
-		if request.URL.Query().Get(property) != "" {
-			val, err := structpb.NewValue(request.URL.Query().Get(property))
-			if err != nil {
-				handleClientError(writer, err)
-				return
-			}
-			criteria = append(criteria, r.newEqualExpression(property, val))
-		}
-	}
+	query, err := r.recordService.PrepareQuery(resource, queryMap)
 
 	limit := 10
 	offset := 0
@@ -124,12 +104,6 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		}
 	}
 
-	var query *model.BooleanExpression
-
-	if len(criteria) > 0 {
-		query = &model.BooleanExpression{Expression: &model.BooleanExpression_And{And: &model.CompoundBooleanExpression{Expressions: criteria}}}
-	}
-
 	ServiceResponder[*stub.ListRecordRequest, *stub.ListRecordResponse]().
 		Writer(writer).
 		Request(request).
@@ -143,25 +117,6 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 			UseHistory: getRequestBoolFlag(request, "useHistory"),
 		}).
 		Respond()
-}
-
-func (r *recordApi) newEqualExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
-	return &model.BooleanExpression{
-		Expression: &model.BooleanExpression_Equal{
-			Equal: &model.PairExpression{
-				Left: &model.Expression{
-					Expression: &model.Expression_Property{
-						Property: propertyName,
-					},
-				},
-				Right: &model.Expression{
-					Expression: &model.Expression_Value{
-						Value: val,
-					},
-				},
-			},
-		},
-	}
 }
 
 func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http.Request) {

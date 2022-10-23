@@ -8,42 +8,42 @@ import 'model/workspace.proto';
 import 'model/error.proto';
 
 service WorkSpaceService {
-  rpc Create(CreateWorkspaceRequest) returns (CreateWorkspaceResponse) {}
-  rpc List(ListWorkspaceRequest) returns (ListWorkspaceResponse) {}
+  rpc Create(CreateWorkSpaceRequest) returns (CreateWorkSpaceResponse) {}
+  rpc List(ListWorkSpaceRequest) returns (ListWorkSpaceResponse) {}
   rpc Update(UpdateWorkSpaceRequest) returns (UpdateWorkSpaceResponse) {}
   rpc Delete(DeleteWorkSpaceRequest) returns (DeleteWorkSpaceResponse) {}
   rpc Get(GetWorkSpaceRequest) returns (GetWorkSpaceResponse) {}
 }
 
-message ListWorkspaceRequest {
+message ListWorkSpaceRequest {
   string token = 1;
 }
 
-message ListWorkspaceResponse {
+message ListWorkSpaceResponse {
   int32 total = 1;
-  repeated model.Workspace content = 2;
+  repeated model.WorkSpace content = 2;
 
   model.Error error = 3;
 }
 
-message CreateWorkspaceRequest {
+message CreateWorkSpaceRequest {
   string token = 1;
-  repeated model.Workspace workspaces = 2;
+  repeated model.WorkSpace workSpaces = 2;
 }
 
-message CreateWorkspaceResponse {
-  repeated model.Workspace workspaces = 1;
+message CreateWorkSpaceResponse {
+  repeated model.WorkSpace workSpaces = 1;
 
   model.Error error = 2;
 }
 
 message UpdateWorkSpaceRequest {
   string token = 1;
-  repeated model.Workspace workspaces = 2;
+  repeated model.WorkSpace workSpaces = 2;
 }
 
 message UpdateWorkSpaceResponse {
-  repeated model.Workspace workspaces = 1;
+  repeated model.WorkSpace workSpaces = 1;
 
   model.Error error = 2;
 }
@@ -54,18 +54,18 @@ message DeleteWorkSpaceRequest {
 }
 
 message DeleteWorkSpaceResponse {
-  repeated model.Workspace workspaces = 1;
+  repeated model.WorkSpace workSpaces = 1;
 
   model.Error error = 2;
 }
 
 message GetWorkSpaceRequest {
   string token = 1;
-  string name = 2;
+  string id = 2;
 }
 
 message GetWorkSpaceResponse {
-  repeated model.Workspace workspaces = 1;
+  model.WorkSpace workSpace = 1;
 
   model.Error error = 2;
 }

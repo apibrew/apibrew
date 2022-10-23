@@ -13,11 +13,12 @@ func getPsqlTypeFromProperty(propertyType model.ResourcePropertyType, length uin
 		return "UUID"
 	case model.ResourcePropertyType_TYPE_STRING:
 		return "VARCHAR(" + strconv.Itoa(int(length)) + ")"
+	case model.ResourcePropertyType_TYPE_PASSWORD:
+		return "VARCHAR(" + strconv.Itoa(int(length)) + ")"
 	case model.ResourcePropertyType_TYPE_DATE:
 		return "DATE"
 	case model.ResourcePropertyType_TYPE_TEXT:
 		return "TEXT"
-
 	case model.ResourcePropertyType_TYPE_INT64:
 		return "INT8"
 	case model.ResourcePropertyType_TYPE_FLOAT:

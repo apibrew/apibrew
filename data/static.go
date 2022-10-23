@@ -55,7 +55,7 @@ func prepareInitUsers() []*model.User {
 	}
 }
 
-func prepareInitWorkSpaces() []*model.Workspace {
+func prepareInitWorkSpaces() []*model.WorkSpace {
 	return nil
 }
 
@@ -63,8 +63,8 @@ func prepareInitDataSources() []*model.DataSource {
 	return nil
 }
 
-func prepareSystemWorkSpace() *model.Workspace {
-	return &model.Workspace{
+func prepareSystemWorkSpace() *model.WorkSpace {
+	return &model.WorkSpace{
 		Name: "system",
 		Type: model.DataType_SYSTEM,
 	}

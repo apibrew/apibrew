@@ -68,6 +68,8 @@ func ByResourcePropertyType(resourcePropertyType model.ResourcePropertyType) Pro
 		return objectType{}
 	case model.ResourcePropertyType_TYPE_BYTES:
 		return bytesType{}
+	case model.ResourcePropertyType_TYPE_PASSWORD:
+		return passwordType{}
 	default:
 		panic("unknown property type: " + resourcePropertyType.String())
 	}

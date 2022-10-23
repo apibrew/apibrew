@@ -19,7 +19,7 @@ type App struct {
 	dataSourceService              service.DataSourceService
 	resourceService                service.ResourceService
 	recordService                  service.RecordService
-	workSpaceService               stub.WorkSpaceServiceServer
+	workSpaceService               service.WorkSpaceService
 	userService                    service.UserService
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	recordApi                      api.RecordApi
@@ -77,7 +77,9 @@ func (app *App) Init() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	var opts []grpc.ServerOption
+	var opts = []grpc.ServerOption{
+		grpc.UnaryInterceptor(app.authenticationService.GrpcIntercept),
+	}
 	app.grpcServer = grpc.NewServer(opts...)
 	stub.RegisterResourceServiceServer(app.grpcServer, app.resourceService)
 	stub.RegisterAuthenticationServiceServer(app.grpcServer, app.authenticationService)
@@ -101,10 +103,12 @@ func (app *App) Stop() {
 
 func (app *App) initServices() {
 	app.postgresResourceServiceBackend.Init()
-	app.dataSourceService.Init()
+	app.dataSourceService.Init(app.initData)
 	app.resourceService.Init(app.initData)
-	//workSpaceService.Init(initData)
+	app.workSpaceService.Init(app.initData)
 	app.recordService.Init(app.initData)
+	app.userService.Init(app.initData)
+	app.authenticationService.Init(app.initData)
 }
 
 func (app *App) InjectServices() {
@@ -120,10 +124,20 @@ func (app *App) InjectServices() {
 	app.resourceService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
 	app.resourceService.InjectAuthenticationService(app.authenticationService)
 
+	app.userService.InjectAuthenticationService(app.authenticationService)
+	app.userService.InjectRecordService(app.recordService)
+	app.userService.InjectResourceService(app.resourceService)
+
+	app.workSpaceService.InjectAuthenticationService(app.authenticationService)
+	app.workSpaceService.InjectRecordService(app.recordService)
+	app.workSpaceService.InjectResourceService(app.resourceService)
+
 	app.recordService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
 	app.recordService.InjectDataSourceService(app.dataSourceService)
 	app.recordService.InjectAuthenticationService(app.authenticationService)
 	app.recordService.InjectResourceService(app.resourceService)
+
+	app.authenticationService.InjectRecordService(app.recordService)
 
 	app.authenticationApi.InjectAuthenticationService(app.authenticationService)
 

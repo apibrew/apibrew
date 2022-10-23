@@ -1,8 +1,8 @@
-package service
+package system
 
 import "data-handler/stub/model"
 
-var dataSourceResource = &model.Resource{
+var DataSourceResource = &model.Resource{
 	Name:      "data-source",
 	Workspace: "system",
 	Type:      model.DataType_SYSTEM,
@@ -10,14 +10,13 @@ var dataSourceResource = &model.Resource{
 		DataSource: "system",
 		Mapping:    "data_source",
 	},
+	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "backend",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:        "backend",
-					SourceDef:      "",
-					AutoGeneration: 0,
+					Mapping: "backend",
 				},
 			},
 			Primary:  false,

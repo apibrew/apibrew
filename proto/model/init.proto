@@ -15,14 +15,15 @@ message AppConfig {
   string httpAddr = 2;
   string jwtPrivateKey = 3;
   string jwtPublicKey = 4;
+  bool disableAuthentication = 5;
 }
 
 message InitData {
   AppConfig config = 1;
   DataSource systemDataSource = 2;
-  Workspace systemWorkSpace = 3;
+  WorkSpace systemWorkSpace = 3;
   repeated DataSource initDataSources = 4;
-  repeated Workspace initWorkSpaces = 5;
+  repeated WorkSpace initWorkSpaces = 5;
   repeated User initUsers = 6;
   repeated Resource initResources = 7;
   repeated Record initRecords = 8;
