@@ -11,6 +11,7 @@ import (
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
+	"net"
 )
 
 const DbNameType = "VARCHAR(64)"
@@ -319,7 +320,7 @@ func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, readOn
 	})
 
 	if err != nil {
-		log.Error("Unable to begin transaction", err, dataSourceId)
+		log.Errorf("Unable to begin transaction: %s %s", err, dataSourceId)
 		return handleDbError(err)
 	}
 
@@ -330,7 +331,7 @@ func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, readOn
 	serviceErr = fn(tx)
 
 	if serviceErr != nil {
-		log.Error("Rollback: ", serviceErr)
+		log.Errorf("Rollback: %s", serviceErr)
 		return serviceErr
 	}
 
@@ -359,6 +360,10 @@ func handleDbError(err error) errors.ServiceError {
 
 	if pqErr, ok := err.(*pq.Error); ok {
 		return handlePqErr(pqErr)
+	}
+
+	if netErr, ok := err.(*net.OpError); ok {
+		return errors.InternalError.WithDetails(netErr.Error())
 	}
 
 	panic("Unhandled situation")

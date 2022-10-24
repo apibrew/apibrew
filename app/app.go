@@ -9,6 +9,7 @@ import (
 	"data-handler/stub/model"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"net"
 )
 
@@ -86,6 +87,8 @@ func (app *App) Init() {
 	stub.RegisterDataSourceServiceServer(app.grpcServer, app.dataSourceService)
 	stub.RegisterRecordServiceServer(app.grpcServer, app.recordService)
 	stub.RegisterWorkspaceServiceServer(app.grpcServer, app.workspaceService)
+
+	reflection.Register(app.grpcServer)
 }
 
 func (app *App) Serve() {
