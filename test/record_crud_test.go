@@ -81,10 +81,12 @@ func TestComplexPayload1Success(t *testing.T) {
 
 			if err != nil {
 				t.Error(err)
+				return
 			}
 
 			if res.Error != nil {
 				t.Error(res.Error)
+				return
 			}
 
 			getRes, err := container.recordService.Get(context.TODO(), &stub.GetRecordRequest{

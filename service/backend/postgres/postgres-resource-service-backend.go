@@ -21,7 +21,7 @@ type postgresResourceServiceBackend struct {
 }
 
 func (p *postgresResourceServiceBackend) ListResources(ctx context.Context) (result []*model.Resource, err error) {
-	err = p.withSystemBackend(func(tx *sql.Tx) error {
+	err = p.withSystemBackend(true, func(tx *sql.Tx) error {
 		result, err = resourceList(ctx, tx)
 
 		return err
@@ -31,7 +31,7 @@ func (p *postgresResourceServiceBackend) ListResources(ctx context.Context) (res
 }
 
 func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context, dataSourceId string) (result []string, err error) {
-	err = p.withBackend(dataSourceId, func(tx *sql.Tx) error {
+	err = p.withBackend(dataSourceId, true, func(tx *sql.Tx) error {
 		result, err = resourceListEntities(ctx, tx)
 
 		return err
@@ -59,7 +59,7 @@ func (p *postgresResourceServiceBackend) DestroyDataSource(dataSourceId string) 
 func (p *postgresResourceServiceBackend) Init() {
 	p.systemBackend = p.dataSourceService.GetSystemDataSourceBackend()
 
-	err := p.withBackend(p.systemBackend.GetDataSourceId(), func(tx *sql.Tx) error {
+	err := p.withBackend(p.systemBackend.GetDataSourceId(), false, func(tx *sql.Tx) error {
 		return resourceSetupTables(tx)
 	})
 
@@ -87,7 +87,7 @@ func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (result 
 }
 
 func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (resource *model.Resource, err error) {
-	err = p.withBackend(dataSourceId, func(tx *sql.Tx) error {
+	err = p.withBackend(dataSourceId, false, func(tx *sql.Tx) error {
 		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, entity); err != nil {
 			log.Error("Unable to load resource details", err)
 			return err
@@ -109,11 +109,11 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 	return resource, nil
 }
 
-func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) (resource *model.Resource, err error) {
+func (p *postgresResourceServiceBackend) GetResourceByName(ctx context.Context, workspace string, resourceName string) (resource *model.Resource, err error) {
 	resource = new(model.Resource)
 
-	err = p.withSystemBackend(func(tx *sql.Tx) error {
-		if err = resourceLoadDetails(tx, resource, resourceName); err != nil {
+	err = p.withSystemBackend(true, func(tx *sql.Tx) error {
+		if err = resourceLoadDetails(tx, resource, workspace, resourceName); err != nil {
 			if err == sql.ErrNoRows {
 				resource = nil
 				return nil
@@ -123,7 +123,7 @@ func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) 
 			return err
 		}
 
-		if err = resourceLoadProperties(tx, resource, resourceName); err != nil {
+		if err = resourceLoadProperties(tx, resource, workspace, resourceName); err != nil {
 			log.Error("Unable to load resource properties", err)
 			return err
 		}
@@ -140,10 +140,14 @@ func (p *postgresResourceServiceBackend) GetResourceByName(resourceName string) 
 }
 
 func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceParams) (*model.Resource, error) {
-	err := p.withSystemBackend(func(tx *sql.Tx) error {
+	if params.Resource.Workspace == "" {
+		params.Resource.Workspace = "default"
+	}
+
+	err := p.withSystemBackend(false, func(tx *sql.Tx) error {
 		// check if resource exists
 
-		if existingCount, err := resourceCountsByName(tx, params.Resource.Name); err != nil {
+		if existingCount, err := resourceCountsByName(tx, params.Resource.Workspace, params.Resource.Name); err != nil {
 			return err
 		} else if existingCount > 0 {
 			if params.IgnoreIfExists {
@@ -162,8 +166,8 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			return err
 		}
 
-		if params.Migrate && !params.Resource.Flags.AutoCreated {
-			err := p.withBackend(params.Resource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+		if params.Migrate {
+			err := p.withBackend(params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) error {
 				err := resourceCreateTable(tx, params.Resource)
 				if err != nil {
 					return err
@@ -197,13 +201,13 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 }
 
 func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error {
-	existingResource, err := p.GetResourceByName(resource.Name)
+	existingResource, err := p.GetResourceByName(nil, resource.Name, resource.Workspace)
 
 	if err != nil {
 		return err
 	}
 
-	return p.withSystemBackend(func(tx *sql.Tx) error {
+	return p.withSystemBackend(false, func(tx *sql.Tx) error {
 		if err = resourceUpdate(ctx, tx, resource); err != nil {
 			return err
 		}
@@ -213,7 +217,7 @@ func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, res
 		}
 
 		if doMigration {
-			err = p.withBackend(existingResource.SourceConfig.DataSource, func(tx *sql.Tx) error {
+			err = p.withBackend(existingResource.SourceConfig.DataSource, false, func(tx *sql.Tx) error {
 				return resourceAlterTable(ctx, tx, existingResource, resource)
 			})
 
@@ -226,19 +230,27 @@ func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, res
 	})
 }
 
-func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, ids []string, doMigration bool, forceMigration bool) error {
+func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, workspace string, ids []string, doMigration bool, forceMigration bool) error {
 	var sources []*model.ResourceSourceConfig
 
+	if workspace == "" {
+		workspace = "default"
+	}
+
 	for _, id := range ids {
-		resource, err := p.GetResourceByName(id)
+		resource, err := p.GetResourceByName(nil, workspace, id)
 
 		if err != nil {
 			return err
 		}
 
+		if resource == nil {
+			return errors.New("resource not found:" + workspace + " " + id)
+		}
+
 		sources = append(sources, resource.SourceConfig)
 	}
-	err := p.withSystemBackend(func(tx *sql.Tx) error {
+	err := p.withSystemBackend(false, func(tx *sql.Tx) error {
 		return resourceDelete(ctx, tx, ids)
 	})
 
@@ -248,7 +260,7 @@ func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, id
 
 	if doMigration {
 		for _, source := range sources {
-			err = p.withBackend(source.DataSource, func(tx *sql.Tx) error {
+			err = p.withBackend(source.DataSource, false, func(tx *sql.Tx) error {
 				return resourceDropTable(tx, source.Mapping)
 			})
 
@@ -293,11 +305,11 @@ func NewPostgresResourceServiceBackend() backend.ResourceServiceBackend {
 	}
 }
 
-func (p *postgresResourceServiceBackend) withSystemBackend(fn func(tx *sql.Tx) error) error {
-	return p.withBackend(p.systemBackend.GetDataSourceId(), fn)
+func (p *postgresResourceServiceBackend) withSystemBackend(readOnly bool, fn func(tx *sql.Tx) error) error {
+	return p.withBackend(p.systemBackend.GetDataSourceId(), readOnly, fn)
 }
 
-func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, fn func(tx *sql.Tx) error) error {
+func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, readOnly bool, fn func(tx *sql.Tx) error) error {
 	conn, err := p.acquireConnection(dataSourceId)
 
 	if err != nil {
@@ -305,7 +317,9 @@ func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, fn fun
 		return err
 	}
 
-	tx, err := conn.BeginTx(context.TODO(), &sql.TxOptions{})
+	tx, err := conn.BeginTx(context.TODO(), &sql.TxOptions{
+		ReadOnly: readOnly,
+	})
 
 	if err != nil {
 		log.Error("Unable to begin transaction", err, dataSourceId)
@@ -318,10 +332,13 @@ func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, fn fun
 
 	err = fn(tx)
 
+	if err == sql.ErrNoRows {
+		return err
+	}
+
 	if err != nil {
 		log.Error("Rollback; Error: ", err)
 		//debug.PrintStack()
-
 		return err
 	}
 

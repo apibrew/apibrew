@@ -25,6 +25,7 @@ var UserResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: true,
+			Unique:   true,
 		},
 		{
 			Name: "password",

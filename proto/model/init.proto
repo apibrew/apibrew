@@ -16,14 +16,15 @@ message AppConfig {
   string jwtPrivateKey = 3;
   string jwtPublicKey = 4;
   bool disableAuthentication = 5;
+  bool disableCache = 6;
 }
 
 message InitData {
   AppConfig config = 1;
   DataSource systemDataSource = 2;
-  WorkSpace systemWorkSpace = 3;
+  Workspace systemWorkspace = 3;
   repeated DataSource initDataSources = 4;
-  repeated WorkSpace initWorkSpaces = 5;
+  repeated Workspace initWorkspaces = 5;
   repeated User initUsers = 6;
   repeated Resource initResources = 7;
   repeated Record initRecords = 8;

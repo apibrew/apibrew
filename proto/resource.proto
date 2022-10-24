@@ -46,10 +46,11 @@ message UpdateResourceResponse {
 
 message DeleteResourceRequest {
   string token = 1;
-  repeated string ids = 2;
+  string workspace = 2;
+  repeated string ids = 3;
 
-  bool doMigration = 3;
-  bool forceMigration = 4;
+  bool doMigration = 4;
+  bool forceMigration = 5;
 }
 
 message DeleteResourceResponse {
@@ -69,7 +70,8 @@ message ListResourceResponse {
 
 message GetResourceRequest {
   string token = 1;
-  string name = 2;
+  string workspace = 2;
+  string name = 3;
 }
 
 message GetResourceResponse {

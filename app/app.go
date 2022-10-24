@@ -19,7 +19,7 @@ type App struct {
 	dataSourceService              service.DataSourceService
 	resourceService                service.ResourceService
 	recordService                  service.RecordService
-	workSpaceService               service.WorkSpaceService
+	workspaceService               service.WorkspaceService
 	userService                    service.UserService
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	recordApi                      api.RecordApi
@@ -58,7 +58,7 @@ func (app *App) Init() {
 	app.resourceService = service.NewResourceService()
 	app.recordService = service.NewRecordService()
 	app.postgresResourceServiceBackend = postgres.NewPostgresResourceServiceBackend()
-	app.workSpaceService = service.NewWorkSpaceService()
+	app.workspaceService = service.NewWorkspaceService()
 	app.userService = service.NewUserService()
 	app.recordApi = api.NewRecordApi()
 	app.authenticationApi = api.NewAuthenticationApi()
@@ -85,6 +85,7 @@ func (app *App) Init() {
 	stub.RegisterAuthenticationServiceServer(app.grpcServer, app.authenticationService)
 	stub.RegisterDataSourceServiceServer(app.grpcServer, app.dataSourceService)
 	stub.RegisterRecordServiceServer(app.grpcServer, app.recordService)
+	stub.RegisterWorkspaceServiceServer(app.grpcServer, app.workspaceService)
 }
 
 func (app *App) Serve() {
@@ -105,7 +106,7 @@ func (app *App) initServices() {
 	app.postgresResourceServiceBackend.Init()
 	app.dataSourceService.Init(app.initData)
 	app.resourceService.Init(app.initData)
-	app.workSpaceService.Init(app.initData)
+	app.workspaceService.Init(app.initData)
 	app.recordService.Init(app.initData)
 	app.userService.Init(app.initData)
 	app.authenticationService.Init(app.initData)
@@ -128,9 +129,9 @@ func (app *App) InjectServices() {
 	app.userService.InjectRecordService(app.recordService)
 	app.userService.InjectResourceService(app.resourceService)
 
-	app.workSpaceService.InjectAuthenticationService(app.authenticationService)
-	app.workSpaceService.InjectRecordService(app.recordService)
-	app.workSpaceService.InjectResourceService(app.resourceService)
+	app.workspaceService.InjectAuthenticationService(app.authenticationService)
+	app.workspaceService.InjectRecordService(app.recordService)
+	app.workspaceService.InjectResourceService(app.resourceService)
 
 	app.recordService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
 	app.recordService.InjectDataSourceService(app.dataSourceService)

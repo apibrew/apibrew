@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/service/backend"
 	"data-handler/service/backend/postgres"
+	"data-handler/service/errors"
 	mapping "data-handler/service/mapping"
 	"data-handler/service/security"
 	"data-handler/service/system"
@@ -78,8 +79,9 @@ func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateData
 	records := mapping.MapToRecord(request.DataSources, mapping.DataSourceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
 	result, err := d.recordService.Create(systemCtx, &stub.CreateRecordRequest{
-		Token:   request.Token,
-		Records: records,
+		Token:     request.Token,
+		Workspace: system.DataSourceResource.Workspace,
+		Records:   records,
 	})
 
 	if err != nil {
@@ -97,8 +99,9 @@ func (d *dataSourceService) Update(ctx context.Context, request *stub.UpdateData
 	records := mapping.MapToRecord(request.DataSources, mapping.DataSourceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
 	result, err := d.recordService.Update(systemCtx, &stub.UpdateRecordRequest{
-		Token:   request.Token,
-		Records: records,
+		Token:     request.Token,
+		Workspace: system.DataSourceResource.Workspace,
+		Records:   records,
 	})
 
 	if err != nil {
@@ -131,9 +134,10 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, reque
 func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSourceRequest) (*stub.GetDataSourceResponse, error) {
 	systemCtx := security.WithSystemContext(ctx)
 	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
-		Token:    request.Token,
-		Resource: system.DataSourceResource.Name,
-		Id:       request.Id,
+		Token:     request.Token,
+		Workspace: system.DataSourceResource.Workspace,
+		Resource:  system.DataSourceResource.Name,
+		Id:        request.Id,
 	})
 
 	if err != nil {
@@ -150,9 +154,10 @@ func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteData
 	systemCtx := security.WithSystemContext(ctx)
 
 	record, err := d.recordService.Delete(systemCtx, &stub.DeleteRecordRequest{
-		Token:    request.Token,
-		Resource: system.DataSourceResource.Name,
-		Ids:      request.Ids,
+		Token:     request.Token,
+		Workspace: system.DataSourceResource.Workspace,
+		Resource:  system.DataSourceResource.Name,
+		Ids:       request.Ids,
 	})
 
 	if err != nil {
@@ -175,12 +180,21 @@ func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backe
 
 	systemCtx := security.WithSystemContext(context.TODO())
 	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
-		Resource: system.DataSourceResource.Name,
-		Id:       dataSourceId,
+		Workspace: system.DataSourceResource.Workspace,
+		Resource:  system.DataSourceResource.Name,
+		Id:        dataSourceId,
 	})
 
 	if err != nil {
 		return nil, err
+	}
+
+	if record.Error != nil {
+		if record.Error.Code == model.ErrorCode_RECORD_NOT_FOUND {
+			return nil, errors.NotFoundError
+		}
+		log.Print(record.Error)
+		return nil, errors.InternalError
 	}
 
 	dataSource := mapping.DataSourceFromRecord(record.Record)
@@ -189,6 +203,9 @@ func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backe
 }
 
 func (d *dataSourceService) GetDataSourceBackend(dataSource *model.DataSource) backend.DataSourceBackend {
+	if dataSource == nil {
+		panic("data-source is nil")
+	}
 	switch d.systemDataSource.Backend {
 	case model.DataSourceBackend_POSTGRESQL:
 		return postgres.NewPostgresDataSourceBackend(dataSource.Id, dataSource.Options.(*model.DataSource_PostgresqlParams).PostgresqlParams)
@@ -224,6 +241,7 @@ func (d *dataSourceService) Init(data *model.InitData) {
 
 	if len(data.InitDataSources) > 0 {
 		res, err := d.recordService.Create(security.SystemContext, &stub.CreateRecordRequest{
+			Workspace:      system.DataSourceResource.Workspace,
 			Records:        mapping.MapToRecord(data.InitDataSources, mapping.DataSourceToRecord),
 			IgnoreIfExists: true,
 		})

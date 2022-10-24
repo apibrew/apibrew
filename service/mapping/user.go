@@ -58,7 +58,7 @@ func UserFromRecord(record *model.Record) *model.User {
 	}
 
 	if record.Properties.AsMap()["details"] != nil {
-		user.Details = record.Properties.AsMap()["details"].(*structpb.Struct)
+		user.Details = record.Properties.AsMap()["details"].(*structpb.Value).GetStructValue()
 	}
 
 	return user

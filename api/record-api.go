@@ -46,7 +46,7 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 func (r *recordApi) matchFunc(request *http.Request, match *mux.RouteMatch) bool {
 	pathParts := strings.Split(request.URL.Path, "/")
 	resourceName := pathParts[1]
-	exists, err := r.resourceService.CheckResourceExists(resourceName)
+	exists, err := r.resourceService.CheckResourceExists("", resourceName)
 	if err != nil {
 		log.Println(err)
 		return false
@@ -66,7 +66,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	resourceName := vars["resourceName"]
 
-	resource, err := r.resourceService.GetResourceByName(request.Context(), resourceName)
+	resource, err := r.resourceService.GetResourceByName(request.Context(), "", resourceName)
 
 	if err != nil {
 		handleClientError(writer, err)

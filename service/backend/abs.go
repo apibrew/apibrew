@@ -42,7 +42,7 @@ type ResourceServiceBackend interface {
 	AddResource(params AddResourceParams) (*model.Resource, error)
 	AddRecords(params BulkRecordsParams) ([]*model.Record, bool, error)
 	UpdateRecords(params BulkRecordsParams) ([]*model.Record, error)
-	GetResourceByName(resourceName string) (*model.Resource, error)
+	GetResourceByName(ctx context.Context, resourceName string, name string) (*model.Resource, error)
 	GetRecord(resource *model.Resource, id string) (*model.Record, error)
 	DeleteRecords(resource *model.Resource, list []string) error
 	DestroyDataSource(dataSourceId string)
@@ -50,7 +50,7 @@ type ResourceServiceBackend interface {
 	GetStatus(dataSourceId string) (*stub.StatusResponse, error)
 	ListRecords(params ListRecordParams) ([]*model.Record, uint32, error)
 	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, error)
-	DeleteResources(ctx context.Context, ids []string, migration bool, forceMigration bool) error
+	DeleteResources(ctx context.Context, workspace string, ids []string, migration bool, forceMigration bool) error
 	ListEntities(ctx context.Context, dataSourceId string) ([]string, error)
 	UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error
 	ListResources(ctx context.Context) ([]*model.Resource, error)

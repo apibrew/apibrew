@@ -20,14 +20,14 @@
     "auditData":  null,
     "version":  0
   },
-  "systemWorkSpace":  {
+  "systemWorkspace":  {
     "name":  "system",
     "type":  "SYSTEM",
     "auditData":  null,
     "version":  0
   },
   "initDataSources":  [],
-  "initWorkSpaces":  [],
+  "initWorkspaces":  [],
   "initUsers":  [
     {
       "id":  "",

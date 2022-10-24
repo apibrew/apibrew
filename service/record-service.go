@@ -48,7 +48,7 @@ func (r *recordService) InjectPostgresResourceServiceBackend(resourceServiceBack
 }
 
 func (r *recordService) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
-	resource, err := r.resourceService.GetResourceByName(ctx, request.Resource)
+	resource, err := r.resourceService.GetResourceByName(ctx, request.Workspace, request.Resource)
 
 	if err != nil {
 		return &stub.ListRecordResponse{
@@ -164,7 +164,7 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
-		resource, err = r.resourceService.GetResourceByName(ctx, resourceName)
+		resource, err = r.resourceService.GetResourceByName(ctx, request.Workspace, resourceName)
 
 		if err != nil {
 			return &stub.CreateRecordResponse{
@@ -234,7 +234,7 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
-		resource, err = r.resourceService.GetResourceByName(ctx, resourceName)
+		resource, err = r.resourceService.GetResourceByName(ctx, request.Workspace, resourceName)
 
 		if err != nil {
 			return &stub.UpdateRecordResponse{
@@ -297,7 +297,7 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 }
 
 func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
-	resource, err := r.resourceService.GetResourceByName(ctx, request.Resource)
+	resource, err := r.resourceService.GetResourceByName(ctx, request.Workspace, request.Resource)
 
 	if err != nil {
 		return &stub.GetRecordResponse{
@@ -332,7 +332,7 @@ func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest)
 }
 
 func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
-	resource, err := r.resourceService.GetResourceByName(ctx, request.Resource)
+	resource, err := r.resourceService.GetResourceByName(ctx, request.Workspace, request.Resource)
 
 	if err != nil {
 		return &stub.DeleteRecordResponse{

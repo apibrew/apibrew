@@ -19,8 +19,8 @@ type ResourceService interface {
 	InitResource(resource *model.Resource)
 	Init(data *model.InitData)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
-	CheckResourceExists(name string) (bool, error)
-	GetResourceByName(ctx context.Context, resource string) (*model.Resource, error)
+	CheckResourceExists(workspace, name string) (bool, error)
+	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, error)
 }
 
 type resourceService struct {
@@ -30,46 +30,55 @@ type resourceService struct {
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	ServiceName                    string
 	cache                          *ttlcache.Cache[string, *model.Resource]
+	disableCache                   bool
 }
 
-func (r *resourceService) GetResourceByName(ctx context.Context, resourceName string) (*model.Resource, error) {
-	if security.IsSystemContext(ctx) {
+func (r *resourceService) GetResourceByName(ctx context.Context, workspace string, resourceName string) (*model.Resource, error) {
+	if security.IsSystemContext(ctx) && (workspace == system.WorkspaceResource.Name || workspace == "") {
 		if resourceName == system.UserResource.Name {
 			return system.UserResource, nil
 		} else if resourceName == system.DataSourceResource.Name {
 			return system.DataSourceResource, nil
-		} else if resourceName == system.WorkSpaceResource.Name {
-			return system.WorkSpaceResource, nil
+		} else if resourceName == system.WorkspaceResource.Name {
+			return system.WorkspaceResource, nil
 		}
 	}
 
-	if r.cache.Get(resourceName) != nil {
-		return r.cache.Get(resourceName).Value(), nil
+	if workspace == "" {
+		workspace = "default"
 	}
 
-	resource, err := r.postgresResourceServiceBackend.GetResourceByName(resourceName)
+	if !r.disableCache {
+		if r.cache.Get(workspace+"-"+resourceName) != nil {
+			return r.cache.Get(workspace + "-" + resourceName).Value(), nil
+		}
+	}
+
+	resource, err := r.postgresResourceServiceBackend.GetResourceByName(ctx, workspace, resourceName)
 
 	if err != nil {
 		return nil, err
 	}
 
-	r.cache.Set(resourceName, resource, ttlcache.DefaultTTL)
+	if !r.disableCache {
+		r.cache.Set(workspace+"-"+resourceName, resource, ttlcache.DefaultTTL)
+	}
 
 	return resource, nil
 }
 
-func (r *resourceService) CheckResourceExists(name string) (bool, error) {
+func (r *resourceService) CheckResourceExists(workspace, name string) (bool, error) {
 	if r.cache.Get(name) != nil {
-		return r.cache.Get(name).Value() != nil, nil
+		return r.cache.Get(workspace+"-"+name).Value() != nil, nil
 	}
 
-	resource, err := r.postgresResourceServiceBackend.GetResourceByName(name)
+	resource, err := r.postgresResourceServiceBackend.GetResourceByName(nil, workspace, name)
 
 	if err != nil {
 		return false, err
 	}
 
-	r.cache.Set(name, resource, ttlcache.DefaultTTL)
+	r.cache.Set(workspace+"-"+name, resource, ttlcache.DefaultTTL)
 
 	return resource != nil, nil
 }
@@ -79,6 +88,7 @@ func (r *resourceService) InjectPostgresResourceServiceBackend(resourceServiceBa
 }
 
 func (r *resourceService) Init(data *model.InitData) {
+	r.disableCache = data.Config.DisableCache
 }
 
 func (r *resourceService) InjectDataSourceService(service DataSourceService) {
@@ -148,7 +158,7 @@ func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourc
 
 func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
 	var err error
-	err = r.GetBackend().DeleteResources(ctx, request.Ids, request.DoMigration, request.ForceMigration)
+	err = r.GetBackend().DeleteResources(ctx, request.Workspace, request.Ids, request.DoMigration, request.ForceMigration)
 
 	if err != nil {
 		return nil, err
@@ -174,7 +184,7 @@ func (r resourceService) List(ctx context.Context, request *stub.ListResourceReq
 }
 
 func (r resourceService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
-	resource, err := r.GetBackend().GetResourceByName(request.Name)
+	resource, err := r.GetBackend().GetResourceByName(ctx, request.Workspace, request.Name)
 
 	if err != nil {
 		return nil, err

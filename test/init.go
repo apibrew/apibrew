@@ -12,11 +12,12 @@ func prepareInitData() *model.InitData {
 			JwtPrivateKey:         "../data/jwt.key",
 			JwtPublicKey:          "../data/jwt.key.pub",
 			DisableAuthentication: true,
+			DisableCache:          true,
 		},
 		SystemDataSource: prepareSystemDataSource(),
-		SystemWorkSpace:  prepareSystemWorkSpace(),
+		SystemWorkspace:  prepareSystemWorkspace(),
 		InitDataSources:  prepareInitDataSources(),
-		InitWorkSpaces:   prepareInitWorkSpaces(),
+		InitWorkspaces:   prepareInitWorkspaces(),
 		InitUsers:        prepareInitUsers(),
 		InitResources:    prepareInitResources(),
 		InitRecords:      prepareInitRecords(),
@@ -32,19 +33,10 @@ func prepareInitResources() []*model.Resource {
 }
 
 func prepareInitUsers() []*model.User {
-	return []*model.User{
-		{
-			Type:     model.DataType_STATIC,
-			Username: "admin",
-			Password: "admin",
-			Scopes: []string{
-				"super-user",
-			},
-		},
-	}
+	return nil
 }
 
-func prepareInitWorkSpaces() []*model.WorkSpace {
+func prepareInitWorkspaces() []*model.Workspace {
 	return nil
 }
 
@@ -52,8 +44,8 @@ func prepareInitDataSources() []*model.DataSource {
 	return nil
 }
 
-func prepareSystemWorkSpace() *model.WorkSpace {
-	return &model.WorkSpace{
+func prepareSystemWorkspace() *model.Workspace {
+	return &model.Workspace{
 		Name: "system",
 		Type: model.DataType_SYSTEM,
 	}

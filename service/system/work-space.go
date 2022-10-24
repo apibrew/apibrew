@@ -2,13 +2,13 @@ package system
 
 import "data-handler/stub/model"
 
-var WorkSpaceResource = &model.Resource{
-	Name:      "work-space",
+var WorkspaceResource = &model.Resource{
+	Name:      "workspace",
 	Workspace: "system",
 	Type:      model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Mapping:    "work_space",
+		Mapping:    "workspace",
 	},
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
@@ -23,6 +23,7 @@ var WorkSpaceResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: true,
+			Unique:   true,
 		},
 		{
 			Name: "description",

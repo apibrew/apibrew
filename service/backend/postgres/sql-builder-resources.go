@@ -91,6 +91,7 @@ var resourceColumnMapFn = func(column string, resource *model.Resource) interfac
 }
 
 var resourcePropertyColumns = []string{
+	"workspace",
 	"resource_name",
 	"property_name",
 	"type",
@@ -101,12 +102,15 @@ var resourcePropertyColumns = []string{
 	"source_auto_generation",
 	"required",
 	"length",
+	"\"unique\"",
 }
 
 var resourcePropertyColumnMapFn = func(column string, resource *model.Resource, property *model.ResourceProperty) interface{} {
 	sourceType := 0
 
 	switch column {
+	case "workspace":
+		return resource.Workspace
 	case "resource_name":
 		return resource.Name
 	case "property_name":
@@ -127,6 +131,8 @@ var resourcePropertyColumnMapFn = func(column string, resource *model.Resource, 
 		return property.Required
 	case "length":
 		return property.Length
+	case "\"unique\"":
+		return property.Unique
 	default:
 		panic("Unknown column: " + column)
 	}
@@ -141,7 +147,7 @@ func valuesFromCol[T interface{}](columns []string, data T, mapperFn func(col st
 func resourceSetupTables(runner QueryRunner) error {
 	_, err := runner.Exec(`
 		create table if not exists public.resource (
-		  name character varying(64) primary key not null,
+		  name character varying(64) not null,
 		  workspace character varying(64) not null,
 		  type smallint not null,
 		  source_data_source character varying(64) not null,
@@ -157,10 +163,12 @@ func resourceSetupTables(runner QueryRunner) error {
 		  updated_on timestamp without time zone,
 		  created_by character varying(64) not null,
 		  updated_by character varying(64),
-		  version integer not null
+		  version integer not null,
+		  PRIMARY KEY(name, workspace)
 		);
 		
 		create table if not exists public.resource_property (
+		  workspace     character varying(64) not null,
 		  resource_name character varying(64) not null,
 		  property_name character varying(64) not null,
 		  type smallint,
@@ -170,17 +178,18 @@ func resourceSetupTables(runner QueryRunner) error {
 		  source_primary bool,
 		  source_auto_generation smallint,
 		  required boolean,
+		  "unique" boolean,
 		  length integer,
-		  primary key (resource_name, property_name),
-		  foreign key (resource_name) references public.resource (name) match simple on update cascade on delete cascade
+		  primary key (workspace, resource_name, property_name),
+		  foreign key (workspace, resource_name) references public.resource (workspace, name) match simple on update cascade on delete cascade
 		);
 `)
 
 	return err
 }
 
-func resourceCountsByName(runner QueryRunner, resourceName string) (int, error) {
-	res := runner.QueryRow("select count(*) as count from resource where name = $1", resourceName)
+func resourceCountsByName(runner QueryRunner, workspace, resourceName string) (int, error) {
+	res := runner.QueryRow("select count(*) as count from resource where name = $1 and workspace = $2", resourceName, workspace)
 
 	var count = new(int)
 	err := res.Scan(count)
@@ -227,12 +236,16 @@ func prepareCreateTableQuery(resource *model.Resource, builder *sqlbuilder.Creat
 	var primaryKeys []string
 	for _, property := range resource.Properties {
 		if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+			uniqModifier := ""
 			nullModifier := "NULL"
 			if property.Required {
 				nullModifier = "NOT NULL"
 			}
+			if property.Unique {
+				uniqModifier = "UNIQUE"
+			}
 			sqlType := getPsqlTypeFromProperty(property.Type, property.Length)
-			builder.Define(sourceConfig.Mapping.Mapping, sqlType, nullModifier)
+			builder.Define(sourceConfig.Mapping.Mapping, sqlType, nullModifier, uniqModifier)
 
 			if property.Primary {
 				primaryKeys = append(primaryKeys, sourceConfig.Mapping.Mapping)
@@ -339,7 +352,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	}
 
 	if *count == 0 {
-		err = errors.New("")
+		err = errors.New("entity table not found")
 		return
 	}
 
@@ -351,6 +364,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	resource.AuditData = new(model.AuditData)
 	resource.Type = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
+	resource.Workspace = "default"
 
 	// properties
 
@@ -459,10 +473,13 @@ func resourceInsert(runner QueryRunner, resource *model.Resource) error {
 	return err
 }
 
-func resourceLoadDetails(runner QueryRunner, resource *model.Resource, name string) error {
+func resourceLoadDetails(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) error {
 	selectBuilder := sqlbuilder.Select(resourceColumns...).
 		From("resource")
-	selectBuilder.Where(selectBuilder.Equal("name", name))
+	selectBuilder.Where(selectBuilder.And(
+		selectBuilder.Equal("name", resourceName),
+		selectBuilder.Equal("workspace", workspace),
+	))
 
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
@@ -603,10 +620,13 @@ func resourceDelete(ctx context.Context, runner QueryRunner, ids []string) error
 	return nil
 }
 
-func resourceLoadProperties(runner QueryRunner, resource *model.Resource, name string) error {
+func resourceLoadProperties(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) error {
 	selectBuilder := sqlbuilder.Select(resourcePropertyColumns...).From("resource_property")
 
-	selectBuilder.Where(selectBuilder.Equal("resource_name", name))
+	selectBuilder.Where(selectBuilder.And(
+		selectBuilder.Equal("resource_name", resourceName),
+		selectBuilder.Equal("workspace", workspace),
+	))
 
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
@@ -630,6 +650,7 @@ func resourceLoadProperties(runner QueryRunner, resource *model.Resource, name s
 		var sourceDef = new(string)
 		var autoGeneration = new(int)
 		err = rows.Scan(
+			&resource.Workspace,
 			&resource.Name,
 			&resourceProperty.Name,
 			&resourceProperty.Type,
@@ -640,6 +661,7 @@ func resourceLoadProperties(runner QueryRunner, resource *model.Resource, name s
 			&autoGeneration,
 			&resourceProperty.Required,
 			&resourceProperty.Length,
+			&resourceProperty.Unique,
 		)
 
 		if *sourceType == 0 {
