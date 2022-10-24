@@ -2,6 +2,7 @@ package backend
 
 import (
 	"context"
+	"data-handler/service/errors"
 	"data-handler/stub"
 	"data-handler/stub/model"
 )
@@ -33,25 +34,25 @@ type ListRecordParams struct {
 }
 
 type DataSourceLocator interface {
-	GetDataSourceBackendById(dataSourceId string) (DataSourceBackend, error)
+	GetDataSourceBackendById(dataSourceId string) (DataSourceBackend, errors.ServiceError)
 	GetSystemDataSourceBackend() DataSourceBackend
 }
 
 type ResourceServiceBackend interface {
 	Init()
-	AddResource(params AddResourceParams) (*model.Resource, error)
-	AddRecords(params BulkRecordsParams) ([]*model.Record, bool, error)
-	UpdateRecords(params BulkRecordsParams) ([]*model.Record, error)
-	GetResourceByName(ctx context.Context, resourceName string, name string) (*model.Resource, error)
-	GetRecord(resource *model.Resource, id string) (*model.Record, error)
-	DeleteRecords(resource *model.Resource, list []string) error
+	AddResource(params AddResourceParams) (*model.Resource, errors.ServiceError)
+	AddRecords(params BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError)
+	UpdateRecords(params BulkRecordsParams) ([]*model.Record, errors.ServiceError)
+	GetResourceByName(ctx context.Context, resourceName string, name string) (*model.Resource, errors.ServiceError)
+	GetRecord(resource *model.Resource, id string) (*model.Record, errors.ServiceError)
+	DeleteRecords(resource *model.Resource, list []string) errors.ServiceError
 	DestroyDataSource(dataSourceId string)
 	InjectDataSourceService(service DataSourceLocator)
-	GetStatus(dataSourceId string) (*stub.StatusResponse, error)
-	ListRecords(params ListRecordParams) ([]*model.Record, uint32, error)
-	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, error)
-	DeleteResources(ctx context.Context, workspace string, ids []string, migration bool, forceMigration bool) error
-	ListEntities(ctx context.Context, dataSourceId string) ([]string, error)
-	UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error
-	ListResources(ctx context.Context) ([]*model.Resource, error)
+	GetStatus(dataSourceId string) (*stub.StatusResponse, errors.ServiceError)
+	ListRecords(params ListRecordParams) ([]*model.Record, uint32, errors.ServiceError)
+	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, errors.ServiceError)
+	DeleteResources(ctx context.Context, workspace string, ids []string, migration bool, forceMigration bool) errors.ServiceError
+	ListEntities(ctx context.Context, dataSourceId string) ([]string, errors.ServiceError)
+	UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
+	ListResources(ctx context.Context) ([]*model.Resource, errors.ServiceError)
 }

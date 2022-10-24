@@ -3,11 +3,12 @@ package postgres
 import (
 	"context"
 	"data-handler/service/backend"
+	"data-handler/service/errors"
 	"data-handler/stub"
 	"data-handler/stub/model"
 	"database/sql"
-	"errors"
 	"fmt"
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,8 +21,8 @@ type postgresResourceServiceBackend struct {
 	dataSourceService backend.DataSourceLocator
 }
 
-func (p *postgresResourceServiceBackend) ListResources(ctx context.Context) (result []*model.Resource, err error) {
-	err = p.withSystemBackend(true, func(tx *sql.Tx) error {
+func (p *postgresResourceServiceBackend) ListResources(ctx context.Context) (result []*model.Resource, err errors.ServiceError) {
+	err = p.withSystemBackend(true, func(tx *sql.Tx) errors.ServiceError {
 		result, err = resourceList(ctx, tx)
 
 		return err
@@ -30,8 +31,8 @@ func (p *postgresResourceServiceBackend) ListResources(ctx context.Context) (res
 	return
 }
 
-func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context, dataSourceId string) (result []string, err error) {
-	err = p.withBackend(dataSourceId, true, func(tx *sql.Tx) error {
+func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context, dataSourceId string) (result []string, err errors.ServiceError) {
+	err = p.withBackend(dataSourceId, true, func(tx *sql.Tx) errors.ServiceError {
 		result, err = resourceListEntities(ctx, tx)
 
 		return err
@@ -59,7 +60,7 @@ func (p *postgresResourceServiceBackend) DestroyDataSource(dataSourceId string) 
 func (p *postgresResourceServiceBackend) Init() {
 	p.systemBackend = p.dataSourceService.GetSystemDataSourceBackend()
 
-	err := p.withBackend(p.systemBackend.GetDataSourceId(), false, func(tx *sql.Tx) error {
+	err := p.withBackend(p.systemBackend.GetDataSourceId(), false, func(tx *sql.Tx) errors.ServiceError {
 		return resourceSetupTables(tx)
 	})
 
@@ -68,7 +69,7 @@ func (p *postgresResourceServiceBackend) Init() {
 	}
 }
 
-func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (result *stub.StatusResponse, err error) {
+func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (result *stub.StatusResponse, err errors.ServiceError) {
 	result = new(stub.StatusResponse)
 
 	result.ConnectionAlreadyInitiated = p.connectionMap[dataSourceId] != nil
@@ -79,15 +80,15 @@ func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (result 
 		return
 	}
 
-	err = conn.Ping()
+	err = handleDbError(conn.Ping())
 
 	result.TestConnection = err == nil
 
 	return
 }
 
-func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (resource *model.Resource, err error) {
-	err = p.withBackend(dataSourceId, false, func(tx *sql.Tx) error {
+func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (resource *model.Resource, err errors.ServiceError) {
+	err = p.withBackend(dataSourceId, false, func(tx *sql.Tx) errors.ServiceError {
 		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, entity); err != nil {
 			log.Error("Unable to load resource details", err)
 			return err
@@ -109,16 +110,11 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 	return resource, nil
 }
 
-func (p *postgresResourceServiceBackend) GetResourceByName(ctx context.Context, workspace string, resourceName string) (resource *model.Resource, err error) {
+func (p *postgresResourceServiceBackend) GetResourceByName(ctx context.Context, workspace string, resourceName string) (resource *model.Resource, err errors.ServiceError) {
 	resource = new(model.Resource)
 
-	err = p.withSystemBackend(true, func(tx *sql.Tx) error {
+	err = p.withSystemBackend(true, func(tx *sql.Tx) errors.ServiceError {
 		if err = resourceLoadDetails(tx, resource, workspace, resourceName); err != nil {
-			if err == sql.ErrNoRows {
-				resource = nil
-				return nil
-			}
-
 			log.Error("Unable to load resource details", err)
 			return err
 		}
@@ -139,12 +135,12 @@ func (p *postgresResourceServiceBackend) GetResourceByName(ctx context.Context, 
 	return resource, nil
 }
 
-func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceParams) (*model.Resource, error) {
+func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceParams) (*model.Resource, errors.ServiceError) {
 	if params.Resource.Workspace == "" {
 		params.Resource.Workspace = "default"
 	}
 
-	err := p.withSystemBackend(false, func(tx *sql.Tx) error {
+	err := p.withSystemBackend(false, func(tx *sql.Tx) errors.ServiceError {
 		// check if resource exists
 
 		if existingCount, err := resourceCountsByName(tx, params.Resource.Workspace, params.Resource.Name); err != nil {
@@ -153,7 +149,7 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			if params.IgnoreIfExists {
 				return nil
 			}
-			return errors.New("resource is already exists")
+			return errors.AlreadyExistsError
 		}
 
 		if err := resourceInsert(tx, params.Resource); err != nil {
@@ -167,7 +163,7 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 		}
 
 		if params.Migrate {
-			err := p.withBackend(params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) error {
+			err := p.withBackend(params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
 				err := resourceCreateTable(tx, params.Resource)
 				if err != nil {
 					return err
@@ -175,7 +171,7 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 
 				if params.Resource.Flags.KeepHistory {
 					if params.Resource.Flags.DisableAudit {
-						return errors.New("history cannot created while audit is disabled")
+						return errors.LogicalError.WithMessage("history cannot created while audit is disabled")
 					}
 					err = resourceCreateHistoryTable(tx, params.Resource)
 					if err != nil {
@@ -200,14 +196,14 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 	return params.Resource, nil
 }
 
-func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error {
+func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
 	existingResource, err := p.GetResourceByName(nil, resource.Name, resource.Workspace)
 
 	if err != nil {
 		return err
 	}
 
-	return p.withSystemBackend(false, func(tx *sql.Tx) error {
+	return p.withSystemBackend(false, func(tx *sql.Tx) errors.ServiceError {
 		if err = resourceUpdate(ctx, tx, resource); err != nil {
 			return err
 		}
@@ -217,7 +213,7 @@ func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, res
 		}
 
 		if doMigration {
-			err = p.withBackend(existingResource.SourceConfig.DataSource, false, func(tx *sql.Tx) error {
+			err = p.withBackend(existingResource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
 				return resourceAlterTable(ctx, tx, existingResource, resource)
 			})
 
@@ -230,7 +226,7 @@ func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, res
 	})
 }
 
-func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, workspace string, ids []string, doMigration bool, forceMigration bool) error {
+func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, workspace string, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
 	var sources []*model.ResourceSourceConfig
 
 	if workspace == "" {
@@ -245,12 +241,12 @@ func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, wo
 		}
 
 		if resource == nil {
-			return errors.New("resource not found:" + workspace + " " + id)
+			return errors.NotFoundError
 		}
 
 		sources = append(sources, resource.SourceConfig)
 	}
-	err := p.withSystemBackend(false, func(tx *sql.Tx) error {
+	err := p.withSystemBackend(false, func(tx *sql.Tx) errors.ServiceError {
 		return resourceDelete(ctx, tx, ids)
 	})
 
@@ -260,7 +256,7 @@ func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, wo
 
 	if doMigration {
 		for _, source := range sources {
-			err = p.withBackend(source.DataSource, false, func(tx *sql.Tx) error {
+			err = p.withBackend(source.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
 				return resourceDropTable(tx, source.Mapping)
 			})
 
@@ -273,7 +269,7 @@ func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, wo
 	return nil
 }
 
-func (p *postgresResourceServiceBackend) acquireConnection(dataSourceId string) (*sql.DB, error) {
+func (p *postgresResourceServiceBackend) acquireConnection(dataSourceId string) (*sql.DB, errors.ServiceError) {
 	if p.connectionMap[dataSourceId] == nil {
 		dsBck, err := p.dataSourceService.GetDataSourceBackendById(dataSourceId)
 
@@ -285,7 +281,8 @@ func (p *postgresResourceServiceBackend) acquireConnection(dataSourceId string) 
 
 		connStr := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", bck.Options.Username, bck.Options.Password, bck.Options.Host, bck.Options.Port, bck.Options.DbName)
 		// Connect to database
-		conn, err := sql.Open("postgres", connStr)
+		conn, sqlErr := sql.Open("postgres", connStr)
+		err = handleDbError(sqlErr)
 
 		if err != nil {
 			return nil, err
@@ -305,16 +302,16 @@ func NewPostgresResourceServiceBackend() backend.ResourceServiceBackend {
 	}
 }
 
-func (p *postgresResourceServiceBackend) withSystemBackend(readOnly bool, fn func(tx *sql.Tx) error) error {
+func (p *postgresResourceServiceBackend) withSystemBackend(readOnly bool, fn func(tx *sql.Tx) errors.ServiceError) errors.ServiceError {
 	return p.withBackend(p.systemBackend.GetDataSourceId(), readOnly, fn)
 }
 
-func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, readOnly bool, fn func(tx *sql.Tx) error) error {
-	conn, err := p.acquireConnection(dataSourceId)
+func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, readOnly bool, fn func(tx *sql.Tx) errors.ServiceError) errors.ServiceError {
+	log.Tracef("begin transaction: %s, readonly=%v", dataSourceId, readOnly)
+	conn, serviceErr := p.acquireConnection(dataSourceId)
 
-	if err != nil {
-		log.Error("Unable to acquire connection", err, dataSourceId)
-		return err
+	if serviceErr != nil {
+		return serviceErr
 	}
 
 	tx, err := conn.BeginTx(context.TODO(), &sql.TxOptions{
@@ -323,24 +320,59 @@ func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, readOn
 
 	if err != nil {
 		log.Error("Unable to begin transaction", err, dataSourceId)
-		return err
+		return handleDbError(err)
 	}
 
 	defer func(tx *sql.Tx) {
 		_ = tx.Rollback()
 	}(tx)
 
-	err = fn(tx)
+	serviceErr = fn(tx)
+
+	if serviceErr != nil {
+		log.Error("Rollback: ", serviceErr)
+		return serviceErr
+	}
+
+	serviceErr = handleDbError(tx.Commit())
+	log.Tracef("end transaction: %s, readonly=%v", dataSourceId, readOnly)
+
+	return serviceErr
+}
+
+func handleDbError(err error) errors.ServiceError {
+	if err == nil {
+		return nil
+	}
 
 	if err == sql.ErrNoRows {
-		return err
+		return errors.NotFoundError
 	}
 
-	if err != nil {
-		log.Error("Rollback; Error: ", err)
-		//debug.PrintStack()
-		return err
+	if err == sql.ErrTxDone {
+		log.Panic("Illegal situation")
 	}
 
-	return tx.Commit()
+	if _, ok := err.(errors.ServiceError); ok {
+		log.Panic("database error is expected: ", err)
+	}
+
+	if pqErr, ok := err.(*pq.Error); ok {
+		return handlePqErr(pqErr)
+	}
+
+	panic("Unhandled situation")
+}
+
+func handlePqErr(err *pq.Error) errors.ServiceError {
+	switch err.Code {
+	case "28000":
+		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
+	case "28P01":
+		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
+	case "23505":
+		return errors.UniqueViolation.WithDetails(err.Message)
+	default:
+		return errors.InternalError.WithMessage(err.Message)
+	}
 }

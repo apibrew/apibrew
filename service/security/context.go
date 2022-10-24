@@ -2,11 +2,11 @@ package security
 
 import (
 	"context"
+	"data-handler/service/errors"
 	"data-handler/stub/model"
-	"errors"
 )
 
-var systemResourceAccessError = errors.New("system resource is accessed outside of system context")
+var systemResourceAccessError = errors.AccessDeniedError.WithMessage("system resource is accessed outside of system context")
 
 const systemContextKey = "SYSTEM_CTX"
 const userContextKey = "USER"
@@ -41,7 +41,7 @@ type HasDataType interface {
 	GetType() model.DataType
 }
 
-func CheckSystemResourceAccess(ctx context.Context, objs ...HasDataType) error {
+func CheckSystemResourceAccess(ctx context.Context, objs ...HasDataType) errors.ServiceError {
 	for _, obj := range objs {
 		if obj.GetType() == model.DataType_SYSTEM {
 			if !IsSystemContext(ctx) {

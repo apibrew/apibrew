@@ -9,9 +9,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordParams) (result []*model.Record, total uint32, err error) {
+func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	log.Tracef("Begin listing: %v", params)
-	err = p.withBackend(params.Resource.SourceConfig.DataSource, true, func(tx *sql.Tx) error {
+	err = p.withBackend(params.Resource.SourceConfig.DataSource, true, func(tx *sql.Tx) errors.ServiceError {
 		result, total, err = recordList(tx, params)
 
 		return err
@@ -21,13 +21,13 @@ func (p *postgresResourceServiceBackend) ListRecords(params backend.ListRecordPa
 	return
 }
 
-func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsParams) ([]*model.Record, bool, error) {
+func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError) {
 	var inserted bool
-	var err error
+	var err errors.ServiceError
 
 	log.Tracef("Begin creating: %v; %v", params.Records)
 
-	err = p.withBackend(params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) error {
+	err = p.withBackend(params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
 		inserted, err = recordInsert(tx, params.Resource, params.Records, params.IgnoreIfExists, false)
 
 		if err != nil {
@@ -54,8 +54,8 @@ func (p *postgresResourceServiceBackend) AddRecords(params backend.BulkRecordsPa
 	return params.Records, inserted, nil
 }
 
-func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecordsParams) ([]*model.Record, error) {
-	err := p.withBackend(params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) error {
+func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
+	err := p.withBackend(params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
 		for _, record := range params.Records {
 			err := recordUpdate(tx, params.Resource, record, params.CheckVersion)
 
@@ -82,10 +82,10 @@ func (p *postgresResourceServiceBackend) UpdateRecords(params backend.BulkRecord
 	return params.Records, nil
 }
 
-func (p *postgresResourceServiceBackend) GetRecord(resource *model.Resource, id string) (*model.Record, error) {
+func (p *postgresResourceServiceBackend) GetRecord(resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
 	var record *model.Record = nil
-	err := p.withBackend(resource.SourceConfig.DataSource, true, func(tx *sql.Tx) error {
-		var err error
+	err := p.withBackend(resource.SourceConfig.DataSource, true, func(tx *sql.Tx) errors.ServiceError {
+		var err errors.ServiceError
 		record, err = readRecord(tx, resource, id)
 
 		if err == sql.ErrNoRows {
@@ -102,9 +102,9 @@ func (p *postgresResourceServiceBackend) GetRecord(resource *model.Resource, id 
 	return record, err
 }
 
-func (p *postgresResourceServiceBackend) DeleteRecords(resource *model.Resource, ids []string) error {
+func (p *postgresResourceServiceBackend) DeleteRecords(resource *model.Resource, ids []string) errors.ServiceError {
 	log.Tracef("Begin deleting records: %v / %v / %v", resource.Workspace, resource.Name, ids)
-	err := p.withBackend(resource.SourceConfig.DataSource, false, func(tx *sql.Tx) error {
+	err := p.withBackend(resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
 		return deleteRecords(tx, resource, ids)
 	})
 	if err != nil {

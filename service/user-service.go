@@ -20,10 +20,10 @@ type UserService interface {
 
 type userService struct {
 	stub.UserServiceServer
-	recordService         RecordService
-	authenticationService AuthenticationService
+	recordService         RecordServiceInternal
+	authenticationService AuthenticationServiceInternal
 	serviceName           string
-	resourceService       ResourceService
+	resourceService       ResourceServiceInternal
 }
 
 func (u *userService) InjectResourceService(service ResourceService) {

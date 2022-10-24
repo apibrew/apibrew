@@ -5,30 +5,37 @@ import (
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/security"
+	"data-handler/service/system"
 	"data-handler/service/types"
 	"data-handler/stub"
 	"data-handler/stub/model"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+type RecordServiceInternal interface {
+	stub.RecordServiceServer
+	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
+	GetRecord(ctx context.Context, workspace, resourceName, id string) (*model.Record, errors.ServiceError)
+	FindBy(ctx context.Context, workspace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
+}
+
 type RecordService interface {
 	stub.RecordServiceServer
-
+	RecordServiceInternal
 	Init(data *model.InitData)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
 	InjectDataSourceService(service DataSourceService)
 	InjectAuthenticationService(service AuthenticationService)
 	InjectResourceService(service ResourceService)
-	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, error)
 }
 
 type recordService struct {
 	stub.RecordServiceServer
 	postgresResourceServiceBackend backend.ResourceServiceBackend
-	dataSourceService              DataSourceService
-	authenticationService          AuthenticationService
+	dataSourceService              DataSourceServiceInternal
+	authenticationService          AuthenticationServiceInternal
 	ServiceName                    string
-	resourceService                ResourceService
+	resourceService                ResourceServiceInternal
 }
 
 func (r *recordService) InjectAuthenticationService(service AuthenticationService) {
@@ -89,16 +96,14 @@ func (r *recordService) List(ctx context.Context, request *stub.ListRecordReques
 	}, nil
 }
 
-func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, error) {
-	var err error
-
+func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
 	var criteria []*model.BooleanExpression
 	for _, property := range resource.Properties {
 		if queryMap[property.Name] != nil {
 			var val *structpb.Value
-			val, err = structpb.NewValue(queryMap[property.Name])
+			val, err := structpb.NewValue(queryMap[property.Name])
 			if err != nil {
-				return nil, nil
+				return nil, errors.RecordValidationError
 			}
 			criteria = append(criteria, r.newEqualExpression(property.Name, val))
 		}
@@ -111,9 +116,9 @@ func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[stri
 	for _, property := range additionalProperties {
 		if queryMap[property] != nil {
 			var val *structpb.Value
-			val, err = structpb.NewValue(queryMap[property])
+			val, err := structpb.NewValue(queryMap[property])
 			if err != nil {
-				return nil, nil
+				return nil, errors.RecordValidationError
 			}
 			criteria = append(criteria, r.newEqualExpression(property, val))
 		}
@@ -124,7 +129,7 @@ func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[stri
 	if len(criteria) > 0 {
 		query = &model.BooleanExpression{Expression: &model.BooleanExpression_And{And: &model.CompoundBooleanExpression{Expressions: criteria}}}
 	}
-	return query, err
+	return query, nil
 }
 
 func (r *recordService) newEqualExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
@@ -296,28 +301,58 @@ func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRe
 	}, nil
 }
 
-func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
-	resource, err := r.resourceService.GetResourceByName(ctx, request.Workspace, request.Resource)
+func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, id string) (*model.Record, errors.ServiceError) {
+	resource, err := r.resourceService.GetResourceByName(ctx, workspace, resourceName)
 
 	if err != nil {
-		return &stub.GetRecordResponse{
-			Error: toProtoError(err),
-		}, nil
-	}
-
-	if resource == nil {
-		return &stub.GetRecordResponse{
-			Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + request.Resource)),
-		}, nil
+		return nil, err
 	}
 
 	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
-		return &stub.GetRecordResponse{
-			Error: toProtoError(err),
-		}, nil
+		return nil, err
 	}
 
-	record, err := r.postgresResourceServiceBackend.GetRecord(resource, request.Id)
+	return r.postgresResourceServiceBackend.GetRecord(resource, id)
+}
+
+func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError) {
+	resource, err := r.resourceService.GetResourceByName(ctx, workspace, resourceName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	queryMap := make(map[string]interface{})
+
+	queryMap[propertyName] = value
+
+	query, err := r.PrepareQuery(system.UserResource, queryMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, total, err := r.postgresResourceServiceBackend.ListRecords(backend.ListRecordParams{
+		Resource:   resource,
+		Query:      query,
+		Limit:      1,
+		Offset:     0,
+		UseHistory: false,
+	})
+
+	if total == 0 {
+		return nil, errors.NotFoundError
+	}
+
+	if total > 1 {
+		return nil, errors.LogicalError.WithDetails("We have more than 1 record")
+	}
+
+	return res[0], nil
+}
+
+func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
+	record, err := r.GetRecord(ctx, request.Workspace, request.Resource, request.Id)
 
 	if err != nil {
 		return &stub.GetRecordResponse{

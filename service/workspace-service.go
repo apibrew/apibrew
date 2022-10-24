@@ -20,10 +20,10 @@ type WorkspaceService interface {
 
 type workspaceService struct {
 	stub.WorkspaceServiceServer
-	recordService         RecordService
-	authenticationService AuthenticationService
+	recordService         RecordServiceInternal
+	authenticationService AuthenticationServiceInternal
 	serviceName           string
-	resourceService       ResourceService
+	resourceService       ResourceServiceInternal
 }
 
 func (u *workspaceService) InjectResourceService(service ResourceService) {

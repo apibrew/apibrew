@@ -27,6 +27,10 @@ type CheckParams struct {
 	Resources any
 }
 
+type AuthenticationServiceInternal interface {
+	validateToken(token string) error
+}
+
 type AuthenticationService interface {
 	stub.AuthenticationServiceServer
 	validateToken(token string) error
@@ -37,7 +41,7 @@ type AuthenticationService interface {
 
 type authenticationService struct {
 	stub.AuthenticationServiceServer
-	recordService         RecordService
+	recordService         RecordServiceInternal
 	privateKey            *rsa.PrivateKey
 	publicKey             *rsa.PublicKey
 	DisableAuthentication bool
@@ -163,35 +167,13 @@ func (s *authenticationService) LocateUser(ctx context.Context, username, passwo
 }
 
 func (s *authenticationService) FindUser(ctx context.Context, username string) (*model.User, error) {
-	queryMap := make(map[string]interface{})
-
-	queryMap["username"] = username
-
-	query, err := s.recordService.PrepareQuery(system.UserResource, queryMap)
+	res, err := s.recordService.FindBy(ctx, system.UserResource.Workspace, system.UserResource.Name, "username", username)
 
 	if err != nil {
 		return nil, err
 	}
 
-	systemCtx := security.WithSystemContext(ctx)
-	res, err := s.recordService.List(systemCtx, &stub.ListRecordRequest{
-		Resource: system.UserResource.Name,
-		Query:    query,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(res.Content) == 0 {
-		return nil, errors.AuthenticationFailedError
-	}
-
-	for _, userRecord := range res.Content {
-		return mapping.UserFromRecord(userRecord), nil
-	}
-
-	return nil, errors.AuthenticationFailedError
+	return mapping.UserFromRecord(res), nil
 }
 
 func (s *authenticationService) Init(data *model.InitData) {

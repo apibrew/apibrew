@@ -1,5 +1,7 @@
 package util
 
+import "data-handler/service/errors"
+
 func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
 	var list []R
 
@@ -10,7 +12,7 @@ func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
 	return list
 }
 
-func ArrayMapWithError[T interface{}, R interface{}](arr []T, mapper func(T) (R, error)) ([]R, error) {
+func ArrayMapWithError[T interface{}, R interface{}](arr []T, mapper func(T) (R, errors.ServiceError)) ([]R, errors.ServiceError) {
 	var list []R
 
 	for _, item := range arr {

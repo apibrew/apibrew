@@ -9,14 +9,14 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/huandu/go-sqlbuilder"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"log"
 	"strings"
 	"time"
 )
 
-func recordInsert(runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, history bool) (bool, error) {
+func recordInsert(runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, history bool) (bool, errors.ServiceError) {
 	if resource.Flags == nil {
 		resource.Flags = &model.ResourceFlags{}
 	}
@@ -61,8 +61,7 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 				unpackedVal, err := propertyType.UnPack(val)
 
 				if err != nil {
-					log.Print("SQL ERROR: ", err)
-					return false, err
+					return false, errors.RecordValidationError.WithDetails(err.Error())
 				}
 
 				row = append(row, unpackedVal)
@@ -90,10 +89,10 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 
 	if err != nil {
 		log.Print("SQL ERROR: ", err)
-		return false, err
+		return false, handleDbError(err)
 	}
 
-	return true, err
+	return true, handleDbError(err)
 }
 
 func getTableName(mapping string, history bool) string {
@@ -104,7 +103,7 @@ func getTableName(mapping string, history bool) string {
 	}
 }
 
-func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) (err error) {
+func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) errors.ServiceError {
 	if resource.Flags == nil {
 		resource.Flags = &model.ResourceFlags{}
 	}
@@ -132,7 +131,7 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 			unpackedVal, err := propertyType.UnPack(val)
 
 			if err != nil {
-				return err
+				return errors.RecordValidationError.WithDetails(err.Error())
 			}
 
 			updateBuilder.SetMore(updateBuilder.Equal(source.Mapping.Mapping, unpackedVal))
@@ -148,23 +147,23 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 	result, err := runner.Exec(sqlQuery, args...)
 
 	if err != nil {
-		return
+		return handleDbError(err)
 	}
 
 	affected, err := result.RowsAffected()
 
 	if err != nil {
-		return
+		return handleDbError(err)
 	}
 
 	if affected == 0 {
 		return errors.NotFoundError
 	}
 
-	return
+	return nil
 }
 
-func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*model.Record, total uint32, err error) {
+func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	// find count
 	countBuilder := sqlbuilder.Select("count(*)")
 	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
@@ -179,7 +178,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	}
 	countQuery, args := countBuilder.Build()
 	countRow := runner.QueryRow(countQuery, args...)
-	err = countRow.Scan(&total)
+	err = handleDbError(countRow.Scan(&total))
 
 	if err != nil {
 		return
@@ -209,7 +208,8 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	selectBuilder.Offset(int(params.Offset))
 
 	sqlQuery, args := selectBuilder.Build()
-	rows, err := runner.Query(sqlQuery, args...)
+	rows, sqlErr := runner.Query(sqlQuery, args...)
+	err = handleDbError(sqlErr)
 
 	if err != nil {
 		return
@@ -230,9 +230,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	return
 }
 
-func applyCondition(resource *model.Resource, query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) (string, error) {
+func applyCondition(resource *model.Resource, query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) (string, errors.ServiceError) {
 	if and, ok := query.Expression.(*model.BooleanExpression_And); ok {
-		expressions, err := util.ArrayMapWithError(and.And.Expressions, func(t *model.BooleanExpression) (string, error) {
+		expressions, err := util.ArrayMapWithError(and.And.Expressions, func(t *model.BooleanExpression) (string, errors.ServiceError) {
 			return applyCondition(resource, t, builder)
 		})
 		if err != nil {
@@ -242,7 +242,7 @@ func applyCondition(resource *model.Resource, query *model.BooleanExpression, bu
 	}
 
 	if and, ok := query.Expression.(*model.BooleanExpression_Or); ok {
-		expressions, err := util.ArrayMapWithError(and.Or.Expressions, func(t *model.BooleanExpression) (string, error) {
+		expressions, err := util.ArrayMapWithError(and.Or.Expressions, func(t *model.BooleanExpression) (string, errors.ServiceError) {
 			return applyCondition(resource, t, builder)
 		})
 		if err != nil {
@@ -322,7 +322,7 @@ func applyCondition(resource *model.Resource, query *model.BooleanExpression, bu
 	panic("unknown boolean expression type: " + query.String())
 }
 
-func applyExpression(resource *model.Resource, query *model.Expression, builder *sqlbuilder.SelectBuilder) (string, error) {
+func applyExpression(resource *model.Resource, query *model.Expression, builder *sqlbuilder.SelectBuilder) (string, errors.ServiceError) {
 	var additionalProperties = []string{
 		"id", "version",
 	}
@@ -349,7 +349,7 @@ func applyExpression(resource *model.Resource, query *model.Expression, builder 
 	panic("unknown expression type: " + query.String())
 }
 
-func scanRecord(record *model.Record, resource *model.Resource, scanner QueryResultScanner) error {
+func scanRecord(record *model.Record, resource *model.Resource, scanner QueryResultScanner) errors.ServiceError {
 	var rowScanFields []any
 
 	var hasOwnId = checkHasOwnId(resource)
@@ -384,7 +384,7 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 		rowScanFields = append(rowScanFields, &record.Version)
 	}
 
-	err := scanner.Scan(rowScanFields...)
+	err := handleDbError(scanner.Scan(rowScanFields...))
 
 	if err != nil {
 		return err
@@ -406,7 +406,7 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 			packedValue, err := propertyType.Pack(val)
 
 			if err != nil {
-				return err
+				return handleDbError(err)
 			}
 
 			properties[property.Name] = packedValue
@@ -429,12 +429,12 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 		record.Id = strings.Join(ids, "-")
 	}
 
-	propStruct, err := structpb.NewStruct(properties)
+	propStruct, parseError := structpb.NewStruct(properties)
 
 	record.Properties = propStruct
 
-	if err != nil {
-		return err
+	if parseError != nil {
+		return errors.RecordValidationError.WithDetails(parseError.Error())
 	}
 
 	if record.AuditData == nil {
@@ -463,7 +463,7 @@ func checkHasOwnId(resource *model.Resource) bool {
 	return !resource.Flags.AutoCreated && !resource.Flags.DoPrimaryKeyLookup
 }
 
-func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, error) {
+func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
 	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(resource)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	selectBuilder.From(resource.SourceConfig.Mapping)
@@ -474,7 +474,7 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 	row := runner.QueryRow(sqlQuery, id)
 
 	if row.Err() != nil {
-		return nil, row.Err()
+		return nil, handleDbError(row.Err())
 	}
 
 	record := new(model.Record)
@@ -488,7 +488,7 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 	return record, nil
 }
 
-func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) error {
+func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
 	deleteBuilder := sqlbuilder.DeleteFrom(resource.SourceConfig.Mapping)
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
@@ -509,13 +509,13 @@ func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) e
 	_, err := runner.Exec(sqlQuery, args...)
 
 	if err != nil {
-		return err
+		return handleDbError(err)
 	}
 
 	return nil
 }
 
-func locatePrimaryKey(resource *model.Resource) (string, error) {
+func locatePrimaryKey(resource *model.Resource) (string, errors.ServiceError) {
 	for _, property := range resource.Properties {
 		if property.Primary {
 			return property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping, nil

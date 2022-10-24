@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"data-handler/service/backend"
+	"data-handler/service/errors"
 	"data-handler/service/security"
 	"data-handler/service/system"
 	"data-handler/stub"
@@ -11,29 +12,32 @@ import (
 	"time"
 )
 
-type ResourceService interface {
-	stub.ResourceServiceServer
-	InjectDataSourceService(service DataSourceService)
-	InjectAuthenticationService(service AuthenticationService)
-
+type ResourceServiceInternal interface {
 	InitResource(resource *model.Resource)
 	Init(data *model.InitData)
+	CheckResourceExists(workspace, name string) (bool, errors.ServiceError)
+	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, errors.ServiceError)
+}
+
+type ResourceService interface {
+	stub.ResourceServiceServer
+	ResourceServiceInternal
+	InjectDataSourceService(service DataSourceService)
+	InjectAuthenticationService(service AuthenticationService)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
-	CheckResourceExists(workspace, name string) (bool, error)
-	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, error)
 }
 
 type resourceService struct {
 	stub.ResourceServiceServer
-	dataSourceService              DataSourceService
-	authenticationService          AuthenticationService
+	dataSourceService              DataSourceServiceInternal
+	authenticationService          AuthenticationServiceInternal
 	postgresResourceServiceBackend backend.ResourceServiceBackend
 	ServiceName                    string
 	cache                          *ttlcache.Cache[string, *model.Resource]
 	disableCache                   bool
 }
 
-func (r *resourceService) GetResourceByName(ctx context.Context, workspace string, resourceName string) (*model.Resource, error) {
+func (r *resourceService) GetResourceByName(ctx context.Context, workspace string, resourceName string) (*model.Resource, errors.ServiceError) {
 	if security.IsSystemContext(ctx) && (workspace == system.WorkspaceResource.Name || workspace == "") {
 		if resourceName == system.UserResource.Name {
 			return system.UserResource, nil
@@ -67,9 +71,9 @@ func (r *resourceService) GetResourceByName(ctx context.Context, workspace strin
 	return resource, nil
 }
 
-func (r *resourceService) CheckResourceExists(workspace, name string) (bool, error) {
+func (r *resourceService) CheckResourceExists(workspace, name string) (bool, errors.ServiceError) {
 	if r.cache.Get(name) != nil {
-		return r.cache.Get(workspace+"-"+name).Value() != nil, nil
+		return true, nil
 	}
 
 	resource, err := r.postgresResourceServiceBackend.GetResourceByName(nil, workspace, name)
@@ -80,7 +84,7 @@ func (r *resourceService) CheckResourceExists(workspace, name string) (bool, err
 
 	r.cache.Set(workspace+"-"+name, resource, ttlcache.DefaultTTL)
 
-	return resource != nil, nil
+	return true, nil
 }
 
 func (r *resourceService) InjectPostgresResourceServiceBackend(resourceServiceBackend backend.ResourceServiceBackend) {

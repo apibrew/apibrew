@@ -13,26 +13,30 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type DataSourceServiceInternal interface {
+	GetDataSourceBackend(dataSource *model.DataSource) backend.DataSourceBackend
+	GetSystemDataSourceBackend() backend.DataSourceBackend
+	GetDataSourceBackendById(dataSourceId string) (backend.DataSourceBackend, errors.ServiceError)
+}
+
 type DataSourceService interface {
 	stub.DataSourceServiceServer
+	DataSourceServiceInternal
 	InjectResourceService(service ResourceService)
 	InjectInitData(data *model.InitData)
 	Init(*model.InitData)
-	GetDataSourceBackend(dataSource *model.DataSource) backend.DataSourceBackend
 	InjectRecordService(service RecordService)
-	GetSystemDataSourceBackend() backend.DataSourceBackend
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
-	GetDataSourceBackendById(dataSourceId string) (backend.DataSourceBackend, error)
 	InjectAuthenticationService(service AuthenticationService)
 }
 
 type dataSourceService struct {
 	stub.DataSourceServiceServer
-	resourceService                ResourceService
-	recordService                  RecordService
+	resourceService                ResourceServiceInternal
+	recordService                  RecordServiceInternal
 	systemDataSource               *model.DataSource
 	postgresResourceServiceBackend backend.ResourceServiceBackend
-	authenticationService          AuthenticationService
+	authenticationService          AuthenticationServiceInternal
 	ServiceName                    string
 }
 
@@ -173,31 +177,19 @@ func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteData
 	}, nil
 }
 
-func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backend.DataSourceBackend, error) {
+func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backend.DataSourceBackend, errors.ServiceError) {
 	if dataSourceId == d.systemDataSource.Id {
 		return d.GetSystemDataSourceBackend(), nil
 	}
 
 	systemCtx := security.WithSystemContext(context.TODO())
-	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
-		Workspace: system.DataSourceResource.Workspace,
-		Resource:  system.DataSourceResource.Name,
-		Id:        dataSourceId,
-	})
+	record, err := d.recordService.GetRecord(systemCtx, system.DataSourceResource.Workspace, system.DataSourceResource.Name, dataSourceId)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if record.Error != nil {
-		if record.Error.Code == model.ErrorCode_RECORD_NOT_FOUND {
-			return nil, errors.NotFoundError
-		}
-		log.Print(record.Error)
-		return nil, errors.InternalError
-	}
-
-	dataSource := mapping.DataSourceFromRecord(record.Record)
+	dataSource := mapping.DataSourceFromRecord(record)
 
 	return d.GetDataSourceBackend(dataSource), nil
 }

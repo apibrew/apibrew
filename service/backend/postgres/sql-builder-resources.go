@@ -2,10 +2,10 @@ package postgres
 
 import (
 	"context"
+	"data-handler/service/errors"
 	"data-handler/stub/model"
 	"data-handler/util"
 	"database/sql"
-	"errors"
 	"github.com/huandu/go-sqlbuilder"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strconv"
@@ -144,7 +144,7 @@ func valuesFromCol[T interface{}](columns []string, data T, mapperFn func(col st
 	})
 }
 
-func resourceSetupTables(runner QueryRunner) error {
+func resourceSetupTables(runner QueryRunner) errors.ServiceError {
 	_, err := runner.Exec(`
 		create table if not exists public.resource (
 		  name character varying(64) not null,
@@ -185,23 +185,23 @@ func resourceSetupTables(runner QueryRunner) error {
 		);
 `)
 
-	return err
+	return handleDbError(err)
 }
 
-func resourceCountsByName(runner QueryRunner, workspace, resourceName string) (int, error) {
+func resourceCountsByName(runner QueryRunner, workspace, resourceName string) (int, errors.ServiceError) {
 	res := runner.QueryRow("select count(*) as count from resource where name = $1 and workspace = $2", resourceName, workspace)
 
 	var count = new(int)
 	err := res.Scan(count)
 
-	return *count, err
+	return *count, handleDbError(err)
 }
 
-func resourceAlterTable(ctx context.Context, runner QueryRunner, existingResource *model.Resource, resource *model.Resource) error {
+func resourceAlterTable(ctx context.Context, runner QueryRunner, existingResource *model.Resource, resource *model.Resource) errors.ServiceError {
 	panic("not implemented yet")
 }
 
-func resourceCreateTable(runner QueryRunner, resource *model.Resource) error {
+func resourceCreateTable(runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig.Mapping, false))
 
 	builder.IfNotExists()
@@ -225,7 +225,7 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) error {
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)
 
-	return err
+	return handleDbError(err)
 }
 
 func prepareCreateTableQuery(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
@@ -257,7 +257,7 @@ func prepareCreateTableQuery(resource *model.Resource, builder *sqlbuilder.Creat
 	}
 }
 
-func resourceCreateHistoryTable(runner QueryRunner, resource *model.Resource) error {
+func resourceCreateHistoryTable(runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig.Mapping, true))
 
 	builder.IfNotExists()
@@ -278,17 +278,18 @@ func resourceCreateHistoryTable(runner QueryRunner, resource *model.Resource) er
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)
 
-	return err
+	return handleDbError(err)
 }
 
-func resourceDropTable(runner QueryRunner, mapping string) error {
+func resourceDropTable(runner QueryRunner, mapping string) errors.ServiceError {
 	_, err := runner.Exec("DROP TABLE " + mapping)
 
-	return err
+	return handleDbError(err)
 }
 
-func resourceListEntities(ctx context.Context, runner QueryRunner) (result []string, err error) {
-	rows, err := runner.QueryContext(ctx, `select table_schema || '.' || table_name from information_schema.tables`)
+func resourceListEntities(ctx context.Context, runner QueryRunner) (result []string, err errors.ServiceError) {
+	rows, sqlErr := runner.QueryContext(ctx, `select table_schema || '.' || table_name from information_schema.tables`)
+	err = handleDbError(sqlErr)
 
 	if err != nil {
 		return
@@ -297,7 +298,7 @@ func resourceListEntities(ctx context.Context, runner QueryRunner) (result []str
 	for rows.Next() {
 		var entityName = new(string)
 
-		err = rows.Scan(entityName)
+		err = handleDbError(rows.Scan(entityName))
 
 		if err != nil {
 			return
@@ -309,12 +310,14 @@ func resourceListEntities(ctx context.Context, runner QueryRunner) (result []str
 	return
 }
 
-func resourceList(ctx context.Context, runner QueryRunner) (result []*model.Resource, err error) {
+func resourceList(ctx context.Context, runner QueryRunner) (result []*model.Resource, err errors.ServiceError) {
 	selectBuilder := sqlbuilder.Select(resourceColumns...).From("resource")
 
 	sqlQuery, args := selectBuilder.Build()
 
-	rows, err := runner.QueryContext(ctx, sqlQuery, args...)
+	rows, sqlErr := runner.QueryContext(ctx, sqlQuery, args...)
+
+	err = handleDbError(sqlErr)
 
 	if err != nil {
 		return
@@ -334,25 +337,25 @@ func resourceList(ctx context.Context, runner QueryRunner) (result []*model.Reso
 	return
 }
 
-func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, entity string) (resource *model.Resource, err error) {
+func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, entity string) (resource *model.Resource, err errors.ServiceError) {
 	matchEntityName := func(ref string) string { return ref + `.table_schema || '.' || ` + ref + `.table_name = $1 ` }
 	// check if entity exists
-	row := runner.QueryRow(`select count(*) from information_schema.tables where table_type = 'BASE TABLE' and `+matchEntityName("tables"), entity)
+	row := runner.QueryRowContext(ctx, `select count(*) from information_schema.tables where table_type = 'BASE TABLE' and `+matchEntityName("tables"), entity)
 
 	if row.Err() != nil {
-		return nil, row.Err()
+		return nil, handleDbError(row.Err())
 	}
 
 	var count = new(int)
 
-	err = row.Scan(&count)
+	err = handleDbError(row.Scan(&count))
 
 	if err != nil {
 		return
 	}
 
 	if *count == 0 {
-		err = errors.New("entity table not found")
+		err = errors.NotFoundError
 		return
 	}
 
@@ -368,7 +371,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 
 	// properties
 
-	rows, err := runner.Query(`select columns.column_name,
+	rows, sqlErr := runner.QueryContext(ctx, `select columns.column_name,
        columns.udt_name as column_type,
        columns.character_maximum_length as length,
        columns.is_nullable = 'YES' as is_nullable,
@@ -386,6 +389,7 @@ from information_schema.columns
                     WHERE contype = 'p') column_key
                    on column_key.conname = key_column_usage.constraint_name
 where `+matchEntityName("columns")+` order by columns.ordinal_position`, entity)
+	err = handleDbError(sqlErr)
 
 	if err != nil {
 		return
@@ -399,7 +403,7 @@ where `+matchEntityName("columns")+` order by columns.ordinal_position`, entity)
 		var isNullable = new(bool)
 		var isPrimary = new(bool)
 
-		err = rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary)
+		err = handleDbError(rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary))
 
 		if err != nil {
 			return
@@ -450,7 +454,7 @@ where `+matchEntityName("columns")+` order by columns.ordinal_position`, entity)
 	return
 }
 
-func resourceInsert(runner QueryRunner, resource *model.Resource) error {
+func resourceInsert(runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	if resource.Flags == nil {
 		resource.Flags = &model.ResourceFlags{}
 	}
@@ -470,10 +474,10 @@ func resourceInsert(runner QueryRunner, resource *model.Resource) error {
 
 	_, err := runner.Exec(sqlQuery, args...)
 
-	return err
+	return handleDbError(err)
 }
 
-func resourceLoadDetails(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) error {
+func resourceLoadDetails(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) errors.ServiceError {
 	selectBuilder := sqlbuilder.Select(resourceColumns...).
 		From("resource")
 	selectBuilder.Where(selectBuilder.And(
@@ -488,7 +492,7 @@ func resourceLoadDetails(runner QueryRunner, resource *model.Resource, workspace
 	row := runner.QueryRow(sqlQuery, args...)
 
 	if row.Err() != nil {
-		return row.Err()
+		return handleDbError(row.Err())
 	}
 
 	err := ScanResource(resource, row)
@@ -500,7 +504,7 @@ func resourceLoadDetails(runner QueryRunner, resource *model.Resource, workspace
 	return nil
 }
 
-func ScanResource(resource *model.Resource, row QueryResultScanner) error {
+func ScanResource(resource *model.Resource, row QueryResultScanner) errors.ServiceError {
 	resource.SourceConfig = &model.ResourceSourceConfig{}
 	resource.Flags = &model.ResourceFlags{}
 	resource.AuditData = &model.AuditData{}
@@ -530,7 +534,7 @@ func ScanResource(resource *model.Resource, row QueryResultScanner) error {
 	)
 
 	if err != nil {
-		return err
+		return handleDbError(err)
 	}
 
 	resource.AuditData.CreatedOn = timestamppb.New(*createdOn)
@@ -543,7 +547,7 @@ func ScanResource(resource *model.Resource, row QueryResultScanner) error {
 	return nil
 }
 
-func resourceInsertProperties(runner QueryRunner, resource *model.Resource) error {
+func resourceInsertProperties(runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	for _, property := range resource.Properties {
 		propertyInsertBuilder := sqlbuilder.InsertInto("resource_property")
 		propertyInsertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
@@ -552,19 +556,19 @@ func resourceInsertProperties(runner QueryRunner, resource *model.Resource) erro
 			return resourcePropertyColumnMapFn(col, resource, property)
 		})...)
 
-		sql, args := propertyInsertBuilder.Build()
+		sqlQuery, args := propertyInsertBuilder.Build()
 
-		_, err := runner.Exec(sql, args...)
+		_, err := runner.Exec(sqlQuery, args...)
 
 		if err != nil {
-			return err
+			return handleDbError(err)
 		}
 	}
 
 	return nil
 }
 
-func resourceUpdateProperties(ctx context.Context, runner QueryRunner, resource *model.Resource) error {
+func resourceUpdateProperties(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	for _, property := range resource.Properties {
 		propertyInsertBuilder := sqlbuilder.Update("resource_property")
 		propertyInsertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
@@ -573,19 +577,19 @@ func resourceUpdateProperties(ctx context.Context, runner QueryRunner, resource 
 			propertyInsertBuilder.SetMore(propertyInsertBuilder.Equal(col, resourcePropertyColumnMapFn(col, resource, property)))
 		}
 
-		sql, args := propertyInsertBuilder.Build()
+		sqlQuery, args := propertyInsertBuilder.Build()
 
-		_, err := runner.ExecContext(ctx, sql, args...)
+		_, err := runner.ExecContext(ctx, sqlQuery, args...)
 
 		if err != nil {
-			return err
+			return handleDbError(err)
 		}
 	}
 
 	return nil
 }
 
-func resourceUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource) error {
+func resourceUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	updateBuilder := sqlbuilder.Update("resource")
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	const ResourceFieldName = "name"
@@ -600,10 +604,10 @@ func resourceUpdate(ctx context.Context, runner QueryRunner, resource *model.Res
 
 	_, err := runner.ExecContext(ctx, sqlQuery, args...)
 
-	return err
+	return handleDbError(err)
 }
 
-func resourceDelete(ctx context.Context, runner QueryRunner, ids []string) error {
+func resourceDelete(ctx context.Context, runner QueryRunner, ids []string) errors.ServiceError {
 	deleteBuilder := sqlbuilder.DeleteFrom("resource")
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
@@ -611,16 +615,16 @@ func resourceDelete(ctx context.Context, runner QueryRunner, ids []string) error
 
 	sqlQuery, args := deleteBuilder.Build()
 
-	_, err := runner.Exec(sqlQuery, args...)
+	_, err := runner.ExecContext(ctx, sqlQuery, args...)
 
 	if err != nil {
-		return err
+		return handleDbError(err)
 	}
 
 	return nil
 }
 
-func resourceLoadProperties(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) error {
+func resourceLoadProperties(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) errors.ServiceError {
 	selectBuilder := sqlbuilder.Select(resourcePropertyColumns...).From("resource_property")
 
 	selectBuilder.Where(selectBuilder.And(
@@ -635,11 +639,11 @@ func resourceLoadProperties(runner QueryRunner, resource *model.Resource, worksp
 	rows, err := runner.Query(sqlQuery, args...)
 
 	if err != nil {
-		return err
+		return handleDbError(err)
 	}
 
 	if rows.Err() != nil {
-		return rows.Err()
+		return handleDbError(rows.Err())
 	}
 
 	for rows.Next() {
@@ -675,7 +679,7 @@ func resourceLoadProperties(runner QueryRunner, resource *model.Resource, worksp
 		}
 
 		if err != nil {
-			return err
+			return handleDbError(err)
 		}
 
 		resource.Properties = append(resource.Properties, resourceProperty)

@@ -81,25 +81,32 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		queryMap[key] = request.URL.Query().Get(key)
 	}
 
-	query, err := r.recordService.PrepareQuery(resource, queryMap)
+	query, srvErr := r.recordService.PrepareQuery(resource, queryMap)
+
+	if srvErr != nil {
+		handleClientError(writer, srvErr)
+		return
+	}
 
 	limit := 10
 	offset := 0
 
 	if request.URL.Query().Get("limit") != "" {
-		limit, err = strconv.Atoi(request.URL.Query().Get("limit"))
+		var _err error
+		limit, _err = strconv.Atoi(request.URL.Query().Get("limit"))
 
-		if err != nil {
-			handleClientError(writer, err)
+		if _err != nil {
+			handleClientError(writer, _err)
 			return
 		}
 	}
 
 	if request.URL.Query().Get("offset") != "" {
-		offset, err = strconv.Atoi(request.URL.Query().Get("offset"))
+		var _err error
+		offset, _err = strconv.Atoi(request.URL.Query().Get("offset"))
 
-		if err != nil {
-			handleClientError(writer, err)
+		if _err != nil {
+			handleClientError(writer, _err)
 			return
 		}
 	}

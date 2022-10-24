@@ -8,3 +8,10 @@ var InternalError ServiceError = newServiceError(model.ErrorCode_INTERNAL_ERROR,
 var PropertyNotFoundError ServiceError = newServiceError(model.ErrorCode_PROPERTY_NOT_FOUND, "Property not found")
 var RecordValidationError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Validation failed")
 var AuthenticationFailedError ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
+var AccessDeniedError ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
+var BackendConnectionAuthenticationError ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
+var UniqueViolation ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
+
+// RecordValidationError @fixme
+var AlreadyExistsError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Validation failed")
+var LogicalError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Validation failed")
