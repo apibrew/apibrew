@@ -38,7 +38,7 @@ func (s *server) Serve(lis net.Listener) {
 	//}()
 
 	c := cors.New(cors.Options{
-		AllowedMethods:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowCredentials: true,
 		// Enable Debugging for testing, consider disabling in production
 		Debug: true,
