@@ -37,7 +37,15 @@ func (s *server) Serve(lis net.Listener) {
 	//	log.Println(http.ListenAndServe("localhost:6060", nil))
 	//}()
 
-	handler := cors.Default().Handler(r)
+	c := cors.New(cors.Options{
+		AllowedMethods:   []string{"*"},
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		// Enable Debugging for testing, consider disabling in production
+		Debug: true,
+	})
+
+	handler := c.Handler(r)
 	if err := http.Serve(lis, handler); err != nil {
 		panic(err)
 	}
