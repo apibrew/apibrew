@@ -61,18 +61,9 @@ message ResourceCheck {
   bool permissive = 2; // if permissive, instead of rejecting payload, we will log it
 }
 
-message ResourcePermissions {
-  bool create = 1;
-  bool read = 2;
-  bool update = 3;
-  bool delete = 4;
-}
-
-message ResourceRelation {
+message ResourceReference {
   string propertyName = 1;
   string relatedResource = 2;
-  string relatedResourcePropertyName = 3;
-  bool cascade = 4;
 }
 
 enum ResourceIndexType {
@@ -108,8 +99,7 @@ message Resource {
   ResourceSourceConfig sourceConfig = 4;
   repeated ResourceProperty properties = 5;
   repeated ResourceCheck checks = 6; // not implemented
-  ResourcePermissions permissions = 7; // not implemented
-  repeated ResourceRelation relations = 8; // not implemented
+  repeated ResourceReference references = 8; // not implemented
   repeated ResourceIndex indexes = 9; // not implemented
   ResourceFlags flags = 10;
 
