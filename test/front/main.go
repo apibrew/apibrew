@@ -9,10 +9,12 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+var token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJhZG1pbiIsImF1ZCI6WyJkYXRhLWhhbmRsZXIiXSwiZXhwIjoxNzI5ODY3NDM0LCJuYmYiOjE2NjY3OTU0MzQsImlhdCI6MTY2Njc5NTQzNCwianRpIjoiZDYwNjg5OTQtZTkxMy00M2NlLTg1MmQtMzdhMjAzNjBjMDY4Iiwic2NvcGVzIjpbInN1cGVyLXVzZXIiXSwidXNlcm5hbWUiOiJhZG1pbiJ9.ajMXk2TNfGwZzaSqtgQLGxofJ7Fddz2ZzsYZOOG9mWiSdDJoGC-VKyAl5zhfVBKYubqxwI2aL340nHrFB-DQ9r1yyc-6glxPpdRYxxDArXZpIIUZA4f6oKUnoYfsmCkgMdzrKdQfoetV3ABhekPwgHk1hSlMm6BDBxPCr5voClU"
+
 func main() {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	conn, err := grpc.Dial("tw:9009", opts...)
+	conn, err := grpc.Dial("localhost:9009", opts...)
 
 	if err != nil {
 		panic(err)
@@ -21,7 +23,90 @@ func main() {
 	resourceService := stub.NewResourceServiceClient(conn)
 	//recordService := stub.NewRecordServiceClient(conn)
 
-	prepareRichResource(resourceService)
+	//prepareRichResource(resourceService)
+	prepareReferencedResource(resourceService)
+}
+
+func prepareReferencedResource(service stub.ResourceServiceClient) {
+	//countryResource := &model.Resource{
+	//	Name:      "rf--country",
+	//	Workspace: "default",
+	//	Type:      2,
+	//	SourceConfig: &model.ResourceSourceConfig{
+	//		DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
+	//		Mapping:    "rf_2_country",
+	//	},
+	//	Properties: []*model.ResourceProperty{
+	//		{
+	//			Name: "name",
+	//			Type: model.ResourcePropertyType_TYPE_STRING,
+	//			SourceConfig: &model.ResourceProperty_Mapping{
+	//				Mapping: &model.ResourcePropertyMappingConfig{
+	//					Mapping: "name",
+	//				},
+	//			},
+	//			Length:   255,
+	//			Required: true,
+	//			Unique:   true,
+	//		},
+	//	},
+	//}
+	//
+	//res, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+	//	Token:       token,
+	//	Resources:   []*model.Resource{countryResource},
+	//	DoMigration: true,
+	//})
+	//
+	//log.Print(res, err)
+
+	cityResource := &model.Resource{
+		Name:      "rf-3-city",
+		Workspace: "default",
+		Type:      2,
+		SourceConfig: &model.ResourceSourceConfig{
+			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
+			Mapping:    "rf_3_city",
+		},
+		Properties: []*model.ResourceProperty{
+			{
+				Name: "name",
+				Type: model.ResourcePropertyType_TYPE_STRING,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "name",
+					},
+				},
+				Length:   255,
+				Required: true,
+			},
+			{
+				Name: "country",
+				Type: model.ResourcePropertyType_TYPE_UUID,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "country",
+					},
+				},
+				Required: true,
+			},
+		},
+		References: []*model.ResourceReference{
+			{
+				PropertyName:       "country",
+				ReferencedResource: "rf-2-country",
+				Cascade:            true,
+			},
+		},
+	}
+
+	res2, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+		Token:       token,
+		Resources:   []*model.Resource{cityResource},
+		DoMigration: true,
+	})
+
+	log.Print(res2, err)
 }
 
 func prepareRichResource(service stub.ResourceServiceClient) {

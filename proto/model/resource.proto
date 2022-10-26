@@ -63,7 +63,8 @@ message ResourceCheck {
 
 message ResourceReference {
   string propertyName = 1;
-  string relatedResource = 2;
+  string referencedResource = 2;
+  bool cascade = 3;
 }
 
 enum ResourceIndexType {

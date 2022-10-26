@@ -6,6 +6,7 @@ import (
 	"data-handler/service/errors"
 	"data-handler/util"
 	"database/sql"
+	"fmt"
 	"github.com/huandu/go-sqlbuilder"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strconv"
@@ -138,6 +139,31 @@ var resourcePropertyColumnMapFn = func(column string, resource *model.Resource, 
 	}
 }
 
+var resourceReferenceColumns = []string{
+	"workspace",
+	"resource_name",
+	"property_name",
+	"referenced_resource",
+	"\"cascade\"",
+}
+
+var resourceReferenceColumnMapFn = func(column string, resource *model.Resource, property *model.ResourceReference) interface{} {
+	switch column {
+	case "workspace":
+		return resource.Workspace
+	case "resource_name":
+		return resource.Name
+	case "property_name":
+		return property.PropertyName
+	case "referenced_resource":
+		return property.ReferencedResource
+	case "\"cascade\"":
+		return property.Cascade
+	default:
+		panic("Unknown column: " + column)
+	}
+}
+
 func valuesFromCol[T interface{}](columns []string, data T, mapperFn func(col string, data T) interface{}) []interface{} {
 	return util.ArrayMap[string, interface{}](columns, func(col string) interface{} {
 		return mapperFn(col, data)
@@ -180,6 +206,16 @@ func resourceSetupTables(runner QueryRunner) errors.ServiceError {
 		  required boolean,
 		  "unique" boolean,
 		  length integer,
+		  primary key (workspace, resource_name, property_name),
+		  foreign key (workspace, resource_name) references public.resource (workspace, name) match simple on update cascade on delete cascade
+		);
+		
+		create table if not exists public.resource_reference (
+		  workspace     character varying(64) not null,
+		  resource_name character varying(64) not null,
+		  property_name character varying(64) not null,
+		  referenced_resource character varying(64) not null,
+		  "cascade" bool not null,
 		  primary key (workspace, resource_name, property_name),
 		  foreign key (workspace, resource_name) references public.resource (workspace, name) match simple on update cascade on delete cascade
 		);
@@ -226,6 +262,71 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) errors.Se
 	_, err := runner.Exec(sqlQuery)
 
 	return handleDbError(err)
+}
+
+type ReferenceLocalDetails struct {
+	sourceTableName       string
+	fkConstraintName      string
+	sourceTableColumn     string
+	referencedTable       string
+	referencedTableColumn string
+	joinAlias             string
+}
+
+func resolveReferenceDetails(runner QueryRunner, resource *model.Resource, reference *model.ResourceReference) (*ReferenceLocalDetails, errors.ServiceError) {
+	var err errors.ServiceError
+
+	// locate referenced resource table name
+	var referencedResource = new(model.Resource)
+	err = resourceLoadDetails(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
+	if err != nil {
+		return nil, handleDbError(err)
+	}
+	if referencedResource.Flags.DoPrimaryKeyLookup {
+		return nil, errors.LogicalError.WithMessage("referenced resource is not allowed for non standard primary keys")
+	}
+	referencedTable := referencedResource.SourceConfig.Mapping
+
+	// locate referenced property name
+	property := locatePropertyByName(resource, reference.PropertyName)
+	if property == nil {
+		return nil, errors.PropertyNotFoundError
+	}
+
+	var sourceTableColumn string = ""
+	if propertySource, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+		sourceTableColumn = propertySource.Mapping.Mapping
+	} else {
+		return nil, errors.PropertyNotFoundError.WithDetails("Property is not with mapping type")
+	}
+
+	referencedTableColumn := "id"
+	sourceTableName := resource.SourceConfig.Mapping
+	fkConstraintName := "fk_" + reference.PropertyName
+	joinAlias := "l_" + referencedTable
+
+	return &ReferenceLocalDetails{
+		joinAlias:             joinAlias,
+		sourceTableName:       sourceTableName,
+		fkConstraintName:      fkConstraintName,
+		sourceTableColumn:     sourceTableColumn,
+		referencedTable:       referencedTable,
+		referencedTableColumn: referencedTableColumn,
+	}, nil
+}
+
+func resourceCreateForeignKey(runner QueryRunner, resource *model.Resource, reference *model.ResourceReference) errors.ServiceError {
+	referenceLocalDetails, err := resolveReferenceDetails(runner, resource, reference)
+
+	if err != nil {
+		return nil
+	}
+
+	query := fmt.Sprintf(`ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)`, referenceLocalDetails.sourceTableName, referenceLocalDetails.fkConstraintName, referenceLocalDetails.sourceTableColumn, referenceLocalDetails.referencedTable, referenceLocalDetails.referencedTableColumn)
+
+	_, sqlErr := runner.Exec(query)
+
+	return handleDbError(sqlErr)
 }
 
 func prepareCreateTableQuery(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
@@ -568,6 +669,27 @@ func resourceInsertProperties(runner QueryRunner, resource *model.Resource) erro
 	return nil
 }
 
+func resourceInsertReferences(runner QueryRunner, resource *model.Resource) errors.ServiceError {
+	for _, property := range resource.References {
+		propertyInsertBuilder := sqlbuilder.InsertInto("resource_reference")
+		propertyInsertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+		propertyInsertBuilder.Cols(resourceReferenceColumns...)
+		propertyInsertBuilder.Values(util.ArrayMap(resourceReferenceColumns, func(col string) interface{} {
+			return resourceReferenceColumnMapFn(col, resource, property)
+		})...)
+
+		sqlQuery, args := propertyInsertBuilder.Build()
+
+		_, err := runner.Exec(sqlQuery, args...)
+
+		if err != nil {
+			return handleDbError(err)
+		}
+	}
+
+	return nil
+}
+
 func resourceUpdateProperties(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	for _, property := range resource.Properties {
 		propertyInsertBuilder := sqlbuilder.Update("resource_property")
@@ -683,6 +805,49 @@ func resourceLoadProperties(runner QueryRunner, resource *model.Resource, worksp
 		}
 
 		resource.Properties = append(resource.Properties, resourceProperty)
+	}
+
+	return nil
+}
+
+func resourceLoadReferences(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) errors.ServiceError {
+	selectBuilder := sqlbuilder.Select(resourceReferenceColumns...).From("resource_reference")
+
+	selectBuilder.Where(selectBuilder.And(
+		selectBuilder.Equal("resource_name", resourceName),
+		selectBuilder.Equal("workspace", workspace),
+	))
+
+	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+
+	sqlQuery, args := selectBuilder.Build()
+
+	rows, err := runner.Query(sqlQuery, args...)
+
+	if err != nil {
+		return handleDbError(err)
+	}
+
+	if rows.Err() != nil {
+		return handleDbError(rows.Err())
+	}
+
+	for rows.Next() {
+		resourceReference := new(model.ResourceReference)
+
+		err = rows.Scan(
+			&resource.Workspace,
+			&resource.Name,
+			&resourceReference.PropertyName,
+			&resourceReference.ReferencedResource,
+			&resourceReference.Cascade,
+		)
+
+		if err != nil {
+			return handleDbError(err)
+		}
+
+		resource.References = append(resource.References, resourceReference)
 	}
 
 	return nil

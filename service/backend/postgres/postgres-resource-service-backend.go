@@ -11,6 +11,7 @@ import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"net"
+	"runtime/debug"
 )
 
 const DbNameType = "VARCHAR(64)"
@@ -122,6 +123,11 @@ func (p *postgresResourceServiceBackend) GetResourceByName(ctx context.Context, 
 			return err
 		}
 
+		if err = resourceLoadReferences(tx, resource, workspace, resourceName); err != nil {
+			log.Error("Unable to load resource properties", err)
+			return err
+		}
+
 		return nil
 	})
 
@@ -160,11 +166,24 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			return err
 		}
 
+		if err := resourceInsertReferences(tx, params.Resource); err != nil {
+			log.Error("Unable to insert resource properties", err)
+			return err
+		}
+
 		if params.Migrate {
 			err := p.withBackend(params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
 				err := resourceCreateTable(tx, params.Resource)
 				if err != nil {
 					return err
+				}
+
+				for _, reference := range params.Resource.References {
+					if err = resourceCreateForeignKey(tx, params.Resource, reference); err != nil {
+						if err != nil {
+							return err
+						}
+					}
 				}
 
 				if params.Resource.Flags.KeepHistory {
@@ -347,6 +366,9 @@ func handleDbError(err error) errors.ServiceError {
 		return errors.NotFoundError
 	}
 
+	log.Printf("Db Error: %s", err)
+	debug.PrintStack()
+
 	if err == sql.ErrTxDone {
 		log.Panic("Illegal situation")
 	}
@@ -374,6 +396,8 @@ func handlePqErr(err *pq.Error) errors.ServiceError {
 		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
 	case "23505":
 		return errors.UniqueViolation.WithDetails(err.Message)
+	case "23503":
+		return errors.ForeignKeyViolation.WithDetails(err.Message)
 	default:
 		return errors.InternalError.WithMessage(err.Message)
 	}

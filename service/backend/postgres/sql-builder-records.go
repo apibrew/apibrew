@@ -167,7 +167,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	// find count
 	countBuilder := sqlbuilder.Select("count(*)")
 	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	countBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory))
+	countBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory) + " as t")
 	if params.Query != nil {
 		var where = ""
 		where, err = applyCondition(params.Resource, params.Query, countBuilder)
@@ -188,9 +188,17 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 		return
 	}
 
-	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(params.Resource)...)
+	joinCols := recordPrepareJoinCols(runner, params.Resource)
+
+	selectBuilder := sqlbuilder.Select(util.Combine[string](prepareResourceRecordCols(params.Resource), joinCols)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	selectBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory))
+	err = recordPrepareJoins(runner, selectBuilder, params.Resource)
+
+	if err != nil {
+		return
+	}
+
 	if params.Query != nil {
 		var where = ""
 		where, err = applyCondition(params.Resource, params.Query, selectBuilder)
@@ -219,7 +227,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 
 	for rows.Next() {
 		record := new(model.Record)
-		err = scanRecord(record, params.Resource, rows)
+		err = scanRecord(runner, record, params.Resource, rows)
 		if err != nil {
 			return
 		}
@@ -228,6 +236,64 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	}
 
 	return
+}
+
+func recordPrepareJoinScan(runner QueryRunner, resource *model.Resource, record *model.Record, rowScanFields *[]any) errors.ServiceError {
+	for _, reference := range resource.References {
+		var referencedResource = new(model.Resource)
+		err := resourceLoadDetails(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, property := range referencedResource.Properties {
+			if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+				propertyType := types.ByResourcePropertyType(property.Type)
+				val := propertyType.Pointer(property.Required)
+				*rowScanFields = append(*rowScanFields, val)
+			}
+		}
+	}
+
+	return nil
+}
+
+func recordPrepareJoinCols(runner QueryRunner, resource *model.Resource) []string {
+	var result []string
+	for _, reference := range resource.References {
+		var referencedResource = new(model.Resource)
+		err := resourceLoadDetails(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
+		if err != nil {
+			panic(err)
+		}
+
+		joinAlias := "l_" + referencedResource.SourceConfig.Mapping
+
+		for _, property := range referencedResource.Properties {
+			if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+				colName := fmt.Sprintf("%s.%s as %s_%s", joinAlias, sourceConfig.Mapping, joinAlias, sourceConfig.Mapping)
+				result = append(result, colName)
+			}
+		}
+	}
+
+	return result
+}
+
+func recordPrepareJoins(runner QueryRunner, builder *sqlbuilder.SelectBuilder, resource *model.Resource) errors.ServiceError {
+	for _, reference := range resource.References {
+		referenceLocalDetails, err := resolveReferenceDetails(runner, resource, reference)
+
+		if err != nil {
+			return nil
+		}
+
+		onExpression := fmt.Sprintf("%s.%s=%s", referenceLocalDetails.joinAlias, referenceLocalDetails.referencedTableColumn, referenceLocalDetails.sourceTableColumn)
+
+		builder.JoinWithOption(sqlbuilder.LeftJoin, referenceLocalDetails.sourceTableColumn+" as "+referenceLocalDetails.joinAlias, onExpression)
+	}
+
+	return nil
 }
 
 func applyCondition(resource *model.Resource, query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) (string, errors.ServiceError) {
@@ -349,7 +415,7 @@ func applyExpression(resource *model.Resource, query *model.Expression, builder 
 	panic("unknown expression type: " + query.String())
 }
 
-func scanRecord(record *model.Record, resource *model.Resource, scanner QueryResultScanner) errors.ServiceError {
+func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resource, scanner QueryResultScanner) errors.ServiceError {
 	var rowScanFields []any
 
 	var hasOwnId = checkHasOwnId(resource)
@@ -369,6 +435,8 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 		}
 	}
 
+	err := recordPrepareJoinScan(runner, resource, record, &rowScanFields)
+
 	var createdOn = new(time.Time)
 	var updatedOn = new(*time.Time)
 	var updatedBy = new(*string)
@@ -384,7 +452,7 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 		rowScanFields = append(rowScanFields, &record.Version)
 	}
 
-	err := handleDbError(scanner.Scan(rowScanFields...))
+	err = handleDbError(scanner.Scan(rowScanFields...))
 
 	if err != nil {
 		return err
@@ -479,7 +547,7 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 
 	record := new(model.Record)
 
-	err := scanRecord(record, resource, row)
+	err := scanRecord(nil, record, resource, row)
 
 	if err != nil {
 		return nil, err
@@ -493,7 +561,7 @@ func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) e
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	if checkHasOwnId(resource) {
-		deleteBuilder.Where(deleteBuilder.In("id", util.ArrayMapToInterface(ids)...))
+		deleteBuilder.Where(deleteBuilder.In("t.id", util.ArrayMapToInterface(ids)...))
 	} else {
 		idField, err := locatePrimaryKey(resource)
 
@@ -529,21 +597,24 @@ func prepareResourceRecordCols(resource *model.Resource) []string {
 	var cols []string
 
 	if checkHasOwnId(resource) {
-		cols = append(cols, "id")
+		cols = append(cols, "t.id as t_id")
 	}
 
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			cols = append(cols, source.Mapping.Mapping)
+			col := fmt.Sprintf("t." + source.Mapping.Mapping + " as t_" + source.Mapping.Mapping)
+			cols = append(cols, col)
 		}
 	}
 
+	// referenced columns
+
 	if !resource.Flags.DisableAudit {
-		cols = append(cols, "created_on")
-		cols = append(cols, "updated_on")
-		cols = append(cols, "created_by")
-		cols = append(cols, "updated_by")
-		cols = append(cols, "version")
+		cols = append(cols, "t.created_on as t_created_on")
+		cols = append(cols, "t.updated_on as t_updated_on")
+		cols = append(cols, "t.created_by as t_created_by")
+		cols = append(cols, "t.updated_by as t_updated_by")
+		cols = append(cols, "t.version as t_version")
 	}
 	return cols
 }
