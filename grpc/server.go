@@ -8,6 +8,7 @@ import (
 	"data-handler/service/errors"
 	"data-handler/service/security"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"net"
 )
 
@@ -48,6 +49,9 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	}
 
 	g.grpcServer = grpc.NewServer(opts...)
+
+	reflection.Register(g.grpcServer)
+
 	stub.RegisterResourceServiceServer(g.grpcServer, NewResourceServiceServer(g.resourceService))
 	stub.RegisterAuthenticationServiceServer(g.grpcServer, NewAuthenticationServiceServer(g.authenticationService))
 	stub.RegisterDataSourceServiceServer(g.grpcServer, NewDataSourceServiceServer(g.dataSourceService))
