@@ -2,7 +2,7 @@ package main
 
 import (
 	"data-handler/app"
-	"data-handler/stub/model"
+	"data-handler/model"
 	"data-handler/util"
 	"flag"
 	log "github.com/sirupsen/logrus"

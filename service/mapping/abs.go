@@ -1,7 +1,7 @@
 package mapping
 
 import (
-	"data-handler/stub/model"
+	"data-handler/model"
 	"google.golang.org/protobuf/proto"
 )
 

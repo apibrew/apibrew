@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"data-handler/stub"
-	"data-handler/stub/model"
+	"data-handler/grpc/stub"
+	"data-handler/model"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

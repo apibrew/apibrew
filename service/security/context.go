@@ -2,8 +2,8 @@ package security
 
 import (
 	"context"
+	"data-handler/model"
 	"data-handler/service/errors"
-	"data-handler/stub/model"
 )
 
 var systemResourceAccessError = errors.AccessDeniedError.WithMessage("system resource is accessed outside of system context")

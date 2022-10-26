@@ -2,39 +2,52 @@ package service
 
 import (
 	"context"
+	"data-handler/model"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/security"
 	"data-handler/service/system"
-	"data-handler/stub"
-	"data-handler/stub/model"
 	"github.com/jellydator/ttlcache/v3"
 	"time"
 )
 
-type ResourceServiceInternal interface {
+type ResourceService interface {
 	InitResource(resource *model.Resource)
 	Init(data *model.InitData)
 	CheckResourceExists(workspace, name string) (bool, errors.ServiceError)
 	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, errors.ServiceError)
-}
-
-type ResourceService interface {
-	stub.ResourceServiceServer
-	ResourceServiceInternal
 	InjectDataSourceService(service DataSourceService)
 	InjectAuthenticationService(service AuthenticationService)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
+	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
+	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
+	Delete(ctx context.Context, workspace string, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
+	List(ctx context.Context) ([]*model.Resource, errors.ServiceError)
+	Get(ctx context.Context, workspace, id string) (*model.Resource, errors.ServiceError)
 }
 
 type resourceService struct {
-	stub.ResourceServiceServer
-	dataSourceService              DataSourceServiceInternal
-	authenticationService          AuthenticationServiceInternal
+	dataSourceService              DataSourceService
+	authenticationService          AuthenticationService
 	postgresResourceServiceBackend backend.ResourceServiceBackend
-	ServiceName                    string
 	cache                          *ttlcache.Cache[string, *model.Resource]
 	disableCache                   bool
+}
+
+func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
+	r.cache.Delete(resource.Workspace + "-" + resource.Name)
+	return r.GetBackend().UpdateResource(ctx, resource, doMigration, forceMigration)
+}
+
+func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
+	resource.Type = model.DataType_USER
+
+	return r.GetBackend().AddResource(backend.AddResourceParams{
+		Resource:       resource,
+		IgnoreIfExists: false,
+		Migrate:        doMigration,
+		ForceMigrate:   forceMigration,
+	})
 }
 
 func (r *resourceService) GetResourceByName(ctx context.Context, workspace string, resourceName string) (*model.Resource, errors.ServiceError) {
@@ -116,88 +129,26 @@ func (r *resourceService) InitResource(resource *model.Resource) {
 	}
 }
 
-func (r resourceService) Create(ctx context.Context, request *stub.CreateResourceRequest) (*stub.CreateResourceResponse, error) {
-	var result []*model.Resource
-
-	for _, resource := range request.Resources {
-
-		resource.Type = model.DataType_USER
-
-		res, err := r.GetBackend().AddResource(backend.AddResourceParams{
-			Resource:     resource,
-			Migrate:      request.DoMigration,
-			ForceMigrate: request.ForceMigration,
-		})
-
-		if err != nil {
-			return nil, err
-		}
-
-		result = append(result, res)
-	}
-
-	return &stub.CreateResourceResponse{
-		Resources: result,
-		Error:     nil,
-	}, nil
-}
-
-func (r resourceService) Update(ctx context.Context, request *stub.UpdateResourceRequest) (*stub.UpdateResourceResponse, error) {
-	var err error
-	for _, resource := range request.Resources {
-		err = r.GetBackend().UpdateResource(ctx, resource, request.DoMigration, request.ForceMigration)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r.cache.Delete(resource.Name)
-	}
-
-	return &stub.UpdateResourceResponse{
-		Resources: request.Resources,
-		Error:     nil,
-	}, nil
-}
-
-func (r resourceService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
-	var err error
-	err = r.GetBackend().DeleteResources(ctx, request.Workspace, request.Ids, request.DoMigration, request.ForceMigration)
+func (r resourceService) Delete(ctx context.Context, workspace string, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
+	err := r.GetBackend().DeleteResources(ctx, workspace, ids, doMigration, forceMigration)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	for _, id := range request.Ids {
+	for _, id := range ids {
 		r.cache.Delete(id)
 	}
 
-	return &stub.DeleteResourceResponse{}, nil
+	return nil
 }
 
-func (r resourceService) List(ctx context.Context, request *stub.ListResourceRequest) (*stub.ListResourceResponse, error) {
-	resources, err := r.GetBackend().ListResources(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &stub.ListResourceResponse{
-		Resources: resources,
-	}, nil
+func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
+	return r.GetBackend().ListResources(ctx)
 }
 
-func (r resourceService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
-	resource, err := r.GetBackend().GetResourceByName(ctx, request.Workspace, request.Name)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &stub.GetResourceResponse{
-		Resource: resource,
-		Error:    nil,
-	}, nil
+func (r resourceService) Get(ctx context.Context, workspace, resourceName string) (*model.Resource, errors.ServiceError) {
+	return r.GetBackend().GetResourceByName(ctx, workspace, resourceName)
 }
 
 func (r resourceService) GetBackend() backend.ResourceServiceBackend {
@@ -206,7 +157,6 @@ func (r resourceService) GetBackend() backend.ResourceServiceBackend {
 
 func NewResourceService() ResourceService {
 	return &resourceService{
-		ServiceName: "ResourceService",
 		cache: ttlcache.New[string, *model.Resource](
 			ttlcache.WithTTL[string, *model.Resource](1 * time.Minute),
 		),

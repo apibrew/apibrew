@@ -1,9 +1,9 @@
 package postgres
 
 import (
+	"data-handler/model"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
-	"data-handler/stub/model"
 	"database/sql"
 	"fmt"
 	log "github.com/sirupsen/logrus"

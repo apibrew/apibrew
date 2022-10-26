@@ -1,7 +1,7 @@
 package main
 
 import (
-	"data-handler/stub/model"
+	"data-handler/model"
 	"data-handler/util"
 )
 

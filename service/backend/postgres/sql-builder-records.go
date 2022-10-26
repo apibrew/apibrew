@@ -1,10 +1,10 @@
 package postgres
 
 import (
+	"data-handler/model"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/types"
-	"data-handler/stub/model"
 	"data-handler/util"
 	"fmt"
 	"github.com/google/uuid"

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stub;
 
-option go_package = "data-handler/stub";
+option go_package = "data-handler/grpc/stub";
 
 import 'model/workspace.proto';
 import 'model/error.proto';

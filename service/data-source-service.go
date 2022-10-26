@@ -2,41 +2,42 @@ package service
 
 import (
 	"context"
+	model "data-handler/model"
 	"data-handler/service/backend"
 	"data-handler/service/backend/postgres"
 	"data-handler/service/errors"
 	mapping "data-handler/service/mapping"
 	"data-handler/service/security"
 	"data-handler/service/system"
-	"data-handler/stub"
-	model "data-handler/stub/model"
 	log "github.com/sirupsen/logrus"
 )
 
-type DataSourceServiceInternal interface {
+type DataSourceService interface {
 	GetDataSourceBackend(dataSource *model.DataSource) backend.DataSourceBackend
 	GetSystemDataSourceBackend() backend.DataSourceBackend
 	GetDataSourceBackendById(dataSourceId string) (backend.DataSourceBackend, errors.ServiceError)
-}
-
-type DataSourceService interface {
-	stub.DataSourceServiceServer
-	DataSourceServiceInternal
 	InjectResourceService(service ResourceService)
 	InjectInitData(data *model.InitData)
 	Init(*model.InitData)
 	InjectRecordService(service RecordService)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
 	InjectAuthenticationService(service AuthenticationService)
+	ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError)
+	List(ctx context.Context) ([]*model.DataSource, errors.ServiceError)
+	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
+	Create(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)
+	Update(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)
+	PrepareResourceFromEntity(ctx context.Context, id string, entity string) (*model.Resource, errors.ServiceError)
+	Get(ctx context.Context, id string) (*model.DataSource, errors.ServiceError)
+	Delete(ctx context.Context, ids []string) errors.ServiceError
 }
 
 type dataSourceService struct {
-	stub.DataSourceServiceServer
-	resourceService                ResourceServiceInternal
-	recordService                  RecordServiceInternal
+	resourceService                ResourceService
+	recordService                  RecordService
 	systemDataSource               *model.DataSource
 	postgresResourceServiceBackend backend.ResourceServiceBackend
-	authenticationService          AuthenticationServiceInternal
+	authenticationService          AuthenticationService
 	ServiceName                    string
 }
 
@@ -44,46 +45,50 @@ func (d *dataSourceService) InjectAuthenticationService(service AuthenticationSe
 	d.authenticationService = service
 }
 
-func (d *dataSourceService) ListEntities(ctx context.Context, request *stub.ListEntitiesRequest) (*stub.ListEntitiesResponse, error) {
-	res, err := d.postgresResourceServiceBackend.ListEntities(ctx, request.Id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &stub.ListEntitiesResponse{
-		Entities: res,
-		Error:    nil,
-	}, nil
+func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError) {
+	return d.postgresResourceServiceBackend.ListEntities(ctx, id)
 }
 
-func (d *dataSourceService) List(ctx context.Context, request *stub.ListDataSourceRequest) (*stub.ListDataSourceResponse, error) {
+func (d *dataSourceService) List(ctx context.Context) ([]*model.DataSource, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
-	result, err := d.recordService.List(systemCtx, &stub.ListRecordRequest{
-		Resource: system.DataSourceResource.Name,
-		Token:    request.Token,
+	result, _, err := d.recordService.List(systemCtx, RecordListParams{
+		Workspace: system.DataSourceResource.Workspace,
+		Resource:  system.DataSourceResource.Name,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &stub.ListDataSourceResponse{
-		Content: mapping.MapFromRecord(result.Content, mapping.DataSourceFromRecord),
-		Error:   result.Error,
-	}, err
+	return mapping.MapFromRecord(result, mapping.DataSourceFromRecord), nil
 }
 
-func (d *dataSourceService) Status(ctx context.Context, request *stub.StatusRequest) (*stub.StatusResponse, error) {
-	return d.postgresResourceServiceBackend.GetStatus(request.Id)
+func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
+	return d.postgresResourceServiceBackend.GetStatus(id)
 }
 
-func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateDataSourceRequest) (*stub.CreateDataSourceResponse, error) {
+func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.DataSource) ([]*model.DataSource, errors.ServiceError) {
 	// insert records via resource service
-	records := mapping.MapToRecord(request.DataSources, mapping.DataSourceToRecord)
+	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
-	result, err := d.recordService.Create(systemCtx, &stub.CreateRecordRequest{
-		Token:     request.Token,
+	result, _, err := d.recordService.Create(systemCtx, RecordCreateParams{
+		Workspace: system.DataSourceResource.Workspace,
+		Resource:  system.DataSourceResource.Name,
+		Records:   records,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return mapping.MapFromRecord(result, mapping.DataSourceFromRecord), nil
+}
+
+func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.DataSource) ([]*model.DataSource, errors.ServiceError) {
+	// insert records via resource service
+	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
+	systemCtx := security.WithSystemContext(ctx)
+	result, err := d.recordService.Update(systemCtx, RecordUpdateParams{
 		Workspace: system.DataSourceResource.Workspace,
 		Records:   records,
 	})
@@ -92,89 +97,46 @@ func (d *dataSourceService) Create(ctx context.Context, request *stub.CreateData
 		return nil, err
 	}
 
-	return &stub.CreateDataSourceResponse{
-		DataSources: mapping.MapFromRecord(result.Records, mapping.DataSourceFromRecord),
-		Error:       result.Error,
-	}, err
-}
-
-func (d *dataSourceService) Update(ctx context.Context, request *stub.UpdateDataSourceRequest) (*stub.UpdateDataSourceResponse, error) {
-	// insert records via resource service
-	records := mapping.MapToRecord(request.DataSources, mapping.DataSourceToRecord)
-	systemCtx := security.WithSystemContext(ctx)
-	result, err := d.recordService.Update(systemCtx, &stub.UpdateRecordRequest{
-		Token:     request.Token,
-		Workspace: system.DataSourceResource.Workspace,
-		Records:   records,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range request.DataSources {
+	for _, item := range dataSources {
 		d.postgresResourceServiceBackend.DestroyDataSource(item.Id)
 	}
 
-	return &stub.UpdateDataSourceResponse{
-		DataSources: mapping.MapFromRecord(result.Records, mapping.DataSourceFromRecord),
-		Error:       result.Error,
-	}, err
+	return mapping.MapFromRecord(result, mapping.DataSourceFromRecord), nil
 }
 
-func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, request *stub.PrepareResourceFromEntityRequest) (*stub.PrepareResourceFromEntityResponse, error) {
-	resource, err := d.postgresResourceServiceBackend.PrepareResourceFromEntity(ctx, request.Id, request.Entity)
+func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id string, entity string) (*model.Resource, errors.ServiceError) {
+	resource, err := d.postgresResourceServiceBackend.PrepareResourceFromEntity(ctx, id, entity)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &stub.PrepareResourceFromEntityResponse{
-		Resource: resource,
-		Error:    nil,
-	}, nil
+	return resource, nil
 }
 
-func (d *dataSourceService) Get(ctx context.Context, request *stub.GetDataSourceRequest) (*stub.GetDataSourceResponse, error) {
+func (d *dataSourceService) Get(ctx context.Context, id string) (*model.DataSource, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
-	record, err := d.recordService.Get(systemCtx, &stub.GetRecordRequest{
-		Token:     request.Token,
+	record, err := d.recordService.Get(systemCtx, RecordGetParams{
 		Workspace: system.DataSourceResource.Workspace,
 		Resource:  system.DataSourceResource.Name,
-		Id:        request.Id,
+		Id:        id,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &stub.GetDataSourceResponse{
-		DataSource: mapping.DataSourceFromRecord(record.Record),
-		Error:      record.Error,
-	}, nil
+	return mapping.DataSourceFromRecord(record), nil
 }
 
-func (d *dataSourceService) Delete(ctx context.Context, request *stub.DeleteDataSourceRequest) (*stub.DeleteDataSourceResponse, error) {
+func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
 	systemCtx := security.WithSystemContext(ctx)
 
-	record, err := d.recordService.Delete(systemCtx, &stub.DeleteRecordRequest{
-		Token:     request.Token,
+	return d.recordService.Delete(systemCtx, RecordDeleteParams{
 		Workspace: system.DataSourceResource.Workspace,
 		Resource:  system.DataSourceResource.Name,
-		Ids:       request.Ids,
+		Ids:       ids,
 	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, dataSourceId := range request.Ids {
-		d.postgresResourceServiceBackend.DestroyDataSource(dataSourceId)
-	}
-
-	return &stub.DeleteDataSourceResponse{
-		Error: record.Error,
-	}, nil
 }
 
 func (d *dataSourceService) GetDataSourceBackendById(dataSourceId string) (backend.DataSourceBackend, errors.ServiceError) {
@@ -232,14 +194,14 @@ func (d *dataSourceService) Init(data *model.InitData) {
 	d.resourceService.InitResource(system.DataSourceResource)
 
 	if len(data.InitDataSources) > 0 {
-		res, err := d.recordService.Create(security.SystemContext, &stub.CreateRecordRequest{
+		_, _, err := d.recordService.Create(security.SystemContext, RecordCreateParams{
 			Workspace:      system.DataSourceResource.Workspace,
 			Records:        mapping.MapToRecord(data.InitDataSources, mapping.DataSourceToRecord),
 			IgnoreIfExists: true,
 		})
 
-		if err != nil || res.Error != nil {
-			log.Error(err, res.Error)
+		if err != nil {
+			log.Error(err)
 		}
 	}
 }

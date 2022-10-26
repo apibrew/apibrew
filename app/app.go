@@ -2,20 +2,18 @@ package app
 
 import (
 	"data-handler/api"
+	grpc_server "data-handler/grpc"
+	"data-handler/model"
 	"data-handler/service"
 	"data-handler/service/backend"
 	"data-handler/service/backend/postgres"
-	"data-handler/stub"
-	"data-handler/stub/model"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"net"
 )
 
 type App struct {
 	initData                       *model.InitData
-	grpcServer                     *grpc.Server
+	grpcServer                     grpc_server.GrpcServer
 	authenticationService          service.AuthenticationService
 	dataSourceService              service.DataSourceService
 	resourceService                service.ResourceService
@@ -65,6 +63,15 @@ func (app *App) Init() {
 	app.authenticationApi = api.NewAuthenticationApi()
 	app.apiServer = api.NewServer()
 
+	app.grpcServer = grpc_server.NewGrpcServer(grpc_server.GrpcServerInjectionConstructorParams{
+		ResourceService:       app.resourceService,
+		RecordService:         app.recordService,
+		AuthenticationService: app.authenticationService,
+		DataSourceService:     app.dataSourceService,
+		WorkspaceService:      app.workspaceService,
+		UserService:           app.userService,
+	})
+
 	app.InjectServices()
 	app.initServices()
 
@@ -78,17 +85,7 @@ func (app *App) Init() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	var opts = []grpc.ServerOption{
-		grpc.UnaryInterceptor(app.authenticationService.GrpcIntercept),
-	}
-	app.grpcServer = grpc.NewServer(opts...)
-	stub.RegisterResourceServiceServer(app.grpcServer, app.resourceService)
-	stub.RegisterAuthenticationServiceServer(app.grpcServer, app.authenticationService)
-	stub.RegisterDataSourceServiceServer(app.grpcServer, app.dataSourceService)
-	stub.RegisterRecordServiceServer(app.grpcServer, app.recordService)
-	stub.RegisterWorkspaceServiceServer(app.grpcServer, app.workspaceService)
-
-	reflection.Register(app.grpcServer)
+	app.grpcServer.Init(app.initData)
 }
 
 func (app *App) Serve() {

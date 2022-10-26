@@ -1,3 +1,5 @@
 .idea
 /stub
 /stub-ts
+/model
+/grpc/stub

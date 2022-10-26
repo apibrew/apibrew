@@ -2,8 +2,8 @@ package postgres
 
 import (
 	"context"
+	"data-handler/model"
 	"data-handler/service/errors"
-	"data-handler/stub/model"
 	"data-handler/util"
 	"database/sql"
 	"github.com/huandu/go-sqlbuilder"

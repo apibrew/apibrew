@@ -2,8 +2,8 @@ package test
 
 //
 //import (
-//	"data-handler/stub"
-//	"data-handler/stub/model"
+//	"data-handler/grpc/stub"
+//	"data-handler/model"
 //	"fmt"
 //	"google.golang.org/protobuf/encoding/protojson"
 //	"google.golang.org/protobuf/types/known/structpb"

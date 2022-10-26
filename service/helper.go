@@ -1,8 +1,8 @@
 package service
 
 import (
+	"data-handler/model"
 	"data-handler/service/errors"
-	"data-handler/stub/model"
 	"google.golang.org/protobuf/proto"
 )
 

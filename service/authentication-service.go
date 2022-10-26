@@ -3,14 +3,12 @@ package service
 import (
 	"context"
 	"crypto/rsa"
+	"data-handler/model"
 	"data-handler/service/errors"
 	"data-handler/service/mapping"
 	"data-handler/service/security"
 	"data-handler/service/system"
-	"data-handler/stub"
-	"data-handler/stub/model"
 	"github.com/golang-jwt/jwt/v4"
-	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
 	"time"
@@ -27,24 +25,91 @@ type CheckParams struct {
 	Resources any
 }
 
-type AuthenticationServiceInternal interface {
-	validateToken(token string) error
-}
-
 type AuthenticationService interface {
-	stub.AuthenticationServiceServer
-	validateToken(token string) error
-	GrpcIntercept(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error)
 	InjectRecordService(service RecordService)
 	Init(data *model.InitData)
+	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError)
+	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
+	ParseAndVerifyToken(token string) (*security.UserDetails, errors.ServiceError)
 }
 
 type authenticationService struct {
-	stub.AuthenticationServiceServer
-	recordService         RecordServiceInternal
+	recordService         RecordService
 	privateKey            *rsa.PrivateKey
 	publicKey             *rsa.PublicKey
 	DisableAuthentication bool
+}
+
+func (s *authenticationService) Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
+	// locate user
+	user, err := s.LocateUser(ctx, username, password)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Prepare token
+	expiration := s.ExpirationFromTerm(term)
+	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
+		Key: *s.privateKey,
+		UserDetails: security.UserDetails{
+			Username: user.Username,
+			Scopes:   user.Scopes,
+		},
+		ExpiresAt: expiration,
+		Issuer:    "data-handler",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Token{
+		Term:       term,
+		Content:    token,
+		Expiration: timestamppb.New(expiration),
+	}, nil
+}
+
+func (s *authenticationService) RenewToken(ctx context.Context, oldToken string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
+	userDetails, err := security.JwtVerifyAndUnpackUserDetails(*s.publicKey, oldToken)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := s.FindUser(ctx, userDetails.Username)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Prepare token
+	expiration := s.ExpirationFromTerm(term)
+
+	newToken, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
+		Key: *s.privateKey,
+		UserDetails: security.UserDetails{
+			Username: user.Username,
+			Scopes:   user.Scopes,
+		},
+		ExpiresAt: expiration,
+		Issuer:    "data-handler",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Token{
+		Term:       term,
+		Content:    newToken,
+		Expiration: timestamppb.New(expiration),
+	}, nil
+}
+
+func (s *authenticationService) ParseAndVerifyToken(token string) (*security.UserDetails, errors.ServiceError) {
+	return security.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
 }
 
 type RequestWithToken interface {
@@ -55,105 +120,7 @@ func (s *authenticationService) InjectRecordService(service RecordService) {
 	s.recordService = service
 }
 
-func (s *authenticationService) GrpcIntercept(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	if rtw, ok := req.(RequestWithToken); !s.DisableAuthentication && ok {
-		token := rtw.GetToken()
-
-		userDetails, err := security.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
-
-		if err != nil {
-			return nil, errors.AuthenticationFailedError
-		}
-
-		userCtx := security.WithUserDetails(ctx, *userDetails)
-
-		return handler(userCtx, req)
-	}
-	return handler(ctx, req)
-}
-
-func (s *authenticationService) Check(params CheckParams) error {
-	return nil
-}
-
-func (s *authenticationService) validateToken(token string) error {
-	return nil
-}
-
-func (s *authenticationService) Authenticate(ctx context.Context, req *stub.AuthenticationRequest) (*stub.AuthenticationResponse, error) {
-	// locate user
-	user, err := s.LocateUser(ctx, req.Username, req.Password)
-
-	if err != nil {
-		return &stub.AuthenticationResponse{
-			Error: toProtoError(err),
-		}, nil
-	}
-
-	// Prepare token
-	expiration := s.ExpirationFromTerm(req.Term)
-	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
-		Key: *s.privateKey,
-		UserDetails: security.UserDetails{
-			Username: user.Username,
-			Scopes:   user.Scopes,
-		},
-		ExpiresAt: expiration,
-		Issuer:    "data-handler",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &stub.AuthenticationResponse{
-		Token: &model.Token{
-			Term:       req.Term,
-			Content:    token,
-			Expiration: timestamppb.New(expiration),
-		},
-		Error: nil,
-	}, nil
-}
-
-func (s *authenticationService) RenewToken(ctx context.Context, req *stub.RenewTokenRequest) (*stub.RenewTokenResponse, error) {
-	userDetails, err := security.JwtVerifyAndUnpackUserDetails(*s.publicKey, req.Token)
-
-	if err != nil {
-		return &stub.RenewTokenResponse{
-			Error: toProtoError(err),
-		}, nil
-	}
-
-	user, err := s.FindUser(ctx, userDetails.Username)
-
-	// Prepare token
-	expiration := s.ExpirationFromTerm(req.Term)
-	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
-		Key: *s.privateKey,
-		UserDetails: security.UserDetails{
-			Username: user.Username,
-			Scopes:   user.Scopes,
-		},
-		ExpiresAt: expiration,
-		Issuer:    "data-handler",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &stub.RenewTokenResponse{
-		Token: &model.Token{
-			Term:       req.Term,
-			Content:    token,
-			Expiration: timestamppb.New(expiration),
-		},
-		Error: nil,
-	}, nil
-}
-
-func (s *authenticationService) LocateUser(ctx context.Context, username, password string) (*model.User, error) {
+func (s *authenticationService) LocateUser(ctx context.Context, username, password string) (*model.User, errors.ServiceError) {
 	user, err := s.FindUser(ctx, username)
 	if err != nil {
 		return nil, err
@@ -166,7 +133,7 @@ func (s *authenticationService) LocateUser(ctx context.Context, username, passwo
 	return user, nil
 }
 
-func (s *authenticationService) FindUser(ctx context.Context, username string) (*model.User, error) {
+func (s *authenticationService) FindUser(ctx context.Context, username string) (*model.User, errors.ServiceError) {
 	res, err := s.recordService.FindBy(ctx, system.UserResource.Workspace, system.UserResource.Name, "username", username)
 
 	if err != nil {

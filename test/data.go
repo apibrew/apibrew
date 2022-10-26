@@ -1,6 +1,6 @@
 package test
 
-import "data-handler/stub/model"
+import "data-handler/model"
 
 var systemDataSource = &model.DataSource{
 	Id:      "system",

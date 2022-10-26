@@ -2,8 +2,10 @@ package security
 
 import (
 	"crypto/rsa"
+	"data-handler/service/errors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -19,11 +21,13 @@ type UserDetails struct {
 	Scopes   []string
 }
 
-func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, error) {
+func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.ServiceError) {
 	jit, err := uuid.NewRandom()
 
 	if err != nil {
-		return "", err
+		log.Error(err)
+
+		return "", errors.InternalError.WithDetails(err.Error())
 	}
 
 	claims := &JwtUserClaims{
@@ -40,10 +44,18 @@ func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 
-	return token.SignedString(&params.Key)
+	signedToken, err := token.SignedString(&params.Key)
+
+	if err != nil {
+		log.Error(err)
+
+		return "", errors.InternalError.WithDetails(err.Error())
+	}
+
+	return signedToken, nil
 }
 
-func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*UserDetails, error) {
+func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*UserDetails, errors.ServiceError) {
 	claims := new(JwtUserClaims)
 
 	_, err := jwt.ParseWithClaims(tokenContent, claims, func(token *jwt.Token) (interface{}, error) {
@@ -51,7 +63,9 @@ func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*Use
 	})
 
 	if err != nil {
-		return nil, err
+		log.Error(err)
+
+		return nil, errors.InternalError.WithDetails(err.Error())
 	}
 
 	return &UserDetails{

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stub.model;
 
-option go_package = "data-handler/stub/model";
+option go_package = "data-handler/model";
 
 import 'google/protobuf/struct.proto';
 import 'model/audit.proto';

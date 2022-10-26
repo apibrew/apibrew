@@ -2,8 +2,8 @@ package test
 
 import (
 	"context"
-	"data-handler/stub"
-	"data-handler/stub/model"
+	"data-handler/grpc/stub"
+	"data-handler/model"
 	log "github.com/sirupsen/logrus"
 	"reflect"
 	"testing"
@@ -205,12 +205,12 @@ func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, contai
 }
 
 func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *model.DataSource, container *SimpleAppGrpcContainer, t *testing.T) {
-	_, err := container.dataSourceService.Status(context.TODO(), &stub.StatusRequest{
+	res, _ := container.dataSourceService.Status(context.TODO(), &stub.StatusRequest{
 		Token: "test-token",
 		Id:    createdDataSource.Id,
 	})
 
-	if err == nil {
+	if res.Error == nil {
 		t.Error("It should be unable to login to database")
 		return
 	}

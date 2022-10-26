@@ -2,28 +2,31 @@ package service
 
 import (
 	"context"
-	mapping "data-handler/service/mapping"
+	"data-handler/model"
+	"data-handler/service/errors"
+	"data-handler/service/mapping"
 	"data-handler/service/security"
 	"data-handler/service/system"
-	"data-handler/stub"
-	"data-handler/stub/model"
 	log "github.com/sirupsen/logrus"
 )
 
 type WorkspaceService interface {
-	stub.WorkspaceServiceServer
 	InjectRecordService(service RecordService)
 	InjectAuthenticationService(service AuthenticationService)
-	Init(data *model.InitData)
 	InjectResourceService(service ResourceService)
+	Init(data *model.InitData)
+	Create(ctx context.Context, workspaces []*model.Workspace) ([]*model.Workspace, errors.ServiceError)
+	Update(ctx context.Context, workspaces []*model.Workspace) ([]*model.Workspace, errors.ServiceError)
+	Delete(ctx context.Context, ids []string) errors.ServiceError
+	Get(ctx context.Context, id string) (*model.Workspace, errors.ServiceError)
+	List(ctx context.Context) ([]*model.Workspace, errors.ServiceError)
 }
 
 type workspaceService struct {
-	stub.WorkspaceServiceServer
-	recordService         RecordServiceInternal
-	authenticationService AuthenticationServiceInternal
+	recordService         RecordService
+	authenticationService AuthenticationService
 	serviceName           string
-	resourceService       ResourceServiceInternal
+	resourceService       ResourceService
 }
 
 func (u *workspaceService) InjectResourceService(service ResourceService) {
@@ -38,109 +41,92 @@ func (u *workspaceService) InjectRecordService(service RecordService) {
 	u.recordService = service
 }
 
-func (u *workspaceService) Create(ctx context.Context, request *stub.CreateWorkspaceRequest) (*stub.CreateWorkspaceResponse, error) {
+func (u *workspaceService) Create(ctx context.Context, workspaces []*model.Workspace) ([]*model.Workspace, errors.ServiceError) {
 	// insert records via resource service
-	records := mapping.MapToRecord(request.Workspaces, mapping.WorkspaceToRecord)
+	records := mapping.MapToRecord(workspaces, mapping.WorkspaceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
 
-	result, err := u.recordService.Create(systemCtx, &stub.CreateRecordRequest{
-		Token:   request.Token,
-		Records: records,
+	result, _, err := u.recordService.Create(systemCtx, RecordCreateParams{
+		Workspace: system.WorkspaceResource.Workspace,
+		Resource:  system.WorkspaceResource.Name,
+		Records:   records,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &stub.CreateWorkspaceResponse{
-		Workspaces: mapping.MapFromRecord(result.Records, mapping.WorkspaceFromRecord),
-		Error:      result.Error,
-	}, err
+	return mapping.MapFromRecord(result, mapping.WorkspaceFromRecord), nil
 }
 
-func (u *workspaceService) Update(ctx context.Context, request *stub.UpdateWorkspaceRequest) (*stub.UpdateWorkspaceResponse, error) {
+func (u *workspaceService) Update(ctx context.Context, workspaces []*model.Workspace) ([]*model.Workspace, errors.ServiceError) {
 	// insert records via resource service
-	records := mapping.MapToRecord(request.Workspaces, mapping.WorkspaceToRecord)
+	records := mapping.MapToRecord(workspaces, mapping.WorkspaceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
-	result, err := u.recordService.Update(systemCtx, &stub.UpdateRecordRequest{
-		Token:   request.Token,
-		Records: records,
+	result, err := u.recordService.Update(systemCtx, RecordUpdateParams{
+		Workspace: system.WorkspaceResource.Workspace,
+		Records:   records,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &stub.UpdateWorkspaceResponse{
-		Workspaces: mapping.MapFromRecord(result.Records, mapping.WorkspaceFromRecord),
-		Error:      result.Error,
-	}, err
+	return mapping.MapFromRecord(result, mapping.WorkspaceFromRecord), nil
 }
 
-func (u *workspaceService) Delete(ctx context.Context, request *stub.DeleteWorkspaceRequest) (*stub.DeleteWorkspaceResponse, error) {
+func (u *workspaceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
 	systemCtx := security.WithSystemContext(ctx)
 
-	record, err := u.recordService.Delete(systemCtx, &stub.DeleteRecordRequest{
-		Token:    request.Token,
-		Resource: system.WorkspaceResource.Name,
-		Ids:      request.Ids,
+	return u.recordService.Delete(systemCtx, RecordDeleteParams{
+		Workspace: system.WorkspaceResource.Workspace,
+		Resource:  system.WorkspaceResource.Name,
+		Ids:       ids,
 	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &stub.DeleteWorkspaceResponse{
-		Error: record.Error,
-	}, nil
 }
 
-func (u *workspaceService) Get(ctx context.Context, request *stub.GetWorkspaceRequest) (*stub.GetWorkspaceResponse, error) {
+func (u *workspaceService) Get(ctx context.Context, id string) (*model.Workspace, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
-	record, err := u.recordService.Get(systemCtx, &stub.GetRecordRequest{
-		Token:    request.Token,
-		Resource: system.WorkspaceResource.Name,
-		Id:       request.Id,
+	record, err := u.recordService.Get(systemCtx, RecordGetParams{
+		Workspace: system.WorkspaceResource.Workspace,
+		Resource:  system.WorkspaceResource.Name,
+		Id:        id,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &stub.GetWorkspaceResponse{
-		Workspace: mapping.WorkspaceFromRecord(record.Record),
-		Error:     record.Error,
-	}, nil
+	return mapping.WorkspaceFromRecord(record), nil
 }
 
-func (u *workspaceService) List(ctx context.Context, request *stub.ListWorkspaceRequest) (*stub.ListWorkspaceResponse, error) {
+func (u *workspaceService) List(ctx context.Context) ([]*model.Workspace, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
-	result, err := u.recordService.List(systemCtx, &stub.ListRecordRequest{
-		Resource: system.WorkspaceResource.Name,
-		Token:    request.Token,
+	result, _, err := u.recordService.List(systemCtx, RecordListParams{
+		Workspace: system.WorkspaceResource.Workspace,
+		Resource:  system.WorkspaceResource.Name,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &stub.ListWorkspaceResponse{
-		Content: mapping.MapFromRecord(result.Content, mapping.WorkspaceFromRecord),
-		Error:   result.Error,
-	}, err
+	return mapping.MapFromRecord(result, mapping.WorkspaceFromRecord), err
 }
 
 func (d *workspaceService) Init(data *model.InitData) {
 	d.resourceService.InitResource(system.WorkspaceResource)
 
 	if len(data.InitWorkspaces) > 0 {
-		res, err := d.recordService.Create(security.SystemContext, &stub.CreateRecordRequest{
+		_, _, err := d.recordService.Create(security.SystemContext, RecordCreateParams{
+			Workspace:      system.WorkspaceResource.Workspace,
+			Resource:       system.WorkspaceResource.Name,
 			Records:        mapping.MapToRecord(data.InitWorkspaces, mapping.WorkspaceToRecord),
 			IgnoreIfExists: true,
 		})
 
-		if err != nil || res.Error != nil {
-			log.Error(err, res.Error)
+		if err != nil {
+			log.Error(err)
 		}
 	}
 }

@@ -1,6 +1,8 @@
 package util
 
-import "data-handler/service/errors"
+import (
+	"data-handler/service/errors"
+)
 
 func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
 	var list []R

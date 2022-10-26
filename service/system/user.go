@@ -1,6 +1,6 @@
 package system
 
-import "data-handler/stub/model"
+import "data-handler/model"
 
 var UserResource = &model.Resource{
 	Name:      "user",

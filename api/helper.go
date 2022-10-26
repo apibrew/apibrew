@@ -1,9 +1,9 @@
 package api
 
 import (
-	"context"
+	"data-handler/model"
 	"data-handler/service"
-	"data-handler/stub/model"
+	"data-handler/service/errors"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -37,8 +37,6 @@ func ServiceResponder[T proto.Message, R service.Response]() ServiceCaller[T, R]
 type ServiceCaller[T proto.Message, R service.Response] struct {
 	request        *http.Request
 	writer         http.ResponseWriter
-	serviceCaller  func(ctx context.Context, req T) (R, error)
-	payload        T
 	responseMapper func(response R) proto.Message
 }
 
@@ -54,42 +52,17 @@ func (s ServiceCaller[T, R]) Writer(writer http.ResponseWriter) ServiceCaller[T,
 	return s
 }
 
-func (s ServiceCaller[T, R]) Payload(payload T) ServiceCaller[T, R] {
-	s.payload = payload
-
-	return s
-}
-
-func (s ServiceCaller[T, R]) ServiceCall(f func(ctx context.Context, req T) (R, error)) ServiceCaller[T, R] {
-	s.serviceCaller = f
-
-	return s
-}
-
-func (s ServiceCaller[T, R]) ResponseMapper(f func(response R) proto.Message) ServiceCaller[T, R] {
-	s.responseMapper = f
-
-	return s
-}
-
-func (s ServiceCaller[T, R]) Respond() {
-	serviceResult, err := s.serviceCaller(s.request.Context(), s.payload)
-
+func (s ServiceCaller[T, R]) Respond(serviceResult proto.Message, serviceError errors.ServiceError) {
 	s.writer.Header().Set("Content-Type", "application/json")
 
-	isSuccess := err == nil && serviceResult.GetError() == nil
+	isSuccess := serviceError == nil
 	if !isSuccess {
-		handleServiceError(s.writer, serviceResult, err)
+		handleServiceError(s.writer, serviceError)
 	} else {
 		s.writer.WriteHeader(200)
 	}
 
-	var msg proto.Message = serviceResult
-	if isSuccess && s.responseMapper != nil {
-		msg = s.responseMapper(serviceResult)
-	}
-
-	body, err := mo.Marshal(msg)
+	body, err := mo.Marshal(serviceResult)
 
 	if err != nil {
 		log.Error(err)
@@ -98,13 +71,8 @@ func (s ServiceCaller[T, R]) Respond() {
 	s.writer.Write(body)
 }
 
-func handleServiceError(writer http.ResponseWriter, serviceResult service.Response, err error) {
-	if err != nil {
-		log.Error(err)
-		writer.WriteHeader(500)
-	} else if serviceResult.GetError() != nil {
-		writer.WriteHeader(errorCodeHttpStatusMap[serviceResult.GetError().GetCode()])
-	}
+func handleServiceError(writer http.ResponseWriter, err errors.ServiceError) {
+	writer.WriteHeader(errorCodeHttpStatusMap[err.ProtoError().GetCode()])
 }
 
 func handleClientError(writer http.ResponseWriter, err error) {

@@ -2,40 +2,73 @@ package service
 
 import (
 	"context"
+	"data-handler/model"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/security"
 	"data-handler/service/system"
 	"data-handler/service/types"
-	"data-handler/stub"
-	"data-handler/stub/model"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type RecordServiceInternal interface {
-	stub.RecordServiceServer
-	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
-	GetRecord(ctx context.Context, workspace, resourceName, id string) (*model.Record, errors.ServiceError)
-	FindBy(ctx context.Context, workspace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
+type RecordListParams struct {
+	Query      *model.BooleanExpression
+	Workspace  string
+	Resource   string
+	Limit      uint32
+	Offset     uint64
+	UseHistory bool
+}
+
+type RecordCreateParams struct {
+	Workspace      string
+	Resource       string
+	Records        []*model.Record
+	IgnoreIfExists bool
+}
+
+type RecordUpdateParams struct {
+	Workspace    string
+	Records      []*model.Record
+	CheckVersion bool
+}
+
+type RecordGetParams struct {
+	Workspace string
+	Resource  string
+	Id        string
+}
+
+type RecordDeleteParams struct {
+	Workspace string
+	Resource  string
+	Ids       []string
 }
 
 type RecordService interface {
-	stub.RecordServiceServer
-	RecordServiceInternal
+	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
+	GetRecord(ctx context.Context, workspace, resourceName, id string) (*model.Record, errors.ServiceError)
+	FindBy(ctx context.Context, workspace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
+
 	Init(data *model.InitData)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
 	InjectDataSourceService(service DataSourceService)
 	InjectAuthenticationService(service AuthenticationService)
 	InjectResourceService(service ResourceService)
+
+	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
+	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError)
+	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
+	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
+	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
 }
 
 type recordService struct {
-	stub.RecordServiceServer
 	postgresResourceServiceBackend backend.ResourceServiceBackend
-	dataSourceService              DataSourceServiceInternal
-	authenticationService          AuthenticationServiceInternal
+	dataSourceService              DataSourceService
+	authenticationService          AuthenticationService
 	ServiceName                    string
-	resourceService                ResourceServiceInternal
+	resourceService                ResourceService
 }
 
 func (r *recordService) InjectAuthenticationService(service AuthenticationService) {
@@ -54,46 +87,30 @@ func (r *recordService) InjectPostgresResourceServiceBackend(resourceServiceBack
 	r.postgresResourceServiceBackend = resourceServiceBackend
 }
 
-func (r *recordService) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
-	resource, err := r.resourceService.GetResourceByName(ctx, request.Workspace, request.Resource)
+func (r *recordService) List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
+	resource, err := r.resourceService.GetResourceByName(ctx, params.Workspace, params.Resource)
 
 	if err != nil {
-		return &stub.ListRecordResponse{
-			Error: toProtoError(err),
-		}, nil
-	}
-
-	if resource == nil {
-		return &stub.ListRecordResponse{
-			Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + request.Resource)),
-		}, nil
+		return nil, 0, err
 	}
 
 	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
-		return &stub.ListRecordResponse{
-			Error: toProtoError(err),
-		}, nil
+		return nil, 0, err
 	}
 
 	records, total, err := r.postgresResourceServiceBackend.ListRecords(backend.ListRecordParams{
 		Resource:   resource,
-		Query:      request.Query,
-		Limit:      request.Limit,
-		Offset:     request.Offset,
-		UseHistory: request.UseHistory,
+		Query:      params.Query,
+		Limit:      params.Limit,
+		Offset:     params.Offset,
+		UseHistory: params.UseHistory,
 	})
 
 	if err != nil {
-		return &stub.ListRecordResponse{
-			Error: toProtoError(err),
-		}, nil
+		return nil, 0, err
 	}
 
-	return &stub.ListRecordResponse{
-		Content: records,
-		Total:   total,
-		Error:   nil,
-	}, nil
+	return records, total, err
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
@@ -151,54 +168,42 @@ func (r *recordService) newEqualExpression(propertyName string, val *structpb.Va
 	}
 }
 
-func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
+func (r *recordService) Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
 	var entityRecordMap = make(map[string][]*model.Record)
 
-	for _, record := range request.Records {
+	for _, record := range params.Records {
 		entityRecordMap[record.Resource] = append(entityRecordMap[record.Resource], record)
 	}
 
 	var result []*model.Record
 
-	for _, item := range request.Records {
+	for _, item := range params.Records {
 		item.Type = model.DataType_USER
 	}
 
 	var insertedArray []bool
-	var err error
+	var err errors.ServiceError
 
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
-		resource, err = r.resourceService.GetResourceByName(ctx, request.Workspace, resourceName)
+		resource, err = r.resourceService.GetResourceByName(ctx, params.Workspace, resourceName)
 
 		if err != nil {
-			return &stub.CreateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
-		}
-
-		if resource == nil {
-			return &stub.CreateRecordResponse{
-				Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + resourceName)),
-			}, nil
+			return nil, nil, err
 		}
 
 		if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		if err != nil {
-			return &stub.CreateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
+			return nil, nil, err
 		}
 
 		err = r.validateRecords(resource, list)
 
 		if err != nil {
-			return &stub.CreateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
+			return nil, nil, err
 		}
 
 		var records []*model.Record
@@ -206,99 +211,66 @@ func (r *recordService) Create(ctx context.Context, request *stub.CreateRecordRe
 		records, inserted, err = r.postgresResourceServiceBackend.AddRecords(backend.BulkRecordsParams{
 			Resource:       resource,
 			Records:        list,
-			IgnoreIfExists: request.IgnoreIfExists,
+			IgnoreIfExists: params.IgnoreIfExists,
 		})
 
 		insertedArray = append(insertedArray, inserted)
 
 		if err != nil {
-			return &stub.CreateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
+			return nil, nil, err
 		}
 
 		result = append(result, records...)
 	}
 
-	return &stub.CreateRecordResponse{
-		Records:  result,
-		Error:    nil,
-		Inserted: insertedArray,
-	}, nil
+	return result, insertedArray, nil
 }
 
-func (r *recordService) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
+func (r *recordService) Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
 	var entityRecordMap = make(map[string][]*model.Record)
 
-	for _, record := range request.Records {
+	for _, record := range params.Records {
 		entityRecordMap[record.Resource] = append(entityRecordMap[record.Resource], record)
 	}
 
 	var result []*model.Record
-	var err error
+	var err errors.ServiceError
 
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
-		resource, err = r.resourceService.GetResourceByName(ctx, request.Workspace, resourceName)
-
-		if err != nil {
-			return &stub.UpdateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
-		}
-
-		if resource == nil {
-			return &stub.UpdateRecordResponse{
-				Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + resourceName)),
-			}, nil
+		if resource, err = r.resourceService.GetResourceByName(ctx, params.Workspace, resourceName); err != nil {
+			return nil, err
 		}
 
 		if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
-			return &stub.UpdateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
+			return nil, err
 		}
 
-		if err != nil {
-			return &stub.UpdateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
-		}
-
-		if resource.Flags.KeepHistory && !request.CheckVersion {
-			return &stub.UpdateRecordResponse{
-				Error: toProtoError(errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")),
-			}, nil
+		if resource.Flags.KeepHistory && !params.CheckVersion {
+			return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
 		}
 
 		err = r.validateRecords(resource, list)
 
 		if err != nil {
-			return &stub.UpdateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
+			return nil, err
 		}
 
 		var records []*model.Record
 		records, err = r.postgresResourceServiceBackend.UpdateRecords(backend.BulkRecordsParams{
 			Resource:     resource,
 			Records:      list,
-			CheckVersion: request.CheckVersion,
+			CheckVersion: params.CheckVersion,
 		})
 
 		if err != nil {
-			return &stub.UpdateRecordResponse{
-				Error: toProtoError(err),
-			}, nil
+			return nil, err
 		}
 
 		result = append(result, records...)
 	}
 
-	return &stub.UpdateRecordResponse{
-		Records: result,
-		Error:   nil,
-	}, nil
+	return result, nil
 }
 
 func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, id string) (*model.Record, errors.ServiceError) {
@@ -351,58 +323,29 @@ func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, pro
 	return res[0], nil
 }
 
-func (r *recordService) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
-	record, err := r.GetRecord(ctx, request.Workspace, request.Resource, request.Id)
-
-	if err != nil {
-		return &stub.GetRecordResponse{
-			Error: toProtoError(err),
-		}, nil
-	}
-
-	return &stub.GetRecordResponse{
-		Record: record,
-		Error:  nil,
-	}, nil
+func (r *recordService) Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError) {
+	return r.GetRecord(ctx, params.Workspace, params.Resource, params.Id)
 }
 
-func (r *recordService) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
-	resource, err := r.resourceService.GetResourceByName(ctx, request.Workspace, request.Resource)
+func (r *recordService) Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError {
+	resource, err := r.resourceService.GetResourceByName(ctx, params.Workspace, params.Resource)
 
 	if err != nil {
-		return &stub.DeleteRecordResponse{
-			Error: toProtoError(err),
-		}, nil
-	}
-
-	if resource == nil {
-		return &stub.DeleteRecordResponse{
-			Error: toProtoError(errors.RecordValidationError.WithDetails("resource not found: " + request.Resource)),
-		}, nil
+		return err
 	}
 
 	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
-		return &stub.DeleteRecordResponse{
-			Error: toProtoError(err),
-		}, nil
+		return err
 	}
 
-	err = r.postgresResourceServiceBackend.DeleteRecords(resource, request.Ids)
-
-	if err != nil {
-		return &stub.DeleteRecordResponse{
-			Error: toProtoError(err),
-		}, nil
-	}
-
-	return &stub.DeleteRecordResponse{}, nil
+	return r.postgresResourceServiceBackend.DeleteRecords(resource, params.Ids)
 }
 
 func (r *recordService) Init(data *model.InitData) {
 
 }
 
-func (r *recordService) validateRecords(resource *model.Resource, list []*model.Record) error {
+func (r *recordService) validateRecords(resource *model.Resource, list []*model.Record) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)

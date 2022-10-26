@@ -2,10 +2,9 @@ package postgres
 
 import (
 	"context"
+	"data-handler/model"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
-	"data-handler/stub"
-	"data-handler/stub/model"
 	"database/sql"
 	"fmt"
 	"github.com/lib/pq"
@@ -70,10 +69,8 @@ func (p *postgresResourceServiceBackend) Init() {
 	}
 }
 
-func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (result *stub.StatusResponse, err errors.ServiceError) {
-	result = new(stub.StatusResponse)
-
-	result.ConnectionAlreadyInitiated = p.connectionMap[dataSourceId] != nil
+func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
+	connectionAlreadyInitiated = p.connectionMap[dataSourceId] != nil
 
 	conn, err := p.acquireConnection(dataSourceId)
 
@@ -83,7 +80,7 @@ func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (result 
 
 	err = handleDbError(conn.Ping())
 
-	result.TestConnection = err == nil
+	testConnection = err == nil
 
 	return
 }

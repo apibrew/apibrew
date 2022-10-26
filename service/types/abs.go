@@ -1,7 +1,7 @@
 package types
 
 import (
-	"data-handler/stub/model"
+	"data-handler/model"
 	"errors"
 	"fmt"
 	"reflect"

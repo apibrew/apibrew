@@ -2,9 +2,8 @@ package backend
 
 import (
 	"context"
+	"data-handler/model"
 	"data-handler/service/errors"
-	"data-handler/stub"
-	"data-handler/stub/model"
 )
 
 type DataSourceBackend interface {
@@ -48,7 +47,7 @@ type ResourceServiceBackend interface {
 	DeleteRecords(resource *model.Resource, list []string) errors.ServiceError
 	DestroyDataSource(dataSourceId string)
 	InjectDataSourceService(service DataSourceLocator)
-	GetStatus(dataSourceId string) (*stub.StatusResponse, errors.ServiceError)
+	GetStatus(dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
 	ListRecords(params ListRecordParams) ([]*model.Record, uint32, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, errors.ServiceError)
 	DeleteResources(ctx context.Context, workspace string, ids []string, migration bool, forceMigration bool) errors.ServiceError

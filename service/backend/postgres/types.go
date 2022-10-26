@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"data-handler/stub/model"
+	"data-handler/model"
 	"strconv"
 )
 

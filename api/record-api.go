@@ -1,12 +1,11 @@
 package api
 
 import (
+	"data-handler/grpc/stub"
+	"data-handler/model"
 	"data-handler/service"
-	"data-handler/stub"
-	"data-handler/stub/model"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/proto"
 	"net/http"
 	"strconv"
 	"strings"
@@ -46,7 +45,7 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 func (r *recordApi) matchFunc(request *http.Request, match *mux.RouteMatch) bool {
 	pathParts := strings.Split(request.URL.Path, "/")
 	resourceName := pathParts[1]
-	exists, err := r.resourceService.CheckResourceExists("", resourceName)
+	exists, err := r.resourceService.CheckResourceExists("default", resourceName)
 	if err != nil {
 		log.Println(err)
 		return false
@@ -111,19 +110,22 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		}
 	}
 
+	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
+		Query:      query,
+		Workspace:  "default",
+		Resource:   resourceName,
+		Limit:      uint32(limit),
+		Offset:     uint64(offset),
+		UseHistory: getRequestBoolFlag(request, "useHistory"),
+	})
+
 	ServiceResponder[*stub.ListRecordRequest, *stub.ListRecordResponse]().
 		Writer(writer).
 		Request(request).
-		ServiceCall(r.recordService.List).
-		Payload(&stub.ListRecordRequest{
-			Token:      getToken(request),
-			Resource:   resourceName,
-			Query:      query,
-			Limit:      uint32(limit),
-			Offset:     uint64(offset),
-			UseHistory: getRequestBoolFlag(request, "useHistory"),
-		}).
-		Respond()
+		Respond(&stub.ListRecordResponse{
+			Total:   total,
+			Content: result,
+		}, serviceErr)
 }
 
 func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http.Request) {
@@ -147,18 +149,20 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
+	res, inserted, serviceErr := r.recordService.Create(request.Context(), service.RecordCreateParams{
+		Workspace:      "default",
+		Resource:       resourceName,
+		Records:        nil,
+		IgnoreIfExists: false,
+	})
+
 	ServiceResponder[*stub.CreateRecordRequest, *stub.CreateRecordResponse]().
 		Writer(writer).
 		Request(request).
-		ServiceCall(r.recordService.Create).
-		Payload(&stub.CreateRecordRequest{
-			Token:   getToken(request),
-			Records: []*model.Record{record1},
-		}).
-		ResponseMapper(func(response *stub.CreateRecordResponse) proto.Message {
-			return response.Records[0]
-		}).
-		Respond()
+		Respond(&stub.CreateRecordResponse{
+			Records:  res,
+			Inserted: inserted,
+		}, serviceErr)
 }
 
 func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Request) {
@@ -166,19 +170,18 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 	resourceName := vars["resourceName"]
 	id := vars["id"]
 
+	record, serviceErr := r.recordService.Get(request.Context(), service.RecordGetParams{
+		Workspace: "default",
+		Resource:  resourceName,
+		Id:        id,
+	})
+
 	ServiceResponder[*stub.GetRecordRequest, *stub.GetRecordResponse]().
 		Writer(writer).
 		Request(request).
-		ServiceCall(r.recordService.Get).
-		Payload(&stub.GetRecordRequest{
-			Token:    getToken(request),
-			Resource: resourceName,
-			Id:       id,
-		}).
-		ResponseMapper(func(response *stub.GetRecordResponse) proto.Message {
-			return response.Record
-		}).
-		Respond()
+		Respond(&stub.GetRecordResponse{
+			Record: record,
+		}, serviceErr)
 }
 
 func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http.Request) {
@@ -198,19 +201,22 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 	record.Resource = resourceName
 	record.Id = id
 
+	result, serviceErr := r.recordService.Update(request.Context(), service.RecordUpdateParams{
+		Workspace:    "",
+		Records:      nil,
+		CheckVersion: false,
+	})
+
+	var updatedRecord *model.Record = nil
+
+	if len(result) == 1 {
+		updatedRecord = result[0]
+	}
+
 	ServiceResponder[*stub.UpdateRecordRequest, *stub.UpdateRecordResponse]().
 		Writer(writer).
 		Request(request).
-		ServiceCall(r.recordService.Update).
-		Payload(&stub.UpdateRecordRequest{
-			Token:        getToken(request),
-			Records:      []*model.Record{record},
-			CheckVersion: getRequestBoolFlag(request, "checkVersion"),
-		}).
-		ResponseMapper(func(response *stub.UpdateRecordResponse) proto.Message {
-			return response.Records[0]
-		}).
-		Respond()
+		Respond(updatedRecord, serviceErr)
 }
 
 func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http.Request) {
@@ -218,16 +224,16 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 	resourceName := vars["resourceName"]
 	id := vars["id"]
 
+	serviceErr := r.recordService.Delete(request.Context(), service.RecordDeleteParams{
+		Workspace: "default",
+		Resource:  resourceName,
+		Ids:       []string{id},
+	})
+
 	ServiceResponder[*stub.DeleteRecordRequest, *stub.DeleteRecordResponse]().
 		Writer(writer).
 		Request(request).
-		ServiceCall(r.recordService.Delete).
-		Payload(&stub.DeleteRecordRequest{
-			Token:    getToken(request),
-			Resource: resourceName,
-			Ids:      []string{id},
-		}).
-		Respond()
+		Respond(&stub.DeleteRecordRequest{}, serviceErr)
 }
 
 func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http.Request) {
@@ -244,12 +250,22 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		return
 	}
 
+	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
+		Query:      listRecordRequest.Query,
+		Workspace:  "default",
+		Resource:   listRecordRequest.Resource,
+		Limit:      listRecordRequest.Limit,
+		Offset:     listRecordRequest.Offset,
+		UseHistory: listRecordRequest.UseHistory,
+	})
+
 	ServiceResponder[*stub.ListRecordRequest, *stub.ListRecordResponse]().
 		Writer(writer).
 		Request(request).
-		ServiceCall(r.recordService.List).
-		Payload(listRecordRequest).
-		Respond()
+		Respond(&stub.ListRecordResponse{
+			Total:   total,
+			Content: result,
+		}, serviceErr)
 }
 
 func (r *recordApi) handleRecordBatchDelete(writer http.ResponseWriter, request *http.Request) {

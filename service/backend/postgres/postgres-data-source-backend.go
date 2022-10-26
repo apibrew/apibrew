@@ -1,8 +1,8 @@
 package postgres
 
 import (
+	"data-handler/model"
 	"data-handler/service/backend"
-	"data-handler/stub/model"
 )
 
 type postgresDataSourceBackend struct {

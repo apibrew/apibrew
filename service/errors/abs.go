@@ -1,7 +1,7 @@
 package errors
 
 import (
-	"data-handler/stub/model"
+	"data-handler/model"
 	"fmt"
 )
 

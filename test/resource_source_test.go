@@ -1,7 +1,7 @@
 package test
 
 import (
-	"data-handler/stub/model"
+	"data-handler/model"
 	"testing"
 )
 

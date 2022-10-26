@@ -2,8 +2,8 @@ package test
 
 import (
 	"context"
-	"data-handler/stub"
-	"data-handler/stub/model"
+	"data-handler/grpc/stub"
+	"data-handler/model"
 	"google.golang.org/protobuf/types/known/structpb"
 	"log"
 	"testing"
