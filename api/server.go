@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"net"
 	"net/http"
 )
@@ -36,7 +37,15 @@ func (s *server) Serve(lis net.Listener) {
 	//	log.Println(http.ListenAndServe("localhost:6060", nil))
 	//}()
 
-	if err := http.Serve(lis, r); err != nil {
+	c := cors.New(cors.Options{
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowCredentials: true,
+		// Enable Debugging for testing, consider disabling in production
+		Debug: true,
+	})
+
+	handler := c.Handler(r)
+	if err := http.Serve(lis, handler); err != nil {
 		panic(err)
 	}
 }

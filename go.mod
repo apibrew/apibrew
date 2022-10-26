@@ -11,6 +11,7 @@ require (
 	github.com/jellydator/ttlcache/v3 v3.0.0
 	github.com/ktr0731/grpcdynamic v0.0.0-20200217085124-70a2c3229ec4
 	github.com/lib/pq v1.10.7
+	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.9.0
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	google.golang.org/grpc v1.50.0
