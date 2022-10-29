@@ -45,7 +45,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 	user, err := s.LocateUser(ctx, username, password)
 
 	if err != nil {
-		return nil, err
+		return nil, errors.AuthenticationFailedError
 	}
 
 	// Prepare token
