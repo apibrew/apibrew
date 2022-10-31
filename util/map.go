@@ -28,6 +28,10 @@ func ArrayMapWithError[T interface{}, R interface{}](arr []T, mapper func(T) (R,
 	return list, nil
 }
 
+func ArrayMapString(arr []string, mapper func(string) string) []string {
+	return ArrayMap[string, string](arr, mapper)
+}
+
 func ArrayMapToInterface[T interface{}](arr []T) []interface{} {
 	return ArrayMap(arr, func(t T) interface{} {
 		return t

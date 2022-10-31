@@ -554,6 +554,13 @@ func resourceUpsertProperties(runner QueryRunner, resource *model.Resource) erro
 			return resourcePropertyColumnMapFn(col, resource, property)
 		})...)
 
+		propertyInsertBuilder.SQL("ON CONFLICT(workspace, resource_name, property_name) DO UPDATE SET")
+		var updates []string
+		for _, col := range resourcePropertyColumns {
+			updates = append(updates, fmt.Sprintf("%s = EXCLUDED.%s", col, col))
+		}
+		propertyInsertBuilder.SQL(strings.Join(updates, ","))
+
 		sqlQuery, args := propertyInsertBuilder.Build()
 
 		_, err := runner.Exec(sqlQuery, args...)
@@ -566,7 +573,7 @@ func resourceUpsertProperties(runner QueryRunner, resource *model.Resource) erro
 	return nil
 }
 
-func resourceInsertReferences(runner QueryRunner, resource *model.Resource) errors.ServiceError {
+func resourceUpsertReferences(runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	for _, property := range resource.References {
 		propertyInsertBuilder := sqlbuilder.InsertInto("resource_reference")
 		propertyInsertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
@@ -577,7 +584,7 @@ func resourceInsertReferences(runner QueryRunner, resource *model.Resource) erro
 
 		propertyInsertBuilder.SQL("ON CONFLICT(workspace, resource_name, property_name) DO UPDATE SET")
 		var updates []string
-		for _, col := range resourcePropertyColumns {
+		for _, col := range resourceReferenceColumns {
 			updates = append(updates, fmt.Sprintf("%s = EXCLUDED.%s", col, col))
 		}
 		propertyInsertBuilder.SQL(strings.Join(updates, ","))

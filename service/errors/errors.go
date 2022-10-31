@@ -6,7 +6,7 @@ var NotFoundError ServiceError = newServiceError(model.ErrorCode_RECORD_NOT_FOUN
 var UnableToLocatePrimaryKey ServiceError = newServiceError(model.ErrorCode_UNABLE_TO_LOCATE_PRIMARY_KEY, "unable to locate primary key")
 var InternalError ServiceError = newServiceError(model.ErrorCode_INTERNAL_ERROR, "Internal error")
 var PropertyNotFoundError ServiceError = newServiceError(model.ErrorCode_PROPERTY_NOT_FOUND, "Property not found")
-var RecordValidationError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Validation failed")
+var RecordValidationError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Record Validation failed")
 var AuthenticationFailedError ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
 var AccessDeniedError ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
 var BackendConnectionAuthenticationError ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
@@ -14,5 +14,5 @@ var UniqueViolation ServiceError = newServiceError(model.ErrorCode_AUTHENTICATIO
 var ForeignKeyViolation ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
 
 // RecordValidationError @fixme
-var AlreadyExistsError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Validation failed")
-var LogicalError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Validation failed")
+var AlreadyExistsError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Already Exists")
+var LogicalError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Logical Error")

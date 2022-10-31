@@ -8,7 +8,9 @@ import (
 	"data-handler/service/security"
 	"data-handler/service/system"
 	"data-handler/service/types"
+	"data-handler/util"
 	"google.golang.org/protobuf/types/known/structpb"
+	"strings"
 )
 
 type RecordListParams struct {
@@ -120,7 +122,7 @@ func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[stri
 			var val *structpb.Value
 			val, err := structpb.NewValue(queryMap[property.Name])
 			if err != nil {
-				return nil, errors.RecordValidationError
+				return nil, errors.RecordValidationError.WithDetails(err.Error())
 			}
 			criteria = append(criteria, r.newEqualExpression(property.Name, val))
 		}
@@ -135,7 +137,7 @@ func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[stri
 			var val *structpb.Value
 			val, err := structpb.NewValue(queryMap[property])
 			if err != nil {
-				return nil, errors.RecordValidationError
+				return nil, errors.RecordValidationError.WithDetails(err.Error())
 			}
 			criteria = append(criteria, r.newEqualExpression(property, val))
 		}
@@ -397,7 +399,9 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 		return nil
 	}
 
-	return errors.RecordValidationError.WithErrorFields(fieldErrors)
+	return errors.RecordValidationError.WithDetails("Validation failed on some fields:" + strings.Join(util.ArrayMap[*model.ErrorField, string](fieldErrors, func(fieldError *model.ErrorField) string {
+		return fieldError.Property + ":" + fieldError.Message
+	}), ";")).WithErrorFields(fieldErrors)
 }
 
 func NewRecordService() RecordService {

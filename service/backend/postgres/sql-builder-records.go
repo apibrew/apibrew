@@ -188,11 +188,14 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 		return
 	}
 
+	ownCols := util.ArrayMapString(prepareResourceRecordCols(params.Resource), func(s string) string {
+		return "t." + s + " as t_" + s
+	})
 	joinCols := recordPrepareJoinCols(runner, params.Resource)
 
-	selectBuilder := sqlbuilder.Select(util.Combine[string](prepareResourceRecordCols(params.Resource), joinCols)...)
+	selectBuilder := sqlbuilder.Select(append(ownCols, joinCols...)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	selectBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory))
+	selectBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory) + " as t")
 	err = recordPrepareJoins(runner, selectBuilder, params.Resource)
 
 	if err != nil {
@@ -557,7 +560,7 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 }
 
 func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
-	deleteBuilder := sqlbuilder.DeleteFrom(resource.SourceConfig.Mapping)
+	deleteBuilder := sqlbuilder.DeleteFrom(resource.SourceConfig.Mapping + " as t")
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	if checkHasOwnId(resource) {
@@ -597,12 +600,12 @@ func prepareResourceRecordCols(resource *model.Resource) []string {
 	var cols []string
 
 	if checkHasOwnId(resource) {
-		cols = append(cols, "t.id as t_id")
+		cols = append(cols, "id")
 	}
 
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			col := fmt.Sprintf("t." + source.Mapping.Mapping + " as t_" + source.Mapping.Mapping)
+			col := fmt.Sprintf(source.Mapping.Mapping)
 			cols = append(cols, col)
 		}
 	}
@@ -610,11 +613,11 @@ func prepareResourceRecordCols(resource *model.Resource) []string {
 	// referenced columns
 
 	if !resource.Flags.DisableAudit {
-		cols = append(cols, "t.created_on as t_created_on")
-		cols = append(cols, "t.updated_on as t_updated_on")
-		cols = append(cols, "t.created_by as t_created_by")
-		cols = append(cols, "t.updated_by as t_updated_by")
-		cols = append(cols, "t.version as t_version")
+		cols = append(cols, "created_on")
+		cols = append(cols, "updated_on")
+		cols = append(cols, "created_by")
+		cols = append(cols, "updated_by")
+		cols = append(cols, "version")
 	}
 	return cols
 }

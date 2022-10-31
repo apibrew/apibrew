@@ -7,11 +7,8 @@ import (
 	"data-handler/service/errors"
 	"database/sql"
 	"fmt"
-	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
-	"net"
-	"runtime/debug"
 )
 
 const DbNameType = "VARCHAR(64)"
@@ -166,7 +163,7 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			return err
 		}
 
-		if err := resourceInsertReferences(tx, params.Resource); err != nil {
+		if err := resourceUpsertReferences(tx, params.Resource); err != nil {
 			log.Error("Unable to insert resource properties", err)
 			return err
 		}
@@ -223,6 +220,10 @@ func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, res
 		doResourceCleanup(resource)
 
 		if err = resourceUpsertProperties(tx, resource); err != nil {
+			return err
+		}
+
+		if err = resourceUpsertReferences(tx, resource); err != nil {
 			return err
 		}
 
@@ -321,89 +322,5 @@ func (p *postgresResourceServiceBackend) acquireConnection(dataSourceId string) 
 func NewPostgresResourceServiceBackend() backend.ResourceServiceBackend {
 	return &postgresResourceServiceBackend{
 		connectionMap: make(map[string]*sql.DB),
-	}
-}
-
-func (p *postgresResourceServiceBackend) withSystemBackend(readOnly bool, fn func(tx *sql.Tx) errors.ServiceError) errors.ServiceError {
-	return p.withBackend(p.systemBackend.GetDataSourceId(), readOnly, fn)
-}
-
-func (p *postgresResourceServiceBackend) withBackend(dataSourceId string, readOnly bool, fn func(tx *sql.Tx) errors.ServiceError) errors.ServiceError {
-	log.Tracef("begin transaction: %s, readonly=%v", dataSourceId, readOnly)
-	conn, serviceErr := p.acquireConnection(dataSourceId)
-
-	if serviceErr != nil {
-		return serviceErr
-	}
-
-	tx, err := conn.BeginTx(context.TODO(), &sql.TxOptions{
-		ReadOnly: readOnly,
-	})
-
-	if err != nil {
-		log.Errorf("Unable to begin transaction: %s %s", err, dataSourceId)
-		return handleDbError(err)
-	}
-
-	defer func(tx *sql.Tx) {
-		_ = tx.Rollback()
-	}(tx)
-
-	serviceErr = fn(tx)
-
-	if serviceErr != nil {
-		log.Errorf("Rollback: %s", serviceErr)
-		return serviceErr
-	}
-
-	serviceErr = handleDbError(tx.Commit())
-	log.Tracef("end transaction: %s, readonly=%v", dataSourceId, readOnly)
-
-	return serviceErr
-}
-
-func handleDbError(err error) errors.ServiceError {
-	if err == nil {
-		return nil
-	}
-
-	if err == sql.ErrNoRows {
-		return errors.NotFoundError
-	}
-
-	log.Printf("Db Error: %s", err)
-	debug.PrintStack()
-
-	if err == sql.ErrTxDone {
-		log.Panic("Illegal situation")
-	}
-
-	if _, ok := err.(errors.ServiceError); ok {
-		log.Panic("database error is expected: ", err)
-	}
-
-	if pqErr, ok := err.(*pq.Error); ok {
-		return handlePqErr(pqErr)
-	}
-
-	if netErr, ok := err.(*net.OpError); ok {
-		return errors.InternalError.WithDetails(netErr.Error())
-	}
-
-	panic("Unhandled situation")
-}
-
-func handlePqErr(err *pq.Error) errors.ServiceError {
-	switch err.Code {
-	case "28000":
-		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
-	case "28P01":
-		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
-	case "23505":
-		return errors.UniqueViolation.WithDetails(err.Message)
-	case "23503":
-		return errors.ForeignKeyViolation.WithDetails(err.Message)
-	default:
-		return errors.InternalError.WithMessage(err.Message)
 	}
 }

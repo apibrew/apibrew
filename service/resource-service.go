@@ -58,7 +58,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 func validateResource(resource *model.Resource) errors.ServiceError {
 	if resource.SourceConfig == nil {
-		return errors.RecordValidationError
+		return errors.RecordValidationError.WithDetails("resource source-config is null")
 	}
 
 	return nil
