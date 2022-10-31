@@ -152,7 +152,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	res, inserted, serviceErr := r.recordService.Create(request.Context(), service.RecordCreateParams{
 		Workspace:      "default",
 		Resource:       resourceName,
-		Records:        nil,
+		Records:        []*model.Record{record1},
 		IgnoreIfExists: false,
 	})
 
@@ -203,7 +203,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 
 	result, serviceErr := r.recordService.Update(request.Context(), service.RecordUpdateParams{
 		Workspace:    "",
-		Records:      nil,
+		Records:      []*model.Record{record},
 		CheckVersion: false,
 	})
 

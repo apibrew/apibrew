@@ -11,13 +11,18 @@ import (
 	"strings"
 )
 
-func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *model.Resource, forceMigration bool) errors.ServiceError {
+func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *model.Resource, forceMigration bool, history bool) errors.ServiceError {
 	var err errors.ServiceError
 	var existingResource *model.Resource
 	entityName := resource.SourceConfig.Mapping
 	if !strings.Contains(entityName, ".") {
 		entityName = "public." + entityName
 	}
+
+	if history {
+		entityName = entityName + "_h"
+	}
+
 	if existingResource, err = resourcePrepareResourceFromEntity(ctx, runner, entityName); err != nil {
 		log.Error("Unable to load resource details", err)
 		return err
@@ -74,22 +79,6 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 		return nil
 	}
 
-	serviceError := migrateTableInner(resource, newProperties, forceMigration, existingResource, removedProperties, changedProperties, newPrevMap, runner, false)
-	if serviceError != nil {
-		return serviceError
-	}
-
-	if existingResource.Flags.KeepHistory {
-		serviceError = migrateTableInner(resource, newProperties, forceMigration, existingResource, removedProperties, changedProperties, newPrevMap, runner, true)
-		if serviceError != nil {
-			return serviceError
-		}
-	}
-
-	return nil
-}
-
-func migrateTableInner(resource *model.Resource, newProperties map[string]bool, forceMigration bool, existingResource *model.Resource, removedProperties map[string]bool, changedProperties map[string]bool, newPrevMap map[*model.ResourceProperty]*model.ResourceProperty, runner QueryRunner, history bool) errors.ServiceError {
 	// create new properties
 	var alterTableQuery = fmt.Sprintf(`ALTER TABLE %s`, getTableName(resource.GetSourceConfig().GetMapping(), history))
 	for _, property := range resource.Properties {
@@ -138,6 +127,8 @@ func migrateTableInner(resource *model.Resource, newProperties map[string]bool, 
 	if sqlError != nil {
 		return handleDbError(sqlError)
 	}
+	return nil
+
 	return nil
 }
 

@@ -233,8 +233,18 @@ func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, res
 					return err
 				}
 
-				if err = resourceMigrateTable(ctx, tx, resource, forceMigration); err != nil {
+				if err = resourceMigrateTable(ctx, tx, resource, forceMigration, false); err != nil {
 					return err
+				}
+
+				if resource.Flags.KeepHistory {
+					if err = resourceCreateHistoryTable(tx, resource); err != nil {
+						return err
+					}
+
+					if err = resourceMigrateTable(ctx, tx, resource, forceMigration, true); err != nil {
+						return err
+					}
 				}
 
 				return nil
