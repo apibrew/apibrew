@@ -460,7 +460,7 @@ func scanRecord(record *model.Record, resource *model.Resource, scanner QueryRes
 }
 
 func checkHasOwnId(resource *model.Resource) bool {
-	return !resource.Flags.AutoCreated && !resource.Flags.DoPrimaryKeyLookup
+	return !resource.Flags.DoPrimaryKeyLookup
 }
 
 func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {

@@ -19,7 +19,10 @@ func (r resourceGrpcService) Create(ctx context.Context, request *stub.CreateRes
 		res, err := r.resourceService.Create(ctx, resource, request.DoMigration, request.ForceMigration)
 
 		if err != nil {
-			return nil, err
+			return &stub.CreateResourceResponse{
+				Resources: nil,
+				Error:     toProtoError(err),
+			}, nil
 		}
 
 		result = append(result, res)
@@ -32,12 +35,14 @@ func (r resourceGrpcService) Create(ctx context.Context, request *stub.CreateRes
 }
 
 func (r resourceGrpcService) Update(ctx context.Context, request *stub.UpdateResourceRequest) (*stub.UpdateResourceResponse, error) {
-	var err error
 	for _, resource := range request.Resources {
-		err = r.resourceService.Update(ctx, resource, request.DoMigration, request.ForceMigration)
+		err := r.resourceService.Update(ctx, resource, request.DoMigration, request.ForceMigration)
 
 		if err != nil {
-			return nil, err
+			return &stub.UpdateResourceResponse{
+				Resources: nil,
+				Error:     toProtoError(err),
+			}, nil
 		}
 	}
 
@@ -48,38 +53,28 @@ func (r resourceGrpcService) Update(ctx context.Context, request *stub.UpdateRes
 }
 
 func (r resourceGrpcService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
-	var err error
-	err = r.resourceService.Delete(ctx, request.Workspace, request.Ids, request.DoMigration, request.ForceMigration)
+	err := r.resourceService.Delete(ctx, request.Workspace, request.Ids, request.DoMigration, request.ForceMigration)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return &stub.DeleteResourceResponse{}, nil
+	return &stub.DeleteResourceResponse{
+		Error: toProtoError(err),
+	}, nil
 }
 
 func (r resourceGrpcService) List(ctx context.Context, request *stub.ListResourceRequest) (*stub.ListResourceResponse, error) {
 	resources, err := r.resourceService.List(ctx)
 
-	if err != nil {
-		return nil, err
-	}
-
 	return &stub.ListResourceResponse{
 		Resources: resources,
+		Error:     toProtoError(err),
 	}, nil
 }
 
 func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
 	resource, err := r.resourceService.Get(ctx, request.Workspace, request.Name)
 
-	if err != nil {
-		return nil, err
-	}
-
 	return &stub.GetResourceResponse{
 		Resource: resource,
-		Error:    nil,
+		Error:    toProtoError(err),
 	}, nil
 }
 

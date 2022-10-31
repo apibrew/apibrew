@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	log.SetLevel(log.TraceLevel)
+	log.SetReportCaller(true)
 	init := flag.String("init", "", "Initial Data for configuring system")
 
 	flag.Parse()

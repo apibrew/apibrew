@@ -42,12 +42,26 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
 	resource.Type = model.DataType_USER
 
+	err := validateResource(resource)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return r.GetBackend().AddResource(backend.AddResourceParams{
 		Resource:       resource,
 		IgnoreIfExists: false,
 		Migrate:        doMigration,
 		ForceMigrate:   forceMigration,
 	})
+}
+
+func validateResource(resource *model.Resource) errors.ServiceError {
+	if resource.SourceConfig == nil {
+		return errors.RecordValidationError
+	}
+
+	return nil
 }
 
 func (r *resourceService) GetResourceByName(ctx context.Context, workspace string, resourceName string) (*model.Resource, errors.ServiceError) {

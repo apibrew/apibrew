@@ -155,7 +155,7 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			return err
 		}
 
-		if err := resourceInsertProperties(tx, params.Resource); err != nil {
+		if err := resourceUpsertProperties(tx, params.Resource); err != nil {
 			log.Error("Unable to insert resource properties", err)
 			return err
 		}
@@ -195,24 +195,29 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 }
 
 func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
-	existingResource, err := p.GetResourceByName(nil, resource.Name, resource.Workspace)
-
-	if err != nil {
-		return err
-	}
-
+	var err errors.ServiceError
 	return p.withSystemBackend(false, func(tx *sql.Tx) errors.ServiceError {
 		if err = resourceUpdate(ctx, tx, resource); err != nil {
 			return err
 		}
 
-		if err = resourceUpdateProperties(ctx, tx, resource); err != nil {
+		doResourceCleanup(resource)
+
+		if err = resourceUpsertProperties(tx, resource); err != nil {
 			return err
 		}
 
 		if doMigration {
-			err = p.withBackend(existingResource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
-				return resourceAlterTable(ctx, tx, existingResource, resource)
+			err = p.withBackend(resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
+				if err = resourceCreateTable(tx, resource); err != nil {
+					return err
+				}
+
+				if err = resourceMigrateTable(ctx, tx, resource, forceMigration); err != nil {
+					return err
+				}
+
+				return nil
 			})
 
 			if err != nil {
