@@ -11,6 +11,7 @@ var AuthenticationFailedError ServiceError = newServiceError(model.ErrorCode_AUT
 var AccessDeniedError ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
 var BackendConnectionAuthenticationError ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
 var UniqueViolation ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
+var ForeignKeyViolation ServiceError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
 
 // RecordValidationError @fixme
 var AlreadyExistsError ServiceError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Validation failed")
