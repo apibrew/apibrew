@@ -4,3 +4,7 @@ services:
     container_name: 'data-handler'
     build: '.'
     network_mode: "host"
+  envoy:
+    container_name: 'envoy'
+    build: 'envoy'
+    network_mode: "host"
