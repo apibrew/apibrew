@@ -71,7 +71,7 @@ message ListResourceResponse {
 message GetResourceRequest {
   string token = 1;
   string workspace = 2;
-  string name = 3;
+  string id = 3;
 }
 
 message GetResourceResponse {

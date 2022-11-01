@@ -28,107 +28,109 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 		return err
 	}
 
-	var notChangedProperties = make(map[string]bool)
-	var changedProperties = make(map[string]bool)
+	var notChangedColumns = make(map[string]bool)
+	var changedColumns = make(map[string]bool)
 	var newPrevMap = make(map[*model.ResourceProperty]*model.ResourceProperty)
-	var removedProperties = make(map[string]bool)
-	var newProperties = make(map[string]bool)
+	var removedColumns = make(map[string]bool)
+	var newColumns = make(map[string]bool)
 
 	// check left
 	for _, existingProperty := range existingResource.Properties {
-		if _, ok := existingProperty.SourceConfig.(*model.ResourceProperty_Mapping); !ok {
-			continue
-		}
+		existingColName := getPropertyColumnName(existingProperty)
 
 		found := false
 		for _, newProperty := range resource.Properties {
-			if existingProperty.Name == newProperty.Name {
+			newColName := getPropertyColumnName(newProperty)
+			if existingColName == newColName {
 				if util.IsSameResourceProperty(existingProperty, newProperty) {
-					notChangedProperties[existingProperty.Name] = true
+					notChangedColumns[existingColName] = true
 				} else {
-					changedProperties[existingProperty.Name] = true
+					changedColumns[existingColName] = true
 					newPrevMap[newProperty] = existingProperty
 				}
 				found = true
 			}
 		}
 		if !found {
-			removedProperties[existingProperty.Name] = true
+			removedColumns[existingColName] = true
 		}
 	}
 
 	// check right
 	for _, newProperty := range resource.Properties {
-		if _, ok := newProperty.SourceConfig.(*model.ResourceProperty_Mapping); !ok {
-			continue
-		}
+		newColName := getPropertyColumnName(newProperty)
 
 		found := false
 		for _, existingProperty := range existingResource.Properties {
-			if existingProperty.Name == newProperty.Name {
+			existingColName := getPropertyColumnName(existingProperty)
+			if existingColName == newColName {
 				found = true
 			}
 		}
 		if !found {
-			newProperties[newProperty.Name] = true
+			newColumns[newColName] = true
 		}
 	}
 
-	if len(changedProperties) == 0 && len(newProperties) == 0 && (!forceMigration || len(removedProperties) == 0) {
+	if len(changedColumns) == 0 && len(newColumns) == 0 && (!forceMigration || len(removedColumns) == 0) {
 		// no need to migration
 		return nil
 	}
 
 	// create new properties
 	var alterTableQuery = fmt.Sprintf(`ALTER TABLE %s`, getTableName(resource.GetSourceConfig().GetMapping(), history))
+
+	var alterTableQueryDefs []string
+
 	for _, property := range resource.Properties {
-		if !newProperties[property.Name] {
+		colName := getPropertyColumnName(property)
+		if !newColumns[colName] {
 			continue
 		}
 
-		alterTableQuery = fmt.Sprintf("%s ADD COLUMN %s", alterTableQuery, prepareResourceTableColumnDefinition(property))
+		alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ADD COLUMN %s", prepareResourceTableColumnDefinition(property)))
 	}
 
 	// delete properties (IF FORCE MIGRATION)
 	if forceMigration {
 		for _, property := range existingResource.Properties {
-			if !removedProperties[property.Name] {
+			colName := getPropertyColumnName(property)
+			if !removedColumns[colName] {
 				continue
 			}
 
-			colName := property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping
-			alterTableQuery = fmt.Sprintf("%s DROP COLUMN %s", alterTableQuery, colName)
+			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("DROP COLUMN %s", colName))
 		}
 	}
 
 	// change updated columns
 	for _, property := range resource.Properties {
-		if !changedProperties[property.Name] {
+		colName := getPropertyColumnName(property)
+		if !changedColumns[colName] {
 			continue
 		}
 		prevProperty := newPrevMap[property]
-		colName := property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping
 
 		if prevProperty.Type != property.Type {
-			alterTableQuery = fmt.Sprintf("%s ALTER COLUMN %s TYPE %s", alterTableQuery, colName, getPsqlTypeFromProperty(property.Type, property.Length))
+			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s TYPE %s", colName, getPsqlTypeFromProperty(property.Type, property.Length)))
 		}
 
 		if prevProperty.Required && !property.Required {
-			alterTableQuery = fmt.Sprintf("%s ALTER COLUMN %s DROP NOT NULL", alterTableQuery, colName)
+			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", colName))
 		}
 
 		if !prevProperty.Required && property.Required {
-			alterTableQuery = fmt.Sprintf("%s ALTER COLUMN %s SET NOT NULL", alterTableQuery, colName)
+			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", colName))
 		}
 	}
+
+	alterTableQuery += " " + strings.Join(alterTableQueryDefs, ",")
 
 	_, sqlError := runner.Exec(alterTableQuery)
 
 	if sqlError != nil {
 		return handleDbError(sqlError)
 	}
-	return nil
-
 	return nil
 }
 
@@ -276,7 +278,7 @@ func doResourceCleanup(resource *model.Resource) {
 	}
 	enableAudit := createdOnDetected && updatedOnDetected && createdByDetected && updatedByDetected && versionDetected
 
-	var newProperties []*model.ResourceProperty
+	var newColumns []*model.ResourceProperty
 
 	for _, property := range resource.Properties {
 		if enableAudit && isAuditColumn(property.Name) {
@@ -288,12 +290,20 @@ func doResourceCleanup(resource *model.Resource) {
 			continue
 		}
 
-		newProperties = append(newProperties, property)
+		newColumns = append(newColumns, property)
 	}
 
-	resource.Properties = newProperties
+	resource.Properties = newColumns
 
 	if enableAudit {
 		resource.Flags.DisableAudit = false
+	}
+}
+
+func getPropertyColumnName(property *model.ResourceProperty) string {
+	if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+		return sourceConfig.Mapping.Mapping
+	} else {
+		return ""
 	}
 }

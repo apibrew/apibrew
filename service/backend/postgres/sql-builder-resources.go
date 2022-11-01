@@ -27,6 +27,7 @@ type QueryRunner interface {
 }
 
 var resourceColumns = []string{
+	"id",
 	"name",
 	"workspace",
 	"type",
@@ -48,6 +49,8 @@ var resourceColumns = []string{
 
 var resourceColumnMapFn = func(column string, resource *model.Resource) interface{} {
 	switch column {
+	case "id":
+		return resource.Id
 	case "name":
 		return resource.Name
 	case "workspace":
@@ -169,60 +172,6 @@ func valuesFromCol[T interface{}](columns []string, data T, mapperFn func(col st
 	})
 }
 
-func resourceSetupTables(runner QueryRunner) errors.ServiceError {
-	_, err := runner.Exec(`
-		create table if not exists public.resource (
-		  name character varying(64) not null,
-		  workspace character varying(64) not null,
-		  type smallint not null,
-		  source_data_source character varying(64) not null,
-		  source_mapping character varying(64) not null,
-		  read_only_records boolean not null,
-		  unique_record boolean not null,
-		  keep_history boolean not null,
-		  auto_created boolean not null,
-		  disable_migration boolean not null,
-		  disable_audit boolean not null,
-		  do_primary_key_lookup boolean not null,
-		  created_on timestamp without time zone not null,
-		  updated_on timestamp without time zone,
-		  created_by character varying(64) not null,
-		  updated_by character varying(64),
-		  version integer not null,
-		  PRIMARY KEY(name, workspace)
-		);
-		
-		create table if not exists public.resource_property (
-		  workspace     character varying(64) not null,
-		  resource_name character varying(64) not null,
-		  property_name character varying(64) not null,
-		  type smallint,
-		  source_type smallint,
-		  source_mapping character varying(64),
-		  source_def character varying(64),
-		  source_primary bool,
-		  source_auto_generation smallint,
-		  required boolean,
-		  "unique" boolean,
-		  length integer,
-		  primary key (workspace, resource_name, property_name),
-		  foreign key (workspace, resource_name) references public.resource (workspace, name) match simple on update cascade on delete cascade
-		);
-		
-		create table if not exists public.resource_reference (
-		  workspace     character varying(64) not null,
-		  resource_name character varying(64) not null,
-		  property_name character varying(64) not null unique,
-		  referenced_resource character varying(64) not null,
-		  "cascade" bool not null,
-		  primary key (workspace, resource_name, property_name),
-		  foreign key (workspace, resource_name) references public.resource (workspace, name) match simple on update cascade on delete cascade
-		);
-`)
-
-	return handleDbError(err)
-}
-
 func resourceCountsByName(runner QueryRunner, workspace, resourceName string) (int, errors.ServiceError) {
 	res := runner.QueryRow("select count(*) as count from resource where name = $1 and workspace = $2", resourceName, workspace)
 
@@ -273,7 +222,7 @@ func resolveReferenceDetails(runner QueryRunner, resource *model.Resource, refer
 
 	// locate referenced resource table name
 	var referencedResource = new(model.Resource)
-	err = resourceLoadDetails(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
+	err = resourceLoadDetailsByName(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
 	if err != nil {
 		return nil, handleDbError(err)
 	}
@@ -475,7 +424,34 @@ func resourceInsert(runner QueryRunner, resource *model.Resource) errors.Service
 	return handleDbError(err)
 }
 
-func resourceLoadDetails(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) errors.ServiceError {
+func resourceLoadDetails(runner QueryRunner, resource *model.Resource, workspace string, id string) errors.ServiceError {
+	selectBuilder := sqlbuilder.Select(resourceColumns...).
+		From("resource")
+	selectBuilder.Where(selectBuilder.And(
+		selectBuilder.Equal("id", id),
+		selectBuilder.Equal("workspace", workspace),
+	))
+
+	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+
+	sqlQuery, args := selectBuilder.Build()
+
+	row := runner.QueryRow(sqlQuery, args...)
+
+	if row.Err() != nil {
+		return handleDbError(row.Err())
+	}
+
+	err := ScanResource(resource, row)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func resourceLoadDetailsByName(runner QueryRunner, resource *model.Resource, workspace string, resourceName string) errors.ServiceError {
 	selectBuilder := sqlbuilder.Select(resourceColumns...).
 		From("resource")
 	selectBuilder.Where(selectBuilder.And(
@@ -512,6 +488,7 @@ func ScanResource(resource *model.Resource, row QueryResultScanner) errors.Servi
 	var updatedBy = new(*string)
 
 	err := row.Scan(
+		&resource.Id,
 		&resource.Name,
 		&resource.Workspace,
 		&resource.Type,
@@ -620,9 +597,11 @@ func resourceUpsertReferences(runner QueryRunner, resource *model.Resource) erro
 func resourceUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	updateBuilder := sqlbuilder.Update("resource")
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	const ResourceFieldName = "name"
 
-	updateBuilder.Where(updateBuilder.Equal(ResourceFieldName, resource.Name))
+	updateBuilder.Where(updateBuilder.And(
+		updateBuilder.Equal("id", resource.Id),
+		updateBuilder.Equal("workspace", resource.Workspace),
+	))
 
 	for _, col := range resourceColumns {
 		updateBuilder.SetMore(updateBuilder.Equal(col, resourceColumnMapFn(col, resource)))

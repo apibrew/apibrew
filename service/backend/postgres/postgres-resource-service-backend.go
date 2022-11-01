@@ -106,11 +106,41 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 	return resource, nil
 }
 
+func (p *postgresResourceServiceBackend) GetResource(ctx context.Context, workspace string, id string) (resource *model.Resource, err errors.ServiceError) {
+	resource = new(model.Resource)
+
+	err = p.withSystemBackend(true, func(tx *sql.Tx) errors.ServiceError {
+		if err = resourceLoadDetails(tx, resource, workspace, id); err != nil {
+			log.Error("Unable to load resource details", err)
+			return err
+		}
+
+		if err = resourceLoadProperties(tx, resource, workspace, resource.Name); err != nil {
+			log.Error("Unable to load resource properties", err)
+			return err
+		}
+
+		if err = resourceLoadReferences(tx, resource, workspace, resource.Name); err != nil {
+			log.Error("Unable to load resource properties", err)
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		log.Error("Unable load resource", err)
+		return nil, err
+	}
+
+	return resource, nil
+}
+
 func (p *postgresResourceServiceBackend) GetResourceByName(ctx context.Context, workspace string, resourceName string) (resource *model.Resource, err errors.ServiceError) {
 	resource = new(model.Resource)
 
 	err = p.withSystemBackend(true, func(tx *sql.Tx) errors.ServiceError {
-		if err = resourceLoadDetails(tx, resource, workspace, resourceName); err != nil {
+		if err = resourceLoadDetailsByName(tx, resource, workspace, resourceName); err != nil {
 			log.Error("Unable to load resource details", err)
 			return err
 		}

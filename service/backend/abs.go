@@ -43,6 +43,7 @@ type ResourceServiceBackend interface {
 	AddRecords(params BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError)
 	UpdateRecords(params BulkRecordsParams) ([]*model.Record, errors.ServiceError)
 	GetResourceByName(ctx context.Context, resourceName string, name string) (*model.Resource, errors.ServiceError)
+	GetResource(ctx context.Context, workspace string, id string) (*model.Resource, errors.ServiceError)
 	GetRecord(resource *model.Resource, id string) (*model.Record, errors.ServiceError)
 	DeleteRecords(resource *model.Resource, list []string) errors.ServiceError
 	DestroyDataSource(dataSourceId string)

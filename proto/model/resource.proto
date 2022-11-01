@@ -94,12 +94,13 @@ message ResourceFlags {
 }
 
 message Resource {
-  string name = 1; // uniq(per workspace) // name
-  string workspace = 2; // create only?
-  DataType type = 3; // read only
-  ResourceSourceConfig sourceConfig = 4;
-  repeated ResourceProperty properties = 5;
-  repeated ResourceCheck checks = 6; // not implemented
+  string id = 1; // id; read only
+  string name = 2; // uniq(per workspace) // name
+  string workspace = 3; // create only?
+  DataType type = 4; // read only
+  ResourceSourceConfig sourceConfig = 5;
+  repeated ResourceProperty properties = 6;
+  repeated ResourceCheck checks = 7; // not implemented
   repeated ResourceReference references = 8; // not implemented
   repeated ResourceIndex indexes = 9; // not implemented
   ResourceFlags flags = 10;

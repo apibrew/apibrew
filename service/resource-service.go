@@ -37,20 +37,20 @@ type resourceService struct {
 func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
 	r.cache.Delete(resource.Workspace + "-" + resource.Name)
 
-	if err := r.checkSystemResource(ctx, resource.Workspace, resource.Name); err != nil {
+	if err := r.checkSystemResource(ctx, resource.Workspace, resource.Id); err != nil {
 		return err
 	}
 
 	return r.GetBackend().UpdateResource(ctx, resource, doMigration, forceMigration)
 }
 
-func (r *resourceService) checkSystemResource(ctx context.Context, workspace, name string) errors.ServiceError {
+func (r *resourceService) checkSystemResource(ctx context.Context, workspace, id string) errors.ServiceError {
 	if !security.IsSystemContext(ctx) {
 		if workspace == "system" {
 			return errors.LogicalError.WithMessage("you cannot access system workspace resources")
 		}
 
-		res, err := r.GetResourceByName(ctx, workspace, name)
+		res, err := r.GetBackend().GetResource(ctx, workspace, id)
 
 		if err != nil {
 			return err
@@ -225,12 +225,12 @@ func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.Se
 	return result, nil
 }
 
-func (r resourceService) Get(ctx context.Context, workspace, resourceName string) (*model.Resource, errors.ServiceError) {
-	if err := r.checkSystemResource(ctx, workspace, resourceName); err != nil {
+func (r resourceService) Get(ctx context.Context, workspace, id string) (*model.Resource, errors.ServiceError) {
+	if err := r.checkSystemResource(ctx, workspace, id); err != nil {
 		return nil, err
 	}
 
-	return r.GetBackend().GetResourceByName(ctx, workspace, resourceName)
+	return r.GetBackend().GetResource(ctx, workspace, id)
 }
 
 func (r resourceService) GetBackend() backend.ResourceServiceBackend {
