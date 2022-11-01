@@ -7,6 +7,7 @@ import (
 	"data-handler/service/errors"
 	"database/sql"
 	"fmt"
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 )
@@ -182,6 +183,14 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 			}
 			return errors.AlreadyExistsError
 		}
+
+		newId, err := uuid.NewRandom()
+
+		if err != nil {
+			return errors.InternalError.WithDetails(err.Error())
+		}
+
+		params.Resource.Id = newId.String()
 
 		if err := resourceInsert(tx, params.Resource); err != nil {
 			log.Error("Unable to insert resource", err)

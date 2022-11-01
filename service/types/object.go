@@ -6,10 +6,10 @@ type objectType struct {
 }
 
 func (o objectType) Pack(value interface{}) (interface{}, error) {
-	var data = make(map[string]interface{})
-	err := json.Unmarshal([]byte(value.(string)), &data)
+	var data = new(interface{})
+	err := json.Unmarshal([]byte(value.(string)), data)
 
-	return data, err
+	return *data, err
 }
 
 func (o objectType) UnPack(value interface{}) (interface{}, error) {

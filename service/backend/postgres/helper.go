@@ -48,7 +48,7 @@ func handleDbError(err error) errors.ServiceError {
 		return errors.InternalError.WithDetails(netErr.Error())
 	}
 
-	panic("Unhandled situation")
+	panic("Unhandled situation:" + err.Error())
 }
 
 func handlePqErr(err *pq.Error) errors.ServiceError {

@@ -125,6 +125,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		Respond(&stub.ListRecordResponse{
 			Total:   total,
 			Content: result,
+			Error:   toProtoError(serviceErr),
 		}, serviceErr)
 }
 
@@ -162,6 +163,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		Respond(&stub.CreateRecordResponse{
 			Records:  res,
 			Inserted: inserted,
+			Error:    toProtoError(serviceErr),
 		}, serviceErr)
 }
 
@@ -181,6 +183,7 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 		Request(request).
 		Respond(&stub.GetRecordResponse{
 			Record: record,
+			Error:  toProtoError(serviceErr),
 		}, serviceErr)
 }
 
@@ -233,7 +236,9 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 	ServiceResponder[*stub.DeleteRecordRequest, *stub.DeleteRecordResponse]().
 		Writer(writer).
 		Request(request).
-		Respond(&stub.DeleteRecordRequest{}, serviceErr)
+		Respond(&stub.DeleteRecordResponse{
+			Error: toProtoError(serviceErr),
+		}, serviceErr)
 }
 
 func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http.Request) {
@@ -265,6 +270,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		Respond(&stub.ListRecordResponse{
 			Total:   total,
 			Content: result,
+			Error:   toProtoError(serviceErr),
 		}, serviceErr)
 }
 

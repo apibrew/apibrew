@@ -198,13 +198,7 @@ func (r *recordService) Create(ctx context.Context, params RecordCreateParams) (
 			return nil, nil, err
 		}
 
-		if err != nil {
-			return nil, nil, err
-		}
-
-		err = r.validateRecords(resource, list)
-
-		if err != nil {
+		if err = r.validateRecords(resource, list); err != nil {
 			return nil, nil, err
 		}
 

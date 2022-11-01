@@ -98,3 +98,11 @@ func getToken(request *http.Request) string {
 func getRequestBoolFlag(request *http.Request, s string) bool {
 	return request.URL.Query().Has(s)
 }
+
+func toProtoError(err errors.ServiceError) *model.Error {
+	if err == nil {
+		return nil
+	}
+
+	return err.ProtoError()
+}
