@@ -36,7 +36,35 @@ type resourceService struct {
 
 func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
 	r.cache.Delete(resource.Workspace + "-" + resource.Name)
+
+	if err := r.checkSystemResource(ctx, resource.Workspace, resource.Name); err != nil {
+		return err
+	}
+
 	return r.GetBackend().UpdateResource(ctx, resource, doMigration, forceMigration)
+}
+
+func (r *resourceService) checkSystemResource(ctx context.Context, workspace, name string) errors.ServiceError {
+	if !security.IsSystemContext(ctx) {
+		if workspace == "system" {
+			return errors.LogicalError.WithMessage("you cannot access system workspace resources")
+		}
+
+		res, err := r.GetResourceByName(ctx, workspace, name)
+
+		if err != nil {
+			return err
+		}
+
+		if res.Type == model.DataType_SYSTEM {
+			return errors.LogicalError.WithMessage("you cannot access system workspace resources")
+		}
+
+		if res.Type == model.DataType_STATIC {
+			return errors.LogicalError.WithMessage("static resources are not editable")
+		}
+	}
+	return nil
 }
 
 func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
@@ -46,6 +74,12 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	if err != nil {
 		return nil, err
+	}
+
+	if !security.IsSystemContext(ctx) {
+		if resource.Workspace == "system" {
+			return nil, errors.LogicalError.WithMessage("you cannot update system workspace resources")
+		}
 	}
 
 	return r.GetBackend().AddResource(backend.AddResourceParams{
@@ -144,6 +178,12 @@ func (r *resourceService) InitResource(resource *model.Resource) {
 }
 
 func (r resourceService) Delete(ctx context.Context, workspace string, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
+	for _, id := range ids {
+		if err := r.checkSystemResource(ctx, workspace, id); err != nil {
+			return err
+		}
+	}
+
 	err := r.GetBackend().DeleteResources(ctx, workspace, ids, doMigration, forceMigration)
 
 	if err != nil {
@@ -158,10 +198,38 @@ func (r resourceService) Delete(ctx context.Context, workspace string, ids []str
 }
 
 func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
-	return r.GetBackend().ListResources(ctx)
+	list, err := r.GetBackend().ListResources(ctx)
+
+	if security.IsSystemContext(ctx) {
+		return list, err
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*model.Resource
+
+	for _, item := range list {
+		if item.Type == model.DataType_SYSTEM {
+			continue
+		}
+
+		if item.Type == model.DataType_STATIC {
+			continue
+		}
+
+		result = append(result, item)
+	}
+
+	return result, nil
 }
 
 func (r resourceService) Get(ctx context.Context, workspace, resourceName string) (*model.Resource, errors.ServiceError) {
+	if err := r.checkSystemResource(ctx, workspace, resourceName); err != nil {
+		return nil, err
+	}
+
 	return r.GetBackend().GetResourceByName(ctx, workspace, resourceName)
 }
 
