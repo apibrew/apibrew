@@ -13,6 +13,7 @@ service ResourceService {
   rpc Delete(DeleteResourceRequest) returns(DeleteResourceResponse) {}
   rpc List(ListResourceRequest) returns(ListResourceResponse) {}
   rpc Get(GetResourceRequest) returns(GetResourceResponse) {}
+  rpc GetSystemResource(GetSystemResourceRequest) returns(GetSystemResourceResponse) {}
 }
 
 message CreateResourceRequest {
@@ -67,7 +68,6 @@ message ListResourceResponse {
   model.Error error = 2;
 }
 
-
 message GetResourceRequest {
   string token = 1;
   string workspace = 2;
@@ -80,3 +80,13 @@ message GetResourceResponse {
   model.Error error = 2;
 }
 
+message GetSystemResourceRequest {
+  string token = 1;
+  string name = 2;
+}
+
+message GetSystemResourceResponse {
+  model.Resource resource = 1;
+
+  model.Error error = 2;
+}

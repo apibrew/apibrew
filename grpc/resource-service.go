@@ -78,6 +78,15 @@ func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceR
 	}, nil
 }
 
+func (r resourceGrpcService) GetSystemResource(ctx context.Context, request *stub.GetSystemResourceRequest) (*stub.GetSystemResourceResponse, error) {
+	resource, err := r.resourceService.GetSystemResourceByName(request.GetName())
+
+	return &stub.GetSystemResourceResponse{
+		Resource: resource,
+		Error:    toProtoError(err),
+	}, nil
+}
+
 func NewResourceServiceServer(service service.ResourceService) stub.ResourceServiceServer {
 	return &resourceGrpcService{resourceService: service}
 }

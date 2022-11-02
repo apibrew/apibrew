@@ -13,6 +13,28 @@ var DataSourceResource = &model.Resource{
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
 		{
+			Name: "name",
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "name",
+				},
+			},
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Required: true,
+		},
+		{
+			Name: "description",
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "description",
+				},
+			},
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Required: true,
+		},
+		{
 			Name: "backend",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{

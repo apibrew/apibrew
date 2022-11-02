@@ -16,6 +16,7 @@ type ResourceService interface {
 	Init(data *model.InitData)
 	CheckResourceExists(workspace, name string) (bool, errors.ServiceError)
 	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, errors.ServiceError)
+	GetSystemResourceByName(resourceName string) (*model.Resource, errors.ServiceError)
 	InjectDataSourceService(service DataSourceService)
 	InjectAuthenticationService(service AuthenticationService)
 	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
@@ -100,12 +101,9 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 
 func (r *resourceService) GetResourceByName(ctx context.Context, workspace string, resourceName string) (*model.Resource, errors.ServiceError) {
 	if security.IsSystemContext(ctx) && (workspace == system.WorkspaceResource.Name || workspace == "") {
-		if resourceName == system.UserResource.Name {
-			return system.UserResource, nil
-		} else if resourceName == system.DataSourceResource.Name {
-			return system.DataSourceResource, nil
-		} else if resourceName == system.WorkspaceResource.Name {
-			return system.WorkspaceResource, nil
+		resource, err := r.GetSystemResourceByName(resourceName)
+		if err != nil {
+			return resource, err
 		}
 	}
 
@@ -130,6 +128,17 @@ func (r *resourceService) GetResourceByName(ctx context.Context, workspace strin
 	}
 
 	return resource, nil
+}
+
+func (r *resourceService) GetSystemResourceByName(resourceName string) (*model.Resource, errors.ServiceError) {
+	if resourceName == system.UserResource.Name {
+		return system.UserResource, nil
+	} else if resourceName == system.DataSourceResource.Name {
+		return system.DataSourceResource, nil
+	} else if resourceName == system.WorkspaceResource.Name {
+		return system.WorkspaceResource, nil
+	}
+	return nil, errors.NotFoundError
 }
 
 func (r *resourceService) CheckResourceExists(workspace, name string) (bool, errors.ServiceError) {
@@ -226,10 +235,6 @@ func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.Se
 }
 
 func (r resourceService) Get(ctx context.Context, workspace, id string) (*model.Resource, errors.ServiceError) {
-	if err := r.checkSystemResource(ctx, workspace, id); err != nil {
-		return nil, err
-	}
-
 	return r.GetBackend().GetResource(ctx, workspace, id)
 }
 

@@ -6,12 +6,14 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func DataSourceToRecord(department *model.DataSource) *model.Record {
+func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 	properties := make(map[string]interface{})
 
-	properties["backend"] = int(department.Backend)
+	properties["name"] = dataSource.Name
+	properties["description"] = dataSource.Description
+	properties["backend"] = int(dataSource.Backend)
 
-	if options, ok := department.Options.(*model.DataSource_PostgresqlParams); ok {
+	if options, ok := dataSource.Options.(*model.DataSource_PostgresqlParams); ok {
 		properties["options_postgres_username"] = options.PostgresqlParams.Username
 		properties["options_postgres_password"] = options.PostgresqlParams.Password
 		properties["options_postgres_host"] = options.PostgresqlParams.Host
@@ -27,12 +29,12 @@ func DataSourceToRecord(department *model.DataSource) *model.Record {
 	}
 
 	return &model.Record{
-		Id:         department.Id,
+		Id:         dataSource.Id,
 		Resource:   system.DataSourceResource.Name,
-		Type:       department.Type,
+		Type:       dataSource.Type,
 		Properties: structProperties,
-		AuditData:  department.AuditData,
-		Version:    department.Version,
+		AuditData:  dataSource.AuditData,
+		Version:    dataSource.Version,
 	}
 }
 
@@ -41,14 +43,16 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 		return nil
 	}
 
-	backendNumnber := record.Properties.Fields["backend"].GetNumberValue()
+	backendNumber := record.Properties.Fields["backend"].GetNumberValue()
 
 	result := &model.DataSource{
-		Id:        record.Id,
-		Type:      record.Type,
-		Backend:   model.DataSourceBackend(backendNumnber),
-		AuditData: record.AuditData,
-		Version:   record.Version,
+		Id:          record.Id,
+		Type:        record.Type,
+		Backend:     model.DataSourceBackend(backendNumber),
+		Name:        record.Properties.Fields["name"].GetStringValue(),
+		Description: record.Properties.Fields["description"].GetStringValue(),
+		AuditData:   record.AuditData,
+		Version:     record.Version,
 	}
 
 	if result.Backend == model.DataSourceBackend_POSTGRESQL {
