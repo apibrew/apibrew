@@ -58,13 +58,38 @@ func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.UserFromRecord), nil
+	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
+
+	u.cleanPasswords(response)
+
+	return response, nil
 }
 
 func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError) {
+	u.encodePasswords(users)
+
+	systemCtx := security.WithSystemContext(ctx)
+
+	for _, user := range users {
+		if user.Password == "" {
+			record, err := u.recordService.Get(systemCtx, RecordGetParams{
+				Workspace: system.UserResource.Workspace,
+				Resource:  system.UserResource.Name,
+				Id:        user.Id,
+			})
+
+			if err != nil {
+				return nil, err
+			}
+
+			existingUser := mapping.UserFromRecord(record)
+			user.Password = existingUser.Password
+		}
+	}
+
 	// insert records via resource service
 	records := mapping.MapToRecord(users, mapping.UserToRecord)
-	systemCtx := security.WithSystemContext(ctx)
+
 	result, err := u.recordService.Update(systemCtx, RecordUpdateParams{
 		Workspace: system.UserResource.Workspace,
 		Records:   records,
@@ -74,7 +99,11 @@ func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.UserFromRecord), nil
+	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
+
+	u.cleanPasswords(response)
+
+	return response, nil
 }
 
 func (u *userService) Delete(ctx context.Context, ids []string) errors.ServiceError {
@@ -99,7 +128,11 @@ func (u *userService) Get(ctx context.Context, id string) (*model.User, errors.S
 		return nil, err
 	}
 
-	return mapping.UserFromRecord(record), nil
+	response := mapping.UserFromRecord(record)
+
+	u.cleanPasswords([]*model.User{response})
+
+	return response, nil
 }
 
 func (u *userService) List(ctx context.Context, query *model.BooleanExpression, limit uint32, offset uint64) ([]*model.User, errors.ServiceError) {
@@ -116,7 +149,11 @@ func (u *userService) List(ctx context.Context, query *model.BooleanExpression, 
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.UserFromRecord), err
+	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
+
+	u.cleanPasswords(response)
+
+	return response, nil
 }
 
 func (d *userService) Init(data *model.InitData) {
@@ -148,6 +185,12 @@ func (d *userService) encodePasswords(users []*model.User) {
 
 			user.Password = hashStr
 		}
+	}
+}
+
+func (u *userService) cleanPasswords(users []*model.User) {
+	for _, user := range users {
+		user.Password = ""
 	}
 }
 
