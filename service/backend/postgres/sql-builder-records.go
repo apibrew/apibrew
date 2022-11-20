@@ -178,7 +178,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 		if err != nil {
 			return nil, 0, err
 		}
-		countBuilder.Where(where)
+		if where != "" {
+			countBuilder.Where(where)
+		}
 	}
 	countQuery, args := countBuilder.Build()
 	countRow := runner.QueryRow(countQuery, args...)
@@ -219,7 +221,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 		if err != nil {
 			return nil, 0, err
 		}
-		selectBuilder.Where(where)
+		if where != "" {
+			selectBuilder.Where(where)
+		}
 	}
 
 	if params.Limit == 0 || params.Limit > 10000 {
@@ -312,6 +316,10 @@ func recordPrepareJoins(runner QueryRunner, builder *sqlbuilder.SelectBuilder, r
 
 func applyCondition(resource *model.Resource, query *model.BooleanExpression, builder *sqlbuilder.SelectBuilder) (string, errors.ServiceError) {
 	if and, ok := query.Expression.(*model.BooleanExpression_And); ok {
+		if len(and.And.Expressions) == 0 {
+			return "", nil
+		}
+
 		expressions, err := util.ArrayMapWithError(and.And.Expressions, func(t *model.BooleanExpression) (string, errors.ServiceError) {
 			return applyCondition(resource, t, builder)
 		})
@@ -322,6 +330,10 @@ func applyCondition(resource *model.Resource, query *model.BooleanExpression, bu
 	}
 
 	if and, ok := query.Expression.(*model.BooleanExpression_Or); ok {
+		if len(and.Or.Expressions) == 0 {
+			return "", nil
+		}
+
 		expressions, err := util.ArrayMapWithError(and.Or.Expressions, func(t *model.BooleanExpression) (string, errors.ServiceError) {
 			return applyCondition(resource, t, builder)
 		})
