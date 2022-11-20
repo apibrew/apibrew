@@ -48,7 +48,12 @@ func handleDbError(err error) errors.ServiceError {
 		return errors.InternalError.WithDetails(netErr.Error())
 	}
 
-	panic("Unhandled situation:" + err.Error())
+	if err.Error() == "context cancelled" {
+		return errors.InternalError.WithDetails(err.Error())
+	}
+
+	log.Print("Unhandled Error: ", err)
+	return errors.InternalError.WithDetails(err.Error())
 }
 
 func handlePqErr(err *pq.Error) errors.ServiceError {

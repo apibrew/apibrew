@@ -598,12 +598,27 @@ func resourceUpdate(ctx context.Context, runner QueryRunner, resource *model.Res
 	updateBuilder := sqlbuilder.Update("resource")
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
+	if resource.Flags == nil {
+		resource.Flags = &model.ResourceFlags{}
+	}
+
+	if resource.AuditData == nil {
+		resource.AuditData = &model.AuditData{}
+	}
+
 	updateBuilder.Where(updateBuilder.And(
 		updateBuilder.Equal("id", resource.Id),
 		updateBuilder.Equal("workspace", resource.Workspace),
 	))
 
 	for _, col := range resourceColumns {
+		if col == "created_on" {
+			continue
+		}
+
+		if col == "created_by" {
+			continue
+		}
 		updateBuilder.SetMore(updateBuilder.Equal(col, resourceColumnMapFn(col, resource)))
 	}
 

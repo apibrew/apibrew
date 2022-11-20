@@ -33,6 +33,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	var newPrevMap = make(map[*model.ResourceProperty]*model.ResourceProperty)
 	var removedColumns = make(map[string]bool)
 	var newColumns = make(map[string]bool)
+	var changesCount = 0
 
 	// check left
 	for _, existingProperty := range existingResource.Properties {
@@ -89,6 +90,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 		}
 
 		alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ADD COLUMN %s", prepareResourceTableColumnDefinition(property)))
+		changesCount++
 	}
 
 	// delete properties (IF FORCE MIGRATION)
@@ -100,6 +102,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 			}
 
 			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("DROP COLUMN %s", colName))
+			changesCount++
 		}
 	}
 
@@ -113,15 +116,22 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 
 		if prevProperty.Type != property.Type {
 			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s TYPE %s", colName, getPsqlTypeFromProperty(property.Type, property.Length)))
+			changesCount++
 		}
 
 		if prevProperty.Required && !property.Required {
 			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", colName))
+			changesCount++
 		}
 
 		if !prevProperty.Required && property.Required {
 			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", colName))
+			changesCount++
 		}
+	}
+
+	if changesCount == 0 {
+		return nil
 	}
 
 	alterTableQuery += " " + strings.Join(alterTableQueryDefs, ",")
