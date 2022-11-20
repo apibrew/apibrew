@@ -14,12 +14,13 @@ import (
 )
 
 type RecordListParams struct {
-	Query      *model.BooleanExpression
-	Workspace  string
-	Resource   string
-	Limit      uint32
-	Offset     uint64
-	UseHistory bool
+	Query             *model.BooleanExpression
+	Workspace         string
+	Resource          string
+	Limit             uint32
+	Offset            uint64
+	UseHistory        bool
+	ResolveReferences bool
 }
 
 type RecordCreateParams struct {
@@ -101,11 +102,12 @@ func (r *recordService) List(ctx context.Context, params RecordListParams) ([]*m
 	}
 
 	records, total, err := r.postgresResourceServiceBackend.ListRecords(backend.ListRecordParams{
-		Resource:   resource,
-		Query:      params.Query,
-		Limit:      params.Limit,
-		Offset:     params.Offset,
-		UseHistory: params.UseHistory,
+		Resource:          resource,
+		Query:             params.Query,
+		Limit:             params.Limit,
+		Offset:            params.Offset,
+		UseHistory:        params.UseHistory,
+		ResolveReferences: params.ResolveReferences,
 	})
 
 	if err != nil {
@@ -301,11 +303,12 @@ func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, pro
 	}
 
 	res, total, err := r.postgresResourceServiceBackend.ListRecords(backend.ListRecordParams{
-		Resource:   resource,
-		Query:      query,
-		Limit:      1,
-		Offset:     0,
-		UseHistory: false,
+		Resource:          resource,
+		Query:             query,
+		Limit:             1,
+		Offset:            0,
+		UseHistory:        false,
+		ResolveReferences: false,
 	})
 
 	if total == 0 {

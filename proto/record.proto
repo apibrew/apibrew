@@ -25,6 +25,7 @@ message ListRecordRequest {
   uint32 limit = 5;
   uint64 offset = 6;
   bool useHistory = 7;
+  bool resolveReferences = 8;
 }
 
 message ListRecordResponse {

@@ -108,6 +108,10 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 		resource.Flags = &model.ResourceFlags{}
 	}
 
+	if record.AuditData == nil {
+		record.AuditData = &model.AuditData{}
+	}
+
 	updateBuilder := sqlbuilder.Update(getTableName(resource.SourceConfig.Mapping, false))
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	if checkVersion {
@@ -191,15 +195,22 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	ownCols := util.ArrayMapString(prepareResourceRecordCols(params.Resource), func(s string) string {
 		return "t." + s + " as t_" + s
 	})
-	joinCols := recordPrepareJoinCols(runner, params.Resource)
+
+	var joinCols []string
+	if params.ResolveReferences {
+		joinCols = recordPrepareJoinCols(runner, params.Resource)
+	}
 
 	selectBuilder := sqlbuilder.Select(append(ownCols, joinCols...)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	selectBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory) + " as t")
-	err = recordPrepareJoins(runner, selectBuilder, params.Resource)
 
-	if err != nil {
-		return
+	if params.ResolveReferences {
+		err = recordPrepareJoins(runner, selectBuilder, params.Resource)
+
+		if err != nil {
+			return
+		}
 	}
 
 	if params.Query != nil {
@@ -230,7 +241,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 
 	for rows.Next() {
 		record := new(model.Record)
-		err = scanRecord(runner, record, params.Resource, rows)
+		err = scanRecord(runner, record, params.Resource, params.ResolveReferences, rows)
 		if err != nil {
 			return
 		}
@@ -392,6 +403,10 @@ func applyCondition(resource *model.Resource, query *model.BooleanExpression, bu
 }
 
 func applyExpression(resource *model.Resource, query *model.Expression, builder *sqlbuilder.SelectBuilder) (string, errors.ServiceError) {
+	if query.Expression == nil {
+		return "", errors.PropertyNotFoundError.WithDetails("expression is empty")
+	}
+
 	var additionalProperties = []string{
 		"id", "version",
 	}
@@ -418,7 +433,7 @@ func applyExpression(resource *model.Resource, query *model.Expression, builder 
 	panic("unknown expression type: " + query.String())
 }
 
-func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resource, scanner QueryResultScanner) errors.ServiceError {
+func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resource, resolveReferences bool, scanner QueryResultScanner) errors.ServiceError {
 	var rowScanFields []any
 
 	var hasOwnId = checkHasOwnId(resource)
@@ -438,7 +453,13 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 		}
 	}
 
-	err := recordPrepareJoinScan(runner, resource, record, &rowScanFields)
+	if resolveReferences {
+		err := recordPrepareJoinScan(runner, resource, record, &rowScanFields)
+
+		if err != nil {
+			return err
+		}
+	}
 
 	var createdOn = new(time.Time)
 	var updatedOn = new(*time.Time)
@@ -455,7 +476,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 		rowScanFields = append(rowScanFields, &record.Version)
 	}
 
-	err = handleDbError(scanner.Scan(rowScanFields...))
+	err := handleDbError(scanner.Scan(rowScanFields...))
 
 	if err != nil {
 		return err
@@ -550,7 +571,7 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 
 	record := new(model.Record)
 
-	err := scanRecord(nil, record, resource, row)
+	err := scanRecord(nil, record, resource, false, row)
 
 	if err != nil {
 		return nil, err

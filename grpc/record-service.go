@@ -13,12 +13,13 @@ type recordServiceServer struct {
 
 func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
 	records, total, err := r.service.List(ctx, service.RecordListParams{
-		Workspace:  request.Workspace,
-		Resource:   request.Resource,
-		Query:      request.Query,
-		Limit:      request.Limit,
-		Offset:     request.Offset,
-		UseHistory: request.UseHistory,
+		Workspace:         request.Workspace,
+		Resource:          request.Resource,
+		Query:             request.Query,
+		Limit:             request.Limit,
+		Offset:            request.Offset,
+		UseHistory:        request.UseHistory,
+		ResolveReferences: request.ResolveReferences,
 	})
 
 	return &stub.ListRecordResponse{
