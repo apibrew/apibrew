@@ -359,6 +359,14 @@ func applyCondition(resource *model.Resource, query *model.BooleanExpression, bu
 		return fmt.Sprintf("%s = %s", left, right), nil
 	}
 
+	if isn, ok := query.Expression.(*model.BooleanExpression_IsNull); ok {
+		left, err := applyExpression(resource, isn.IsNull, builder)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s is null", left), nil
+	}
+
 	if equ, ok := query.Expression.(*model.BooleanExpression_GreaterThan); ok {
 		left, err := applyExpression(resource, equ.GreaterThan.Left, builder)
 		if err != nil {
