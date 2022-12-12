@@ -2,7 +2,13 @@ package test
 
 import (
 	"data-handler/model"
+	log "github.com/sirupsen/logrus"
 )
+
+func init() {
+	log.SetLevel(log.TraceLevel)
+	log.SetReportCaller(true)
+}
 
 func prepareInitData() *model.InitData {
 	return &model.InitData{

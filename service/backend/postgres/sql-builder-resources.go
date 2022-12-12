@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/huandu/go-sqlbuilder"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
 	"time"
@@ -463,6 +464,8 @@ func resourceLoadDetailsByName(runner QueryRunner, resource *model.Resource, wor
 
 	sqlQuery, args := selectBuilder.Build()
 
+	log.Tracef("SQL: %s", sqlQuery)
+
 	row := runner.QueryRow(sqlQuery, args...)
 
 	if row.Err() != nil {
@@ -540,6 +543,8 @@ func resourceUpsertProperties(runner QueryRunner, resource *model.Resource) erro
 
 		sqlQuery, args := propertyInsertBuilder.Build()
 
+		log.Tracef("SQL: %s", sqlQuery)
+
 		_, err := runner.Exec(sqlQuery, args...)
 
 		if err != nil {
@@ -567,6 +572,8 @@ func resourceUpsertReferences(runner QueryRunner, resource *model.Resource) erro
 		propertyInsertBuilder.SQL(strings.Join(updates, ","))
 
 		sqlQuery, args := propertyInsertBuilder.Build()
+
+		log.Tracef("SQL: %s", sqlQuery)
 
 		_, err := runner.Exec(sqlQuery, args...)
 
@@ -624,6 +631,8 @@ func resourceUpdate(ctx context.Context, runner QueryRunner, resource *model.Res
 
 	sqlQuery, args := updateBuilder.Build()
 
+	log.Tracef("SQL: %s", sqlQuery)
+
 	_, err := runner.ExecContext(ctx, sqlQuery, args...)
 
 	return handleDbError(err)
@@ -633,9 +642,11 @@ func resourceDelete(ctx context.Context, runner QueryRunner, ids []string) error
 	deleteBuilder := sqlbuilder.DeleteFrom("resource")
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
-	deleteBuilder.Where(deleteBuilder.In("name", util.ArrayMapToInterface(ids)...))
+	deleteBuilder.Where(deleteBuilder.In("id", util.ArrayMapToInterface(ids)...))
 
 	sqlQuery, args := deleteBuilder.Build()
+
+	log.Tracef("SQL: %s", sqlQuery)
 
 	_, err := runner.ExecContext(ctx, sqlQuery, args...)
 
@@ -657,6 +668,8 @@ func resourceLoadProperties(runner QueryRunner, resource *model.Resource, worksp
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	sqlQuery, args := selectBuilder.Build()
+
+	log.Tracef("SQL: %s", sqlQuery)
 
 	rows, err := runner.Query(sqlQuery, args...)
 
@@ -721,6 +734,8 @@ func resourceLoadReferences(runner QueryRunner, resource *model.Resource, worksp
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	sqlQuery, args := selectBuilder.Build()
+
+	log.Tracef("SQL: %s", sqlQuery)
 
 	rows, err := runner.Query(sqlQuery, args...)
 

@@ -3,9 +3,11 @@ package test
 import "data-handler/model"
 
 var systemDataSource = &model.DataSource{
-	Id:      "system",
-	Backend: model.DataSourceBackend_POSTGRESQL,
-	Type:    model.DataType_SYSTEM,
+	Id:          "system",
+	Backend:     model.DataSourceBackend_POSTGRESQL,
+	Type:        model.DataType_SYSTEM,
+	Name:        "system",
+	Description: "system",
 	Options: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
 			Username:      "root",
@@ -19,7 +21,9 @@ var systemDataSource = &model.DataSource{
 }
 
 var dataSource1 = &model.DataSource{
-	Backend: model.DataSourceBackend_POSTGRESQL,
+	Backend:     model.DataSourceBackend_POSTGRESQL,
+	Name:        "data-source-1",
+	Description: "data-source-1",
 	Options: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
 			Username:      "dh_test",
@@ -33,7 +37,9 @@ var dataSource1 = &model.DataSource{
 }
 
 var dataSource1WrongPassword = &model.DataSource{
-	Backend: model.DataSourceBackend_POSTGRESQL,
+	Backend:     model.DataSourceBackend_POSTGRESQL,
+	Name:        "data-source-1-wrong",
+	Description: "data-source-1-wrong",
 	Options: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
 			Username:      "dh_test_wrong_pass",
@@ -47,7 +53,9 @@ var dataSource1WrongPassword = &model.DataSource{
 }
 
 var dataSourceDhTest = &model.DataSource{
-	Backend: model.DataSourceBackend_POSTGRESQL,
+	Backend:     model.DataSourceBackend_POSTGRESQL,
+	Name:        "data-source-test",
+	Description: "data-source-test",
 	Options: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
 			Username:      "dh_test",

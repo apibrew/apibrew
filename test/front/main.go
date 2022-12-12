@@ -14,7 +14,7 @@ var token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLC
 func main() {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	conn, err := grpc.Dial("localhost:9009", opts...)
+	conn, err := grpc.Dial("tw:9009", opts...)
 
 	if err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func main() {
 
 	//prepareRichResource(resourceService)
 	//prepareReferencedResource(resourceService)
-	prepareSimpleResource(resourceService)
+	prepareCityResource(resourceService)
 }
 
 func prepareSimpleResource(service stub.ResourceServiceClient) {
@@ -84,6 +84,63 @@ func prepareSimpleResource(service stub.ResourceServiceClient) {
 			{
 				PropertyName:       "country",
 				ReferencedResource: "rf-2-country",
+				Cascade:            true,
+			},
+		},
+	}
+
+	res2, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+		Token:       token,
+		Resources:   []*model.Resource{personResource},
+		DoMigration: true,
+	})
+
+	log.Print(res2, err)
+}
+func prepareCityResource(service stub.ResourceServiceClient) {
+	personResource := &model.Resource{
+		Name:      "city",
+		Workspace: "default",
+		Type:      2,
+		SourceConfig: &model.ResourceSourceConfig{
+			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
+			Mapping:    "city",
+		},
+		Properties: []*model.ResourceProperty{
+			{
+				Name: "name",
+				Type: model.ResourcePropertyType_TYPE_STRING,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "name",
+					},
+				},
+				Length:   255,
+				Required: true,
+			}, {
+				Name: "description",
+				Type: model.ResourcePropertyType_TYPE_STRING,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "description",
+					},
+				},
+				Length:   255,
+				Required: true,
+			}, {
+				Name: "country",
+				Type: model.ResourcePropertyType_TYPE_UUID,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "country",
+					},
+				},
+				Required: false,
+			}},
+		References: []*model.ResourceReference{
+			{
+				PropertyName:       "country",
+				ReferencedResource: "country",
 				Cascade:            true,
 			},
 		},

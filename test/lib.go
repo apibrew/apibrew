@@ -43,7 +43,6 @@ var container *SimpleAppGrpcContainer
 var application *app.App = new(app.App)
 
 func init() {
-	log.SetLevel(log.TraceLevel)
 	application = new(app.App)
 
 	application.SetInitData(initData)
@@ -156,20 +155,35 @@ func withResource(t testing.TB, resource *model.Resource, exec func()) {
 	}
 
 	if res.Error != nil {
-		t.Error(res.Error.Message)
-		return
+		if res.Error.Code == model.ErrorCode_ALREADY_EXISTS {
+			res2, _ := container.resourceService.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+				Token:     "test-token",
+				Workspace: resource.Workspace,
+				Name:      resource.Name,
+			})
+			resource = res2.Resource
+
+		} else {
+			t.Error(res.Error.Message)
+			return
+		}
+	} else {
+		resource.Id = res.Resources[0].Id
 	}
-	log.Print("resource created", res.Resources[0].Name)
+
+	log.Print("resource created", resource.Name)
+
+	defer func() {
+		log.Print("resource deleting", resource.Name)
+		_, err = container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
+			Token:          "test-token",
+			Ids:            []string{resource.Id},
+			DoMigration:    true,
+			ForceMigration: true,
+		})
+	}()
 
 	exec()
-
-	log.Print("resource deleting", res.Resources[0].Name)
-	_, err = container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
-		Token:          "test-token",
-		Ids:            []string{resource.Name},
-		DoMigration:    true,
-		ForceMigration: true,
-	})
 
 	if err != nil {
 		t.Error(err)
@@ -227,7 +241,7 @@ func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dat
 		log.Print("begin delete resource without migration", res.Resource.Workspace, res.Resource.Name)
 		deleteRes, err := container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
 			Token:          "test-token",
-			Ids:            []string{res.Resource.Name},
+			Ids:            []string{createRes.Resources[0].Id},
 			DoMigration:    false,
 			ForceMigration: false,
 		})

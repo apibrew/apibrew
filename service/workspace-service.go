@@ -5,6 +5,7 @@ import (
 	"data-handler/model"
 	"data-handler/service/errors"
 	"data-handler/service/mapping"
+	"data-handler/service/params"
 	"data-handler/service/security"
 	"data-handler/service/system"
 	log "github.com/sirupsen/logrus"
@@ -46,7 +47,7 @@ func (u *workspaceService) Create(ctx context.Context, workspaces []*model.Works
 	records := mapping.MapToRecord(workspaces, mapping.WorkspaceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
 
-	result, _, err := u.recordService.Create(systemCtx, RecordCreateParams{
+	result, _, err := u.recordService.Create(systemCtx, params.RecordCreateParams{
 		Workspace: system.WorkspaceResource.Workspace,
 		Resource:  system.WorkspaceResource.Name,
 		Records:   records,
@@ -63,7 +64,7 @@ func (u *workspaceService) Update(ctx context.Context, workspaces []*model.Works
 	// insert records via resource service
 	records := mapping.MapToRecord(workspaces, mapping.WorkspaceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
-	result, err := u.recordService.Update(systemCtx, RecordUpdateParams{
+	result, err := u.recordService.Update(systemCtx, params.RecordUpdateParams{
 		Workspace: system.WorkspaceResource.Workspace,
 		Records:   records,
 	})
@@ -78,7 +79,7 @@ func (u *workspaceService) Update(ctx context.Context, workspaces []*model.Works
 func (u *workspaceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
 	systemCtx := security.WithSystemContext(ctx)
 
-	return u.recordService.Delete(systemCtx, RecordDeleteParams{
+	return u.recordService.Delete(systemCtx, params.RecordDeleteParams{
 		Workspace: system.WorkspaceResource.Workspace,
 		Resource:  system.WorkspaceResource.Name,
 		Ids:       ids,
@@ -87,7 +88,7 @@ func (u *workspaceService) Delete(ctx context.Context, ids []string) errors.Serv
 
 func (u *workspaceService) Get(ctx context.Context, id string) (*model.Workspace, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
-	record, err := u.recordService.Get(systemCtx, RecordGetParams{
+	record, err := u.recordService.Get(systemCtx, params.RecordGetParams{
 		Workspace: system.WorkspaceResource.Workspace,
 		Resource:  system.WorkspaceResource.Name,
 		Id:        id,
@@ -102,7 +103,7 @@ func (u *workspaceService) Get(ctx context.Context, id string) (*model.Workspace
 
 func (u *workspaceService) List(ctx context.Context) ([]*model.Workspace, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
-	result, _, err := u.recordService.List(systemCtx, RecordListParams{
+	result, _, err := u.recordService.List(systemCtx, params.RecordListParams{
 		Workspace: system.WorkspaceResource.Workspace,
 		Resource:  system.WorkspaceResource.Name,
 	})
@@ -118,7 +119,7 @@ func (d *workspaceService) Init(data *model.InitData) {
 	d.resourceService.InitResource(system.WorkspaceResource)
 
 	if len(data.InitWorkspaces) > 0 {
-		_, _, err := d.recordService.Create(security.SystemContext, RecordCreateParams{
+		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
 			Workspace:      system.WorkspaceResource.Workspace,
 			Resource:       system.WorkspaceResource.Name,
 			Records:        mapping.MapToRecord(data.InitWorkspaces, mapping.WorkspaceToRecord),

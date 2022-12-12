@@ -24,7 +24,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	}
 
 	if existingResource, err = resourcePrepareResourceFromEntity(ctx, runner, entityName); err != nil {
-		log.Error("Unable to load resource details", err)
+		log.Error("Unable to load resource details: ", err)
 		return err
 	}
 

@@ -87,7 +87,7 @@ func (p *postgresResourceServiceBackend) GetStatus(dataSourceId string) (connect
 func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (resource *model.Resource, err errors.ServiceError) {
 	err = p.withBackend(dataSourceId, false, func(tx *sql.Tx) errors.ServiceError {
 		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, entity); err != nil {
-			log.Error("Unable to load resource details", err)
+			log.Errorf("[PrepareResourceFromEntity] Unable to load resource details for %s/%s Err: %s", dataSourceId, entity, err)
 			return err
 		}
 
@@ -100,7 +100,7 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 	})
 
 	if err != nil {
-		log.Error("Unable load resource", err)
+		log.Errorf("Unable to load resource for %s/%s Err: %s", dataSourceId, entity, err)
 		return nil, err
 	}
 
@@ -108,21 +108,25 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 }
 
 func (p *postgresResourceServiceBackend) GetResource(ctx context.Context, workspace string, id string) (resource *model.Resource, err errors.ServiceError) {
+	if workspace == "" {
+		workspace = "default"
+	}
+
 	resource = new(model.Resource)
 
 	err = p.withSystemBackend(true, func(tx *sql.Tx) errors.ServiceError {
 		if err = resourceLoadDetails(tx, resource, workspace, id); err != nil {
-			log.Error("Unable to load resource details", err)
+			log.Errorf("Unable to load resource details for %s/%s Err: %s", workspace, id, err)
 			return err
 		}
 
 		if err = resourceLoadProperties(tx, resource, workspace, resource.Name); err != nil {
-			log.Error("Unable to load resource properties", err)
+			log.Errorf("Unable to load resource properties for %s/%s Err: %s", workspace, id, err)
 			return err
 		}
 
 		if err = resourceLoadReferences(tx, resource, workspace, resource.Name); err != nil {
-			log.Error("Unable to load resource properties", err)
+			log.Errorf("Unable to load resource references for %s/%s Err: %s", workspace, id, err)
 			return err
 		}
 
@@ -130,7 +134,7 @@ func (p *postgresResourceServiceBackend) GetResource(ctx context.Context, worksp
 	})
 
 	if err != nil {
-		log.Error("Unable load resource", err)
+		log.Errorf("Unable to load resource for %s/%s Err: %s", workspace, id, err)
 		return nil, err
 	}
 
@@ -138,21 +142,25 @@ func (p *postgresResourceServiceBackend) GetResource(ctx context.Context, worksp
 }
 
 func (p *postgresResourceServiceBackend) GetResourceByName(ctx context.Context, workspace string, resourceName string) (resource *model.Resource, err errors.ServiceError) {
+	if workspace == "" {
+		workspace = "default"
+	}
+
 	resource = new(model.Resource)
 
 	err = p.withSystemBackend(true, func(tx *sql.Tx) errors.ServiceError {
 		if err = resourceLoadDetailsByName(tx, resource, workspace, resourceName); err != nil {
-			log.Error("Unable to load resource details", err)
+			log.Errorf("Unable to load resource details for %s/%s Err: %s", workspace, resourceName, err)
 			return err
 		}
 
 		if err = resourceLoadProperties(tx, resource, workspace, resourceName); err != nil {
-			log.Error("Unable to load resource properties", err)
+			log.Errorf("Unable to load resource properties for %s/%s Err: %s", workspace, resourceName, err)
 			return err
 		}
 
 		if err = resourceLoadReferences(tx, resource, workspace, resourceName); err != nil {
-			log.Error("Unable to load resource properties", err)
+			log.Errorf("Unable to load resource references for %s/%s Err: %s", workspace, resourceName, err)
 			return err
 		}
 
@@ -160,7 +168,7 @@ func (p *postgresResourceServiceBackend) GetResourceByName(ctx context.Context, 
 	})
 
 	if err != nil {
-		log.Error("Unable load resource", err)
+		log.Errorf("Unable to load resource for %s/%s Err: %s", workspace, resourceName, err)
 		return nil, err
 	}
 
@@ -193,17 +201,17 @@ func (p *postgresResourceServiceBackend) AddResource(params backend.AddResourceP
 		params.Resource.Id = newId.String()
 
 		if err := resourceInsert(tx, params.Resource); err != nil {
-			log.Error("Unable to insert resource", err)
+			log.Error("Unable to insert resource: ", err)
 			return err
 		}
 
 		if err := resourceUpsertProperties(tx, params.Resource); err != nil {
-			log.Error("Unable to insert resource properties", err)
+			log.Error("Unable to insert resource properties: ", err)
 			return err
 		}
 
 		if err := resourceUpsertReferences(tx, params.Resource); err != nil {
-			log.Error("Unable to insert resource properties", err)
+			log.Error("Unable to insert resource properties: ", err)
 			return err
 		}
 
@@ -299,14 +307,14 @@ func (p *postgresResourceServiceBackend) UpdateResource(ctx context.Context, res
 }
 
 func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, workspace string, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
-	var sources []*model.ResourceSourceConfig
-
 	if workspace == "" {
 		workspace = "default"
 	}
 
+	var sources []*model.ResourceSourceConfig
+
 	for _, id := range ids {
-		resource, err := p.GetResourceByName(nil, workspace, id)
+		resource, err := p.GetResource(ctx, workspace, id)
 
 		if err != nil {
 			return err

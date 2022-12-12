@@ -4,6 +4,7 @@ import (
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	"data-handler/service"
+	"data-handler/service/params"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -110,7 +111,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		}
 	}
 
-	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
+	result, total, serviceErr := r.recordService.List(request.Context(), params.RecordListParams{
 		Query:      query,
 		Workspace:  "default",
 		Resource:   resourceName,
@@ -150,7 +151,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	res, inserted, serviceErr := r.recordService.Create(request.Context(), service.RecordCreateParams{
+	res, inserted, serviceErr := r.recordService.Create(request.Context(), params.RecordCreateParams{
 		Workspace:      "default",
 		Resource:       resourceName,
 		Records:        []*model.Record{record1},
@@ -172,7 +173,7 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 	resourceName := vars["resourceName"]
 	id := vars["id"]
 
-	record, serviceErr := r.recordService.Get(request.Context(), service.RecordGetParams{
+	record, serviceErr := r.recordService.Get(request.Context(), params.RecordGetParams{
 		Workspace: "default",
 		Resource:  resourceName,
 		Id:        id,
@@ -204,7 +205,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 	record.Resource = resourceName
 	record.Id = id
 
-	result, serviceErr := r.recordService.Update(request.Context(), service.RecordUpdateParams{
+	result, serviceErr := r.recordService.Update(request.Context(), params.RecordUpdateParams{
 		Workspace:    "",
 		Records:      []*model.Record{record},
 		CheckVersion: false,
@@ -227,7 +228,7 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 	resourceName := vars["resourceName"]
 	id := vars["id"]
 
-	serviceErr := r.recordService.Delete(request.Context(), service.RecordDeleteParams{
+	serviceErr := r.recordService.Delete(request.Context(), params.RecordDeleteParams{
 		Workspace: "default",
 		Resource:  resourceName,
 		Ids:       []string{id},
@@ -255,7 +256,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		return
 	}
 
-	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
+	result, total, serviceErr := r.recordService.List(request.Context(), params.RecordListParams{
 		Query:      listRecordRequest.Query,
 		Workspace:  "default",
 		Resource:   listRecordRequest.Resource,

@@ -11,6 +11,7 @@ enum ErrorCode {
   PROPERTY_NOT_FOUND = 3;
   RECORD_VALIDATION_ERROR = 4;
   AUTHENTICATION_FAILED = 5;
+  ALREADY_EXISTS = 6;
 }
 
 message ErrorField {

@@ -85,6 +85,8 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 
 	sqlQuery, args := insertBuilder.Build()
 
+	log.Tracef("SQL: %s", sqlQuery)
+
 	_, err := runner.Exec(sqlQuery, args...)
 
 	if err != nil {
@@ -148,6 +150,8 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 
 	sqlQuery, args := updateBuilder.Build()
 
+	log.Tracef("SQL: %s", sqlQuery)
+
 	result, err := runner.Exec(sqlQuery, args...)
 
 	if err != nil {
@@ -183,6 +187,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 		}
 	}
 	countQuery, args := countBuilder.Build()
+
+	log.Tracef("SQL: %s", countQuery)
+
 	countRow := runner.QueryRow(countQuery, args...)
 	err = handleDbError(countRow.Scan(&total))
 
@@ -234,6 +241,9 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	selectBuilder.Offset(int(params.Offset))
 
 	sqlQuery, args := selectBuilder.Build()
+
+	log.Tracef("SQL: %s", sqlQuery)
+
 	rows, sqlErr := runner.Query(sqlQuery, args...)
 	err = handleDbError(sqlErr)
 
@@ -583,6 +593,8 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 
 	sqlQuery, _ := selectBuilder.Build()
 
+	log.Tracef("SQL: %s", sqlQuery)
+
 	row := runner.QueryRow(sqlQuery, id)
 
 	if row.Err() != nil {
@@ -617,6 +629,8 @@ func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) e
 	}
 
 	sqlQuery, args := deleteBuilder.Build()
+
+	log.Tracef("SQL: %s", sqlQuery)
 
 	_, err := runner.Exec(sqlQuery, args...)
 

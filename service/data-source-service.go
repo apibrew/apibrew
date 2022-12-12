@@ -7,6 +7,7 @@ import (
 	"data-handler/service/backend/postgres"
 	"data-handler/service/errors"
 	mapping "data-handler/service/mapping"
+	"data-handler/service/params"
 	"data-handler/service/security"
 	"data-handler/service/system"
 	log "github.com/sirupsen/logrus"
@@ -51,7 +52,7 @@ func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]stri
 
 func (d *dataSourceService) List(ctx context.Context) ([]*model.DataSource, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
-	result, _, err := d.recordService.List(systemCtx, RecordListParams{
+	result, _, err := d.recordService.List(systemCtx, params.RecordListParams{
 		Workspace: system.DataSourceResource.Workspace,
 		Resource:  system.DataSourceResource.Name,
 	})
@@ -71,7 +72,7 @@ func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.Dat
 	// insert records via resource service
 	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
-	result, _, err := d.recordService.Create(systemCtx, RecordCreateParams{
+	result, _, err := d.recordService.Create(systemCtx, params.RecordCreateParams{
 		Workspace: system.DataSourceResource.Workspace,
 		Resource:  system.DataSourceResource.Name,
 		Records:   records,
@@ -88,7 +89,7 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 	// insert records via resource service
 	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
-	result, err := d.recordService.Update(systemCtx, RecordUpdateParams{
+	result, err := d.recordService.Update(systemCtx, params.RecordUpdateParams{
 		Workspace: system.DataSourceResource.Workspace,
 		Records:   records,
 	})
@@ -116,7 +117,7 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 
 func (d *dataSourceService) Get(ctx context.Context, id string) (*model.DataSource, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
-	record, err := d.recordService.Get(systemCtx, RecordGetParams{
+	record, err := d.recordService.Get(systemCtx, params.RecordGetParams{
 		Workspace: system.DataSourceResource.Workspace,
 		Resource:  system.DataSourceResource.Name,
 		Id:        id,
@@ -132,7 +133,7 @@ func (d *dataSourceService) Get(ctx context.Context, id string) (*model.DataSour
 func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
 	systemCtx := security.WithSystemContext(ctx)
 
-	return d.recordService.Delete(systemCtx, RecordDeleteParams{
+	return d.recordService.Delete(systemCtx, params.RecordDeleteParams{
 		Workspace: system.DataSourceResource.Workspace,
 		Resource:  system.DataSourceResource.Name,
 		Ids:       ids,
@@ -194,7 +195,7 @@ func (d *dataSourceService) Init(data *model.InitData) {
 	d.resourceService.InitResource(system.DataSourceResource)
 
 	if len(data.InitDataSources) > 0 {
-		_, _, err := d.recordService.Create(security.SystemContext, RecordCreateParams{
+		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
 			Workspace:      system.DataSourceResource.Workspace,
 			Records:        mapping.MapToRecord(data.InitDataSources, mapping.DataSourceToRecord),
 			IgnoreIfExists: true,
