@@ -212,6 +212,30 @@ func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dat
 			return
 		}
 
+		var resourceId string
+
+		defer func() {
+			log.Print("begin delete resource without migration", res.Resource.Workspace, res.Resource.Name)
+			deleteRes, err := container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
+				Token:          "test-token",
+				Ids:            []string{resourceId},
+				DoMigration:    false,
+				ForceMigration: false,
+			})
+
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			if deleteRes.Error != nil {
+				t.Error(deleteRes.Error)
+				return
+			}
+
+			log.Info("resource deleted: " + res.Resource.Name)
+		}()
+
 		log.Print("finish PrepareResourceFromEntity", mappingName, dataSource.Id)
 
 		log.Print("begin create resource without migration", res.Resource.Workspace, res.Resource.Name)
@@ -228,8 +252,20 @@ func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dat
 		}
 
 		if createRes.Error != nil {
-			t.Error(createRes.Error)
-			return
+			if createRes.Error.Code == model.ErrorCode_ALREADY_EXISTS {
+				res2, _ := container.resourceService.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+					Token:     "test-token",
+					Workspace: res.Resource.Workspace,
+					Name:      res.Resource.Name,
+				})
+				resourceId = res2.Resource.Id
+
+			} else {
+				t.Error(res.Error.Message)
+				return
+			}
+		} else {
+			resourceId = createRes.Resources[0].Id
 		}
 
 		log.Print("finish create resource without migration", res.Resource.Workspace, res.Resource.Name)
@@ -237,25 +273,5 @@ func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dat
 		log.Print("Calling exec: ", res.Resource.Workspace, " ", res.Resource.Name, " ", res.Resource.SourceConfig.DataSource)
 		exec(res.Resource)
 		log.Print("Finished exec: ", res.Resource.Workspace, " ", res.Resource.Name, " ", res.Resource.SourceConfig.DataSource)
-
-		log.Print("begin delete resource without migration", res.Resource.Workspace, res.Resource.Name)
-		deleteRes, err := container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
-			Token:          "test-token",
-			Ids:            []string{createRes.Resources[0].Id},
-			DoMigration:    false,
-			ForceMigration: false,
-		})
-
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		if deleteRes.Error != nil {
-			t.Error(deleteRes.Error)
-			return
-		}
-
-		log.Info("resource deleted: " + res.Resource.Name)
 	})
 }

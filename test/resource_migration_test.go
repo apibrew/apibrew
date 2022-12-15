@@ -51,6 +51,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 	})
 }
 
+// @todo fix me
 func TestResourceMigration_CrunchbaseMigrationWithResourceCreation(t *testing.T) {
 	withAutoLoadedResource(t, container, dataSourceDhTest, "public.organization", func(resource1 *model.Resource) {
 		resource2 := proto.Clone(resource1).(*model.Resource)
@@ -60,12 +61,12 @@ func TestResourceMigration_CrunchbaseMigrationWithResourceCreation(t *testing.T)
 
 		defer container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
 			Token:          "test-token",
-			Ids:            []string{resource2.Name},
+			Ids:            []string{resource2.Id},
 			DoMigration:    true,
 			ForceMigration: false,
 		})
 
-		res, err := container.resourceService.Create(context.TODO(), &stub.CreateResourceRequest{
+		createRes, err := container.resourceService.Create(context.TODO(), &stub.CreateResourceRequest{
 			Token:          "test-token",
 			Resources:      []*model.Resource{resource2},
 			DoMigration:    true,
@@ -77,8 +78,21 @@ func TestResourceMigration_CrunchbaseMigrationWithResourceCreation(t *testing.T)
 			return
 		}
 
-		if res.Error != nil {
-			t.Error(res.Error)
+		if createRes.Error != nil {
+			if createRes.Error.Code == model.ErrorCode_ALREADY_EXISTS {
+				res2, _ := container.resourceService.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+					Token:     "test-token",
+					Workspace: resource2.Workspace,
+					Name:      resource2.Name,
+				})
+				resource2.Id = res2.Resource.Id
+
+			} else {
+				t.Error(createRes.Error.Message)
+			}
+			return
+		} else {
+			resource2.Id = createRes.Resources[0].Id
 		}
 
 		list, err := container.recordService.List(context.TODO(), &stub.ListRecordRequest{
@@ -103,7 +117,7 @@ func TestResourceMigration_CrunchbaseMigrationWithResourceCreation(t *testing.T)
 			return record
 		})
 
-		createRes, err := container.recordService.Create(context.TODO(), &stub.CreateRecordRequest{
+		createRes2, err := container.recordService.Create(context.TODO(), &stub.CreateRecordRequest{
 			Token:   "test-token",
 			Records: records,
 		})
@@ -112,8 +126,8 @@ func TestResourceMigration_CrunchbaseMigrationWithResourceCreation(t *testing.T)
 			t.Error(err)
 		}
 
-		if createRes.Error != nil {
-			t.Error(createRes.Error.Message)
+		if createRes2.Error != nil {
+			t.Error(createRes2.Error.Message)
 		}
 
 		_, err = container.recordService.Delete(context.TODO(), &stub.DeleteRecordRequest{

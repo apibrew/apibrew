@@ -56,8 +56,6 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterAuthenticationServiceServer(g.grpcServer, NewAuthenticationServiceServer(g.authenticationService))
 	stub.RegisterDataSourceServiceServer(g.grpcServer, NewDataSourceServiceServer(g.dataSourceService))
 	stub.RegisterRecordServiceServer(g.grpcServer, NewRecordServiceServer(g.recordService))
-	stub.RegisterWorkspaceServiceServer(g.grpcServer, NewWorkspaceServiceServer(g.workspaceService))
-	stub.RegisterUserServiceServer(g.grpcServer, NewUserServiceServer(g.userService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) error {

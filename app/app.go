@@ -8,6 +8,7 @@ import (
 	"data-handler/service/backend"
 	"data-handler/service/backend/postgres"
 	"data-handler/service/handler"
+	"data-handler/service/handlers"
 	log "github.com/sirupsen/logrus"
 	"net"
 )
@@ -27,7 +28,8 @@ type App struct {
 	apiServer                      api.Server
 	grpcLis                        net.Listener
 	httpLis                        net.Listener
-	genericHandler                 handler.GenericHandler
+	genericHandler                 *handler.GenericHandler
+	stdHandler                     handlers.StdHandler
 }
 
 type GrpcContainer interface {
@@ -65,6 +67,7 @@ func (app *App) Init() {
 	app.recordApi = api.NewRecordApi()
 	app.authenticationApi = api.NewAuthenticationApi()
 	app.apiServer = api.NewServer()
+	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService)
 
 	app.grpcServer = grpc_server.NewGrpcServer(grpc_server.GrpcServerInjectionConstructorParams{
 		ResourceService:       app.resourceService,
@@ -113,6 +116,7 @@ func (app *App) initServices() {
 	app.recordService.Init(app.initData)
 	app.userService.Init(app.initData)
 	app.authenticationService.Init(app.initData)
+	app.stdHandler.Init(app.initData)
 }
 
 func (app *App) InjectServices() {

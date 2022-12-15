@@ -24,7 +24,7 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 		return nil, 0, err
 	}
 
-	if handled, records, total, err := r.genericHandler.List(); handled {
+	if handled, records, total, err := r.genericHandler.List(ctx, params); handled {
 		return records, total, err
 	}
 
@@ -183,11 +183,11 @@ func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, 
 		return nil, err
 	}
 
-	if err = r.genericHandler.BeforeGet(resource, id); err != nil {
+	if err = r.genericHandler.BeforeGet(ctx, resource, id); err != nil {
 		return nil, err
 	}
 
-	if handled, res, err := r.genericHandler.Get(resource, id); handled {
+	if handled, res, err := r.genericHandler.Get(ctx, resource, id); handled {
 		return res, err
 	}
 
@@ -197,7 +197,7 @@ func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, 
 		return nil, err
 	}
 
-	if err = r.genericHandler.AfterGet(resource, id, res); err != nil {
+	if err = r.genericHandler.AfterGet(ctx, resource, id, res); err != nil {
 		return nil, err
 	}
 

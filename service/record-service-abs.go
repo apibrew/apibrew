@@ -28,7 +28,7 @@ type RecordService interface {
 	Update(ctx context.Context, params params.RecordUpdateParams) ([]*model.Record, errors.ServiceError)
 	Get(ctx context.Context, params params.RecordGetParams) (*model.Record, errors.ServiceError)
 	Delete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
-	InjectGenericHandler(handler handler.GenericHandler)
+	InjectGenericHandler(handler *handler.GenericHandler)
 }
 
 type recordService struct {
@@ -37,10 +37,10 @@ type recordService struct {
 	authenticationService          AuthenticationService
 	ServiceName                    string
 	resourceService                ResourceService
-	genericHandler                 handler.GenericHandler
+	genericHandler                 *handler.GenericHandler
 }
 
-func (r *recordService) InjectGenericHandler(genericHandler handler.GenericHandler) {
+func (r *recordService) InjectGenericHandler(genericHandler *handler.GenericHandler) {
 	r.genericHandler = genericHandler
 }
 

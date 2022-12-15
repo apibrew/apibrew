@@ -10,30 +10,49 @@ import (
 type Event struct {
 }
 
-type BaseHandler interface {
+type BeforeList func(ctx context.Context, resource *model.Resource, params params.RecordListParams) errors.ServiceError
+type List func(ctx context.Context, params params.RecordListParams) (handled bool, records []*model.Record, total uint32, err errors.ServiceError)
+type AfterList func(ctx context.Context, resource *model.Resource, params params.RecordListParams, records []*model.Record, total uint32) errors.ServiceError
+
+type BeforeCreate func(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) errors.ServiceError
+type Create func(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) (handled bool, records []*model.Record, inserted []bool, err errors.ServiceError)
+type AfterCreate func(ctx context.Context, resource *model.Resource, params params.RecordCreateParams, records []*model.Record) errors.ServiceError
+
+type BeforeUpdate func(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams) errors.ServiceError
+type Update func(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams) (handled bool, records []*model.Record, err errors.ServiceError)
+type AfterUpdate func(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams, records []*model.Record) errors.ServiceError
+
+type BeforeGet func(ctx context.Context, resource *model.Resource, id string) errors.ServiceError
+type Get func(ctx context.Context, resource *model.Resource, id string) (handled bool, record *model.Record, error errors.ServiceError)
+type AfterGet func(ctx context.Context, resource *model.Resource, id string, res *model.Record) errors.ServiceError
+
+type BeforeDelete func(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
+type Delete func(ctx context.Context, params params.RecordDeleteParams) (handled bool, err errors.ServiceError)
+type AfterDelete func(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
+
+type BaseHandler struct {
 	// list
-	BeforeList(ctx context.Context, resource *model.Resource, params params.RecordListParams) errors.ServiceError
-	List() (handled bool, records []*model.Record, total uint32, err errors.ServiceError)
-	AfterList(ctx context.Context, resource *model.Resource, params params.RecordListParams, records []*model.Record, total uint32) errors.ServiceError
+	BeforeList BeforeList
+	List       List
+	AfterList  AfterList
 
 	// create
-	BeforeCreate(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) errors.ServiceError
-	Create(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) (handled bool, records []*model.Record, inserted []bool, err errors.ServiceError)
-	AfterCreate(ctx context.Context, resource *model.Resource, params params.RecordCreateParams, records []*model.Record) errors.ServiceError
+	BeforeCreate BeforeCreate
+	Create       Create
+	AfterCreate  AfterCreate
 
 	// update
-	BeforeUpdate(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams) errors.ServiceError
-
-	Update(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams) (handled bool, records []*model.Record, err errors.ServiceError)
-	AfterUpdate(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams, records []*model.Record) errors.ServiceError
+	BeforeUpdate BeforeUpdate
+	Update       Update
+	AfterUpdate  AfterUpdate
 
 	// get
-	BeforeGet(resource *model.Resource, id string) errors.ServiceError
-	Get(resource *model.Resource, id string) (handled bool, record *model.Record, error errors.ServiceError)
-	AfterGet(resource *model.Resource, id string, res *model.Record) errors.ServiceError
+	BeforeGet BeforeGet
+	Get       Get
+	AfterGet  AfterGet
 
 	// delete
-	BeforeDelete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
-	Delete(ctx context.Context, params params.RecordDeleteParams) (handled bool, err errors.ServiceError)
-	AfterDelete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
+	BeforeDelete BeforeDelete
+	Delete       Delete
+	AfterDelete  AfterDelete
 }
