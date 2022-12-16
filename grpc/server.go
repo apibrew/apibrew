@@ -58,7 +58,7 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterAuthenticationServiceServer(g.grpcServer, NewAuthenticationServiceServer(g.authenticationService))
 	stub.RegisterDataSourceServiceServer(g.grpcServer, NewDataSourceServiceServer(g.dataSourceService))
 	stub.RegisterRecordServiceServer(g.grpcServer, NewRecordServiceServer(g.recordService))
-	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.recordService))
+	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.watchService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) error {

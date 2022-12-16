@@ -172,9 +172,9 @@ func (g *GenericHandler) Unregister(handler BaseHandler) {
 	var newHandlers []BaseHandler
 
 	for _, item := range g.handlers {
-		if handler == item {
-			continue
-		}
+		//if handler == item {
+		//	continue
+		//}
 
 		newHandlers = append(newHandlers, item)
 	}
