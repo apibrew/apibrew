@@ -14,7 +14,7 @@ require (
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.9.0
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-	google.golang.org/grpc v1.50.0
+	google.golang.org/grpc v1.39.0-dev
 	google.golang.org/protobuf v1.28.1
 )
 
@@ -25,4 +25,5 @@ require (
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0 // indirect
 )

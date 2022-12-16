@@ -4,10 +4,21 @@ package stub.model;
 
 option go_package = "data-handler/model";
 
+import 'model/record.proto';
+import 'google/protobuf/struct.proto';
+import 'google/protobuf/timestamp.proto';
+
 enum EventType {
   CREATE = 0;
   UPDATE = 1;
   DELETE = 2;
   GET = 3;
   LIST = 4;
+}
+
+message WatchMessage {
+  google.protobuf.Struct changes = 4;
+  Record record = 1;
+  EventType event = 2;
+  google.protobuf.Timestamp event_on = 3;
 }
