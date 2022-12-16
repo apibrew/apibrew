@@ -19,6 +19,7 @@ type GrpcServerInjectionConstructorParams struct {
 	DataSourceService     service.DataSourceService
 	WorkspaceService      service.WorkspaceService
 	UserService           service.UserService
+	WatchService          service.WatchService
 }
 
 type GrpcServer interface {
@@ -36,6 +37,7 @@ type grpcServer struct {
 	workspaceService      service.WorkspaceService
 	userService           service.UserService
 	initData              *model.InitData
+	watchService          service.WatchService
 }
 
 func (g *grpcServer) Stop() {
@@ -56,6 +58,7 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterAuthenticationServiceServer(g.grpcServer, NewAuthenticationServiceServer(g.authenticationService))
 	stub.RegisterDataSourceServiceServer(g.grpcServer, NewDataSourceServiceServer(g.dataSourceService))
 	stub.RegisterRecordServiceServer(g.grpcServer, NewRecordServiceServer(g.recordService))
+	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.recordService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) error {
@@ -83,6 +86,7 @@ func NewGrpcServer(params GrpcServerInjectionConstructorParams) GrpcServer {
 	return &grpcServer{
 		resourceService:       params.ResourceService,
 		recordService:         params.RecordService,
+		watchService:          params.WatchService,
 		authenticationService: params.AuthenticationService,
 		dataSourceService:     params.DataSourceService,
 		workspaceService:      params.WorkspaceService,

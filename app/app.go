@@ -30,6 +30,7 @@ type App struct {
 	httpLis                        net.Listener
 	genericHandler                 *handler.GenericHandler
 	stdHandler                     handlers.StdHandler
+	watchService                   service.WatchService
 }
 
 type GrpcContainer interface {
@@ -68,6 +69,7 @@ func (app *App) Init() {
 	app.authenticationApi = api.NewAuthenticationApi()
 	app.apiServer = api.NewServer()
 	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService)
+	app.watchService = service.NewWatchService(app.genericHandler)
 
 	app.grpcServer = grpc_server.NewGrpcServer(grpc_server.GrpcServerInjectionConstructorParams{
 		ResourceService:       app.resourceService,
@@ -76,6 +78,7 @@ func (app *App) Init() {
 		DataSourceService:     app.dataSourceService,
 		WorkspaceService:      app.workspaceService,
 		UserService:           app.userService,
+		WatchService:          app.watchService,
 	})
 
 	app.InjectServices()

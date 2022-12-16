@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "data-handler/grpc/stub";
+
+import 'model/record.proto';
+import 'model/query.proto';
+import 'google/protobuf/struct.proto';
+import 'google/protobuf/timestamp.proto';
+
+service WatchService {
+  // Sends a greeting
+  rpc Watch (WatchRequest) returns (stream WatchResponse) {}
+}
+
+
+
+message WatchRequest {
+  string token = 1;
+  string workspace = 2;
+  string resource = 3;
+  model.BooleanExpression query = 4;
+  repeated EventType events = 5;
+}
+
+message WatchResponse {
+  google.protobuf.Struct changes = 4;
+  model.Record record = 1;
+  EventType event = 2;
+  google.protobuf.Timestamp event_on = 3;
+}
