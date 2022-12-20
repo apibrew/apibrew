@@ -5,6 +5,7 @@ import (
 	"data-handler/grpc/stub"
 	"data-handler/service"
 	"data-handler/service/params"
+	log "github.com/sirupsen/logrus"
 )
 
 type watchGrpcService struct {
@@ -14,7 +15,9 @@ type watchGrpcService struct {
 
 func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.WatchService_WatchServer) error {
 	localCtx, cancel := context.WithCancel(res.Context())
-	defer cancel()
+	defer func() {
+		cancel()
+	}()
 
 	out := w.watchService.Watch(localCtx, params.WatchParams{
 		Workspace:  req.Workspace,
@@ -23,11 +26,12 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.WatchService_W
 		BufferSize: 500,
 	})
 
-	for item := range out {
-		err := res.Send(&stub.WatchResponse{Message: item})
+	for range out {
+		err := res.Send(&stub.WatchResponse{})
 
 		if err != nil {
 			cancel()
+			log.Error(err)
 			return err
 		}
 	}

@@ -31,6 +31,7 @@ type Delete func(ctx context.Context, params params.RecordDeleteParams) (handled
 type AfterDelete func(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
 
 type BaseHandler struct {
+	Id string
 	// list
 	BeforeList BeforeList
 	List       List

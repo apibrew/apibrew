@@ -4,7 +4,6 @@ package stub.model;
 
 option go_package = "data-handler/model";
 
-import 'model/record.proto';
 import 'google/protobuf/struct.proto';
 import 'google/protobuf/timestamp.proto';
 
@@ -18,7 +17,7 @@ enum EventType {
 
 message WatchMessage {
   google.protobuf.Struct changes = 4;
-  Record record = 1;
+  repeated string recordIds = 1;
   EventType event = 2;
   google.protobuf.Timestamp event_on = 3;
 }

@@ -29,8 +29,8 @@ func (h *dataSourceHandler) BeforeList(ctx context.Context, resource *model.Reso
 	return nil
 }
 
-func (h *dataSourceHandler) prepareHandler() handler.BaseHandler {
-	return handler.BaseHandler{
+func (h *dataSourceHandler) prepareHandler() *handler.BaseHandler {
+	return &handler.BaseHandler{
 		BeforeCreate: h.BeforeCreate,
 		BeforeList:   h.BeforeList,
 	}

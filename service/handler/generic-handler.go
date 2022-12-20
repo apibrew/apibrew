@@ -5,14 +5,17 @@ import (
 	"data-handler/model"
 	"data-handler/service/errors"
 	"data-handler/service/params"
+	"fmt"
+	"math/rand"
 )
 
 type GenericHandler struct {
 	BaseHandler
-	handlers []BaseHandler
+	handlers []*BaseHandler
 }
 
-func (g *GenericHandler) Register(handler BaseHandler) {
+func (g *GenericHandler) Register(handler *BaseHandler) {
+	handler.Id = fmt.Sprintf("%v", rand.Float64())
 	g.handlers = append(g.handlers, handler)
 }
 
@@ -168,13 +171,13 @@ func (g *GenericHandler) AfterDelete(ctx context.Context, params params.RecordDe
 	return nil
 }
 
-func (g *GenericHandler) Unregister(handler BaseHandler) {
-	var newHandlers []BaseHandler
+func (g *GenericHandler) Unregister(handler *BaseHandler) {
+	var newHandlers []*BaseHandler
 
 	for _, item := range g.handlers {
-		//if handler == item {
-		//	continue
-		//}
+		if handler.Id == item.Id {
+			continue
+		}
 
 		newHandlers = append(newHandlers, item)
 	}

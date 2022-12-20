@@ -6,6 +6,7 @@ import (
 	"data-handler/service/errors"
 	"data-handler/service/handler"
 	"data-handler/service/params"
+	"data-handler/util"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
@@ -24,33 +25,31 @@ func (w watchService) Watch(ctx context.Context, p params.WatchParams) <-chan *m
 	}
 
 	out := make(chan *model.WatchMessage, p.BufferSize)
-	watchHandler := handler.BaseHandler{}
+	watchHandler := &handler.BaseHandler{}
 
-	w.genericHandler.Register(watchHandler)
-
-	go func() {
-		<-ctx.Done()
-
-		w.genericHandler.Unregister(watchHandler)
-		close(out)
-	}()
+	//go func() {
+	//	<-ctx.Done()
+	//
+	//	w.genericHandler.Unregister(watchHandler)
+	//	close(out)
+	//}()
 
 	sendEvent := func(records []*model.Record, event model.EventType) {
-		for _, record := range records {
-			select {
-			case out <- &model.WatchMessage{
-				Changes: nil,
-				Record:  record,
-				Event:   event,
-				EventOn: timestamppb.New(time.Now()),
-			}:
-			default:
-			}
+		select {
+		case out <- &model.WatchMessage{
+			Changes: nil,
+			RecordIds: util.ArrayMap[*model.Record, string](records, func(r *model.Record) string {
+				return r.Id
+			}),
+			Event:   event,
+			EventOn: timestamppb.New(time.Now()),
+		}:
+		default:
 		}
 	}
 
 	watchHandler.AfterList = func(ctx context.Context, resource *model.Resource, params params.RecordListParams, records []*model.Record, total uint32) errors.ServiceError {
-		sendEvent(records, model.EventType_CREATE)
+		sendEvent(records, model.EventType_LIST)
 		return nil
 	}
 
@@ -61,10 +60,12 @@ func (w watchService) Watch(ctx context.Context, p params.WatchParams) <-chan *m
 	}
 
 	watchHandler.AfterGet = func(ctx context.Context, resource *model.Resource, id string, res *model.Record) errors.ServiceError {
-		sendEvent([]*model.Record{res}, model.EventType_CREATE)
+		sendEvent([]*model.Record{res}, model.EventType_GET)
 
 		return nil
 	}
+
+	w.genericHandler.Register(watchHandler)
 
 	//watchHandler.AfterDelete = func(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError {
 	//	sendEvent([]*model.Record{params.}, model.EventType_CREATE)

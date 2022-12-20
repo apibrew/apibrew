@@ -57,6 +57,7 @@ func (s ServiceCaller[T, R]) Respond(serviceResult proto.Message, serviceError e
 
 	isSuccess := serviceError == nil
 	if !isSuccess {
+		s.writer.WriteHeader(400)
 		handleServiceError(s.writer, serviceError)
 	} else {
 		s.writer.WriteHeader(200)
