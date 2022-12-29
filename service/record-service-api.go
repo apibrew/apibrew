@@ -16,9 +16,9 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 		return nil, 0, err
 	}
 
-	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
-		return nil, 0, err
-	}
+	//if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
+	//	return nil, 0, err
+	//}
 
 	if err = r.genericHandler.BeforeList(ctx, resource, params); err != nil {
 		return nil, 0, err
