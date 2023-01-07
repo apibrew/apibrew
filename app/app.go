@@ -3,10 +3,10 @@ package app
 import (
 	"data-handler/api"
 	grpc_server "data-handler/grpc"
+	"data-handler/logging"
 	"data-handler/model"
+	"data-handler/params"
 	"data-handler/service"
-	"data-handler/service/backend"
-	"data-handler/service/backend/postgres"
 	"data-handler/service/handler"
 	"data-handler/service/handlers"
 	log "github.com/sirupsen/logrus"
@@ -14,23 +14,21 @@ import (
 )
 
 type App struct {
-	initData                       *model.InitData
-	grpcServer                     grpc_server.GrpcServer
-	authenticationService          service.AuthenticationService
-	dataSourceService              service.DataSourceService
-	resourceService                service.ResourceService
-	recordService                  service.RecordService
-	workspaceService               service.WorkspaceService
-	userService                    service.UserService
-	postgresResourceServiceBackend backend.ResourceServiceBackend
-	recordApi                      api.RecordApi
-	authenticationApi              api.AuthenticationApi
-	apiServer                      api.Server
-	grpcLis                        net.Listener
-	httpLis                        net.Listener
-	genericHandler                 *handler.GenericHandler
-	stdHandler                     handlers.StdHandler
-	watchService                   service.WatchService
+	initData               *model.InitData
+	grpcServer             grpc_server.GrpcServer
+	authenticationService  service.AuthenticationService
+	dataSourceService      service.DataSourceService
+	resourceService        service.ResourceService
+	recordService          service.RecordService
+	backendProviderService service.BackendProviderService
+	workspaceService       service.WorkspaceService
+	userService            service.UserService
+	apiServer              api.Server
+	grpcLis                net.Listener
+	httpLis                net.Listener
+	genericHandler         *handler.GenericHandler
+	stdHandler             handlers.StdHandler
+	watchService           service.WatchService
 }
 
 type GrpcContainer interface {
@@ -60,18 +58,25 @@ func (app *App) Init() {
 	app.authenticationService = service.NewAuthenticationService()
 	app.dataSourceService = service.NewDataSourceService()
 	app.resourceService = service.NewResourceService()
+	app.backendProviderService = service.NewBackendProviderService()
 	app.recordService = service.NewRecordService()
 	app.genericHandler = handler.NewGenericHandler()
-	app.postgresResourceServiceBackend = postgres.NewPostgresResourceServiceBackend()
 	app.workspaceService = service.NewWorkspaceService()
 	app.userService = service.NewUserService()
-	app.recordApi = api.NewRecordApi()
-	app.authenticationApi = api.NewAuthenticationApi()
-	app.apiServer = api.NewServer()
 	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService)
 	app.watchService = service.NewWatchService(app.genericHandler)
 
-	app.grpcServer = grpc_server.NewGrpcServer(grpc_server.GrpcServerInjectionConstructorParams{
+	app.grpcServer = grpc_server.NewGrpcServer(params.ServerInjectionConstructorParams{
+		ResourceService:       app.resourceService,
+		RecordService:         app.recordService,
+		AuthenticationService: app.authenticationService,
+		DataSourceService:     app.dataSourceService,
+		WorkspaceService:      app.workspaceService,
+		UserService:           app.userService,
+		WatchService:          app.watchService,
+	})
+
+	app.apiServer = api.NewServer(params.ServerInjectionConstructorParams{
 		ResourceService:       app.resourceService,
 		RecordService:         app.recordService,
 		AuthenticationService: app.authenticationService,
@@ -98,7 +103,7 @@ func (app *App) Init() {
 }
 
 func (app *App) Serve() {
-	go app.apiServer.Serve(app.httpLis)
+	//go app.apiServer.Serve(app.httpLis)
 
 	err := app.grpcServer.Serve(app.grpcLis)
 
@@ -112,7 +117,7 @@ func (app *App) Stop() {
 }
 
 func (app *App) initServices() {
-	app.postgresResourceServiceBackend.Init()
+	app.backendProviderService.Init(app.initData)
 	app.dataSourceService.Init(app.initData)
 	app.resourceService.Init(app.initData)
 	app.workspaceService.Init(app.initData)
@@ -123,16 +128,16 @@ func (app *App) initServices() {
 }
 
 func (app *App) InjectServices() {
+	app.backendProviderService.InjectDataSourceService(app.dataSourceService)
+
 	app.dataSourceService.InjectResourceService(app.resourceService)
 	app.dataSourceService.InjectRecordService(app.recordService)
 	app.dataSourceService.InjectInitData(app.initData)
-	app.dataSourceService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
 	app.dataSourceService.InjectAuthenticationService(app.authenticationService)
-
-	app.postgresResourceServiceBackend.InjectDataSourceService(app.dataSourceService)
+	app.dataSourceService.InjectBackendProviderService(app.backendProviderService)
 
 	app.resourceService.InjectDataSourceService(app.dataSourceService)
-	app.resourceService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
+	app.resourceService.InjectBackendProviderService(app.backendProviderService)
 	app.resourceService.InjectAuthenticationService(app.authenticationService)
 
 	app.userService.InjectAuthenticationService(app.authenticationService)
@@ -143,7 +148,7 @@ func (app *App) InjectServices() {
 	app.workspaceService.InjectRecordService(app.recordService)
 	app.workspaceService.InjectResourceService(app.resourceService)
 
-	app.recordService.InjectPostgresResourceServiceBackend(app.postgresResourceServiceBackend)
+	app.recordService.InjectBackendProviderService(app.backendProviderService)
 	app.recordService.InjectDataSourceService(app.dataSourceService)
 	app.recordService.InjectAuthenticationService(app.authenticationService)
 	app.recordService.InjectResourceService(app.resourceService)
@@ -151,12 +156,6 @@ func (app *App) InjectServices() {
 
 	app.authenticationService.InjectRecordService(app.recordService)
 
-	app.authenticationApi.InjectAuthenticationService(app.authenticationService)
-
-	app.recordApi.InjectRecordService(app.recordService)
-	app.recordApi.InjectResourceService(app.resourceService)
-	app.apiServer.InjectAuthenticationApi(app.authenticationApi)
-	app.apiServer.InjectRecordApi(app.recordApi)
 }
 
 func (app *App) SetInitData(data *model.InitData) {
@@ -169,4 +168,8 @@ func (app *App) CheckInitData(data *model.InitData) {
 	if data.SystemDataSource == nil {
 		log.Fatal("System dataSource is not set")
 	}
+}
+
+func (app *App) SetGrayLogAddr(addr string) {
+	logging.SetupGrayLog("tw:12201", "test")
 }

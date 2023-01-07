@@ -1,6 +1,7 @@
 package test
 
 import (
+	"data-handler/logging"
 	"data-handler/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -8,6 +9,8 @@ import (
 func init() {
 	log.SetLevel(log.TraceLevel)
 	//log.SetReportCaller(true)
+
+	logging.SetupGrayLog("tw:12201", "test")
 }
 
 func prepareInitData() *model.InitData {

@@ -9,7 +9,9 @@ import 'model/common.proto';
 
 enum DataSourceBackend {
   POSTGRESQL = 0;
-  MONGODB = 1; // not supported currently
+  MYSQL = 1;
+  ORACLE = 2;
+  MONGODB = 3;
 }
 
 message PostgresqlOptions {

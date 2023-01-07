@@ -2,24 +2,26 @@ package service
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/security"
 	"data-handler/service/system"
 	"github.com/jellydator/ttlcache/v3"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
 type ResourceService interface {
 	InitResource(resource *model.Resource)
 	Init(data *model.InitData)
-	CheckResourceExists(workspace, name string) (bool, errors.ServiceError)
+	CheckResourceExists(ctx context.Context, workspace, name string) (bool, errors.ServiceError)
 	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, errors.ServiceError)
 	GetSystemResourceByName(resourceName string) (*model.Resource, errors.ServiceError)
 	InjectDataSourceService(service DataSourceService)
 	InjectAuthenticationService(service AuthenticationService)
-	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
+	InjectBackendProviderService(backendProviderService BackendProviderService)
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
 	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
 	Delete(ctx context.Context, workspace string, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
@@ -28,11 +30,15 @@ type ResourceService interface {
 }
 
 type resourceService struct {
-	dataSourceService              DataSourceService
-	authenticationService          AuthenticationService
-	postgresResourceServiceBackend backend.ResourceServiceBackend
-	cache                          *ttlcache.Cache[string, *model.Resource]
-	disableCache                   bool
+	dataSourceService      DataSourceService
+	authenticationService  AuthenticationService
+	cache                  *ttlcache.Cache[string, *model.Resource]
+	disableCache           bool
+	backendProviderService BackendProviderService
+}
+
+func (r *resourceService) InjectBackendProviderService(backendProviderService BackendProviderService) {
+	r.backendProviderService = backendProviderService
 }
 
 func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
@@ -42,7 +48,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	return r.GetBackend().UpdateResource(ctx, resource, doMigration, forceMigration)
+	return r.backendProviderService.GetSystemBackend(ctx).UpdateResource(ctx, resource, doMigration, forceMigration)
 }
 
 func (r *resourceService) checkSystemResource(ctx context.Context, workspace, id string) errors.ServiceError {
@@ -51,7 +57,7 @@ func (r *resourceService) checkSystemResource(ctx context.Context, workspace, id
 			return errors.LogicalError.WithMessage("you cannot access system workspace resources")
 		}
 
-		res, err := r.GetBackend().GetResource(ctx, workspace, id)
+		res, err := r.backendProviderService.GetSystemBackend(ctx).GetResource(ctx, workspace, id)
 
 		if err != nil {
 			return err
@@ -83,7 +89,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 	}
 
-	return r.GetBackend().AddResource(backend.AddResourceParams{
+	return r.backendProviderService.GetSystemBackend(ctx).AddResource(ctx, backend.AddResourceParams{
 		Resource:       resource,
 		IgnoreIfExists: false,
 		Migrate:        doMigration,
@@ -100,9 +106,17 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 }
 
 func (r *resourceService) GetResourceByName(ctx context.Context, workspace string, resourceName string) (*model.Resource, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debugf("Begin resource-service GetResourceByName: %s / %s", workspace, resourceName)
+	defer logger.Debug("End resource-service GetResourceByName")
+
 	if security.IsSystemContext(ctx) && (workspace == system.WorkspaceResource.Name || workspace == "") {
+		logger.Debugf("Call GetSystemResourceByName: %s", resourceName)
+
 		resource, err := r.GetSystemResourceByName(resourceName)
 		if err != nil {
+			logger.Error("Error GetSystemResourceByName: %s", resourceName)
 			return resource, err
 		}
 	}
@@ -117,9 +131,11 @@ func (r *resourceService) GetResourceByName(ctx context.Context, workspace strin
 		}
 	}
 
-	resource, err := r.postgresResourceServiceBackend.GetResourceByName(ctx, workspace, resourceName)
+	logger.Debugf("Call backend GetResourceByName: %s", resourceName)
+	resource, err := r.backendProviderService.GetSystemBackend(ctx).GetResourceByName(ctx, workspace, resourceName)
 
 	if err != nil {
+		logger.Error("Error GetResourceByName: %s", resourceName)
 		return nil, err
 	}
 
@@ -141,12 +157,12 @@ func (r *resourceService) GetSystemResourceByName(resourceName string) (*model.R
 	return nil, errors.NotFoundError
 }
 
-func (r *resourceService) CheckResourceExists(workspace, name string) (bool, errors.ServiceError) {
+func (r *resourceService) CheckResourceExists(ctx context.Context, workspace, name string) (bool, errors.ServiceError) {
 	if r.cache.Get(name) != nil {
 		return true, nil
 	}
 
-	resource, err := r.postgresResourceServiceBackend.GetResourceByName(nil, workspace, name)
+	resource, err := r.backendProviderService.GetSystemBackend(ctx).GetResourceByName(nil, workspace, name)
 
 	if err != nil {
 		return false, err
@@ -155,10 +171,6 @@ func (r *resourceService) CheckResourceExists(workspace, name string) (bool, err
 	r.cache.Set(workspace+"-"+name, resource, ttlcache.DefaultTTL)
 
 	return true, nil
-}
-
-func (r *resourceService) InjectPostgresResourceServiceBackend(resourceServiceBackend backend.ResourceServiceBackend) {
-	r.postgresResourceServiceBackend = resourceServiceBackend
 }
 
 func (r *resourceService) Init(data *model.InitData) {
@@ -174,7 +186,7 @@ func (r *resourceService) InjectAuthenticationService(service AuthenticationServ
 }
 
 func (r *resourceService) InitResource(resource *model.Resource) {
-	_, err := r.GetBackend().AddResource(backend.AddResourceParams{
+	_, err := r.backendProviderService.GetSystemBackend(context.TODO()).AddResource(context.TODO(), backend.AddResourceParams{
 		Resource:       resource,
 		IgnoreIfExists: true,
 		Migrate:        true,
@@ -193,7 +205,7 @@ func (r resourceService) Delete(ctx context.Context, workspace string, ids []str
 		}
 	}
 
-	err := r.GetBackend().DeleteResources(ctx, workspace, ids, doMigration, forceMigration)
+	err := r.backendProviderService.GetSystemBackend(ctx).DeleteResources(ctx, workspace, ids, doMigration, forceMigration)
 
 	if err != nil {
 		return err
@@ -207,7 +219,7 @@ func (r resourceService) Delete(ctx context.Context, workspace string, ids []str
 }
 
 func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
-	list, err := r.GetBackend().ListResources(ctx)
+	list, err := r.backendProviderService.GetSystemBackend(ctx).ListResources(ctx)
 
 	if security.IsSystemContext(ctx) {
 		return list, err
@@ -235,11 +247,7 @@ func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.Se
 }
 
 func (r resourceService) Get(ctx context.Context, workspace, id string) (*model.Resource, errors.ServiceError) {
-	return r.GetBackend().GetResource(ctx, workspace, id)
-}
-
-func (r resourceService) GetBackend() backend.ResourceServiceBackend {
-	return r.postgresResourceServiceBackend
+	return r.backendProviderService.GetSystemBackend(ctx).GetResource(ctx, workspace, id)
 }
 
 func NewResourceService() ResourceService {

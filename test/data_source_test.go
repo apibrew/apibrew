@@ -1,7 +1,6 @@
 package test
 
 import (
-	"context"
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	log "github.com/sirupsen/logrus"
@@ -10,14 +9,18 @@ import (
 )
 
 func TestCreateDataSource(t *testing.T) {
-	withDataSource(t, container, dataSource1, func(createdDataSource *model.DataSource) {
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSource1, func(createdDataSource *model.DataSource) {
 		// testing is done
 	})
 }
 
 func TestCreateAndReadDataSource(t *testing.T) {
-	withDataSource(t, container, dataSource1, func(createdDataSource *model.DataSource) {
-		res2, err := container.dataSourceService.Get(context.TODO(), &stub.GetDataSourceRequest{
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSource1, func(createdDataSource *model.DataSource) {
+		res2, err := container.dataSourceService.Get(ctx, &stub.GetDataSourceRequest{
 			Token: "test-token",
 			Id:    createdDataSource.Id,
 		})
@@ -42,22 +45,28 @@ func TestCreateAndReadDataSource(t *testing.T) {
 }
 
 func TestCreateDataSourceStatusTest(t *testing.T) {
-	withDataSource(t, container, systemDataSource, func(createdDataSource *model.DataSource) {
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, systemDataSource, func(createdDataSource *model.DataSource) {
 		checkNewCreatedDatasourceStatus(createdDataSource, container, t)
 	})
 }
 
 func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
-	withDataSource(t, container, dataSource1WrongPassword, func(createdDataSource *model.DataSource) {
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSource1WrongPassword, func(createdDataSource *model.DataSource) {
 		checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource, container, t)
 	})
 }
 
 func TestListCreatedDataSources(t *testing.T) {
-	withDataSource(t, container, dataSource1, func(createdDataSource1 *model.DataSource) {
-		withDataSource(t, container, dataSource1, func(createdDataSource2 *model.DataSource) {
-			withDataSource(t, container, dataSource1, func(createdDataSource3 *model.DataSource) {
-				res, err := container.dataSourceService.List(context.TODO(), &stub.ListDataSourceRequest{
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSource1, func(createdDataSource1 *model.DataSource) {
+		withDataSource(ctx, t, container, dataSource1, func(createdDataSource2 *model.DataSource) {
+			withDataSource(ctx, t, container, dataSource1, func(createdDataSource3 *model.DataSource) {
+				res, err := container.dataSourceService.List(ctx, &stub.ListDataSourceRequest{
 					Token: "test-token",
 				})
 
@@ -75,7 +84,9 @@ func TestListCreatedDataSources(t *testing.T) {
 }
 
 func TestUpdateDataSource(t *testing.T) {
-	withDataSource(t, container, dataSource1, func(createdDataSource1 *model.DataSource) {
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSource1, func(createdDataSource1 *model.DataSource) {
 		createdDataSource1.Options = &model.DataSource_PostgresqlParams{
 			PostgresqlParams: &model.PostgresqlOptions{
 				Username:      "root2",
@@ -87,7 +98,7 @@ func TestUpdateDataSource(t *testing.T) {
 			},
 		}
 
-		res, err := container.dataSourceService.Update(context.TODO(), &stub.UpdateDataSourceRequest{
+		res, err := container.dataSourceService.Update(ctx, &stub.UpdateDataSourceRequest{
 			Token:       "test-token",
 			DataSources: []*model.DataSource{createdDataSource1},
 		})
@@ -114,7 +125,7 @@ func TestUpdateDataSource(t *testing.T) {
 			t.Error("Version is wrong")
 		}
 
-		getRes, err := container.dataSourceService.Get(context.TODO(), &stub.GetDataSourceRequest{
+		getRes, err := container.dataSourceService.Get(ctx, &stub.GetDataSourceRequest{
 			Token: "test-token",
 			Id:    createdDataSource1.Id,
 		})
@@ -141,7 +152,9 @@ func TestUpdateDataSource(t *testing.T) {
 }
 
 func TestUpdateDataSourceStatus(t *testing.T) {
-	withDataSource(t, container, dataSourceDhTest, func(createdDataSource1 *model.DataSource) {
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSourceDhTest, func(createdDataSource1 *model.DataSource) {
 		checkNewCreatedDatasourceStatus(createdDataSource1, container, t)
 
 		createdDataSource1.Options = &model.DataSource_PostgresqlParams{
@@ -155,7 +168,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 			},
 		}
 
-		container.dataSourceService.Update(context.TODO(), &stub.UpdateDataSourceRequest{
+		container.dataSourceService.Update(ctx, &stub.UpdateDataSourceRequest{
 			Token:       "test-token",
 			DataSources: []*model.DataSource{createdDataSource1},
 		})
@@ -174,7 +187,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 		}
 		createdDataSource1.Version++
 
-		container.dataSourceService.Update(context.TODO(), &stub.UpdateDataSourceRequest{
+		container.dataSourceService.Update(ctx, &stub.UpdateDataSourceRequest{
 			Token:       "test-token",
 			DataSources: []*model.DataSource{createdDataSource1},
 		})
@@ -184,7 +197,9 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 }
 
 func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, container *SimpleAppGrpcContainer, t *testing.T) {
-	res, err := container.dataSourceService.Status(context.TODO(), &stub.StatusRequest{
+	ctx := prepareTextContext()
+
+	res, err := container.dataSourceService.Status(ctx, &stub.StatusRequest{
 		Token: "test-token",
 		Id:    createdDataSource.Id,
 	})
@@ -205,7 +220,9 @@ func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, contai
 }
 
 func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *model.DataSource, container *SimpleAppGrpcContainer, t *testing.T) {
-	res, _ := container.dataSourceService.Status(context.TODO(), &stub.StatusRequest{
+	ctx := prepareTextContext()
+
+	res, _ := container.dataSourceService.Status(ctx, &stub.StatusRequest{
 		Token: "test-token",
 		Id:    createdDataSource.Id,
 	})

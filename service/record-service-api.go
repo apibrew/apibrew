@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/params"
 	"data-handler/service/security"
+	log "github.com/sirupsen/logrus"
 )
 
 func (r *recordService) List(ctx context.Context, params params.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
@@ -16,10 +18,6 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 		return nil, 0, err
 	}
 
-	//if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
-	//	return nil, 0, err
-	//}
-
 	if err = r.genericHandler.BeforeList(ctx, resource, params); err != nil {
 		return nil, 0, err
 	}
@@ -28,7 +26,15 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 		return records, total, err
 	}
 
-	records, total, err := r.postgresResourceServiceBackend.ListRecords(backend.ListRecordParams{
+	dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
+
+	records, total, err := bck.ListRecords(ctx, backend.ListRecordParams{
 		Resource:          resource,
 		Query:             params.Query,
 		Limit:             params.Limit,
@@ -91,7 +97,15 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 			return records, inserted, err
 		}
 
-		records, inserted, err = r.postgresResourceServiceBackend.AddRecords(backend.BulkRecordsParams{
+		dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+
+		if err != nil {
+			return nil, []bool{}, err
+		}
+
+		bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
+
+		records, inserted, err = bck.AddRecords(ctx, backend.BulkRecordsParams{
 			Resource:       resource,
 			Records:        list,
 			IgnoreIfExists: params.IgnoreIfExists,
@@ -152,7 +166,16 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 		}
 
 		var records []*model.Record
-		records, err = r.postgresResourceServiceBackend.UpdateRecords(backend.BulkRecordsParams{
+
+		dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+
+		if err != nil {
+			return nil, err
+		}
+
+		bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
+
+		records, err = bck.UpdateRecords(ctx, backend.BulkRecordsParams{
 			Resource:     resource,
 			Records:      list,
 			CheckVersion: params.CheckVersion,
@@ -191,7 +214,15 @@ func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, 
 		return res, err
 	}
 
-	res, err := r.postgresResourceServiceBackend.GetRecord(resource, id)
+	dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+
+	if err != nil {
+		return nil, err
+	}
+
+	bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
+
+	res, err := bck.GetRecord(ctx, resource, id)
 
 	if err != nil {
 		return nil, err
@@ -205,6 +236,11 @@ func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, 
 }
 
 func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debug("Begin record-service FindBy")
+	defer logger.Debug("Finish record-service FindBy")
+
 	resource, err := r.resourceService.GetResourceByName(ctx, workspace, resourceName)
 
 	if err != nil {
@@ -215,7 +251,9 @@ func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, pro
 
 	queryMap[propertyName] = value
 
+	logger.Debug("Call PrepareQuery: ", queryMap)
 	query, err := r.PrepareQuery(resource, queryMap)
+	logger.Debug("Result record-service: ", query)
 
 	if err != nil {
 		return nil, err
@@ -265,7 +303,15 @@ func (r *recordService) Delete(ctx context.Context, params params.RecordDeletePa
 		return err
 	}
 
-	if err = r.postgresResourceServiceBackend.DeleteRecords(resource, params.Ids); err != nil {
+	dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+
+	if err != nil {
+		return err
+	}
+
+	bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
+
+	if err = bck.DeleteRecords(ctx, resource, params.Ids); err != nil {
 		return err
 	}
 

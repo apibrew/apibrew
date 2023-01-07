@@ -1,6 +1,7 @@
 package api
 
 import (
+	"data-handler/params"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"net"
@@ -14,18 +15,12 @@ type Router interface {
 }
 
 type Server interface {
-	InjectRecordApi(api RecordApi)
 	Serve(lis net.Listener)
-	InjectAuthenticationApi(api AuthenticationApi)
 }
 
 type server struct {
 	recordApi         RecordApi
 	authenticationApi AuthenticationApi
-}
-
-func (s *server) InjectAuthenticationApi(api AuthenticationApi) {
-	s.authenticationApi = api
 }
 
 func (s *server) Serve(lis net.Listener) {
@@ -50,10 +45,6 @@ func (s *server) Serve(lis net.Listener) {
 	}
 }
 
-func (s *server) InjectRecordApi(api RecordApi) {
-	s.recordApi = api
-}
-
-func NewServer() Server {
+func NewServer(serverInjectionParams params.ServerInjectionConstructorParams) Server {
 	return &server{}
 }

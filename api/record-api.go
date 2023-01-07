@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	"data-handler/service"
@@ -46,7 +47,7 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 func (r *recordApi) matchFunc(request *http.Request, match *mux.RouteMatch) bool {
 	pathParts := strings.Split(request.URL.Path, "/")
 	resourceName := pathParts[1]
-	exists, err := r.resourceService.CheckResourceExists("default", resourceName)
+	exists, err := r.resourceService.CheckResourceExists(context.TODO(), "default", resourceName)
 	if err != nil {
 		log.Println(err)
 		return false

@@ -8,6 +8,7 @@ import (
 
 type DataSourceBackend interface {
 	GetDataSourceId() string
+	GetBackend() model.DataSourceBackend
 }
 
 type AddResourceParams struct {
@@ -34,23 +35,23 @@ type ListRecordParams struct {
 }
 
 type DataSourceLocator interface {
-	GetDataSourceBackendById(dataSourceId string) (DataSourceBackend, errors.ServiceError)
-	GetSystemDataSourceBackend() DataSourceBackend
+	GetDataSourceBackendById(ctx context.Context, dataSourceId string) (DataSourceBackend, errors.ServiceError)
+	GetSystemDataSourceBackend(ctx context.Context) DataSourceBackend
 }
 
 type ResourceServiceBackend interface {
 	Init()
-	AddResource(params AddResourceParams) (*model.Resource, errors.ServiceError)
-	AddRecords(params BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError)
-	UpdateRecords(params BulkRecordsParams) ([]*model.Record, errors.ServiceError)
+	AddResource(ctx context.Context, params AddResourceParams) (*model.Resource, errors.ServiceError)
+	AddRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError)
+	UpdateRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, errors.ServiceError)
 	GetResourceByName(ctx context.Context, resourceName string, name string) (*model.Resource, errors.ServiceError)
 	GetResource(ctx context.Context, workspace string, id string) (*model.Resource, errors.ServiceError)
-	GetRecord(resource *model.Resource, id string) (*model.Record, errors.ServiceError)
-	DeleteRecords(resource *model.Resource, list []string) errors.ServiceError
-	DestroyDataSource(dataSourceId string)
+	GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError)
+	DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError
+	DestroyDataSource(ctx context.Context, dataSourceId string)
 	InjectDataSourceService(service DataSourceLocator)
-	GetStatus(dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
-	ListRecords(params ListRecordParams) ([]*model.Record, uint32, errors.ServiceError)
+	GetStatus(ctx context.Context, dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
+	ListRecords(ctx context.Context, params ListRecordParams) ([]*model.Record, uint32, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, errors.ServiceError)
 	DeleteResources(ctx context.Context, workspace string, ids []string, migration bool, forceMigration bool) errors.ServiceError
 	ListEntities(ctx context.Context, dataSourceId string) ([]string, errors.ServiceError)

@@ -1,4 +1,4 @@
-package postgres
+package mysql
 
 import (
 	"data-handler/model"
@@ -8,11 +8,11 @@ import (
 type postgresDataSourceBackend struct {
 	Options      *model.PostgresqlOptions
 	dataSourceId string
-	backend      model.DataSourceBackend
 }
 
 func (p postgresDataSourceBackend) GetBackend() model.DataSourceBackend {
-	return p.backend
+	//TODO implement me
+	panic("implement me")
 }
 
 func (p postgresDataSourceBackend) GetDataSourceId() string {

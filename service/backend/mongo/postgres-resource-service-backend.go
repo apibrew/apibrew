@@ -1,4 +1,4 @@
-package postgres
+package mongo
 
 import (
 	"context"
@@ -376,7 +376,7 @@ func (p *postgresResourceServiceBackend) acquireConnection(ctx context.Context, 
 	return p.connectionMap[dataSourceId], nil
 }
 
-func NewPostgresResourceServiceBackend() backend.ResourceServiceBackend {
+func NewMongoResourceServiceBackend() backend.ResourceServiceBackend {
 	return &postgresResourceServiceBackend{
 		connectionMap: make(map[string]*sql.DB),
 	}

@@ -6,7 +6,9 @@ import (
 )
 
 func TestCreateResource(t *testing.T) {
-	withDataSource(t, container, dataSource1, func(createdDataSource *model.DataSource) {
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSource1, func(createdDataSource *model.DataSource) {
 		// testing is done
 
 	})

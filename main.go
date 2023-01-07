@@ -13,6 +13,7 @@ func main() {
 	log.SetLevel(log.TraceLevel)
 	log.SetReportCaller(true)
 	init := flag.String("init", "", "Initial Data for configuring system")
+	grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
 
 	flag.Parse()
 
@@ -34,6 +35,10 @@ func main() {
 	application := new(app.App)
 
 	application.SetInitData(initData)
+
+	if grayLogAddr != nil {
+		application.SetGrayLogAddr(*grayLogAddr)
+	}
 
 	application.Init()
 

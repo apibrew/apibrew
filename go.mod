@@ -3,6 +3,7 @@ module data-handler
 go 1.19
 
 require (
+	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.1.2
@@ -20,10 +21,10 @@ require (
 
 require (
 	github.com/huandu/xstrings v1.3.2 // indirect
+	github.com/pkg/errors v0.8.1 // indirect
 	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0 // indirect
 )

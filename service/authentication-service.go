@@ -3,12 +3,14 @@ package service
 import (
 	"context"
 	"crypto/rsa"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/errors"
 	"data-handler/service/mapping"
 	"data-handler/service/security"
 	"data-handler/service/system"
 	"github.com/golang-jwt/jwt/v4"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
 	"time"
@@ -41,6 +43,12 @@ type authenticationService struct {
 }
 
 func (s *authenticationService) Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debug("Begin Authenticate")
+
+	defer logger.Debug("End Authenticate")
+
 	// locate user
 	user, err := s.LocateUser(ctx, username, password)
 
@@ -60,7 +68,10 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 		Issuer:    "data-handler",
 	})
 
+	logger.Trace("Token prepared: %s", token)
+
 	if err != nil {
+		logger.Warning("Token preparation error", err)
 		return nil, err
 	}
 
@@ -121,12 +132,19 @@ func (s *authenticationService) InjectRecordService(service RecordService) {
 }
 
 func (s *authenticationService) LocateUser(ctx context.Context, username, password string) (*model.User, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debugf("Locating user: %s", username)
+
 	user, err := s.FindUser(ctx, username)
 	if err != nil {
+		logger.Debugf("Could not find user: %s", username)
 		return nil, err
 	}
 
+	logger.Debugf("Checking password: %s", username)
 	if security.VerifyKey(user.Password, password) != nil {
+		logger.Debugf("Password is wrong: %s", username)
 		return nil, errors.AuthenticationFailedError
 	}
 
@@ -134,6 +152,10 @@ func (s *authenticationService) LocateUser(ctx context.Context, username, passwo
 }
 
 func (s *authenticationService) FindUser(ctx context.Context, username string) (*model.User, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debug("FindUser with username: ", username)
+
 	res, err := s.recordService.FindBy(ctx, system.UserResource.Workspace, system.UserResource.Name, "username", username)
 
 	if err != nil {

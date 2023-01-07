@@ -1,7 +1,6 @@
 package test
 
 import (
-	"context"
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -10,14 +9,16 @@ import (
 )
 
 func TestComplexPayload1Fail(t *testing.T) {
-	withDataSource(t, container, dataSourceDhTest, func(dataSource *model.DataSource) {
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSourceDhTest, func(dataSource *model.DataSource) {
 		richResource1.SourceConfig.DataSource = dataSource.Id
-		withResource(t, richResource1, func() {
+		withResource(ctx, t, richResource1, func() {
 
 			record1 := new(model.Record)
 			record1.Resource = richResource1.Name
 
-			res, err := container.recordService.Create(context.TODO(), &stub.CreateRecordRequest{
+			res, err := container.recordService.Create(ctx, &stub.CreateRecordRequest{
 				Token:   "",
 				Records: []*model.Record{record1},
 			})
@@ -45,9 +46,11 @@ func TestComplexPayload1Fail(t *testing.T) {
 }
 
 func TestComplexPayload1Success(t *testing.T) {
-	withDataSource(t, container, dataSourceDhTest, func(dataSource *model.DataSource) {
+	ctx := prepareTextContext()
+
+	withDataSource(ctx, t, container, dataSourceDhTest, func(dataSource *model.DataSource) {
 		richResource1.SourceConfig.DataSource = dataSource.Id
-		withResource(t, richResource1, func() {
+		withResource(ctx, t, richResource1, func() {
 			record1 := new(model.Record)
 			record1.Resource = richResource1.Name
 			var err error
@@ -74,7 +77,7 @@ func TestComplexPayload1Success(t *testing.T) {
 				t.Error(err)
 			}
 
-			res, err := container.recordService.Create(context.TODO(), &stub.CreateRecordRequest{
+			res, err := container.recordService.Create(ctx, &stub.CreateRecordRequest{
 				Token:   "",
 				Records: []*model.Record{record1},
 			})
@@ -89,7 +92,7 @@ func TestComplexPayload1Success(t *testing.T) {
 				return
 			}
 
-			getRes, err := container.recordService.Get(context.TODO(), &stub.GetRecordRequest{
+			getRes, err := container.recordService.Get(ctx, &stub.GetRecordRequest{
 				Token:    "",
 				Resource: richResource1.Name,
 				Id:       res.Records[0].Id,

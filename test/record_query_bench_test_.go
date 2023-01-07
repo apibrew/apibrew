@@ -1,7 +1,6 @@
 package test
 
 import (
-	"context"
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -9,7 +8,9 @@ import (
 )
 
 func BenchmarkListRecordBench1(t *testing.B) {
-	withAutoLoadedResource(t, container, dataSource1, "public.organization", func(resource *model.Resource) {
+	ctx := prepareTextContext()
+
+	withAutoLoadedResource(ctx, t, container, dataSource1, "public.organization", func(resource *model.Resource) {
 		t.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				val1, err := structpb.NewValue("month")
@@ -26,7 +27,7 @@ func BenchmarkListRecordBench1(t *testing.B) {
 					return
 				}
 
-				res, err := container.recordService.List(context.TODO(), &stub.ListRecordRequest{
+				res, err := container.recordService.List(ctx, &stub.ListRecordRequest{
 					Token:    "test-token",
 					Resource: resource.Name,
 					Query: &model.BooleanExpression{

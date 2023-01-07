@@ -1,7 +1,6 @@
 package test
 
 import (
-	"context"
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	log "github.com/sirupsen/logrus"
@@ -10,7 +9,9 @@ import (
 )
 
 func TestListRecord1(t *testing.T) {
-	withAutoLoadedResource(t, container, dataSource1, "public.organization", func(resource *model.Resource) {
+	ctx := prepareTextContext()
+
+	withAutoLoadedResource(ctx, t, container, dataSource1, "public.organization", func(resource *model.Resource) {
 		val1, err := structpb.NewValue("month")
 
 		if err != nil {
@@ -25,7 +26,7 @@ func TestListRecord1(t *testing.T) {
 			return
 		}
 
-		res, err := container.recordService.List(context.TODO(), &stub.ListRecordRequest{
+		res, err := container.recordService.List(ctx, &stub.ListRecordRequest{
 			Token:    "test-token",
 			Resource: resource.Name,
 			Query: &model.BooleanExpression{

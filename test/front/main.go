@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	log "github.com/sirupsen/logrus"
@@ -89,7 +88,7 @@ func prepareSimpleResource(service stub.ResourceServiceClient) {
 		},
 	}
 
-	res2, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+	res2, err := service.Create(ctx, &stub.CreateResourceRequest{
 		Token:       token,
 		Resources:   []*model.Resource{personResource},
 		DoMigration: true,
@@ -146,7 +145,7 @@ func prepareCityResource(service stub.ResourceServiceClient) {
 		},
 	}
 
-	res2, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+	res2, err := service.Create(ctx, &stub.CreateResourceRequest{
 		Token:       token,
 		Resources:   []*model.Resource{personResource},
 		DoMigration: true,
@@ -179,7 +178,7 @@ func prepareReferencedResource(service stub.ResourceServiceClient) {
 	//	},
 	//}
 	//
-	//res, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+	//res, err := service.Create(ctx, &stub.CreateResourceRequest{
 	//	Token:       token,
 	//	Resources:   []*model.Resource{countryResource},
 	//	DoMigration: true,
@@ -227,7 +226,7 @@ func prepareReferencedResource(service stub.ResourceServiceClient) {
 		},
 	}
 
-	res2, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+	res2, err := service.Create(ctx, &stub.CreateResourceRequest{
 		Token:       token,
 		Resources:   []*model.Resource{cityResource},
 		DoMigration: true,
@@ -413,7 +412,7 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 		},
 	}
 
-	res, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+	res, err := service.Create(ctx, &stub.CreateResourceRequest{
 		Token:       "",
 		Resources:   []*model.Resource{richResource},
 		DoMigration: true,

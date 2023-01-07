@@ -3,9 +3,11 @@ package grpc_service
 import (
 	"context"
 	"data-handler/grpc/stub"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service"
 	"data-handler/service/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 type authenticationServiceServer struct {
@@ -18,7 +20,14 @@ type RequestWithToken interface {
 }
 
 func (s *authenticationServiceServer) Authenticate(ctx context.Context, req *stub.AuthenticationRequest) (*stub.AuthenticationResponse, error) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debug("Begin Authenticate")
+	logger.WithField("req", req).Trace("Params")
+
 	token, err := s.service.Authenticate(ctx, req.Username, req.Password, req.Term)
+
+	logger.Debug("End Authenticate")
 
 	return &stub.AuthenticationResponse{
 		Token: token,

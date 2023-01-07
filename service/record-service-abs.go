@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"data-handler/model"
-	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/handler"
 	"data-handler/service/params"
@@ -18,8 +17,8 @@ type RecordService interface {
 	FindBy(ctx context.Context, workspace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
 
 	Init(data *model.InitData)
-	InjectPostgresResourceServiceBackend(serviceBackend backend.ResourceServiceBackend)
-	InjectDataSourceService(service DataSourceService)
+	InjectBackendProviderService(backendProviderService BackendProviderService)
+	InjectDataSourceService(dataSourceService DataSourceService)
 	InjectAuthenticationService(service AuthenticationService)
 	InjectResourceService(service ResourceService)
 
@@ -32,12 +31,16 @@ type RecordService interface {
 }
 
 type recordService struct {
-	postgresResourceServiceBackend backend.ResourceServiceBackend
-	dataSourceService              DataSourceService
-	authenticationService          AuthenticationService
-	ServiceName                    string
-	resourceService                ResourceService
-	genericHandler                 *handler.GenericHandler
+	dataSourceService      DataSourceService
+	authenticationService  AuthenticationService
+	ServiceName            string
+	resourceService        ResourceService
+	genericHandler         *handler.GenericHandler
+	backendServiceProvider BackendProviderService
+}
+
+func (r *recordService) InjectBackendProviderService(backendProviderService BackendProviderService) {
+	r.backendServiceProvider = backendProviderService
 }
 
 func (r *recordService) InjectGenericHandler(genericHandler *handler.GenericHandler) {
@@ -54,10 +57,6 @@ func (r *recordService) InjectResourceService(service ResourceService) {
 
 func (r *recordService) InjectDataSourceService(service DataSourceService) {
 	r.dataSourceService = service
-}
-
-func (r *recordService) InjectPostgresResourceServiceBackend(resourceServiceBackend backend.ResourceServiceBackend) {
-	r.postgresResourceServiceBackend = resourceServiceBackend
 }
 
 func (r *recordService) Init(data *model.InitData) {

@@ -4,12 +4,15 @@ import (
 	"context"
 	"data-handler/app"
 	"data-handler/grpc/stub"
+	"data-handler/helper"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/util"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"reflect"
 	"testing"
 	"time"
@@ -69,7 +72,21 @@ func init() {
 	}
 }
 
-func withDataSource(t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, exec func(dataSource *model.DataSource)) {
+func prepareTextContext() context.Context {
+	ctx := context.TODO()
+
+	clientTrackId := helper.RandStringRunes(8)
+
+	ctx = logging.WithLogField(ctx, "clientTrackId", clientTrackId)
+	ctx = context.WithValue(ctx, "clientTrackId", clientTrackId)
+	ctx = metadata.AppendToOutgoingContext(ctx, "clientTrackId", clientTrackId)
+
+	log.Info("Init test clientTrackId: ", clientTrackId)
+
+	return ctx
+}
+
+func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, exec func(dataSource *model.DataSource)) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in f", r)
@@ -77,7 +94,7 @@ func withDataSource(t testing.TB, container *SimpleAppGrpcContainer, dataSource 
 		}
 	}()
 	log.Print("Create data-source:", dataSource)
-	res, err := container.dataSourceService.Create(context.TODO(), &stub.CreateDataSourceRequest{
+	res, err := container.dataSourceService.Create(ctx, &stub.CreateDataSourceRequest{
 		Token:       "test-token",
 		DataSources: []*model.DataSource{dataSource},
 	})
@@ -98,7 +115,7 @@ func withDataSource(t testing.TB, container *SimpleAppGrpcContainer, dataSource 
 		t.Error("Created datasource length is wrong", len(res.DataSources), 1)
 	}
 
-	exists := checkDataSourceExists(container, res.DataSources[0].Id)
+	exists := checkDataSourceExists(ctx, container, res.DataSources[0].Id)
 	if !exists {
 		t.Error("Datasource created but not exists")
 		return
@@ -107,7 +124,7 @@ func withDataSource(t testing.TB, container *SimpleAppGrpcContainer, dataSource 
 	exec(res.DataSources[0])
 
 	log.Print("data-source deleting", res.DataSources[0].Id)
-	res2, err := container.dataSourceService.Delete(context.TODO(), &stub.DeleteDataSourceRequest{
+	res2, err := container.dataSourceService.Delete(ctx, &stub.DeleteDataSourceRequest{
 		Token: "test-token",
 		Ids: util.ArrayMap(res.DataSources, func(t *model.DataSource) string {
 			return t.Id
@@ -126,14 +143,14 @@ func withDataSource(t testing.TB, container *SimpleAppGrpcContainer, dataSource 
 
 	log.Print("data-source deleted", res.DataSources[0].Id)
 
-	exists = checkDataSourceExists(container, res.DataSources[0].Id)
+	exists = checkDataSourceExists(ctx, container, res.DataSources[0].Id)
 	if exists {
 		t.Error("Datasource removed but exists")
 	}
 }
 
-func checkDataSourceExists(container *SimpleAppGrpcContainer, id string) bool {
-	res, err := container.dataSourceService.Get(context.TODO(), &stub.GetDataSourceRequest{
+func checkDataSourceExists(ctx context.Context, container *SimpleAppGrpcContainer, id string) bool {
+	res, err := container.dataSourceService.Get(ctx, &stub.GetDataSourceRequest{
 		Token: "test-token",
 		Id:    id,
 	})
@@ -141,9 +158,9 @@ func checkDataSourceExists(container *SimpleAppGrpcContainer, id string) bool {
 	return res.Error == nil && err == nil && res.DataSource != nil
 }
 
-func withResource(t testing.TB, resource *model.Resource, exec func()) {
+func withResource(ctx context.Context, t testing.TB, resource *model.Resource, exec func()) {
 	log.Print("resource creating", resource)
-	res, err := container.resourceService.Create(context.TODO(), &stub.CreateResourceRequest{
+	res, err := container.resourceService.Create(ctx, &stub.CreateResourceRequest{
 		Token:          "test-token",
 		Resources:      []*model.Resource{resource},
 		DoMigration:    true,
@@ -156,7 +173,7 @@ func withResource(t testing.TB, resource *model.Resource, exec func()) {
 
 	if res.Error != nil {
 		if res.Error.Code == model.ErrorCode_ALREADY_EXISTS {
-			res2, _ := container.resourceService.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+			res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 				Token:     "test-token",
 				Workspace: resource.Workspace,
 				Name:      resource.Name,
@@ -175,7 +192,7 @@ func withResource(t testing.TB, resource *model.Resource, exec func()) {
 
 	defer func() {
 		log.Print("resource deleting", resource.Name)
-		_, err = container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
+		_, err = container.resourceService.Delete(ctx, &stub.DeleteResourceRequest{
 			Token:          "test-token",
 			Ids:            []string{resource.Id},
 			DoMigration:    true,
@@ -193,10 +210,10 @@ func withResource(t testing.TB, resource *model.Resource, exec func()) {
 
 }
 
-func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, mappingName string, exec func(resource *model.Resource)) {
-	withDataSource(t, container, dataSource, func(dataSource *model.DataSource) {
+func withAutoLoadedResource(ctx context.Context, t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, mappingName string, exec func(resource *model.Resource)) {
+	withDataSource(ctx, t, container, dataSource, func(dataSource *model.DataSource) {
 		log.Print("begin PrepareResourceFromEntity", mappingName, dataSource.Id)
-		res, err := container.dataSourceService.PrepareResourceFromEntity(context.TODO(), &stub.PrepareResourceFromEntityRequest{
+		res, err := container.dataSourceService.PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
 			Token:  "test-token",
 			Id:     dataSource.Id,
 			Entity: mappingName,
@@ -216,7 +233,7 @@ func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dat
 
 		defer func() {
 			log.Print("begin delete resource without migration", res.Resource.Workspace, res.Resource.Name)
-			deleteRes, err := container.resourceService.Delete(context.TODO(), &stub.DeleteResourceRequest{
+			deleteRes, err := container.resourceService.Delete(ctx, &stub.DeleteResourceRequest{
 				Token:          "test-token",
 				Ids:            []string{resourceId},
 				DoMigration:    false,
@@ -239,7 +256,7 @@ func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dat
 		log.Print("finish PrepareResourceFromEntity", mappingName, dataSource.Id)
 
 		log.Print("begin create resource without migration", res.Resource.Workspace, res.Resource.Name)
-		createRes, err := container.resourceService.Create(context.TODO(), &stub.CreateResourceRequest{
+		createRes, err := container.resourceService.Create(ctx, &stub.CreateResourceRequest{
 			Token:          "test-token",
 			Resources:      []*model.Resource{res.Resource},
 			DoMigration:    false,
@@ -253,7 +270,7 @@ func withAutoLoadedResource(t testing.TB, container *SimpleAppGrpcContainer, dat
 
 		if createRes.Error != nil {
 			if createRes.Error.Code == model.ErrorCode_ALREADY_EXISTS {
-				res2, _ := container.resourceService.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+				res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 					Token:     "test-token",
 					Workspace: res.Resource.Workspace,
 					Name:      res.Resource.Name,
