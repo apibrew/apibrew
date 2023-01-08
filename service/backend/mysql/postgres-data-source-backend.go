@@ -10,7 +10,7 @@ type postgresDataSourceBackend struct {
 	dataSourceId string
 }
 
-func (p postgresDataSourceBackend) GetBackend() model.DataSourceBackend {
+func (p postgresDataSourceBackend) GetBackendType() model.DataSourceBackendType {
 	//TODO implement me
 	panic("implement me")
 }
@@ -19,7 +19,7 @@ func (p postgresDataSourceBackend) GetDataSourceId() string {
 	return p.dataSourceId
 }
 
-func NewPostgresDataSourceBackend(dataSourceId string, options *model.PostgresqlOptions) backend.DataSourceBackend {
+func NewPostgresDataSourceBackend(dataSourceId string, options *model.PostgresqlOptions) backend.DataSourceConnectionDetails {
 	return &postgresDataSourceBackend{
 		dataSourceId: dataSourceId,
 		Options:      options,

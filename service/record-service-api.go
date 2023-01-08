@@ -26,13 +26,11 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 		return records, total, err
 	}
 
-	dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		return nil, 0, err
 	}
-
-	bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
 
 	records, total, err := bck.ListRecords(ctx, backend.ListRecordParams{
 		Resource:          resource,
@@ -97,13 +95,11 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 			return records, inserted, err
 		}
 
-		dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+		bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
 
 		if err != nil {
 			return nil, []bool{}, err
 		}
-
-		bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
 
 		records, inserted, err = bck.AddRecords(ctx, backend.BulkRecordsParams{
 			Resource:       resource,
@@ -167,13 +163,11 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 
 		var records []*model.Record
 
-		dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+		bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
 
 		if err != nil {
 			return nil, err
 		}
-
-		bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
 
 		records, err = bck.UpdateRecords(ctx, backend.BulkRecordsParams{
 			Resource:     resource,
@@ -214,13 +208,11 @@ func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, 
 		return res, err
 	}
 
-	dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		return nil, err
 	}
-
-	bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
 
 	res, err := bck.GetRecord(ctx, resource, id)
 
@@ -303,13 +295,11 @@ func (r *recordService) Delete(ctx context.Context, params params.RecordDeletePa
 		return err
 	}
 
-	dsb, err := r.dataSourceService.GetDataSourceBackendById(ctx, resource.GetSourceConfig().DataSource)
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		return err
 	}
-
-	bck := r.backendServiceProvider.GetBackend(ctx, dsb.GetBackend())
 
 	if err = bck.DeleteRecords(ctx, resource, params.Ids); err != nil {
 		return err

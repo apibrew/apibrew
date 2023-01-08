@@ -48,14 +48,14 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 	result := &model.DataSource{
 		Id:          record.Id,
 		Type:        record.Type,
-		Backend:     model.DataSourceBackend(backendNumber),
+		Backend:     model.DataSourceBackendType(backendNumber),
 		Name:        record.Properties.Fields["name"].GetStringValue(),
 		Description: record.Properties.Fields["description"].GetStringValue(),
 		AuditData:   record.AuditData,
 		Version:     record.Version,
 	}
 
-	if result.Backend == model.DataSourceBackend_POSTGRESQL {
+	if result.Backend == model.DataSourceBackendType_POSTGRESQL {
 		options := new(model.DataSource_PostgresqlParams)
 
 		options.PostgresqlParams = &model.PostgresqlOptions{

@@ -13,7 +13,6 @@ import (
 
 type WorkspaceService interface {
 	InjectRecordService(service RecordService)
-	InjectAuthenticationService(service AuthenticationService)
 	InjectResourceService(service ResourceService)
 	Init(data *model.InitData)
 	Create(ctx context.Context, workspaces []*model.Workspace) ([]*model.Workspace, errors.ServiceError)
@@ -24,18 +23,13 @@ type WorkspaceService interface {
 }
 
 type workspaceService struct {
-	recordService         RecordService
-	authenticationService AuthenticationService
-	serviceName           string
-	resourceService       ResourceService
+	recordService   RecordService
+	serviceName     string
+	resourceService ResourceService
 }
 
 func (u *workspaceService) InjectResourceService(service ResourceService) {
 	u.resourceService = service
-}
-
-func (u *workspaceService) InjectAuthenticationService(service AuthenticationService) {
-	u.authenticationService = service
 }
 
 func (u *workspaceService) InjectRecordService(service RecordService) {

@@ -18,8 +18,6 @@ type RecordService interface {
 
 	Init(data *model.InitData)
 	InjectBackendProviderService(backendProviderService BackendProviderService)
-	InjectDataSourceService(dataSourceService DataSourceService)
-	InjectAuthenticationService(service AuthenticationService)
 	InjectResourceService(service ResourceService)
 
 	List(ctx context.Context, params params.RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
@@ -31,8 +29,6 @@ type RecordService interface {
 }
 
 type recordService struct {
-	dataSourceService      DataSourceService
-	authenticationService  AuthenticationService
 	ServiceName            string
 	resourceService        ResourceService
 	genericHandler         *handler.GenericHandler
@@ -47,16 +43,8 @@ func (r *recordService) InjectGenericHandler(genericHandler *handler.GenericHand
 	r.genericHandler = genericHandler
 }
 
-func (r *recordService) InjectAuthenticationService(service AuthenticationService) {
-	r.authenticationService = service
-}
-
 func (r *recordService) InjectResourceService(service ResourceService) {
 	r.resourceService = service
-}
-
-func (r *recordService) InjectDataSourceService(service DataSourceService) {
-	r.dataSourceService = service
 }
 
 func (r *recordService) Init(data *model.InitData) {

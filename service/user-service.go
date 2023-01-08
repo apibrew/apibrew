@@ -13,7 +13,6 @@ import (
 
 type UserService interface {
 	InjectRecordService(service RecordService)
-	InjectAuthenticationService(service AuthenticationService)
 	InjectResourceService(service ResourceService)
 	Init(data *model.InitData)
 	Create(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError)
@@ -32,10 +31,6 @@ type userService struct {
 
 func (u *userService) InjectResourceService(service ResourceService) {
 	u.resourceService = service
-}
-
-func (u *userService) InjectAuthenticationService(service AuthenticationService) {
-	u.authenticationService = service
 }
 
 func (u *userService) InjectRecordService(service RecordService) {

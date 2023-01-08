@@ -128,29 +128,19 @@ func (app *App) initServices() {
 }
 
 func (app *App) InjectServices() {
-	app.backendProviderService.InjectDataSourceService(app.dataSourceService)
-
 	app.dataSourceService.InjectResourceService(app.resourceService)
 	app.dataSourceService.InjectRecordService(app.recordService)
-	app.dataSourceService.InjectInitData(app.initData)
-	app.dataSourceService.InjectAuthenticationService(app.authenticationService)
 	app.dataSourceService.InjectBackendProviderService(app.backendProviderService)
 
-	app.resourceService.InjectDataSourceService(app.dataSourceService)
 	app.resourceService.InjectBackendProviderService(app.backendProviderService)
-	app.resourceService.InjectAuthenticationService(app.authenticationService)
 
-	app.userService.InjectAuthenticationService(app.authenticationService)
 	app.userService.InjectRecordService(app.recordService)
 	app.userService.InjectResourceService(app.resourceService)
 
-	app.workspaceService.InjectAuthenticationService(app.authenticationService)
 	app.workspaceService.InjectRecordService(app.recordService)
 	app.workspaceService.InjectResourceService(app.resourceService)
 
 	app.recordService.InjectBackendProviderService(app.backendProviderService)
-	app.recordService.InjectDataSourceService(app.dataSourceService)
-	app.recordService.InjectAuthenticationService(app.authenticationService)
 	app.recordService.InjectResourceService(app.resourceService)
 	app.recordService.InjectGenericHandler(app.genericHandler)
 

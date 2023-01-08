@@ -4,8 +4,6 @@ import (
 	"context"
 	"data-handler/logging"
 	model "data-handler/model"
-	"data-handler/service/backend"
-	"data-handler/service/backend/postgres"
 	"data-handler/service/errors"
 	mapping "data-handler/service/mapping"
 	"data-handler/service/params"
@@ -15,14 +13,9 @@ import (
 )
 
 type DataSourceService interface {
-	GetDataSourceBackend(ctx context.Context, dataSource *model.DataSource) backend.DataSourceBackend
-	GetSystemDataSourceBackend(ctx context.Context) backend.DataSourceBackend
-	GetDataSourceBackendById(ctx context.Context, dataSourceId string) (backend.DataSourceBackend, errors.ServiceError)
 	InjectResourceService(service ResourceService)
-	InjectInitData(data *model.InitData)
 	Init(*model.InitData)
 	InjectRecordService(service RecordService)
-	InjectAuthenticationService(service AuthenticationService)
 	ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError)
 	List(ctx context.Context) ([]*model.DataSource, errors.ServiceError)
 	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
@@ -37,18 +30,12 @@ type DataSourceService interface {
 type dataSourceService struct {
 	resourceService        ResourceService
 	recordService          RecordService
-	systemDataSource       *model.DataSource
-	authenticationService  AuthenticationService
 	ServiceName            string
 	backendProviderService BackendProviderService
 }
 
 func (d *dataSourceService) InjectBackendProviderService(backendProviderService BackendProviderService) {
 	d.backendProviderService = backendProviderService
-}
-
-func (d *dataSourceService) InjectAuthenticationService(service AuthenticationService) {
-	d.authenticationService = service
 }
 
 func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError) {
@@ -177,55 +164,12 @@ func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.Ser
 	})
 }
 
-func (d *dataSourceService) GetDataSourceBackendById(ctx context.Context, dataSourceId string) (backend.DataSourceBackend, errors.ServiceError) {
-	logger := log.WithFields(logging.CtxFields(ctx))
-	logger.WithField("dataSourceId", dataSourceId).Debug("Begin data-source GetDataSourceBackendById")
-	defer logger.Debug("End data-source GetDataSourceBackendById")
-
-	if dataSourceId == d.systemDataSource.Id {
-		return d.GetSystemDataSourceBackend(ctx), nil
-	}
-
-	systemCtx := security.WithSystemContext(context.TODO())
-	record, err := d.recordService.GetRecord(systemCtx, system.DataSourceResource.Workspace, system.DataSourceResource.Name, dataSourceId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	dataSource := mapping.DataSourceFromRecord(record)
-
-	return d.GetDataSourceBackend(ctx, dataSource), nil
-}
-
-func (d *dataSourceService) GetDataSourceBackend(ctx context.Context, dataSource *model.DataSource) backend.DataSourceBackend {
-	if dataSource == nil {
-		panic("data-source is nil")
-	}
-	switch d.systemDataSource.Backend {
-	case model.DataSourceBackend_POSTGRESQL:
-		return postgres.NewPostgresDataSourceBackend(dataSource.Id, dataSource.Options.(*model.DataSource_PostgresqlParams).PostgresqlParams)
-	case model.DataSourceBackend_MONGODB:
-		panic("mongodb data-source not init")
-	default:
-		panic("unknown data-source type")
-	}
-}
-
-func (d *dataSourceService) GetSystemDataSourceBackend(ctx context.Context) backend.DataSourceBackend {
-	return d.GetDataSourceBackend(ctx, d.systemDataSource)
-}
-
 func (d *dataSourceService) InjectResourceService(service ResourceService) {
 	d.resourceService = service
 }
 
 func (d *dataSourceService) InjectRecordService(service RecordService) {
 	d.recordService = service
-}
-
-func (d *dataSourceService) InjectInitData(data *model.InitData) {
-	d.systemDataSource = data.SystemDataSource
 }
 
 func (d *dataSourceService) Init(data *model.InitData) {

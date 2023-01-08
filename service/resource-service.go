@@ -19,8 +19,6 @@ type ResourceService interface {
 	CheckResourceExists(ctx context.Context, workspace, name string) (bool, errors.ServiceError)
 	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, errors.ServiceError)
 	GetSystemResourceByName(resourceName string) (*model.Resource, errors.ServiceError)
-	InjectDataSourceService(service DataSourceService)
-	InjectAuthenticationService(service AuthenticationService)
 	InjectBackendProviderService(backendProviderService BackendProviderService)
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
 	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
@@ -30,8 +28,6 @@ type ResourceService interface {
 }
 
 type resourceService struct {
-	dataSourceService      DataSourceService
-	authenticationService  AuthenticationService
 	cache                  *ttlcache.Cache[string, *model.Resource]
 	disableCache           bool
 	backendProviderService BackendProviderService
@@ -175,14 +171,6 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, workspace, na
 
 func (r *resourceService) Init(data *model.InitData) {
 	r.disableCache = data.Config.DisableCache
-}
-
-func (r *resourceService) InjectDataSourceService(service DataSourceService) {
-	r.dataSourceService = service
-}
-
-func (r *resourceService) InjectAuthenticationService(service AuthenticationService) {
-	r.authenticationService = service
 }
 
 func (r *resourceService) InitResource(resource *model.Resource) {

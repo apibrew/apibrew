@@ -6,9 +6,9 @@ import (
 	"data-handler/service/errors"
 )
 
-type DataSourceBackend interface {
+type DataSourceConnectionDetails interface {
 	GetDataSourceId() string
-	GetBackend() model.DataSourceBackend
+	GetBackendType() model.DataSourceBackendType
 }
 
 type AddResourceParams struct {
@@ -35,8 +35,8 @@ type ListRecordParams struct {
 }
 
 type DataSourceLocator interface {
-	GetDataSourceBackendById(ctx context.Context, dataSourceId string) (DataSourceBackend, errors.ServiceError)
-	GetSystemDataSourceBackend(ctx context.Context) DataSourceBackend
+	GetDataSourceBackendById(ctx context.Context, dataSourceId string) (DataSourceConnectionDetails, errors.ServiceError)
+	GetSystemDataSourceBackend(ctx context.Context) DataSourceConnectionDetails
 }
 
 type ResourceServiceBackend interface {
@@ -49,7 +49,7 @@ type ResourceServiceBackend interface {
 	GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError)
 	DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError
 	DestroyDataSource(ctx context.Context, dataSourceId string)
-	InjectDataSourceService(service DataSourceLocator)
+	InjectDataSourceLocator(service DataSourceLocator)
 	GetStatus(ctx context.Context, dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
 	ListRecords(ctx context.Context, params ListRecordParams) ([]*model.Record, uint32, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, entity string) (*model.Resource, errors.ServiceError)

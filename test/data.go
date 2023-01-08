@@ -4,7 +4,7 @@ import "data-handler/model"
 
 var systemDataSource = &model.DataSource{
 	Id:          "system",
-	Backend:     model.DataSourceBackend_POSTGRESQL,
+	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Type:        model.DataType_SYSTEM,
 	Name:        "system",
 	Description: "system",
@@ -21,7 +21,7 @@ var systemDataSource = &model.DataSource{
 }
 
 var dataSource1 = &model.DataSource{
-	Backend:     model.DataSourceBackend_POSTGRESQL,
+	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1",
 	Description: "data-source-1",
 	Options: &model.DataSource_PostgresqlParams{
@@ -37,7 +37,7 @@ var dataSource1 = &model.DataSource{
 }
 
 var dataSource1WrongPassword = &model.DataSource{
-	Backend:     model.DataSourceBackend_POSTGRESQL,
+	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1-wrong",
 	Description: "data-source-1-wrong",
 	Options: &model.DataSource_PostgresqlParams{
@@ -53,7 +53,7 @@ var dataSource1WrongPassword = &model.DataSource{
 }
 
 var dataSourceDhTest = &model.DataSource{
-	Backend:     model.DataSourceBackend_POSTGRESQL,
+	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-test",
 	Description: "data-source-test",
 	Options: &model.DataSource_PostgresqlParams{

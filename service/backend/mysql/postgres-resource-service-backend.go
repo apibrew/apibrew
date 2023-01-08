@@ -16,7 +16,7 @@ const DbNameType = "VARCHAR(64)"
 
 type postgresResourceServiceBackend struct {
 	connectionMap     map[string]*sql.DB
-	systemBackend     backend.DataSourceBackend
+	systemBackend     backend.DataSourceConnectionDetails
 	dataSourceService backend.DataSourceLocator
 }
 
@@ -40,7 +40,7 @@ func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context, dataS
 	return
 }
 
-func (p *postgresResourceServiceBackend) InjectDataSourceService(dataSourceService backend.DataSourceLocator) {
+func (p *postgresResourceServiceBackend) InjectDataSourceLocator(dataSourceService backend.DataSourceLocator) {
 	p.dataSourceService = dataSourceService
 }
 
