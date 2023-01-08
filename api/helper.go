@@ -57,7 +57,6 @@ func (s ServiceCaller[T, R]) Respond(serviceResult proto.Message, serviceError e
 
 	isSuccess := serviceError == nil
 	if !isSuccess {
-		s.writer.WriteHeader(400)
 		handleServiceError(s.writer, serviceError)
 	} else {
 		s.writer.WriteHeader(200)
@@ -79,8 +78,16 @@ func handleServiceError(writer http.ResponseWriter, err errors.ServiceError) {
 func handleClientError(writer http.ResponseWriter, err error) {
 	if err != nil {
 		log.Error(err)
-		writer.WriteHeader(500)
-		writer.Write([]byte("Invalid Request Data: " + err.Error()))
+		writer.WriteHeader(400)
+		writer.Write([]byte(err.Error()))
+	}
+}
+
+func handleClientErrorText(writer http.ResponseWriter, err string) {
+	if err != "" {
+		log.Error(err)
+		writer.WriteHeader(400)
+		writer.Write([]byte(err))
 	}
 }
 
@@ -90,10 +97,7 @@ var errorCodeHttpStatusMap = map[model.ErrorCode]int{
 	model.ErrorCode_INTERNAL_ERROR:               500,
 	model.ErrorCode_PROPERTY_NOT_FOUND:           400,
 	model.ErrorCode_RECORD_VALIDATION_ERROR:      400,
-}
-
-func getToken(request *http.Request) string {
-	return request.Header.Get("Authorization")
+	model.ErrorCode_AUTHENTICATION_FAILED:        401,
 }
 
 func getRequestBoolFlag(request *http.Request, s string) bool {

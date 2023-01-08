@@ -84,7 +84,7 @@ func (app *App) Init() {
 		WorkspaceService:      app.workspaceService,
 		UserService:           app.userService,
 		WatchService:          app.watchService,
-	})
+	}, app.initData)
 
 	app.InjectServices()
 	app.initServices()
@@ -103,7 +103,7 @@ func (app *App) Init() {
 }
 
 func (app *App) Serve() {
-	//go app.apiServer.Serve(app.httpLis)
+	go app.apiServer.Serve(app.httpLis)
 
 	err := app.grpcServer.Serve(app.grpcLis)
 

@@ -4,10 +4,13 @@ import (
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	"data-handler/service"
+	"data-handler/service/errors"
+	"data-handler/service/security"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type LoginData struct {
@@ -17,12 +20,46 @@ type LoginData struct {
 }
 
 type AuthenticationApi interface {
-	InjectAuthenticationService(service service.AuthenticationService)
 	ConfigureRouter(r *mux.Router)
+	AuthenticationMiddleWare(http.Handler) http.Handler
 }
 
 type authenticationApi struct {
 	authenticationService service.AuthenticationService
+	initData              *model.InitData
+}
+
+func (r *authenticationApi) AuthenticationMiddleWare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		authorizationHeader := req.Header.Get("Authorization")
+
+		if authorizationHeader != "" {
+			tokenParts := strings.Split(authorizationHeader, " ")
+
+			if len(tokenParts) != 2 {
+				handleClientErrorText(w, "authorization header should contain two part") //@todo fixme
+				return
+			}
+
+			if strings.ToLower(tokenParts[0]) != "bearer" {
+				handleClientErrorText(w, "authorization token type should be bearer") //@todo fixme
+				return
+			}
+
+			token := tokenParts[1]
+
+			userDetails, err := r.authenticationService.ParseAndVerifyToken(token)
+
+			if err != nil {
+				handleClientError(w, errors.AuthenticationFailedError) //@todo fixme
+				return
+			}
+
+			req = req.WithContext(security.WithUserDetails(req.Context(), *userDetails))
+		}
+
+		next.ServeHTTP(w, req)
+	})
 }
 
 func (r *authenticationApi) ConfigureRouter(router *mux.Router) {
@@ -57,10 +94,6 @@ func (r *authenticationApi) ConfigureRouter(router *mux.Router) {
 	}).Methods("POST")
 }
 
-func (r *authenticationApi) InjectAuthenticationService(service service.AuthenticationService) {
-	r.authenticationService = service
-}
-
-func NewAuthenticationApi() AuthenticationApi {
-	return &authenticationApi{}
+func NewAuthenticationApi(authenticationService service.AuthenticationService, initData *model.InitData) AuthenticationApi {
+	return &authenticationApi{authenticationService: authenticationService, initData: initData}
 }

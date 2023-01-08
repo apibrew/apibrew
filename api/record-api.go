@@ -14,8 +14,6 @@ import (
 )
 
 type RecordApi interface {
-	InjectRecordService(service service.RecordService)
-	InjectResourceService(service service.ResourceService)
 	ConfigureRouter(r *mux.Router)
 }
 
@@ -53,14 +51,6 @@ func (r *recordApi) matchFunc(request *http.Request, match *mux.RouteMatch) bool
 		return false
 	}
 	return exists
-}
-
-func (r *recordApi) InjectRecordService(service service.RecordService) {
-	r.recordService = service
-}
-
-func (r *recordApi) InjectResourceService(service service.ResourceService) {
-	r.resourceService = service
 }
 
 func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.Request) {
@@ -288,6 +278,9 @@ func (r *recordApi) handleRecordBatchCreate(writer http.ResponseWriter, request 
 	writer.Write([]byte("Not implemented"))
 }
 
-func NewRecordApi() RecordApi {
-	return &recordApi{}
+func NewRecordApi(recordService service.RecordService, resourceService service.ResourceService) RecordApi {
+	return &recordApi{
+		recordService:   recordService,
+		resourceService: resourceService,
+	}
 }

@@ -1,6 +1,8 @@
 package params
 
-import "data-handler/service"
+import (
+	"data-handler/service"
+)
 
 type ServerInjectionConstructorParams struct {
 	ResourceService       service.ResourceService
