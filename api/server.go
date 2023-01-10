@@ -1,7 +1,6 @@
 package api
 
 import (
-	"data-handler/api/swagger"
 	"data-handler/helper"
 	"data-handler/logging"
 	"data-handler/model"
@@ -25,16 +24,16 @@ type Server interface {
 type server struct {
 	recordApi         RecordApi
 	authenticationApi AuthenticationApi
+	swaggerApi        SwaggerApi
 }
 
 func (s *server) Serve(lis net.Listener) {
 	r := mux.NewRouter()
 
-	swagger.ConfigureRouter(r)
-
 	r.Use(s.authenticationApi.AuthenticationMiddleWare)
 	r.Use(s.TrackingMiddleWare)
 
+	s.swaggerApi.ConfigureRouter(r)
 	s.authenticationApi.ConfigureRouter(r)
 	s.recordApi.ConfigureRouter(r)
 
@@ -71,5 +70,6 @@ func NewServer(serverInjectionParams params.ServerInjectionConstructorParams, in
 	return &server{
 		recordApi:         NewRecordApi(serverInjectionParams.RecordService, serverInjectionParams.ResourceService),
 		authenticationApi: NewAuthenticationApi(serverInjectionParams.AuthenticationService, initData),
+		swaggerApi:        NewSwaggerApi(serverInjectionParams.ResourceService),
 	}
 }

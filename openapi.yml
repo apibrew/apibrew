@@ -3,6 +3,9 @@ info:
   version: '1.0.0'
   title: 'Data Handler'
   description: 'Swagger doc file for data handler rest api'
+servers:
+  - "url": "http://localhost:8008"
+  - "url": "http://tw:8008"
 paths:
   /authentication/token:
     post:
