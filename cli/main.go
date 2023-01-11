@@ -7,14 +7,16 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "stringer",
-	Short: "stringer - a simple CLI to transform and inspect strings",
-	Long: `stringer is a super fancy CLI (kidding)
-   
-One can use stringer to modify or inspect strings straight from the terminal`,
+	Use:   "dhctl",
+	Short: "dhctl - client for data-handler",
+	Long:  `dhctl is cli util for data-handler, you can do various of operations with dhctl`,
 	Run: func(cmd *cobra.Command, args []string) {
-
 	},
+}
+
+func init() {
+	rootCmd.AddCommand(backupCmd)
+	defineRootFlags()
 }
 
 func main() {
