@@ -29,11 +29,14 @@ require (
 	github.com/go-openapi/spec v0.20.6 // indirect
 	github.com/go-openapi/swag v0.21.1 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/invopop/yaml v0.1.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/spf13/cobra v1.6.1 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/swaggo/swag v1.8.1 // indirect
 	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
