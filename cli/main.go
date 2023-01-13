@@ -15,7 +15,10 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(describeCmd)
 	rootCmd.AddCommand(backupCmd)
+	rootCmd.AddCommand(applyCmd)
 	defineRootFlags()
 }
 

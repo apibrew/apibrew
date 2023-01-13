@@ -69,7 +69,7 @@ func BenchmarkSerializeProtobufLarge(b *testing.B) {
 }
 
 func BenchmarkSerializeProtobufLarge2(b *testing.B) {
-	chunkCount := 100000
+	chunkCount := 10
 	newInitData := &model.InitData{}
 
 	res := data.PreparePersonResource()
@@ -93,3 +93,4 @@ func BenchmarkSerializeProtobufLarge2(b *testing.B) {
 
 // 651428875
 // 453834792
+// 1791968653

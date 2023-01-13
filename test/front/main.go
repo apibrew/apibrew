@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	log "github.com/sirupsen/logrus"
@@ -24,7 +25,66 @@ func main() {
 
 	//prepareRichResource(resourceService)
 	//prepareReferencedResource(resourceService)
-	prepareCityResource(resourceService)
+	//prepareCityResource(resourceService)
+	prepareCategoryResource(resourceService)
+}
+
+func prepareCategoryResource(service stub.ResourceServiceClient) {
+	personResource := &model.Resource{
+		Name:      "product",
+		Workspace: "default",
+		Type:      2,
+		SourceConfig: &model.ResourceSourceConfig{
+			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
+			Mapping:    "product",
+		},
+		Properties: []*model.ResourceProperty{
+			{
+				Name: "name",
+				Type: model.ResourcePropertyType_TYPE_STRING,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "name",
+					},
+				},
+				Length:   255,
+				Required: true,
+			}, {
+				Name: "description",
+				Type: model.ResourcePropertyType_TYPE_STRING,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "description",
+					},
+				},
+				Length:   255,
+				Required: true,
+			}, {
+				Name: "category",
+				Type: model.ResourcePropertyType_TYPE_UUID,
+				SourceConfig: &model.ResourceProperty_Mapping{
+					Mapping: &model.ResourcePropertyMappingConfig{
+						Mapping: "category",
+					},
+				},
+				Required: true,
+			}},
+		References: []*model.ResourceReference{
+			{
+				PropertyName:       "category",
+				ReferencedResource: "category",
+				Cascade:            true,
+			},
+		},
+	}
+
+	res2, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
+		Token:       token,
+		Resources:   []*model.Resource{personResource},
+		DoMigration: true,
+	})
+
+	log.Print(res2, err)
 }
 
 func prepareCityResource(service stub.ResourceServiceClient) {
@@ -76,7 +136,7 @@ func prepareCityResource(service stub.ResourceServiceClient) {
 		},
 	}
 
-	res2, err := service.Create(ctx, &stub.CreateResourceRequest{
+	res2, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
 		Token:       token,
 		Resources:   []*model.Resource{personResource},
 		DoMigration: true,
@@ -157,7 +217,7 @@ func prepareReferencedResource(service stub.ResourceServiceClient) {
 		},
 	}
 
-	res2, err := service.Create(ctx, &stub.CreateResourceRequest{
+	res2, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
 		Token:       token,
 		Resources:   []*model.Resource{cityResource},
 		DoMigration: true,
@@ -343,7 +403,7 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 		},
 	}
 
-	res, err := service.Create(ctx, &stub.CreateResourceRequest{
+	res, err := service.Create(context.TODO(), &stub.CreateResourceRequest{
 		Token:       "",
 		Resources:   []*model.Resource{richResource},
 		DoMigration: true,

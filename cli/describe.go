@@ -1,0 +1,53 @@
+package main
+
+import (
+	"data-handler/cli/output"
+	"data-handler/grpc/stub"
+	"github.com/spf13/cobra"
+	"log"
+	"strings"
+)
+
+var describeCmd = &cobra.Command{
+	Use:   "describe",
+	Short: "describe - describe resource",
+	Run: func(cmd *cobra.Command, args []string) {
+		parseRootFlags(cmd)
+		initClient(cmd.Context())
+
+		if len(args) == 0 {
+			log.Fatal("type should be provided")
+		}
+
+		resourceName := args[0]
+
+		workspace := "default"
+
+		if len(args) > 1 {
+			workspace = args[0]
+			resourceName = args[1]
+		}
+
+		if strings.Contains(resourceName, "/") {
+			parts := strings.Split(resourceName, "/")
+			workspace = parts[0]
+			resourceName = parts[1]
+		}
+
+		writer := output.NewOutputWriter("console")
+
+		resp, err := resourceServiceClient.GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+			Token:     authToken,
+			Workspace: workspace,
+			Name:      resourceName,
+		})
+
+		check(err)
+
+		writer.DescribeResource(resp.Resource)
+	},
+}
+
+func init() {
+	//getCmd.PersistentFlags().StringP("output", "o", "console", "Output format")
+}

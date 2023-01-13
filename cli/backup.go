@@ -2,8 +2,8 @@ package main
 
 import (
 	"data-handler/grpc/stub"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var backupCmd = &cobra.Command{
@@ -13,10 +13,35 @@ var backupCmd = &cobra.Command{
 		parseRootFlags(cmd)
 		initClient(cmd.Context())
 
-		resp, err := resourceServiceClient.List(cmd.Context(), &stub.ListResourceRequest{
+		output, err := cmd.Flags().GetString("output")
+		check(err)
+
+		format, err := cmd.Flags().GetString("format")
+		check(err)
+
+		selectResource, err := cmd.Flags().GetStringArray("select-resource")
+		check(err)
+
+		selectDataSource, err := cmd.Flags().GetStringArray("select-data-source")
+		check(err)
+
+		if output == "" {
+			log.Fatal("output should provided")
+		}
+
+		log.Print(output, format, selectResource, selectDataSource)
+
+		resourceServiceClient.List(cmd.Context(), &stub.ListResourceRequest{
 			Token: authToken,
 		})
 
-		log.Print("Started")
 	},
+}
+
+func init() {
+	backupCmd.PersistentFlags().StringP("output", "o", "", "Output file")
+	backupCmd.PersistentFlags().StringP("format", "f", "protobuf", "Backup format")
+	backupCmd.PersistentFlags().StringArray("select-resource", []string{}, "Select specific resources")
+	backupCmd.PersistentFlags().StringArray("select-data-source", []string{}, "Select specific data sources")
+	backupCmd.PersistentFlags().StringArray("query", []string{}, "Backup format")
 }

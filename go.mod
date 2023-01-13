@@ -13,6 +13,7 @@ require (
 	github.com/jellydator/ttlcache/v3 v3.0.0
 	github.com/ktr0731/grpcdynamic v0.0.0-20200217085124-70a2c3229ec4
 	github.com/lib/pq v1.10.7
+	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.6.1
@@ -38,6 +39,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
