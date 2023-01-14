@@ -40,13 +40,11 @@ func (s *server) Serve(lis net.Listener) {
 		Debug:            true,
 	})
 
-	r.Use(c.Handler)
-
 	s.swaggerApi.ConfigureRouter(r)
 	s.authenticationApi.ConfigureRouter(r)
 	s.recordApi.ConfigureRouter(r)
 
-	if err := http.Serve(lis, r); err != nil {
+	if err := http.Serve(lis, c.Handler(r)); err != nil {
 		panic(err)
 	}
 }
