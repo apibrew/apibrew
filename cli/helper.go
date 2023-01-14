@@ -1,6 +1,7 @@
 package main
 
 import (
+	"data-handler/model"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -8,6 +9,12 @@ import (
 func check(err error) {
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func checkError(err *model.Error) {
+	if err != nil {
+		log.Fatal(err.Message)
 	}
 }
 

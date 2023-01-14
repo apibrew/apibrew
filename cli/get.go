@@ -7,6 +7,7 @@ import (
 	"data-handler/model"
 	"github.com/spf13/cobra"
 	"log"
+	"strings"
 )
 
 var getCmd = &cobra.Command{
@@ -18,6 +19,7 @@ var getCmd = &cobra.Command{
 
 		o := getFlag(cmd, "output", true)
 		name := getFlag(cmd, "name", false)
+		names := getFlag(cmd, "names", false)
 		workspace := getFlag(cmd, "workspace", false)
 
 		if len(args) == 0 {
@@ -29,25 +31,35 @@ var getCmd = &cobra.Command{
 		writer := output.NewOutputWriter(o)
 
 		if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
+			resp, err := resourceServiceClient.List(cmd.Context(), &stub.ListResourceRequest{
+				Token: authToken,
+			})
+
+			check(err)
+
+			checkError(resp.Error)
+
+			var filteredResources []*model.Resource
+
 			if name != "" {
-				resp, err := resourceServiceClient.GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
-					Token:     authToken,
-					Workspace: workspace,
-					Name:      name,
-				})
-
-				check(err)
-
-				writer.WriteResources([]*model.Resource{resp.Resource})
+				for _, item := range resp.Resources {
+					if item.Name == name {
+						filteredResources = append(filteredResources, item)
+					}
+				}
+			} else if names != "" {
+				for _, ni := range strings.Split(names, ",") {
+					for _, item := range resp.Resources {
+						if item.Name == ni {
+							filteredResources = append(filteredResources, item)
+						}
+					}
+				}
 			} else {
-				resp, err := resourceServiceClient.List(cmd.Context(), &stub.ListResourceRequest{
-					Token: authToken,
-				})
-
-				check(err)
-
-				writer.WriteResources(resp.Resources)
+				filteredResources = resp.Resources
 			}
+
+			writer.WriteResources(filteredResources)
 		} else {
 			resp, err := recordServiceClient.List(context.TODO(), &stub.ListRecordRequest{
 				Token:     authToken,
@@ -57,6 +69,8 @@ var getCmd = &cobra.Command{
 
 			check(err)
 
+			checkError(resp.Error)
+
 			writer.WriteRecords(resp.Content)
 		}
 	},
@@ -64,6 +78,7 @@ var getCmd = &cobra.Command{
 
 func init() {
 	getCmd.PersistentFlags().StringP("output", "o", "console", "Output format")
-	getCmd.PersistentFlags().StringP("workspace", "w", "default", "Output format")
-	getCmd.PersistentFlags().StringP("name", "n", "", "Output format")
+	getCmd.PersistentFlags().StringP("workspace", "w", "default", "Workspace")
+	getCmd.PersistentFlags().StringP("name", "n", "", "Item name")
+	getCmd.PersistentFlags().String("names", "", "Item names")
 }

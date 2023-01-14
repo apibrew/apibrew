@@ -57,7 +57,7 @@ var resourceColumnMapFn = func(column string, resource *model.Resource) interfac
 	case "workspace":
 		return resource.Workspace
 	case "type":
-		return resource.Type
+		return resource.DataType
 	case "source_data_source":
 		return resource.SourceConfig.DataSource
 	case "source_mapping":
@@ -494,7 +494,7 @@ func ScanResource(resource *model.Resource, row QueryResultScanner) errors.Servi
 		&resource.Id,
 		&resource.Name,
 		&resource.Workspace,
-		&resource.Type,
+		&resource.DataType,
 		&resource.SourceConfig.DataSource,
 		&resource.SourceConfig.Mapping,
 		&resource.Flags.ReadOnlyRecords,

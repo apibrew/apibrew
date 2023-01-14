@@ -172,7 +172,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	resource.Flags.DisableMigration = true
 	resource.Flags.DisableAudit = true
 	resource.AuditData = new(model.AuditData)
-	resource.Type = model.DataType_USER
+	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
 	resource.Workspace = "default"
 

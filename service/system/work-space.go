@@ -5,7 +5,7 @@ import "data-handler/model"
 var WorkspaceResource = &model.Resource{
 	Name:      "workspace",
 	Workspace: "system",
-	Type:      model.DataType_SYSTEM,
+	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Mapping:    "workspace",

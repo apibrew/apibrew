@@ -29,9 +29,11 @@ func (c *yamlWriter) WriteResources(resources []*model.Resource) {
 
 		check(err)
 
-		var data interface{}
+		var data map[string]interface{}
 
 		err = json.Unmarshal(body, &data)
+
+		data["type"] = "resource"
 
 		check(err)
 

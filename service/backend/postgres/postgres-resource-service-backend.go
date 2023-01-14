@@ -24,6 +24,18 @@ func (p *postgresResourceServiceBackend) ListResources(ctx context.Context) (res
 	err = p.withSystemBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
 		result, err = resourceList(ctx, tx)
 
+		for _, resource := range result {
+			if err = resourceLoadProperties(tx, resource, resource.Workspace, resource.Name); err != nil {
+				log.Errorf("Unable to load resource properties for %s/%s Err: %s", resource.Workspace, resource.Name, err)
+				return err
+			}
+
+			if err = resourceLoadReferences(tx, resource, resource.Workspace, resource.Name); err != nil {
+				log.Errorf("Unable to load resource references for %s/%s Err: %s", resource.Workspace, resource.Name, err)
+				return err
+			}
+		}
+
 		return err
 	})
 

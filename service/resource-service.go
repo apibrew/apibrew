@@ -59,11 +59,11 @@ func (r *resourceService) checkSystemResource(ctx context.Context, workspace, id
 			return err
 		}
 
-		if res.Type == model.DataType_SYSTEM {
+		if res.DataType == model.DataType_SYSTEM {
 			return errors.LogicalError.WithMessage("you cannot access system workspace resources")
 		}
 
-		if res.Type == model.DataType_STATIC {
+		if res.DataType == model.DataType_STATIC {
 			return errors.LogicalError.WithMessage("static resources are not editable")
 		}
 	}
@@ -71,7 +71,7 @@ func (r *resourceService) checkSystemResource(ctx context.Context, workspace, id
 }
 
 func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
-	resource.Type = model.DataType_USER
+	resource.DataType = model.DataType_USER
 
 	err := validateResource(resource)
 
@@ -220,11 +220,11 @@ func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.Se
 	var result []*model.Resource
 
 	for _, item := range list {
-		if item.Type == model.DataType_SYSTEM {
+		if item.DataType == model.DataType_SYSTEM {
 			continue
 		}
 
-		if item.Type == model.DataType_STATIC {
+		if item.DataType == model.DataType_STATIC {
 			continue
 		}
 

@@ -97,7 +97,7 @@ message Resource {
   string id = 1; // id; read only
   string name = 2; // uniq(per workspace) // name
   string workspace = 3; // create only?
-  DataType type = 4; // read only
+  DataType dataType = 4; // read only
   ResourceSourceConfig sourceConfig = 5;
   repeated ResourceProperty properties = 6;
   repeated ResourceCheck checks = 7; // not implemented

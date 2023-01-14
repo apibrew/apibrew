@@ -38,12 +38,12 @@ func IsSystemContext(ctx context.Context) bool {
 }
 
 type HasDataType interface {
-	GetType() model.DataType
+	GetDataType() model.DataType
 }
 
 func CheckSystemResourceAccess(ctx context.Context, objs ...HasDataType) errors.ServiceError {
 	for _, obj := range objs {
-		if obj.GetType() == model.DataType_SYSTEM {
+		if obj.GetDataType() == model.DataType_SYSTEM {
 			if !IsSystemContext(ctx) {
 				return systemResourceAccessError
 			}
