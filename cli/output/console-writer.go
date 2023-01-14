@@ -148,13 +148,15 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.R
 		row := []string{
 			item.Id,
 			strconv.Itoa(int(item.Version)),
-			string(item.Version),
 		}
 
 		for _, prop := range resource.Properties {
-			value := item.Properties.AsMap()[prop.Name]
+			typeHandler := types.ByResourcePropertyType(prop.Type)
+			value, err := typeHandler.UnPack(item.Properties.AsMap()[prop.Name])
 
-			valStr := types.ByResourcePropertyType(prop.Type).String(value)
+			check(err)
+
+			valStr := typeHandler.String(value)
 
 			row = append(row, valStr)
 		}

@@ -9,8 +9,12 @@ func (u uuidType) Pack(value interface{}) (interface{}, error) {
 	return value, nil
 }
 
-func (u uuidType) UnPack(value interface{}) (interface{}, error) {
-	return value, nil
+func (u uuidType) UnPack(val interface{}) (interface{}, error) {
+	if _, ok := val.(string); ok {
+		return uuid.Parse(val.(string))
+	}
+
+	return val, nil
 }
 
 func (u uuidType) Default() any {

@@ -91,6 +91,7 @@ func canCast[T interface{}](typeName string, val interface{}) error {
 	} else {
 		return errors.New(fmt.Sprintf("value is not %s: %v", typeName, val))
 	}
+
 }
 
 type number interface {
