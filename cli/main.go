@@ -11,6 +11,7 @@ var rootCmd = &cobra.Command{
 	Short: "dhctl - client for data-handler",
 	Long:  `dhctl is cli util for data-handler, you can do various of operations with dhctl`,
 	Run: func(cmd *cobra.Command, args []string) {
+		check(cmd.Usage())
 	},
 }
 

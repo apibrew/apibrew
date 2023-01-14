@@ -131,6 +131,24 @@ func (c consoleWriter) WriteResources(resources []*model.Resource) {
 }
 
 func (c consoleWriter) WriteRecords(record []*model.Record) {
-	//TODO implement me
-	panic("implement me")
+	var data [][]string
+
+	table := tablewriter.NewWriter(c.writer)
+	table.SetHeader([]string{"Name", "Workspace", "DataSource", "Mapping", "Version"})
+	c.configureTable(table)
+
+	for _, item := range resources {
+		data = append(data, []string{
+			item.Name,
+			item.Workspace,
+			item.SourceConfig.DataSource,
+			item.SourceConfig.Mapping,
+			string(item.Version),
+		})
+	}
+
+	for _, v := range data {
+		table.Append(v)
+	}
+	table.Render() // Send output
 }
