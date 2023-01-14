@@ -5,7 +5,7 @@ info:
   description: 'Swagger doc file for data handler rest api'
 servers:
   - "url": "http://localhost:8008"
-  - "url": "http://tw:8008"
+  - "url": "http://tiswork.tisserv.net:8008"
 paths:
   /authentication/token:
     post:
