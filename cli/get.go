@@ -71,7 +71,17 @@ var getCmd = &cobra.Command{
 
 			checkError(resp.Error)
 
-			writer.WriteRecords(resp.Content)
+			resourceResp, err := resourceServiceClient.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+				Token:     authToken,
+				Workspace: workspace,
+				Name:      getType,
+			})
+
+			check(err)
+
+			checkError(resourceResp.Error)
+
+			writer.WriteRecords(resourceResp.Resource, resp.Content)
 		}
 	},
 }

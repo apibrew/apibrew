@@ -47,7 +47,7 @@ func (c *yamlWriter) WriteResources(resources []*model.Resource) {
 	}
 }
 
-func (c *yamlWriter) WriteRecords(record []*model.Record) {
+func (c *yamlWriter) WriteRecords(resource *model.Resource, record []*model.Record) {
 
 }
 

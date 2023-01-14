@@ -18,7 +18,7 @@ type ConfigServer struct {
 }
 
 type Config struct {
-	Resource      string
+	Type          string
 	Servers       []ConfigServer
 	DefaultServer string
 }

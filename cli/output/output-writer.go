@@ -8,7 +8,7 @@ import (
 
 type Writer interface {
 	WriteResources(resources []*model.Resource)
-	WriteRecords(records []*model.Record)
+	WriteRecords(resource *model.Resource, records []*model.Record)
 	DescribeResource(resource *model.Resource)
 }
 

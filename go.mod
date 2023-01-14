@@ -23,6 +23,7 @@ require (
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -58,6 +59,5 @@ require (
 	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

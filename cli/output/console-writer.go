@@ -2,6 +2,7 @@ package output
 
 import (
 	"data-handler/model"
+	"data-handler/service/types"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"io"
@@ -130,21 +131,35 @@ func (c consoleWriter) WriteResources(resources []*model.Resource) {
 	table.Render() // Send output
 }
 
-func (c consoleWriter) WriteRecords(record []*model.Record) {
+func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.Record) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
-	table.SetHeader([]string{"Name", "Workspace", "DataSource", "Mapping", "Version"})
+	columns := []string{"Id", "Version"}
+
+	for _, prop := range resource.Properties {
+		columns = append(columns, prop.Name)
+	}
+
+	table.SetHeader(columns)
 	c.configureTable(table)
 
-	for _, item := range resources {
-		data = append(data, []string{
-			item.Name,
-			item.Workspace,
-			item.SourceConfig.DataSource,
-			item.SourceConfig.Mapping,
+	for _, item := range records {
+		row := []string{
+			item.Id,
+			strconv.Itoa(int(item.Version)),
 			string(item.Version),
-		})
+		}
+
+		for _, prop := range resource.Properties {
+			value := item.Properties.AsMap()[prop.Name]
+
+			valStr := types.ByResourcePropertyType(prop.Type).String(value)
+
+			row = append(row, valStr)
+		}
+
+		data = append(data, row)
 	}
 
 	for _, v := range data {
