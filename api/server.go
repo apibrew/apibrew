@@ -33,10 +33,6 @@ func (s *server) Serve(lis net.Listener) {
 	r.Use(s.authenticationApi.AuthenticationMiddleWare)
 	r.Use(s.TrackingMiddleWare)
 
-	s.swaggerApi.ConfigureRouter(r)
-	s.authenticationApi.ConfigureRouter(r)
-	s.recordApi.ConfigureRouter(r)
-
 	c := cors.New(cors.Options{
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowCredentials: true,
@@ -45,6 +41,10 @@ func (s *server) Serve(lis net.Listener) {
 	})
 
 	r.Use(c.Handler)
+
+	s.swaggerApi.ConfigureRouter(r)
+	s.authenticationApi.ConfigureRouter(r)
+	s.recordApi.ConfigureRouter(r)
 
 	if err := http.Serve(lis, r); err != nil {
 		panic(err)
