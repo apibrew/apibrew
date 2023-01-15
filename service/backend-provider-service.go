@@ -5,8 +5,6 @@ import (
 	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/backend"
-	"data-handler/service/backend/mongo"
-	"data-handler/service/backend/mysql"
 	"data-handler/service/backend/postgres"
 	"data-handler/service/errors"
 	"data-handler/service/mapping"
@@ -16,80 +14,79 @@ import (
 )
 
 type BackendProviderService interface {
-	backend.DataSourceLocator
 	Init(data *model.InitData)
-	GetSystemBackend(ctx context.Context) backend.ResourceServiceBackend
-	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (backend.ResourceServiceBackend, errors.ServiceError)
+	GetSystemBackend(ctx context.Context) backend.Backend
+	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (backend.Backend, errors.ServiceError)
+	DestroyBackend(ctx context.Context, id string) error
 }
 
 type backendProviderService struct {
-	postgresBackend  backend.ResourceServiceBackend
-	mysqlBackend     backend.ResourceServiceBackend
-	mongoBackend     backend.ResourceServiceBackend
 	systemDataSource *model.DataSource
+	backendMap       map[string]backend.Backend
 }
 
-func (d *backendProviderService) GetDataSourceBackendById(ctx context.Context, dataSourceId string) (backend.DataSourceConnectionDetails, errors.ServiceError) {
+func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) error {
+	bck, err := b.GetBackendByDataSourceId(ctx, dataSourceId)
+
+	if err != nil {
+		return err
+	}
+
+	bck.DestroyDataSource(ctx)
+
+	delete(b.backendMap, "dataSourceId")
+
+	return nil
+}
+
+func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (backend.Backend, errors.ServiceError) {
+	if b.backendMap[dataSourceId] != nil {
+		return b.backendMap[dataSourceId], nil
+	}
+
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("dataSourceId", dataSourceId).Debug("Begin data-source GetDataSourceBackendById")
 	defer logger.Debug("End data-source GetDataSourceBackendById")
 
-	if dataSourceId == d.systemDataSource.Id {
-		return d.GetSystemDataSourceBackend(ctx), nil
-	}
+	if dataSourceId == b.systemDataSource.Id {
+		return b.GetSystemBackend(ctx), nil
+	} else {
+		systemCtx := security.WithSystemContext(context.TODO())
+		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, system.DataSourceResource, dataSourceId)
 
-	systemCtx := security.WithSystemContext(context.TODO())
-	record, err := d.GetSystemBackend(systemCtx).GetRecord(systemCtx, system.DataSourceResource, dataSourceId)
+		if err != nil {
+			return nil, err
+		}
 
-	if err != nil {
-		return nil, err
-	}
-
-	dataSource := mapping.DataSourceFromRecord(record)
-
-	return d.GetDataSourceBackend(ctx, dataSource), nil
-}
-
-func (d *backendProviderService) GetDataSourceBackend(ctx context.Context, dataSource *model.DataSource) backend.DataSourceConnectionDetails {
-	if dataSource == nil {
-		panic("data-source is nil")
-	}
-	switch d.systemDataSource.Backend {
-	case model.DataSourceBackendType_POSTGRESQL:
-		return postgres.NewPostgresDataSourceBackend(dataSource.Id, dataSource.Options.(*model.DataSource_PostgresqlParams).PostgresqlParams)
-	case model.DataSourceBackendType_MONGODB:
-		panic("mongodb data-source not init")
-	default:
-		panic("unknown data-source type")
+		return b.GetBackend(mapping.DataSourceFromRecord(record)), nil
 	}
 }
 
-func (d *backendProviderService) GetSystemDataSourceBackend(ctx context.Context) backend.DataSourceConnectionDetails {
-	return d.GetDataSourceBackend(ctx, d.systemDataSource)
+func (b *backendProviderService) GetSystemBackend(ctx context.Context) backend.Backend {
+	return b.GetBackend(b.systemDataSource)
 }
 
-func (b *backendProviderService) GetSystemBackend(ctx context.Context) backend.ResourceServiceBackend {
-	return b.GetBackend(ctx, b.systemDataSource.Backend)
-}
-
-func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (backend.ResourceServiceBackend, errors.ServiceError) {
-	dsb, err := b.GetDataSourceBackendById(ctx, dataSourceId)
-
-	if err != nil {
-		return nil, err
+func (b *backendProviderService) GetBackend(dataSource *model.DataSource) backend.Backend {
+	if b.backendMap[dataSource.Id] != nil {
+		return b.backendMap[dataSource.Id]
 	}
 
-	return b.GetBackend(ctx, dsb.GetBackendType()), nil
+	constructor := b.GetBackendConstructor(dataSource.GetBackend())
+	instance := constructor(dataSource.GetOptions())
+
+	b.backendMap[dataSource.Id] = instance
+
+	return instance
 }
 
-func (b *backendProviderService) GetBackend(ctx context.Context, backend model.DataSourceBackendType) backend.ResourceServiceBackend {
+func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceBackendType) backend.Constructor {
 	switch backend {
 	case model.DataSourceBackendType_POSTGRESQL:
-		return b.postgresBackend
+		return postgres.NewPostgresResourceServiceBackend
 	case model.DataSourceBackendType_MYSQL:
-		return b.mysqlBackend
+		return nil
 	case model.DataSourceBackendType_MONGODB:
-		return b.mongoBackend
+		return nil
 	}
 
 	panic("Not implemented backend: " + backend.String())
@@ -97,16 +94,21 @@ func (b *backendProviderService) GetBackend(ctx context.Context, backend model.D
 
 func (b *backendProviderService) Init(data *model.InitData) {
 	b.systemDataSource = data.SystemDataSource
-
-	b.postgresBackend.InjectDataSourceLocator(b)
-
-	b.postgresBackend.Init()
 }
 
 func NewBackendProviderService() BackendProviderService {
 	return &backendProviderService{
-		postgresBackend: postgres.NewPostgresResourceServiceBackend(),
-		mysqlBackend:    mysql.NewMysqlResourceServiceBackend(),
-		mongoBackend:    mongo.NewMongoResourceServiceBackend(),
+		backendMap: make(map[string]backend.Backend),
 	}
 }
+
+//
+//func (p *postgresResourceServiceBackend) Init() {
+//	err := p.withBackend(context.TODO(), p.systemBackend.GetDataSourceId(), false, func(tx *sql.Tx) errors.ServiceError {
+//		return resourceSetupTables(tx)
+//	})
+//
+//	if err != nil {
+//		panic(err)
+//	}
+//}
