@@ -12,7 +12,7 @@ import (
 
 func (p *postgresResourceServiceBackend) ListRecords(ctx context.Context, params backend.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	log.Tracef("Begin listing: %v", params)
-	err = p.withBackend(ctx, params.Resource.SourceConfig.DataSource, true, func(tx *sql.Tx) errors.ServiceError {
+	err = p.withBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
 		result, total, err = recordList(tx, params)
 
 		return err
@@ -28,7 +28,7 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 
 	log.Tracef("Begin creating: %v; %v", params.Records)
 
-	err = p.withBackend(ctx, params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
+	err = p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		inserted, err = recordInsert(tx, params.Resource, params.Records, params.IgnoreIfExists, false)
 
 		if err != nil {
@@ -56,7 +56,7 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 }
 
 func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, params backend.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
-	err := p.withBackend(ctx, params.Resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
+	err := p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		for _, record := range params.Records {
 			err := recordUpdate(tx, params.Resource, record, params.CheckVersion)
 
@@ -85,7 +85,7 @@ func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, para
 
 func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
 	var record *model.Record = nil
-	err := p.withBackend(ctx, resource.SourceConfig.DataSource, true, func(tx *sql.Tx) errors.ServiceError {
+	err := p.withBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
 		var err errors.ServiceError
 		record, err = readRecord(tx, resource, id)
 
@@ -105,7 +105,7 @@ func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource
 
 func (p *postgresResourceServiceBackend) DeleteRecords(ctx context.Context, resource *model.Resource, ids []string) errors.ServiceError {
 	log.Tracef("Begin deleting records: %v / %v / %v", resource.Workspace, resource.Name, ids)
-	err := p.withBackend(ctx, resource.SourceConfig.DataSource, false, func(tx *sql.Tx) errors.ServiceError {
+	err := p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		return deleteRecords(tx, resource, ids)
 	})
 	if err != nil {

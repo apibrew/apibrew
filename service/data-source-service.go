@@ -43,7 +43,13 @@ func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]stri
 	logger.WithField("req", id).Debug("Begin data-source ListEntities")
 	defer logger.Debug("End data-source ListEntities")
 
-	return d.backendProviderService.GetSystemBackend(ctx).ListEntities(ctx, id)
+	bck, err := d.backendProviderService.GetBackendByDataSourceId(ctx, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return bck.ListEntities(ctx)
 }
 
 func (d *dataSourceService) List(ctx context.Context) ([]*model.DataSource, errors.ServiceError) {
@@ -69,7 +75,13 @@ func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectio
 	logger.WithField("id", id).Debug("Begin data-source GetStatus")
 	defer logger.Debug("End data-source GetStatus")
 
-	return d.backendProviderService.GetSystemBackend(ctx).GetStatus(ctx, id)
+	bck, err := d.backendProviderService.GetBackendByDataSourceId(ctx, id)
+
+	if err != nil {
+		return
+	}
+
+	return bck.GetStatus(ctx)
 }
 
 func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.DataSource) ([]*model.DataSource, errors.ServiceError) {
@@ -111,7 +123,7 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 	}
 
 	for _, item := range dataSources {
-		d.backendProviderService.GetSystemBackend(ctx).DestroyDataSource(ctx, item.Id)
+		_ = d.backendProviderService.DestroyBackend(ctx, item.Id) //@fixme
 	}
 
 	return mapping.MapFromRecord(result, mapping.DataSourceFromRecord), nil
@@ -122,7 +134,15 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 	logger.WithField("id", id).WithField("entity", entity).Debug("Begin data-source PrepareResourceFromEntity")
 	defer logger.Debug("End data-source PrepareResourceFromEntity")
 
-	resource, err := d.backendProviderService.GetSystemBackend(ctx).PrepareResourceFromEntity(ctx, id, entity)
+	bck, err := d.backendProviderService.GetBackendByDataSourceId(ctx, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resource, err := bck.PrepareResourceFromEntity(ctx, entity)
+
+	resource.SourceConfig.DataSource = id
 
 	if err != nil {
 		return nil, err
