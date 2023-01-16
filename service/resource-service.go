@@ -150,7 +150,6 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 	}
 
 	logger.Debugf("Call backend GetResourceByName: %s", resourceName)
-	//resource, err := r.backendProviderService.GetSystemBackend(ctx).GetResourceByName(ctx, namespace, resourceName)
 
 	queryMap := make(map[string]interface{})
 
@@ -211,7 +210,7 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, na
 		return true, nil
 	}
 
-	resource, err := r.GetResourceByName(nil, namespace, name)
+	resource, err := r.GetResourceByName(ctx, namespace, name)
 
 	if err != nil {
 		return false, err
