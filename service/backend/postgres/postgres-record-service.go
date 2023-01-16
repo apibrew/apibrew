@@ -26,7 +26,7 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 	var inserted bool
 	var err errors.ServiceError
 
-	log.Tracef("Begin creating: %v; %v", params.Records)
+	log.Tracef("Begin creating: %v", params.Records)
 
 	err = p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		inserted, err = recordInsert(tx, params.Resource, params.Records, params.IgnoreIfExists, false)

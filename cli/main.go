@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -16,6 +17,9 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	log.SetLevel(log.TraceLevel)
+	log.SetReportCaller(true)
+
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(describeCmd)
 	rootCmd.AddCommand(backupCmd)

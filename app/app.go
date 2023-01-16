@@ -161,5 +161,5 @@ func (app *App) CheckInitData(data *model.InitData) {
 }
 
 func (app *App) SetGrayLogAddr(addr string) {
-	logging.SetupGrayLog("tw:12201", "test")
+	logging.SetupGrayLog("tiswork.tisserv.net:12201", "test")
 }

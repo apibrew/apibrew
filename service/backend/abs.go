@@ -34,32 +34,28 @@ type ListRecordParams struct {
 
 type Constructor func(dataSource DataSourceConnectionDetails) Backend
 
-type Backend interface {
-	// generic
+type GenericInterface interface {
 	GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
 	DestroyDataSource(ctx context.Context)
+}
 
-	// records
+type RecordsInterface interface {
 	AddRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError)
 	UpdateRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, errors.ServiceError)
 	GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError)
 	DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError
 	ListRecords(ctx context.Context, params ListRecordParams) ([]*model.Record, uint32, errors.ServiceError)
+}
 
-	// schema
+type SchemaInterface interface {
 	ListEntities(ctx context.Context) ([]string, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, entity string) (*model.Resource, errors.ServiceError)
 	UpgradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError
-	DowngradeResource(ctx context.Context, resource *model.Resource) errors.ServiceError
+	DowngradeResource(ctx context.Context, resource *model.Resource, migration bool) errors.ServiceError
+}
 
-	// deprecated
-	AddResource(ctx context.Context, params AddResourceParams) (*model.Resource, errors.ServiceError)
-	// deprecated
-	GetResourceByName(ctx context.Context, resourceName string, name string) (*model.Resource, errors.ServiceError)
-	// deprecated
-	GetResource(ctx context.Context, workspace string, id string) (*model.Resource, errors.ServiceError)
-	// deprecated
-	DeleteResources(ctx context.Context, workspace string, ids []string, migration bool, forceMigration bool) errors.ServiceError
-	// deprecated
-	UpdateResource(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
+type Backend interface {
+	GenericInterface
+	RecordsInterface
+	SchemaInterface
 }

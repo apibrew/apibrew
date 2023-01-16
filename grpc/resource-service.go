@@ -53,7 +53,7 @@ func (r resourceGrpcService) Update(ctx context.Context, request *stub.UpdateRes
 }
 
 func (r resourceGrpcService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
-	err := r.resourceService.Delete(ctx, request.Workspace, request.Ids, request.DoMigration, request.ForceMigration)
+	err := r.resourceService.Delete(ctx, request.Ids, request.DoMigration, request.ForceMigration)
 
 	return &stub.DeleteResourceResponse{
 		Error: toProtoError(err),

@@ -24,5 +24,4 @@ func SetupGrayLog(gelfAddr string, appMode string) {
 	hook.Level = log.TraceLevel
 
 	log.AddHook(hook)
-	log.Info("aaaa")
 }

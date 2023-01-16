@@ -26,6 +26,10 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 
 	cols := prepareResourceRecordCols(resource)
 
+	cols = util.ArrayMap(cols, func(t string) string {
+		return fmt.Sprintf("\"%s\"", t)
+	})
+
 	insertBuilder.Cols(cols...)
 
 	for _, record := range records {
@@ -99,9 +103,9 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 
 func getTableName(mapping string, history bool) string {
 	if history {
-		return mapping + "_h"
+		return fmt.Sprintf("\"%s_h\"", mapping)
 	} else {
-		return mapping
+		return fmt.Sprintf("\"%s\"", mapping)
 	}
 }
 
@@ -202,7 +206,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	}
 
 	ownCols := util.ArrayMapString(prepareResourceRecordCols(params.Resource), func(s string) string {
-		return "t." + s + " as t_" + s
+		return fmt.Sprintf("t.\"%s\" as \"t_%s\"", s, s)
 	})
 
 	var joinCols []string
@@ -251,7 +255,13 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 		return
 	}
 
-	defer rows.Close()
+	defer func() {
+		err2 := rows.Close()
+
+		if err2 != nil {
+			log.Print(err2)
+		}
+	}()
 
 	for rows.Next() {
 		record := new(model.Record)
@@ -267,59 +277,59 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 }
 
 func recordPrepareJoinScan(runner QueryRunner, resource *model.Resource, record *model.Record, rowScanFields *[]any) errors.ServiceError {
-	for _, reference := range resource.References {
-		var referencedResource = new(model.Resource)
-		err := resourceLoadDetailsByName(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
-		if err != nil {
-			panic(err)
-		}
-
-		for _, property := range referencedResource.Properties {
-			if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-				propertyType := types.ByResourcePropertyType(property.Type)
-				val := propertyType.Pointer(property.Required)
-				*rowScanFields = append(*rowScanFields, val)
-			}
-		}
-	}
+	//for _, reference := range resource.References {
+	//	var referencedResource = new(model.Resource)
+	//	err := resourceLoadDetailsByName(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//
+	//	for _, property := range referencedResource.Properties {
+	//		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+	//			propertyType := types.ByResourcePropertyType(property.Type)
+	//			val := propertyType.Pointer(property.Required)
+	//			*rowScanFields = append(*rowScanFields, val)
+	//		}
+	//	}
+	//}
 
 	return nil
 }
 
 func recordPrepareJoinCols(runner QueryRunner, resource *model.Resource) []string {
 	var result []string
-	for _, reference := range resource.References {
-		var referencedResource = new(model.Resource)
-		err := resourceLoadDetailsByName(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
-		if err != nil {
-			panic(err)
-		}
-
-		joinAlias := "l_" + referencedResource.SourceConfig.Mapping
-
-		for _, property := range referencedResource.Properties {
-			if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-				colName := fmt.Sprintf("%s.%s as %s_%s", joinAlias, sourceConfig.Mapping, joinAlias, sourceConfig.Mapping)
-				result = append(result, colName)
-			}
-		}
-	}
+	//for _, reference := range resource.References {
+	//	var referencedResource = new(model.Resource)
+	//	err := resourceLoadDetailsByName(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//
+	//	joinAlias := "l_" + referencedResource.SourceConfig.Mapping
+	//
+	//	for _, property := range referencedResource.Properties {
+	//		if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
+	//			colName := fmt.Sprintf("%s.%s as %s_%s", joinAlias, sourceConfig.Mapping, joinAlias, sourceConfig.Mapping)
+	//			result = append(result, colName)
+	//		}
+	//	}
+	//}
 
 	return result
 }
 
 func recordPrepareJoins(runner QueryRunner, builder *sqlbuilder.SelectBuilder, resource *model.Resource) errors.ServiceError {
-	for _, reference := range resource.References {
-		referenceLocalDetails, err := resolveReferenceDetails(runner, resource, reference)
-
-		if err != nil {
-			return nil
-		}
-
-		onExpression := fmt.Sprintf("%s.%s=%s", referenceLocalDetails.joinAlias, referenceLocalDetails.referencedTableColumn, referenceLocalDetails.sourceTableColumn)
-
-		builder.JoinWithOption(sqlbuilder.LeftJoin, referenceLocalDetails.sourceTableColumn+" as "+referenceLocalDetails.joinAlias, onExpression)
-	}
+	//for _, reference := range resource.References {
+	//	referenceLocalDetails, err := resolveReferenceDetails(runner, resource, reference)
+	//
+	//	if err != nil {
+	//		return nil
+	//	}
+	//
+	//	onExpression := fmt.Sprintf("%s.%s=%s", referenceLocalDetails.joinAlias, referenceLocalDetails.referencedTableColumn, referenceLocalDetails.sourceTableColumn)
+	//
+	//	builder.JoinWithOption(sqlbuilder.LeftJoin, referenceLocalDetails.sourceTableColumn+" as "+referenceLocalDetails.joinAlias, onExpression)
+	//}
 
 	return nil
 }
@@ -660,7 +670,7 @@ func prepareResourceRecordCols(resource *model.Resource) []string {
 
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			col := fmt.Sprintf(source.Mapping.Mapping)
+			col := fmt.Sprintf("%s", source.Mapping.Mapping)
 			cols = append(cols, col)
 		}
 	}

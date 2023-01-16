@@ -130,5 +130,15 @@ var ResourceResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_BOOL,
 			Required: true,
 		},
+		{
+			Name: "type",
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "type",
+				},
+			},
+			Type:     model.ResourcePropertyType_TYPE_INT32,
+			Required: true,
+		},
 	},
 }

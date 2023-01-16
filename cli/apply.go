@@ -6,7 +6,6 @@ import (
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	"encoding/json"
-	"errors"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v2"
@@ -87,11 +86,9 @@ var applyCmd = &cobra.Command{
 
 						if resp.Error != nil {
 							if resp.Error.Code != model.ErrorCode_RECORD_NOT_FOUND {
-								check(errors.New(resp.Error.Message))
+								checkError(resp.Error)
 							}
 						}
-
-						checkError(resp.Error)
 
 						if resp.Resource != nil {
 							resource.Id = resp.Resource.Id

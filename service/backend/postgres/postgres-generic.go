@@ -3,11 +3,16 @@ package postgres
 import (
 	"context"
 	"data-handler/service/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 func (p *postgresResourceServiceBackend) DestroyDataSource(ctx context.Context) {
 	if p.connection != nil {
-		p.connection.Close()
+		err := p.connection.Close()
+
+		if err != nil {
+			log.Error(err)
+		}
 
 		p.connection = nil
 	}

@@ -64,7 +64,7 @@ func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, re
 	})
 }
 
-func (p *postgresResourceServiceBackend) DowngradeResource(ctx context.Context, resource *model.Resource) errors.ServiceError {
+func (p *postgresResourceServiceBackend) DowngradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		return resourceDropTable(tx, resource.SourceConfig.Mapping)
 	})

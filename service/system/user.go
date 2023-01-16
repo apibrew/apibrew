@@ -8,7 +8,7 @@ var UserResource = &model.Resource{
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Mapping:    "\"user\"",
+		Mapping:    "user",
 	},
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{

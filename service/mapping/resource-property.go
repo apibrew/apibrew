@@ -6,13 +6,23 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func ResourcePropertyToRecord(Resource *model.Resource) *model.Record {
+func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.Resource) *model.Record {
 	properties := make(map[string]interface{})
 
-	properties["name"] = Resource.Name
-	properties["workspace"] = Resource.Workspace
-	properties["dataSource"] = Resource.SourceConfig.DataSource
-	properties["mapping"] = Resource.SourceConfig.Mapping
+	properties["name"] = property.Name
+	properties["type"] = int32(property.Type.Number())
+	properties["resource"] = resource.Id
+	properties["required"] = property.Required
+	properties["sourcePrimary"] = property.Primary
+	properties["length"] = property.Length
+	properties["unique"] = property.Unique
+
+	sourceConfig := property.SourceConfig.(*model.ResourceProperty_Mapping)
+
+	properties["sourceType"] = 0
+	properties["sourceMapping"] = sourceConfig.Mapping.Mapping
+	properties["sourceDef"] = sourceConfig.Mapping.SourceDef
+	properties["sourceAutoGeneration"] = int32(sourceConfig.Mapping.AutoGeneration.Number())
 
 	structProperties, err := structpb.NewStruct(properties)
 
@@ -21,12 +31,9 @@ func ResourcePropertyToRecord(Resource *model.Resource) *model.Record {
 	}
 
 	return &model.Record{
-		Id:         Resource.Id,
-		Resource:   system.ResourceResource.Name,
-		DataType:   Resource.DataType,
+		Resource:   system.ResourcePropertyResource.Name,
+		DataType:   model.DataType_SYSTEM,
 		Properties: structProperties,
-		AuditData:  Resource.AuditData,
-		Version:    Resource.Version,
 	}
 }
 

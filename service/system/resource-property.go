@@ -133,7 +133,7 @@ var ResourcePropertyResource = &model.Resource{
 		{
 			PropertyName:       "resource",
 			ReferencedResource: "resource",
-			Cascade:            false,
+			Cascade:            true,
 		},
 	},
 }
