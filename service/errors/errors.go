@@ -8,10 +8,10 @@ var InternalError = newServiceError(model.ErrorCode_INTERNAL_ERROR, "Internal er
 var PropertyNotFoundError = newServiceError(model.ErrorCode_PROPERTY_NOT_FOUND, "Property not found")
 var RecordValidationError = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Record Validation failed")
 var AuthenticationFailedError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
-var AccessDeniedError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
-var BackendConnectionAuthenticationError = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
-var UniqueViolation = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
-var ForeignKeyViolation = newServiceError(model.ErrorCode_AUTHENTICATION_FAILED, "Authentication failed")
+var AccessDeniedError = newServiceError(model.ErrorCode_ACCESS_DENIED, "Access denied")
+var BackendConnectionAuthenticationError = newServiceError(model.ErrorCode_BACKEND_ERROR, "Backend error")
+var UniqueViolation = newServiceError(model.ErrorCode_UNIQUE_VIOLATION, "Unique violation")
+var ForeignKeyViolation = newServiceError(model.ErrorCode_REFERENCE_VIOLATION, "Reference violation")
 
 // RecordValidationError @fixme
 var AlreadyExistsError = newServiceError(model.ErrorCode_ALREADY_EXISTS, "Already Exists")

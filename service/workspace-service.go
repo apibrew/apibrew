@@ -110,7 +110,7 @@ func (u *workspaceService) List(ctx context.Context) ([]*model.Workspace, errors
 }
 
 func (d *workspaceService) Init(data *model.InitData) {
-	d.resourceService.InitResource(system.WorkspaceResource)
+	d.resourceService.MigrateResource(system.WorkspaceResource)
 
 	if len(data.InitWorkspaces) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{

@@ -9,13 +9,14 @@ import (
 	"data-handler/service/mapping"
 	"data-handler/service/security"
 	"data-handler/service/system"
+	"fmt"
 	"github.com/jellydator/ttlcache/v3"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
 
 type ResourceService interface {
-	InitResource(resource *model.Resource)
+	MigrateResource(resource *model.Resource)
 	Init(data *model.InitData)
 	CheckResourceExists(ctx context.Context, workspace, name string) (bool, errors.ServiceError)
 	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, errors.ServiceError)
@@ -65,14 +66,18 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		IgnoreIfExists: false,
 	})
 
+	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
+		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("Resource is already exiss: " + resource.Name))
+	}
+
 	if err != nil {
 		return nil, err
 	}
 
-	newResource := mapping.ResourceFromRecord(result[0])
+	resource.Id = result[0].Id
 
 	propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
-		return mapping.ResourcePropertyToRecord(property, newResource)
+		return mapping.ResourcePropertyToRecord(property, resource)
 	})
 
 	_, _, err = r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, backend.BulkRecordsParams{
@@ -83,14 +88,20 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	})
 
 	if err != nil {
-		_ = r.Delete(ctx, []string{newResource.Id}, false, false)
+		_ = r.Delete(ctx, []string{resource.Id}, false, false)
 		return nil, err
 	}
 
 	//todo add references
 
 	if doMigration {
-		err = r.backendProviderService.GetSystemBackend(ctx).UpgradeResource(ctx, resource, forceMigration)
+		bck, err := r.backendProviderService.GetBackendByDataSourceId(ctx, resource.SourceConfig.DataSource)
+
+		if err != nil {
+			return nil, err
+		}
+
+		err = bck.UpgradeResource(ctx, resource, forceMigration)
 
 		if err != nil {
 			return nil, err
@@ -103,6 +114,14 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 func validateResource(resource *model.Resource) errors.ServiceError {
 	if resource.SourceConfig == nil {
 		return errors.RecordValidationError.WithDetails("resource source-config is null")
+	}
+
+	if resource.Flags == nil {
+		return errors.RecordValidationError.WithDetails("resource flags has not initialized")
+	}
+
+	if resource.SourceConfig == nil {
+		return errors.RecordValidationError.WithDetails("resource SourceConfig has not initialized")
 	}
 
 	return nil
@@ -205,19 +224,18 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, workspace, na
 
 func (r *resourceService) Init(data *model.InitData) {
 	r.disableCache = data.Config.DisableCache
+
+	r.MigrateResource(system.ResourceResource)
+	r.MigrateResource(system.ResourcePropertyResource)
+	r.MigrateResource(system.ResourceReferenceResource)
 }
 
-func (r *resourceService) InitResource(resource *model.Resource) {
-	//_, err := r.backendProviderService.GetSystemBackend(context.TODO()).AddResource(context.TODO(), backend.AddResourceParams{
-	//	Resource:       resource,
-	//	IgnoreIfExists: true,
-	//	Migrate:        true,
-	//	ForceMigrate:   false,
-	//})
-	//
-	//if err != nil {
-	//	panic(err)
-	//}
+func (r *resourceService) MigrateResource(resource *model.Resource) {
+	err := r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), resource, true)
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (r resourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
@@ -239,7 +257,12 @@ func (r resourceService) Delete(ctx context.Context, ids []string, doMigration b
 		r.cache.Delete(resourceId)
 
 		if doMigration {
-			err = r.backendProviderService.GetSystemBackend(ctx).DowngradeResource(ctx, resource, forceMigration)
+			bck, err := r.backendProviderService.GetBackendByDataSourceId(ctx, resource.SourceConfig.DataSource)
+
+			if err != nil {
+				return err
+			}
+			err = bck.DowngradeResource(ctx, resource, forceMigration)
 
 			if err != nil {
 				return err

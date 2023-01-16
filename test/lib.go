@@ -87,6 +87,7 @@ func prepareTextContext() context.Context {
 }
 
 func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, exec func(dataSource *model.DataSource)) {
+	log.Print("[withDataSource]Step 1")
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in f", r)
@@ -98,6 +99,7 @@ func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcC
 		Token:       "test-token",
 		DataSources: []*model.DataSource{dataSource},
 	})
+	log.Print("[withDataSource]Step 2")
 
 	if err != nil {
 		t.Error(err)
@@ -109,11 +111,15 @@ func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcC
 		return
 	}
 
+	log.Print("[withDataSource]Step 3")
+
 	log.Print("data-source created", res.DataSources[0].Id)
 
 	if !reflect.DeepEqual(len(res.DataSources), 1) {
 		t.Error("Created datasource length is wrong", len(res.DataSources), 1)
 	}
+
+	log.Print("[withDataSource]Step 4")
 
 	exists := checkDataSourceExists(ctx, container, res.DataSources[0].Id)
 	if !exists {
@@ -121,7 +127,11 @@ func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcC
 		return
 	}
 
+	log.Print("[withDataSource]Step 5")
+
 	exec(res.DataSources[0])
+
+	log.Print("[withDataSource]Step 6")
 
 	log.Print("data-source deleting", res.DataSources[0].Id)
 	res2, err := container.dataSourceService.Delete(ctx, &stub.DeleteDataSourceRequest{
@@ -131,22 +141,33 @@ func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcC
 		}),
 	})
 
+	log.Print("[withDataSource]Step 7")
+
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	log.Print("[withDataSource]Step 8")
 
 	if res2.Error != nil {
 		t.Error(res.Error.Message)
 		return
 	}
 
+	log.Print("[withDataSource]Step 9")
+
 	log.Print("data-source deleted", res.DataSources[0].Id)
 
 	exists = checkDataSourceExists(ctx, container, res.DataSources[0].Id)
+
+	log.Print("[withDataSource]Step 10")
+
 	if exists {
 		t.Error("Datasource removed but exists")
 	}
+
+	log.Print("[withDataSource]Step 11")
 }
 
 func checkDataSourceExists(ctx context.Context, container *SimpleAppGrpcContainer, id string) bool {
@@ -160,6 +181,8 @@ func checkDataSourceExists(ctx context.Context, container *SimpleAppGrpcContaine
 
 func withResource(ctx context.Context, t testing.TB, resource *model.Resource, exec func()) {
 	log.Print("resource creating", resource)
+	resource.Flags = &model.ResourceFlags{}
+
 	res, err := container.resourceService.Create(ctx, &stub.CreateResourceRequest{
 		Token:          "test-token",
 		Resources:      []*model.Resource{resource},
@@ -202,11 +225,7 @@ func withResource(ctx context.Context, t testing.TB, resource *model.Resource, e
 
 	exec()
 
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	log.Print("resource deleted", res.Resources[0].Name)
+	log.Print("resource deleted", resource.Name)
 
 }
 

@@ -5,7 +5,9 @@ import (
 	"data-handler/model"
 	"data-handler/service/errors"
 	"database/sql"
+	"fmt"
 	"github.com/huandu/go-sqlbuilder"
+	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -45,6 +47,8 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) errors.Se
 
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)
+
+	log.Trace("sqlQuery: ", sqlQuery)
 
 	return handleDbError(err)
 }
@@ -94,7 +98,7 @@ func prepareResourceTableColumnDefinition(property *model.ResourceProperty) stri
 		}
 		sqlType := getPsqlTypeFromProperty(property.Type, property.Length)
 
-		var def = []string{sourceConfig.Mapping.Mapping, sqlType, nullModifier, uniqModifier}
+		var def = []string{fmt.Sprintf("\"%s\"", sourceConfig.Mapping.Mapping), sqlType, nullModifier, uniqModifier}
 
 		return strings.Join(def, " ")
 	}

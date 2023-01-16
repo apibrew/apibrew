@@ -71,7 +71,7 @@ var dataSourceDhTest = &model.DataSource{
 var richResource1 = &model.Resource{
 	Name:      "rich-test-3993",
 	Workspace: "default",
-	Type:      2,
+	DataType:  2,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
 		Mapping:    "rich_test_3993",

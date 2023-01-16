@@ -6,6 +6,7 @@ import (
 )
 
 type ServiceError interface {
+	Code() model.ErrorCode
 	Error() string
 	ProtoError() *model.Error
 	WithMessage(msg string) ServiceError
@@ -18,6 +19,10 @@ type serviceError struct {
 	message     string
 	details     string
 	errorFields []*model.ErrorField
+}
+
+func (s serviceError) Code() model.ErrorCode {
+	return s.code
 }
 
 func (s serviceError) Error() string {

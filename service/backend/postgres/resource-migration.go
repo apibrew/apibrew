@@ -89,7 +89,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 			continue
 		}
 
-		alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ADD COLUMN %s", prepareResourceTableColumnDefinition(property)))
+		alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ADD COLUMN \"%s\"", prepareResourceTableColumnDefinition(property)))
 		changesCount++
 	}
 
@@ -101,7 +101,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 				continue
 			}
 
-			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("DROP COLUMN %s", colName))
+			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("DROP COLUMN \"%s\"", colName))
 			changesCount++
 		}
 	}
@@ -115,17 +115,17 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 		prevProperty := newPrevMap[property]
 
 		if prevProperty.Type != property.Type {
-			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s TYPE %s", colName, getPsqlTypeFromProperty(property.Type, property.Length)))
+			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN \"%s\" TYPE %s", colName, getPsqlTypeFromProperty(property.Type, property.Length)))
 			changesCount++
 		}
 
 		if prevProperty.Required && !property.Required {
-			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", colName))
+			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN \"%s\" DROP NOT NULL", colName))
 			changesCount++
 		}
 
 		if !prevProperty.Required && property.Required {
-			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", colName))
+			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN \"%s\" SET NOT NULL", colName))
 			changesCount++
 		}
 	}
@@ -137,6 +137,8 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	alterTableQuery += " " + strings.Join(alterTableQueryDefs, ",")
 
 	_, sqlError := runner.Exec(alterTableQuery)
+
+	log.Trace("SqlQuery: " + alterTableQuery)
 
 	if sqlError != nil {
 		return handleDbError(sqlError)

@@ -153,7 +153,7 @@ func (u *userService) List(ctx context.Context, query *model.BooleanExpression, 
 }
 
 func (d *userService) Init(data *model.InitData) {
-	d.resourceService.InitResource(system.UserResource)
+	d.resourceService.MigrateResource(system.UserResource)
 
 	if len(data.InitUsers) > 0 {
 		d.encodePasswords(data.InitUsers)

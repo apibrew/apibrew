@@ -142,10 +142,13 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 
 	resource, err := bck.PrepareResourceFromEntity(ctx, entity)
 
-	resource.SourceConfig.DataSource = id
-
 	if err != nil {
 		return nil, err
+	}
+
+	resource.SourceConfig = &model.ResourceSourceConfig{
+		DataSource: id,
+		Mapping:    entity,
 	}
 
 	return resource, nil
@@ -193,7 +196,7 @@ func (d *dataSourceService) InjectRecordService(service RecordService) {
 }
 
 func (d *dataSourceService) Init(data *model.InitData) {
-	d.resourceService.InitResource(system.DataSourceResource)
+	d.resourceService.MigrateResource(system.DataSourceResource)
 
 	if len(data.InitDataSources) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{

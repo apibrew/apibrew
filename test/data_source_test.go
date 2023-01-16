@@ -154,8 +154,11 @@ func TestUpdateDataSource(t *testing.T) {
 func TestUpdateDataSourceStatus(t *testing.T) {
 	ctx := prepareTextContext()
 
+	log.Info("Begin test")
 	withDataSource(ctx, t, container, dataSourceDhTest, func(createdDataSource1 *model.DataSource) {
+		log.Info("Step 1")
 		checkNewCreatedDatasourceStatus(createdDataSource1, container, t)
+		log.Info("Step 2")
 
 		createdDataSource1.Options = &model.DataSource_PostgresqlParams{
 			PostgresqlParams: &model.PostgresqlOptions{
@@ -167,13 +170,17 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 				DefaultSchema: "public",
 			},
 		}
+		log.Info("Step 3")
 
 		container.dataSourceService.Update(ctx, &stub.UpdateDataSourceRequest{
 			Token:       "test-token",
 			DataSources: []*model.DataSource{createdDataSource1},
 		})
+		log.Info("Step 4")
 
 		checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource1, container, t)
+
+		log.Info("Step 5")
 
 		createdDataSource1.Options = &model.DataSource_PostgresqlParams{
 			PostgresqlParams: &model.PostgresqlOptions{
@@ -192,8 +199,13 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 			DataSources: []*model.DataSource{createdDataSource1},
 		})
 
+		log.Info("Step 6")
+
 		checkNewCreatedDatasourceStatus(createdDataSource1, container, t)
+		log.Info("Step 7")
 	})
+
+	log.Info("End Test")
 }
 
 func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, container *SimpleAppGrpcContainer, t *testing.T) {

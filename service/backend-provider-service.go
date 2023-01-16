@@ -34,7 +34,7 @@ func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceI
 
 	bck.DestroyDataSource(ctx)
 
-	delete(b.backendMap, "dataSourceId")
+	delete(b.backendMap, dataSourceId)
 
 	return nil
 }
