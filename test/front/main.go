@@ -33,7 +33,7 @@ func prepareCategoryResource(service stub.ResourceServiceClient) {
 	personResource := &model.Resource{
 		Name:      "product",
 		Namespace: "default",
-		Type:      2,
+		DataType:  2,
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
 			Mapping:    "product",
@@ -91,7 +91,7 @@ func prepareCityResource(service stub.ResourceServiceClient) {
 	personResource := &model.Resource{
 		Name:      "city",
 		Namespace: "default",
-		Type:      2,
+		DataType:  2,
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
 			Mapping:    "city",
@@ -180,7 +180,7 @@ func prepareReferencedResource(service stub.ResourceServiceClient) {
 	cityResource := &model.Resource{
 		Name:      "rf-3-city",
 		Namespace: "default",
-		Type:      2,
+		DataType:  2,
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
 			Mapping:    "rf_3_city",
@@ -230,7 +230,7 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 	richResource := &model.Resource{
 		Name:      "rich-test-2",
 		Namespace: "default",
-		Type:      2,
+		DataType:  2,
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
 			Mapping:    "rich_test_1",
