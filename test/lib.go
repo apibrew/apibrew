@@ -229,13 +229,14 @@ func withResource(ctx context.Context, t testing.TB, resource *model.Resource, e
 
 }
 
-func withAutoLoadedResource(ctx context.Context, t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, mappingName string, exec func(resource *model.Resource)) {
+func withAutoLoadedResource(ctx context.Context, t testing.TB, container *SimpleAppGrpcContainer, dataSource *model.DataSource, catalog, entity string, exec func(resource *model.Resource)) {
 	withDataSource(ctx, t, container, dataSource, func(dataSource *model.DataSource) {
-		log.Print("begin PrepareResourceFromEntity", mappingName, dataSource.Id)
+		log.Print("begin PrepareResourceFromEntity", catalog, entity, dataSource.Id)
 		res, err := container.dataSourceService.PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
-			Token:  "test-token",
-			Id:     dataSource.Id,
-			Entity: mappingName,
+			Token:   "test-token",
+			Id:      dataSource.Id,
+			Catalog: catalog,
+			Entity:  entity,
 		})
 
 		if err != nil {
@@ -272,7 +273,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 			log.Info("resource deleted: " + res.Resource.Name)
 		}()
 
-		log.Print("finish PrepareResourceFromEntity", mappingName, dataSource.Id)
+		log.Print("finish PrepareResourceFromEntity", catalog, entity, dataSource.Id)
 
 		log.Print("begin create resource without migration", res.Resource.Namespace, res.Resource.Name)
 		createRes, err := container.resourceService.Create(ctx, &stub.CreateResourceRequest{

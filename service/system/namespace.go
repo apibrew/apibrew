@@ -8,7 +8,7 @@ var NamespaceResource = &model.Resource{
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Mapping:    "namespace",
+		Entity:     "namespace",
 	},
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{

@@ -62,7 +62,7 @@ func (d *dataSourceServiceServer) Update(ctx context.Context, request *stub.Upda
 }
 
 func (d *dataSourceServiceServer) PrepareResourceFromEntity(ctx context.Context, request *stub.PrepareResourceFromEntityRequest) (*stub.PrepareResourceFromEntityResponse, error) {
-	resources, err := d.service.PrepareResourceFromEntity(ctx, request.Id, request.Entity)
+	resources, err := d.service.PrepareResourceFromEntity(ctx, request.Id, request.Catalog, request.Entity)
 
 	return &stub.PrepareResourceFromEntityResponse{
 		Resource: resources,

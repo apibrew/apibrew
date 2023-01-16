@@ -10,7 +10,7 @@ import (
 func BenchmarkListRecordBench1(t *testing.B) {
 	ctx := prepareTextContext()
 
-	withAutoLoadedResource(ctx, t, container, dataSource1, "public.organization", func(resource *model.Resource) {
+	withAutoLoadedResource(ctx, t, container, dataSource1, "public", "organization", func(resource *model.Resource) {
 		t.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				val1, err := structpb.NewValue("month")

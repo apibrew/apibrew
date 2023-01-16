@@ -22,7 +22,8 @@ service DataSourceService {
 message PrepareResourceFromEntityRequest {
   string token = 1;
   string id = 2;
-  string entity = 3;
+  string catalog = 3;
+  string entity = 4;
 }
 
 message PrepareResourceFromEntityResponse {

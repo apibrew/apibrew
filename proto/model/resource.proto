@@ -81,7 +81,7 @@ message ResourceIndex {
 message ResourceSourceConfig {
   string dataSource = 1;
   string catalog = 2;
-  string mapping = 3;
+  string entity = 3;
 }
 
 message ResourceFlags {

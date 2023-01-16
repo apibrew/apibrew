@@ -25,7 +25,7 @@ type QueryRunner interface {
 }
 
 func resourceCreateTable(runner QueryRunner, resource *model.Resource) errors.ServiceError {
-	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig.Mapping, false))
+	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig, false))
 
 	builder.IfNotExists()
 
@@ -107,7 +107,7 @@ func prepareResourceTableColumnDefinition(property *model.ResourceProperty) stri
 }
 
 func resourceCreateHistoryTable(runner QueryRunner, resource *model.Resource) errors.ServiceError {
-	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig.Mapping, true))
+	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig, true))
 
 	builder.IfNotExists()
 

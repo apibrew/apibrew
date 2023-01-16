@@ -24,7 +24,8 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	properties["name"] = resource.Name
 	properties["namespace"] = resource.Namespace
 	properties["dataSource"] = resource.SourceConfig.DataSource
-	properties["mapping"] = resource.SourceConfig.Mapping
+	properties["entity"] = resource.SourceConfig.Entity
+	properties["catalog"] = resource.SourceConfig.Catalog
 	properties["type"] = int32(resource.DataType.Number())
 	properties["readOnlyRecords"] = resource.Flags.ReadOnlyRecords
 	properties["uniqueRecord"] = resource.Flags.UniqueRecord
@@ -64,7 +65,8 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		Namespace: record.Properties.AsMap()["namespace"].(string),
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: record.Properties.AsMap()["dataSource"].(string),
-			Mapping:    record.Properties.AsMap()["mapping"].(string),
+			Entity:     record.Properties.AsMap()["entity"].(string),
+			Catalog:    record.Properties.AsMap()["catalog"].(string),
 		},
 		Flags: &model.ResourceFlags{
 			ReadOnlyRecords:    record.Properties.AsMap()["readOnlyRecords"].(bool),

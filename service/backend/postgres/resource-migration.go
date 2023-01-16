@@ -14,16 +14,13 @@ import (
 func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *model.Resource, forceMigration bool, history bool) errors.ServiceError {
 	var err errors.ServiceError
 	var existingResource *model.Resource
-	entityName := resource.SourceConfig.Mapping
-	if !strings.Contains(entityName, ".") {
-		entityName = "public." + entityName
-	}
 
+	entityName := resource.SourceConfig.Entity
 	if history {
 		entityName = entityName + "_h"
 	}
 
-	if existingResource, err = resourcePrepareResourceFromEntity(ctx, runner, entityName); err != nil {
+	if existingResource, err = resourcePrepareResourceFromEntity(ctx, runner, resource.SourceConfig.Catalog, entityName); err != nil {
 		log.Error("Unable to load resource details: ", err)
 		return err
 	}
@@ -79,7 +76,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	}
 
 	// create new properties
-	var alterTableQuery = fmt.Sprintf(`ALTER TABLE %s`, getTableName(resource.GetSourceConfig().GetMapping(), history))
+	var alterTableQuery = fmt.Sprintf(`ALTER TABLE %s`, getTableName(resource.GetSourceConfig(), history))
 
 	var alterTableQueryDefs []string
 
@@ -146,10 +143,12 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	return nil
 }
 
-func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, entity string) (resource *model.Resource, err errors.ServiceError) {
-	matchEntityName := func(ref string) string { return ref + `.table_schema || '.' || ` + ref + `.table_name = $1 ` }
+func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {
+	if catalog == "" {
+		catalog = "public"
+	}
 	// check if entity exists
-	row := runner.QueryRowContext(ctx, `select count(*) from information_schema.tables where table_type = 'BASE TABLE' and `+matchEntityName("tables"), entity)
+	row := runner.QueryRowContext(ctx, `select count(*) from information_schema.tables where table_type = 'BASE TABLE' and tables.table_schema = $1 and tables.table_name = $2`, catalog, entity)
 
 	if row.Err() != nil {
 		return nil, handleDbError(row.Err())
@@ -177,6 +176,10 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
 	resource.Namespace = "default"
+	resource.SourceConfig = &model.ResourceSourceConfig{
+		Catalog: catalog,
+		Entity:  entity,
+	}
 
 	// properties
 
@@ -197,7 +200,7 @@ from information_schema.columns
                              JOIN pg_namespace n ON n.oid = c.connamespace
                     WHERE contype = 'p') column_key
                    on column_key.conname = key_column_usage.constraint_name
-where `+matchEntityName("columns")+` order by columns.ordinal_position`, entity)
+where columns.table_schema = $1 and columns.table_name = $2 order by columns.ordinal_position`, catalog, entity)
 	err = handleDbError(sqlErr)
 
 	if err != nil {

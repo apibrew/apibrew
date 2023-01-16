@@ -8,7 +8,7 @@ var DataSourceResource = &model.Resource{
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Mapping:    "data_source",
+		Entity:     "data_source",
 	},
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{

@@ -8,7 +8,7 @@ var ResourceResource = &model.Resource{
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Mapping:    "resource",
+		Entity:     "resource",
 	},
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
@@ -50,10 +50,21 @@ var ResourceResource = &model.Resource{
 			Required: true,
 		},
 		{
-			Name: "mapping",
+			Name: "entity",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
 					Mapping: "source_mapping",
+				},
+			},
+			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Length:   256,
+			Required: true,
+		},
+		{
+			Name: "catalog",
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "source_catalog",
 				},
 			},
 			Type:     model.ResourcePropertyType_TYPE_STRING,

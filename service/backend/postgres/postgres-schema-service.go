@@ -18,15 +18,11 @@ func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context) (resu
 	return
 }
 
-func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, entity string) (resource *model.Resource, err errors.ServiceError) {
+func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, catalog string, entity string) (resource *model.Resource, err errors.ServiceError) {
 	err = p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
-		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, entity); err != nil {
+		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, catalog, entity); err != nil {
 			log.Errorf("[PrepareResourceFromEntity] Unable to load resource details for %s Err: %s", entity, err)
 			return err
-		}
-
-		resource.SourceConfig = &model.ResourceSourceConfig{
-			Mapping: entity,
 		}
 
 		return nil
@@ -66,6 +62,20 @@ func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, re
 
 func (p *postgresResourceServiceBackend) DowngradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
-		return resourceDropTable(tx, resource.SourceConfig.Mapping)
+		err := resourceDropTable(tx, getTableName(resource.SourceConfig, false))
+
+		if err != nil {
+			return err
+		}
+
+		if resource.Flags.KeepHistory {
+			err = resourceDropTable(tx, getTableName(resource.SourceConfig, true))
+
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
 	})
 }

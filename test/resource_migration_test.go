@@ -12,8 +12,8 @@ import (
 func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 	ctx := prepareTextContext()
 
-	withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public.organization", func(resource1 *model.Resource) {
-		withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public.organization_copy", func(resource2 *model.Resource) {
+	withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
+		withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public", "organization_copy", func(resource2 *model.Resource) {
 			list, err := container.recordService.List(ctx, &stub.ListRecordRequest{
 				Token:    "test-token",
 				Resource: resource1.Name,
@@ -56,11 +56,12 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 func TestResourceMigration_CrunchbaseMigrationWithResourceCreation(t *testing.T) {
 	ctx := prepareTextContext()
 
-	withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public.organization", func(resource1 *model.Resource) {
+	withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
 		resource2 := proto.Clone(resource1).(*model.Resource)
 
 		resource2.Name = "organization_copy_new"
-		resource2.SourceConfig.Mapping = "public.organization_copy_new"
+		resource2.SourceConfig.Catalog = "public"
+		resource2.SourceConfig.Entity = "organization_copy_new"
 
 		defer container.resourceService.Delete(ctx, &stub.DeleteResourceRequest{
 			Token:          "test-token",

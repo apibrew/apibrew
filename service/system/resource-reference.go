@@ -8,7 +8,7 @@ var ResourceReferenceResource = &model.Resource{
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Mapping:    "resource_reference",
+		Entity:     "resource_reference",
 	},
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{

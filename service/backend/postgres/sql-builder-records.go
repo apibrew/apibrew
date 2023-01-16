@@ -21,7 +21,7 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 		resource.Flags = &model.ResourceFlags{}
 	}
 
-	insertBuilder := sqlbuilder.InsertInto(getTableName(resource.SourceConfig.Mapping, history))
+	insertBuilder := sqlbuilder.InsertInto(getTableName(resource.SourceConfig, history))
 	insertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	cols := prepareResourceRecordCols(resource)
@@ -101,12 +101,22 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 	return true, handleDbError(err)
 }
 
-func getTableName(mapping string, history bool) string {
-	if history {
-		return fmt.Sprintf("\"%s_h\"", mapping)
-	} else {
-		return fmt.Sprintf("\"%s\"", mapping)
+func getTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
+	def := ""
+
+	if sourceConfig.Catalog != "" {
+		def = fmt.Sprintf("\"%s\".", sourceConfig.Catalog)
 	}
+
+	def = fmt.Sprintf("\"%s\"", sourceConfig.Entity)
+
+	if history {
+		def = fmt.Sprintf("\"%s_h\"", sourceConfig.Entity)
+	} else {
+		def = fmt.Sprintf("\"%s\"", sourceConfig.Entity)
+	}
+
+	return def
 }
 
 func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) errors.ServiceError {
@@ -118,7 +128,7 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 		record.AuditData = &model.AuditData{}
 	}
 
-	updateBuilder := sqlbuilder.Update(getTableName(resource.SourceConfig.Mapping, false))
+	updateBuilder := sqlbuilder.Update(getTableName(resource.SourceConfig, false))
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	if checkVersion {
 		updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))
@@ -179,7 +189,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	// find count
 	countBuilder := sqlbuilder.Select("count(*)")
 	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	countBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory) + " as t")
+	countBuilder.From(getTableName(params.Resource.SourceConfig, params.UseHistory) + " as t")
 	if params.Query != nil {
 		var where = ""
 		where, err = applyCondition(params.Resource, params.Query, countBuilder)
@@ -216,7 +226,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 
 	selectBuilder := sqlbuilder.Select(append(ownCols, joinCols...)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	selectBuilder.From(getTableName(params.Resource.SourceConfig.Mapping, params.UseHistory) + " as t")
+	selectBuilder.From(getTableName(params.Resource.SourceConfig, params.UseHistory) + " as t")
 
 	if params.ResolveReferences {
 		err = recordPrepareJoins(runner, selectBuilder, params.Resource)
@@ -598,7 +608,7 @@ func checkHasOwnId(resource *model.Resource) bool {
 func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
 	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(resource)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	selectBuilder.From(resource.SourceConfig.Mapping)
+	selectBuilder.From(getTableName(resource.SourceConfig, false))
 	selectBuilder.Where(selectBuilder.Equal("id", id))
 
 	sqlQuery, _ := selectBuilder.Build()
@@ -623,7 +633,7 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 }
 
 func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
-	deleteBuilder := sqlbuilder.DeleteFrom(resource.SourceConfig.Mapping + " as t")
+	deleteBuilder := sqlbuilder.DeleteFrom(getTableName(resource.SourceConfig, false) + " as t")
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	if checkHasOwnId(resource) {

@@ -21,7 +21,7 @@ type DataSourceService interface {
 	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
 	Create(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)
 	Update(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)
-	PrepareResourceFromEntity(ctx context.Context, id string, entity string) (*model.Resource, errors.ServiceError)
+	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, catalog, entity string) (*model.Resource, errors.ServiceError)
 	Get(ctx context.Context, id string) (*model.DataSource, errors.ServiceError)
 	Delete(ctx context.Context, ids []string) errors.ServiceError
 	InjectBackendProviderService(service BackendProviderService)
@@ -129,7 +129,7 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 	return mapping.MapFromRecord(result, mapping.DataSourceFromRecord), nil
 }
 
-func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id string, entity string) (*model.Resource, errors.ServiceError) {
+func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id string, catalog, entity string) (*model.Resource, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("id", id).WithField("entity", entity).Debug("Begin data-source PrepareResourceFromEntity")
 	defer logger.Debug("End data-source PrepareResourceFromEntity")
@@ -140,7 +140,7 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 		return nil, err
 	}
 
-	resource, err := bck.PrepareResourceFromEntity(ctx, entity)
+	resource, err := bck.PrepareResourceFromEntity(ctx, catalog, entity)
 
 	if err != nil {
 		return nil, err
@@ -148,7 +148,8 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 
 	resource.SourceConfig = &model.ResourceSourceConfig{
 		DataSource: id,
-		Mapping:    entity,
+		Catalog:    catalog,
+		Entity:     entity,
 	}
 
 	return resource, nil
