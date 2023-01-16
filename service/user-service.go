@@ -45,7 +45,7 @@ func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model
 	systemCtx := security.WithSystemContext(ctx)
 
 	result, _, err := u.recordService.Create(systemCtx, params.RecordCreateParams{
-		Workspace: system.UserResource.Workspace,
+		Namespace: system.UserResource.Namespace,
 		Resource:  system.UserResource.Name,
 		Records:   records,
 	})
@@ -69,7 +69,7 @@ func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model
 	for _, user := range users {
 		if user.Password == "" {
 			record, err := u.recordService.Get(systemCtx, params.RecordGetParams{
-				Workspace: system.UserResource.Workspace,
+				Namespace: system.UserResource.Namespace,
 				Resource:  system.UserResource.Name,
 				Id:        user.Id,
 			})
@@ -87,7 +87,7 @@ func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model
 	records := mapping.MapToRecord(users, mapping.UserToRecord)
 
 	result, err := u.recordService.Update(systemCtx, params.RecordUpdateParams{
-		Workspace: system.UserResource.Workspace,
+		Namespace: system.UserResource.Namespace,
 		Records:   records,
 	})
 
@@ -106,7 +106,7 @@ func (u *userService) Delete(ctx context.Context, ids []string) errors.ServiceEr
 	systemCtx := security.WithSystemContext(ctx)
 
 	return u.recordService.Delete(systemCtx, params.RecordDeleteParams{
-		Workspace: system.UserResource.Workspace,
+		Namespace: system.UserResource.Namespace,
 		Resource:  system.UserResource.Name,
 		Ids:       ids,
 	})
@@ -115,7 +115,7 @@ func (u *userService) Delete(ctx context.Context, ids []string) errors.ServiceEr
 func (u *userService) Get(ctx context.Context, id string) (*model.User, errors.ServiceError) {
 	systemCtx := security.WithSystemContext(ctx)
 	record, err := u.recordService.Get(systemCtx, params.RecordGetParams{
-		Workspace: system.UserResource.Workspace,
+		Namespace: system.UserResource.Namespace,
 		Resource:  system.UserResource.Name,
 		Id:        id,
 	})
@@ -135,7 +135,7 @@ func (u *userService) List(ctx context.Context, query *model.BooleanExpression, 
 	systemCtx := security.WithSystemContext(ctx)
 	result, _, err := u.recordService.List(systemCtx, params.RecordListParams{
 		Query:     query,
-		Workspace: system.UserResource.Workspace,
+		Namespace: system.UserResource.Namespace,
 		Resource:  system.UserResource.Name,
 		Limit:     limit,
 		Offset:    offset,
@@ -158,7 +158,7 @@ func (d *userService) Init(data *model.InitData) {
 	if len(data.InitUsers) > 0 {
 		d.encodePasswords(data.InitUsers)
 		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
-			Workspace:      system.UserResource.Workspace,
+			Namespace:      system.UserResource.Namespace,
 			Resource:       system.UserResource.Name,
 			Records:        mapping.MapToRecord(data.InitUsers, mapping.UserToRecord),
 			IgnoreIfExists: true,

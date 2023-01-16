@@ -78,7 +78,7 @@ var applyCmd = &cobra.Command{
 					if resource.Id == "" {
 						resp, err := resourceServiceClient.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
 							Token:     authToken,
-							Workspace: resource.Workspace,
+							Namespace: resource.Namespace,
 							Name:      resource.Name,
 						})
 

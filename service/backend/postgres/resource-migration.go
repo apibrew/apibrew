@@ -89,7 +89,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 			continue
 		}
 
-		alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ADD COLUMN \"%s\"", prepareResourceTableColumnDefinition(property)))
+		alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ADD COLUMN %s", prepareResourceTableColumnDefinition(property)))
 		changesCount++
 	}
 
@@ -176,7 +176,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	resource.AuditData = new(model.AuditData)
 	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
-	resource.Workspace = "default"
+	resource.Namespace = "default"
 
 	// properties
 

@@ -198,7 +198,7 @@ func withResource(ctx context.Context, t testing.TB, resource *model.Resource, e
 		if res.Error.Code == model.ErrorCode_ALREADY_EXISTS {
 			res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 				Token:     "test-token",
-				Workspace: resource.Workspace,
+				Namespace: resource.Namespace,
 				Name:      resource.Name,
 			})
 			resource = res2.Resource
@@ -251,7 +251,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 		var resourceId string
 
 		defer func() {
-			log.Print("begin delete resource without migration", res.Resource.Workspace, res.Resource.Name)
+			log.Print("begin delete resource without migration", res.Resource.Namespace, res.Resource.Name)
 			deleteRes, err := container.resourceService.Delete(ctx, &stub.DeleteResourceRequest{
 				Token:          "test-token",
 				Ids:            []string{resourceId},
@@ -274,7 +274,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 
 		log.Print("finish PrepareResourceFromEntity", mappingName, dataSource.Id)
 
-		log.Print("begin create resource without migration", res.Resource.Workspace, res.Resource.Name)
+		log.Print("begin create resource without migration", res.Resource.Namespace, res.Resource.Name)
 		createRes, err := container.resourceService.Create(ctx, &stub.CreateResourceRequest{
 			Token:          "test-token",
 			Resources:      []*model.Resource{res.Resource},
@@ -291,7 +291,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 			if createRes.Error.Code == model.ErrorCode_ALREADY_EXISTS {
 				res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 					Token:     "test-token",
-					Workspace: res.Resource.Workspace,
+					Namespace: res.Resource.Namespace,
 					Name:      res.Resource.Name,
 				})
 				resourceId = res2.Resource.Id
@@ -304,10 +304,10 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 			resourceId = createRes.Resources[0].Id
 		}
 
-		log.Print("finish create resource without migration", res.Resource.Workspace, res.Resource.Name)
+		log.Print("finish create resource without migration", res.Resource.Namespace, res.Resource.Name)
 
-		log.Print("Calling exec: ", res.Resource.Workspace, " ", res.Resource.Name, " ", res.Resource.SourceConfig.DataSource)
+		log.Print("Calling exec: ", res.Resource.Namespace, " ", res.Resource.Name, " ", res.Resource.SourceConfig.DataSource)
 		exec(res.Resource)
-		log.Print("Finished exec: ", res.Resource.Workspace, " ", res.Resource.Name, " ", res.Resource.SourceConfig.DataSource)
+		log.Print("Finished exec: ", res.Resource.Namespace, " ", res.Resource.Name, " ", res.Resource.SourceConfig.DataSource)
 	})
 }

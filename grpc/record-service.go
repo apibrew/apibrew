@@ -14,7 +14,7 @@ type recordServiceServer struct {
 
 func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
 	records, total, err := r.service.List(ctx, params.RecordListParams{
-		Workspace:         request.Workspace,
+		Namespace:         request.Namespace,
 		Resource:          request.Resource,
 		Query:             request.Query,
 		Limit:             request.Limit,
@@ -32,7 +32,7 @@ func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecord
 
 func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	records, inserted, err := r.service.Create(ctx, params.RecordCreateParams{
-		Workspace:      request.Workspace,
+		Namespace:      request.Namespace,
 		Records:        request.Records,
 		IgnoreIfExists: request.IgnoreIfExists,
 	})
@@ -46,7 +46,7 @@ func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRe
 
 func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
 	records, err := r.service.Update(ctx, params.RecordUpdateParams{
-		Workspace:    request.Workspace,
+		Namespace:    request.Namespace,
 		Records:      request.Records,
 		CheckVersion: request.CheckVersion,
 	})
@@ -59,7 +59,7 @@ func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRe
 
 func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
 	record, err := r.service.Get(ctx, params.RecordGetParams{
-		Workspace: request.Workspace,
+		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Id:        request.Id,
 	})
@@ -72,7 +72,7 @@ func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRe
 
 func (r *recordServiceServer) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
 	err := r.service.Delete(ctx, params.RecordDeleteParams{
-		Workspace: request.Workspace,
+		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Ids:       request.Ids,
 	})

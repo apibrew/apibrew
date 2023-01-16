@@ -279,7 +279,7 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 func recordPrepareJoinScan(runner QueryRunner, resource *model.Resource, record *model.Record, rowScanFields *[]any) errors.ServiceError {
 	//for _, reference := range resource.References {
 	//	var referencedResource = new(model.Resource)
-	//	err := resourceLoadDetailsByName(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
+	//	err := resourceLoadDetailsByName(runner, referencedResource, resource.Namespace, reference.ReferencedResource)
 	//	if err != nil {
 	//		panic(err)
 	//	}
@@ -300,7 +300,7 @@ func recordPrepareJoinCols(runner QueryRunner, resource *model.Resource) []strin
 	var result []string
 	//for _, reference := range resource.References {
 	//	var referencedResource = new(model.Resource)
-	//	err := resourceLoadDetailsByName(runner, referencedResource, resource.Workspace, reference.ReferencedResource)
+	//	err := resourceLoadDetailsByName(runner, referencedResource, resource.Namespace, reference.ReferencedResource)
 	//	if err != nil {
 	//		panic(err)
 	//	}

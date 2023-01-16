@@ -104,7 +104,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 
 	result, total, serviceErr := r.recordService.List(request.Context(), params.RecordListParams{
 		Query:      query,
-		Workspace:  "default",
+		Namespace:  "default",
 		Resource:   resourceName,
 		Limit:      uint32(limit),
 		Offset:     uint64(offset),
@@ -143,7 +143,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	}
 
 	res, inserted, serviceErr := r.recordService.Create(request.Context(), params.RecordCreateParams{
-		Workspace:      "default",
+		Namespace:      "default",
 		Resource:       resourceName,
 		Records:        []*model.Record{record1},
 		IgnoreIfExists: false,
@@ -165,7 +165,7 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 	id := vars["id"]
 
 	record, serviceErr := r.recordService.Get(request.Context(), params.RecordGetParams{
-		Workspace: "default",
+		Namespace: "default",
 		Resource:  resourceName,
 		Id:        id,
 	})
@@ -197,7 +197,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 	record.Id = id
 
 	result, serviceErr := r.recordService.Update(request.Context(), params.RecordUpdateParams{
-		Workspace:    "",
+		Namespace:    "",
 		Records:      []*model.Record{record},
 		CheckVersion: false,
 	})
@@ -220,7 +220,7 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 	id := vars["id"]
 
 	serviceErr := r.recordService.Delete(request.Context(), params.RecordDeleteParams{
-		Workspace: "default",
+		Namespace: "default",
 		Resource:  resourceName,
 		Ids:       []string{id},
 	})
@@ -249,7 +249,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 
 	result, total, serviceErr := r.recordService.List(request.Context(), params.RecordListParams{
 		Query:      listRecordRequest.Query,
-		Workspace:  "default",
+		Namespace:  "default",
 		Resource:   listRecordRequest.Resource,
 		Limit:      listRecordRequest.Limit,
 		Offset:     listRecordRequest.Offset,

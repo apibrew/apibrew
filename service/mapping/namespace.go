@@ -6,13 +6,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func WorkspaceToRecord(workspace *model.Workspace) *model.Record {
+func NamespaceToRecord(namespace *model.Namespace) *model.Record {
 	properties := make(map[string]interface{})
 
-	properties["name"] = workspace.Name
-	properties["description"] = workspace.Description
-	if workspace.Details != nil {
-		properties["details"] = workspace.Details.AsMap()
+	properties["name"] = namespace.Name
+	properties["description"] = namespace.Description
+	if namespace.Details != nil {
+		properties["details"] = namespace.Details.AsMap()
 	}
 
 	structProperties, err := structpb.NewStruct(properties)
@@ -22,21 +22,21 @@ func WorkspaceToRecord(workspace *model.Workspace) *model.Record {
 	}
 
 	return &model.Record{
-		Id:         workspace.Id,
-		Resource:   system.WorkspaceResource.Name,
-		DataType:   workspace.Type,
+		Id:         namespace.Id,
+		Resource:   system.NamespaceResource.Name,
+		DataType:   namespace.Type,
 		Properties: structProperties,
-		AuditData:  workspace.AuditData,
-		Version:    workspace.Version,
+		AuditData:  namespace.AuditData,
+		Version:    namespace.Version,
 	}
 }
 
-func WorkspaceFromRecord(record *model.Record) *model.Workspace {
+func NamespaceFromRecord(record *model.Record) *model.Namespace {
 	if record == nil {
 		return nil
 	}
 
-	result := &model.Workspace{
+	result := &model.Namespace{
 		Id:        record.Id,
 		Type:      record.DataType,
 		AuditData: record.AuditData,

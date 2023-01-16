@@ -156,7 +156,7 @@ func (s *authenticationService) FindUser(ctx context.Context, username string) (
 
 	logger.Debug("FindUser with username: ", username)
 
-	res, err := s.recordService.FindBy(ctx, system.UserResource.Workspace, system.UserResource.Name, "username", username)
+	res, err := s.recordService.FindBy(ctx, system.UserResource.Namespace, system.UserResource.Name, "username", username)
 
 	if err != nil {
 		return nil, err

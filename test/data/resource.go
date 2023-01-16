@@ -7,7 +7,7 @@ import (
 func PreparePersonResource() *model.Resource {
 	personResource := &model.Resource{
 		Name:      "person",
-		Workspace: "default",
+		Namespace: "default",
 		Type:      2,
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",

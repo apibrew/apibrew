@@ -41,12 +41,12 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 		w.Write(data)
 	})
 
-	r.HandleFunc("/docs/resources/{workspace}/{resourceName}.json", func(w http.ResponseWriter, req *http.Request) {
+	r.HandleFunc("/docs/resources/{namespace}/{resourceName}.json", func(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
-		workspace := vars["workspace"]
+		namespace := vars["namespace"]
 		resourceName := vars["resourceName"]
 
-		resource, serviceErr := s.resourceService.GetResourceByName(req.Context(), workspace, resourceName)
+		resource, serviceErr := s.resourceService.GetResourceByName(req.Context(), namespace, resourceName)
 
 		if serviceErr != nil {
 			handleServiceError(w, serviceErr)
@@ -98,7 +98,7 @@ func (s *swaggerApi) prepareDoc(ctx context.Context) (*openapi3.T, errors.Servic
 }
 
 func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, resource *model.Resource) {
-	jsonSchemaRef := "/docs/resources/" + resource.Workspace + "/" + resource.Name + ".json"
+	jsonSchemaRef := "/docs/resources/" + resource.Namespace + "/" + resource.Name + ".json"
 
 	doc.Paths["/"+s.getResourceFQN(resource)] = &openapi3.PathItem{
 		Summary:     resource.Name,
@@ -152,10 +152,10 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 }
 
 func (s *swaggerApi) getResourceFQN(resource *model.Resource) string {
-	if resource.Workspace == "default" {
+	if resource.Namespace == "default" {
 		return resource.Name
 	} else {
-		return resource.Workspace + "-" + resource.Name
+		return resource.Namespace + "-" + resource.Name
 	}
 }
 

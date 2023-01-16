@@ -3,7 +3,7 @@ package params
 import "data-handler/model"
 
 type WatchParams struct {
-	Workspace  string
+	Namespace  string
 	Resource   string
 	Query      *model.BooleanExpression
 	BufferSize int

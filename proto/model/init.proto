@@ -8,7 +8,7 @@ import 'model/data-source.proto';
 import 'model/user.proto';
 import 'model/resource.proto';
 import 'model/record.proto';
-import 'model/workspace.proto';
+import 'model/namespace.proto';
 
 message AppConfig {
   string grpcAddr = 1;
@@ -22,9 +22,9 @@ message AppConfig {
 message InitData {
   AppConfig config = 1;
   DataSource systemDataSource = 2;
-  Workspace systemWorkspace = 3;
+  Namespace systemNamespace = 3;
   repeated DataSource initDataSources = 4;
-  repeated Workspace initWorkspaces = 5;
+  repeated Namespace initNamespaces = 5;
   repeated User initUsers = 6;
   repeated Resource initResources = 7;
   repeated Record initRecords = 8;

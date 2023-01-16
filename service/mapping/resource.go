@@ -22,7 +22,7 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	properties := make(map[string]interface{})
 
 	properties["name"] = resource.Name
-	properties["workspace"] = resource.Workspace
+	properties["namespace"] = resource.Namespace
 	properties["dataSource"] = resource.SourceConfig.DataSource
 	properties["mapping"] = resource.SourceConfig.Mapping
 	properties["type"] = int32(resource.DataType.Number())
@@ -61,7 +61,7 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		AuditData: record.AuditData,
 		Version:   record.Version,
 		Name:      record.Properties.AsMap()["name"].(string),
-		Workspace: record.Properties.AsMap()["workspace"].(string),
+		Namespace: record.Properties.AsMap()["namespace"].(string),
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: record.Properties.AsMap()["dataSource"].(string),
 			Mapping:    record.Properties.AsMap()["mapping"].(string),

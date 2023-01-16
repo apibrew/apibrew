@@ -12,7 +12,7 @@ import (
 )
 
 func (r *recordService) List(ctx context.Context, params params.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
-	resource, err := r.resourceService.GetResourceByName(ctx, params.Workspace, params.Resource)
+	resource, err := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if err != nil {
 		return nil, 0, err
@@ -70,7 +70,7 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
-		resource, err = r.resourceService.GetResourceByName(ctx, params.Workspace, resourceName)
+		resource, err = r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName)
 
 		if err != nil {
 			return nil, nil, err
@@ -135,7 +135,7 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
-		if resource, err = r.resourceService.GetResourceByName(ctx, params.Workspace, resourceName); err != nil {
+		if resource, err = r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName); err != nil {
 			return nil, err
 		}
 
@@ -189,8 +189,8 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 	return result, nil
 }
 
-func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, id string) (*model.Record, errors.ServiceError) {
-	resource, err := r.resourceService.GetResourceByName(ctx, workspace, resourceName)
+func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError) {
+	resource, err := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
 
 	if err != nil {
 		return nil, err
@@ -227,13 +227,13 @@ func (r *recordService) GetRecord(ctx context.Context, workspace, resourceName, 
 	return res, err
 }
 
-func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError) {
+func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Debug("Begin record-service FindBy")
 	defer logger.Debug("Finish record-service FindBy")
 
-	resource, err := r.resourceService.GetResourceByName(ctx, workspace, resourceName)
+	resource, err := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
 
 	if err != nil {
 		return nil, err
@@ -253,7 +253,7 @@ func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, pro
 
 	res, total, err := r.List(ctx, params.RecordListParams{
 		Query:             query,
-		Workspace:         workspace,
+		Namespace:         namespace,
 		Resource:          resourceName,
 		Limit:             2,
 		Offset:            0,
@@ -273,11 +273,11 @@ func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, pro
 }
 
 func (r *recordService) Get(ctx context.Context, params params.RecordGetParams) (*model.Record, errors.ServiceError) {
-	return r.GetRecord(ctx, params.Workspace, params.Resource, params.Id)
+	return r.GetRecord(ctx, params.Namespace, params.Resource, params.Id)
 }
 
 func (r *recordService) Delete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError {
-	resource, err := r.resourceService.GetResourceByName(ctx, params.Workspace, params.Resource)
+	resource, err := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if err != nil {
 		return err

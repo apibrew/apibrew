@@ -85,7 +85,7 @@ func TestResourceMigration_CrunchbaseMigrationWithResourceCreation(t *testing.T)
 			if createRes.Error.Code == model.ErrorCode_ALREADY_EXISTS {
 				res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 					Token:     "test-token",
-					Workspace: resource2.Workspace,
+					Namespace: resource2.Namespace,
 					Name:      resource2.Name,
 				})
 				resource2.Id = res2.Resource.Id

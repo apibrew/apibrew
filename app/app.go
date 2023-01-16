@@ -21,7 +21,7 @@ type App struct {
 	resourceService        service.ResourceService
 	recordService          service.RecordService
 	backendProviderService service.BackendProviderService
-	workspaceService       service.WorkspaceService
+	namespaceService       service.NamespaceService
 	userService            service.UserService
 	apiServer              api.Server
 	grpcLis                net.Listener
@@ -61,7 +61,7 @@ func (app *App) Init() {
 	app.backendProviderService = service.NewBackendProviderService()
 	app.recordService = service.NewRecordService()
 	app.genericHandler = handler.NewGenericHandler()
-	app.workspaceService = service.NewWorkspaceService()
+	app.namespaceService = service.NewNamespaceService()
 	app.userService = service.NewUserService()
 	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService)
 	app.watchService = service.NewWatchService(app.genericHandler)
@@ -71,7 +71,7 @@ func (app *App) Init() {
 		RecordService:         app.recordService,
 		AuthenticationService: app.authenticationService,
 		DataSourceService:     app.dataSourceService,
-		WorkspaceService:      app.workspaceService,
+		NamespaceService:      app.namespaceService,
 		UserService:           app.userService,
 		WatchService:          app.watchService,
 	})
@@ -81,7 +81,7 @@ func (app *App) Init() {
 		RecordService:         app.recordService,
 		AuthenticationService: app.authenticationService,
 		DataSourceService:     app.dataSourceService,
-		WorkspaceService:      app.workspaceService,
+		NamespaceService:      app.namespaceService,
 		UserService:           app.userService,
 		WatchService:          app.watchService,
 	}, app.initData)
@@ -120,7 +120,7 @@ func (app *App) initServices() {
 	app.backendProviderService.Init(app.initData)
 	app.dataSourceService.Init(app.initData)
 	app.resourceService.Init(app.initData)
-	app.workspaceService.Init(app.initData)
+	app.namespaceService.Init(app.initData)
 	app.recordService.Init(app.initData)
 	app.userService.Init(app.initData)
 	app.authenticationService.Init(app.initData)
@@ -137,8 +137,8 @@ func (app *App) InjectServices() {
 	app.userService.InjectRecordService(app.recordService)
 	app.userService.InjectResourceService(app.resourceService)
 
-	app.workspaceService.InjectRecordService(app.recordService)
-	app.workspaceService.InjectResourceService(app.resourceService)
+	app.namespaceService.InjectRecordService(app.recordService)
+	app.namespaceService.InjectResourceService(app.resourceService)
 
 	app.recordService.InjectBackendProviderService(app.backendProviderService)
 	app.recordService.InjectResourceService(app.resourceService)

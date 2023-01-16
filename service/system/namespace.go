@@ -2,13 +2,13 @@ package system
 
 import "data-handler/model"
 
-var WorkspaceResource = &model.Resource{
-	Name:      "workspace",
-	Workspace: "system",
+var NamespaceResource = &model.Resource{
+	Name:      "namespace",
+	Namespace: "system",
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Mapping:    "workspace",
+		Mapping:    "namespace",
 	},
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{

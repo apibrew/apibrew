@@ -13,8 +13,8 @@ import (
 
 type RecordService interface {
 	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
-	GetRecord(ctx context.Context, workspace, resourceName, id string) (*model.Record, errors.ServiceError)
-	FindBy(ctx context.Context, workspace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
+	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
+	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
 
 	Init(data *model.InitData)
 	InjectBackendProviderService(backendProviderService BackendProviderService)

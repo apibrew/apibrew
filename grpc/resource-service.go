@@ -79,7 +79,7 @@ func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceR
 }
 
 func (r resourceGrpcService) GetByName(ctx context.Context, request *stub.GetResourceByNameRequest) (*stub.GetResourceByNameResponse, error) {
-	resource, err := r.resourceService.GetResourceByName(ctx, request.Workspace, request.Name)
+	resource, err := r.resourceService.GetResourceByName(ctx, request.Namespace, request.Name)
 
 	return &stub.GetResourceByNameResponse{
 		Resource: resource,

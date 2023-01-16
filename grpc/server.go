@@ -28,7 +28,7 @@ type grpcServer struct {
 	recordService         service.RecordService
 	authenticationService service.AuthenticationService
 	dataSourceService     service.DataSourceService
-	workspaceService      service.WorkspaceService
+	namespaceService      service.NamespaceService
 	userService           service.UserService
 	initData              *model.InitData
 	watchService          service.WatchService
@@ -103,7 +103,7 @@ func NewGrpcServer(params params.ServerInjectionConstructorParams) GrpcServer {
 		watchService:          params.WatchService,
 		authenticationService: params.AuthenticationService,
 		dataSourceService:     params.DataSourceService,
-		workspaceService:      params.WorkspaceService,
+		namespaceService:      params.NamespaceService,
 		userService:           params.UserService,
 	}
 }

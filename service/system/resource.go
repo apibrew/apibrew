@@ -4,7 +4,7 @@ import "data-handler/model"
 
 var ResourceResource = &model.Resource{
 	Name:      "resource",
-	Workspace: "system",
+	Namespace: "system",
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
@@ -28,10 +28,10 @@ var ResourceResource = &model.Resource{
 			Unique:   true,
 		},
 		{
-			Name: "workspace",
+			Name: "namespace",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "workspace",
+					Mapping: "namespace",
 				},
 			},
 			Type:     model.ResourcePropertyType_TYPE_STRING,

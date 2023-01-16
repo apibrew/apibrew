@@ -8,7 +8,7 @@ import 'model/audit.proto';
 import 'model/common.proto';
 import 'google/protobuf/struct.proto';
 
-message Workspace {
+message Namespace {
   string id = 1;
   string name = 2;
   DataType type = 3;

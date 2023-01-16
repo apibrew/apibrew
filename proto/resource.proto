@@ -48,7 +48,7 @@ message UpdateResourceResponse {
 
 message DeleteResourceRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   repeated string ids = 3;
 
   bool doMigration = 4;
@@ -71,7 +71,7 @@ message ListResourceResponse {
 
 message GetResourceRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   string id = 3;
 }
 
@@ -83,7 +83,7 @@ message GetResourceResponse {
 
 message GetResourceByNameRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   string name = 3;
 }
 

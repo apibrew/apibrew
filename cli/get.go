@@ -20,7 +20,7 @@ var getCmd = &cobra.Command{
 		o := getFlag(cmd, "output", true)
 		name := getFlag(cmd, "name", false)
 		names := getFlag(cmd, "names", false)
-		workspace := getFlag(cmd, "workspace", false)
+		namespace := getFlag(cmd, "namespace", false)
 
 		if len(args) == 0 {
 			log.Fatal("type should be provided")
@@ -63,7 +63,7 @@ var getCmd = &cobra.Command{
 		} else {
 			resp, err := recordServiceClient.List(context.TODO(), &stub.ListRecordRequest{
 				Token:     authToken,
-				Workspace: workspace,
+				Namespace: namespace,
 				Resource:  getType,
 			})
 
@@ -73,7 +73,7 @@ var getCmd = &cobra.Command{
 
 			resourceResp, err := resourceServiceClient.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
 				Token:     authToken,
-				Workspace: workspace,
+				Namespace: namespace,
 				Name:      getType,
 			})
 
@@ -88,7 +88,7 @@ var getCmd = &cobra.Command{
 
 func init() {
 	getCmd.PersistentFlags().StringP("output", "o", "console", "Output format")
-	getCmd.PersistentFlags().StringP("workspace", "w", "default", "Workspace")
+	getCmd.PersistentFlags().StringP("namespace", "w", "default", "Namespace")
 	getCmd.PersistentFlags().StringP("name", "n", "", "Item name")
 	getCmd.PersistentFlags().String("names", "", "Item names")
 }

@@ -20,7 +20,7 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	w := tabwriter.NewWriter(c.writer, 0, 0, padding, ' ', 0)
 
 	c.out(w, "Name: \t\t %s", resource.Name)
-	c.out(w, "Workspace: \t\t %s", resource.Workspace)
+	c.out(w, "Namespace: \t\t %s", resource.Namespace)
 	c.out(w, "Version: \t\t %d", resource.Version)
 	c.out(w, "")
 
@@ -112,13 +112,13 @@ func (c consoleWriter) WriteResources(resources []*model.Resource) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
-	table.SetHeader([]string{"Name", "Workspace", "DataSource", "Mapping", "Version"})
+	table.SetHeader([]string{"Name", "Namespace", "DataSource", "Mapping", "Version"})
 	c.configureTable(table)
 
 	for _, item := range resources {
 		data = append(data, []string{
 			item.Name,
-			item.Workspace,
+			item.Namespace,
 			item.SourceConfig.DataSource,
 			item.SourceConfig.Mapping,
 			string(item.Version),

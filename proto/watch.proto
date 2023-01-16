@@ -18,7 +18,7 @@ message WatchResponse {
 
 message WatchRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   string resource = 3;
   model.BooleanExpression query = 4;
   repeated model.EventType events = 5;

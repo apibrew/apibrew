@@ -59,7 +59,7 @@ func (d *dataSourceService) List(ctx context.Context) ([]*model.DataSource, erro
 
 	systemCtx := security.WithSystemContext(ctx)
 	result, _, err := d.recordService.List(systemCtx, params.RecordListParams{
-		Workspace: system.DataSourceResource.Workspace,
+		Namespace: system.DataSourceResource.Namespace,
 		Resource:  system.DataSourceResource.Name,
 	})
 
@@ -93,7 +93,7 @@ func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.Dat
 	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
 	result, _, err := d.recordService.Create(systemCtx, params.RecordCreateParams{
-		Workspace: system.DataSourceResource.Workspace,
+		Namespace: system.DataSourceResource.Namespace,
 		Resource:  system.DataSourceResource.Name,
 		Records:   records,
 	})
@@ -114,7 +114,7 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
 	systemCtx := security.WithSystemContext(ctx)
 	result, err := d.recordService.Update(systemCtx, params.RecordUpdateParams{
-		Workspace: system.DataSourceResource.Workspace,
+		Namespace: system.DataSourceResource.Namespace,
 		Records:   records,
 	})
 
@@ -161,7 +161,7 @@ func (d *dataSourceService) Get(ctx context.Context, id string) (*model.DataSour
 
 	systemCtx := security.WithSystemContext(ctx)
 	record, err := d.recordService.Get(systemCtx, params.RecordGetParams{
-		Workspace: system.DataSourceResource.Workspace,
+		Namespace: system.DataSourceResource.Namespace,
 		Resource:  system.DataSourceResource.Name,
 		Id:        id,
 	})
@@ -181,7 +181,7 @@ func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.Ser
 	systemCtx := security.WithSystemContext(ctx)
 
 	return d.recordService.Delete(systemCtx, params.RecordDeleteParams{
-		Workspace: system.DataSourceResource.Workspace,
+		Namespace: system.DataSourceResource.Namespace,
 		Resource:  system.DataSourceResource.Name,
 		Ids:       ids,
 	})
@@ -200,7 +200,7 @@ func (d *dataSourceService) Init(data *model.InitData) {
 
 	if len(data.InitDataSources) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
-			Workspace:      system.DataSourceResource.Workspace,
+			Namespace:      system.DataSourceResource.Namespace,
 			Records:        mapping.MapToRecord(data.InitDataSources, mapping.DataSourceToRecord),
 			IgnoreIfExists: true,
 		})

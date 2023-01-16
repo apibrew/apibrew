@@ -9,7 +9,7 @@ type ServerInjectionConstructorParams struct {
 	RecordService         service.RecordService
 	AuthenticationService service.AuthenticationService
 	DataSourceService     service.DataSourceService
-	WorkspaceService      service.WorkspaceService
+	NamespaceService      service.NamespaceService
 	UserService           service.UserService
 	WatchService          service.WatchService
 }

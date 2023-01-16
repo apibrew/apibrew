@@ -4,7 +4,7 @@ import "data-handler/model"
 
 var DataSourceResource = &model.Resource{
 	Name:      "data-source",
-	Workspace: "system",
+	Namespace: "system",
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",

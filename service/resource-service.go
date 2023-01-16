@@ -18,8 +18,8 @@ import (
 type ResourceService interface {
 	MigrateResource(resource *model.Resource)
 	Init(data *model.InitData)
-	CheckResourceExists(ctx context.Context, workspace, name string) (bool, errors.ServiceError)
-	GetResourceByName(ctx context.Context, workspace, resource string) (*model.Resource, errors.ServiceError)
+	CheckResourceExists(ctx context.Context, namespace, name string) (bool, errors.ServiceError)
+	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
 	GetSystemResourceByName(resourceName string) (*model.Resource, errors.ServiceError)
 	InjectBackendProviderService(backendProviderService BackendProviderService)
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
@@ -54,8 +54,8 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	if !security.IsSystemContext(ctx) {
-		if resource.Workspace == "system" {
-			return nil, errors.LogicalError.WithMessage("you cannot update system workspace resources")
+		if resource.Namespace == "system" {
+			return nil, errors.LogicalError.WithMessage("you cannot update system namespace resources")
 		}
 	}
 
@@ -127,35 +127,35 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 	return nil
 }
 
-func (r *resourceService) GetResourceByName(ctx context.Context, workspace string, resourceName string) (*model.Resource, errors.ServiceError) {
+func (r *resourceService) GetResourceByName(ctx context.Context, namespace string, resourceName string) (*model.Resource, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	logger.Debugf("Begin resource-service GetResourceByName: %s / %s", workspace, resourceName)
+	logger.Debugf("Begin resource-service GetResourceByName: %s / %s", namespace, resourceName)
 	defer logger.Debug("End resource-service GetResourceByName")
 
-	if workspace == "system" {
+	if namespace == "system" {
 		logger.Debugf("Call GetSystemResourceByName: %s", resourceName)
 
 		return r.GetSystemResourceByName(resourceName)
 	}
 
-	if workspace == "" {
-		workspace = "default"
+	if namespace == "" {
+		namespace = "default"
 	}
 
 	if !r.disableCache {
-		if r.cache.Get(workspace+"-"+resourceName) != nil {
-			return r.cache.Get(workspace + "-" + resourceName).Value(), nil
+		if r.cache.Get(namespace+"-"+resourceName) != nil {
+			return r.cache.Get(namespace + "-" + resourceName).Value(), nil
 		}
 	}
 
 	logger.Debugf("Call backend GetResourceByName: %s", resourceName)
-	//resource, err := r.backendProviderService.GetSystemBackend(ctx).GetResourceByName(ctx, workspace, resourceName)
+	//resource, err := r.backendProviderService.GetSystemBackend(ctx).GetResourceByName(ctx, namespace, resourceName)
 
 	queryMap := make(map[string]interface{})
 
 	queryMap["name"] = resourceName
-	queryMap["workspace"] = workspace
+	queryMap["namespace"] = namespace
 
 	logger.Debug("Call PrepareQuery: ", queryMap)
 	query, err := PrepareQuery(system.ResourceResource, queryMap)
@@ -189,7 +189,7 @@ func (r *resourceService) GetResourceByName(ctx context.Context, workspace strin
 	}
 
 	if !r.disableCache {
-		r.cache.Set(workspace+"-"+resourceName, resource, ttlcache.DefaultTTL)
+		r.cache.Set(namespace+"-"+resourceName, resource, ttlcache.DefaultTTL)
 	}
 
 	return resource, nil
@@ -200,24 +200,24 @@ func (r *resourceService) GetSystemResourceByName(resourceName string) (*model.R
 		return system.UserResource, nil
 	} else if resourceName == system.DataSourceResource.Name {
 		return system.DataSourceResource, nil
-	} else if resourceName == system.WorkspaceResource.Name {
-		return system.WorkspaceResource, nil
+	} else if resourceName == system.NamespaceResource.Name {
+		return system.NamespaceResource, nil
 	}
 	return nil, errors.NotFoundError
 }
 
-func (r *resourceService) CheckResourceExists(ctx context.Context, workspace, name string) (bool, errors.ServiceError) {
+func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, name string) (bool, errors.ServiceError) {
 	if r.cache.Get(name) != nil {
 		return true, nil
 	}
 
-	resource, err := r.GetResourceByName(nil, workspace, name)
+	resource, err := r.GetResourceByName(nil, namespace, name)
 
 	if err != nil {
 		return false, err
 	}
 
-	r.cache.Set(workspace+"-"+name, resource, ttlcache.DefaultTTL)
+	r.cache.Set(namespace+"-"+name, resource, ttlcache.DefaultTTL)
 
 	return true, nil
 }

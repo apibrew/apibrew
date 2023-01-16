@@ -90,7 +90,7 @@ func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource
 		record, err = readRecord(tx, resource, id)
 
 		if err == sql.ErrNoRows {
-			return errors.NotFoundError.WithDetails(fmt.Sprintf("workspace %s; resource %s; id %v", resource.Workspace, resource.Name, id))
+			return errors.NotFoundError.WithDetails(fmt.Sprintf("namespace %s; resource %s; id %v", resource.Namespace, resource.Name, id))
 		}
 
 		if err != nil {
@@ -104,14 +104,14 @@ func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource
 }
 
 func (p *postgresResourceServiceBackend) DeleteRecords(ctx context.Context, resource *model.Resource, ids []string) errors.ServiceError {
-	log.Tracef("Begin deleting records: %v / %v / %v", resource.Workspace, resource.Name, ids)
+	log.Tracef("Begin deleting records: %v / %v / %v", resource.Namespace, resource.Name, ids)
 	err := p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		return deleteRecords(tx, resource, ids)
 	})
 	if err != nil {
 		log.Print(err)
 	} else {
-		log.Tracef("records deleted: %v / %v / %v", resource.Workspace, resource.Name, ids)
+		log.Tracef("records deleted: %v / %v / %v", resource.Namespace, resource.Name, ids)
 	}
 
 	return err

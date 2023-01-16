@@ -21,16 +21,16 @@ var describeCmd = &cobra.Command{
 
 		resourceName := args[0]
 
-		workspace := "default"
+		namespace := "default"
 
 		if len(args) > 1 {
-			workspace = args[0]
+			namespace = args[0]
 			resourceName = args[1]
 		}
 
 		if strings.Contains(resourceName, "/") {
 			parts := strings.Split(resourceName, "/")
-			workspace = parts[0]
+			namespace = parts[0]
 			resourceName = parts[1]
 		}
 
@@ -38,7 +38,7 @@ var describeCmd = &cobra.Command{
 
 		resp, err := resourceServiceClient.GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 			Token:     authToken,
-			Workspace: workspace,
+			Namespace: namespace,
 			Name:      resourceName,
 		})
 

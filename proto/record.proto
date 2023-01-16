@@ -19,7 +19,7 @@ service RecordService {
 
 message ListRecordRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   string resource = 3;
   model.BooleanExpression query = 4;
   uint32 limit = 5;
@@ -36,7 +36,7 @@ message ListRecordResponse {
 
 message CreateRecordRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   repeated model.Record Records = 3;
   bool ignoreIfExists = 4;
 }
@@ -49,7 +49,7 @@ message CreateRecordResponse {
 
 message UpdateRecordRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   repeated model.Record Records = 3;
   bool checkVersion = 4;
 }
@@ -61,7 +61,7 @@ message UpdateRecordResponse {
 
 message DeleteRecordRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   string resource = 3;
   repeated string ids = 4;
 }
@@ -72,7 +72,7 @@ message DeleteRecordResponse {
 
 message GetRecordRequest {
   string token = 1;
-  string workspace = 2;
+  string namespace = 2;
   string resource = 3;
   string id = 4;
 }
