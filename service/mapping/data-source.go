@@ -31,7 +31,7 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 	return &model.Record{
 		Id:         dataSource.Id,
 		Resource:   system.DataSourceResource.Name,
-		Type:       dataSource.Type,
+		DataType:   dataSource.Type,
 		Properties: structProperties,
 		AuditData:  dataSource.AuditData,
 		Version:    dataSource.Version,
@@ -47,7 +47,7 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 
 	result := &model.DataSource{
 		Id:          record.Id,
-		Type:        record.Type,
+		Type:        record.DataType,
 		Backend:     model.DataSourceBackendType(backendNumber),
 		Name:        record.Properties.Fields["name"].GetStringValue(),
 		Description: record.Properties.Fields["description"].GetStringValue(),

@@ -26,7 +26,7 @@ func UserToRecord(user *model.User) *model.Record {
 	return &model.Record{
 		Id:         user.Id,
 		Resource:   system.UserResource.Name,
-		Type:       user.Type,
+		DataType:   user.Type,
 		Properties: structProperties,
 		AuditData:  user.AuditData,
 		Version:    user.Version,
@@ -40,7 +40,7 @@ func UserFromRecord(record *model.Record) *model.User {
 
 	var user = &model.User{
 		Id:        record.Id,
-		Type:      record.Type,
+		Type:      record.DataType,
 		AuditData: record.AuditData,
 		Version:   record.Version,
 	}

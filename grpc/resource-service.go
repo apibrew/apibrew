@@ -70,7 +70,7 @@ func (r resourceGrpcService) List(ctx context.Context, request *stub.ListResourc
 }
 
 func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
-	resource, err := r.resourceService.Get(ctx, request.Workspace, request.Id)
+	resource, err := r.resourceService.Get(ctx, request.Id)
 
 	return &stub.GetResourceResponse{
 		Resource: resource,

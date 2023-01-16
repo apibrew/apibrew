@@ -35,6 +35,10 @@ type recordService struct {
 	backendServiceProvider BackendProviderService
 }
 
+func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
+	return PrepareQuery(resource, queryMap)
+}
+
 func (r *recordService) InjectBackendProviderService(backendProviderService BackendProviderService) {
 	r.backendServiceProvider = backendProviderService
 }

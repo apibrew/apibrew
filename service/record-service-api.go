@@ -62,7 +62,7 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 	var result []*model.Record
 
 	for _, item := range params.Records {
-		item.Type = model.DataType_USER
+		item.DataType = model.DataType_USER
 	}
 
 	var insertedArray []bool
@@ -244,7 +244,7 @@ func (r *recordService) FindBy(ctx context.Context, workspace, resourceName, pro
 	queryMap[propertyName] = value
 
 	logger.Debug("Call PrepareQuery: ", queryMap)
-	query, err := r.PrepareQuery(resource, queryMap)
+	query, err := PrepareQuery(resource, queryMap)
 	logger.Debug("Result record-service: ", query)
 
 	if err != nil {

@@ -13,7 +13,7 @@ import 'model/common.proto';
 message Record {
   string id = 1; // id; read only
   string resource = 2; // create only
-  DataType type = 3; // read only
+  DataType data_type = 3; // read only
   google.protobuf.Struct properties = 4;
   google.protobuf.Struct references = 5;
 

@@ -6,7 +6,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
+func PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
 	var criteria []*model.BooleanExpression
 	for _, property := range resource.Properties {
 		if queryMap[property.Name] != nil {
@@ -15,7 +15,7 @@ func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[stri
 			if err != nil {
 				return nil, errors.RecordValidationError.WithDetails(err.Error())
 			}
-			criteria = append(criteria, r.newEqualExpression(property.Name, val))
+			criteria = append(criteria, newEqualExpression(property.Name, val))
 		}
 	}
 
@@ -30,7 +30,7 @@ func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[stri
 			if err != nil {
 				return nil, errors.RecordValidationError.WithDetails(err.Error())
 			}
-			criteria = append(criteria, r.newEqualExpression(property, val))
+			criteria = append(criteria, newEqualExpression(property, val))
 		}
 	}
 
@@ -42,7 +42,7 @@ func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[stri
 	return query, nil
 }
 
-func (r *recordService) newEqualExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
+func newEqualExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
 	return &model.BooleanExpression{
 		Expression: &model.BooleanExpression_Equal{
 			Equal: &model.PairExpression{

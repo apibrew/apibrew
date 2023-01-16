@@ -6,7 +6,6 @@ import (
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"database/sql"
-	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
@@ -17,82 +16,6 @@ const DbNameType = "VARCHAR(64)"
 type postgresResourceServiceBackend struct {
 	connectionDetails *model.DataSource_PostgresqlParams
 	connection        *sql.DB
-}
-
-func (p *postgresResourceServiceBackend) ListResources(ctx context.Context) (result []*model.Resource, err errors.ServiceError) {
-	err = p.withBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
-		result, err = resourceList(ctx, tx)
-
-		for _, resource := range result {
-			if err = resourceLoadProperties(tx, resource, resource.Workspace, resource.Name); err != nil {
-				log.Errorf("Unable to load resource properties for %s/%s Err: %s", resource.Workspace, resource.Name, err)
-				return err
-			}
-
-			if err = resourceLoadReferences(tx, resource, resource.Workspace, resource.Name); err != nil {
-				log.Errorf("Unable to load resource references for %s/%s Err: %s", resource.Workspace, resource.Name, err)
-				return err
-			}
-		}
-
-		return err
-	})
-
-	return
-}
-
-func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context) (result []string, err errors.ServiceError) {
-	err = p.withBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
-		result, err = resourceListEntities(ctx, tx)
-
-		return err
-	})
-
-	return
-}
-
-func (p *postgresResourceServiceBackend) DestroyDataSource(ctx context.Context) {
-	if p.connection != nil {
-		p.connection.Close()
-
-		p.connection = nil
-	}
-}
-
-func (p *postgresResourceServiceBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
-	conn, err := p.acquireConnection(ctx)
-
-	if err != nil {
-		return
-	}
-
-	err = handleDbError(conn.Ping())
-
-	testConnection = err == nil
-
-	return
-}
-
-func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, entity string) (resource *model.Resource, err errors.ServiceError) {
-	err = p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
-		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, entity); err != nil {
-			log.Errorf("[PrepareResourceFromEntity] Unable to load resource details for %s Err: %s", entity, err)
-			return err
-		}
-
-		resource.SourceConfig = &model.ResourceSourceConfig{
-			Mapping: entity,
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		log.Errorf("Unable to load resource for %s Err: %s", entity, err)
-		return nil, err
-	}
-
-	return resource, nil
 }
 
 func (p *postgresResourceServiceBackend) GetResource(ctx context.Context, workspace string, id string) (resource *model.Resource, err errors.ServiceError) {
@@ -335,28 +258,6 @@ func (p *postgresResourceServiceBackend) DeleteResources(ctx context.Context, wo
 	//}
 
 	return nil
-}
-
-func (p *postgresResourceServiceBackend) acquireConnection(ctx context.Context) (*sql.DB, errors.ServiceError) {
-	if p.connection == nil {
-
-		params := p.connectionDetails.PostgresqlParams
-
-		connStr := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", params.Username, params.Password, params.Host, params.Port, params.DbName)
-		// Connect to database
-		conn, sqlErr := sql.Open("postgres", connStr)
-		err := handleDbError(sqlErr)
-
-		if err != nil {
-			return nil, err
-		}
-
-		p.connection = conn
-
-		log.Infof("Connected to Datasource: %s@%s:%d/%s", params.Username, params.Host, params.Port, params.DefaultSchema)
-	}
-
-	return p.connection, nil
 }
 
 func NewPostgresResourceServiceBackend(connectionDetails backend.DataSourceConnectionDetails) backend.Backend {

@@ -371,33 +371,6 @@ func resourceListEntities(ctx context.Context, runner QueryRunner) (result []str
 	return
 }
 
-func resourceList(ctx context.Context, runner QueryRunner) (result []*model.Resource, err errors.ServiceError) {
-	selectBuilder := sqlbuilder.Select(resourceColumns...).From("resource")
-
-	sqlQuery, args := selectBuilder.Build()
-
-	rows, sqlErr := runner.QueryContext(ctx, sqlQuery, args...)
-
-	err = handleDbError(sqlErr)
-
-	if err != nil {
-		return
-	}
-
-	for rows.Next() {
-		resource := new(model.Resource)
-		err = ScanResource(resource, rows)
-
-		if err != nil {
-			return nil, err
-		}
-
-		result = append(result, resource)
-	}
-
-	return
-}
-
 func isAuditColumn(column string) bool {
 	return column == "created_on" || column == "updated_on" || column == "created_by" || column == "updated_by" || column == "version"
 }

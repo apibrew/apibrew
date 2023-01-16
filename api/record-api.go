@@ -135,7 +135,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	}
 
 	record1.Resource = resourceName
-	record1.Type = model.DataType_USER
+	record1.DataType = model.DataType_USER
 
 	if err != nil {
 		handleClientError(writer, err)

@@ -572,7 +572,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 	}
 
 	record.Resource = resource.Name
-	record.Type = model.DataType_USER
+	record.DataType = model.DataType_USER
 
 	if record.Id == "" {
 		return errors.NotFoundError

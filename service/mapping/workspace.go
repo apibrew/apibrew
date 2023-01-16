@@ -24,7 +24,7 @@ func WorkspaceToRecord(workspace *model.Workspace) *model.Record {
 	return &model.Record{
 		Id:         workspace.Id,
 		Resource:   system.WorkspaceResource.Name,
-		Type:       workspace.Type,
+		DataType:   workspace.Type,
 		Properties: structProperties,
 		AuditData:  workspace.AuditData,
 		Version:    workspace.Version,
@@ -38,7 +38,7 @@ func WorkspaceFromRecord(record *model.Record) *model.Workspace {
 
 	result := &model.Workspace{
 		Id:        record.Id,
-		Type:      record.Type,
+		Type:      record.DataType,
 		AuditData: record.AuditData,
 		Version:   record.Version,
 	}
