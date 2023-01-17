@@ -8,7 +8,7 @@ type dateType struct {
 }
 
 func (u dateType) Pack(value interface{}) (interface{}, error) {
-	return value.(time.Time).Format("2006-01-02"), nil
+	return u.String(value), nil
 }
 
 func (u dateType) UnPack(value interface{}) (interface{}, error) {
@@ -28,7 +28,7 @@ func (u dateType) Pointer(required bool) any {
 }
 
 func (u dateType) String(val any) string {
-	return val.(string)
+	return val.(time.Time).Format("2006-01-02")
 }
 
 func (u dateType) IsEmpty(value any) bool {

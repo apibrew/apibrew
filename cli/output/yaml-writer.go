@@ -47,8 +47,29 @@ func (c *yamlWriter) WriteResources(resources []*model.Resource) {
 	}
 }
 
-func (c *yamlWriter) WriteRecords(resource *model.Resource, record []*model.Record) {
+func (c *yamlWriter) WriteRecords(resource *model.Resource, records []*model.Record) {
+	for _, record := range records {
+		c.writePrefix()
+		body, err := jsonMo.Marshal(record)
 
+		check(err)
+
+		var data map[string]interface{}
+
+		err = json.Unmarshal(body, &data)
+
+		data["type"] = "record"
+
+		check(err)
+
+		out, err := yaml.Marshal(data)
+
+		check(err)
+
+		_, err = c.writer.Write(out)
+
+		check(err)
+	}
 }
 
 func (c *yamlWriter) writePrefix() {

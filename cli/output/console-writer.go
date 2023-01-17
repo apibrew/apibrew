@@ -26,7 +26,8 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 
 	c.out(w, "Source Config:")
 	c.out(w, "  DataSource: \t\t %s", resource.SourceConfig.DataSource)
-	c.out(w, "  Mapping: \t\t %s", resource.SourceConfig.Mapping)
+	c.out(w, "  Catalog: \t\t %s", resource.SourceConfig.Catalog)
+	c.out(w, "  Entity: \t\t %s", resource.SourceConfig.Entity)
 	c.out(w, "")
 
 	c.out(w, "AuditData:")
@@ -112,7 +113,7 @@ func (c consoleWriter) WriteResources(resources []*model.Resource) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
-	table.SetHeader([]string{"Name", "Namespace", "DataSource", "Mapping", "Version"})
+	table.SetHeader([]string{"Name", "Namespace", "DataSource", "Catalog", "Entity", "Version"})
 	c.configureTable(table)
 
 	for _, item := range resources {
@@ -120,7 +121,8 @@ func (c consoleWriter) WriteResources(resources []*model.Resource) {
 			item.Name,
 			item.Namespace,
 			item.SourceConfig.DataSource,
-			item.SourceConfig.Mapping,
+			item.SourceConfig.Catalog,
+			item.SourceConfig.Entity,
 			string(item.Version),
 		})
 	}
@@ -152,13 +154,18 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.R
 
 		for _, prop := range resource.Properties {
 			typeHandler := types.ByResourcePropertyType(prop.Type)
-			value, err := typeHandler.UnPack(item.Properties.AsMap()[prop.Name])
+			packedVal := item.Properties.AsMap()[prop.Name]
 
-			check(err)
+			if packedVal == nil {
+				row = append(row, "Null")
+			} else {
+				value, err := typeHandler.UnPack(packedVal)
 
-			valStr := typeHandler.String(value)
+				check(err)
+				valStr := typeHandler.String(value)
 
-			row = append(row, valStr)
+				row = append(row, valStr)
+			}
 		}
 
 		data = append(data, row)

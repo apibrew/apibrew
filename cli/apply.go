@@ -12,6 +12,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -26,6 +27,9 @@ var applyCmd = &cobra.Command{
 		check(err)
 
 		migrate, err := cmd.Flags().GetBool("migrate")
+		check(err)
+
+		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)
 
 		force, err := cmd.Flags().GetBool("force")
@@ -45,12 +49,14 @@ var applyCmd = &cobra.Command{
 			Resolver:       nil,
 		}
 
-		if strings.HasSuffix(file, "yml") || strings.HasSuffix(file, "yaml") {
-			var body map[string]interface{}
+		var createRecords []*model.Record
+		var updateRecords []*model.Record
 
+		if strings.HasSuffix(file, "yml") || strings.HasSuffix(file, "yaml") {
 			decoder := yaml.NewDecoder(bytes.NewReader(fileData))
 
 			for {
+				var body map[string]interface{}
 				err = decoder.Decode(&body)
 
 				if err == io.EOF {
@@ -122,8 +128,56 @@ var applyCmd = &cobra.Command{
 
 						log.Println("Resource created: " + resource.Name)
 					}
+				case "record":
+					delete(body, "type")
+
+					jsonData, err := json.Marshal(body)
+
+					check(err)
+
+					var record = new(model.Record)
+					err = jsonUMo.Unmarshal(jsonData, record)
+
+					check(err)
+
+					if record.Id != "" {
+						updateRecords = append(updateRecords, record)
+					} else {
+						createRecords = append(createRecords, record)
+					}
+
 				}
 			}
+		}
+
+		if len(updateRecords) > 0 {
+			resp, err := recordServiceClient.Update(context.TODO(), &stub.UpdateRecordRequest{
+				Token:        authToken,
+				Namespace:    namespace,
+				Records:      updateRecords,
+				CheckVersion: false,
+			})
+
+			check(err)
+
+			checkError(resp.Error)
+
+			log.Println("Record updated: " + strconv.Itoa(len(updateRecords)))
+		}
+
+		if len(createRecords) > 0 {
+			resp, err := recordServiceClient.Create(context.TODO(), &stub.CreateRecordRequest{
+				Token:          authToken,
+				Namespace:      namespace,
+				Records:        createRecords,
+				IgnoreIfExists: true,
+			})
+
+			check(err)
+
+			checkError(resp.Error)
+
+			log.Println("Record created: " + strconv.Itoa(len(createRecords)))
 		}
 
 		log.Println(migrate)
@@ -155,6 +209,7 @@ func convert(i interface{}) interface{} {
 
 func init() {
 	applyCmd.PersistentFlags().StringP("file", "f", "", "Output file")
+	applyCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	applyCmd.PersistentFlags().BoolP("migrate", "m", false, "Migrate")
 	applyCmd.PersistentFlags().Bool("force", false, "Force")
 }
