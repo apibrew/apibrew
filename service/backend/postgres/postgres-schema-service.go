@@ -36,7 +36,7 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 	return resource, nil
 }
 
-func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError {
+func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, currentResource *model.Resource, resource *model.Resource, forceMigration bool) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		if err := resourceCreateTable(tx, resource); err != nil {
 			return err

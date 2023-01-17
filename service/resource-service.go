@@ -7,7 +7,6 @@ import (
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/mapping"
-	"data-handler/service/security"
 	"data-handler/service/system"
 	"fmt"
 	"github.com/jellydator/ttlcache/v3"
@@ -40,23 +39,76 @@ func (r *resourceService) InjectBackendProviderService(backendProviderService Ba
 }
 
 func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
-	//todo reimlement
+	resource.DataType = model.DataType_USER
+
+	if err := validateResource(resource); err != nil {
+		return err
+	}
+
+	if err := r.mustModifyResource(resource); err != nil {
+		return err
+	}
+
+	result, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, backend.BulkRecordsParams{
+		Resource:       system.ResourceResource,
+		Records:        []*model.Record{mapping.ResourceToRecord(resource)},
+		CheckVersion:   false,
+		IgnoreIfExists: false,
+	})
+
+	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
+		return errors.AlreadyExistsError.WithMessage(fmt.Sprintf("Resource is already exiss: " + resource.Name))
+	}
+
+	if err != nil {
+		return err
+	}
+
+	resource.Id = result[0].Id
+
+	propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
+		return mapping.ResourcePropertyToRecord(property, resource)
+	})
+
+	_, err = r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, backend.BulkRecordsParams{
+		Resource:       system.ResourcePropertyResource,
+		Records:        propertyRecords,
+		CheckVersion:   false,
+		IgnoreIfExists: false,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	//todo add references
+
+	if doMigration {
+		bck, err := r.backendProviderService.GetBackendByDataSourceId(ctx, resource.SourceConfig.DataSource)
+
+		if err != nil {
+			return err
+		}
+
+		err = bck.UpgradeResource(ctx, nil, resource, forceMigration)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
 func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
 	resource.DataType = model.DataType_USER
 
-	err := validateResource(resource)
-
-	if err != nil {
+	if err := validateResource(resource); err != nil {
 		return nil, err
 	}
 
-	if !security.IsSystemContext(ctx) {
-		if resource.Namespace == "system" {
-			return nil, errors.LogicalError.WithMessage("you cannot update system namespace resources")
-		}
+	if err := r.mustModifyResource(resource); err != nil {
+		return nil, err
 	}
 
 	result, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, backend.BulkRecordsParams{
@@ -101,7 +153,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 			return nil, err
 		}
 
-		err = bck.UpgradeResource(ctx, resource, forceMigration)
+		err = bck.UpgradeResource(ctx, nil, resource, forceMigration)
 
 		if err != nil {
 			return nil, err
@@ -230,7 +282,7 @@ func (r *resourceService) Init(data *model.InitData) {
 }
 
 func (r *resourceService) MigrateResource(resource *model.Resource) {
-	err := r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), resource, true)
+	err := r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), nil, resource, true)
 
 	if err != nil {
 		panic(err)
@@ -242,6 +294,10 @@ func (r resourceService) Delete(ctx context.Context, ids []string, doMigration b
 		resource, err := r.Get(ctx, resourceId)
 
 		if err != nil {
+			return err
+		}
+
+		if err := r.mustModifyResource(resource); err != nil {
 			return err
 		}
 
@@ -269,6 +325,17 @@ func (r resourceService) Delete(ctx context.Context, ids []string, doMigration b
 		}
 	}
 
+	return nil
+}
+
+func (r resourceService) mustModifyResource(resource *model.Resource) errors.ServiceError {
+	if resource.Namespace == "system" || resource.DataType == model.DataType_SYSTEM {
+		return errors.LogicalError.WithMessage("actions on system resource is not allowed")
+	}
+
+	if resource.DataType == model.DataType_STATIC {
+		return errors.LogicalError.WithMessage("actions on static resource is not allowed")
+	}
 	return nil
 }
 
