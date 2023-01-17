@@ -152,13 +152,18 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.R
 
 		for _, prop := range resource.Properties {
 			typeHandler := types.ByResourcePropertyType(prop.Type)
-			value, err := typeHandler.UnPack(item.Properties.AsMap()[prop.Name])
+			packedVal := item.Properties.AsMap()[prop.Name]
 
-			check(err)
+			if packedVal == nil {
+				row = append(row, "Null")
+			} else {
+				value, err := typeHandler.UnPack(packedVal)
 
-			valStr := typeHandler.String(value)
+				check(err)
+				valStr := typeHandler.String(value)
 
-			row = append(row, valStr)
+				row = append(row, valStr)
+			}
 		}
 
 		data = append(data, row)
