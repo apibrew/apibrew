@@ -53,11 +53,10 @@ var applyCmd = &cobra.Command{
 		var updateRecords []*model.Record
 
 		if strings.HasSuffix(file, "yml") || strings.HasSuffix(file, "yaml") {
-			var body map[string]interface{}
-
 			decoder := yaml.NewDecoder(bytes.NewReader(fileData))
 
 			for {
+				var body map[string]interface{}
 				err = decoder.Decode(&body)
 
 				if err == io.EOF {

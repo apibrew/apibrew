@@ -8,13 +8,13 @@ import (
 
 func check(err error) {
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }
 
 func checkError(err *model.Error) {
 	if err != nil {
-		log.Fatal(err.Message)
+		panic(err.Message)
 	}
 }
 
