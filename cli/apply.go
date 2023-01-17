@@ -29,7 +29,7 @@ var applyCmd = &cobra.Command{
 		migrate, err := cmd.Flags().GetBool("migrate")
 		check(err)
 
-		workspace, err := cmd.Flags().GetString("workspace")
+		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)
 
 		force, err := cmd.Flags().GetBool("force")
@@ -154,7 +154,7 @@ var applyCmd = &cobra.Command{
 		if len(updateRecords) > 0 {
 			resp, err := recordServiceClient.Update(context.TODO(), &stub.UpdateRecordRequest{
 				Token:        authToken,
-				Workspace:    workspace,
+				Namespace:    namespace,
 				Records:      updateRecords,
 				CheckVersion: false,
 			})
@@ -169,7 +169,7 @@ var applyCmd = &cobra.Command{
 		if len(createRecords) > 0 {
 			resp, err := recordServiceClient.Create(context.TODO(), &stub.CreateRecordRequest{
 				Token:          authToken,
-				Workspace:      workspace,
+				Namespace:      namespace,
 				Records:        createRecords,
 				IgnoreIfExists: true,
 			})
@@ -210,7 +210,7 @@ func convert(i interface{}) interface{} {
 
 func init() {
 	applyCmd.PersistentFlags().StringP("file", "f", "", "Output file")
-	applyCmd.PersistentFlags().StringP("workspace", "w", "default", "Workspace")
+	applyCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	applyCmd.PersistentFlags().BoolP("migrate", "m", false, "Migrate")
 	applyCmd.PersistentFlags().Bool("force", false, "Force")
 }
