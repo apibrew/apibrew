@@ -1,12 +1,17 @@
 package api
 
 import (
+	"context"
+	"data-handler/grpc/stub"
 	"data-handler/helper"
 	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/params"
 	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"net/http"
 )
@@ -43,6 +48,14 @@ func (s *server) Serve(lis net.Listener) {
 	s.swaggerApi.ConfigureRouter(r)
 	s.authenticationApi.ConfigureRouter(r)
 	s.recordApi.ConfigureRouter(r)
+
+	mux := runtime.NewServeMux()
+
+	r.Handle("/*", mux)
+
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+
+	stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), mux, "localhost:9009", opts)
 
 	if err := http.Serve(lis, c.Handler(r)); err != nil {
 		panic(err)

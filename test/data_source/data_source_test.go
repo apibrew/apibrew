@@ -4,9 +4,19 @@ import (
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"reflect"
 	"testing"
 )
+
+// You can use testing.T, if you want to test the code without benchmarking
+
+func TestMain(m *testing.M) {
+	log.Println("Begin TestMain")
+	code := m.Run()
+	log.Println("End TestMain")
+	os.Exit(code)
+}
 
 func TestCreateDataSource(t *testing.T) {
 	ctx := prepareTextContext()

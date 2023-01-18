@@ -3,6 +3,7 @@ package test
 import (
 	"data-handler/logging"
 	"data-handler/model"
+	"data-handler/test/lib"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -61,5 +62,5 @@ func prepareSystemNamespace() *model.Namespace {
 }
 
 func prepareSystemDataSource() *model.DataSource {
-	return systemDataSource
+	return lib.SystemDataSource
 }
