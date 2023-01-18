@@ -51,7 +51,9 @@ func (s *server) Serve(lis net.Listener) {
 
 	mux := runtime.NewServeMux()
 
-	r.Handle("/*", mux)
+	r.HandleFunc("/v1/fcr/FcrService.AddUserImage", func(writer http.ResponseWriter, request *http.Request) {
+		mux.ServeHTTP(writer, request)
+	})
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
