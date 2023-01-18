@@ -52,6 +52,8 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterAuthenticationServiceServer(g.grpcServer, NewAuthenticationServiceServer(g.authenticationService))
 	stub.RegisterDataSourceServiceServer(g.grpcServer, NewDataSourceServiceServer(g.dataSourceService))
 	stub.RegisterRecordServiceServer(g.grpcServer, NewRecordServiceServer(g.recordService))
+	stub.RegisterUserServiceServer(g.grpcServer, NewUserServiceServer(g.userService))
+	stub.RegisterNamespaceServiceServer(g.grpcServer, NewNamespaceServiceServer(g.namespaceService))
 	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.watchService))
 }
 

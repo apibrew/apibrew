@@ -12,6 +12,7 @@ service RecordService {
   // Sends a greeting
   rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {}
   rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {}
+  rpc Apply (ApplyRecordsRequest) returns (ApplyRecordsResponse) {}
   rpc Delete (DeleteRecordRequest) returns (DeleteRecordResponse) {}
   rpc List (ListRecordRequest) returns (ListRecordResponse) {}
   rpc Get (GetRecordRequest) returns (GetRecordResponse) {}
@@ -37,7 +38,7 @@ message ListRecordResponse {
 message CreateRecordRequest {
   string token = 1;
   string namespace = 2;
-  repeated model.Record Records = 3;
+  model.Record Record = 3;
   bool ignoreIfExists = 4;
 }
 
@@ -50,11 +51,23 @@ message CreateRecordResponse {
 message UpdateRecordRequest {
   string token = 1;
   string namespace = 2;
-  repeated model.Record Records = 3;
+  model.Record Record = 3;
   bool checkVersion = 4;
 }
 
 message UpdateRecordResponse {
+  model.Record Record = 1;
+  model.Error error = 2;
+}
+
+message ApplyRecordsRequest {
+  string token = 1;
+  string namespace = 2;
+  repeated model.Record Records = 3;
+  bool checkVersion = 4;
+}
+
+message ApplyRecordsResponse {
   repeated model.Record Records = 1;
   model.Error error = 2;
 }
@@ -63,7 +76,8 @@ message DeleteRecordRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  repeated string ids = 4;
+  repeated string ids = 4; // multi
+  repeated string id = 5; // single
 }
 
 message DeleteRecordResponse {

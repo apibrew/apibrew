@@ -6,14 +6,9 @@ option go_package = "data-handler/grpc/stub";
 
 import 'model/error.proto';
 import 'model/token.proto';
-import "google/api/annotations.proto";
 
 service AuthenticationService {
-  rpc Authenticate(AuthenticationRequest) returns(AuthenticationResponse) {
-    option (google.api.http) = {
-      get: "/v1/fcr/FcrService.AddUserImage"
-    };
-  }
+  rpc Authenticate(AuthenticationRequest) returns(AuthenticationResponse) {}
   rpc RenewToken(RenewTokenRequest) returns(RenewTokenResponse) {}
 }
 

@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "data-handler/grpc/stub";
+
+import 'model/error.proto';
+import 'model/user.proto';
+import 'model/query.proto';
+import "google/api/annotations.proto";
+
+service UserService {
+  rpc Create(CreateUserRequest) returns(CreateUserResponse) {
+    option (google.api.http) = {
+      post: "/v1/user"
+      body: "*"
+    };
+  }
+  rpc Update(UpdateUserRequest) returns(UpdateUserResponse) {
+    option (google.api.http) = {
+      put: "/v1/user/{user.id}"
+      body: "*"
+    };
+  }
+  rpc Delete(DeleteUserRequest) returns(DeleteUserResponse) {
+    option (google.api.http) = {
+      delete: "/v1/user/{id}"
+    };
+  }
+  rpc List(ListUserRequest) returns(ListUserResponse) {
+    option (google.api.http) = {
+      get: "/v1/user"
+    };
+  }
+  rpc Get(GetUserRequest) returns (GetUserResponse) {}
+}
+
+message CreateUserRequest {
+  string token = 1;
+  model.User user = 2;
+}
+
+message CreateUserResponse {
+  model.User user = 1;
+
+  model.Error error = 2;
+}
+
+message UpdateUserRequest {
+  string token = 1;
+  model.User user = 2;
+}
+
+message UpdateUserResponse {
+  model.User user = 1;
+
+  model.Error error = 2;
+}
+
+
+message DeleteUserRequest {
+  string token = 1;
+  repeated string ids = 2;
+  repeated string id = 3;
+}
+
+message DeleteUserResponse {
+  model.Error error = 2;
+}
+
+message ListUserRequest {
+  string token = 1;
+
+  model.BooleanExpression query = 3;
+  uint32 limit = 4;
+  uint64 offset = 5;
+}
+
+message ListUserResponse {
+  repeated model.User content = 1;
+
+  model.Error error = 2;
+}
+
+message GetUserRequest {
+  string token = 1;
+  string id = 2;
+}
+
+message GetUserResponse {
+  model.User user = 1;
+
+  model.Error error = 2;
+}

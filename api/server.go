@@ -51,13 +51,11 @@ func (s *server) Serve(lis net.Listener) {
 
 	mux := runtime.NewServeMux()
 
-	r.HandleFunc("/v1/fcr/FcrService.AddUserImage", func(writer http.ResponseWriter, request *http.Request) {
-		mux.ServeHTTP(writer, request)
-	})
+	r.PathPrefix("/v1").Handler(mux)
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-
 	stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), mux, "localhost:9009", opts)
+	stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), mux, "localhost:9009", opts)
 
 	if err := http.Serve(lis, c.Handler(r)); err != nil {
 		panic(err)

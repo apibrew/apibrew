@@ -48,14 +48,22 @@ func (r *authenticationApi) AuthenticationMiddleWare(next http.Handler) http.Han
 
 			token := tokenParts[1]
 
-			userDetails, err := r.authenticationService.ParseAndVerifyToken(token)
+			if strings.HasPrefix(req.URL.Path, "/v1") {
+				if req.URL.RawQuery == "" {
+					req.URL.RawQuery = "token=" + token
+				} else {
+					req.URL.RawQuery = req.URL.RawQuery + "token=" + token
+				}
+			} else {
+				userDetails, err := r.authenticationService.ParseAndVerifyToken(token)
 
-			if err != nil {
-				handleClientError(w, errors.AuthenticationFailedError) //@todo fixme
-				return
+				if err != nil {
+					handleClientError(w, errors.AuthenticationFailedError) //@todo fixme
+					return
+				}
+
+				req = req.WithContext(security.WithUserDetails(req.Context(), *userDetails))
 			}
-
-			req = req.WithContext(security.WithUserDetails(req.Context(), *userDetails))
 		}
 
 		next.ServeHTTP(w, req)

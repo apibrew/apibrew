@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "data-handler/grpc/stub";
+
+import 'model/namespace.proto';
+import 'model/error.proto';
+
+service NamespaceService {
+  rpc Create(CreateNamespaceRequest) returns (CreateNamespaceResponse) {}
+  rpc List(ListNamespaceRequest) returns (ListNamespaceResponse) {}
+  rpc Update(UpdateNamespaceRequest) returns (UpdateNamespaceResponse) {}
+  rpc Delete(DeleteNamespaceRequest) returns (DeleteNamespaceResponse) {}
+  rpc Get(GetNamespaceRequest) returns (GetNamespaceResponse) {}
+}
+
+message ListNamespaceRequest {
+  string token = 1;
+}
+
+message ListNamespaceResponse {
+  int32 total = 1;
+  repeated model.Namespace content = 2;
+
+  model.Error error = 3;
+}
+
+message CreateNamespaceRequest {
+  string token = 1;
+  repeated model.Namespace Namespaces = 2;
+}
+
+message CreateNamespaceResponse {
+  repeated model.Namespace Namespaces = 1;
+
+  model.Error error = 2;
+}
+
+message UpdateNamespaceRequest {
+  string token = 1;
+  repeated model.Namespace Namespaces = 2;
+}
+
+message UpdateNamespaceResponse {
+  repeated model.Namespace Namespaces = 1;
+
+  model.Error error = 2;
+}
+
+message DeleteNamespaceRequest {
+  string token = 1;
+  repeated string ids = 2;
+}
+
+message DeleteNamespaceResponse {
+  repeated model.Namespace Namespaces = 1;
+
+  model.Error error = 2;
+}
+
+message GetNamespaceRequest {
+  string token = 1;
+  string id = 2;
+}
+
+message GetNamespaceResponse {
+  model.Namespace Namespace = 1;
+
+  model.Error error = 2;
+}

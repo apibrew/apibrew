@@ -3,6 +3,7 @@ package grpc_service
 import (
 	"context"
 	"data-handler/grpc/stub"
+	"data-handler/model"
 	"data-handler/service"
 	"data-handler/service/params"
 )
@@ -33,7 +34,7 @@ func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecord
 func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	records, inserted, err := r.service.Create(ctx, params.RecordCreateParams{
 		Namespace:      request.Namespace,
-		Records:        request.Records,
+		Records:        []*model.Record{request.Record},
 		IgnoreIfExists: request.IgnoreIfExists,
 	})
 
@@ -47,13 +48,19 @@ func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRe
 func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
 	records, err := r.service.Update(ctx, params.RecordUpdateParams{
 		Namespace:    request.Namespace,
-		Records:      request.Records,
+		Records:      []*model.Record{request.Record},
 		CheckVersion: request.CheckVersion,
 	})
 
+	var record *model.Record
+
+	if len(records) > 0 {
+		record = records[0]
+	}
+
 	return &stub.UpdateRecordResponse{
-		Records: records,
-		Error:   toProtoError(err),
+		Record: record,
+		Error:  toProtoError(err),
 	}, nil
 }
 
