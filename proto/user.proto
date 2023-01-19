@@ -16,7 +16,7 @@ service UserService {
       body: "users"
       response_body: "users"
       additional_bindings {
-        post: "/uses",
+        post: "/users",
         body: "user"
         response_body: "user"
       }

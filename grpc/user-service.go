@@ -23,7 +23,7 @@ func (u *userServiceServer) Create(ctx context.Context, request *stub.CreateUser
 		User:  util.ArrayFirst(users),
 		Users: util.ArrayCut(users, 0),
 		Error: toProtoError(err),
-	}, nil
+	}, err
 }
 
 func (u *userServiceServer) Update(ctx context.Context, request *stub.UpdateUserRequest) (*stub.UpdateUserResponse, error) {

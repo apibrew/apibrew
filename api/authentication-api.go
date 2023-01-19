@@ -4,8 +4,6 @@ import (
 	"data-handler/grpc/stub"
 	"data-handler/model"
 	"data-handler/service"
-	"data-handler/service/errors"
-	"data-handler/service/security"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"io"
@@ -48,21 +46,10 @@ func (r *authenticationApi) AuthenticationMiddleWare(next http.Handler) http.Han
 
 			token := tokenParts[1]
 
-			if strings.HasPrefix(req.URL.Path, "/generic") {
-				if req.URL.RawQuery == "" {
-					req.URL.RawQuery = "token=" + token
-				} else {
-					req.URL.RawQuery = req.URL.RawQuery + "token=" + token
-				}
+			if req.URL.RawQuery == "" {
+				req.URL.RawQuery = "token=" + token
 			} else {
-				userDetails, err := r.authenticationService.ParseAndVerifyToken(token)
-
-				if err != nil {
-					handleClientError(w, errors.AuthenticationFailedError) //@todo fixme
-					return
-				}
-
-				req = req.WithContext(security.WithUserDetails(req.Context(), *userDetails))
+				req.URL.RawQuery = req.URL.RawQuery + "token=" + token
 			}
 		}
 

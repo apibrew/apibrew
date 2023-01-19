@@ -1,6 +1,23 @@
 GET http://localhost:8008/users
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJhZG1pbiIsImF1ZCI6WyJkYXRhLWhhbmRsZXIiXSwiZXhwIjoxNjc0MTcyOTUwLCJuYmYiOjE2NzQwMDAxNTAsImlhdCI6MTY3NDAwMDE1MCwianRpIjoiZmFhMTY0YTMtNjdlNC00MDZjLWFiODktNzVmMmZiMDQyYzRkIiwic2NvcGVzIjpbInN1cGVyLXVzZXIiXSwidXNlcm5hbWUiOiJhZG1pbiJ9.kdkk7bwYF4rfXaMvakaY-2CUOVqkFjEoaGiU3xLt0plZg1xL23mJPVU96SSCQzcveIua-3FkGnkBgV8u-zET6utoI3FWxnuQhKXwfv68RaovCEbLftemAJTEFd3eajvZvtXe0DcSDfcs_yUK56XD06fD5zyiVY9Hfom7OZuzdtw
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJ0YWxlaDIiLCJhdWQiOlsiZGF0YS1oYW5kbGVyIl0sImV4cCI6MTczNzIxMzAzNCwibmJmIjoxNjc0MTQxMDM0LCJpYXQiOjE2NzQxNDEwMzQsImp0aSI6ImNkNDYzOTc1LWQxN2ItNDNkZC04ZmYxLTVkOGNjZDU3ZmQzNiIsInNjb3BlcyI6WyIiXSwidXNlcm5hbWUiOiJ0YWxlaDIifQ.ugV6lIA1DTq-uOwZnWaWEDQud5RI_D2mlDeDUviPPCHWlaRARzwIiQ9WuWfi2gOUiNoiGvvFHo4Otl7Btv_3--iwtaVVcDndwULneNTg2E_DtjEjeMdYX2tpSltklYcRSTiE6k-F_5OFgXHbNSoVL26i1eDr2qQwQE-DQ0qjjpA
 
+
+#####
+
+GET http://localhost:8008/users/f1550da0-977a-11ed-844d-b29c4ac91271
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJ0YWxlaDIiLCJhdWQiOlsiZGF0YS1oYW5kbGVyIl0sImV4cCI6MTczNzIxMzAzNCwibmJmIjoxNjc0MTQxMDM0LCJpYXQiOjE2NzQxNDEwMzQsImp0aSI6ImNkNDYzOTc1LWQxN2ItNDNkZC04ZmYxLTVkOGNjZDU3ZmQzNiIsInNjb3BlcyI6WyIiXSwidXNlcm5hbWUiOiJ0YWxlaDIifQ.ugV6lIA1DTq-uOwZnWaWEDQud5RI_D2mlDeDUviPPCHWlaRARzwIiQ9WuWfi2gOUiNoiGvvFHo4Otl7Btv_3--iwtaVVcDndwULneNTg2E_DtjEjeMdYX2tpSltklYcRSTiE6k-F_5OFgXHbNSoVL26i1eDr2qQwQE-DQ0qjjpA
+
+
+#####
+
+POST http://localhost:8008/users
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJ0YWxlaDIiLCJhdWQiOlsiZGF0YS1oYW5kbGVyIl0sImV4cCI6MTczNzIxMzAzNCwibmJmIjoxNjc0MTQxMDM0LCJpYXQiOjE2NzQxNDEwMzQsImp0aSI6ImNkNDYzOTc1LWQxN2ItNDNkZC04ZmYxLTVkOGNjZDU3ZmQzNiIsInNjb3BlcyI6WyIiXSwidXNlcm5hbWUiOiJ0YWxlaDIifQ.ugV6lIA1DTq-uOwZnWaWEDQud5RI_D2mlDeDUviPPCHWlaRARzwIiQ9WuWfi2gOUiNoiGvvFHo4Otl7Btv_3--iwtaVVcDndwULneNTg2E_DtjEjeMdYX2tpSltklYcRSTiE6k-F_5OFgXHbNSoVL26i1eDr2qQwQE-DQ0qjjpA
+Content-Type: application/json
+
+{
+  "username": "taleh-5-new",
+  "password": "pass123"
+}
 
 #####
 
@@ -8,8 +25,8 @@ POST http://localhost:8008/authentication/token
 Content-Type: application/json
 
 {
-  "username": "taleh2",
-  "password": "taleh2",
+  "username": "taleh-4-new",
+  "password": "pass123",
   "term": 3
 }
 

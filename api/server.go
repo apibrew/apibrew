@@ -45,10 +45,6 @@ func (s *server) Serve(lis net.Listener) {
 		Debug:            true,
 	})
 
-	s.swaggerApi.ConfigureRouter(r)
-	s.authenticationApi.ConfigureRouter(r)
-	s.recordApi.ConfigureRouter(r)
-
 	m := runtime.NewServeMux()
 
 	r.PathPrefix("/records").Handler(m)
@@ -58,6 +54,10 @@ func (s *server) Serve(lis net.Listener) {
 	stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
 	stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
 	stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
+
+	s.swaggerApi.ConfigureRouter(r)
+	s.authenticationApi.ConfigureRouter(r)
+	s.recordApi.ConfigureRouter(r)
 
 	if err := http.Serve(lis, c.Handler(r)); err != nil {
 		panic(err)
