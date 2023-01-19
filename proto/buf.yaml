@@ -1,4 +1,0 @@
-name: buf.build/tislib/data-handler
-version: v1
-deps:
-  - buf.build/googleapis/googleapis

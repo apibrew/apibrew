@@ -12,56 +12,82 @@ import "google/api/annotations.proto";
 service UserService {
   rpc Create(CreateUserRequest) returns(CreateUserResponse) {
     option (google.api.http) = {
-      post: "/v1/user"
-      body: "*"
+      post: "/uses/_bulk"
+      body: "users"
+      response_body: "users"
+      additional_bindings {
+        post: "/uses",
+        body: "user"
+        response_body: "user"
+      }
     };
   }
   rpc Update(UpdateUserRequest) returns(UpdateUserResponse) {
     option (google.api.http) = {
-      put: "/v1/user/{user.id}"
-      body: "*"
+      put: "/uses/_bulk"
+      body: "users"
+      response_body: "users"
+      additional_bindings {
+        put: "/users/{user.id}"
+        body: "user"
+        response_body: "user"
+      }
     };
   }
   rpc Delete(DeleteUserRequest) returns(DeleteUserResponse) {
     option (google.api.http) = {
-      delete: "/v1/user/{id}"
+      delete: "/uses/_bulk"
+      body: "ids"
+
+      additional_bindings {
+        delete: "/users/{id}"
+      }
     };
   }
   rpc List(ListUserRequest) returns(ListUserResponse) {
     option (google.api.http) = {
-      get: "/v1/user"
+      get: "/users",
     };
   }
-  rpc Get(GetUserRequest) returns (GetUserResponse) {}
+  rpc Get(GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get: "/users/{id}",
+      response_body: "user"
+    };
+  }
 }
 
 message CreateUserRequest {
   string token = 1;
   model.User user = 2;
+  repeated model.User users = 3;
 }
 
 message CreateUserResponse {
   model.User user = 1;
+  repeated model.User users = 2;
 
-  model.Error error = 2;
+  model.Error error = 3;
 }
 
 message UpdateUserRequest {
   string token = 1;
   model.User user = 2;
+  repeated model.User users = 3;
 }
 
 message UpdateUserResponse {
   model.User user = 1;
+  repeated model.User users = 2;
 
-  model.Error error = 2;
+  model.Error error = 3;
 }
 
 
 message DeleteUserRequest {
   string token = 1;
-  repeated string ids = 2;
-  repeated string id = 3;
+  string id = 2;
+  repeated string ids = 3;
 }
 
 message DeleteUserResponse {
@@ -71,7 +97,6 @@ message DeleteUserResponse {
 message ListUserRequest {
   string token = 1;
 
-  model.BooleanExpression query = 3;
   uint32 limit = 4;
   uint64 offset = 5;
 }

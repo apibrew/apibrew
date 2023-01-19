@@ -3,7 +3,6 @@ package grpc_service
 import (
 	"context"
 	"data-handler/grpc/stub"
-	"data-handler/model"
 	"data-handler/service"
 	"data-handler/service/params"
 )
@@ -17,7 +16,6 @@ func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecord
 	records, total, err := r.service.List(ctx, params.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
-		Query:             request.Query,
 		Limit:             request.Limit,
 		Offset:            request.Offset,
 		UseHistory:        request.UseHistory,
@@ -31,10 +29,28 @@ func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecord
 	}, nil
 }
 
+func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRecordRequest) (*stub.SearchRecordResponse, error) {
+	records, total, err := r.service.List(ctx, params.RecordListParams{
+		Namespace:         request.Namespace,
+		Resource:          request.Resource,
+		Limit:             request.Limit,
+		Query:             request.Query,
+		Offset:            request.Offset,
+		UseHistory:        request.UseHistory,
+		ResolveReferences: request.ResolveReferences,
+	})
+
+	return &stub.SearchRecordResponse{
+		Content: records,
+		Total:   total,
+		Error:   toProtoError(err),
+	}, nil
+}
+
 func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	records, inserted, err := r.service.Create(ctx, params.RecordCreateParams{
 		Namespace:      request.Namespace,
-		Records:        []*model.Record{request.Record},
+		Records:        request.Records,
 		IgnoreIfExists: request.IgnoreIfExists,
 	})
 
@@ -48,19 +64,13 @@ func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRe
 func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
 	records, err := r.service.Update(ctx, params.RecordUpdateParams{
 		Namespace:    request.Namespace,
-		Records:      []*model.Record{request.Record},
+		Records:      request.Records,
 		CheckVersion: request.CheckVersion,
 	})
 
-	var record *model.Record
-
-	if len(records) > 0 {
-		record = records[0]
-	}
-
 	return &stub.UpdateRecordResponse{
-		Record: record,
-		Error:  toProtoError(err),
+		Records: records,
+		Error:   toProtoError(err),
 	}, nil
 }
 

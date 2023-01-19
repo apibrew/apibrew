@@ -237,7 +237,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 	vars := mux.Vars(request)
 	resourceName := vars["resourceName"]
 
-	listRecordRequest := new(stub.ListRecordRequest)
+	listRecordRequest := new(stub.SearchRecordRequest)
 
 	err := parseRequestMessage(request, listRecordRequest)
 	listRecordRequest.Resource = resourceName

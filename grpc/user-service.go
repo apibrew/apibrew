@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/grpc/stub"
 	"data-handler/service"
+	"data-handler/util"
 )
 
 type UserGrpcService interface {
@@ -16,19 +17,21 @@ type userServiceServer struct {
 }
 
 func (u *userServiceServer) Create(ctx context.Context, request *stub.CreateUserRequest) (*stub.CreateUserResponse, error) {
-	users, err := u.service.Create(ctx, request.Users)
+	users, err := u.service.Create(ctx, util.ArrayPrepend(request.Users, request.User))
 
 	return &stub.CreateUserResponse{
-		Users: users,
+		User:  util.ArrayFirst(users),
+		Users: util.ArrayCut(users, 0),
 		Error: toProtoError(err),
 	}, nil
 }
 
 func (u *userServiceServer) Update(ctx context.Context, request *stub.UpdateUserRequest) (*stub.UpdateUserResponse, error) {
-	users, err := u.service.Update(ctx, request.Users)
+	users, err := u.service.Update(ctx, util.ArrayPrepend(request.Users, request.User))
 
 	return &stub.UpdateUserResponse{
-		Users: users,
+		User:  util.ArrayFirst(users),
+		Users: util.ArrayCut(users, 0),
 		Error: toProtoError(err),
 	}, err
 }
@@ -51,7 +54,7 @@ func (u *userServiceServer) Get(ctx context.Context, request *stub.GetUserReques
 }
 
 func (u *userServiceServer) List(ctx context.Context, request *stub.ListUserRequest) (*stub.ListUserResponse, error) {
-	users, err := u.service.List(ctx, request.Query, request.Limit, request.Offset)
+	users, err := u.service.List(ctx, nil, request.Limit, request.Offset)
 
 	return &stub.ListUserResponse{
 		Content: users,

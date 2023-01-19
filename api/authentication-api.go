@@ -48,7 +48,7 @@ func (r *authenticationApi) AuthenticationMiddleWare(next http.Handler) http.Han
 
 			token := tokenParts[1]
 
-			if strings.HasPrefix(req.URL.Path, "/v1") {
+			if strings.HasPrefix(req.URL.Path, "/generic") {
 				if req.URL.RawQuery == "" {
 					req.URL.RawQuery = "token=" + token
 				} else {

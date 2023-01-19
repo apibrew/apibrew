@@ -49,13 +49,15 @@ func (s *server) Serve(lis net.Listener) {
 	s.authenticationApi.ConfigureRouter(r)
 	s.recordApi.ConfigureRouter(r)
 
-	mux := runtime.NewServeMux()
+	m := runtime.NewServeMux()
 
-	r.PathPrefix("/v1").Handler(mux)
+	r.PathPrefix("/records").Handler(m)
+	r.PathPrefix("/users").Handler(m)
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), mux, "localhost:9009", opts)
-	stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), mux, "localhost:9009", opts)
+	stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
+	stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
+	stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
 
 	if err := http.Serve(lis, c.Handler(r)); err != nil {
 		panic(err)

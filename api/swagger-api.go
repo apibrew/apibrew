@@ -78,7 +78,7 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 func (s *swaggerApi) prepareDoc(ctx context.Context) (*openapi3.T, errors.ServiceError) {
 	loader := openapi3.NewLoader()
 
-	doc, err := loader.LoadFromFile("openapi.yml")
+	doc, err := loader.LoadFromFile("openapi.base.yml")
 
 	if err != nil {
 		panic(err)

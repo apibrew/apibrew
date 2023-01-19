@@ -7,22 +7,71 @@ option go_package = "data-handler/grpc/stub";
 import 'model/record.proto';
 import 'model/query.proto';
 import 'model/error.proto';
+import "google/api/annotations.proto";
 
 service RecordService {
-  // Sends a greeting
-  rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {}
-  rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {}
-  rpc Apply (ApplyRecordsRequest) returns (ApplyRecordsResponse) {}
-  rpc Delete (DeleteRecordRequest) returns (DeleteRecordResponse) {}
-  rpc List (ListRecordRequest) returns (ListRecordResponse) {}
-  rpc Get (GetRecordRequest) returns (GetRecordResponse) {}
+  rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {
+    option (google.api.http) = {
+      post: "/records/{namespace}/{record.resource}/_bulk",
+      body: "records",
+      response_body: "records"
+      additional_bindings {
+        post: "/records/{namespace}/{record.resource}",
+        body: "record",
+        response_body: "record"
+      }
+    };
+  }
+
+  rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {
+    option (google.api.http) = {
+      put: "/records/{namespace}/{record.resource}/_bulk",
+      body: "records",
+      response_body: "records"
+      additional_bindings {
+        put: "/records/{namespace}/{record.resource}/{record.id}",
+        body: "record",
+        response_body: "record"
+      }
+    };
+  }
+
+  rpc Delete (DeleteRecordRequest)   returns (DeleteRecordResponse) {
+    option (google.api.http) = {
+      put: "/records/{namespace}/{resource}/_bulk",
+      body: "ids"
+      additional_bindings {
+        delete: "/records/{namespace}/{resource}/{id}",
+      }
+    };
+  }
+
+  rpc List (ListRecordRequest) returns (ListRecordResponse) {
+    option (google.api.http) = {
+      get: "/records/{namespace}/{resource}",
+    };
+  }
+
+  rpc Search (SearchRecordRequest) returns (SearchRecordResponse) {
+    option (google.api.http) = {
+      post: "/records/{namespace}/{resource}/_search",
+      body: "*"
+    };
+  }
+
+  rpc Get (GetRecordRequest) returns (GetRecordResponse) {
+    option (google.api.http) = {
+      get: "/records/{namespace}/{resource}/{id}",
+      response_body: "record"
+    };
+  }
 }
 
 message ListRecordRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  model.BooleanExpression query = 4;
+  map<string, string> filters = 4;
   uint32 limit = 5;
   uint64 offset = 6;
   bool useHistory = 7;
@@ -35,49 +84,58 @@ message ListRecordResponse {
   model.Error error = 3;
 }
 
+message SearchRecordRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  model.BooleanExpression query = 4;
+  uint32 limit = 5;
+  uint64 offset = 6;
+  bool useHistory = 7;
+  bool resolveReferences = 8;
+}
+
+message SearchRecordResponse {
+  uint32 total = 1;
+  repeated model.Record content = 2;
+  model.Error error = 3;
+}
+
 message CreateRecordRequest {
   string token = 1;
   string namespace = 2;
-  model.Record Record = 3;
-  bool ignoreIfExists = 4;
+  model.Record record = 3;
+  repeated model.Record records = 4;
+  bool ignoreIfExists = 5;
 }
 
 message CreateRecordResponse {
-  repeated model.Record Records = 1;
-  model.Error error = 2;
-  repeated bool inserted = 3;
+  model.Record record = 1;
+  repeated model.Record records = 2;
+  model.Error error = 3;
+  repeated bool inserted = 4;
 }
 
 message UpdateRecordRequest {
   string token = 1;
   string namespace = 2;
-  model.Record Record = 3;
-  bool checkVersion = 4;
+  model.Record record = 3;
+  repeated model.Record records = 4;
+  bool checkVersion = 5;
 }
 
 message UpdateRecordResponse {
-  model.Record Record = 1;
-  model.Error error = 2;
-}
-
-message ApplyRecordsRequest {
-  string token = 1;
-  string namespace = 2;
-  repeated model.Record Records = 3;
-  bool checkVersion = 4;
-}
-
-message ApplyRecordsResponse {
-  repeated model.Record Records = 1;
-  model.Error error = 2;
+  model.Record record = 1;
+  repeated model.Record records = 2;
+  model.Error error = 3;
 }
 
 message DeleteRecordRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  repeated string ids = 4; // multi
-  repeated string id = 5; // single
+  repeated string id = 4;
+  repeated string ids = 5;
 }
 
 message DeleteRecordResponse {
@@ -92,6 +150,6 @@ message GetRecordRequest {
 }
 
 message GetRecordResponse {
-  model.Record Record = 1;
+  model.Record record = 1;
   model.Error error = 2;
 }

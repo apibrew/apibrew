@@ -3,3 +3,4 @@
 /stub-ts
 /model
 /grpc/stub
+proto/*.lock

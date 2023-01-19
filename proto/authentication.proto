@@ -6,10 +6,21 @@ option go_package = "data-handler/grpc/stub";
 
 import 'model/error.proto';
 import 'model/token.proto';
+import "google/api/annotations.proto";
 
 service AuthenticationService {
-  rpc Authenticate(AuthenticationRequest) returns(AuthenticationResponse) {}
-  rpc RenewToken(RenewTokenRequest) returns(RenewTokenResponse) {}
+  rpc Authenticate(AuthenticationRequest) returns(AuthenticationResponse) {
+    option (google.api.http) = {
+      post: "/authentication/token",
+      body: "*"
+    };
+  }
+  rpc RenewToken(RenewTokenRequest) returns(RenewTokenResponse) {
+    option (google.api.http) = {
+      put: "/authentication/token",
+      body: "*"
+    };
+  }
 }
 
 message AuthenticationRequest {
