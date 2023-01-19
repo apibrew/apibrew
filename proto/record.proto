@@ -13,8 +13,6 @@ service RecordService {
   rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {
     option (google.api.http) = {
       post: "/records/{namespace}/{record.resource}/_bulk",
-      body: "records",
-      response_body: "records"
       additional_bindings {
         post: "/records/{namespace}/{record.resource}",
         body: "record",
@@ -26,8 +24,6 @@ service RecordService {
   rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {
     option (google.api.http) = {
       put: "/records/{namespace}/{record.resource}/_bulk",
-      body: "records",
-      response_body: "records"
       additional_bindings {
         put: "/records/{namespace}/{record.resource}/{record.id}",
         body: "record",
@@ -39,7 +35,6 @@ service RecordService {
   rpc Delete (DeleteRecordRequest)   returns (DeleteRecordResponse) {
     option (google.api.http) = {
       put: "/records/{namespace}/{resource}/_bulk",
-      body: "ids"
       additional_bindings {
         delete: "/records/{namespace}/{resource}/{id}",
       }
