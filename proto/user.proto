@@ -13,8 +13,6 @@ service UserService {
   rpc Create(CreateUserRequest) returns(CreateUserResponse) {
     option (google.api.http) = {
       post: "/uses/_bulk"
-      body: "users"
-      response_body: "users"
       additional_bindings {
         post: "/users",
         body: "user"
@@ -25,8 +23,6 @@ service UserService {
   rpc Update(UpdateUserRequest) returns(UpdateUserResponse) {
     option (google.api.http) = {
       put: "/uses/_bulk"
-      body: "users"
-      response_body: "users"
       additional_bindings {
         put: "/users/{user.id}"
         body: "user"
@@ -37,8 +33,6 @@ service UserService {
   rpc Delete(DeleteUserRequest) returns(DeleteUserResponse) {
     option (google.api.http) = {
       delete: "/uses/_bulk"
-      body: "ids"
-
       additional_bindings {
         delete: "/users/{id}"
       }
