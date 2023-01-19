@@ -1,10 +1,10 @@
-package grpc_service
+package grpc
 
 import (
 	"context"
-	"data-handler/grpc/stub"
 	"data-handler/logging"
 	"data-handler/model"
+	"data-handler/server/stub"
 	"data-handler/service"
 	"data-handler/service/errors"
 	log "github.com/sirupsen/logrus"

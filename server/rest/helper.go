@@ -1,4 +1,4 @@
-package api
+package rest
 
 import (
 	"data-handler/model"

@@ -1,11 +1,11 @@
 package app
 
 import (
-	"data-handler/api"
-	grpc_server "data-handler/grpc"
 	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/params"
+	grpc_server "data-handler/server/grpc"
+	"data-handler/server/rest"
 	"data-handler/service"
 	"data-handler/service/handler"
 	"data-handler/service/handlers"
@@ -23,7 +23,7 @@ type App struct {
 	backendProviderService service.BackendProviderService
 	namespaceService       service.NamespaceService
 	userService            service.UserService
-	apiServer              api.Server
+	apiServer              rest.Server
 	grpcLis                net.Listener
 	httpLis                net.Listener
 	genericHandler         *handler.GenericHandler
@@ -76,7 +76,7 @@ func (app *App) Init() {
 		WatchService:          app.watchService,
 	})
 
-	app.apiServer = api.NewServer(params.ServerInjectionConstructorParams{
+	app.apiServer = rest.NewServer(params.ServerInjectionConstructorParams{
 		ResourceService:       app.resourceService,
 		RecordService:         app.recordService,
 		AuthenticationService: app.authenticationService,

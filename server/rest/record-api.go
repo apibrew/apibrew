@@ -1,9 +1,9 @@
-package api
+package rest
 
 import (
 	"context"
-	"data-handler/grpc/stub"
 	"data-handler/model"
+	"data-handler/server/stub"
 	"data-handler/service"
 	"data-handler/service/params"
 	"github.com/gorilla/mux"

@@ -1,18 +1,18 @@
 version: v1
 plugins:
   - name: go
-    out: ../grpc/stub
+    out: ../
     opt:
       - paths=source_relative
   - name: go-grpc
-    out: ../grpc/stub
+    out: ../
     opt:
       - paths=source_relative
   - name: grpc-gateway
-    out: ../grpc/stub
+    out: ../
     opt:
       - paths=source_relative
       - allow_delete_body=true
   - name: openapi
     strategy: all
-    out: ../api
+    out: ../

@@ -1,8 +1,8 @@
 package test
 
 import (
-	"data-handler/grpc/stub"
 	"data-handler/model"
+	"data-handler/server/stub"
 	"data-handler/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"

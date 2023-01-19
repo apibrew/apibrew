@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"data-handler/grpc/stub"
+	"data-handler/server/stub"
 	log "github.com/sirupsen/logrus"
 )
 import "google.golang.org/grpc"

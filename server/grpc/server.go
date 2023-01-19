@@ -1,12 +1,12 @@
-package grpc_service
+package grpc
 
 import (
 	"context"
-	"data-handler/grpc/stub"
 	"data-handler/helper"
 	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/params"
+	"data-handler/server/stub"
 	"data-handler/service"
 	"data-handler/service/errors"
 	"data-handler/service/security"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"data-handler/grpc/stub"
+	"data-handler/server/stub"
 	"github.com/spf13/cobra"
 	"log"
 )

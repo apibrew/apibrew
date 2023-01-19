@@ -2,7 +2,7 @@ package lib
 
 import (
 	"data-handler/app"
-	"data-handler/grpc/stub"
+	"data-handler/server/stub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"time"

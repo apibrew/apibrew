@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
-	"data-handler/grpc/stub"
 	"data-handler/model"
+	"data-handler/server/stub"
 	"encoding/json"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/encoding/protojson"

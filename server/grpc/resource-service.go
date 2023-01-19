@@ -1,9 +1,9 @@
-package grpc_service
+package grpc
 
 import (
 	"context"
-	"data-handler/grpc/stub"
 	"data-handler/model"
+	"data-handler/server/stub"
 	"data-handler/service"
 )
 

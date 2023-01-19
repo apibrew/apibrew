@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"data-handler/cli/output"
-	"data-handler/grpc/stub"
 	"data-handler/model"
+	"data-handler/server/stub"
 	"github.com/spf13/cobra"
 	"log"
 	"strings"

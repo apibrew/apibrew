@@ -1,12 +1,12 @@
-package api
+package rest
 
 import (
 	"context"
-	"data-handler/grpc/stub"
 	"data-handler/helper"
 	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/params"
+	"data-handler/server/stub"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
@@ -72,6 +72,7 @@ func (s *server) Serve(lis net.Listener) {
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowCredentials: true,
 		AllowedOrigins:   []string{"*"},
+		AllowedHeaders:   []string{"Authorization"},
 		Debug:            true,
 	})
 

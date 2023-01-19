@@ -3,10 +3,10 @@ package test
 import (
 	"context"
 	"data-handler/app"
-	"data-handler/grpc/stub"
 	"data-handler/helper"
 	"data-handler/logging"
 	"data-handler/model"
+	"data-handler/server/stub"
 	"data-handler/util"
 	"fmt"
 	log "github.com/sirupsen/logrus"

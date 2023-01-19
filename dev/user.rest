@@ -1,10 +1,10 @@
-GET http://localhost:8008/users
+GET http://tiswork.tisserv.net:8008/users
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJ0YWxlaDIiLCJhdWQiOlsiZGF0YS1oYW5kbGVyIl0sImV4cCI6MTczNzIxMzAzNCwibmJmIjoxNjc0MTQxMDM0LCJpYXQiOjE2NzQxNDEwMzQsImp0aSI6ImNkNDYzOTc1LWQxN2ItNDNkZC04ZmYxLTVkOGNjZDU3ZmQzNiIsInNjb3BlcyI6WyIiXSwidXNlcm5hbWUiOiJ0YWxlaDIifQ.ugV6lIA1DTq-uOwZnWaWEDQud5RI_D2mlDeDUviPPCHWlaRARzwIiQ9WuWfi2gOUiNoiGvvFHo4Otl7Btv_3--iwtaVVcDndwULneNTg2E_DtjEjeMdYX2tpSltklYcRSTiE6k-F_5OFgXHbNSoVL26i1eDr2qQwQE-DQ0qjjpA
 
 
 #####
 
-GET http://localhost:8008/users/f1550da0-977a-11ed-844d-b29c4ac91271
+GET http://localhost:8008/tiswork.tisserv.net:8008/f1550da0-977a-11ed-844d-b29c4ac91271
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJ0YWxlaDIiLCJhdWQiOlsiZGF0YS1oYW5kbGVyIl0sImV4cCI6MTczNzIxMzAzNCwibmJmIjoxNjc0MTQxMDM0LCJpYXQiOjE2NzQxNDEwMzQsImp0aSI6ImNkNDYzOTc1LWQxN2ItNDNkZC04ZmYxLTVkOGNjZDU3ZmQzNiIsInNjb3BlcyI6WyIiXSwidXNlcm5hbWUiOiJ0YWxlaDIifQ.ugV6lIA1DTq-uOwZnWaWEDQud5RI_D2mlDeDUviPPCHWlaRARzwIiQ9WuWfi2gOUiNoiGvvFHo4Otl7Btv_3--iwtaVVcDndwULneNTg2E_DtjEjeMdYX2tpSltklYcRSTiE6k-F_5OFgXHbNSoVL26i1eDr2qQwQE-DQ0qjjpA
 
 
@@ -48,5 +48,33 @@ Content-Type: application/json
 GET http://localhost:8008/generic/user/b60cd9d0-977a-11ed-b749-b29c4ac91271
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJ0YWxlaDIiLCJhdWQiOlsiZGF0YS1oYW5kbGVyIl0sImV4cCI6MTczNzEzMTIzMywibmJmIjoxNjc0MDU5MjMzLCJpYXQiOjE2NzQwNTkyMzMsImp0aSI6ImUxMDZjNGY2LTFjZjYtNDFkOS1hMjRiLTU4MmM3NTc0MTk5MiIsInNjb3BlcyI6WyIiXSwidXNlcm5hbWUiOiJ0YWxlaDIifQ.kCMUqaAWwsMzSUkP7Px-1Xl4_L7j8ZsEi0x_3iWzUv8oV8mCBws9N9IAun-5_z2JZo9Tl5tWterHJzGJ5xsmHd3YRl_e0th4MoJBMdQ3cJcKVaFzBwbEpV5o8WQc_4yJgmKNslEGf2Ib-OMSHK7Cq9K2cgjIxdCMbVaeL2w-uSQ
 
+###
 
+# curl 'http://tiswork.tisserv.net:8008/users?limit=1000'
+#  -X 'OPTIONS'
+#  -H 'Accept: */*'
+#  -H 'Accept-Language: en-US,en;q=0.9'
+#  -H 'Access-Control-Request-Headers: authorization'
+#  -H 'Access-Control-Request-Method: GET'
+#  -H 'Cache-Control: no-cache'
+#  -H 'Connection: keep-alive'
+#  -H 'Origin: http://localhost:3000'
+#  -H 'Pragma: no-cache'
+#  -H 'Referer: http://localhost:3000/'
+#  -H 'Sec-Fetch-Mode: cors'
+#-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+OPTIONS http://localhost:8008/users?limit=1000
+Accept: */*
+Accept-Language: en-US,en;q=0.9
+Access-Control-Request-Headers: authorization
+Access-Control-Request-Method: GET
+Cache-Control: no-cache
+Connection: keep-alive
+Origin: http://localhost:3000
+Pragma: no-cache
+Referer: http://localhost:3000/
+Sec-Fetch-Mode: cors
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36
+
+###
 

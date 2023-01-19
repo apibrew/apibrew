@@ -127,12 +127,6 @@ paths:
                   in: query
                   schema:
                     type: boolean
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Record'
-                required: true
             responses:
                 "200":
                     description: OK
@@ -219,12 +213,6 @@ paths:
                   in: query
                   schema:
                     type: boolean
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Record'
-                required: true
             responses:
                 "200":
                     description: OK
@@ -315,12 +303,12 @@ paths:
                     type: array
                     items:
                         type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: string
-                required: true
+                - name: ids
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
             responses:
                 "200":
                     description: OK
@@ -538,12 +526,6 @@ paths:
                   schema:
                     type: integer
                     format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/User'
-                required: true
             responses:
                 "200":
                     description: OK
@@ -626,12 +608,6 @@ paths:
                   schema:
                     type: integer
                     format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/User'
-                required: true
             responses:
                 "200":
                     description: OK
@@ -658,12 +634,12 @@ paths:
                   in: query
                   schema:
                     type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: string
-                required: true
+                - name: ids
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
             responses:
                 "200":
                     description: OK

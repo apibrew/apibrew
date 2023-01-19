@@ -2,7 +2,7 @@ package lib
 
 import (
 	"context"
-	"data-handler/grpc/stub"
+	"data-handler/server/stub"
 )
 
 func Setup() {
