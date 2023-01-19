@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"net/http"
+	"strings"
 )
 
 //import _ "net/http/pprof"
@@ -27,15 +28,44 @@ type Server interface {
 }
 
 type server struct {
-	recordApi         RecordApi
-	authenticationApi AuthenticationApi
-	swaggerApi        SwaggerApi
+	recordApi  RecordApi
+	swaggerApi SwaggerApi
+}
+
+func (r *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		authorizationHeader := req.Header.Get("Authorization")
+
+		if authorizationHeader != "" {
+			tokenParts := strings.Split(authorizationHeader, " ")
+
+			if len(tokenParts) != 2 {
+				handleClientErrorText(w, "authorization header should contain two part") //@todo fixme
+				return
+			}
+
+			if strings.ToLower(tokenParts[0]) != "bearer" {
+				handleClientErrorText(w, "authorization token type should be bearer") //@todo fixme
+				return
+			}
+
+			token := tokenParts[1]
+
+			if req.URL.RawQuery == "" {
+				req.URL.RawQuery = "token=" + token
+			} else {
+				req.URL.RawQuery = req.URL.RawQuery + "token=" + token
+			}
+		}
+
+		next.ServeHTTP(w, req)
+	})
 }
 
 func (s *server) Serve(lis net.Listener) {
 	r := mux.NewRouter()
 
-	r.Use(s.authenticationApi.AuthenticationMiddleWare)
+	r.Use(s.AuthenticationMiddleWare)
 	r.Use(s.TrackingMiddleWare)
 
 	c := cors.New(cors.Options{
@@ -49,6 +79,7 @@ func (s *server) Serve(lis net.Listener) {
 
 	r.PathPrefix("/records").Handler(m)
 	r.PathPrefix("/users").Handler(m)
+	r.PathPrefix("/authentication").Handler(m)
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
@@ -56,7 +87,6 @@ func (s *server) Serve(lis net.Listener) {
 	stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
 
 	s.swaggerApi.ConfigureRouter(r)
-	s.authenticationApi.ConfigureRouter(r)
 	s.recordApi.ConfigureRouter(r)
 
 	if err := http.Serve(lis, c.Handler(r)); err != nil {
@@ -81,8 +111,7 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 
 func NewServer(serverInjectionParams params.ServerInjectionConstructorParams, initData *model.InitData) Server {
 	return &server{
-		recordApi:         NewRecordApi(serverInjectionParams.RecordService, serverInjectionParams.ResourceService),
-		authenticationApi: NewAuthenticationApi(serverInjectionParams.AuthenticationService, initData),
-		swaggerApi:        NewSwaggerApi(serverInjectionParams.ResourceService),
+		recordApi:  NewRecordApi(serverInjectionParams.RecordService, serverInjectionParams.ResourceService),
+		swaggerApi: NewSwaggerApi(serverInjectionParams.ResourceService),
 	}
 }

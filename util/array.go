@@ -20,5 +20,5 @@ func ArrayCut[T interface{}](arr []T, index int) []T {
 		return nil
 	}
 
-	return arr[index:]
+	return arr[index+1:]
 }
