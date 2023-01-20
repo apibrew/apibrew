@@ -2,10 +2,9 @@ package rest
 
 import (
 	"context"
+	"data-handler/app"
 	"data-handler/helper"
 	"data-handler/logging"
-	"data-handler/model"
-	"data-handler/params"
 	"data-handler/server/stub"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -110,9 +109,9 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 	})
 }
 
-func NewServer(serverInjectionParams params.ServerInjectionConstructorParams, initData *model.InitData) Server {
+func NewServer(container app.Container) Server {
 	return &server{
-		recordApi:  NewRecordApi(serverInjectionParams.RecordService, serverInjectionParams.ResourceService),
-		swaggerApi: NewSwaggerApi(serverInjectionParams.ResourceService),
+		recordApi:  NewRecordApi(container.GetRecordService(), container.GetResourceService()),
+		swaggerApi: NewSwaggerApi(container.GetResourceService()),
 	}
 }

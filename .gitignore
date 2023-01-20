@@ -4,3 +4,4 @@
 /model
 /grpc/stub
 proto/*.lock
+server/stub

@@ -15,4 +15,4 @@ plugins:
       - allow_delete_body=true
   - name: openapi
     strategy: all
-    out: ../
+    out: ../server/rest

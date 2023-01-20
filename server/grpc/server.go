@@ -2,22 +2,23 @@ package grpc
 
 import (
 	"context"
+	"data-handler/app"
 	"data-handler/helper"
 	"data-handler/logging"
 	"data-handler/model"
-	"data-handler/params"
 	"data-handler/server/stub"
 	"data-handler/service"
 	"data-handler/service/errors"
 	"data-handler/service/security"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"net"
 )
 
-type GrpcServer interface {
-	Serve(lis net.Listener) error
+type Server interface {
+	Serve(lis net.Listener)
 	Init(*model.InitData)
 	Stop()
 }
@@ -57,8 +58,10 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.watchService))
 }
 
-func (g *grpcServer) Serve(lis net.Listener) error {
-	return g.grpcServer.Serve(lis)
+func (g *grpcServer) Serve(lis net.Listener) {
+	if err := g.grpcServer.Serve(lis); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
@@ -98,14 +101,14 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 	return handler(ctx, req)
 }
 
-func NewGrpcServer(params params.ServerInjectionConstructorParams) GrpcServer {
+func NewGrpcServer(container app.Container) Server {
 	return &grpcServer{
-		resourceService:       params.ResourceService,
-		recordService:         params.RecordService,
-		watchService:          params.WatchService,
-		authenticationService: params.AuthenticationService,
-		dataSourceService:     params.DataSourceService,
-		namespaceService:      params.NamespaceService,
-		userService:           params.UserService,
+		resourceService:       container.GetResourceService(),
+		recordService:         container.GetRecordService(),
+		watchService:          container.GetWatchService(),
+		authenticationService: container.GetAuthenticationService(),
+		dataSourceService:     container.GetDataSourceService(),
+		namespaceService:      container.GetNamespaceService(),
+		userService:           container.GetUserService(),
 	}
 }

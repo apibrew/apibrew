@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"data-handler/cli/output"
+	"data-handler/cmd/cli/output"
 	"data-handler/model"
 	"data-handler/server/stub"
 	"github.com/spf13/cobra"

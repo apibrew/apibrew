@@ -1,7 +1,7 @@
 {
   "config":  {
-    "grpcAddr":  "0.0.0.0:9009",
-    "httpAddr":  "0.0.0.0:8008",
+    "host":  "0.0.0.0",
+    "port":  "9009",
     "jwtPrivateKey":  "data/jwt.key",
     "jwtPublicKey":  "data/jwt.key.pub"
   },

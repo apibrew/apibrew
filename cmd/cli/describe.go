@@ -1,7 +1,7 @@
 package main
 
 import (
-	"data-handler/cli/output"
+	"data-handler/cmd/cli/output"
 	"data-handler/server/stub"
 	"github.com/spf13/cobra"
 	"log"

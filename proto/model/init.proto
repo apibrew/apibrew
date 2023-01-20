@@ -11,8 +11,8 @@ import 'model/record.proto';
 import 'model/namespace.proto';
 
 message AppConfig {
-  string grpcAddr = 1;
-  string httpAddr = 2;
+  string host = 1;
+  int32 port = 2;
   string jwtPrivateKey = 3;
   string jwtPublicKey = 4;
   bool disableAuthentication = 5;

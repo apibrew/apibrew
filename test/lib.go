@@ -19,7 +19,7 @@ import (
 )
 
 type SimpleAppGrpcContainer struct {
-	app.GrpcContainer
+	app.Container
 
 	authenticationService stub.AuthenticationServiceClient
 	dataSourceService     stub.DataSourceServiceClient

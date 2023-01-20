@@ -3,19 +3,14 @@ package app
 import (
 	"data-handler/logging"
 	"data-handler/model"
-	"data-handler/params"
-	grpc_server "data-handler/server/grpc"
-	"data-handler/server/rest"
 	"data-handler/service"
 	"data-handler/service/handler"
 	"data-handler/service/handlers"
 	log "github.com/sirupsen/logrus"
-	"net"
 )
 
 type App struct {
 	initData               *model.InitData
-	grpcServer             grpc_server.GrpcServer
 	authenticationService  service.AuthenticationService
 	dataSourceService      service.DataSourceService
 	resourceService        service.ResourceService
@@ -23,19 +18,31 @@ type App struct {
 	backendProviderService service.BackendProviderService
 	namespaceService       service.NamespaceService
 	userService            service.UserService
-	apiServer              rest.Server
-	grpcLis                net.Listener
-	httpLis                net.Listener
 	genericHandler         *handler.GenericHandler
 	stdHandler             handlers.StdHandler
 	watchService           service.WatchService
 }
 
-type GrpcContainer interface {
+type Container interface {
 	GetRecordService() service.RecordService
 	GetAuthenticationService() service.AuthenticationService
 	GetResourceService() service.ResourceService
 	GetDataSourceService() service.DataSourceService
+	GetWatchService() service.WatchService
+	GetNamespaceService() service.NamespaceService
+	GetUserService() service.UserService
+}
+
+func (app *App) GetWatchService() service.WatchService {
+	return app.watchService
+}
+
+func (app *App) GetNamespaceService() service.NamespaceService {
+	return app.namespaceService
+}
+
+func (app *App) GetUserService() service.UserService {
+	return app.userService
 }
 
 func (app *App) GetRecordService() service.RecordService {
@@ -66,54 +73,8 @@ func (app *App) Init() {
 	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService)
 	app.watchService = service.NewWatchService(app.genericHandler)
 
-	app.grpcServer = grpc_server.NewGrpcServer(params.ServerInjectionConstructorParams{
-		ResourceService:       app.resourceService,
-		RecordService:         app.recordService,
-		AuthenticationService: app.authenticationService,
-		DataSourceService:     app.dataSourceService,
-		NamespaceService:      app.namespaceService,
-		UserService:           app.userService,
-		WatchService:          app.watchService,
-	})
-
-	app.apiServer = rest.NewServer(params.ServerInjectionConstructorParams{
-		ResourceService:       app.resourceService,
-		RecordService:         app.recordService,
-		AuthenticationService: app.authenticationService,
-		DataSourceService:     app.dataSourceService,
-		NamespaceService:      app.namespaceService,
-		UserService:           app.userService,
-		WatchService:          app.watchService,
-	}, app.initData)
-
 	app.InjectServices()
 	app.initServices()
-
-	var err error
-	app.grpcLis, err = net.Listen("tcp", app.initData.Config.GrpcAddr)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	app.httpLis, err = net.Listen("tcp", app.initData.Config.HttpAddr)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	app.grpcServer.Init(app.initData)
-}
-
-func (app *App) Serve() {
-	go app.apiServer.Serve(app.httpLis)
-
-	err := app.grpcServer.Serve(app.grpcLis)
-
-	if err != nil {
-		panic(err)
-	}
-}
-
-func (app *App) Stop() {
-	app.grpcServer.Stop()
 }
 
 func (app *App) initServices() {
