@@ -2,7 +2,6 @@ package rest
 
 import (
 	"data-handler/model"
-	"data-handler/service"
 	"data-handler/service/errors"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -30,29 +29,29 @@ func parseRequestMessage[T proto.Message](request *http.Request, msg T) error {
 	return err
 }
 
-func ServiceResponder[T proto.Message, R service.Response]() ServiceCaller[T, R] {
-	return ServiceCaller[T, R]{}
+func ServiceResponder[T proto.Message]() ServiceCaller[T] {
+	return ServiceCaller[T]{}
 }
 
-type ServiceCaller[T proto.Message, R service.Response] struct {
+type ServiceCaller[T proto.Message] struct {
 	request        *http.Request
 	writer         http.ResponseWriter
-	responseMapper func(response R) proto.Message
+	responseMapper func(response proto.Message) proto.Message
 }
 
-func (s ServiceCaller[T, R]) Request(request *http.Request) ServiceCaller[T, R] {
+func (s ServiceCaller[T]) Request(request *http.Request) ServiceCaller[T] {
 	s.request = request
 
 	return s
 }
 
-func (s ServiceCaller[T, R]) Writer(writer http.ResponseWriter) ServiceCaller[T, R] {
+func (s ServiceCaller[T]) Writer(writer http.ResponseWriter) ServiceCaller[T] {
 	s.writer = writer
 
 	return s
 }
 
-func (s ServiceCaller[T, R]) Respond(serviceResult proto.Message, serviceError errors.ServiceError) {
+func (s ServiceCaller[T]) Respond(serviceResult proto.Message, serviceError errors.ServiceError) {
 	s.writer.Header().Set("Content-Type", "application/json")
 
 	isSuccess := serviceError == nil

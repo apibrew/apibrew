@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/server/stub"
 	"data-handler/service"
+	"data-handler/service/errors"
 	"data-handler/service/params"
 	"data-handler/util"
 )
@@ -26,8 +27,7 @@ func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecord
 	return &stub.ListRecordResponse{
 		Content: records,
 		Total:   total,
-		Error:   toProtoError(err),
-	}, err
+	}, errors.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRecordRequest) (*stub.SearchRecordResponse, error) {
@@ -44,8 +44,7 @@ func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRe
 	return &stub.SearchRecordResponse{
 		Content: records,
 		Total:   total,
-		Error:   toProtoError(err),
-	}, err
+	}, errors.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
@@ -57,10 +56,9 @@ func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRe
 
 	return &stub.CreateRecordResponse{
 		Record:   util.ArrayFirst(records),
-		Records:  util.ArrayCut(records, 0),
+		Records:  records,
 		Inserted: inserted,
-		Error:    toProtoError(err),
-	}, err
+	}, errors.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
@@ -72,9 +70,8 @@ func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRe
 
 	return &stub.UpdateRecordResponse{
 		Record:  util.ArrayFirst(records),
-		Records: util.ArrayCut(records, 0),
-		Error:   toProtoError(err),
-	}, err
+		Records: records,
+	}, errors.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
@@ -86,8 +83,7 @@ func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRe
 
 	return &stub.GetRecordResponse{
 		Record: record,
-		Error:  toProtoError(err),
-	}, err
+	}, errors.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
@@ -97,9 +93,7 @@ func (r *recordServiceServer) Delete(ctx context.Context, request *stub.DeleteRe
 		Ids:       request.Ids,
 	})
 
-	return &stub.DeleteRecordResponse{
-		Error: toProtoError(err),
-	}, err
+	return &stub.DeleteRecordResponse{}, errors.ToStatusError(err)
 }
 
 func NewRecordServiceServer(service service.RecordService) stub.RecordServiceServer {

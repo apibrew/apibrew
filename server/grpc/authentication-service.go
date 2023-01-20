@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"data-handler/logging"
-	"data-handler/model"
 	"data-handler/server/stub"
 	"data-handler/service"
 	"data-handler/service/errors"
@@ -31,16 +30,7 @@ func (s *authenticationServiceServer) Authenticate(ctx context.Context, req *stu
 
 	return &stub.AuthenticationResponse{
 		Token: token,
-		Error: toProtoError(err),
-	}, nil
-}
-
-func toProtoError(err errors.ServiceError) *model.Error {
-	if err == nil {
-		return nil
-	}
-
-	return err.ProtoError()
+	}, errors.ToStatusError(err)
 }
 
 func (s *authenticationServiceServer) RenewToken(ctx context.Context, req *stub.RenewTokenRequest) (*stub.RenewTokenResponse, error) {
@@ -48,8 +38,7 @@ func (s *authenticationServiceServer) RenewToken(ctx context.Context, req *stub.
 
 	return &stub.RenewTokenResponse{
 		Token: token,
-		Error: toProtoError(err),
-	}, nil
+	}, errors.ToStatusError(err)
 }
 
 func NewAuthenticationServiceServer(service service.AuthenticationService) stub.AuthenticationServiceServer {

@@ -4,19 +4,9 @@ import (
 	"data-handler/model"
 	"data-handler/server/stub"
 	log "github.com/sirupsen/logrus"
-	"os"
 	"reflect"
 	"testing"
 )
-
-// You can use testing.T, if you want to test the code without benchmarking
-
-func TestMain(m *testing.M) {
-	log.Println("Begin TestMain")
-	code := m.Run()
-	log.Println("End TestMain")
-	os.Exit(code)
-}
 
 func TestCreateDataSource(t *testing.T) {
 	ctx := prepareTextContext()
@@ -244,12 +234,12 @@ func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, contai
 func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *model.DataSource, container *SimpleAppGrpcContainer, t *testing.T) {
 	ctx := prepareTextContext()
 
-	res, _ := container.dataSourceService.Status(ctx, &stub.StatusRequest{
+	_, err := container.dataSourceService.Status(ctx, &stub.StatusRequest{
 		Token: "test-token",
 		Id:    createdDataSource.Id,
 	})
 
-	if res.Error == nil {
+	if err == nil {
 		t.Error("It should be unable to login to database")
 		return
 	}

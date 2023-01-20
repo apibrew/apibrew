@@ -27,8 +27,6 @@ message CreateResourceRequest {
 
 message CreateResourceResponse {
   repeated model.Resource resources = 1;
-
-  model.Error error = 2;
 }
 
 message UpdateResourceRequest {
@@ -41,8 +39,6 @@ message UpdateResourceRequest {
 
 message UpdateResourceResponse {
   repeated model.Resource resources = 1;
-
-  model.Error error = 2;
 }
 
 
@@ -56,7 +52,6 @@ message DeleteResourceRequest {
 }
 
 message DeleteResourceResponse {
-  model.Error error = 2;
 }
 
 message ListResourceRequest {
@@ -65,8 +60,6 @@ message ListResourceRequest {
 
 message ListResourceResponse {
   repeated model.Resource resources = 1;
-
-  model.Error error = 2;
 }
 
 message GetResourceRequest {
@@ -77,8 +70,6 @@ message GetResourceRequest {
 
 message GetResourceResponse {
   model.Resource resource = 1;
-
-  model.Error error = 2;
 }
 
 message GetResourceByNameRequest {
@@ -89,8 +80,6 @@ message GetResourceByNameRequest {
 
 message GetResourceByNameResponse {
   model.Resource resource = 1;
-
-  model.Error error = 2;
 }
 
 message GetSystemResourceRequest {
@@ -100,6 +89,4 @@ message GetSystemResourceRequest {
 
 message GetSystemResourceResponse {
   model.Resource resource = 1;
-
-  model.Error error = 2;
 }

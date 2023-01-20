@@ -28,7 +28,6 @@ message PrepareResourceFromEntityRequest {
 
 message PrepareResourceFromEntityResponse {
   model.Resource resource = 1;
-  model.Error error = 2;
 }
 
 message StatusRequest {
@@ -39,7 +38,6 @@ message StatusRequest {
 message StatusResponse {
   bool connectionAlreadyInitiated = 1;
   bool testConnection = 2;
-  model.Error error = 3;
 }
 
 message ListEntitiesRequest {
@@ -49,7 +47,6 @@ message ListEntitiesRequest {
 
 message ListEntitiesResponse {
   repeated string entities = 1;
-  model.Error error = 2;
 }
 
 message ListDataSourceRequest {
@@ -59,8 +56,6 @@ message ListDataSourceRequest {
 message ListDataSourceResponse {
   int32 total = 1;
   repeated model.DataSource content = 2;
-
-  model.Error error = 3;
 }
 
 message CreateDataSourceRequest {
@@ -70,8 +65,6 @@ message CreateDataSourceRequest {
 
 message CreateDataSourceResponse {
   repeated model.DataSource dataSources = 1;
-
-  model.Error error = 2;
 }
 
 message UpdateDataSourceRequest {
@@ -81,8 +74,6 @@ message UpdateDataSourceRequest {
 
 message UpdateDataSourceResponse {
   repeated model.DataSource dataSources = 1;
-
-  model.Error error = 2;
 }
 
 message DeleteDataSourceRequest {
@@ -91,7 +82,6 @@ message DeleteDataSourceRequest {
 }
 
 message DeleteDataSourceResponse {
-  model.Error error = 2;
 }
 
 message GetDataSourceRequest {
@@ -101,6 +91,4 @@ message GetDataSourceRequest {
 
 message GetDataSourceResponse {
   model.DataSource dataSource = 1;
-
-  model.Error error = 2;
 }

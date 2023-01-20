@@ -31,8 +31,6 @@ message AuthenticationRequest {
 
 message AuthenticationResponse {
   model.Token token = 1;
-
-  model.Error error = 2;
 }
 
 message RenewTokenRequest {
@@ -43,6 +41,4 @@ message RenewTokenRequest {
 
 message RenewTokenResponse {
   model.Token token = 1;
-
-  model.Error error = 2;
 }

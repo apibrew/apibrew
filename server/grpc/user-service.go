@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/server/stub"
 	"data-handler/service"
+	"data-handler/service/errors"
 	"data-handler/util"
 )
 
@@ -21,9 +22,8 @@ func (u *userServiceServer) Create(ctx context.Context, request *stub.CreateUser
 
 	return &stub.CreateUserResponse{
 		User:  util.ArrayFirst(users),
-		Users: util.ArrayCut(users, 0),
-		Error: toProtoError(err),
-	}, err
+		Users: users,
+	}, errors.ToStatusError(err)
 }
 
 func (u *userServiceServer) Update(ctx context.Context, request *stub.UpdateUserRequest) (*stub.UpdateUserResponse, error) {
@@ -31,26 +31,22 @@ func (u *userServiceServer) Update(ctx context.Context, request *stub.UpdateUser
 
 	return &stub.UpdateUserResponse{
 		User:  util.ArrayFirst(users),
-		Users: util.ArrayCut(users, 0),
-		Error: toProtoError(err),
-	}, err
+		Users: users,
+	}, errors.ToStatusError(err)
 }
 
 func (u *userServiceServer) Delete(ctx context.Context, request *stub.DeleteUserRequest) (*stub.DeleteUserResponse, error) {
 	err := u.service.Delete(ctx, request.Ids)
 
-	return &stub.DeleteUserResponse{
-		Error: toProtoError(err),
-	}, nil
+	return &stub.DeleteUserResponse{}, errors.ToStatusError(err)
 }
 
 func (u *userServiceServer) Get(ctx context.Context, request *stub.GetUserRequest) (*stub.GetUserResponse, error) {
 	user, err := u.service.Get(ctx, request.Id)
 
 	return &stub.GetUserResponse{
-		User:  user,
-		Error: toProtoError(err),
-	}, nil
+		User: user,
+	}, errors.ToStatusError(err)
 }
 
 func (u *userServiceServer) List(ctx context.Context, request *stub.ListUserRequest) (*stub.ListUserResponse, error) {
@@ -58,8 +54,7 @@ func (u *userServiceServer) List(ctx context.Context, request *stub.ListUserRequ
 
 	return &stub.ListUserResponse{
 		Content: users,
-		Error:   toProtoError(err),
-	}, err
+	}, errors.ToStatusError(err)
 }
 
 func NewUserServiceServer(service service.UserService) stub.UserServiceServer {

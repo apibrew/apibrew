@@ -14,11 +14,3 @@ func ArrayFirst[T interface{}](arr []*T) *T {
 
 	return arr[0]
 }
-
-func ArrayCut[T interface{}](arr []T, index int) []T {
-	if len(arr) <= index+1 {
-		return nil
-	}
-
-	return arr[index+1:]
-}

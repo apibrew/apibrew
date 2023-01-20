@@ -683,8 +683,6 @@ components:
             properties:
                 token:
                     $ref: '#/components/schemas/Token'
-                error:
-                    $ref: '#/components/schemas/Error'
         BooleanExpression:
             type: object
             properties:
@@ -724,8 +722,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
-                error:
-                    $ref: '#/components/schemas/Error'
                 inserted:
                     type: array
                     items:
@@ -739,39 +735,12 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
-                error:
-                    $ref: '#/components/schemas/Error'
         DeleteRecordResponse:
             type: object
-            properties:
-                error:
-                    $ref: '#/components/schemas/Error'
+            properties: {}
         DeleteUserResponse:
             type: object
-            properties:
-                error:
-                    $ref: '#/components/schemas/Error'
-        Error:
-            type: object
-            properties:
-                code:
-                    type: integer
-                    format: enum
-                message:
-                    type: string
-                fields:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/ErrorField'
-        ErrorField:
-            type: object
-            properties:
-                recordId:
-                    type: string
-                property:
-                    type: string
-                message:
-                    type: string
+            properties: {}
         Expression:
             type: object
             properties:
@@ -797,15 +766,11 @@ components:
             properties:
                 record:
                     $ref: '#/components/schemas/Record'
-                error:
-                    $ref: '#/components/schemas/Error'
         GetUserResponse:
             type: object
             properties:
                 user:
                     $ref: '#/components/schemas/User'
-                error:
-                    $ref: '#/components/schemas/Error'
         GoogleProtobufAny:
             type: object
             properties:
@@ -826,8 +791,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
-                error:
-                    $ref: '#/components/schemas/Error'
         ListUserResponse:
             type: object
             properties:
@@ -835,8 +798,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
-                error:
-                    $ref: '#/components/schemas/Error'
         PairExpression:
             type: object
             properties:
@@ -883,8 +844,6 @@ components:
             properties:
                 token:
                     $ref: '#/components/schemas/Token'
-                error:
-                    $ref: '#/components/schemas/Error'
         SearchRecordRequest:
             type: object
             properties:
@@ -916,8 +875,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
-                error:
-                    $ref: '#/components/schemas/Error'
         Status:
             type: object
             properties:
@@ -954,8 +911,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
-                error:
-                    $ref: '#/components/schemas/Error'
         UpdateUserResponse:
             type: object
             properties:
@@ -965,8 +920,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
-                error:
-                    $ref: '#/components/schemas/Error'
         User:
             type: object
             properties:

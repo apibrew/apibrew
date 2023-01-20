@@ -26,7 +26,7 @@ func TestListRecord1(t *testing.T) {
 			return
 		}
 
-		res, err := container.recordService.List(ctx, &stub.ListRecordRequest{
+		res, err := container.recordService.Search(ctx, &stub.SearchRecordRequest{
 			Token:    "test-token",
 			Resource: resource.Name,
 			Query: &model.BooleanExpression{

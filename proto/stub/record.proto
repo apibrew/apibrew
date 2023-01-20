@@ -76,7 +76,6 @@ message ListRecordRequest {
 message ListRecordResponse {
   uint32 total = 1;
   repeated model.Record content = 2;
-  model.Error error = 3;
 }
 
 message SearchRecordRequest {
@@ -93,7 +92,6 @@ message SearchRecordRequest {
 message SearchRecordResponse {
   uint32 total = 1;
   repeated model.Record content = 2;
-  model.Error error = 3;
 }
 
 message CreateRecordRequest {
@@ -107,7 +105,6 @@ message CreateRecordRequest {
 message CreateRecordResponse {
   model.Record record = 1;
   repeated model.Record records = 2;
-  model.Error error = 3;
   repeated bool inserted = 4;
 }
 
@@ -122,7 +119,6 @@ message UpdateRecordRequest {
 message UpdateRecordResponse {
   model.Record record = 1;
   repeated model.Record records = 2;
-  model.Error error = 3;
 }
 
 message DeleteRecordRequest {
@@ -134,7 +130,6 @@ message DeleteRecordRequest {
 }
 
 message DeleteRecordResponse {
-  model.Error error = 1;
 }
 
 message GetRecordRequest {
@@ -146,5 +141,4 @@ message GetRecordRequest {
 
 message GetRecordResponse {
   model.Record record = 1;
-  model.Error error = 2;
 }

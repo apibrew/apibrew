@@ -6,14 +6,18 @@ import (
 	"data-handler/helper"
 	"data-handler/logging"
 	"data-handler/model"
+	grpc2 "data-handler/server/grpc"
 	"data-handler/server/stub"
+	"data-handler/service/errors"
 	"data-handler/util"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	"net"
 	"reflect"
+	"runtime/debug"
 	"testing"
 	"time"
 )
@@ -46,19 +50,30 @@ var container *SimpleAppGrpcContainer
 var application *app.App = new(app.App)
 
 func init() {
+	addr := fmt.Sprintf("%s:%d", initData.Config.Host, initData.Config.Port)
+
 	application = new(app.App)
 
 	application.SetInitData(initData)
 
 	application.Init()
 
-	go application.Serve()
+	grpcServer := grpc2.NewGrpcServer(application)
+	grpcServer.Init(initData)
+
+	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", initData.Config.Host, initData.Config.Port))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go grpcServer.Serve(l)
+
 	time.Sleep(10 * time.Millisecond)
 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	conn, err := grpc.Dial(initData.Config.GrpcAddr, opts...)
+	conn, err := grpc.Dial(addr, opts...)
 
 	if err != nil {
 		panic(err)
@@ -91,6 +106,7 @@ func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcC
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in f", r)
+			debug.PrintStack()
 			t.Error(r)
 		}
 	}()
@@ -103,11 +119,6 @@ func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcC
 
 	if err != nil {
 		t.Error(err)
-		return
-	}
-
-	if res.Error != nil {
-		t.Error(res.Error.Message)
 		return
 	}
 
@@ -134,7 +145,7 @@ func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcC
 	log.Print("[withDataSource]Step 6")
 
 	log.Print("data-source deleting", res.DataSources[0].Id)
-	res2, err := container.dataSourceService.Delete(ctx, &stub.DeleteDataSourceRequest{
+	_, err = container.dataSourceService.Delete(ctx, &stub.DeleteDataSourceRequest{
 		Token: "test-token",
 		Ids: util.ArrayMap(res.DataSources, func(t *model.DataSource) string {
 			return t.Id
@@ -145,13 +156,6 @@ func withDataSource(ctx context.Context, t testing.TB, container *SimpleAppGrpcC
 
 	if err != nil {
 		t.Error(err)
-		return
-	}
-
-	log.Print("[withDataSource]Step 8")
-
-	if res2.Error != nil {
-		t.Error(res.Error.Message)
 		return
 	}
 
@@ -176,7 +180,7 @@ func checkDataSourceExists(ctx context.Context, container *SimpleAppGrpcContaine
 		Id:    id,
 	})
 
-	return res.Error == nil && err == nil && res.DataSource != nil
+	return err == nil && res.DataSource != nil
 }
 
 func withResource(ctx context.Context, t testing.TB, resource *model.Resource, exec func()) {
@@ -189,13 +193,9 @@ func withResource(ctx context.Context, t testing.TB, resource *model.Resource, e
 		DoMigration:    true,
 		ForceMigration: true,
 	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
 
-	if res.Error != nil {
-		if res.Error.Code == model.ErrorCode_ALREADY_EXISTS {
+	if err != nil {
+		if errors.GetErrorCode(err) == model.ErrorCode_ALREADY_EXISTS {
 			res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 				Token:     "test-token",
 				Namespace: resource.Namespace,
@@ -204,7 +204,7 @@ func withResource(ctx context.Context, t testing.TB, resource *model.Resource, e
 			resource = res2.Resource
 
 		} else {
-			t.Error(res.Error.Message)
+			t.Error(err)
 			return
 		}
 	} else {
@@ -244,16 +244,11 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 			return
 		}
 
-		if res.Error != nil {
-			t.Error(res.Error)
-			return
-		}
-
 		var resourceId string
 
 		defer func() {
 			log.Print("begin delete resource without migration", res.Resource.Namespace, res.Resource.Name)
-			deleteRes, err := container.resourceService.Delete(ctx, &stub.DeleteResourceRequest{
+			_, err := container.resourceService.Delete(ctx, &stub.DeleteResourceRequest{
 				Token:          "test-token",
 				Ids:            []string{resourceId},
 				DoMigration:    false,
@@ -262,11 +257,6 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 
 			if err != nil {
 				t.Error(err)
-				return
-			}
-
-			if deleteRes.Error != nil {
-				t.Error(deleteRes.Error)
 				return
 			}
 
@@ -284,12 +274,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 		})
 
 		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		if createRes.Error != nil {
-			if createRes.Error.Code == model.ErrorCode_ALREADY_EXISTS {
+			if errors.GetErrorCode(err) == model.ErrorCode_ALREADY_EXISTS {
 				res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 					Token:     "test-token",
 					Namespace: res.Resource.Namespace,
@@ -298,7 +283,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 				resourceId = res2.Resource.Id
 
 			} else {
-				t.Error(res.Error.Message)
+				t.Error(err)
 				return
 			}
 		} else {

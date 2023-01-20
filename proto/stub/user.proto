@@ -60,8 +60,6 @@ message CreateUserRequest {
 message CreateUserResponse {
   model.User user = 1;
   repeated model.User users = 2;
-
-  model.Error error = 3;
 }
 
 message UpdateUserRequest {
@@ -73,8 +71,6 @@ message UpdateUserRequest {
 message UpdateUserResponse {
   model.User user = 1;
   repeated model.User users = 2;
-
-  model.Error error = 3;
 }
 
 
@@ -85,7 +81,6 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {
-  model.Error error = 2;
 }
 
 message ListUserRequest {
@@ -97,8 +92,6 @@ message ListUserRequest {
 
 message ListUserResponse {
   repeated model.User content = 1;
-
-  model.Error error = 2;
 }
 
 message GetUserRequest {
@@ -108,6 +101,4 @@ message GetUserRequest {
 
 message GetUserResponse {
   model.User user = 1;
-
-  model.Error error = 2;
 }

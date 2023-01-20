@@ -7,7 +7,6 @@ import (
 	"github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"net"
-	"runtime/debug"
 )
 
 func locatePropertyByName(resource *model.Resource, propertyName string) *model.ResourceProperty {
@@ -30,7 +29,7 @@ func handleDbError(err error) errors.ServiceError {
 	}
 
 	log.Printf("Db Error: %s", err)
-	debug.PrintStack()
+	//debug.PrintStack()
 
 	if err == sql.ErrTxDone {
 		log.Panic("Illegal situation")

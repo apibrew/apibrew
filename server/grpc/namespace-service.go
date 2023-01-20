@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/server/stub"
 	"data-handler/service"
+	"data-handler/service/errors"
 )
 
 type NamespaceGrpcService interface {
@@ -20,8 +21,7 @@ func (u *NamespaceServiceServer) Create(ctx context.Context, request *stub.Creat
 
 	return &stub.CreateNamespaceResponse{
 		Namespaces: Namespaces,
-		Error:      toProtoError(err),
-	}, nil
+	}, errors.ToStatusError(err)
 }
 
 func (u *NamespaceServiceServer) Update(ctx context.Context, request *stub.UpdateNamespaceRequest) (*stub.UpdateNamespaceResponse, error) {
@@ -29,16 +29,13 @@ func (u *NamespaceServiceServer) Update(ctx context.Context, request *stub.Updat
 
 	return &stub.UpdateNamespaceResponse{
 		Namespaces: Namespaces,
-		Error:      toProtoError(err),
-	}, err
+	}, errors.ToStatusError(err)
 }
 
 func (u *NamespaceServiceServer) Delete(ctx context.Context, request *stub.DeleteNamespaceRequest) (*stub.DeleteNamespaceResponse, error) {
 	err := u.service.Delete(ctx, request.Ids)
 
-	return &stub.DeleteNamespaceResponse{
-		Error: toProtoError(err),
-	}, nil
+	return &stub.DeleteNamespaceResponse{}, errors.ToStatusError(err)
 }
 
 func (u *NamespaceServiceServer) Get(ctx context.Context, request *stub.GetNamespaceRequest) (*stub.GetNamespaceResponse, error) {
@@ -46,8 +43,7 @@ func (u *NamespaceServiceServer) Get(ctx context.Context, request *stub.GetNames
 
 	return &stub.GetNamespaceResponse{
 		Namespace: Namespace,
-		Error:     toProtoError(err),
-	}, nil
+	}, errors.ToStatusError(err)
 }
 
 func (u *NamespaceServiceServer) List(ctx context.Context, request *stub.ListNamespaceRequest) (*stub.ListNamespaceResponse, error) {
@@ -55,8 +51,7 @@ func (u *NamespaceServiceServer) List(ctx context.Context, request *stub.ListNam
 
 	return &stub.ListNamespaceResponse{
 		Content: Namespaces,
-		Error:   toProtoError(err),
-	}, err
+	}, errors.ToStatusError(err)
 }
 
 func NewNamespaceServiceServer(service service.NamespaceService) stub.NamespaceServiceServer {

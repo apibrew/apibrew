@@ -11,6 +11,8 @@ func Setup() {
 
 	checkResp(listDataSourceResp, err)
 
-	for _, ds := listDataSourceResp.Content {}
+	for _, ds := range listDataSourceResp.Content {
+
+	}
 
 }

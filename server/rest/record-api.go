@@ -111,13 +111,12 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		UseHistory: getRequestBoolFlag(request, "useHistory"),
 	})
 
-	ServiceResponder[*stub.ListRecordRequest, *stub.ListRecordResponse]().
+	ServiceResponder[*stub.ListRecordRequest]().
 		Writer(writer).
 		Request(request).
 		Respond(&stub.ListRecordResponse{
 			Total:   total,
 			Content: result,
-			Error:   toProtoError(serviceErr),
 		}, serviceErr)
 }
 
@@ -149,13 +148,12 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		IgnoreIfExists: false,
 	})
 
-	ServiceResponder[*stub.CreateRecordRequest, *stub.CreateRecordResponse]().
+	ServiceResponder[*stub.CreateRecordRequest]().
 		Writer(writer).
 		Request(request).
 		Respond(&stub.CreateRecordResponse{
 			Records:  res,
 			Inserted: inserted,
-			Error:    toProtoError(serviceErr),
 		}, serviceErr)
 }
 
@@ -170,12 +168,11 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 		Id:        id,
 	})
 
-	ServiceResponder[*stub.GetRecordRequest, *stub.GetRecordResponse]().
+	ServiceResponder[*stub.GetRecordRequest]().
 		Writer(writer).
 		Request(request).
 		Respond(&stub.GetRecordResponse{
 			Record: record,
-			Error:  toProtoError(serviceErr),
 		}, serviceErr)
 }
 
@@ -208,7 +205,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 		updatedRecord = result[0]
 	}
 
-	ServiceResponder[*stub.UpdateRecordRequest, *stub.UpdateRecordResponse]().
+	ServiceResponder[*stub.UpdateRecordRequest]().
 		Writer(writer).
 		Request(request).
 		Respond(updatedRecord, serviceErr)
@@ -225,12 +222,10 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 		Ids:       []string{id},
 	})
 
-	ServiceResponder[*stub.DeleteRecordRequest, *stub.DeleteRecordResponse]().
+	ServiceResponder[*stub.DeleteRecordRequest]().
 		Writer(writer).
 		Request(request).
-		Respond(&stub.DeleteRecordResponse{
-			Error: toProtoError(serviceErr),
-		}, serviceErr)
+		Respond(&stub.DeleteRecordResponse{}, serviceErr)
 }
 
 func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http.Request) {
@@ -256,13 +251,12 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		UseHistory: listRecordRequest.UseHistory,
 	})
 
-	ServiceResponder[*stub.ListRecordRequest, *stub.ListRecordResponse]().
+	ServiceResponder[*stub.ListRecordRequest]().
 		Writer(writer).
 		Request(request).
 		Respond(&stub.ListRecordResponse{
 			Total:   total,
 			Content: result,
-			Error:   toProtoError(serviceErr),
 		}, serviceErr)
 }
 

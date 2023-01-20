@@ -16,7 +16,7 @@ func (u dateType) UnPack(value interface{}) (interface{}, error) {
 }
 
 func (u dateType) Default() any {
-	return time.Now().Format("2006-01-02")
+	return time.Now()
 }
 
 func (u dateType) Pointer(required bool) any {

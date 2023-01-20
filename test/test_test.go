@@ -2,7 +2,7 @@ package test
 
 //
 //import (
-//	"data-handler/grpc/stub"
+//	"data-handler/server/stub"
 //	"data-handler/model"
 //	"fmt"
 //	"google.golang.org/protobuf/encoding/protojson"
