@@ -13,6 +13,6 @@ plugins:
     opt:
       - paths=source_relative
       - allow_delete_body=true
-  - name: openapi
-    strategy: all
-    out: ../server/rest
+#  - name: openapi
+#    strategy: all
+#    out: ../server/rest

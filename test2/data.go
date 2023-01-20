@@ -1,4 +1,4 @@
-package test
+package test2
 
 import "data-handler/model"
 
@@ -20,7 +20,7 @@ var systemDataSource = &model.DataSource{
 	},
 }
 
-var dataSource1 = &model.DataSource{
+var dhTest = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1",
 	Description: "data-source-1",
@@ -36,7 +36,7 @@ var dataSource1 = &model.DataSource{
 	},
 }
 
-var dataSource1WrongPassword = &model.DataSource{
+var dhTestWrongPassword = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1-wrong",
 	Description: "data-source-1-wrong",

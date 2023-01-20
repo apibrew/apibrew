@@ -1,13 +1,12 @@
-package data_source
+package test2
 
 import (
-	"data-handler/test2/lib"
 	"os"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
-	lib.Setup()
+	Setup()
 
 	code := m.Run()
 	os.Exit(code)

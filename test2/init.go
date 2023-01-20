@@ -1,9 +1,8 @@
-package test
+package test2
 
 import (
 	"data-handler/logging"
 	"data-handler/model"
-	"data-handler/test/lib"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -17,8 +16,8 @@ func init() {
 func prepareInitData() *model.InitData {
 	return &model.InitData{
 		Config: &model.AppConfig{
-			GrpcAddr:              "localhost:17981",
-			HttpAddr:              "localhost:17982",
+			Host:                  "localhost",
+			Port:                  17981,
 			JwtPrivateKey:         "../data/jwt.key",
 			JwtPublicKey:          "../data/jwt.key.pub",
 			DisableAuthentication: true,
@@ -62,5 +61,5 @@ func prepareSystemNamespace() *model.Namespace {
 }
 
 func prepareSystemDataSource() *model.DataSource {
-	return lib.SystemDataSource
+	return SystemDataSource
 }
