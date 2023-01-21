@@ -1,4 +1,4 @@
-package test
+package test2
 
 import (
 	"data-handler/service/types"

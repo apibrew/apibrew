@@ -8,7 +8,16 @@ import (
 	"data-handler/server/stub"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/metadata"
+	"os"
+	"testing"
 )
+
+func TestMain(m *testing.M) {
+	Setup()
+
+	code := m.Run()
+	os.Exit(code)
+}
 
 func Setup() {
 	setupDataSources()
@@ -19,6 +28,7 @@ func setupDataSources() {
 	dataSources := []*model.DataSource{
 		dataSourceDhTest,
 		dhTest,
+		dataSource1,
 	}
 	// creating data sources
 	listDataSourceResp, err := dataSourceServiceClient.List(context.TODO(), &stub.ListDataSourceRequest{})
@@ -33,7 +43,7 @@ func setupDataSources() {
 
 			if cd.Name == ds.Name {
 				found = true
-				cd.Id = ds.Id
+				*cd = *ds
 				break
 			}
 		}
@@ -60,7 +70,7 @@ func setupDataSources() {
 
 			if cd.Name == ds.Name {
 				found = true
-				cd.Id = ds.Id
+				*cd = *ds
 				break
 			}
 		}
@@ -89,7 +99,7 @@ func setupResources() {
 
 			if cd.Name == ds.Name {
 				found = true
-				cd.Id = ds.Id
+				*cd = *ds
 				cd.SourceConfig.DataSource = ds.SourceConfig.DataSource
 				break
 			}
@@ -119,8 +129,7 @@ func setupResources() {
 
 			if cd.Name == ds.Name {
 				found = true
-				cd.Id = ds.Id
-				cd.SourceConfig.DataSource = ds.SourceConfig.DataSource
+				*cd = *ds
 				break
 			}
 		}

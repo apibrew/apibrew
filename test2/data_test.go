@@ -68,6 +68,22 @@ var dataSourceDhTest = &model.DataSource{
 	},
 }
 
+var dataSource1 = &model.DataSource{
+	Backend:     model.DataSourceBackendType_POSTGRESQL,
+	Name:        "data-source-1",
+	Description: "data-source-1",
+	Options: &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlOptions{
+			Username:      "dh_test",
+			Password:      "dh_test",
+			Host:          "127.0.0.1",
+			Port:          5432,
+			DbName:        "dh_test",
+			DefaultSchema: "public",
+		},
+	},
+}
+
 var richResource1 = &model.Resource{
 	Name:      "rich-test-3993",
 	Namespace: "default",
