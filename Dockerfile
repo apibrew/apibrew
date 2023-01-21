@@ -16,8 +16,6 @@ RUN go mod download
 
 COPY proto proto
 COPY generate.go generate.go
-RUN sh -c "cd proto; buf mod update"
-RUN go generate
 
 COPY app app
 COPY cmd cmd
@@ -34,6 +32,9 @@ WORKDIR /app/
 RUN apk add postgresql
 RUN mkdir /run/postgresql
 RUN chown postgres:postgres /run/postgresql/
+
+RUN sh -c "cd proto; buf mod update"
+RUN go generate
 
 COPY test test
 COPY run-tests.sh .
