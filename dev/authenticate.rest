@@ -4,12 +4,12 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhb
 
 #####
 
-POST http://localhost:8008/authentication/token
+POST http://tiswork.tisserv.net:8008/authentication/token
 Content-Type: application/json
 
 {
-  "username": "taleh2",
-  "password": "taleh2",
+  "username": "admin",
+  "password": "admin",
   "term": 3
 }
 

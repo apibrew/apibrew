@@ -10,9 +10,9 @@ import (
 func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 	ctx := prepareTextContext()
 
-	withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
-		withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public", "organization_copy", func(resource2 *model.Resource) {
-			list, err := container.recordService.List(ctx, &stub.ListRecordRequest{
+	withAutoLoadedResource(ctx, t, dataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
+		withAutoLoadedResource(ctx, t, dataSourceDhTest, "public", "organization_copy", func(resource2 *model.Resource) {
+			list, err := recordServiceClient.List(ctx, &stub.ListRecordRequest{
 				Token:    "test-token",
 				Resource: resource1.Name,
 			})
@@ -28,7 +28,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 				return record
 			})
 
-			_, err = container.recordService.Create(ctx, &stub.CreateRecordRequest{
+			_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
 				Token:   "test-token",
 				Records: records,
 			})
@@ -37,7 +37,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 				t.Error(err)
 			}
 
-			_, err = container.recordService.Delete(ctx, &stub.DeleteRecordRequest{
+			_, err = recordServiceClient.Delete(ctx, &stub.DeleteRecordRequest{
 				Token:    "test-token",
 				Resource: resource2.Name,
 				Ids: util.ArrayMap(list.Content, func(record *model.Record) string {

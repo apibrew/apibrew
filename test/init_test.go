@@ -17,7 +17,7 @@ func prepareInitData() *model.InitData {
 	return &model.InitData{
 		Config: &model.AppConfig{
 			Host:                  "localhost",
-			Port:                  17982,
+			Port:                  17981,
 			JwtPrivateKey:         "../data/jwt.key",
 			JwtPublicKey:          "../data/jwt.key.pub",
 			DisableAuthentication: true,

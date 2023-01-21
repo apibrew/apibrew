@@ -4,3 +4,4 @@ CREATE DATABASE dh_system;
 CREATE DATABASE dh_test;
 
 set enable_parallel_hash=off;
+
