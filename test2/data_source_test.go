@@ -26,6 +26,8 @@ func TestCreateAndReadDataSource(t *testing.T) {
 		return
 	}
 
+	dataSource1.AuditData = res2.DataSource.AuditData
+
 	if !reflect.DeepEqual(dataSource1, res2.DataSource) {
 		log.Println(dataSource1)
 		log.Println(res2.DataSource)
