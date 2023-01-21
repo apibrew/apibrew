@@ -1,8 +1,10 @@
 package test
 
 import (
+	"context"
 	"data-handler/model"
 	"data-handler/server/stub"
+	util2 "data-handler/server/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
@@ -11,7 +13,7 @@ import (
 func TestListRecord1(t *testing.T) {
 	ctx := prepareTextContext()
 
-	withAutoLoadedResource(ctx, t, container, dataSource1, "public", "organization", func(resource *model.Resource) {
+	withAutoLoadedResource(ctx, t, dataSource1, "public", "organization", func(resource *model.Resource) {
 		val1, err := structpb.NewValue("month")
 
 		if err != nil {
@@ -26,7 +28,7 @@ func TestListRecord1(t *testing.T) {
 			return
 		}
 
-		res, err := container.recordService.Search(ctx, &stub.SearchRecordRequest{
+		res, err := recordServiceClient.Search(ctx, &stub.SearchRecordRequest{
 			Token:    "test-token",
 			Resource: resource.Name,
 			Query: &model.BooleanExpression{
@@ -74,4 +76,72 @@ func TestListRecord1(t *testing.T) {
 			t.Error("Unknown record count")
 		}
 	})
+}
+
+func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *model.DataSource, catalog, entity string, exec func(resource *model.Resource)) {
+	log.Print("begin PrepareResourceFromEntity", catalog, entity, dataSource.Id)
+	res, err := dataSourceServiceClient.PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
+		Token:   "test-token",
+		Id:      dataSource.Id,
+		Catalog: catalog,
+		Entity:  entity,
+	})
+	log.Print("end PrepareResourceFromEntity", catalog, entity, dataSource.Id)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	var resourceId string
+
+	defer func() {
+		log.Print("begin delete resource without migration", res.Resource.Namespace, res.Resource.Name)
+		_, err := resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			Token:          "test-token",
+			Ids:            []string{resourceId},
+			DoMigration:    false,
+			ForceMigration: false,
+		})
+
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		log.Info("resource deleted: " + res.Resource.Name)
+	}()
+
+	log.Print("finish PrepareResourceFromEntity", catalog, entity, dataSource.Id)
+
+	log.Print("begin create resource without migration", res.Resource.Namespace, res.Resource.Name)
+	createRes, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+		Token:          "test-token",
+		Resources:      []*model.Resource{res.Resource},
+		DoMigration:    false,
+		ForceMigration: false,
+	})
+
+	if err != nil {
+		if util2.GetErrorCode(err) == model.ErrorCode_ALREADY_EXISTS {
+			res2, _ := resourceServiceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
+				Token:     "test-token",
+				Namespace: res.Resource.Namespace,
+				Name:      res.Resource.Name,
+			})
+			resourceId = res2.Resource.Id
+
+		} else {
+			t.Error(err)
+			return
+		}
+	} else {
+		resourceId = createRes.Resources[0].Id
+	}
+
+	log.Print("finish create resource without migration", res.Resource.Namespace, res.Resource.Name)
+
+	log.Print("Calling exec: ", res.Resource.Namespace, " ", res.Resource.Name, " ", res.Resource.SourceConfig.DataSource)
+	exec(res.Resource)
+	log.Print("Finished exec: ", res.Resource.Namespace, " ", res.Resource.Name, " ", res.Resource.SourceConfig.DataSource)
 }

@@ -1,4 +1,4 @@
-package test2
+package test
 
 import (
 	"data-handler/app"

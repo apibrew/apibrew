@@ -36,7 +36,6 @@ RUN mkdir /run/postgresql
 RUN chown postgres:postgres /run/postgresql/
 
 COPY test test
-COPY test2 test2
 COPY run-tests.sh .
 
 RUN sh /app/run-tests.sh
