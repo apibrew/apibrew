@@ -44,8 +44,6 @@ var describeCmd = &cobra.Command{
 
 		check(err)
 
-		checkError(resp.Error)
-
 		writer.DescribeResource(resp.Resource)
 	},
 }

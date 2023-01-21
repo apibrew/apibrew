@@ -41,10 +41,6 @@ func initClient(ctx context.Context) {
 			log.Fatal(err)
 		}
 
-		if authResp.Error != nil {
-			log.Fatal(authResp.Error.Message)
-		}
-
 		authToken = authResp.Token.Content
 	}
 }

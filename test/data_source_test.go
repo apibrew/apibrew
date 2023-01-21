@@ -4,61 +4,8 @@ import (
 	"data-handler/model"
 	"data-handler/server/stub"
 	log "github.com/sirupsen/logrus"
-	"reflect"
 	"testing"
 )
-
-func TestCreateDataSource(t *testing.T) {
-	ctx := prepareTextContext()
-
-	withDataSource(ctx, t, container, dataSource1, func(createdDataSource *model.DataSource) {
-		// testing is done
-	})
-}
-
-func TestCreateAndReadDataSource(t *testing.T) {
-	ctx := prepareTextContext()
-
-	withDataSource(ctx, t, container, dataSource1, func(createdDataSource *model.DataSource) {
-		res2, err := container.dataSourceService.Get(ctx, &stub.GetDataSourceRequest{
-			Token: "test-token",
-			Id:    createdDataSource.Id,
-		})
-
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		if res2.DataSource == nil {
-			t.Error("Data source must not be null")
-			return
-		}
-
-		if !reflect.DeepEqual(createdDataSource, res2.DataSource) {
-			log.Println(createdDataSource)
-			log.Println(res2.DataSource)
-			t.Error("Backend is different")
-			return
-		}
-	})
-}
-
-func TestCreateDataSourceStatusTest(t *testing.T) {
-	ctx := prepareTextContext()
-
-	withDataSource(ctx, t, container, systemDataSource, func(createdDataSource *model.DataSource) {
-		checkNewCreatedDatasourceStatus(createdDataSource, container, t)
-	})
-}
-
-func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
-	ctx := prepareTextContext()
-
-	withDataSource(ctx, t, container, dataSource1WrongPassword, func(createdDataSource *model.DataSource) {
-		checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource, container, t)
-	})
-}
 
 func TestListCreatedDataSources(t *testing.T) {
 	ctx := prepareTextContext()

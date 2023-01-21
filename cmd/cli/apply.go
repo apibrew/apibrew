@@ -5,6 +5,7 @@ import (
 	"context"
 	"data-handler/model"
 	"data-handler/server/stub"
+	"data-handler/server/util"
 	"encoding/json"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -88,12 +89,8 @@ var applyCmd = &cobra.Command{
 							Name:      resource.Name,
 						})
 
-						check(err)
-
-						if resp.Error != nil {
-							if resp.Error.Code != model.ErrorCode_RECORD_NOT_FOUND {
-								checkError(resp.Error)
-							}
+						if err != nil && util.GetErrorCode(err) != model.ErrorCode_RECORD_NOT_FOUND {
+							panic(err)
 						}
 
 						if resp.Resource != nil {
@@ -102,7 +99,7 @@ var applyCmd = &cobra.Command{
 					}
 
 					if resource.Id != "" {
-						resp, err := resourceServiceClient.Update(context.TODO(), &stub.UpdateResourceRequest{
+						_, err := resourceServiceClient.Update(context.TODO(), &stub.UpdateResourceRequest{
 							Token:          authToken,
 							Resources:      []*model.Resource{resource},
 							DoMigration:    migrate,
@@ -110,12 +107,10 @@ var applyCmd = &cobra.Command{
 						})
 
 						check(err)
-
-						checkError(resp.Error)
 
 						log.Println("Resource updated: " + resource.Name)
 					} else {
-						resp, err := resourceServiceClient.Create(context.TODO(), &stub.CreateResourceRequest{
+						_, err := resourceServiceClient.Create(context.TODO(), &stub.CreateResourceRequest{
 							Token:          authToken,
 							Resources:      []*model.Resource{resource},
 							DoMigration:    migrate,
@@ -123,8 +118,6 @@ var applyCmd = &cobra.Command{
 						})
 
 						check(err)
-
-						checkError(resp.Error)
 
 						log.Println("Resource created: " + resource.Name)
 					}
@@ -151,7 +144,7 @@ var applyCmd = &cobra.Command{
 		}
 
 		if len(updateRecords) > 0 {
-			resp, err := recordServiceClient.Update(context.TODO(), &stub.UpdateRecordRequest{
+			_, err := recordServiceClient.Update(context.TODO(), &stub.UpdateRecordRequest{
 				Token:        authToken,
 				Namespace:    namespace,
 				Records:      updateRecords,
@@ -160,13 +153,11 @@ var applyCmd = &cobra.Command{
 
 			check(err)
 
-			checkError(resp.Error)
-
 			log.Println("Record updated: " + strconv.Itoa(len(updateRecords)))
 		}
 
 		if len(createRecords) > 0 {
-			resp, err := recordServiceClient.Create(context.TODO(), &stub.CreateRecordRequest{
+			_, err := recordServiceClient.Create(context.TODO(), &stub.CreateRecordRequest{
 				Token:          authToken,
 				Namespace:      namespace,
 				Records:        createRecords,
@@ -174,8 +165,6 @@ var applyCmd = &cobra.Command{
 			})
 
 			check(err)
-
-			checkError(resp.Error)
 
 			log.Println("Record created: " + strconv.Itoa(len(createRecords)))
 		}

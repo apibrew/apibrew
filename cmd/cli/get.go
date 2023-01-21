@@ -37,8 +37,6 @@ var getCmd = &cobra.Command{
 
 			check(err)
 
-			checkError(resp.Error)
-
 			var filteredResources []*model.Resource
 
 			if name != "" {
@@ -69,8 +67,6 @@ var getCmd = &cobra.Command{
 
 			check(err)
 
-			checkError(resp.Error)
-
 			resourceResp, err := resourceServiceClient.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
 				Token:     authToken,
 				Namespace: namespace,
@@ -78,8 +74,6 @@ var getCmd = &cobra.Command{
 			})
 
 			check(err)
-
-			checkError(resourceResp.Error)
 
 			writer.WriteRecords(resourceResp.Resource, resp.Content)
 		}

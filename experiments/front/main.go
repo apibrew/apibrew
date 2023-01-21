@@ -36,7 +36,7 @@ func prepareCategoryResource(service stub.ResourceServiceClient) {
 		DataType:  2,
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
-			Mapping:    "product",
+			Entity:     "product",
 		},
 		Properties: []*model.ResourceProperty{
 			{
@@ -94,7 +94,7 @@ func prepareCityResource(service stub.ResourceServiceClient) {
 		DataType:  2,
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
-			Mapping:    "city",
+			Entity:     "city",
 		},
 		Properties: []*model.ResourceProperty{
 			{

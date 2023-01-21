@@ -33,7 +33,10 @@ func setupDataSources() {
 	// creating data sources
 	listDataSourceResp, err := dataSourceServiceClient.List(context.TODO(), &stub.ListDataSourceRequest{})
 
-	check(err, nil)
+	if err != nil {
+		panic(err)
+		return
+	}
 
 	var dataSourcesForCreate []*model.DataSource
 
@@ -58,7 +61,10 @@ func setupDataSources() {
 		DataSources: dataSourcesForCreate,
 	})
 
-	check(err, nil)
+	if err != nil {
+		panic(err)
+		return
+	}
 
 	for _, cd := range dataSources {
 		if cd.Id != "" {
@@ -89,7 +95,10 @@ func setupResources() {
 	// creating data sources
 	listResourceResp, err := resourceServiceClient.List(context.TODO(), &stub.ListResourceRequest{})
 
-	check(err, nil)
+	if err != nil {
+		panic(err)
+		return
+	}
 
 	var resourcesForCreate []*model.Resource
 
@@ -117,7 +126,10 @@ func setupResources() {
 		ForceMigration: true,
 	})
 
-	check(err, nil)
+	if err != nil {
+		panic(err)
+		return
+	}
 
 	for _, cd := range resources {
 		if cd.Id != "" {
