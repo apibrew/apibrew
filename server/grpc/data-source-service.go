@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 	"data-handler/server/stub"
+	"data-handler/server/util"
 	"data-handler/service"
-	"data-handler/service/errors"
 )
 
 type dataSourceServiceServer struct {
@@ -17,7 +17,7 @@ func (d *dataSourceServiceServer) ListEntities(ctx context.Context, request *stu
 
 	return &stub.ListEntitiesResponse{
 		Entities: res,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (d *dataSourceServiceServer) List(ctx context.Context, request *stub.ListDataSourceRequest) (*stub.ListDataSourceResponse, error) {
@@ -25,7 +25,7 @@ func (d *dataSourceServiceServer) List(ctx context.Context, request *stub.ListDa
 
 	return &stub.ListDataSourceResponse{
 		Content: result,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (d *dataSourceServiceServer) Status(ctx context.Context, request *stub.StatusRequest) (*stub.StatusResponse, error) {
@@ -34,7 +34,7 @@ func (d *dataSourceServiceServer) Status(ctx context.Context, request *stub.Stat
 	return &stub.StatusResponse{
 		ConnectionAlreadyInitiated: connectionAlreadyInitiated,
 		TestConnection:             testConnection,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (d *dataSourceServiceServer) Create(ctx context.Context, request *stub.CreateDataSourceRequest) (*stub.CreateDataSourceResponse, error) {
@@ -42,7 +42,7 @@ func (d *dataSourceServiceServer) Create(ctx context.Context, request *stub.Crea
 
 	return &stub.CreateDataSourceResponse{
 		DataSources: res,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (d *dataSourceServiceServer) Update(ctx context.Context, request *stub.UpdateDataSourceRequest) (*stub.UpdateDataSourceResponse, error) {
@@ -50,7 +50,7 @@ func (d *dataSourceServiceServer) Update(ctx context.Context, request *stub.Upda
 
 	return &stub.UpdateDataSourceResponse{
 		DataSources: res,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (d *dataSourceServiceServer) PrepareResourceFromEntity(ctx context.Context, request *stub.PrepareResourceFromEntityRequest) (*stub.PrepareResourceFromEntityResponse, error) {
@@ -58,7 +58,7 @@ func (d *dataSourceServiceServer) PrepareResourceFromEntity(ctx context.Context,
 
 	return &stub.PrepareResourceFromEntityResponse{
 		Resource: resources,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (d *dataSourceServiceServer) Get(ctx context.Context, request *stub.GetDataSourceRequest) (*stub.GetDataSourceResponse, error) {
@@ -66,13 +66,13 @@ func (d *dataSourceServiceServer) Get(ctx context.Context, request *stub.GetData
 
 	return &stub.GetDataSourceResponse{
 		DataSource: dataSource,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (d *dataSourceServiceServer) Delete(ctx context.Context, request *stub.DeleteDataSourceRequest) (*stub.DeleteDataSourceResponse, error) {
 	err := d.service.Delete(ctx, request.Ids)
 
-	return &stub.DeleteDataSourceResponse{}, errors.ToStatusError(err)
+	return &stub.DeleteDataSourceResponse{}, util.ToStatusError(err)
 }
 
 func NewDataSourceServiceServer(dataSourceService service.DataSourceService) stub.DataSourceServiceServer {

@@ -6,6 +6,7 @@ import (
 	"data-handler/service/errors"
 	"data-handler/service/types"
 	"data-handler/util"
+	"database/sql"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/huandu/go-sqlbuilder"
@@ -179,7 +180,7 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 	}
 
 	if affected == 0 {
-		return errors.NotFoundError
+		return errors.RecordNotFoundError
 	}
 
 	return nil
@@ -526,7 +527,13 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 		rowScanFields = append(rowScanFields, &record.Version)
 	}
 
-	err := handleDbError(scanner.Scan(rowScanFields...))
+	sqlErr := scanner.Scan(rowScanFields...)
+
+	if sqlErr == sql.ErrNoRows {
+		return errors.RecordNotFoundError.WithDetails(fmt.Sprintf("namespace: %s; resource: %s", resource.Namespace, resource.Name))
+	}
+
+	err := handleDbError(sqlErr)
 
 	if err != nil {
 		return err
@@ -595,7 +602,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 	record.DataType = model.DataType_USER
 
 	if record.Id == "" {
-		return errors.NotFoundError
+		return errors.RecordNotFoundError
 	}
 
 	return nil

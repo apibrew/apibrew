@@ -8,7 +8,7 @@ import (
 	"data-handler/model"
 	grpc2 "data-handler/server/grpc"
 	"data-handler/server/stub"
-	"data-handler/service/errors"
+	util2 "data-handler/server/util"
 	"data-handler/util"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -195,7 +195,7 @@ func withResource(ctx context.Context, t testing.TB, resource *model.Resource, e
 	})
 
 	if err != nil {
-		if errors.GetErrorCode(err) == model.ErrorCode_ALREADY_EXISTS {
+		if util2.GetErrorCode(err) == model.ErrorCode_ALREADY_EXISTS {
 			res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 				Token:     "test-token",
 				Namespace: resource.Namespace,
@@ -274,7 +274,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, container *Simple
 		})
 
 		if err != nil {
-			if errors.GetErrorCode(err) == model.ErrorCode_ALREADY_EXISTS {
+			if util2.GetErrorCode(err) == model.ErrorCode_ALREADY_EXISTS {
 				res2, _ := container.resourceService.GetByName(ctx, &stub.GetResourceByNameRequest{
 					Token:     "test-token",
 					Namespace: res.Resource.Namespace,

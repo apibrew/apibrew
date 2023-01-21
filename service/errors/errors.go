@@ -2,7 +2,8 @@ package errors
 
 import "data-handler/model"
 
-var NotFoundError = newServiceError(model.ErrorCode_RECORD_NOT_FOUND, "not found")
+var RecordNotFoundError = newServiceError(model.ErrorCode_RECORD_NOT_FOUND, "record not found")
+var ResourceNotFoundError = newServiceError(model.ErrorCode_RESOURCE_NOT_FOUND, "resource not found")
 var UnableToLocatePrimaryKey = newServiceError(model.ErrorCode_UNABLE_TO_LOCATE_PRIMARY_KEY, "unable to locate primary key")
 var InternalError = newServiceError(model.ErrorCode_INTERNAL_ERROR, "Internal error")
 var PropertyNotFoundError = newServiceError(model.ErrorCode_PROPERTY_NOT_FOUND, "Property not found")

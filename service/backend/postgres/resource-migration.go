@@ -163,7 +163,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	}
 
 	if *count == 0 {
-		err = errors.NotFoundError
+		err = errors.RecordNotFoundError
 		return
 	}
 

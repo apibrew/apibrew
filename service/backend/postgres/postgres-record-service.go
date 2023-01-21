@@ -90,7 +90,7 @@ func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource
 		record, err = readRecord(tx, resource, id)
 
 		if err == sql.ErrNoRows {
-			return errors.NotFoundError.WithDetails(fmt.Sprintf("namespace %s; resource %s; id %v", resource.Namespace, resource.Name, id))
+			return errors.RecordNotFoundError.WithDetails(fmt.Sprintf("namespace %s; resource %s; id %v", resource.Namespace, resource.Name, id))
 		}
 
 		if err != nil {

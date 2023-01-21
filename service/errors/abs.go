@@ -3,9 +3,6 @@ package errors
 import (
 	"data-handler/model"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type ServiceError interface {
@@ -62,42 +59,4 @@ func (s serviceError) WithErrorFields(errorFields []*model.ErrorField) ServiceEr
 
 func newServiceError(code model.ErrorCode, message string) ServiceError {
 	return &serviceError{code: code, message: message}
-}
-
-func ToStatusError(err ServiceError) error {
-	if err == nil {
-		return nil
-	}
-
-	st := status.New(codes.Unknown, err.Error())
-
-	st, _ = st.WithDetails(err.ProtoError())
-
-	return st.Err()
-}
-
-func GetErrorCode(err error) model.ErrorCode {
-	st, found := status.FromError(err)
-
-	if !found {
-		return model.ErrorCode_INTERNAL_ERROR
-	}
-
-	a := st.Details()[0].(*model.Error)
-
-	return a.GetCode()
-}
-
-func GetServiceError(err error) model.ErrorCode {
-	st, found := status.FromError(err)
-
-	if !found {
-		return model.ErrorCode_INTERNAL_ERROR
-	}
-
-	a := st.Details()[0]
-
-	log.Print(a)
-
-	return model.ErrorCode_BACKEND_ERROR
 }

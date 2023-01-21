@@ -61,5 +61,5 @@ func prepareSystemNamespace() *model.Namespace {
 }
 
 func prepareSystemDataSource() *model.DataSource {
-	return SystemDataSource
+	return systemDataSource
 }

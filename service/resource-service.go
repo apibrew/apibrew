@@ -227,7 +227,7 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 	}
 
 	if len(records) == 0 {
-		return nil, errors.NotFoundError
+		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
 	}
 
 	resource := mapping.ResourceFromRecord(records[0])
@@ -254,7 +254,8 @@ func (r *resourceService) GetSystemResourceByName(resourceName string) (*model.R
 	} else if resourceName == system.NamespaceResource.Name {
 		return system.NamespaceResource, nil
 	}
-	return nil, errors.NotFoundError
+
+	return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("system/%s", resourceName))
 }
 
 func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, name string) (bool, errors.ServiceError) {

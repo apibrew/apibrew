@@ -4,8 +4,8 @@ import (
 	"context"
 	"data-handler/model"
 	"data-handler/server/stub"
+	"data-handler/server/util"
 	"data-handler/service"
-	"data-handler/service/errors"
 )
 
 type resourceGrpcService struct {
@@ -22,7 +22,7 @@ func (r resourceGrpcService) Create(ctx context.Context, request *stub.CreateRes
 		if err != nil {
 			return &stub.CreateResourceResponse{
 				Resources: nil,
-			}, errors.ToStatusError(err)
+			}, util.ToStatusError(err)
 		}
 
 		result = append(result, res)
@@ -40,7 +40,7 @@ func (r resourceGrpcService) Update(ctx context.Context, request *stub.UpdateRes
 		if err != nil {
 			return &stub.UpdateResourceResponse{
 				Resources: nil,
-			}, errors.ToStatusError(err)
+			}, util.ToStatusError(err)
 		}
 	}
 
@@ -52,7 +52,7 @@ func (r resourceGrpcService) Update(ctx context.Context, request *stub.UpdateRes
 func (r resourceGrpcService) Delete(ctx context.Context, request *stub.DeleteResourceRequest) (*stub.DeleteResourceResponse, error) {
 	err := r.resourceService.Delete(ctx, request.Ids, request.DoMigration, request.ForceMigration)
 
-	return &stub.DeleteResourceResponse{}, errors.ToStatusError(err)
+	return &stub.DeleteResourceResponse{}, util.ToStatusError(err)
 }
 
 func (r resourceGrpcService) List(ctx context.Context, request *stub.ListResourceRequest) (*stub.ListResourceResponse, error) {
@@ -60,7 +60,7 @@ func (r resourceGrpcService) List(ctx context.Context, request *stub.ListResourc
 
 	return &stub.ListResourceResponse{
 		Resources: resources,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
@@ -68,7 +68,7 @@ func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceR
 
 	return &stub.GetResourceResponse{
 		Resource: resource,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (r resourceGrpcService) GetByName(ctx context.Context, request *stub.GetResourceByNameRequest) (*stub.GetResourceByNameResponse, error) {
@@ -76,7 +76,7 @@ func (r resourceGrpcService) GetByName(ctx context.Context, request *stub.GetRes
 
 	return &stub.GetResourceByNameResponse{
 		Resource: resource,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (r resourceGrpcService) GetSystemResource(ctx context.Context, request *stub.GetSystemResourceRequest) (*stub.GetSystemResourceResponse, error) {
@@ -84,7 +84,7 @@ func (r resourceGrpcService) GetSystemResource(ctx context.Context, request *stu
 
 	return &stub.GetSystemResourceResponse{
 		Resource: resource,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func NewResourceServiceServer(service service.ResourceService) stub.ResourceServiceServer {

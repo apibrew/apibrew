@@ -262,7 +262,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	})
 
 	if total == 0 {
-		return nil, errors.NotFoundError
+		return nil, errors.RecordNotFoundError
 	}
 
 	if total > 1 {

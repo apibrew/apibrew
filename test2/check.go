@@ -1,7 +1,13 @@
 package test2
 
-func check(err error) {
+import "testing"
+
+func check(err error, t *testing.T) {
 	if err != nil {
-		panic(err)
+		if t != nil {
+			t.Error(err)
+		} else {
+			panic(err)
+		}
 	}
 }

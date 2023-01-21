@@ -4,8 +4,8 @@ import (
 	"context"
 	"data-handler/logging"
 	"data-handler/server/stub"
+	"data-handler/server/util"
 	"data-handler/service"
-	"data-handler/service/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,7 +30,7 @@ func (s *authenticationServiceServer) Authenticate(ctx context.Context, req *stu
 
 	return &stub.AuthenticationResponse{
 		Token: token,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (s *authenticationServiceServer) RenewToken(ctx context.Context, req *stub.RenewTokenRequest) (*stub.RenewTokenResponse, error) {
@@ -38,7 +38,7 @@ func (s *authenticationServiceServer) RenewToken(ctx context.Context, req *stub.
 
 	return &stub.RenewTokenResponse{
 		Token: token,
-	}, errors.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func NewAuthenticationServiceServer(service service.AuthenticationService) stub.AuthenticationServiceServer {

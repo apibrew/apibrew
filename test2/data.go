@@ -76,6 +76,7 @@ var richResource1 = &model.Resource{
 		DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
 		Entity:     "rich_test_3993",
 	},
+	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "int32_o",

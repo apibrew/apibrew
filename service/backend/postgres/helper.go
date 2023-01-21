@@ -25,7 +25,7 @@ func handleDbError(err error) errors.ServiceError {
 	}
 
 	if err == sql.ErrNoRows {
-		return errors.NotFoundError
+		return errors.RecordNotFoundError
 	}
 
 	log.Printf("Db Error: %s", err)
