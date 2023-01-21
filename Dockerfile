@@ -43,6 +43,9 @@ RUN sh /app/run-tests.sh
 
 FROM buildenv as builder
 
+RUN sh -c "cd proto; buf mod update"
+RUN go generate
+
 RUN go build -o data-handler cmd/server/main.go
 
 FROM golang:1.19-alpine
