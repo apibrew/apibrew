@@ -1,14 +1,36 @@
 package types
 
+import (
+	"encoding/base64"
+)
+
+// string: base64
 type bytesType struct {
 }
 
+func (b bytesType) Equals(aBytes, bBytes interface{}) bool {
+	aArr := aBytes.([]byte)
+	bArr := bBytes.([]byte)
+
+	if len(aArr) != len(bArr) {
+		return false
+	}
+
+	isEqual := true
+
+	for i := 0; i < len(aArr); i++ {
+		isEqual = isEqual && (aArr[i] == bArr[i])
+	}
+
+	return isEqual
+}
+
 func (b bytesType) Pack(value interface{}) (interface{}, error) {
-	return "YXNk", nil //@todo fixme
+	return base64.StdEncoding.EncodeToString(value.([]byte)), nil
 }
 
 func (b bytesType) UnPack(value interface{}) (interface{}, error) {
-	return "YXNk", nil //@todo fixme
+	return base64.StdEncoding.DecodeString(value.(string))
 }
 
 func (b bytesType) Pointer(required bool) any {

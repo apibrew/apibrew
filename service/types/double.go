@@ -2,7 +2,12 @@ package types
 
 import "fmt"
 
+// float64
 type doubleType struct {
+}
+
+func (d doubleType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (d doubleType) Pack(value interface{}) (interface{}, error) {
