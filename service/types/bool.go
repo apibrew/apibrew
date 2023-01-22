@@ -4,15 +4,20 @@ import (
 	"strconv"
 )
 
+// bool
 type boolType struct {
 }
 
+func (u boolType) Equals(a, b interface{}) bool {
+	return a == b
+}
+
 func (u boolType) Pack(value interface{}) (interface{}, error) {
-	return value, nil
+	return value.(bool), nil
 }
 
 func (u boolType) UnPack(value interface{}) (interface{}, error) {
-	return value, nil
+	return value.(bool), nil
 }
 
 func (u boolType) Default() any {

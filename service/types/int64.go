@@ -4,7 +4,12 @@ import (
 	"strconv"
 )
 
+// float64
 type int64Type struct {
+}
+
+func (i int64Type) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (i int64Type) Pack(value interface{}) (interface{}, error) {

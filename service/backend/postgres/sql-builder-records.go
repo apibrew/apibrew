@@ -63,13 +63,23 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 					continue
 				}
 				propertyType := types.ByResourcePropertyType(property.Type)
-				unpackedVal, err := propertyType.UnPack(val)
 
-				if err != nil {
-					return false, errors.RecordValidationError.WithDetails(err.Error())
+				if property.Type == model.ResourcePropertyType_TYPE_OBJECT {
+					packed, err := propertyType.Pack(val)
+
+					if err != nil {
+						return false, errors.RecordValidationError.WithDetails(err.Error())
+					}
+
+					row = append(row, packed)
+				} else {
+					unpackedVal, err := propertyType.UnPack(val)
+
+					if err != nil {
+						return false, errors.RecordValidationError.WithDetails(err.Error())
+					}
+					row = append(row, unpackedVal)
 				}
-
-				row = append(row, unpackedVal)
 			}
 		}
 

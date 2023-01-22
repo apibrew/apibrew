@@ -16,6 +16,7 @@ type PropertyType interface {
 	Pack(value interface{}) (interface{}, error)
 	UnPack(value interface{}) (interface{}, error)
 	Default() any
+	Equals(a, b interface{}) bool
 }
 
 func Dereference(val interface{}) interface{} {

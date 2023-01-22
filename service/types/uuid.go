@@ -2,7 +2,12 @@ package types
 
 import "github.com/google/uuid"
 
+// string
 type uuidType struct {
+}
+
+func (u uuidType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (u uuidType) Pack(value interface{}) (interface{}, error) {

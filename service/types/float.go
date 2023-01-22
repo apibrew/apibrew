@@ -4,7 +4,12 @@ import (
 	"fmt"
 )
 
+// float64
 type floatType struct {
+}
+
+func (f floatType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (f floatType) Pack(value interface{}) (interface{}, error) {

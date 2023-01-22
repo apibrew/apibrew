@@ -1,6 +1,11 @@
 package types
 
+// string
 type stringType struct {
+}
+
+func (s stringType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (s stringType) Pack(value interface{}) (interface{}, error) {

@@ -1,6 +1,11 @@
 package types
 
+// string
 type passwordType struct {
+}
+
+func (s passwordType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (s passwordType) Pack(value interface{}) (interface{}, error) {

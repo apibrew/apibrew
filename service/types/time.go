@@ -2,7 +2,12 @@ package types
 
 import "time"
 
+// string
 type timeType struct {
+}
+
+func (t timeType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (t timeType) Pack(value interface{}) (interface{}, error) {

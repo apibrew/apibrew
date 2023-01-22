@@ -4,7 +4,12 @@ import (
 	"time"
 )
 
+// string
 type timestampType struct {
+}
+
+func (t timestampType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (t timestampType) Pack(value interface{}) (interface{}, error) {
