@@ -7,13 +7,17 @@ type objectType struct {
 }
 
 func (o objectType) Equals(a, b interface{}) bool {
-	v1, _ := o.Pack(a)
-	v2, _ := o.Pack(b)
+	v1, _ := o.Serialize(a)
+	v2, _ := o.Serialize(b)
 
 	return v1 == v2
 }
 
 func (o objectType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
+}
+
+func (o objectType) Serialize(value interface{}) (interface{}, error) {
 	data, err := json.Marshal(value)
 
 	if err != nil {
@@ -24,14 +28,7 @@ func (o objectType) Pack(value interface{}) (interface{}, error) {
 }
 
 func (o objectType) UnPack(value interface{}) (interface{}, error) {
-	if str, ok := value.(string); ok {
-		var data = new(interface{})
-		err := json.Unmarshal([]byte(str), data)
-
-		return *data, err
-	} else {
-		return value, nil
-	}
+	return value, nil
 }
 
 func (o objectType) Pointer(required bool) any {
