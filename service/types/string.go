@@ -36,6 +36,6 @@ func (s stringType) IsEmpty(value any) bool {
 	return value == nil || value == ""
 }
 
-func (s stringType) ValidateValue(value any) error {
+func (s stringType) ValidatePackedValue(value any) error {
 	return canCast[string]("string", value)
 }

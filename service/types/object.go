@@ -47,7 +47,7 @@ func (o objectType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (o objectType) ValidateValue(value any) error {
+func (o objectType) ValidatePackedValue(value any) error {
 	return nil
 }
 

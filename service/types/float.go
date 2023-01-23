@@ -36,7 +36,7 @@ func (f floatType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (f floatType) ValidateValue(value any) error {
+func (f floatType) ValidatePackedValue(value any) error {
 	return canCastNumber[float32]("float32", value)
 }
 

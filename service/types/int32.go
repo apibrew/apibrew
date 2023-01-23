@@ -40,6 +40,6 @@ func (i int32Type) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (i int32Type) ValidateValue(value any) error {
+func (i int32Type) ValidatePackedValue(value any) error {
 	return canCastNumber[int32]("int32", value)
 }

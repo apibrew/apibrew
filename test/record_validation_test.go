@@ -67,6 +67,9 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 		t.Run(subCase.recordType.String()+" - Valid", func(t *testing.T) {
 			testRecordCreationValidationValidCase(ctx, t, subCase)
 		})
+		t.Run(subCase.recordType.String()+" - Invalid", func(t *testing.T) {
+			testRecordCreationValidationInvalidCase(ctx, t, subCase)
+		})
 	}
 }
 
@@ -131,6 +134,44 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 	}
 }
 
+func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
+	if len(subCase.invalidValues) == 0 {
+		return
+	}
+
+	var records []*model.Record
+	for i := 0; i < len(subCase.invalidValues)-3; i += 3 {
+		var propertiesMap = make(map[string]interface{}, 3)
+
+		propertiesMap[subCase.resource.Properties[0].Name] = subCase.invalidValues[i]
+		propertiesMap[subCase.resource.Properties[1].Name] = subCase.invalidValues[i+1]
+		propertiesMap[subCase.resource.Properties[2].Name] = subCase.invalidValues[i+2]
+
+		properties, err := structpb.NewStruct(propertiesMap)
+
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		validRecord := &model.Record{
+			Resource:   subCase.resource.Name,
+			Properties: properties,
+		}
+
+		records = append(records, validRecord)
+	}
+
+	_, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+		Records: records,
+	})
+
+	if err == nil {
+		t.Error("Validation should failed but not failed for: " + subCase.recordType.String())
+		return
+	}
+}
+
 func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidationSubCase {
 	typs := types.GetAllResourcePropertyTypes()
 
@@ -192,13 +233,9 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 		for len(validValues) < 30 {
 			validValues = append(validValues, fakeValidValue(typ)...)
 
-			if len(validValues) == 0 { //@todo remove this code
+			if len(validValues) == 0 {
 				break
 			}
-		}
-
-		if len(validValues) == 0 { //@todo remove this code
-			continue
 		}
 
 		for len(invalidValues) < 30 {
@@ -207,10 +244,6 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 			if len(invalidValues) == 0 { //@todo remove this code
 				break
 			}
-		}
-
-		if len(invalidValues) == 0 { //@todo remove this code
-			continue
 		}
 
 		cases = append(cases, TestRecordCreationValidationSubCase{

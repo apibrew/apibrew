@@ -34,7 +34,7 @@ func (d doubleType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (d doubleType) ValidateValue(value any) error {
+func (d doubleType) ValidatePackedValue(value any) error {
 	return nil
 }
 

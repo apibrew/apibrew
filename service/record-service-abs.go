@@ -68,7 +68,39 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 		propertyMap := record.Properties.AsMap()
 		for _, property := range resource.Properties {
 			propertyType := types.ByResourcePropertyType(property.Type)
-			val := propertyMap[property.Name]
+			packedVal := propertyMap[property.Name]
+
+			if packedVal != nil {
+				err := propertyType.ValidatePackedValue(packedVal)
+
+				if err != nil {
+					fieldErrors = append(fieldErrors, &model.ErrorField{
+						RecordId: record.Id,
+						Property: property.Name,
+						Message:  err.Error(),
+					})
+					continue
+				}
+			}
+
+			var val interface{}
+			var err error
+
+			if packedVal == nil {
+				val = nil
+			} else {
+				val, err = propertyType.UnPack(packedVal)
+
+				if err != nil {
+					fieldErrors = append(fieldErrors, &model.ErrorField{
+						RecordId: record.Id,
+						Property: property.Name,
+						Message:  "wrong type: " + err.Error(),
+					})
+					continue
+				}
+			}
+
 			isEmpty := propertyType.IsEmpty(val)
 
 			if property.Required && isEmpty {
@@ -77,18 +109,6 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 					Property: property.Name,
 					Message:  "required",
 				})
-			}
-
-			if !isEmpty {
-				err := propertyType.ValidateValue(val)
-
-				if err != nil {
-					fieldErrors = append(fieldErrors, &model.ErrorField{
-						RecordId: record.Id,
-						Property: property.Name,
-						Message:  err.Error(),
-					})
-				}
 			}
 		}
 

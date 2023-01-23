@@ -36,7 +36,7 @@ func (n numericType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (n numericType) ValidateValue(value any) error {
+func (n numericType) ValidatePackedValue(value any) error {
 	return canCastNumber[float64]("float64", value)
 }
 

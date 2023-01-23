@@ -1,6 +1,8 @@
 package types
 
 import (
+	"errors"
+	"reflect"
 	"time"
 )
 
@@ -17,7 +19,11 @@ func (t timestampType) Pack(value interface{}) (interface{}, error) {
 }
 
 func (t timestampType) UnPack(value interface{}) (interface{}, error) {
-	return time.Parse(time.RFC3339, value.(string))
+	if str, ok := value.(string); ok {
+		return time.Parse(time.RFC3339, str)
+	} else {
+		return nil, errors.New("wrong type: " + reflect.TypeOf(value).String())
+	}
 }
 
 func (t timestampType) Pointer(required bool) any {
@@ -29,14 +35,14 @@ func (t timestampType) Pointer(required bool) any {
 }
 
 func (t timestampType) String(val any) string {
-	return val.(string)
+	return val.(time.Time).Format(time.RFC3339)
 }
 
 func (t timestampType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (t timestampType) ValidateValue(value any) error {
+func (t timestampType) ValidatePackedValue(value any) error {
 	err := ValidateDateTime(value)
 
 	if err != nil {
@@ -49,5 +55,5 @@ func (t timestampType) ValidateValue(value any) error {
 }
 
 func (t timestampType) Default() any {
-	return time.Now().Format(time.RFC3339)
+	return time.Now()
 }

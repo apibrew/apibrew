@@ -36,6 +36,6 @@ func (s passwordType) IsEmpty(value any) bool {
 	return value == nil || value == ""
 }
 
-func (s passwordType) ValidateValue(value any) error {
+func (s passwordType) ValidatePackedValue(value any) error {
 	return canCast[string]("string", value)
 }
