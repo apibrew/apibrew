@@ -50,7 +50,7 @@ func TestComplexPayload1Success(t *testing.T) {
 		"int32":   12,
 		"int64":   34,
 		"numeric": 99,
-		"object": map[string]interface{}{
+		"object": map[string]interface{}{ //@todo fixme double packing problem
 			"test1": "test-123",
 		},
 		"string":    "asdasdksadjsakldksal",
