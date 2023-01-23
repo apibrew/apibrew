@@ -12,7 +12,7 @@ type PropertyType interface {
 	Pointer(required bool) any
 	String(val any) string
 	IsEmpty(value any) bool
-	ValidateValue(value any) error
+	ValidatePackedValue(value any) error
 	Pack(value interface{}) (interface{}, error)
 	UnPack(value interface{}) (interface{}, error)
 	Default() any

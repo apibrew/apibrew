@@ -42,7 +42,7 @@ func (u uuidType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (u uuidType) ValidateValue(value any) error {
+func (u uuidType) ValidatePackedValue(value any) error {
 	err := canCast[string]("string", value)
 
 	if err != nil {

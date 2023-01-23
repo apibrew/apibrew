@@ -2,6 +2,8 @@ package types
 
 import (
 	"encoding/base64"
+	"errors"
+	"reflect"
 )
 
 // string: base64
@@ -30,7 +32,11 @@ func (b bytesType) Pack(value interface{}) (interface{}, error) {
 }
 
 func (b bytesType) UnPack(value interface{}) (interface{}, error) {
-	return base64.StdEncoding.DecodeString(value.(string))
+	if str, ok := value.(string); ok {
+		return base64.StdEncoding.DecodeString(str)
+	} else {
+		return nil, errors.New("wrong type: " + reflect.TypeOf(value).String())
+	}
 }
 
 func (b bytesType) Pointer(required bool) any {
@@ -42,17 +48,17 @@ func (b bytesType) Pointer(required bool) any {
 }
 
 func (b bytesType) String(val any) string {
-	return val.(string)
+	return string(val.([]byte))
 }
 
 func (b bytesType) IsEmpty(val any) bool {
-	return val == nil || len(val.(string)) == 0
+	return val == nil || len(val.([]byte)) == 0
 }
 
-func (b bytesType) ValidateValue(value any) error {
-	return canCast[string]("base64", value)
+func (b bytesType) ValidatePackedValue(value any) error {
+	return canCast[string]("string", value)
 }
 
 func (b bytesType) Default() any {
-	return ""
+	return []byte("")
 }

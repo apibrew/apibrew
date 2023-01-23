@@ -44,6 +44,6 @@ func (u boolType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (u boolType) ValidateValue(value any) error {
+func (u boolType) ValidatePackedValue(value any) error {
 	return canCast[bool]("bool", value)
 }

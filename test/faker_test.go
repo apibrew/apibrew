@@ -190,39 +190,57 @@ func fakeInvalidValue(propertyType model.ResourcePropertyType) []interface{} {
 		}
 	case model.ResourcePropertyType_TYPE_BOOL:
 		return []interface{}{
-			false, true,
+			randDate().Format(time.RFC3339),
+			rand.Int63(),
+			rand.Int31(),
+			rand.Float32(),
+			rand.Float64(),
+			RandStringRunes(32),
 		}
 	case model.ResourcePropertyType_TYPE_DATE:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
+			rand.Int63(),
+			rand.Int31(),
+			rand.Float32(),
+			rand.Float64(),
+			RandStringRunes(32),
 		}
 	case model.ResourcePropertyType_TYPE_FLOAT:
 		return []interface{}{
-			rand.Float32(),
+			randDate().Format(time.RFC3339),
+			rand.Int63(),
+			rand.Float64(),
+			RandStringRunes(32),
 		}
 	case model.ResourcePropertyType_TYPE_DOUBLE:
 		return []interface{}{
-			rand.Float64(),
+			randDate().Format(time.RFC3339),
+			RandStringRunes(32),
 		}
 	case model.ResourcePropertyType_TYPE_NUMERIC:
+		return []interface{}{
+			RandStringRunes(32),
+		}
+	case model.ResourcePropertyType_TYPE_TIME:
+		return []interface{}{
+			randDate().Format(time.RFC3339),
+			rand.Int63(),
+			rand.Int31(),
+			rand.Float32(),
+			rand.Float64(),
+			RandStringRunes(32),
+		}
+	case model.ResourcePropertyType_TYPE_TIMESTAMP:
 		return []interface{}{
 			rand.Int63(),
 			rand.Int31(),
 			rand.Float32(),
 			rand.Float64(),
-		}
-	case model.ResourcePropertyType_TYPE_TIME:
-		return []interface{}{
-			randDate().Format("15:04:05"),
-		}
-	case model.ResourcePropertyType_TYPE_TIMESTAMP:
-		return []interface{}{
-			randDate().Format(time.RFC3339),
+			RandStringRunes(32),
 		}
 	case model.ResourcePropertyType_TYPE_OBJECT:
-		return []interface{}{
-			time.Now(),
-		}
+		return []interface{}{}
 	default:
 		panic("Unknown type: " + propertyType.String())
 	}
