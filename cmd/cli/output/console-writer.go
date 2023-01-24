@@ -154,7 +154,7 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.R
 
 		for _, prop := range resource.Properties {
 			typeHandler := types.ByResourcePropertyType(prop.Type)
-			packedVal := item.Properties.AsMap()[prop.Name]
+			packedVal := item.Properties.GetFields()[prop.Name]
 
 			if packedVal == nil {
 				row = append(row, "Null")

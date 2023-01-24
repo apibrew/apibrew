@@ -58,29 +58,32 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 
 		for _, property := range resource.Properties {
 			if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-				val := record.Properties.AsMap()[property.Name]
-				if val == nil {
+				packedVal := record.Properties.GetFields()[property.Name]
+				if packedVal == nil {
 					row = append(row, nil)
 					continue
 				}
 				propertyType := types.ByResourcePropertyType(property.Type)
 
+				var val interface{}
+
 				if property.Type == model.ResourcePropertyType_TYPE_OBJECT {
 					var err2 error
-					val, err2 = json.Marshal(val)
+					val, err2 = json.Marshal(packedVal.AsInterface())
 
 					if err2 != nil {
 						return false, errors.InternalError.WithDetails(err2.Error())
 					}
 					val = string(val.([]byte))
-				}
+				} else {
+					var err error
+					val, err = propertyType.UnPack(packedVal)
 
-				unpackedVal, err := propertyType.UnPack(val)
-
-				if err != nil {
-					return false, errors.RecordValidationError.WithDetails(err.Error())
+					if err != nil {
+						return false, errors.RecordValidationError.WithDetails(err.Error())
+					}
 				}
-				row = append(row, unpackedVal)
+				row = append(row, val)
 			}
 		}
 
@@ -157,27 +160,28 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			val := record.Properties.AsMap()[property.Name]
+			packedVal := record.Properties.GetFields()[property.Name]
 
 			propertyType := types.ByResourcePropertyType(property.Type)
+			var val interface{}
 
 			if property.Type == model.ResourcePropertyType_TYPE_OBJECT {
 				var err2 error
-				val, err2 = json.Marshal(val)
+				val, err2 = json.Marshal(packedVal.AsInterface())
 
 				if err2 != nil {
 					return errors.InternalError.WithDetails(err2.Error())
 				}
 				val = string(val.([]byte))
+			} else {
+				var err error
+				val, err = propertyType.UnPack(packedVal)
+				if err != nil {
+					return errors.RecordValidationError.WithDetails(err.Error())
+				}
 			}
 
-			unpackedVal, err := propertyType.UnPack(val)
-
-			if err != nil {
-				return errors.RecordValidationError.WithDetails(err.Error())
-			}
-
-			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("\"%s\"", source.Mapping.Mapping), unpackedVal))
+			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("\"%s\"", source.Mapping.Mapping), val))
 		}
 	}
 
@@ -591,7 +595,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 				return handleDbError(err)
 			}
 
-			properties[property.Name] = packedValue
+			properties[property.Name] = packedValue.AsInterface()
 
 			if property.Primary {
 				ids = append(ids, propertyType.String(val))
@@ -613,6 +617,8 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 	}
 
 	propStruct, parseError := structpb.NewStruct(properties)
+
+	propStruct.GetFields()
 
 	record.Properties = propStruct
 

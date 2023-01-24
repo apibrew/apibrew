@@ -1,6 +1,9 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+	"google.golang.org/protobuf/types/known/structpb"
+)
 
 // float64
 type doubleType struct {
@@ -10,12 +13,12 @@ func (d doubleType) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (d doubleType) Pack(value interface{}) (interface{}, error) {
-	return value, nil
+func (d doubleType) Pack(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
 }
 
-func (d doubleType) UnPack(value interface{}) (interface{}, error) {
-	return value, nil
+func (d doubleType) UnPack(value *structpb.Value) (interface{}, error) {
+	return value.GetNumberValue(), nil
 }
 
 func (d doubleType) Pointer(required bool) any {
@@ -34,8 +37,8 @@ func (d doubleType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (d doubleType) ValidatePackedValue(value any) error {
-	return canCastNumber[float64]("float64", value)
+func (d doubleType) ValidatePackedValue(value *structpb.Value) error {
+	return canCastNumber[float64]("float64", value.AsInterface())
 }
 
 func (d doubleType) Default() any {

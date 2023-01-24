@@ -1,6 +1,7 @@
 package types
 
 import (
+	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )
 
@@ -12,12 +13,12 @@ func (u boolType) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (u boolType) Pack(value interface{}) (interface{}, error) {
-	return value.(bool), nil
+func (u boolType) Pack(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
 }
 
-func (u boolType) UnPack(value interface{}) (interface{}, error) {
-	return value.(bool), nil
+func (u boolType) UnPack(value *structpb.Value) (interface{}, error) {
+	return value.GetBoolValue(), nil
 }
 
 func (u boolType) Default() any {
@@ -44,6 +45,6 @@ func (u boolType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (u boolType) ValidatePackedValue(value any) error {
-	return canCast[bool]("bool", value)
+func (u boolType) ValidatePackedValue(value *structpb.Value) error {
+	return canCast[bool]("bool", value.AsInterface())
 }

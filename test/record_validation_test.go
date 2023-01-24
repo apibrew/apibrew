@@ -118,13 +118,13 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 		createdRecord := resp.Records[i]
 		record := records[i]
 
-		createdRecordValue0, _ := propertyType.UnPack(createdRecord.Properties.AsMap()[subCase.resource.Properties[0].Name])
-		createdRecordValue1, _ := propertyType.UnPack(createdRecord.Properties.AsMap()[subCase.resource.Properties[1].Name])
-		createdRecordValue2, _ := propertyType.UnPack(createdRecord.Properties.AsMap()[subCase.resource.Properties[2].Name])
+		createdRecordValue0, _ := propertyType.UnPack(createdRecord.Properties.GetFields()[subCase.resource.Properties[0].Name])
+		createdRecordValue1, _ := propertyType.UnPack(createdRecord.Properties.GetFields()[subCase.resource.Properties[1].Name])
+		createdRecordValue2, _ := propertyType.UnPack(createdRecord.Properties.GetFields()[subCase.resource.Properties[2].Name])
 
-		recordValue0, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[0].Name])
-		recordValue1, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[1].Name])
-		recordValue2, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[2].Name])
+		recordValue0, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[0].Name])
+		recordValue1, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[1].Name])
+		recordValue2, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[2].Name])
 
 		if !propertyType.Equals(createdRecordValue0, recordValue0) {
 			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue0, recordValue0))
@@ -211,13 +211,13 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 		updatedRecord := updateResp.Records[i]
 		record := records[i]
 
-		createdRecordValue0, _ := propertyType.UnPack(updatedRecord.Properties.AsMap()[subCase.resource.Properties[0].Name])
-		createdRecordValue1, _ := propertyType.UnPack(updatedRecord.Properties.AsMap()[subCase.resource.Properties[1].Name])
-		createdRecordValue2, _ := propertyType.UnPack(updatedRecord.Properties.AsMap()[subCase.resource.Properties[2].Name])
+		createdRecordValue0, _ := propertyType.UnPack(updatedRecord.Properties.GetFields()[subCase.resource.Properties[0].Name])
+		createdRecordValue1, _ := propertyType.UnPack(updatedRecord.Properties.GetFields()[subCase.resource.Properties[1].Name])
+		createdRecordValue2, _ := propertyType.UnPack(updatedRecord.Properties.GetFields()[subCase.resource.Properties[2].Name])
 
-		recordValue0, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[0].Name])
-		recordValue1, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[1].Name])
-		recordValue2, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[2].Name])
+		recordValue0, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[0].Name])
+		recordValue1, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[1].Name])
+		recordValue2, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[2].Name])
 
 		if !propertyType.Equals(createdRecordValue0, recordValue0) {
 			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue0, recordValue0))
