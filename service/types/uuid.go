@@ -2,11 +2,16 @@ package types
 
 import "github.com/google/uuid"
 
+// string
 type uuidType struct {
 }
 
+func (u uuidType) Equals(a, b interface{}) bool {
+	return a == b
+}
+
 func (u uuidType) Pack(value interface{}) (interface{}, error) {
-	return value, nil
+	return value.(uuid.UUID).String(), nil
 }
 
 func (u uuidType) UnPack(val interface{}) (interface{}, error) {
@@ -37,11 +42,11 @@ func (u uuidType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (u uuidType) ValidateValue(value any) error {
+func (u uuidType) ValidatePackedValue(value any) error {
 	err := canCast[string]("string", value)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	_, err = uuid.Parse(value.(string))

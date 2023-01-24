@@ -4,7 +4,12 @@ import (
 	"time"
 )
 
+// string
 type dateType struct {
+}
+
+func (u dateType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (u dateType) Pack(value interface{}) (interface{}, error) {
@@ -35,11 +40,11 @@ func (u dateType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (u dateType) ValidateValue(value any) error {
+func (u dateType) ValidatePackedValue(value any) error {
 	err := canCast[string]("string", value)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	_, err = u.UnPack(value)

@@ -2,7 +2,12 @@ package types
 
 import "time"
 
+// string
 type timeType struct {
+}
+
+func (t timeType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (t timeType) Pack(value interface{}) (interface{}, error) {
@@ -22,18 +27,18 @@ func (t timeType) Pointer(required bool) any {
 }
 
 func (t timeType) String(val any) string {
-	return val.(string)
+	return val.(time.Time).Format("15:04:05")
 }
 
 func (t timeType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (t timeType) ValidateValue(value any) error {
+func (t timeType) ValidatePackedValue(value any) error {
 	err := canCast[string]("string", value)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	_, err = time.Parse("15:04:05", value.(string))
@@ -42,5 +47,5 @@ func (t timeType) ValidateValue(value any) error {
 }
 
 func (t timeType) Default() any {
-	return time.Now().Format("15:04:05")
+	return time.Now()
 }

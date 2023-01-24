@@ -28,7 +28,7 @@ func handleDbError(err error) errors.ServiceError {
 		return errors.RecordNotFoundError
 	}
 
-	log.Printf("Db Error: %s", err)
+	log.Errorf("Db Error: %s", err)
 	//debug.PrintStack()
 
 	if err == sql.ErrTxDone {

@@ -20,6 +20,8 @@ func TestMain(m *testing.M) {
 }
 
 func Setup() {
+	log.SetLevel(log.TraceLevel)
+	log.SetReportCaller(true)
 	setupDataSources()
 	setupResources()
 }
@@ -109,6 +111,7 @@ func setupResources() {
 			if cd.Name == ds.Name {
 				found = true
 				*cd = *ds
+				cd.Id = ds.Id
 				cd.SourceConfig.DataSource = ds.SourceConfig.DataSource
 				break
 			}
