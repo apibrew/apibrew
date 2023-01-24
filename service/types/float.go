@@ -4,7 +4,12 @@ import (
 	"fmt"
 )
 
+// float64
 type floatType struct {
+}
+
+func (f floatType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (f floatType) Pack(value interface{}) (interface{}, error) {
@@ -31,7 +36,7 @@ func (f floatType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (f floatType) ValidateValue(value any) error {
+func (f floatType) ValidatePackedValue(value any) error {
 	return canCastNumber[float32]("float32", value)
 }
 

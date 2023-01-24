@@ -7,6 +7,7 @@ import (
 	"data-handler/service/types"
 	"data-handler/util"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/huandu/go-sqlbuilder"
@@ -63,12 +64,22 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 					continue
 				}
 				propertyType := types.ByResourcePropertyType(property.Type)
+
+				if property.Type == model.ResourcePropertyType_TYPE_OBJECT {
+					var err2 error
+					val, err2 = json.Marshal(val)
+
+					if err2 != nil {
+						return false, errors.InternalError.WithDetails(err2.Error())
+					}
+					val = string(val.([]byte))
+				}
+
 				unpackedVal, err := propertyType.UnPack(val)
 
 				if err != nil {
 					return false, errors.RecordValidationError.WithDetails(err.Error())
 				}
-
 				row = append(row, unpackedVal)
 			}
 		}
@@ -95,7 +106,7 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 	_, err := runner.Exec(sqlQuery, args...)
 
 	if err != nil {
-		log.Print("SQL ERROR: ", err)
+		log.Error("SQL ERROR: ", err)
 		return false, handleDbError(err)
 	}
 
@@ -552,6 +563,17 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 				continue
 			}
 
+			if property.Type == model.ResourcePropertyType_TYPE_OBJECT {
+				var data = new(interface{})
+				err2 := json.Unmarshal([]byte(val.(string)), data)
+
+				if err2 != nil {
+					return errors.InternalError.WithDetails(err2.Error())
+				}
+
+				val = *data
+			}
+
 			packedValue, err := propertyType.Pack(val)
 
 			if err != nil {
@@ -561,8 +583,9 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 			properties[property.Name] = packedValue
 
 			if property.Primary {
-				ids = append(ids, propertyType.String(packedValue))
+				ids = append(ids, propertyType.String(val))
 			}
+
 		}
 
 		if _, ok := properties[property.Name].(uuid.UUID); ok {

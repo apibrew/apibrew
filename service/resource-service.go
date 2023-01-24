@@ -343,6 +343,7 @@ func (r resourceService) mustModifyResource(resource *model.Resource) errors.Ser
 func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
 	list, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, backend.ListRecordParams{
 		Resource: system.ResourceResource,
+		Limit:    1000000,
 	})
 
 	resources := mapping.MapFromRecord(list, mapping.ResourceFromRecord)

@@ -12,10 +12,11 @@ type PropertyType interface {
 	Pointer(required bool) any
 	String(val any) string
 	IsEmpty(value any) bool
-	ValidateValue(value any) error
+	ValidatePackedValue(value any) error
 	Pack(value interface{}) (interface{}, error)
 	UnPack(value interface{}) (interface{}, error)
 	Default() any
+	Equals(a, b interface{}) bool
 }
 
 func Dereference(val interface{}) interface{} {
@@ -120,7 +121,7 @@ func ValidateDateTime(value interface{}) error {
 	err := canCast[string]("string", value)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	_, err = time.Parse(time.RFC3339, value.(string))

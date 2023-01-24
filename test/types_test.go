@@ -16,14 +16,15 @@ func TestGetPropertyType(t *testing.T) {
 		propertyType := types.ByResourcePropertyType(resourcePropertyType)
 
 		val := propertyType.Default()
+		packedVal, _ := propertyType.Pack(val)
 
 		propertyType.String(val)
 		propertyType.Pointer(false)
 		propertyType.Pointer(true)
 		propertyType.IsEmpty(val)
 
-		if propertyType.ValidateValue(val) != nil {
-			t.Error("Cannot validate default value: " + propertyType.ValidateValue(val).Error())
+		if propertyType.ValidatePackedValue(packedVal) != nil {
+			t.Error("Cannot validate default value: " + propertyType.ValidatePackedValue(val).Error())
 		}
 	}
 }

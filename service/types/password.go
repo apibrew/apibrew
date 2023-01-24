@@ -1,6 +1,11 @@
 package types
 
+// string
 type passwordType struct {
+}
+
+func (s passwordType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (s passwordType) Pack(value interface{}) (interface{}, error) {
@@ -31,6 +36,6 @@ func (s passwordType) IsEmpty(value any) bool {
 	return value == nil || value == ""
 }
 
-func (s passwordType) ValidateValue(value any) error {
+func (s passwordType) ValidatePackedValue(value any) error {
 	return canCast[string]("string", value)
 }

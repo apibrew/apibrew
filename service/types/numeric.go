@@ -4,7 +4,12 @@ import (
 	"fmt"
 )
 
+// float64
 type numericType struct {
+}
+
+func (n numericType) Equals(a, b interface{}) bool {
+	return a == b
 }
 
 func (n numericType) Pack(value interface{}) (interface{}, error) {
@@ -31,7 +36,7 @@ func (n numericType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (n numericType) ValidateValue(value any) error {
+func (n numericType) ValidatePackedValue(value any) error {
 	return canCastNumber[float64]("float64", value)
 }
 
