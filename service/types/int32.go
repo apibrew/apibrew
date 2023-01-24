@@ -1,6 +1,7 @@
 package types
 
 import (
+	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )
 
@@ -12,12 +13,12 @@ func (i int32Type) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (i int32Type) Pack(value interface{}) (interface{}, error) {
-	return value, nil
+func (i int32Type) Pack(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
 }
 
-func (i int32Type) UnPack(value interface{}) (interface{}, error) {
-	return value, nil
+func (i int32Type) UnPack(value *structpb.Value) (interface{}, error) {
+	return int32(value.GetNumberValue()), nil
 }
 
 func (i int32Type) Default() any {
@@ -40,6 +41,6 @@ func (i int32Type) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (i int32Type) ValidatePackedValue(value any) error {
-	return canCastNumber[int32]("int32", value)
+func (i int32Type) ValidatePackedValue(value *structpb.Value) error {
+	return canCastNumber[int32]("int32", value.AsInterface())
 }
