@@ -160,13 +160,24 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 			val := record.Properties.AsMap()[property.Name]
 
 			propertyType := types.ByResourcePropertyType(property.Type)
+
+			if property.Type == model.ResourcePropertyType_TYPE_OBJECT {
+				var err2 error
+				val, err2 = json.Marshal(val)
+
+				if err2 != nil {
+					return errors.InternalError.WithDetails(err2.Error())
+				}
+				val = string(val.([]byte))
+			}
+
 			unpackedVal, err := propertyType.UnPack(val)
 
 			if err != nil {
 				return errors.RecordValidationError.WithDetails(err.Error())
 			}
 
-			updateBuilder.SetMore(updateBuilder.Equal(source.Mapping.Mapping, unpackedVal))
+			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("\"%s\"", source.Mapping.Mapping), unpackedVal))
 		}
 	}
 

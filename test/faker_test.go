@@ -53,7 +53,7 @@ func fakeResource(properties ...*model.ResourceProperty) *model.Resource {
 	}
 }
 
-func fakeValidValue(propertyType model.ResourcePropertyType) []interface{} {
+func fakeValidValues(propertyType model.ResourcePropertyType) []interface{} {
 	switch propertyType {
 	case model.ResourcePropertyType_TYPE_INT32:
 		return []interface{}{rand.Int31()}
@@ -129,7 +129,13 @@ func fakeValidValue(propertyType model.ResourcePropertyType) []interface{} {
 	}
 }
 
-func fakeInvalidValue(propertyType model.ResourcePropertyType) []interface{} {
+func fakeValidValue(propertyType model.ResourcePropertyType) interface{} {
+	values := fakeValidValues(propertyType)
+
+	return values[rand.Intn(len(values))]
+}
+
+func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 	switch propertyType {
 	case model.ResourcePropertyType_TYPE_INT32:
 		return []interface{}{
@@ -244,4 +250,14 @@ func fakeInvalidValue(propertyType model.ResourcePropertyType) []interface{} {
 	default:
 		panic("Unknown type: " + propertyType.String())
 	}
+}
+
+func fakeInvalidValue(propertyType model.ResourcePropertyType) interface{} {
+	values := fakeInvalidValues(propertyType)
+
+	if len(values) == 0 {
+		return nil
+	}
+
+	return values[rand.Intn(len(values))]
 }

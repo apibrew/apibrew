@@ -78,6 +78,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 						RecordId: record.Id,
 						Property: property.Name,
 						Message:  err.Error(),
+						Value:    record.Properties.GetFields()[property.Name],
 					})
 					continue
 				}
@@ -96,6 +97,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 						RecordId: record.Id,
 						Property: property.Name,
 						Message:  "wrong type: " + err.Error(),
+						Value:    record.Properties.GetFields()[property.Name],
 					})
 					continue
 				}
@@ -108,6 +110,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 					RecordId: record.Id,
 					Property: property.Name,
 					Message:  "required",
+					Value:    record.Properties.GetFields()[property.Name],
 				})
 			}
 		}
