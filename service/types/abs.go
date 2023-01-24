@@ -121,7 +121,7 @@ func ValidateDateTime(value interface{}) error {
 	err := canCast[string]("string", value)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	_, err = time.Parse(time.RFC3339, value.(string))

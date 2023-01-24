@@ -56,7 +56,15 @@ func (b bytesType) IsEmpty(val any) bool {
 }
 
 func (b bytesType) ValidatePackedValue(value any) error {
-	return canCast[string]("string", value)
+	err := canCast[string]("string", value)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = b.UnPack(value)
+
+	return err
 }
 
 func (b bytesType) Default() any {
