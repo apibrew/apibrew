@@ -63,14 +63,6 @@ func fakeValidValues(propertyType model.ResourcePropertyType) []interface{} {
 		return []interface{}{
 			RandStringRunes(16),
 		}
-	case model.ResourcePropertyType_TYPE_TEXT:
-		return []interface{}{
-			RandStringRunes(16),
-		}
-	case model.ResourcePropertyType_TYPE_PASSWORD:
-		return []interface{}{
-			RandStringRunes(16),
-		}
 	case model.ResourcePropertyType_TYPE_UUID:
 		randUUid, _ := uuid.NewUUID()
 		return []interface{}{
@@ -88,19 +80,12 @@ func fakeValidValues(propertyType model.ResourcePropertyType) []interface{} {
 		return []interface{}{
 			randDate().Format("2006-01-02"),
 		}
-	case model.ResourcePropertyType_TYPE_FLOAT:
+	case model.ResourcePropertyType_TYPE_FLOAT32:
 		return []interface{}{
 			rand.Float32(),
 		}
-	case model.ResourcePropertyType_TYPE_DOUBLE:
+	case model.ResourcePropertyType_TYPE_FLOAT64:
 		return []interface{}{
-			rand.Float64(),
-		}
-	case model.ResourcePropertyType_TYPE_NUMERIC:
-		return []interface{}{
-			rand.Int63(),
-			rand.Int31(),
-			rand.Float32(),
 			rand.Float64(),
 		}
 	case model.ResourcePropertyType_TYPE_TIME:
@@ -152,22 +137,6 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			true,
 			rand.Float64(),
 		}
-	case model.ResourcePropertyType_TYPE_TEXT:
-		return []interface{}{
-			rand.Int31(),
-			rand.Int63(),
-			false,
-			true,
-			rand.Float64(),
-		}
-	case model.ResourcePropertyType_TYPE_PASSWORD:
-		return []interface{}{
-			rand.Int31(),
-			rand.Int63(),
-			false,
-			true,
-			rand.Float64(),
-		}
 	case model.ResourcePropertyType_TYPE_STRING:
 		return []interface{}{
 			rand.Int31(),
@@ -214,18 +183,14 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			rand.Float64(),
 			RandStringRunes(32),
 		}
-	case model.ResourcePropertyType_TYPE_FLOAT:
+	case model.ResourcePropertyType_TYPE_FLOAT32:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
 			RandStringRunes(32),
 		}
-	case model.ResourcePropertyType_TYPE_DOUBLE:
+	case model.ResourcePropertyType_TYPE_FLOAT64:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
-			RandStringRunes(32),
-		}
-	case model.ResourcePropertyType_TYPE_NUMERIC:
-		return []interface{}{
 			RandStringRunes(32),
 		}
 	case model.ResourcePropertyType_TYPE_TIME:

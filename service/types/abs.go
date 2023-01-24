@@ -46,14 +46,10 @@ func ByResourcePropertyType(resourcePropertyType model.ResourcePropertyType) Pro
 		return int32Type{}
 	case model.ResourcePropertyType_TYPE_INT64:
 		return int64Type{}
-	case model.ResourcePropertyType_TYPE_FLOAT:
-		return floatType{}
-	case model.ResourcePropertyType_TYPE_DOUBLE:
-		return doubleType{}
-	case model.ResourcePropertyType_TYPE_NUMERIC:
-		return doubleType{} //fixme remove?
-	case model.ResourcePropertyType_TYPE_TEXT:
-		return stringType{} //fixme remove?
+	case model.ResourcePropertyType_TYPE_FLOAT32:
+		return float32Type{}
+	case model.ResourcePropertyType_TYPE_FLOAT64:
+		return float64Type{}
 	case model.ResourcePropertyType_TYPE_STRING:
 		return stringType{}
 	case model.ResourcePropertyType_TYPE_UUID:
@@ -70,10 +66,8 @@ func ByResourcePropertyType(resourcePropertyType model.ResourcePropertyType) Pro
 		return objectType{}
 	case model.ResourcePropertyType_TYPE_BYTES:
 		return bytesType{}
-	case model.ResourcePropertyType_TYPE_PASSWORD:
-		return stringType{} //fixme remove?
 	default:
-		return floatType{}
+		panic("unknown property type: " + resourcePropertyType.String())
 	}
 }
 
