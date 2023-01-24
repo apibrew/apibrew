@@ -186,7 +186,9 @@ func fakeInvalidValue(propertyType model.ResourcePropertyType) []interface{} {
 			false,
 			true,
 			rand.Float64(),
-			RandStringRunes(12),
+			RandStringRunes(13),
+			RandStringRunes(14),
+			RandStringRunes(15),
 		}
 	case model.ResourcePropertyType_TYPE_BOOL:
 		return []interface{}{
@@ -209,8 +211,6 @@ func fakeInvalidValue(propertyType model.ResourcePropertyType) []interface{} {
 	case model.ResourcePropertyType_TYPE_FLOAT:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
-			rand.Int63(),
-			rand.Float64(),
 			RandStringRunes(32),
 		}
 	case model.ResourcePropertyType_TYPE_DOUBLE:

@@ -4,9 +4,11 @@ import (
 	"context"
 	"data-handler/model"
 	"data-handler/server/stub"
+	"data-handler/server/util"
 	"data-handler/service/types"
 	"fmt"
 	"google.golang.org/protobuf/types/known/structpb"
+	"strconv"
 	"testing"
 )
 
@@ -168,6 +170,18 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 
 	if err == nil {
 		t.Error("Validation should failed but not failed for: " + subCase.recordType.String())
+		return
+	}
+
+	if util.GetErrorCode(err) != model.ErrorCode_RECORD_VALIDATION_ERROR {
+		t.Error("Wrong error code: " + util.GetErrorCode(err).String())
+		return
+	}
+
+	errorFields := util.GetErrorFields(err)
+
+	if len(errorFields) != len(records)*3 {
+		t.Error("Wrong error count: " + strconv.Itoa(len(errorFields)))
 		return
 	}
 }

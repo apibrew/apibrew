@@ -35,7 +35,7 @@ func (d doubleType) IsEmpty(value any) bool {
 }
 
 func (d doubleType) ValidatePackedValue(value any) error {
-	return nil
+	return canCastNumber[float64]("float64", value)
 }
 
 func (d doubleType) Default() any {

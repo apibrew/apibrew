@@ -583,7 +583,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 			properties[property.Name] = packedValue
 
 			if property.Primary {
-				ids = append(ids, propertyType.String(packedValue))
+				ids = append(ids, propertyType.String(val))
 			}
 
 		}
