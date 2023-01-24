@@ -13,20 +13,14 @@ func getPsqlTypeFromProperty(propertyType model.ResourcePropertyType, length uin
 		return "UUID"
 	case model.ResourcePropertyType_TYPE_STRING:
 		return "VARCHAR(" + strconv.Itoa(int(length)) + ")"
-	case model.ResourcePropertyType_TYPE_PASSWORD:
-		return "VARCHAR(" + strconv.Itoa(int(length)) + ")"
 	case model.ResourcePropertyType_TYPE_DATE:
 		return "DATE"
-	case model.ResourcePropertyType_TYPE_TEXT:
-		return "TEXT"
 	case model.ResourcePropertyType_TYPE_INT64:
 		return "INT8"
-	case model.ResourcePropertyType_TYPE_FLOAT:
+	case model.ResourcePropertyType_TYPE_FLOAT32:
 		return "FLOAT"
-	case model.ResourcePropertyType_TYPE_DOUBLE:
+	case model.ResourcePropertyType_TYPE_FLOAT64:
 		return "DOUBLE PRECISION"
-	case model.ResourcePropertyType_TYPE_NUMERIC:
-		return "NUMERIC"
 	case model.ResourcePropertyType_TYPE_TIME:
 		return "TIME"
 	case model.ResourcePropertyType_TYPE_TIMESTAMP:
@@ -60,9 +54,9 @@ func getPropertyTypeFromPsql(columnType string) model.ResourcePropertyType {
 	case "timestampz":
 		return model.ResourcePropertyType_TYPE_TIMESTAMP
 	case "float4":
-		return model.ResourcePropertyType_TYPE_FLOAT
+		return model.ResourcePropertyType_TYPE_FLOAT32
 	case "float8":
-		return model.ResourcePropertyType_TYPE_FLOAT
+		return model.ResourcePropertyType_TYPE_FLOAT64
 	case "int2":
 		return model.ResourcePropertyType_TYPE_INT32
 	case "int4":
@@ -73,15 +67,13 @@ func getPropertyTypeFromPsql(columnType string) model.ResourcePropertyType {
 		return model.ResourcePropertyType_TYPE_OBJECT
 	case "json":
 		return model.ResourcePropertyType_TYPE_OBJECT
-	case "numeric":
-		return model.ResourcePropertyType_TYPE_NUMERIC
 	case "varchar":
 		return model.ResourcePropertyType_TYPE_STRING
 	case "text":
-		return model.ResourcePropertyType_TYPE_TEXT
+		return model.ResourcePropertyType_TYPE_STRING
 	case "uuid":
 		return model.ResourcePropertyType_TYPE_UUID
 	default:
-		return model.ResourcePropertyType_TYPE_TEXT
+		return model.ResourcePropertyType_TYPE_STRING
 	}
 }

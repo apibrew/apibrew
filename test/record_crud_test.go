@@ -30,7 +30,7 @@ func TestComplexPayload1Fail(t *testing.T) {
 
 	errorFields := util.GetErrorFields(err)
 
-	if len(errorFields) != 14 {
+	if len(errorFields) != 13 {
 		t.Error("There must be 14 error field")
 	}
 }
@@ -42,14 +42,13 @@ func TestComplexPayload1Success(t *testing.T) {
 	record1.Resource = richResource1.Name
 	var err error
 	record1.Properties, err = structpb.NewStruct(map[string]interface{}{
-		"bool":    true,
-		"bytes":   "YXNk",
-		"date":    "2006-01-02",
-		"double":  12.3,
-		"float":   31.200000762939453,
-		"int32":   12,
-		"int64":   34,
-		"numeric": 99,
+		"bool":   true,
+		"bytes":  "YXNk",
+		"date":   "2006-01-02",
+		"double": 12.3,
+		"float":  31.200000762939453,
+		"int32":  12,
+		"int64":  34,
 		"object": map[string]interface{}{ //@todo fixme double packing problem
 			"test1": "test-123",
 		},

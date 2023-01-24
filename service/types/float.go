@@ -6,22 +6,22 @@ import (
 )
 
 // float32
-type floatType struct {
+type float32Type struct {
 }
 
-func (f floatType) Equals(a, b interface{}) bool {
+func (f float32Type) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (f floatType) Pack(value interface{}) (*structpb.Value, error) {
+func (f float32Type) Pack(value interface{}) (*structpb.Value, error) {
 	return structpb.NewValue(value)
 }
 
-func (f floatType) UnPack(value *structpb.Value) (interface{}, error) {
+func (f float32Type) UnPack(value *structpb.Value) (interface{}, error) {
 	return float32(value.GetNumberValue()), nil
 }
 
-func (f floatType) Pointer(required bool) any {
+func (f float32Type) Pointer(required bool) any {
 	if required {
 		return new(float32)
 	} else {
@@ -29,18 +29,18 @@ func (f floatType) Pointer(required bool) any {
 	}
 }
 
-func (f floatType) String(val any) string {
+func (f float32Type) String(val any) string {
 	return fmt.Sprintf("%f", val)
 }
 
-func (f floatType) IsEmpty(value any) bool {
+func (f float32Type) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (f floatType) ValidatePackedValue(value *structpb.Value) error {
+func (f float32Type) ValidatePackedValue(value *structpb.Value) error {
 	return canCastNumber[float32]("float32", value.AsInterface())
 }
 
-func (f floatType) Default() any {
+func (f float32Type) Default() any {
 	return float32(0)
 }
