@@ -111,7 +111,17 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
-	result, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, backend.BulkRecordsParams{
+	systemBackend := r.backendProviderService.GetSystemBackend(ctx)
+
+	txk, err := systemBackend.BeginTransaction(ctx, false)
+
+	if err != nil {
+		return nil, err
+	}
+
+	txCtx := context.WithValue(ctx, "transactionKey", txk)
+
+	result, _, err := systemBackend.AddRecords(txCtx, backend.BulkRecordsParams{
 		Resource:       system.ResourceResource,
 		Records:        []*model.Record{mapping.ResourceToRecord(resource)},
 		CheckVersion:   false,
@@ -132,7 +142,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return mapping.ResourcePropertyToRecord(property, resource)
 	})
 
-	_, _, err = r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, backend.BulkRecordsParams{
+	_, _, err = systemBackend.AddRecords(txCtx, backend.BulkRecordsParams{
 		Resource:       system.ResourcePropertyResource,
 		Records:        propertyRecords,
 		CheckVersion:   false,
@@ -158,6 +168,12 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	err = systemBackend.CommitTransaction(txCtx)
+
+	if err != nil {
+		return nil, err
 	}
 
 	return resource, nil

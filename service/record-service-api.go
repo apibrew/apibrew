@@ -68,11 +68,21 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 	var insertedArray []bool
 	var err errors.ServiceError
 
+	var success = true
+	var postOperationHandlers []func()
+
+	defer func() {
+		for _, handler := range postOperationHandlers {
+			handler()
+		}
+	}()
+
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
 		resource, err = r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName)
 
 		if err != nil {
+			success = false
 			return nil, nil, err
 		}
 
@@ -98,10 +108,37 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 		bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
 
 		if err != nil {
+			success = false
 			return nil, []bool{}, err
 		}
 
-		records, inserted, err = bck.AddRecords(ctx, backend.BulkRecordsParams{
+		tx, err := bck.BeginTransaction(ctx, false)
+
+		if err != nil {
+			success = false
+			return nil, []bool{}, err
+		}
+
+		txCtx := context.WithValue(ctx, "transactionKey", tx)
+
+		postOperationHandlers = append(postOperationHandlers, func() {
+			if success {
+				err = bck.CommitTransaction(txCtx)
+
+				if err != nil {
+					log.Print(err)
+					success = false
+				}
+			} else {
+				err = bck.RollbackTransaction(txCtx)
+
+				if err != nil {
+					log.Print(err)
+				}
+			}
+		})
+
+		records, inserted, err = bck.AddRecords(txCtx, backend.BulkRecordsParams{
 			Resource:       resource,
 			Records:        list,
 			IgnoreIfExists: params.IgnoreIfExists,
@@ -110,10 +147,12 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 		insertedArray = append(insertedArray, inserted)
 
 		if err != nil {
+			success = false
 			return nil, nil, err
 		}
 
 		if err = r.genericHandler.AfterCreate(ctx, resource, params, records); err != nil {
+			success = false
 			return nil, nil, err
 		}
 
@@ -133,6 +172,15 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 	var result []*model.Record
 	var err errors.ServiceError
 
+	var success = true
+	var postOperationHandlers []func()
+
+	defer func() {
+		for _, handler := range postOperationHandlers {
+			handler()
+		}
+	}()
+
 	for resourceName, list := range entityRecordMap {
 		var resource *model.Resource
 		if resource, err = r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName); err != nil {
@@ -140,24 +188,29 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 		}
 
 		if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
+			success = false
 			return nil, err
 		}
 
 		if resource.Flags.KeepHistory && !params.CheckVersion {
+			success = false
 			return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
 		}
 
 		err = r.validateRecords(resource, list)
 
 		if err != nil {
+			success = false
 			return nil, err
 		}
 
 		if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {
+			success = false
 			return nil, err
 		}
 
 		if handled, records, err := r.genericHandler.Update(ctx, resource, params); handled {
+			success = false
 			return records, err
 		}
 
@@ -166,16 +219,44 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 		bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
 
 		if err != nil {
+			success = false
 			return nil, err
 		}
 
-		records, err = bck.UpdateRecords(ctx, backend.BulkRecordsParams{
+		tx, err := bck.BeginTransaction(ctx, false)
+
+		if err != nil {
+			success = false
+			return nil, err
+		}
+
+		txCtx := context.WithValue(ctx, "transactionKey", tx)
+
+		postOperationHandlers = append(postOperationHandlers, func() {
+			if success {
+				err = bck.CommitTransaction(txCtx)
+
+				if err != nil {
+					log.Print(err)
+					success = false
+				}
+			} else {
+				err = bck.RollbackTransaction(txCtx)
+
+				if err != nil {
+					log.Print(err)
+				}
+			}
+		})
+
+		records, err = bck.UpdateRecords(txCtx, backend.BulkRecordsParams{
 			Resource:     resource,
 			Records:      list,
 			CheckVersion: params.CheckVersion,
 		})
 
 		if err != nil {
+			success = false
 			return nil, err
 		}
 

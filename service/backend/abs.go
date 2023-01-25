@@ -54,8 +54,16 @@ type SchemaInterface interface {
 	DowngradeResource(ctx context.Context, resource *model.Resource, migration bool) errors.ServiceError
 }
 
+type TransactionInterface interface {
+	BeginTransaction(ctx context.Context, readOnly bool) (transactionKey string, serviceError errors.ServiceError)
+	CommitTransaction(ctx context.Context) (serviceError errors.ServiceError)
+	RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError)
+	IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError errors.ServiceError)
+}
+
 type Backend interface {
 	GenericInterface
 	RecordsInterface
 	SchemaInterface
+	TransactionInterface
 }
