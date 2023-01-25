@@ -8,6 +8,14 @@ import (
 )
 
 func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx *sql.Tx) errors.ServiceError) errors.ServiceError {
+	transactionKey := ctx.Value(ctxTransactionKey)
+
+	if transactionKey != nil {
+		txDataInstance := p.transactionMap[transactionKey.(string)]
+
+		return fn(txDataInstance.tx)
+	}
+
 	log.Tracef("begin transaction readonly=%v", readOnly)
 	conn, serviceErr := p.acquireConnection(ctx)
 
