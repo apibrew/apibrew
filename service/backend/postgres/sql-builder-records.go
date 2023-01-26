@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"data-handler/model"
+	"data-handler/service/annotations"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/types"
@@ -19,9 +20,6 @@ import (
 )
 
 func recordInsert(runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, history bool) (bool, errors.ServiceError) {
-	if resource.Flags == nil {
-		resource.Flags = &model.ResourceFlags{}
-	}
 
 	insertBuilder := sqlbuilder.InsertInto(getTableName(resource.SourceConfig, history))
 	insertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
@@ -87,7 +85,7 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 			}
 		}
 
-		if !resource.Flags.DisableAudit {
+		if !annotations.IsEnabled(resource, annotations.DisableAudit) {
 			row = append(row, record.AuditData.CreatedOn.AsTime())
 			row = append(row, record.AuditData.UpdatedOn.AsTime())
 			row = append(row, record.AuditData.CreatedBy)
@@ -135,10 +133,6 @@ func getTableName(sourceConfig *model.ResourceSourceConfig, history bool) string
 }
 
 func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) errors.ServiceError {
-	if resource.Flags == nil {
-		resource.Flags = &model.ResourceFlags{}
-	}
-
 	if record.AuditData == nil {
 		record.AuditData = &model.AuditData{}
 	}
@@ -542,7 +536,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 	var updatedOn = new(*time.Time)
 	var updatedBy = new(*string)
 
-	if !resource.Flags.DisableAudit {
+	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
 		record.AuditData = &model.AuditData{}
 
 		rowScanFields = append(rowScanFields, createdOn)
@@ -649,7 +643,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 }
 
 func checkHasOwnId(resource *model.Resource) bool {
-	return !resource.Flags.DoPrimaryKeyLookup
+	return !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup)
 }
 
 func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
@@ -734,7 +728,7 @@ func prepareResourceRecordCols(resource *model.Resource) []string {
 
 	// referenced columns
 
-	if !resource.Flags.DisableAudit {
+	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
 		cols = append(cols, "created_on")
 		cols = append(cols, "updated_on")
 		cols = append(cols, "created_by")

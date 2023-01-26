@@ -10,7 +10,6 @@ var ResourcePropertyResource = &model.Resource{
 		DataSource: "system",
 		Entity:     "resource_property",
 	},
-	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "name",

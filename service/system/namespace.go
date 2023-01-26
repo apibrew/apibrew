@@ -10,7 +10,6 @@ var NamespaceResource = &model.Resource{
 		DataSource: "system",
 		Entity:     "namespace",
 	},
-	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "name",

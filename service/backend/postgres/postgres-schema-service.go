@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"data-handler/model"
+	"data-handler/service/annotations"
 	"data-handler/service/errors"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
@@ -46,7 +47,7 @@ func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, cu
 			return err
 		}
 
-		if resource.Flags.KeepHistory {
+		if annotations.IsEnabled(resource, annotations.KeepHistory) {
 			if err := resourceCreateHistoryTable(tx, resource); err != nil {
 				return err
 			}
@@ -68,7 +69,7 @@ func (p *postgresResourceServiceBackend) DowngradeResource(ctx context.Context, 
 			return err
 		}
 
-		if resource.Flags.KeepHistory {
+		if annotations.IsEnabled(resource, annotations.KeepHistory) {
 			err = resourceDropTable(tx, getTableName(resource.SourceConfig, true))
 
 			if err != nil {

@@ -10,7 +10,6 @@ var UserResource = &model.Resource{
 		DataSource: "system",
 		Entity:     "user",
 	},
-	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "username",

@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"data-handler/model"
+	"data-handler/service/annotations"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"database/sql"
@@ -35,7 +36,7 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 			return err
 		}
 
-		if inserted && params.Resource.Flags.KeepHistory {
+		if inserted && annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
 			_, err = recordInsert(tx, params.Resource, params.Records, false, true)
 
 			if err != nil {
@@ -65,7 +66,7 @@ func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, para
 			}
 		}
 
-		if params.Resource.Flags.KeepHistory {
+		if annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
 			_, err := recordInsert(tx, params.Resource, params.Records, false, false)
 
 			if err != nil {
