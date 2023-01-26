@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"data-handler/model"
+	"data-handler/service/annotations"
 	"data-handler/service/errors"
 	"database/sql"
 	"fmt"
@@ -29,14 +30,14 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) errors.Se
 
 	builder.IfNotExists()
 
-	if !resource.Flags.DoPrimaryKeyLookup {
+	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 		builder.Define("id", "uuid", "NOT NULL", "PRIMARY KEY")
 	}
 
 	prepareCreateTableQuery(resource, builder)
 
 	// audit
-	if !resource.Flags.DisableAudit {
+	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
 		builder.Define("created_on", "timestamp", "NOT NULL")
 		builder.Define("updated_on", "timestamp", "NULL")
 		builder.Define("created_by", DbNameType, "NOT NULL")
@@ -63,9 +64,6 @@ type ReferenceLocalDetails struct {
 }
 
 func prepareCreateTableQuery(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
-	if resource.Flags == nil {
-		resource.Flags = new(model.ResourceFlags)
-	}
 
 	var primaryKeys []string
 	for _, property := range resource.Properties {
