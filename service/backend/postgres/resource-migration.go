@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"data-handler/model"
+	"data-handler/service/annotations"
 	"data-handler/service/errors"
 	"data-handler/util"
 	"fmt"
@@ -168,10 +169,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	}
 
 	resource = new(model.Resource)
-	resource.Flags = new(model.ResourceFlags)
-	resource.Flags.AutoCreated = true
-	resource.Flags.DisableMigration = true
-	resource.Flags.DisableAudit = true
+	annotations.Enable(resource, annotations.AutoCreated, annotations.DisableMigration, annotations.DisableAudit)
 	resource.AuditData = new(model.AuditData)
 	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
@@ -230,19 +228,19 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 			**columnLength = 0
 		}
 
-		if *isPrimary && !resource.Flags.DoPrimaryKeyLookup {
+		if *isPrimary && !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 			primaryCount++
 
 			if primaryCount > 1 {
-				resource.Flags.DoPrimaryKeyLookup = true
+				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
 			}
 
 			if *columnName != "id" {
-				resource.Flags.DoPrimaryKeyLookup = true
+				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
 			}
 
 			if *columnType != "uuid" {
-				resource.Flags.DoPrimaryKeyLookup = true
+				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
 			}
 		}
 
@@ -300,7 +298,7 @@ func doResourceCleanup(resource *model.Resource) {
 			continue
 		}
 
-		if property.Primary && !resource.Flags.DoPrimaryKeyLookup {
+		if property.Primary && !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 			// ignore id column if it is same as standard id column
 			continue
 		}
@@ -311,7 +309,7 @@ func doResourceCleanup(resource *model.Resource) {
 	resource.Properties = newColumns
 
 	if enableAudit {
-		resource.Flags.DisableAudit = false
+		annotations.Disable(resource, annotations.DisableAudit)
 	}
 }
 

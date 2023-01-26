@@ -10,7 +10,6 @@ var ResourceResource = &model.Resource{
 		DataSource: "system",
 		Entity:     "resource",
 	},
-	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "name",
@@ -72,74 +71,14 @@ var ResourceResource = &model.Resource{
 			Required: true,
 		},
 		{
-			Name: "readOnlyRecords",
+			Name: "annotations",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "read_only_records",
+					Mapping: "annotations",
 				},
 			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Required: true,
-		},
-		{
-			Name: "uniqueRecord",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "unique_record",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Required: true,
-		},
-		{
-			Name: "keepHistory",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "keep_history",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Required: true,
-		},
-		{
-			Name: "autoCreated",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "auto_created",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Required: true,
-		},
-		{
-			Name: "disableMigration",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "disable_migration",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Required: true,
-		},
-		{
-			Name: "disableAudit",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "disable_audit",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Required: true,
-		},
-		{
-			Name: "doPrimaryKeyLookup",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "do_primary_key_lookup",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Required: true,
+			Type:     model.ResourcePropertyType_TYPE_OBJECT,
+			Required: false,
 		},
 		{
 			Name: "type",

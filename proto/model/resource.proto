@@ -81,16 +81,6 @@ message ResourceSourceConfig {
   string entity = 3;
 }
 
-message ResourceFlags {
-  bool readOnlyRecords = 1;
-  bool uniqueRecord = 2;
-  bool keepHistory = 3;
-  bool autoCreated = 4;
-  bool disableMigration = 5;
-  bool disableAudit = 6;
-  bool doPrimaryKeyLookup = 7;
-}
-
 message Resource {
   string id = 1; // id; read only
   string name = 2; // uniq(per namespace) // name
@@ -101,7 +91,7 @@ message Resource {
   repeated ResourceCheck checks = 7; // not implemented
   repeated ResourceReference references = 8; // not implemented
   repeated ResourceIndex indexes = 9; // not implemented
-  ResourceFlags flags = 10;
+  map<string, string> annotations = 10;
 
   AuditData auditData = 101;
   uint32 version = 102;
