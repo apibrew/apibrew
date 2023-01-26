@@ -65,10 +65,9 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 	}
 
 	for _, record := range list {
-		propertyMap := record.Properties.AsMap()
 		for _, property := range resource.Properties {
 			propertyType := types.ByResourcePropertyType(property.Type)
-			packedVal := propertyMap[property.Name]
+			packedVal := record.Properties.GetFields()[property.Name]
 
 			if packedVal != nil {
 				err := propertyType.ValidatePackedValue(packedVal)
@@ -78,6 +77,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 						RecordId: record.Id,
 						Property: property.Name,
 						Message:  err.Error(),
+						Value:    record.Properties.GetFields()[property.Name],
 					})
 					continue
 				}
@@ -96,6 +96,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 						RecordId: record.Id,
 						Property: property.Name,
 						Message:  "wrong type: " + err.Error(),
+						Value:    record.Properties.GetFields()[property.Name],
 					})
 					continue
 				}
@@ -108,11 +109,12 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 					RecordId: record.Id,
 					Property: property.Name,
 					Message:  "required",
+					Value:    record.Properties.GetFields()[property.Name],
 				})
 			}
 		}
 
-		for key := range propertyMap {
+		for key := range record.Properties.GetFields() {
 			if !resourcePropertyExists[key] {
 				fieldErrors = append(fieldErrors, &model.ErrorField{
 					RecordId: record.Id,

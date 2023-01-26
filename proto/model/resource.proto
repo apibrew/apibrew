@@ -28,19 +28,16 @@ message ResourcePropertyMappingConfig {
 enum ResourcePropertyType {
   TYPE_BOOL = 0;
   TYPE_STRING = 1;
-  TYPE_FLOAT = 2;
-  TYPE_DOUBLE = 3;
+  TYPE_FLOAT32 = 2;
+  TYPE_FLOAT64 = 3;
   TYPE_INT32 = 4;
   TYPE_INT64 = 5;
   TYPE_BYTES = 6;
-  TYPE_TEXT = 7;
   TYPE_UUID = 8;
   TYPE_DATE = 9;
   TYPE_TIME = 10;
   TYPE_TIMESTAMP = 11;
   TYPE_OBJECT = 12;
-  TYPE_NUMERIC = 13;
-  TYPE_PASSWORD = 14;
 }
 
 message ResourceProperty {

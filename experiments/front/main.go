@@ -304,7 +304,7 @@ func prepareRichResource(service stub.ResourceServiceClient) {
 
 			{
 				Name: "text",
-				Type: model.ResourcePropertyType_TYPE_TEXT,
+				Type: model.ResourcePropertyType_TYPE_STRING,
 				SourceConfig: &model.ResourceProperty_Mapping{
 					Mapping: &model.ResourcePropertyMappingConfig{
 						Mapping: "text",

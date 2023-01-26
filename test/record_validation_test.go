@@ -13,12 +13,8 @@ import (
 )
 
 type TestRecordCreationValidationSubCase struct {
-	resource           *model.Resource
-	recordType         model.ResourcePropertyType
-	validValues        []interface{}
-	invalidValues      []interface{}
-	invalidValueErrors []*model.ErrorField
-	length             uint32
+	resource   *model.Resource
+	recordType model.ResourcePropertyType
 }
 
 func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
@@ -66,23 +62,31 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 	}
 
 	for _, subCase := range subCases {
-		t.Run(subCase.recordType.String()+" - Valid", func(t *testing.T) {
+		// create
+		t.Run(subCase.recordType.String()+" - Create - Valid", func(t *testing.T) {
 			testRecordCreationValidationValidCase(ctx, t, subCase)
 		})
-		t.Run(subCase.recordType.String()+" - Invalid", func(t *testing.T) {
+		t.Run(subCase.recordType.String()+" - Create - Invalid", func(t *testing.T) {
 			testRecordCreationValidationInvalidCase(ctx, t, subCase)
 		})
+		// update
+		t.Run(subCase.recordType.String()+" - Update - Valid", func(t *testing.T) {
+			testRecordUpdateValidationValidCase(ctx, t, subCase)
+		})
+		//t.Run(subCase.recordType.String()+" - Invalid", func(t *testing.T) {
+		//	testRecordUpdateValidationInvalidCase(ctx, t, subCase)
+		//})
 	}
 }
 
 func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
 	var records []*model.Record
-	for i := 0; i < len(subCase.validValues)-3; i += 3 {
+	for i := 0; i < 30; i += 3 {
 		var propertiesMap = make(map[string]interface{}, 3)
 
-		propertiesMap[subCase.resource.Properties[0].Name] = subCase.validValues[i]
-		propertiesMap[subCase.resource.Properties[1].Name] = subCase.validValues[i+1]
-		propertiesMap[subCase.resource.Properties[2].Name] = subCase.validValues[i+2]
+		propertiesMap[subCase.resource.Properties[0].Name] = fakeValidValue(subCase.recordType)
+		propertiesMap[subCase.resource.Properties[1].Name] = fakeValidValue(subCase.recordType)
+		propertiesMap[subCase.resource.Properties[2].Name] = fakeValidValue(subCase.recordType)
 
 		properties, err := structpb.NewStruct(propertiesMap)
 
@@ -114,13 +118,106 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 		createdRecord := resp.Records[i]
 		record := records[i]
 
-		createdRecordValue0, _ := propertyType.UnPack(createdRecord.Properties.AsMap()[subCase.resource.Properties[0].Name])
-		createdRecordValue1, _ := propertyType.UnPack(createdRecord.Properties.AsMap()[subCase.resource.Properties[1].Name])
-		createdRecordValue2, _ := propertyType.UnPack(createdRecord.Properties.AsMap()[subCase.resource.Properties[2].Name])
+		createdRecordValue0, _ := propertyType.UnPack(createdRecord.Properties.GetFields()[subCase.resource.Properties[0].Name])
+		createdRecordValue1, _ := propertyType.UnPack(createdRecord.Properties.GetFields()[subCase.resource.Properties[1].Name])
+		createdRecordValue2, _ := propertyType.UnPack(createdRecord.Properties.GetFields()[subCase.resource.Properties[2].Name])
 
-		recordValue0, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[0].Name])
-		recordValue1, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[1].Name])
-		recordValue2, _ := propertyType.UnPack(record.Properties.AsMap()[subCase.resource.Properties[2].Name])
+		recordValue0, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[0].Name])
+		recordValue1, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[1].Name])
+		recordValue2, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[2].Name])
+
+		if !propertyType.Equals(createdRecordValue0, recordValue0) {
+			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue0, recordValue0))
+		}
+
+		if !propertyType.Equals(createdRecordValue1, recordValue1) {
+			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue1, recordValue1))
+		}
+
+		if !propertyType.Equals(createdRecordValue2, recordValue2) {
+			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue2, recordValue2))
+		}
+	}
+}
+
+func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
+	var records []*model.Record
+	for i := 0; i < 30; i += 3 {
+		var propertiesMap = make(map[string]interface{}, 3)
+
+		propertiesMap[subCase.resource.Properties[0].Name] = fakeValidValue(subCase.recordType)
+		propertiesMap[subCase.resource.Properties[1].Name] = fakeValidValue(subCase.recordType)
+		propertiesMap[subCase.resource.Properties[2].Name] = fakeValidValue(subCase.recordType)
+
+		properties, err := structpb.NewStruct(propertiesMap)
+
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		validRecord := &model.Record{
+			Resource:   subCase.resource.Name,
+			Properties: properties,
+		}
+
+		records = append(records, validRecord)
+	}
+
+	resp, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+		Records: records,
+	})
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	propertyType := types.ByResourcePropertyType(subCase.recordType)
+
+	for i := 0; i < len(resp.Records); i++ {
+		createdRecord := resp.Records[i]
+		record := records[i]
+		record.Id = createdRecord.Id
+	}
+
+	for _, record := range records {
+		var propertiesMap = record.Properties.AsMap()
+
+		propertiesMap[subCase.resource.Properties[0].Name] = fakeValidValue(subCase.recordType)
+		propertiesMap[subCase.resource.Properties[1].Name] = fakeValidValue(subCase.recordType)
+		propertiesMap[subCase.resource.Properties[2].Name] = fakeValidValue(subCase.recordType)
+
+		properties, err := structpb.NewStruct(propertiesMap)
+
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		record.Properties = properties
+	}
+
+	updateResp, err := recordServiceClient.Update(ctx, &stub.UpdateRecordRequest{
+		Records: records,
+	})
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	for i := 0; i < len(updateResp.Records); i++ {
+		updatedRecord := updateResp.Records[i]
+		record := records[i]
+
+		createdRecordValue0, _ := propertyType.UnPack(updatedRecord.Properties.GetFields()[subCase.resource.Properties[0].Name])
+		createdRecordValue1, _ := propertyType.UnPack(updatedRecord.Properties.GetFields()[subCase.resource.Properties[1].Name])
+		createdRecordValue2, _ := propertyType.UnPack(updatedRecord.Properties.GetFields()[subCase.resource.Properties[2].Name])
+
+		recordValue0, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[0].Name])
+		recordValue1, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[1].Name])
+		recordValue2, _ := propertyType.UnPack(record.Properties.GetFields()[subCase.resource.Properties[2].Name])
 
 		if !propertyType.Equals(createdRecordValue0, recordValue0) {
 			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue0, recordValue0))
@@ -137,17 +234,17 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 }
 
 func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
-	if len(subCase.invalidValues) == 0 {
+	if fakeInvalidValue(subCase.recordType) == nil {
 		return
 	}
 
 	var records []*model.Record
-	for i := 0; i < len(subCase.invalidValues)-3; i += 3 {
+	for i := 0; i < 30; i += 3 {
 		var propertiesMap = make(map[string]interface{}, 3)
 
-		propertiesMap[subCase.resource.Properties[0].Name] = subCase.invalidValues[i]
-		propertiesMap[subCase.resource.Properties[1].Name] = subCase.invalidValues[i+1]
-		propertiesMap[subCase.resource.Properties[2].Name] = subCase.invalidValues[i+2]
+		propertiesMap[subCase.resource.Properties[0].Name] = fakeInvalidValue(subCase.recordType)
+		propertiesMap[subCase.resource.Properties[1].Name] = fakeInvalidValue(subCase.recordType)
+		propertiesMap[subCase.resource.Properties[2].Name] = fakeInvalidValue(subCase.recordType)
 
 		properties, err := structpb.NewStruct(propertiesMap)
 
@@ -241,32 +338,9 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 			},
 		)
 
-		var validValues []interface{}
-		var invalidValues []interface{}
-
-		for len(validValues) < 30 {
-			validValues = append(validValues, fakeValidValue(typ)...)
-
-			if len(validValues) == 0 {
-				break
-			}
-		}
-
-		for len(invalidValues) < 30 {
-			invalidValues = append(invalidValues, fakeInvalidValue(typ)...)
-
-			if len(invalidValues) == 0 { //@todo remove this code
-				break
-			}
-		}
-
 		cases = append(cases, TestRecordCreationValidationSubCase{
-			recordType:         typ,
-			validValues:        validValues,
-			invalidValues:      invalidValues,
-			invalidValueErrors: nil,
-			length:             32,
-			resource:           resource,
+			recordType: typ,
+			resource:   resource,
 		})
 	}
 

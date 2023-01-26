@@ -24,7 +24,7 @@ func TestGetPropertyType(t *testing.T) {
 		propertyType.IsEmpty(val)
 
 		if propertyType.ValidatePackedValue(packedVal) != nil {
-			t.Error("Cannot validate default value: " + propertyType.ValidatePackedValue(val).Error())
+			t.Error("Cannot validate default value: " + propertyType.ValidatePackedValue(packedVal).Error())
 		}
 	}
 }
