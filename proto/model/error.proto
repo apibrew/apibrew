@@ -4,6 +4,8 @@ package stub.model;
 
 option go_package = "data-handler/model";
 
+import 'google/protobuf/struct.proto';
+
 enum ErrorCode {
   UNKNOWN_ERROR = 0;
   RECORD_NOT_FOUND = 1;
@@ -24,6 +26,7 @@ message ErrorField {
   string recordId = 1;
   string property = 2;
   string message = 3;
+  google.protobuf.Value value = 4;
 }
 
 message Error {

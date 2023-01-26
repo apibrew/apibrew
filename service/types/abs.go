@@ -4,6 +4,7 @@ import (
 	"data-handler/model"
 	"errors"
 	"fmt"
+	"google.golang.org/protobuf/types/known/structpb"
 	"reflect"
 	"time"
 )
@@ -12,9 +13,9 @@ type PropertyType interface {
 	Pointer(required bool) any
 	String(val any) string
 	IsEmpty(value any) bool
-	ValidatePackedValue(value any) error
-	Pack(value interface{}) (interface{}, error)
-	UnPack(value interface{}) (interface{}, error)
+	ValidatePackedValue(value *structpb.Value) error
+	Pack(value interface{}) (*structpb.Value, error)
+	UnPack(value *structpb.Value) (interface{}, error)
 	Default() any
 	Equals(a, b interface{}) bool
 }
@@ -45,14 +46,10 @@ func ByResourcePropertyType(resourcePropertyType model.ResourcePropertyType) Pro
 		return int32Type{}
 	case model.ResourcePropertyType_TYPE_INT64:
 		return int64Type{}
-	case model.ResourcePropertyType_TYPE_FLOAT:
-		return floatType{}
-	case model.ResourcePropertyType_TYPE_DOUBLE:
-		return doubleType{}
-	case model.ResourcePropertyType_TYPE_NUMERIC:
-		return numericType{}
-	case model.ResourcePropertyType_TYPE_TEXT:
-		return stringType{}
+	case model.ResourcePropertyType_TYPE_FLOAT32:
+		return float32Type{}
+	case model.ResourcePropertyType_TYPE_FLOAT64:
+		return float64Type{}
 	case model.ResourcePropertyType_TYPE_STRING:
 		return stringType{}
 	case model.ResourcePropertyType_TYPE_UUID:
@@ -69,8 +66,6 @@ func ByResourcePropertyType(resourcePropertyType model.ResourcePropertyType) Pro
 		return objectType{}
 	case model.ResourcePropertyType_TYPE_BYTES:
 		return bytesType{}
-	case model.ResourcePropertyType_TYPE_PASSWORD:
-		return passwordType{}
 	default:
 		panic("unknown property type: " + resourcePropertyType.String())
 	}

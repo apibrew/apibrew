@@ -1,6 +1,9 @@
 package types
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"google.golang.org/protobuf/types/known/structpb"
+)
 
 // string
 type objectType struct {
@@ -13,8 +16,8 @@ func (o objectType) Equals(a, b interface{}) bool {
 	return v1 == v2
 }
 
-func (o objectType) Pack(value interface{}) (interface{}, error) {
-	return value, nil
+func (o objectType) Pack(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
 }
 
 func (o objectType) Serialize(value interface{}) (interface{}, error) {
@@ -27,8 +30,8 @@ func (o objectType) Serialize(value interface{}) (interface{}, error) {
 	return string(data), nil
 }
 
-func (o objectType) UnPack(value interface{}) (interface{}, error) {
-	return value, nil
+func (o objectType) UnPack(value *structpb.Value) (interface{}, error) {
+	return value.AsInterface(), nil
 }
 
 func (o objectType) Pointer(required bool) any {
@@ -47,7 +50,7 @@ func (o objectType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (o objectType) ValidatePackedValue(value any) error {
+func (o objectType) ValidatePackedValue(value *structpb.Value) error {
 	return nil
 }
 

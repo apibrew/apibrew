@@ -2,8 +2,7 @@ package types
 
 import (
 	"encoding/base64"
-	"errors"
-	"reflect"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // string: base64
@@ -27,16 +26,12 @@ func (b bytesType) Equals(aBytes, bBytes interface{}) bool {
 	return isEqual
 }
 
-func (b bytesType) Pack(value interface{}) (interface{}, error) {
-	return base64.StdEncoding.EncodeToString(value.([]byte)), nil
+func (b bytesType) Pack(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
 }
 
-func (b bytesType) UnPack(value interface{}) (interface{}, error) {
-	if str, ok := value.(string); ok {
-		return base64.StdEncoding.DecodeString(str)
-	} else {
-		return nil, errors.New("wrong type: " + reflect.TypeOf(value).String())
-	}
+func (b bytesType) UnPack(value *structpb.Value) (interface{}, error) {
+	return base64.StdEncoding.DecodeString(value.GetStringValue())
 }
 
 func (b bytesType) Pointer(required bool) any {
@@ -55,8 +50,8 @@ func (b bytesType) IsEmpty(val any) bool {
 	return val == nil || len(val.([]byte)) == 0
 }
 
-func (b bytesType) ValidatePackedValue(value any) error {
-	err := canCast[string]("string", value)
+func (b bytesType) ValidatePackedValue(value *structpb.Value) error {
+	err := canCast[string]("string", value.AsInterface())
 
 	if err != nil {
 		return err

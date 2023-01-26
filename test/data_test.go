@@ -85,12 +85,12 @@ var dataSource1 = &model.DataSource{
 }
 
 var richResource1 = &model.Resource{
-	Name:      "rich-test-3993",
+	Name:      "rich-test-3995",
 	Namespace: "default",
 	DataType:  2,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
-		Entity:     "rich_test_3993",
+		Entity:     "rich_test_3995",
 	},
 	Flags: &model.ResourceFlags{},
 	Properties: []*model.ResourceProperty{
@@ -104,7 +104,6 @@ var richResource1 = &model.Resource{
 			},
 			Required: false,
 		},
-
 		{
 			Name: "int32",
 			Type: model.ResourcePropertyType_TYPE_INT32,
@@ -129,7 +128,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "float",
-			Type: model.ResourcePropertyType_TYPE_FLOAT,
+			Type: model.ResourcePropertyType_TYPE_FLOAT32,
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
 					Mapping: "float",
@@ -140,7 +139,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "double",
-			Type: model.ResourcePropertyType_TYPE_DOUBLE,
+			Type: model.ResourcePropertyType_TYPE_FLOAT64,
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
 					Mapping: "double",
@@ -150,24 +149,14 @@ var richResource1 = &model.Resource{
 		},
 
 		{
-			Name: "numeric",
-			Type: model.ResourcePropertyType_TYPE_NUMERIC,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "numeric",
-				},
-			},
-			Required: true,
-		},
-
-		{
 			Name: "text",
-			Type: model.ResourcePropertyType_TYPE_TEXT,
+			Type: model.ResourcePropertyType_TYPE_STRING,
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
 					Mapping: "text",
 				},
 			},
+			Length:   255,
 			Required: true,
 		},
 

@@ -34,7 +34,7 @@ var UserResource = &model.Resource{
 					Mapping: "password",
 				},
 			},
-			Type:     model.ResourcePropertyType_TYPE_PASSWORD,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: true,
 		},
@@ -45,7 +45,8 @@ var UserResource = &model.Resource{
 					Mapping: "scopes",
 				},
 			},
-			Type:     model.ResourcePropertyType_TYPE_TEXT,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Length:   256,
 			Required: false,
 		},
 		{
