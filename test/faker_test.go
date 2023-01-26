@@ -49,7 +49,6 @@ func fakeResource(properties ...*model.ResourceProperty) *model.Resource {
 			Entity:     name,
 		},
 		Properties: properties,
-		Flags:      &model.ResourceFlags{},
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/logging"
 	"data-handler/model"
+	"data-handler/service/annotations"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/params"
@@ -192,7 +193,7 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 			return nil, err
 		}
 
-		if resource.Flags.KeepHistory && !params.CheckVersion {
+		if annotations.IsEnabled(resource, annotations.KeepHistory) && !params.CheckVersion {
 			success = false
 			return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
 		}

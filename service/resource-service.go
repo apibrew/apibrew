@@ -184,10 +184,6 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 		return errors.RecordValidationError.WithDetails("resource source-config is null")
 	}
 
-	if resource.Flags == nil {
-		return errors.RecordValidationError.WithDetails("resource flags has not initialized")
-	}
-
 	if resource.SourceConfig == nil {
 		return errors.RecordValidationError.WithDetails("resource SourceConfig has not initialized")
 	}
