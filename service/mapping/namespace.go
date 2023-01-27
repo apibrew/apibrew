@@ -7,25 +7,19 @@ import (
 )
 
 func NamespaceToRecord(namespace *model.Namespace) *model.Record {
-	properties := make(map[string]interface{})
+	properties := make(map[string]*structpb.Value)
 
-	properties["name"] = namespace.Name
-	properties["description"] = namespace.Description
+	properties["name"] = structpb.NewStringValue(namespace.Name)
+	properties["description"] = structpb.NewStringValue(namespace.Description)
 	if namespace.Details != nil {
-		properties["details"] = namespace.Details.AsMap()
-	}
-
-	structProperties, err := structpb.NewStruct(properties)
-
-	if err != nil {
-		panic(err)
+		properties["details"] = structpb.NewStructValue(namespace.Details)
 	}
 
 	return &model.Record{
 		Id:         namespace.Id,
 		Resource:   system.NamespaceResource.Name,
 		DataType:   namespace.Type,
-		Properties: structProperties,
+		Properties: properties,
 		AuditData:  namespace.AuditData,
 		Version:    namespace.Version,
 	}
@@ -43,16 +37,16 @@ func NamespaceFromRecord(record *model.Record) *model.Namespace {
 		Version:   record.Version,
 	}
 
-	if record.Properties.AsMap()["name"] != nil {
-		result.Name = record.Properties.AsMap()["name"].(string)
+	if record.Properties["name"] != nil {
+		result.Name = record.Properties["name"].GetStringValue()
 	}
 
-	if record.Properties.AsMap()["description"] != nil {
-		result.Description = record.Properties.AsMap()["description"].(string)
+	if record.Properties["description"] != nil {
+		result.Description = record.Properties["description"].GetStringValue()
 	}
 
-	if record.Properties.AsMap()["details"] != nil {
-		result.Details = record.Properties.Fields["details"].GetStructValue()
+	if record.Properties["details"] != nil {
+		result.Details = record.Properties["details"].GetStructValue()
 	}
 
 	return result
