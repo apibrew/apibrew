@@ -40,7 +40,7 @@ func getPsqlTypeFromProperty(propertyType model.ResourcePropertyType, length uin
 func getPropertyTypeFromPsql(columnType string) model.ResourcePropertyType {
 	switch columnType {
 	case "bool":
-		return model.ResourcePropertyType_TYPE_STRING
+		return model.ResourcePropertyType_TYPE_BOOL
 	case "bytea":
 		return model.ResourcePropertyType_TYPE_BYTES
 	case "char":
