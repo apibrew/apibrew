@@ -5,6 +5,7 @@ import (
 	"data-handler/server/stub"
 	util2 "data-handler/server/util"
 	"data-handler/service"
+	"data-handler/service/annotations"
 	"data-handler/service/params"
 	"data-handler/util"
 )
@@ -15,7 +16,7 @@ type recordServiceServer struct {
 }
 
 func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
-	records, total, err := r.service.List(ctx, params.RecordListParams{
+	records, total, err := r.service.List(annotations.WithContext(ctx, request), params.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
 		Limit:             request.Limit,
@@ -31,7 +32,7 @@ func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecord
 }
 
 func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRecordRequest) (*stub.SearchRecordResponse, error) {
-	records, total, err := r.service.List(ctx, params.RecordListParams{
+	records, total, err := r.service.List(annotations.WithContext(ctx, request), params.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
 		Limit:             request.Limit,
@@ -48,7 +49,7 @@ func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRe
 }
 
 func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
-	records, inserted, err := r.service.Create(ctx, params.RecordCreateParams{
+	records, inserted, err := r.service.Create(annotations.WithContext(ctx, request), params.RecordCreateParams{
 		Namespace:      request.Namespace,
 		Records:        util.ArrayPrepend(request.Records, request.Record),
 		IgnoreIfExists: request.IgnoreIfExists,
@@ -62,7 +63,7 @@ func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRe
 }
 
 func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
-	records, err := r.service.Update(ctx, params.RecordUpdateParams{
+	records, err := r.service.Update(annotations.WithContext(ctx, request), params.RecordUpdateParams{
 		Namespace:    request.Namespace,
 		Records:      util.ArrayPrepend(request.Records, request.Record),
 		CheckVersion: request.CheckVersion,
@@ -75,7 +76,7 @@ func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRe
 }
 
 func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
-	record, err := r.service.Get(ctx, params.RecordGetParams{
+	record, err := r.service.Get(annotations.WithContext(ctx, request), params.RecordGetParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Id:        request.Id,
@@ -87,7 +88,7 @@ func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRe
 }
 
 func (r *recordServiceServer) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
-	err := r.service.Delete(ctx, params.RecordDeleteParams{
+	err := r.service.Delete(annotations.WithContext(ctx, request), params.RecordDeleteParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Ids:       request.Ids,

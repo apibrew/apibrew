@@ -56,7 +56,7 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 
 		for _, property := range resource.Properties {
 			if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-				packedVal := record.Properties.GetFields()[property.Name]
+				packedVal := record.Properties[property.Name]
 				if packedVal == nil {
 					row = append(row, nil)
 					continue
@@ -154,7 +154,7 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			packedVal := record.Properties.GetFields()[property.Name]
+			packedVal := record.Properties[property.Name]
 
 			propertyType := types.ByResourcePropertyType(property.Type)
 			var val interface{}
@@ -514,7 +514,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 	}
 
 	var propertyPointers = make(map[string]interface{})
-	var properties = make(map[string]interface{})
+	var properties = make(map[string]*structpb.Value)
 	for _, property := range resource.Properties {
 		if _, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
 			propertyType := types.ByResourcePropertyType(property.Type)
@@ -589,20 +589,11 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 				return handleDbError(err)
 			}
 
-			properties[property.Name] = packedValue.AsInterface()
+			properties[property.Name] = packedValue
 
 			if property.Primary {
 				ids = append(ids, propertyType.String(val))
 			}
-
-		}
-
-		if _, ok := properties[property.Name].(uuid.UUID); ok {
-			properties[property.Name] = properties[property.Name].(uuid.UUID).String()
-		}
-
-		if _, ok := properties[property.Name].(time.Time); ok {
-			properties[property.Name] = properties[property.Name].(time.Time).Format(time.RFC3339)
 		}
 	}
 
@@ -610,15 +601,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 		record.Id = strings.Join(ids, "-")
 	}
 
-	propStruct, parseError := structpb.NewStruct(properties)
-
-	propStruct.GetFields()
-
-	record.Properties = propStruct
-
-	if parseError != nil {
-		return errors.RecordValidationError.WithDetails(parseError.Error())
-	}
+	record.Properties = properties
 
 	if record.AuditData == nil {
 		record.AuditData = new(model.AuditData)

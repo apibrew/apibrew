@@ -1,27 +1,43 @@
 package annotations
 
-import "data-handler/model"
+import "golang.org/x/net/context"
 
-func IsEnabled(resource *model.Resource, name string) bool {
-	return resource.Annotations != nil && resource.Annotations[name] == "true"
+type Annotated interface {
+	GetAnnotations() map[string]string
 }
 
-func Enable(resource *model.Resource, names ...string) {
-	if resource.Annotations == nil {
-		resource.Annotations = make(map[string]string)
-	}
+const ctxValue = "annotationsCtx"
 
-	for _, name := range names {
-		resource.Annotations[name] = "true"
+func WithContext(parent context.Context, annotated Annotated) context.Context {
+	return context.WithValue(parent, ctxValue, annotated)
+}
+
+type annotated struct {
+	annotations map[string]string
+}
+
+func (a *annotated) GetAnnotations() map[string]string {
+	return a.annotations
+}
+
+func FromCtx(ctx context.Context) Annotated {
+	return &annotated{
+		annotations: ctx.Value(ctxValue).(map[string]string),
 	}
 }
 
-func Disable(resource *model.Resource, names ...string) {
-	if resource.Annotations == nil {
-		resource.Annotations = make(map[string]string)
-	}
+func IsEnabled(resource Annotated, name string) bool {
+	return resource.GetAnnotations() != nil && resource.GetAnnotations()[name] == "true"
+}
 
+func Enable(resource Annotated, names ...string) {
 	for _, name := range names {
-		resource.Annotations[name] = "false"
+		resource.GetAnnotations()[name] = "true"
+	}
+}
+
+func Disable(resource Annotated, names ...string) {
+	for _, name := range names {
+		resource.GetAnnotations()[name] = "false"
 	}
 }

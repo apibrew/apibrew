@@ -8,6 +8,7 @@ import 'model/record.proto';
 import 'model/query.proto';
 import 'model/error.proto';
 import "google/api/annotations.proto";
+import 'google/protobuf/struct.proto';
 
 service RecordService {
   rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {
@@ -29,6 +30,12 @@ service RecordService {
         body: "record",
         response_body: "record"
       }
+    };
+  }
+
+  rpc UpdateMulti (UpdateMultiRecordRequest) returns (UpdateMultiRecordResponse) {
+    option (google.api.http) = {
+      post: "/records/{namespace}/{resource}/_multi"
     };
   }
 
@@ -71,6 +78,8 @@ message ListRecordRequest {
   uint64 offset = 6;
   bool useHistory = 7;
   bool resolveReferences = 8;
+
+  map<string, string> annotations = 103;
 }
 
 message ListRecordResponse {
@@ -87,6 +96,8 @@ message SearchRecordRequest {
   uint64 offset = 6;
   bool useHistory = 7;
   bool resolveReferences = 8;
+
+  map<string, string> annotations = 103;
 }
 
 message SearchRecordResponse {
@@ -100,6 +111,8 @@ message CreateRecordRequest {
   model.Record record = 3;
   repeated model.Record records = 4;
   bool ignoreIfExists = 5;
+
+  map<string, string> annotations = 103;
 }
 
 message CreateRecordResponse {
@@ -114,9 +127,26 @@ message UpdateRecordRequest {
   model.Record record = 3;
   repeated model.Record records = 4;
   bool checkVersion = 5;
+
+  map<string, string> annotations = 103;
 }
 
 message UpdateRecordResponse {
+  model.Record record = 1;
+  repeated model.Record records = 2;
+}
+
+message UpdateMultiRecordRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  model.BooleanExpression query = 4;
+  map<string, google.protobuf.Value> properties = 5;
+
+  map<string, string> annotations = 103;
+}
+
+message UpdateMultiRecordResponse {
   model.Record record = 1;
   repeated model.Record records = 2;
 }
@@ -127,6 +157,8 @@ message DeleteRecordRequest {
   string resource = 3;
   repeated string id = 4;
   repeated string ids = 5;
+
+  map<string, string> annotations = 103;
 }
 
 message DeleteRecordResponse {
@@ -137,6 +169,8 @@ message GetRecordRequest {
   string namespace = 2;
   string resource = 3;
   string id = 4;
+
+  map<string, string> annotations = 103;
 }
 
 message GetRecordResponse {

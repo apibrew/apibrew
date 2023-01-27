@@ -7,29 +7,23 @@ import (
 )
 
 func ResourceToRecord(resource *model.Resource) *model.Record {
-	properties := make(map[string]interface{})
+	properties := make(map[string]*structpb.Value)
 
-	properties["name"] = resource.Name
-	properties["namespace"] = resource.Namespace
-	properties["dataSource"] = resource.SourceConfig.DataSource
-	properties["entity"] = resource.SourceConfig.Entity
-	properties["catalog"] = resource.SourceConfig.Catalog
-	properties["type"] = int32(resource.DataType.Number())
-	properties["annotations"] = convertMap(resource.Annotations, func(v string) interface{} {
+	properties["name"] = structpb.NewStringValue(resource.Name)
+	properties["namespace"] = structpb.NewStringValue(resource.Namespace)
+	properties["dataSource"] = structpb.NewStringValue(resource.SourceConfig.DataSource)
+	properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
+	properties["catalog"] = structpb.NewStringValue(resource.SourceConfig.Catalog)
+	properties["type"] = structpb.NewNumberValue(float64(resource.DataType.Number()))
+	properties["annotations"], _ = structpb.NewValue(convertMap(resource.Annotations, func(v string) interface{} {
 		return v
-	})
-
-	structProperties, err := structpb.NewStruct(properties)
-
-	if err != nil {
-		panic(err)
-	}
+	}))
 
 	return &model.Record{
 		Id:         resource.Id,
 		Resource:   system.ResourceResource.Name,
 		DataType:   resource.DataType,
-		Properties: structProperties,
+		Properties: properties,
 		AuditData:  resource.AuditData,
 		Version:    resource.Version,
 	}
@@ -52,17 +46,17 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 
 	var resource = &model.Resource{
 		Id:        record.Id,
-		DataType:  model.DataType(int32(record.Properties.AsMap()["type"].(float64))),
+		DataType:  model.DataType(int32(record.Properties["type"].GetNumberValue())),
 		AuditData: record.AuditData,
 		Version:   record.Version,
-		Name:      record.Properties.AsMap()["name"].(string),
-		Namespace: record.Properties.AsMap()["namespace"].(string),
+		Name:      record.Properties["name"].GetStringValue(),
+		Namespace: record.Properties["namespace"].GetStringValue(),
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: record.Properties.AsMap()["dataSource"].(string),
-			Entity:     record.Properties.AsMap()["entity"].(string),
-			Catalog:    record.Properties.AsMap()["catalog"].(string),
+			DataSource: record.Properties["dataSource"].GetStringValue(),
+			Entity:     record.Properties["entity"].GetStringValue(),
+			Catalog:    record.Properties["catalog"].GetStringValue(),
 		},
-		Annotations: convertMap(record.Properties.AsMap()["annotations"].(map[string]interface{}), func(v interface{}) string {
+		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
 		}),
 	}
