@@ -180,12 +180,56 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 }
 
 func validateResource(resource *model.Resource) errors.ServiceError {
-	if resource.SourceConfig == nil {
-		return errors.ResourceValidationError.WithDetails("resource source-config is null")
+	var errorFields []*model.ErrorField
+	details := ""
+
+	if resource.Name == "" {
+		errorFields = append(errorFields, &model.ErrorField{
+			RecordId: resource.Id,
+			Property: "Name",
+			Message:  "should not be empty",
+			Value:    nil,
+		})
+	}
+
+	if resource.Namespace == "" {
+		errorFields = append(errorFields, &model.ErrorField{
+			RecordId: resource.Id,
+			Property: "Namespace",
+			Message:  "should not be empty",
+			Value:    nil,
+		})
 	}
 
 	if resource.SourceConfig == nil {
-		return errors.ResourceValidationError.WithDetails("resource SourceConfig has not initialized")
+		errorFields = append(errorFields, &model.ErrorField{
+			RecordId: resource.Id,
+			Property: "SourceConfig",
+			Message:  "should not be nil",
+			Value:    nil,
+		})
+	} else {
+		if resource.SourceConfig.DataSource == "" {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: "SourceConfig.DataSource",
+				Message:  "should not be blank",
+				Value:    nil,
+			})
+		}
+
+		if resource.SourceConfig.Entity == "" {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: "SourceConfig.Entity",
+				Message:  "should not be blank",
+				Value:    nil,
+			})
+		}
+	}
+
+	if len(errorFields) > 0 {
+		return errors.ResourceValidationError.WithDetails(details).WithErrorFields(errorFields)
 	}
 
 	return nil
@@ -306,7 +350,7 @@ func (r *resourceService) MigrateResource(resource *model.Resource) {
 	}
 }
 
-func (r resourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
+func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
 	for _, resourceId := range ids {
 		resource, err := r.Get(ctx, resourceId)
 
@@ -345,7 +389,7 @@ func (r resourceService) Delete(ctx context.Context, ids []string, doMigration b
 	return nil
 }
 
-func (r resourceService) mustModifyResource(resource *model.Resource) errors.ServiceError {
+func (r *resourceService) mustModifyResource(resource *model.Resource) errors.ServiceError {
 	if resource.Namespace == "system" || resource.DataType == model.DataType_SYSTEM {
 		return errors.LogicalError.WithMessage("actions on system resource is not allowed")
 	}
@@ -356,7 +400,7 @@ func (r resourceService) mustModifyResource(resource *model.Resource) errors.Ser
 	return nil
 }
 
-func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
+func (r *resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
 	list, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, backend.ListRecordParams{
 		Resource: system.ResourceResource,
 		Limit:    1000000,
@@ -391,7 +435,7 @@ func (r resourceService) List(ctx context.Context) ([]*model.Resource, errors.Se
 	return result, nil
 }
 
-func (r resourceService) Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError) {
+func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError) {
 	record, err := r.backendProviderService.GetSystemBackend(ctx).GetRecord(ctx, system.ResourceResource, id)
 
 	if err != nil {
@@ -409,7 +453,7 @@ func (r resourceService) Get(ctx context.Context, id string) (*model.Resource, e
 	return resource, nil
 }
 
-func (r resourceService) loadResource(ctx context.Context, resource *model.Resource) errors.ServiceError {
+func (r *resourceService) loadResource(ctx context.Context, resource *model.Resource) errors.ServiceError {
 	if resource.Properties == nil {
 		queryMap := make(map[string]interface{})
 

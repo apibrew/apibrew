@@ -44,7 +44,7 @@ var ResourceResource = &model.Resource{
 					Mapping: "source_data_source",
 				},
 			},
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourcePropertyType_TYPE_UUID,
 			Length:   256,
 			Required: true,
 		},
@@ -89,6 +89,13 @@ var ResourceResource = &model.Resource{
 			},
 			Type:     model.ResourcePropertyType_TYPE_INT32,
 			Required: true,
+		},
+	},
+	References: []*model.ResourceReference{
+		{
+			PropertyName:       "dataSource",
+			ReferencedResource: DataSourceResource.Name,
+			Cascade:            false,
 		},
 	},
 }
