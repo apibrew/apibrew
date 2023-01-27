@@ -7,32 +7,26 @@ import (
 )
 
 func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
-	properties := make(map[string]interface{})
+	properties := make(map[string]*structpb.Value)
 
-	properties["name"] = dataSource.Name
-	properties["description"] = dataSource.Description
-	properties["backend"] = int(dataSource.Backend)
+	properties["name"] = structpb.NewStringValue(dataSource.Name)
+	properties["description"] = structpb.NewStringValue(dataSource.Description)
+	properties["backend"] = structpb.NewNumberValue(float64(dataSource.Backend))
 
 	if options, ok := dataSource.Options.(*model.DataSource_PostgresqlParams); ok {
-		properties["options_postgres_username"] = options.PostgresqlParams.Username
-		properties["options_postgres_password"] = options.PostgresqlParams.Password
-		properties["options_postgres_host"] = options.PostgresqlParams.Host
-		properties["options_postgres_port"] = options.PostgresqlParams.Port
-		properties["options_postgres_db_name"] = options.PostgresqlParams.DbName
-		properties["options_postgres_default_schema"] = options.PostgresqlParams.DefaultSchema
-	}
-
-	structProperties, err := structpb.NewStruct(properties)
-
-	if err != nil {
-		panic(err)
+		properties["options_postgres_username"] = structpb.NewStringValue(options.PostgresqlParams.Username)
+		properties["options_postgres_password"] = structpb.NewStringValue(options.PostgresqlParams.Password)
+		properties["options_postgres_host"] = structpb.NewStringValue(options.PostgresqlParams.Host)
+		properties["options_postgres_port"] = structpb.NewNumberValue(float64(options.PostgresqlParams.Port))
+		properties["options_postgres_db_name"] = structpb.NewStringValue(options.PostgresqlParams.DbName)
+		properties["options_postgres_default_schema"] = structpb.NewStringValue(options.PostgresqlParams.DefaultSchema)
 	}
 
 	return &model.Record{
 		Id:         dataSource.Id,
 		Resource:   system.DataSourceResource.Name,
 		DataType:   dataSource.Type,
-		Properties: structProperties,
+		Properties: properties,
 		AuditData:  dataSource.AuditData,
 		Version:    dataSource.Version,
 	}
@@ -43,14 +37,14 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 		return nil
 	}
 
-	backendNumber := record.Properties.Fields["backend"].GetNumberValue()
+	backendNumber := record.Properties["backend"].GetNumberValue()
 
 	result := &model.DataSource{
 		Id:          record.Id,
 		Type:        record.DataType,
 		Backend:     model.DataSourceBackendType(backendNumber),
-		Name:        record.Properties.Fields["name"].GetStringValue(),
-		Description: record.Properties.Fields["description"].GetStringValue(),
+		Name:        record.Properties["name"].GetStringValue(),
+		Description: record.Properties["description"].GetStringValue(),
 		AuditData:   record.AuditData,
 		Version:     record.Version,
 	}
@@ -59,12 +53,12 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 		options := new(model.DataSource_PostgresqlParams)
 
 		options.PostgresqlParams = &model.PostgresqlOptions{
-			Username:      record.Properties.Fields["options_postgres_username"].GetStringValue(),
-			Password:      record.Properties.Fields["options_postgres_password"].GetStringValue(),
-			Host:          record.Properties.Fields["options_postgres_host"].GetStringValue(),
-			Port:          uint32(record.Properties.Fields["options_postgres_port"].GetNumberValue()),
-			DbName:        record.Properties.Fields["options_postgres_db_name"].GetStringValue(),
-			DefaultSchema: record.Properties.Fields["options_postgres_default_schema"].GetStringValue(),
+			Username:      record.Properties["options_postgres_username"].GetStringValue(),
+			Password:      record.Properties["options_postgres_password"].GetStringValue(),
+			Host:          record.Properties["options_postgres_host"].GetStringValue(),
+			Port:          uint32(record.Properties["options_postgres_port"].GetNumberValue()),
+			DbName:        record.Properties["options_postgres_db_name"].GetStringValue(),
+			DefaultSchema: record.Properties["options_postgres_default_schema"].GetStringValue(),
 		}
 
 		result.Options = options

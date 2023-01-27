@@ -169,6 +169,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	}
 
 	resource = new(model.Resource)
+	resource.Annotations = make(map[string]string)
 	annotations.Enable(resource, annotations.AutoCreated, annotations.DisableMigration, annotations.DisableAudit)
 	resource.AuditData = new(model.AuditData)
 	resource.DataType = model.DataType_USER

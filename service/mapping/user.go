@@ -8,26 +8,20 @@ import (
 )
 
 func UserToRecord(user *model.User) *model.Record {
-	properties := make(map[string]interface{})
+	properties := make(map[string]*structpb.Value)
 
-	properties["username"] = user.Username
-	properties["password"] = user.Password
+	properties["username"] = structpb.NewStringValue(user.Username)
+	properties["password"] = structpb.NewStringValue(user.Password)
 	if user.Details != nil {
-		properties["details"] = user.Details.AsMap()
+		properties["details"] = structpb.NewStructValue(user.Details)
 	}
-	properties["scopes"] = strings.Join(user.Scopes, ",")
-
-	structProperties, err := structpb.NewStruct(properties)
-
-	if err != nil {
-		panic(err)
-	}
+	properties["scopes"] = structpb.NewStringValue(strings.Join(user.Scopes, ","))
 
 	return &model.Record{
 		Id:         user.Id,
 		Resource:   system.UserResource.Name,
 		DataType:   user.Type,
-		Properties: structProperties,
+		Properties: properties,
 		AuditData:  user.AuditData,
 		Version:    user.Version,
 	}
@@ -45,20 +39,20 @@ func UserFromRecord(record *model.Record) *model.User {
 		Version:   record.Version,
 	}
 
-	if record.Properties.AsMap()["username"] != nil {
-		user.Username = record.Properties.AsMap()["username"].(string)
+	if record.Properties["username"] != nil {
+		user.Username = record.Properties["username"].GetStringValue()
 	}
 
-	if record.Properties.AsMap()["password"] != nil {
-		user.Password = record.Properties.AsMap()["password"].(string)
+	if record.Properties["password"] != nil {
+		user.Password = record.Properties["password"].GetStringValue()
 	}
 
-	if record.Properties.AsMap()["scopes"] != nil {
-		user.Scopes = strings.Split(record.Properties.AsMap()["scopes"].(string), ",")
+	if record.Properties["scopes"] != nil {
+		user.Scopes = strings.Split(record.Properties["scopes"].GetStringValue(), ",")
 	}
 
-	if record.Properties.AsMap()["details"] != nil {
-		user.Details = record.Properties.AsMap()["details"].(*structpb.Value).GetStructValue()
+	if record.Properties["details"] != nil {
+		user.Details = record.Properties["details"].GetStructValue()
 	}
 
 	return user
