@@ -19,7 +19,7 @@ type ResourceService interface {
 	Init(data *model.InitData)
 	CheckResourceExists(ctx context.Context, namespace, name string) (bool, errors.ServiceError)
 	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
-	GetSystemResourceByName(resourceName string) (*model.Resource, errors.ServiceError)
+	GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, errors.ServiceError)
 	InjectBackendProviderService(backendProviderService BackendProviderService)
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
 	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
@@ -181,11 +181,11 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 func validateResource(resource *model.Resource) errors.ServiceError {
 	if resource.SourceConfig == nil {
-		return errors.RecordValidationError.WithDetails("resource source-config is null")
+		return errors.ResourceValidationError.WithDetails("resource source-config is null")
 	}
 
 	if resource.SourceConfig == nil {
-		return errors.RecordValidationError.WithDetails("resource SourceConfig has not initialized")
+		return errors.ResourceValidationError.WithDetails("resource SourceConfig has not initialized")
 	}
 
 	return nil
@@ -200,7 +200,7 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 	if namespace == "system" {
 		logger.Debugf("Call GetSystemResourceByName: %s", resourceName)
 
-		return r.GetSystemResourceByName(resourceName)
+		return r.GetSystemResourceByName(ctx, resourceName)
 	}
 
 	if namespace == "" {
@@ -258,7 +258,7 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 	return resource, nil
 }
 
-func (r *resourceService) GetSystemResourceByName(resourceName string) (*model.Resource, errors.ServiceError) {
+func (r *resourceService) GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, errors.ServiceError) {
 	if resourceName == system.UserResource.Name {
 		return system.UserResource, nil
 	} else if resourceName == system.DataSourceResource.Name {
@@ -295,6 +295,10 @@ func (r *resourceService) Init(data *model.InitData) {
 }
 
 func (r *resourceService) MigrateResource(resource *model.Resource) {
+	if resource.Annotations == nil {
+		resource.Annotations = make(map[string]string)
+	}
+
 	err := r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), nil, resource, true)
 
 	if err != nil {
