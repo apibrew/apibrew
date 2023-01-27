@@ -245,9 +245,15 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 			}
 		}
 
+		typ := getPropertyTypeFromPsql(*columnType)
+
+		if typ == model.ResourcePropertyType_TYPE_STRING && uint32(**columnLength) == 0 {
+			**columnLength = 256
+		}
+
 		property := &model.ResourceProperty{
 			Name: *columnName,
-			Type: getPropertyTypeFromPsql(*columnType),
+			Type: typ,
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
 					Mapping:   *columnName,

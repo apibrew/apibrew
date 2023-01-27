@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"github.com/jellydator/ttlcache/v3"
 	log "github.com/sirupsen/logrus"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -181,21 +183,11 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 func validateResource(resource *model.Resource) errors.ServiceError {
 	var errorFields []*model.ErrorField
-	details := ""
 
 	if resource.Name == "" {
 		errorFields = append(errorFields, &model.ErrorField{
 			RecordId: resource.Id,
 			Property: "Name",
-			Message:  "should not be empty",
-			Value:    nil,
-		})
-	}
-
-	if resource.Namespace == "" {
-		errorFields = append(errorFields, &model.ErrorField{
-			RecordId: resource.Id,
-			Property: "Namespace",
 			Message:  "should not be empty",
 			Value:    nil,
 		})
@@ -228,8 +220,78 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 		}
 	}
 
+	for i, prop := range resource.Properties {
+		propertyPrefix := "Properties[" + strconv.Itoa(i) + "]."
+
+		if prop.Name == "" {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: propertyPrefix + "Name",
+				Message:  "should not be blank",
+				Value:    nil,
+			})
+		}
+
+		if prop.SourceConfig == nil {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: propertyPrefix + "SourceConfig",
+				Message:  "should not be nil",
+				Value:    nil,
+			})
+			continue
+		}
+
+		if _, ok := prop.SourceConfig.(*model.ResourceProperty_Computed); ok {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: propertyPrefix + "SourceConfig",
+				Message:  "computed property source type is not supported",
+				Value:    nil,
+			})
+			continue
+		}
+
+		mp := prop.SourceConfig.(*model.ResourceProperty_Mapping)
+
+		if mp.Mapping == nil {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: propertyPrefix + "SourceConfig.Mapping",
+				Message:  "Mapping not be nil",
+				Value:    nil,
+			})
+		} else {
+			if mp.Mapping.Mapping == "" {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "SourceConfig.Mapping",
+					Message:  "Mapping should not be blank",
+					Value:    nil,
+				})
+			}
+		}
+
+		if prop.Type == model.ResourcePropertyType_TYPE_STRING {
+			if prop.Length <= 0 {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "Length",
+					Message:  "Length should be positive number for string type",
+					Value:    nil,
+				})
+			}
+		}
+	}
+
 	if len(errorFields) > 0 {
-		return errors.ResourceValidationError.WithDetails(details).WithErrorFields(errorFields)
+		var details []string
+
+		for _, errorField := range errorFields {
+			details = append(details, fmt.Sprintf("%s: %s", errorField.Property, errorField.Message))
+		}
+
+		return errors.ResourceValidationError.WithDetails(strings.Join(details, ";")).WithErrorFields(errorFields)
 	}
 
 	return nil
