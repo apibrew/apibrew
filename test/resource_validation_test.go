@@ -91,3 +91,22 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 		t.Error("errorFields[4].Property should be Properties[1].SourceConfig: " + errorFields[4].Property)
 	}
 }
+
+func TestCreateResourceWithSameName(t *testing.T) {
+	ctx := prepareTextContext()
+
+	_, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+		Resources:      []*model.Resource{richResource1},
+		DoMigration:    true,
+		ForceMigration: false,
+	})
+
+	if err == nil {
+		t.Error("Error should be provided for Resource is already exits")
+		return
+	}
+
+	if util.GetErrorCode(err) != model.ErrorCode_ALREADY_EXISTS {
+		t.Error("Error code should be provided for ErrorCode_ALREADY_EXISTS")
+	}
+}
