@@ -32,6 +32,19 @@ type ListRecordParams struct {
 	ResolveReferences bool
 }
 
+type ReferenceMapEntry struct {
+	Catalog  string
+	Entity   string
+	IdColumn string
+}
+
+type UpgradeResourceParams struct {
+	CurrentResource *model.Resource
+	Resource        *model.Resource
+	ForceMigration  bool
+	ReferenceMap    map[string]ReferenceMapEntry
+}
+
 type Constructor func(dataSource DataSourceConnectionDetails) Backend
 
 type GenericInterface interface {
@@ -50,8 +63,8 @@ type RecordsInterface interface {
 type SchemaInterface interface {
 	ListEntities(ctx context.Context) ([]string, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError)
-	UpgradeResource(ctx context.Context, currentResource *model.Resource, resource *model.Resource, forceMigration bool) errors.ServiceError
-	DowngradeResource(ctx context.Context, resource *model.Resource, migration bool) errors.ServiceError
+	UpgradeResource(ctx context.Context, params UpgradeResourceParams) errors.ServiceError
+	DowngradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError
 }
 
 type TransactionInterface interface {

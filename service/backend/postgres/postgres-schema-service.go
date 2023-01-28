@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/model"
 	"data-handler/service/annotations"
+	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
@@ -37,22 +38,22 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 	return resource, nil
 }
 
-func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, currentResource *model.Resource, resource *model.Resource, forceMigration bool) errors.ServiceError {
+func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, params backend.UpgradeResourceParams) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
-		if err := resourceCreateTable(tx, resource); err != nil {
+		if err := resourceCreateTable(tx, params.Resource); err != nil {
 			return err
 		}
 
-		if err := resourceMigrateTable(ctx, tx, resource, forceMigration, false); err != nil {
+		if err := resourceMigrateTable(ctx, tx, params, false); err != nil {
 			return err
 		}
 
-		if annotations.IsEnabled(resource, annotations.KeepHistory) {
-			if err := resourceCreateHistoryTable(tx, resource); err != nil {
+		if annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
+			if err := resourceCreateHistoryTable(tx, params.Resource); err != nil {
 				return err
 			}
 
-			if err := resourceMigrateTable(ctx, tx, resource, forceMigration, true); err != nil {
+			if err := resourceMigrateTable(ctx, tx, params, true); err != nil {
 				return err
 			}
 		}

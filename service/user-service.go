@@ -20,13 +20,19 @@ type UserService interface {
 	Delete(ctx context.Context, ids []string) errors.ServiceError
 	Get(ctx context.Context, id string) (*model.User, errors.ServiceError)
 	List(ctx context.Context, query *model.BooleanExpression, limit uint32, offset uint64) ([]*model.User, errors.ServiceError)
+	InjectBackendProviderService(service BackendProviderService)
 }
 
 type userService struct {
-	recordService         RecordService
-	authenticationService AuthenticationService
-	serviceName           string
-	resourceService       ResourceService
+	recordService          RecordService
+	authenticationService  AuthenticationService
+	serviceName            string
+	resourceService        ResourceService
+	backendProviderService BackendProviderService
+}
+
+func (u *userService) InjectBackendProviderService(backendProviderService BackendProviderService) {
+	u.backendProviderService = backendProviderService
 }
 
 func (u *userService) InjectResourceService(service ResourceService) {
@@ -153,7 +159,7 @@ func (u *userService) List(ctx context.Context, query *model.BooleanExpression, 
 }
 
 func (d *userService) Init(data *model.InitData) {
-	d.resourceService.MigrateResource(system.UserResource)
+	d.backendProviderService.MigrateResource(system.UserResource, nil)
 
 	if len(data.InitUsers) > 0 {
 		d.encodePasswords(data.InitUsers)

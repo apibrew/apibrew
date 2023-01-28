@@ -52,12 +52,22 @@ var ResourceReferenceResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_BOOL,
 			Required: true,
 		},
+		{
+			Name: "resource",
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "resource",
+				},
+			},
+			Type:     model.ResourcePropertyType_TYPE_UUID,
+			Required: true,
+		},
 	},
 	References: []*model.ResourceReference{
 		{
 			PropertyName:       "resource",
 			ReferencedResource: "resource",
-			Cascade:            false,
+			Cascade:            true,
 		},
 	},
 }
