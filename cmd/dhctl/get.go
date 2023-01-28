@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/spf13/cobra"
-	"github.com/tislib/data-handler/cmd/cli/output"
+	"github.com/tislib/data-handler/cmd/dhctl/output"
 	"github.com/tislib/data-handler/model"
 	"github.com/tislib/data-handler/server/stub"
 	"log"
