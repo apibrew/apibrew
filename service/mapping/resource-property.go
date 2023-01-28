@@ -23,6 +23,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["sourceMapping"] = structpb.NewStringValue(sourceConfig.Mapping.Mapping)
 	properties["sourceDef"] = structpb.NewStringValue(sourceConfig.Mapping.SourceDef)
 	properties["sourceAutoGeneration"] = structpb.NewNumberValue(float64(sourceConfig.Mapping.AutoGeneration.Number()))
+	properties["securityContext"] = SecurityContextToValue(resource.SecurityContext)
 
 	return &model.Record{
 		Resource:   system.ResourcePropertyResource.Name,
@@ -46,10 +47,11 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 				AutoGeneration: model.AutoGenerationType(record.Properties["sourceAutoGeneration"].GetNumberValue()),
 			},
 		},
-		Primary:  record.Properties["sourcePrimary"].GetBoolValue(),
-		Required: record.Properties["required"].GetBoolValue(),
-		Length:   uint32(record.Properties["length"].GetNumberValue()),
-		Unique:   record.Properties["unique"].GetBoolValue(),
+		Primary:         record.Properties["sourcePrimary"].GetBoolValue(),
+		Required:        record.Properties["required"].GetBoolValue(),
+		Length:          uint32(record.Properties["length"].GetNumberValue()),
+		Unique:          record.Properties["unique"].GetBoolValue(),
+		SecurityContext: SecurityContextFromValue(record.Properties["securityContext"]),
 	}
 
 	return resource

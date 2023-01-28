@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package stub.model;
+
+option go_package = "data-handler/model";
+
+import 'google/protobuf/timestamp.proto';
+
+enum OperationType {
+  OPERATION_TYPE_READ = 0;
+  OPERATION_TYPE_CREATE = 1;
+  OPERATION_TYPE_UPDATE = 2;
+  OPERATION_TYPE_DELETE = 3;
+  FULL = 4;
+}
+
+enum PermitType {
+  PERMIT_TYPE_ALLOW = 0;
+  PERMIT_TYPE_REJECT = 1;
+  PERMIT_TYPE_UNKNOWN = 2;
+}
+
+message SecurityConstraint {
+  string namespace = 1;
+  string resource = 2;
+  string property = 3;
+
+  google.protobuf.Timestamp before = 5;
+  google.protobuf.Timestamp after = 6;
+
+  string principal = 7;
+  repeated string recordIds = 8;
+
+  OperationType operation = 13;
+  PermitType permit = 14;
+}
+
+message SecurityContext {
+  repeated SecurityConstraint constraints = 1;
+}

@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"context"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/annotations"
 	"data-handler/service/backend"
@@ -19,7 +21,8 @@ import (
 	"time"
 )
 
-func recordInsert(runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, history bool) (bool, errors.ServiceError) {
+func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, history bool) (bool, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
 
 	insertBuilder := sqlbuilder.InsertInto(getTableName(resource.SourceConfig, history))
 	insertBuilder.SetFlavor(sqlbuilder.PostgreSQL)
@@ -97,21 +100,21 @@ func recordInsert(runner QueryRunner, resource *model.Resource, records []*model
 	}
 
 	if ignoreIfExists {
-		insertBuilder.SQL("ON CONFLICT(id) DO NOTHING")
+		insertBuilder.SQL(fmt.Sprintf("ON CONFLICT DO NOTHING"))
 	}
 
 	sqlQuery, args := insertBuilder.Build()
 
-	log.Tracef("SQL: %s", sqlQuery)
+	logger.Tracef("SQL: %s", sqlQuery)
 
-	_, err := runner.Exec(sqlQuery, args...)
+	_, err := runner.ExecContext(ctx, sqlQuery, args...)
 
 	if err != nil {
-		log.Error("SQL ERROR: ", err)
-		return false, handleDbError(err)
+		logger.Error("SQL ERROR: ", err)
+		return false, handleDbError(ctx, err)
 	}
 
-	return true, handleDbError(err)
+	return true, handleDbError(ctx, err)
 }
 
 func getTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
@@ -132,7 +135,9 @@ func getTableName(sourceConfig *model.ResourceSourceConfig, history bool) string
 	return def
 }
 
-func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) errors.ServiceError {
+func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) errors.ServiceError {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	if record.AuditData == nil {
 		record.AuditData = &model.AuditData{}
 	}
@@ -185,18 +190,18 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 
 	sqlQuery, args := updateBuilder.Build()
 
-	log.Tracef("SQL: %s", sqlQuery)
+	logger.Tracef("SQL: %s", sqlQuery)
 
-	result, err := runner.Exec(sqlQuery, args...)
+	result, err := runner.ExecContext(ctx, sqlQuery, args...)
 
 	if err != nil {
-		return handleDbError(err)
+		return handleDbError(ctx, err)
 	}
 
 	affected, err := result.RowsAffected()
 
 	if err != nil {
-		return handleDbError(err)
+		return handleDbError(ctx, err)
 	}
 
 	if affected == 0 {
@@ -206,7 +211,9 @@ func recordUpdate(runner QueryRunner, resource *model.Resource, record *model.Re
 	return nil
 }
 
-func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
+func recordList(ctx context.Context, runner QueryRunner, params backend.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	// find count
 	countBuilder := sqlbuilder.Select("count(*)")
 	countBuilder.SetFlavor(sqlbuilder.PostgreSQL)
@@ -223,10 +230,10 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 	}
 	countQuery, args := countBuilder.Build()
 
-	log.Tracef("SQL: %s", countQuery)
+	logger.Tracef("SQL: %s", countQuery)
 
-	countRow := runner.QueryRow(countQuery, args...)
-	err = handleDbError(countRow.Scan(&total))
+	countRow := runner.QueryRowContext(ctx, countQuery, args...)
+	err = handleDbError(ctx, countRow.Scan(&total))
 
 	if err != nil {
 		return
@@ -277,10 +284,10 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 
 	sqlQuery, args := selectBuilder.Build()
 
-	log.Tracef("SQL: %s", sqlQuery)
+	logger.Tracef("SQL: %s", sqlQuery)
 
 	rows, sqlErr := runner.Query(sqlQuery, args...)
-	err = handleDbError(sqlErr)
+	err = handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return
@@ -290,13 +297,13 @@ func recordList(runner QueryRunner, params backend.ListRecordParams) (result []*
 		err2 := rows.Close()
 
 		if err2 != nil {
-			log.Print(err2)
+			logger.Print(err2)
 		}
 	}()
 
 	for rows.Next() {
 		record := new(model.Record)
-		err = scanRecord(runner, record, params.Resource, params.ResolveReferences, rows)
+		err = scanRecord(ctx, runner, record, params.Resource, params.ResolveReferences, rows)
 		if err != nil {
 			return
 		}
@@ -504,7 +511,9 @@ func applyExpression(resource *model.Resource, query *model.Expression, builder 
 	panic("unknown expression type: " + query.String())
 }
 
-func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resource, resolveReferences bool, scanner QueryResultScanner) errors.ServiceError {
+func scanRecord(ctx context.Context, runner QueryRunner, record *model.Record, resource *model.Resource, resolveReferences bool, scanner QueryResultScanner) errors.ServiceError {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	var rowScanFields []any
 
 	var hasOwnId = checkHasOwnId(resource)
@@ -553,7 +562,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 		return errors.RecordNotFoundError.WithDetails(fmt.Sprintf("namespace: %s; resource: %s", resource.Namespace, resource.Name))
 	}
 
-	err := handleDbError(sqlErr)
+	err := handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return err
@@ -586,7 +595,7 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 			packedValue, err := propertyType.Pack(val)
 
 			if err != nil {
-				return handleDbError(err)
+				return handleDbError(ctx, err)
 			}
 
 			properties[property.Name] = packedValue
@@ -622,6 +631,8 @@ func scanRecord(runner QueryRunner, record *model.Record, resource *model.Resour
 		return errors.RecordNotFoundError
 	}
 
+	logger.Tracef("Record scanned: %s" + record.Id)
+
 	return nil
 }
 
@@ -629,7 +640,9 @@ func checkHasOwnId(resource *model.Resource) bool {
 	return !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup)
 }
 
-func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+func readRecord(ctx context.Context, runner QueryRunner, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	selectBuilder := sqlbuilder.Select(prepareResourceRecordCols(resource)...)
 	selectBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	selectBuilder.From(getTableName(resource.SourceConfig, false))
@@ -637,17 +650,17 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 
 	sqlQuery, _ := selectBuilder.Build()
 
-	log.Tracef("SQL: %s", sqlQuery)
+	logger.Tracef("SQL: %s", sqlQuery)
 
-	row := runner.QueryRow(sqlQuery, id)
+	row := runner.QueryRowContext(ctx, sqlQuery, id)
 
 	if row.Err() != nil {
-		return nil, handleDbError(row.Err())
+		return nil, handleDbError(ctx, row.Err())
 	}
 
 	record := new(model.Record)
 
-	err := scanRecord(nil, record, resource, false, row)
+	err := scanRecord(ctx, runner, record, resource, false, row)
 
 	if err != nil {
 		return nil, err
@@ -656,7 +669,9 @@ func readRecord(runner QueryRunner, resource *model.Resource, id string) (*model
 	return record, nil
 }
 
-func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
+func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	deleteBuilder := sqlbuilder.DeleteFrom(getTableName(resource.SourceConfig, false) + " as t")
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
@@ -674,12 +689,12 @@ func deleteRecords(runner QueryRunner, resource *model.Resource, ids []string) e
 
 	sqlQuery, args := deleteBuilder.Build()
 
-	log.Tracef("SQL: %s", sqlQuery)
+	logger.Tracef("SQL: %s", sqlQuery)
 
 	_, err := runner.Exec(sqlQuery, args...)
 
 	if err != nil {
-		return handleDbError(err)
+		return handleDbError(ctx, err)
 	}
 
 	return nil

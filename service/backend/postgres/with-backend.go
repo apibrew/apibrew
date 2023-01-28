@@ -2,12 +2,15 @@ package postgres
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/service/errors"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 )
 
 func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx *sql.Tx) errors.ServiceError) errors.ServiceError {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	transactionKey := ctx.Value(ctxTransactionKey)
 
 	if transactionKey != nil {
@@ -20,7 +23,7 @@ func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOn
 		return fn(txDataInstance.tx)
 	}
 
-	log.Tracef("begin transaction readonly=%v", readOnly)
+	logger.Tracef("begin transaction readonly=%v", readOnly)
 	conn, serviceErr := p.acquireConnection(ctx)
 
 	if serviceErr != nil {
@@ -32,8 +35,8 @@ func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOn
 	})
 
 	if err != nil {
-		log.Errorf("Unable to begin transaction: %s", err)
-		return handleDbError(err)
+		logger.Errorf("Unable to begin transaction: %s", err)
+		return handleDbError(ctx, err)
 	}
 
 	defer func(tx *sql.Tx) {
@@ -43,12 +46,12 @@ func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOn
 	serviceErr = fn(tx)
 
 	if serviceErr != nil {
-		log.Errorf("Rollback: %s", serviceErr)
+		logger.Errorf("Rollback: %s", serviceErr)
 		return serviceErr
 	}
 
-	serviceErr = handleDbError(tx.Commit())
-	log.Tracef("end transaction readonly=%v", readOnly)
+	serviceErr = handleDbError(ctx, tx.Commit())
+	logger.Tracef("end transaction readonly=%v", readOnly)
 
 	return serviceErr
 }

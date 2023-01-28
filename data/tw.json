@@ -11,10 +11,10 @@
     "type":  "SYSTEM",
     "postgresqlParams":  {
       "username":  "root",
-      "password":  "root",
-      "host":  "127.0.0.1",
+      "password":  "52fa536f0c5b85f9d806633937f06446",
+      "host":  "tiswork.tisserv.net",
       "port":  5432,
-      "dbName":  "dh_system",
+      "dbName":  "dh",
       "defaultSchema":  "public"
     },
     "auditData":  null,
@@ -34,16 +34,9 @@
       "type":  "STATIC",
       "username":  "admin",
       "password":  "admin",
-      "securityContext":  {
-        "constraints": [
-          {
-            "namespace": "*",
-            "resource": "*",
-            "operation": "FULL",
-            "permit": 0
-          }
-        ]
-      },
+      "scopes":  [
+        "super-user"
+      ],
       "details":  null,
       "auditData":  null,
       "version":  0

@@ -6,6 +6,7 @@ option go_package = "data-handler/model";
 
 import 'model/audit.proto';
 import 'model/common.proto';
+import 'model/security.proto';
 import 'google/protobuf/struct.proto';
 
 message Namespace {
@@ -16,6 +17,7 @@ message Namespace {
 
   string description = 4;
   google.protobuf.Struct details = 5;
+  SecurityContext securityContext = 6;
 
   AuditData auditData = 101;
   uint32 version = 102;

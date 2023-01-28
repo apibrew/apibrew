@@ -45,9 +45,8 @@ func (u *namespaceService) InjectRecordService(service RecordService) {
 func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
 	// insert records via resource service
 	records := mapping.MapToRecord(namespaces, mapping.NamespaceToRecord)
-	systemCtx := security.WithSystemContext(ctx)
 
-	result, _, err := u.recordService.Create(systemCtx, params.RecordCreateParams{
+	result, _, err := u.recordService.Create(ctx, params.RecordCreateParams{
 		Namespace: system.NamespaceResource.Namespace,
 		Resource:  system.NamespaceResource.Name,
 		Records:   records,
@@ -63,8 +62,8 @@ func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Names
 func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
 	// insert records via resource service
 	records := mapping.MapToRecord(namespaces, mapping.NamespaceToRecord)
-	systemCtx := security.WithSystemContext(ctx)
-	result, err := u.recordService.Update(systemCtx, params.RecordUpdateParams{
+
+	result, err := u.recordService.Update(ctx, params.RecordUpdateParams{
 		Namespace: system.NamespaceResource.Namespace,
 		Records:   records,
 	})
@@ -77,9 +76,8 @@ func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Names
 }
 
 func (u *namespaceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
-	systemCtx := security.WithSystemContext(ctx)
 
-	return u.recordService.Delete(systemCtx, params.RecordDeleteParams{
+	return u.recordService.Delete(ctx, params.RecordDeleteParams{
 		Namespace: system.NamespaceResource.Namespace,
 		Resource:  system.NamespaceResource.Name,
 		Ids:       ids,
@@ -87,8 +85,8 @@ func (u *namespaceService) Delete(ctx context.Context, ids []string) errors.Serv
 }
 
 func (u *namespaceService) Get(ctx context.Context, id string) (*model.Namespace, errors.ServiceError) {
-	systemCtx := security.WithSystemContext(ctx)
-	record, err := u.recordService.Get(systemCtx, params.RecordGetParams{
+
+	record, err := u.recordService.Get(ctx, params.RecordGetParams{
 		Namespace: system.NamespaceResource.Namespace,
 		Resource:  system.NamespaceResource.Name,
 		Id:        id,
@@ -102,8 +100,8 @@ func (u *namespaceService) Get(ctx context.Context, id string) (*model.Namespace
 }
 
 func (u *namespaceService) List(ctx context.Context) ([]*model.Namespace, errors.ServiceError) {
-	systemCtx := security.WithSystemContext(ctx)
-	result, _, err := u.recordService.List(systemCtx, params.RecordListParams{
+
+	result, _, err := u.recordService.List(ctx, params.RecordListParams{
 		Namespace: system.NamespaceResource.Namespace,
 		Resource:  system.NamespaceResource.Name,
 	})

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/annotations"
 	"data-handler/service/backend"
@@ -21,9 +22,11 @@ func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context) (resu
 }
 
 func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, catalog string, entity string) (resource *model.Resource, err errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	err = p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, catalog, entity); err != nil {
-			log.Errorf("[PrepareResourceFromEntity] Unable to load resource details for %s Err: %s", entity, err)
+			logger.Errorf("[PrepareResourceFromEntity] Unable to load resource details for %s Err: %s", entity, err)
 			return err
 		}
 
@@ -31,7 +34,7 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 	})
 
 	if err != nil {
-		log.Errorf("Unable to load resource for %s Err: %s", entity, err)
+		logger.Errorf("Unable to load resource for %s Err: %s", entity, err)
 		return nil, err
 	}
 
@@ -40,7 +43,7 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 
 func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, params backend.UpgradeResourceParams) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
-		if err := resourceCreateTable(tx, params.Resource); err != nil {
+		if err := resourceCreateTable(ctx, tx, params.Resource); err != nil {
 			return err
 		}
 
@@ -49,7 +52,7 @@ func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, pa
 		}
 
 		if annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
-			if err := resourceCreateHistoryTable(tx, params.Resource); err != nil {
+			if err := resourceCreateHistoryTable(ctx, tx, params.Resource); err != nil {
 				return err
 			}
 
@@ -64,14 +67,14 @@ func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, pa
 
 func (p *postgresResourceServiceBackend) DowngradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
-		err := resourceDropTable(tx, getTableName(resource.SourceConfig, false))
+		err := resourceDropTable(ctx, tx, getTableName(resource.SourceConfig, false))
 
 		if err != nil {
 			return err
 		}
 
 		if annotations.IsEnabled(resource, annotations.KeepHistory) {
-			err = resourceDropTable(tx, getTableName(resource.SourceConfig, true))
+			err = resourceDropTable(ctx, tx, getTableName(resource.SourceConfig, true))
 
 			if err != nil {
 				return err

@@ -70,4 +70,5 @@ var ResourceReferenceResource = &model.Resource{
 			Cascade:            true,
 		},
 	},
+	SecurityContext: securityContextDisallowAll,
 }

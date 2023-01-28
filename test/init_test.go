@@ -20,7 +20,7 @@ func prepareInitData() *model.InitData {
 			Port:                  17981,
 			JwtPrivateKey:         "../data/jwt.key",
 			JwtPublicKey:          "../data/jwt.key.pub",
-			DisableAuthentication: true,
+			DisableAuthentication: false,
 			DisableCache:          true,
 		},
 		SystemDataSource: prepareSystemDataSource(),
@@ -42,7 +42,43 @@ func prepareInitResources() []*model.Resource {
 }
 
 func prepareInitUsers() []*model.User {
-	return nil
+	return []*model.User{
+		{
+			Username: "admin",
+			Password: "admin",
+			SecurityContext: &model.SecurityContext{
+				Constraints: []*model.SecurityConstraint{
+					{
+						Operation: model.OperationType_FULL,
+						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+					},
+				},
+			},
+		},
+		{
+			Username: "dh_test",
+			Password: "dh_test",
+			SecurityContext: &model.SecurityContext{
+				Constraints: []*model.SecurityConstraint{
+					{
+						Resource:  "user",
+						Operation: model.OperationType_OPERATION_TYPE_READ,
+						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+					},
+					{
+						Resource:  "namespace",
+						Operation: model.OperationType_OPERATION_TYPE_CREATE,
+						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+					},
+					{
+						Resource:  "namespace",
+						Operation: model.OperationType_OPERATION_TYPE_READ,
+						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+					},
+				},
+			},
+		},
+	}
 }
 
 func prepareInitNamespaces() []*model.Namespace {
