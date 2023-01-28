@@ -97,9 +97,11 @@ func (app *App) InjectServices() {
 
 	app.userService.InjectRecordService(app.recordService)
 	app.userService.InjectResourceService(app.resourceService)
+	app.userService.InjectBackendProviderService(app.backendProviderService)
 
 	app.namespaceService.InjectRecordService(app.recordService)
 	app.namespaceService.InjectResourceService(app.resourceService)
+	app.namespaceService.InjectBackendProviderService(app.backendProviderService)
 
 	app.recordService.InjectBackendProviderService(app.backendProviderService)
 	app.recordService.InjectResourceService(app.resourceService)

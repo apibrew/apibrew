@@ -20,12 +20,18 @@ type NamespaceService interface {
 	Delete(ctx context.Context, ids []string) errors.ServiceError
 	Get(ctx context.Context, id string) (*model.Namespace, errors.ServiceError)
 	List(ctx context.Context) ([]*model.Namespace, errors.ServiceError)
+	InjectBackendProviderService(service BackendProviderService)
 }
 
 type namespaceService struct {
-	recordService   RecordService
-	serviceName     string
-	resourceService ResourceService
+	recordService          RecordService
+	serviceName            string
+	resourceService        ResourceService
+	backendProviderService BackendProviderService
+}
+
+func (u *namespaceService) InjectBackendProviderService(backendProviderService BackendProviderService) {
+	u.backendProviderService = backendProviderService
 }
 
 func (u *namespaceService) InjectResourceService(service ResourceService) {
@@ -110,7 +116,7 @@ func (u *namespaceService) List(ctx context.Context) ([]*model.Namespace, errors
 }
 
 func (d *namespaceService) Init(data *model.InitData) {
-	d.resourceService.MigrateResource(system.NamespaceResource)
+	d.backendProviderService.MigrateResource(system.NamespaceResource, nil)
 
 	if len(data.InitNamespaces) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{

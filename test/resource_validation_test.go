@@ -4,6 +4,7 @@ import (
 	"data-handler/model"
 	"data-handler/server/stub"
 	"data-handler/server/util"
+	"github.com/google/uuid"
 	"strconv"
 	"testing"
 )
@@ -108,5 +109,45 @@ func TestCreateResourceWithSameName(t *testing.T) {
 
 	if util.GetErrorCode(err) != model.ErrorCode_ALREADY_EXISTS {
 		t.Error("Error code should be provided for ErrorCode_ALREADY_EXISTS")
+	}
+}
+
+func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
+	ctx := prepareTextContext()
+
+	randUUid, _ := uuid.NewRandom()
+
+	resp, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+		Resources: []*model.Resource{
+			{
+				Name: "non_existent_source",
+				SourceConfig: &model.ResourceSourceConfig{
+					DataSource: randUUid.String(),
+					Catalog:    "catalog_1",
+					Entity:     "entity_1",
+				},
+			},
+		},
+		DoMigration:    true,
+		ForceMigration: true,
+	})
+
+	defer func() {
+		if resp != nil && len(resp.Resources) > 0 {
+			_, _ = resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+				Ids:            []string{resp.Resources[0].Id},
+				DoMigration:    true,
+				ForceMigration: true,
+			})
+		}
+	}()
+
+	if err == nil {
+		t.Error("Error should be provided for Resource is already exits")
+		return
+	}
+
+	if util.GetErrorCode(err) != model.ErrorCode_RESOURCE_VALIDATION_ERROR {
+		t.Error("Error code should be provided for ErrorCode_RESOURCE_VALIDATION_ERROR: " + util.GetErrorCode(err).String())
 	}
 }
