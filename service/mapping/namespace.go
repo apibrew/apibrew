@@ -15,6 +15,8 @@ func NamespaceToRecord(namespace *model.Namespace) *model.Record {
 		properties["details"] = structpb.NewStructValue(namespace.Details)
 	}
 
+	properties["securityContext"] = SecurityContextToValue(namespace.SecurityContext)
+
 	return &model.Record{
 		Id:         namespace.Id,
 		Resource:   system.NamespaceResource.Name,
@@ -48,6 +50,8 @@ func NamespaceFromRecord(record *model.Record) *model.Namespace {
 	if record.Properties["details"] != nil {
 		result.Details = record.Properties["details"].GetStructValue()
 	}
+
+	result.SecurityContext = SecurityContextFromValue(record.Properties["securityContext"])
 
 	return result
 }

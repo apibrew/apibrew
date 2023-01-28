@@ -47,5 +47,7 @@ var NamespaceResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_OBJECT,
 			Required: false,
 		},
+		securityContextProperty,
 	},
+	SecurityContext: securityContextDisallowAll,
 }

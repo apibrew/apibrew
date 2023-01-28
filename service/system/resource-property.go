@@ -127,6 +127,7 @@ var ResourcePropertyResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_UUID,
 			Required: true,
 		},
+		securityContextProperty,
 	},
 	References: []*model.ResourceReference{
 		{
@@ -135,4 +136,5 @@ var ResourcePropertyResource = &model.Resource{
 			Cascade:            true,
 		},
 	},
+	SecurityContext: securityContextDisallowAll,
 }

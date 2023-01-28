@@ -37,17 +37,7 @@ var UserResource = &model.Resource{
 			Length:   256,
 			Required: true,
 		},
-		{
-			Name: "scopes",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "scopes",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_STRING,
-			Length:   256,
-			Required: false,
-		},
+		securityContextProperty,
 		{
 			Name: "details",
 			SourceConfig: &model.ResourceProperty_Mapping{
@@ -58,4 +48,5 @@ var UserResource = &model.Resource{
 			Type: model.ResourcePropertyType_TYPE_OBJECT,
 		},
 	},
+	SecurityContext: securityContextDisallowAll,
 }

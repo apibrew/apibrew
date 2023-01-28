@@ -48,9 +48,8 @@ func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model
 
 	// insert records via resource service
 	records := mapping.MapToRecord(users, mapping.UserToRecord)
-	systemCtx := security.WithSystemContext(ctx)
 
-	result, _, err := u.recordService.Create(systemCtx, params.RecordCreateParams{
+	result, _, err := u.recordService.Create(ctx, params.RecordCreateParams{
 		Namespace: system.UserResource.Namespace,
 		Resource:  system.UserResource.Name,
 		Records:   records,
@@ -70,11 +69,9 @@ func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model
 func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError) {
 	u.encodePasswords(users)
 
-	systemCtx := security.WithSystemContext(ctx)
-
 	for _, user := range users {
 		if user.Password == "" {
-			record, err := u.recordService.Get(systemCtx, params.RecordGetParams{
+			record, err := u.recordService.Get(ctx, params.RecordGetParams{
 				Namespace: system.UserResource.Namespace,
 				Resource:  system.UserResource.Name,
 				Id:        user.Id,
@@ -92,7 +89,7 @@ func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model
 	// insert records via resource service
 	records := mapping.MapToRecord(users, mapping.UserToRecord)
 
-	result, err := u.recordService.Update(systemCtx, params.RecordUpdateParams{
+	result, err := u.recordService.Update(ctx, params.RecordUpdateParams{
 		Namespace: system.UserResource.Namespace,
 		Records:   records,
 	})
@@ -109,9 +106,7 @@ func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model
 }
 
 func (u *userService) Delete(ctx context.Context, ids []string) errors.ServiceError {
-	systemCtx := security.WithSystemContext(ctx)
-
-	return u.recordService.Delete(systemCtx, params.RecordDeleteParams{
+	return u.recordService.Delete(ctx, params.RecordDeleteParams{
 		Namespace: system.UserResource.Namespace,
 		Resource:  system.UserResource.Name,
 		Ids:       ids,
@@ -119,8 +114,7 @@ func (u *userService) Delete(ctx context.Context, ids []string) errors.ServiceEr
 }
 
 func (u *userService) Get(ctx context.Context, id string) (*model.User, errors.ServiceError) {
-	systemCtx := security.WithSystemContext(ctx)
-	record, err := u.recordService.Get(systemCtx, params.RecordGetParams{
+	record, err := u.recordService.Get(ctx, params.RecordGetParams{
 		Namespace: system.UserResource.Namespace,
 		Resource:  system.UserResource.Name,
 		Id:        id,
@@ -138,8 +132,7 @@ func (u *userService) Get(ctx context.Context, id string) (*model.User, errors.S
 }
 
 func (u *userService) List(ctx context.Context, query *model.BooleanExpression, limit uint32, offset uint64) ([]*model.User, errors.ServiceError) {
-	systemCtx := security.WithSystemContext(ctx)
-	result, _, err := u.recordService.List(systemCtx, params.RecordListParams{
+	result, _, err := u.recordService.List(ctx, params.RecordListParams{
 		Query:     query,
 		Namespace: system.UserResource.Namespace,
 		Resource:  system.UserResource.Name,

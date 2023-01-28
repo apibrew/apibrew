@@ -111,4 +111,5 @@ var DataSourceResource = &model.Resource{
 			Required: false,
 		},
 	},
+	SecurityContext: securityContextDisallowAll,
 }

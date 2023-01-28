@@ -17,6 +17,7 @@ RUN go mod download
 COPY proto proto
 COPY generate.go generate.go
 
+COPY data data
 COPY app app
 COPY cmd cmd
 COPY helper helper

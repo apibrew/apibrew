@@ -8,7 +8,8 @@ import (
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/params"
-	"data-handler/service/security"
+	"data-handler/service/system"
+	"data-handler/util"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,6 +17,13 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 	resource, err := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if err != nil {
+		return nil, 0, err
+	}
+
+	if err := checkAccess(ctx, checkAccessParams{
+		Resource:  resource,
+		Operation: model.OperationType_OPERATION_TYPE_READ,
+	}); err != nil {
 		return nil, 0, err
 	}
 
@@ -43,6 +51,14 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 	})
 
 	if err != nil {
+		return nil, 0, err
+	}
+
+	if err := checkAccess(ctx, checkAccessParams{
+		Resource:  resource,
+		Records:   &records,
+		Operation: model.OperationType_OPERATION_TYPE_READ,
+	}); err != nil {
 		return nil, 0, err
 	}
 
@@ -87,8 +103,16 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 			return nil, nil, err
 		}
 
-		if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
+		if err = checkAccess(ctx, checkAccessParams{
+			Resource:  resource,
+			Records:   &list,
+			Operation: model.OperationType_OPERATION_TYPE_CREATE,
+		}); err != nil {
 			return nil, nil, err
+		}
+
+		if isResourceRelatedResource(resource) {
+			return nil, nil, errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
 		}
 
 		if err = r.validateRecords(resource, list); err != nil {
@@ -163,6 +187,10 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 	return result, insertedArray, nil
 }
 
+func isResourceRelatedResource(resource *model.Resource) bool {
+	return resource.Namespace == system.ResourceResource.Namespace && (resource.Name == system.ResourceResource.Name || resource.Name == system.ResourcePropertyResource.Name || resource.Name == system.ResourceReferenceResource.Name)
+}
+
 func (r *recordService) Update(ctx context.Context, params params.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
 	var entityRecordMap = make(map[string][]*model.Record)
 
@@ -188,8 +216,15 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 			return nil, err
 		}
 
-		if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
-			success = false
+		if isResourceRelatedResource(resource) {
+			return nil, errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
+		}
+
+		if err = checkAccess(ctx, checkAccessParams{
+			Resource:  resource,
+			Records:   &list,
+			Operation: model.OperationType_OPERATION_TYPE_UPDATE,
+		}); err != nil {
 			return nil, err
 		}
 
@@ -278,7 +313,19 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
+	if isResourceRelatedResource(resource) {
+		return nil, errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
+	}
+
+	if err = checkAccess(ctx, checkAccessParams{
+		Resource: resource,
+		Records: &[]*model.Record{
+			{
+				Id: id,
+			},
+		},
+		Operation: model.OperationType_OPERATION_TYPE_READ,
+	}); err != nil {
 		return nil, err
 	}
 
@@ -365,8 +412,22 @@ func (r *recordService) Delete(ctx context.Context, params params.RecordDeletePa
 		return err
 	}
 
-	if err = security.CheckSystemResourceAccess(ctx, resource); err != nil {
+	var recordForCheck = util.ArrayMap(params.Ids, func(t string) *model.Record {
+		return &model.Record{
+			Id: t,
+		}
+	})
+
+	if err = checkAccess(ctx, checkAccessParams{
+		Resource:  resource,
+		Records:   &recordForCheck,
+		Operation: model.OperationType_OPERATION_TYPE_DELETE,
+	}); err != nil {
 		return err
+	}
+
+	if isResourceRelatedResource(resource) {
+		return errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
 	}
 
 	if err = r.genericHandler.BeforeDelete(ctx, params); err != nil {

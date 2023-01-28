@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/service/errors"
 	"database/sql"
 	"fmt"
@@ -9,6 +10,8 @@ import (
 )
 
 func (p *postgresResourceServiceBackend) acquireConnection(ctx context.Context) (*sql.DB, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	if p.connection == nil {
 
 		params := p.connectionDetails.PostgresqlParams
@@ -16,7 +19,7 @@ func (p *postgresResourceServiceBackend) acquireConnection(ctx context.Context) 
 		connStr := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", params.Username, params.Password, params.Host, params.Port, params.DbName)
 		// Connect to database
 		conn, sqlErr := sql.Open("postgres", connStr)
-		err := handleDbError(sqlErr)
+		err := handleDbError(ctx, sqlErr)
 
 		if err != nil {
 			return nil, err
@@ -24,7 +27,7 @@ func (p *postgresResourceServiceBackend) acquireConnection(ctx context.Context) 
 
 		p.connection = conn
 
-		log.Infof("Connected to Datasource: %s@%s:%d/%s", params.Username, params.Host, params.Port, params.DefaultSchema)
+		logger.Infof("Connected to Datasource: %s@%s:%d/%s", params.Username, params.Host, params.Port, params.DefaultSchema)
 	}
 
 	return p.connection, nil

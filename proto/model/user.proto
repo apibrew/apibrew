@@ -7,14 +7,16 @@ option go_package = "data-handler/model";
 import 'google/protobuf/struct.proto';
 import 'model/audit.proto';
 import 'model/common.proto';
+import 'model/security.proto';
 
 message User {
   string id = 1;
   DataType type = 2;
-  string username = 3;
+  string username = 3; // principal
   string password = 4;
-  repeated string scopes = 5;
+  SecurityContext securityContext = 5;
   google.protobuf.Struct details = 6;
+  string signKey = 7; // rsa pub key to create tokens
 
   AuditData auditData = 101;
   uint32 version = 102;

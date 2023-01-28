@@ -10,7 +10,6 @@ import (
 )
 
 func TestCreateResourceValidationForResourceFields(t *testing.T) {
-	ctx := prepareTextContext()
 
 	testResource := &model.Resource{}
 
@@ -44,10 +43,9 @@ func TestCreateResourceValidationForResourceFields(t *testing.T) {
 }
 
 func TestCreateResourceValidationForProperties(t *testing.T) {
-	ctx := prepareTextContext()
 
 	_, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
-		Resources: []*model.Resource{&model.Resource{
+		Resources: []*model.Resource{{
 			Properties: []*model.ResourceProperty{
 				{
 					Name: "Type123",
@@ -94,7 +92,6 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 }
 
 func TestCreateResourceWithSameName(t *testing.T) {
-	ctx := prepareTextContext()
 
 	_, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:      []*model.Resource{richResource1},
@@ -113,7 +110,6 @@ func TestCreateResourceWithSameName(t *testing.T) {
 }
 
 func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
-	ctx := prepareTextContext()
 
 	randUUid, _ := uuid.NewRandom()
 

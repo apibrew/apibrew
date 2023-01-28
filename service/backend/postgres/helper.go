@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"context"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/errors"
 	"database/sql"
@@ -20,7 +22,9 @@ func locatePropertyByName(resource *model.Resource, propertyName string) *model.
 	return nil
 }
 
-func handleDbError(err error) errors.ServiceError {
+func handleDbError(ctx context.Context, err error) errors.ServiceError {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	if err == nil {
 		return nil
 	}
@@ -29,15 +33,15 @@ func handleDbError(err error) errors.ServiceError {
 		return errors.RecordNotFoundError
 	}
 
-	log.Errorf("Db Error: %s", err)
-	debug.PrintStack()
+	logger.Errorf("Db Error: %s", err)
+	logger.Tracef("Stack: " + string(debug.Stack()))
 
 	if err == sql.ErrTxDone {
-		log.Panic("Illegal situation")
+		logger.Panic("Illegal situation")
 	}
 
 	if _, ok := err.(errors.ServiceError); ok {
-		log.Panic("database error is expected: ", err)
+		logger.Panic("database error is expected: ", err)
 	}
 
 	if pqErr, ok := err.(*pq.Error); ok {
@@ -52,7 +56,7 @@ func handleDbError(err error) errors.ServiceError {
 		return errors.InternalError.WithDetails(err.Error())
 	}
 
-	log.Print("Unhandled Error: ", err)
+	logger.Print("Unhandled Error: ", err)
 	return errors.InternalError.WithDetails(err.Error())
 }
 
