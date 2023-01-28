@@ -58,6 +58,10 @@ func (p *postgresResourceServiceBackend) CommitTransaction(ctx context.Context) 
 
 	txDataInstance := p.transactionMap[transactionKey.(string)]
 
+	if txDataInstance == nil {
+		return errors.LogicalError.WithDetails("Transaction not found: " + transactionKey.(string))
+	}
+
 	err := txDataInstance.tx.Commit()
 	txDataInstance.cancel()
 
@@ -72,6 +76,10 @@ func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context
 	}
 
 	txDataInstance := p.transactionMap[transactionKey.(string)]
+
+	if txDataInstance == nil {
+		return errors.LogicalError.WithDetails("Transaction not found: " + transactionKey.(string))
+	}
 
 	err := txDataInstance.tx.Rollback()
 	txDataInstance.cancel()

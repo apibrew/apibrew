@@ -13,6 +13,10 @@ func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOn
 	if transactionKey != nil {
 		txDataInstance := p.transactionMap[transactionKey.(string)]
 
+		if txDataInstance == nil {
+			return errors.LogicalError.WithDetails("Transaction not found: " + transactionKey.(string))
+		}
+
 		return fn(txDataInstance.tx)
 	}
 
