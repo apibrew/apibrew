@@ -32,5 +32,6 @@ You need to configure client pointing to right server:
 Sample commands
 ```
 dhctl get resources
-dhctl get user
+dhctl get user -n system
 ```
+For detailed documentation: [link](docs/dhctl.md)
