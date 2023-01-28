@@ -1,6 +1,6 @@
 package test
 
-import "data-handler/model"
+import "github.com/tislib/data-handler/model"
 
 var systemDataSource = &model.DataSource{
 	Id:          "system",

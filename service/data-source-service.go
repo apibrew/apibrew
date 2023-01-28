@@ -2,14 +2,14 @@ package service
 
 import (
 	"context"
-	"data-handler/logging"
-	model "data-handler/model"
-	"data-handler/service/errors"
-	mapping "data-handler/service/mapping"
-	"data-handler/service/params"
-	"data-handler/service/security"
-	"data-handler/service/system"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	model "github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/errors"
+	mapping "github.com/tislib/data-handler/service/mapping"
+	"github.com/tislib/data-handler/service/params"
+	"github.com/tislib/data-handler/service/security"
+	"github.com/tislib/data-handler/service/system"
 )
 
 type DataSourceService interface {

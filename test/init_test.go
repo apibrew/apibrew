@@ -1,9 +1,9 @@
 package test
 
 import (
-	"data-handler/logging"
-	"data-handler/model"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/model"
 )
 
 func init() {

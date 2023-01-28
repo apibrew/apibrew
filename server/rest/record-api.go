@@ -2,12 +2,12 @@ package rest
 
 import (
 	"context"
-	"data-handler/model"
-	"data-handler/server/stub"
-	"data-handler/service"
-	"data-handler/service/params"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/stub"
+	"github.com/tislib/data-handler/service"
+	"github.com/tislib/data-handler/service/params"
 	"net/http"
 	"strconv"
 	"strings"

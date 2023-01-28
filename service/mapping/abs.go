@@ -1,7 +1,7 @@
 package mapping
 
 import (
-	"data-handler/model"
+	"github.com/tislib/data-handler/model"
 	"google.golang.org/protobuf/proto"
 )
 

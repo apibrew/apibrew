@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	"data-handler/logging"
-	"data-handler/model"
-	"data-handler/service/errors"
-	"data-handler/service/security"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/errors"
+	"github.com/tislib/data-handler/service/security"
 	"time"
 )
 

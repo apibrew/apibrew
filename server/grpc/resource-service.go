@@ -2,11 +2,11 @@ package grpc
 
 import (
 	"context"
-	"data-handler/model"
-	"data-handler/server/stub"
-	"data-handler/server/util"
-	"data-handler/service"
-	"data-handler/service/annotations"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/stub"
+	"github.com/tislib/data-handler/server/util"
+	"github.com/tislib/data-handler/service"
+	"github.com/tislib/data-handler/service/annotations"
 )
 
 type resourceGrpcService struct {

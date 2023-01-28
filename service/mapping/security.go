@@ -1,8 +1,8 @@
 package mapping
 
 import (
-	"data-handler/model"
-	"data-handler/util"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"

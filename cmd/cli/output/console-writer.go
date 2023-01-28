@@ -1,10 +1,10 @@
 package output
 
 import (
-	"data-handler/model"
-	"data-handler/service/types"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/types"
 	"io"
 	"strconv"
 	"strings"

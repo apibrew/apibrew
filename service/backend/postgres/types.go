@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"data-handler/model"
+	"github.com/tislib/data-handler/model"
 	"strconv"
 )
 

@@ -2,10 +2,10 @@ package postgres
 
 import (
 	"context"
-	"data-handler/logging"
-	"data-handler/service/errors"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/service/errors"
 )
 
 func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx *sql.Tx) errors.ServiceError) errors.ServiceError {

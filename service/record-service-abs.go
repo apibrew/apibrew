@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
-	"data-handler/model"
-	"data-handler/service/errors"
-	"data-handler/service/handler"
-	"data-handler/service/params"
-	"data-handler/service/types"
-	"data-handler/util"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/errors"
+	"github.com/tislib/data-handler/service/handler"
+	"github.com/tislib/data-handler/service/params"
+	"github.com/tislib/data-handler/service/types"
+	"github.com/tislib/data-handler/util"
 	"strings"
 )
 

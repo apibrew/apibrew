@@ -2,7 +2,7 @@ package security
 
 import (
 	"context"
-	"data-handler/model"
+	"github.com/tislib/data-handler/model"
 )
 
 const systemContextKey = "SYSTEM_CTX"

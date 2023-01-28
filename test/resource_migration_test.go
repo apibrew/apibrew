@@ -1,9 +1,9 @@
 package test
 
 import (
-	"data-handler/model"
-	"data-handler/server/stub"
-	"data-handler/util"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/stub"
+	"github.com/tislib/data-handler/util"
 	"testing"
 )
 

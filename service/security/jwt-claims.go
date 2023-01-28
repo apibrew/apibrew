@@ -2,9 +2,9 @@ package security
 
 import (
 	"crypto/subtle"
-	"data-handler/model"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/tislib/data-handler/model"
 	"time"
 )
 

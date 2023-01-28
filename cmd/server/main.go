@@ -1,15 +1,15 @@
 package main
 
 import (
-	"data-handler/app"
-	"data-handler/model"
-	"data-handler/server/grpc"
-	"data-handler/server/rest"
-	"data-handler/util"
 	"flag"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
+	"github.com/tislib/data-handler/app"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/grpc"
+	"github.com/tislib/data-handler/server/rest"
+	"github.com/tislib/data-handler/util"
 	"net"
 	"strings"
 )

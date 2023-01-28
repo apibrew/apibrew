@@ -1,8 +1,8 @@
 package util
 
 import (
-	"data-handler/model"
-	"data-handler/service/errors"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

@@ -1,7 +1,7 @@
 package output
 
 import (
-	"data-handler/model"
+	"github.com/tislib/data-handler/model"
 	"log"
 	"os"
 )

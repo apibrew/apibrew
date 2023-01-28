@@ -2,9 +2,9 @@ package postgres
 
 import (
 	"context"
-	"data-handler/logging"
-	"data-handler/service/errors"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/service/errors"
 )
 
 func (p *postgresResourceServiceBackend) DestroyDataSource(ctx context.Context) {

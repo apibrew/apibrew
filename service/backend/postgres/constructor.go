@@ -1,10 +1,10 @@
 package postgres
 
 import (
-	"data-handler/model"
-	"data-handler/service/backend"
 	"database/sql"
 	_ "github.com/lib/pq"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/backend"
 )
 
 const DbNameType = "VARCHAR(64)"

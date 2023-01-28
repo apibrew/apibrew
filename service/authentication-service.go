@@ -3,14 +3,14 @@ package service
 import (
 	"context"
 	"crypto/rsa"
-	"data-handler/logging"
-	"data-handler/model"
-	"data-handler/service/errors"
-	"data-handler/service/mapping"
-	"data-handler/service/security"
-	"data-handler/service/system"
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/errors"
+	"github.com/tislib/data-handler/service/mapping"
+	"github.com/tislib/data-handler/service/security"
+	"github.com/tislib/data-handler/service/system"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
 	"time"
@@ -65,7 +65,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 			SecurityContext: user.SecurityContext,
 		},
 		ExpiresAt: expiration,
-		Issuer:    "data-handler",
+		Issuer:    "github.com/tislib/data-handler",
 	})
 
 	logger.Trace("Token prepared: %s", token)
@@ -105,7 +105,7 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 			SecurityContext: user.SecurityContext,
 		},
 		ExpiresAt: expiration,
-		Issuer:    "data-handler",
+		Issuer:    "github.com/tislib/data-handler",
 	})
 
 	if err != nil {

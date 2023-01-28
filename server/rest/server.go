@@ -2,13 +2,13 @@ package rest
 
 import (
 	"context"
-	"data-handler/app"
-	"data-handler/helper"
-	"data-handler/logging"
-	"data-handler/server/stub"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
+	"github.com/tislib/data-handler/app"
+	"github.com/tislib/data-handler/helper"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/server/stub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"

@@ -1,8 +1,8 @@
 package mapping
 
 import (
-	"data-handler/model"
-	"data-handler/service/system"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/system"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

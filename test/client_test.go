@@ -1,11 +1,11 @@
 package test
 
 import (
-	"data-handler/app"
-	grpc2 "data-handler/server/grpc"
-	"data-handler/server/stub"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/app"
+	grpc2 "github.com/tislib/data-handler/server/grpc"
+	"github.com/tislib/data-handler/server/stub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"

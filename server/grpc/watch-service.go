@@ -2,10 +2,10 @@ package grpc
 
 import (
 	"context"
-	"data-handler/server/stub"
-	"data-handler/service"
-	"data-handler/service/params"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/server/stub"
+	"github.com/tislib/data-handler/service"
+	"github.com/tislib/data-handler/service/params"
 )
 
 type watchGrpcService struct {

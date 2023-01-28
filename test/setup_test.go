@@ -2,11 +2,11 @@ package test
 
 import (
 	"context"
-	"data-handler/helper"
-	"data-handler/logging"
-	"data-handler/model"
-	"data-handler/server/stub"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/helper"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/stub"
 	"google.golang.org/grpc/metadata"
 	"os"
 	"testing"

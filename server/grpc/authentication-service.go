@@ -2,11 +2,11 @@ package grpc
 
 import (
 	"context"
-	"data-handler/logging"
-	"data-handler/server/stub"
-	"data-handler/server/util"
-	"data-handler/service"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/server/stub"
+	"github.com/tislib/data-handler/server/util"
+	"github.com/tislib/data-handler/service"
 )
 
 type authenticationServiceServer struct {

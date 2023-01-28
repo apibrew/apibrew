@@ -1,6 +1,6 @@
 package system
 
-import "data-handler/model"
+import "github.com/tislib/data-handler/model"
 
 var securityContextProperty = &model.ResourceProperty{
 	Name: "securityContext",

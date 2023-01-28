@@ -1,7 +1,7 @@
 package util
 
 import (
-	"data-handler/service/errors"
+	"github.com/tislib/data-handler/service/errors"
 )
 
 func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {

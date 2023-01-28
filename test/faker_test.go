@@ -1,8 +1,8 @@
 package test
 
 import (
-	"data-handler/model"
 	"github.com/google/uuid"
+	"github.com/tislib/data-handler/model"
 	"math/rand"
 	"time"
 )
