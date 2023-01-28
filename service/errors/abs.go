@@ -12,6 +12,7 @@ type ServiceError interface {
 	WithMessage(msg string) ServiceError
 	WithDetails(details string) ServiceError
 	WithErrorFields(errors []*model.ErrorField) ServiceError
+	GetDetails() string
 }
 
 type serviceError struct {
@@ -19,6 +20,10 @@ type serviceError struct {
 	message     string
 	details     string
 	errorFields []*model.ErrorField
+}
+
+func (s serviceError) GetDetails() string {
+	return s.details
 }
 
 func (s serviceError) Code() model.ErrorCode {

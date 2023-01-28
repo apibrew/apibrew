@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/model"
 	"data-handler/service/annotations"
+	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/util"
 	"fmt"
@@ -12,16 +13,16 @@ import (
 	"strings"
 )
 
-func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *model.Resource, forceMigration bool, history bool) errors.ServiceError {
+func resourceMigrateTable(ctx context.Context, runner QueryRunner, params backend.UpgradeResourceParams, history bool) errors.ServiceError {
 	var err errors.ServiceError
 	var existingResource *model.Resource
 
-	entityName := resource.SourceConfig.Entity
+	entityName := params.Resource.SourceConfig.Entity
 	if history {
 		entityName = entityName + "_h"
 	}
 
-	if existingResource, err = resourcePrepareResourceFromEntity(ctx, runner, resource.SourceConfig.Catalog, entityName); err != nil {
+	if existingResource, err = resourcePrepareResourceFromEntity(ctx, runner, params.Resource.SourceConfig.Catalog, entityName); err != nil {
 		log.Error("Unable to load resource details: ", err)
 		return err
 	}
@@ -38,7 +39,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 		existingColName := getPropertyColumnName(existingProperty)
 
 		found := false
-		for _, newProperty := range resource.Properties {
+		for _, newProperty := range params.Resource.Properties {
 			newColName := getPropertyColumnName(newProperty)
 			if existingColName == newColName {
 				if util.IsSameResourceProperty(existingProperty, newProperty) {
@@ -56,7 +57,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	}
 
 	// check right
-	for _, newProperty := range resource.Properties {
+	for _, newProperty := range params.Resource.Properties {
 		newColName := getPropertyColumnName(newProperty)
 
 		found := false
@@ -71,17 +72,17 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 		}
 	}
 
-	if len(changedColumns) == 0 && len(newColumns) == 0 && (!forceMigration || len(removedColumns) == 0) {
+	if len(changedColumns) == 0 && len(newColumns) == 0 && (!params.ForceMigration || len(removedColumns) == 0) {
 		// no need to migration
 		return nil
 	}
 
 	// create new properties
-	var alterTableQuery = fmt.Sprintf(`ALTER TABLE %s`, getTableName(resource.GetSourceConfig(), history))
+	var alterTableQuery = fmt.Sprintf(`ALTER TABLE %s`, getTableName(params.Resource.GetSourceConfig(), history))
 
 	var alterTableQueryDefs []string
 
-	for _, property := range resource.Properties {
+	for _, property := range params.Resource.Properties {
 		colName := getPropertyColumnName(property)
 		if !newColumns[colName] {
 			continue
@@ -92,7 +93,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	}
 
 	// delete properties (IF FORCE MIGRATION)
-	if forceMigration {
+	if params.ForceMigration {
 		for _, property := range existingResource.Properties {
 			colName := getPropertyColumnName(property)
 			if !removedColumns[colName] {
@@ -105,7 +106,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	}
 
 	// change updated columns
-	for _, property := range resource.Properties {
+	for _, property := range params.Resource.Properties {
 		colName := getPropertyColumnName(property)
 		if !changedColumns[colName] {
 			continue
@@ -128,11 +129,72 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 		}
 	}
 
+	if params.ReferenceMap != nil {
+
+		for _, existingFk := range existingResource.References {
+			found := false
+			for _, newFk := range params.Resource.References {
+				if existingFk.PropertyName == newFk.PropertyName {
+					found = true
+					break
+				}
+			}
+			if !found {
+				// not implemented
+				//alterTableQuery += " " + fmt.Sprintf("ADD CONSTRAINT FOREIGN KEY (%s) REFERENCES %s (%s)")
+			}
+		}
+
+		for _, newFk := range params.Resource.References {
+			// locating property
+			var sourceProperty *model.ResourceProperty
+
+			for _, property := range params.Resource.Properties {
+				if property.Name == newFk.PropertyName {
+					sourceProperty = property
+				}
+			}
+
+			if sourceProperty == nil {
+				return errors.LogicalError.WithDetails("Source property could not be found: " + newFk.ReferencedResource)
+			}
+
+			var sourceColumn = sourceProperty.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping
+
+			found := false
+			for _, existingFk := range existingResource.References {
+				if existingFk.PropertyName == newFk.PropertyName || existingFk.PropertyName == "["+sourceColumn+"]" {
+					found = true
+					break
+				}
+			}
+			if !found {
+
+				targetTable := params.ReferenceMap[newFk.ReferencedResource]
+
+				if targetTable.Entity == "" {
+					return errors.LogicalError.WithDetails("Reference map not found for: " + newFk.ReferencedResource)
+				}
+
+				if targetTable.Catalog == "" {
+					targetTable.Catalog = "public"
+				}
+
+				sqlPart := fmt.Sprintf("ADD CONSTRAINT \"fk_%s_%s\" FOREIGN KEY (\"%s\") REFERENCES \"%s\".\"%s\" (\"%s\")", sourceColumn, targetTable.Entity, sourceColumn, targetTable.Catalog, targetTable.Entity, targetTable.IdColumn)
+				if newFk.Cascade {
+					sqlPart += " on update cascade on delete cascade"
+				}
+				alterTableQueryDefs = append(alterTableQueryDefs, sqlPart)
+				changesCount++
+			}
+		}
+	}
+
+	alterTableQuery += "\n" + strings.Join(alterTableQueryDefs, ",")
+
 	if changesCount == 0 {
 		return nil
 	}
-
-	alterTableQuery += " " + strings.Join(alterTableQueryDefs, ",")
 
 	_, sqlError := runner.Exec(alterTableQuery)
 
@@ -141,6 +203,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, resource *mod
 	if sqlError != nil {
 		return handleDbError(sqlError)
 	}
+
 	return nil
 }
 
@@ -182,6 +245,83 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 
 	// properties
 
+	err = resourcePrepareProperties(ctx, runner, catalog, entity, resource)
+	if err != nil {
+		return
+	}
+
+	// references
+
+	err = resourcePrepareReferences(ctx, runner, catalog, entity, resource)
+	if err != nil {
+		return
+	}
+
+	doResourceCleanup(resource)
+
+	return
+}
+
+func resourcePrepareReferences(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
+	rows, sqlErr := runner.QueryContext(ctx, `SELECT
+       (SELECT a.attname
+        FROM pg_attribute a
+        WHERE a.attrelid = m.oid AND a.attnum = o.conkey[1] AND a.attisdropped = false)  AS source_column,
+       (SELECT nspname FROM pg_namespace WHERE oid = f.relnamespace)                     AS target_schema,
+       f.relname                                                                         AS target_table,
+       (SELECT a.attname
+        FROM pg_attribute a
+        WHERE a.attrelid = f.oid AND a.attnum = o.confkey[1] AND a.attisdropped = false) AS target_column
+FROM pg_constraint o
+         LEFT JOIN pg_class f ON f.oid = o.confrelid
+         LEFT JOIN pg_class m ON m.oid = o.conrelid
+WHERE o.contype = 'f'
+  AND o.conrelid IN (SELECT oid FROM pg_class c WHERE c.relkind = 'r')
+and (SELECT nspname FROM pg_namespace WHERE oid = m.relnamespace) = $1
+and m.relname   = $2`, catalog, entity)
+
+	err := handleDbError(sqlErr)
+
+	if err != nil {
+		return err
+	}
+
+	for rows.Next() {
+		sourceColumn := new(string)
+		targetSchema := new(string)
+		targetTable := new(string)
+		targetColumn := new(string)
+
+		sqlErr = rows.Scan(sourceColumn, targetSchema, targetTable, targetColumn)
+
+		if sqlErr != nil {
+			return handleDbError(sqlErr)
+		}
+
+		// locating source property
+		var sourceProperty *model.ResourceProperty
+		for _, property := range resource.Properties {
+			if property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping == *sourceColumn {
+				sourceProperty = property
+				break
+			}
+		}
+
+		if sourceProperty == nil {
+			return errors.LogicalError.WithDetails("Source property cannot be located")
+		}
+
+		resource.References = append(resource.References, &model.ResourceReference{
+			PropertyName:       "[" + sourceProperty.Name + "]",
+			ReferencedResource: "[" + *targetTable + "]",
+			Cascade:            true,
+		})
+	}
+
+	return nil
+}
+
+func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
 	rows, sqlErr := runner.QueryContext(ctx, `select columns.column_name,
        columns.udt_name as column_type,
        columns.character_maximum_length as length,
@@ -200,10 +340,10 @@ from information_schema.columns
                     WHERE contype = 'p') column_key
                    on column_key.conname = key_column_usage.constraint_name
 where columns.table_schema = $1 and columns.table_name = $2 order by columns.ordinal_position`, catalog, entity)
-	err = handleDbError(sqlErr)
+	err := handleDbError(sqlErr)
 
 	if err != nil {
-		return
+		return err
 	}
 
 	primaryCount := 0
@@ -217,7 +357,7 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 		err = handleDbError(rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary))
 
 		if err != nil {
-			return
+			return err
 		}
 
 		var sourceDef = *columnType
@@ -245,9 +385,15 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 			}
 		}
 
+		typ := getPropertyTypeFromPsql(*columnType)
+
+		if typ == model.ResourcePropertyType_TYPE_STRING && uint32(**columnLength) == 0 {
+			**columnLength = 256
+		}
+
 		property := &model.ResourceProperty{
 			Name: *columnName,
-			Type: getPropertyTypeFromPsql(*columnType),
+			Type: typ,
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
 					Mapping:   *columnName,
@@ -261,10 +407,7 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 
 		resource.Properties = append(resource.Properties, property)
 	}
-
-	doResourceCleanup(resource)
-
-	return
+	return err
 }
 
 func doResourceCleanup(resource *model.Resource) {

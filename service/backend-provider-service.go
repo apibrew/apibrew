@@ -18,6 +18,7 @@ type BackendProviderService interface {
 	GetSystemBackend(ctx context.Context) backend.Backend
 	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (backend.Backend, errors.ServiceError)
 	DestroyBackend(ctx context.Context, id string) error
+	MigrateResource(resource *model.Resource, referenceMap map[string]backend.ReferenceMapEntry)
 }
 
 type backendProviderService struct {
@@ -94,6 +95,22 @@ func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceB
 
 func (b *backendProviderService) Init(data *model.InitData) {
 	b.systemDataSource = data.SystemDataSource
+}
+
+func (b *backendProviderService) MigrateResource(resource *model.Resource, referenceMap map[string]backend.ReferenceMapEntry) {
+	if resource.Annotations == nil {
+		resource.Annotations = make(map[string]string)
+	}
+
+	err := b.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), backend.UpgradeResourceParams{
+		Resource:       resource,
+		ForceMigration: true,
+		ReferenceMap:   referenceMap,
+	})
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func NewBackendProviderService() BackendProviderService {

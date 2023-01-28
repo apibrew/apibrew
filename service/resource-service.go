@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-handler/logging"
 	"data-handler/model"
+	"data-handler/server/util"
 	"data-handler/service/backend"
 	"data-handler/service/errors"
 	"data-handler/service/mapping"
@@ -11,11 +12,12 @@ import (
 	"fmt"
 	"github.com/jellydator/ttlcache/v3"
 	log "github.com/sirupsen/logrus"
+	"strconv"
+	"strings"
 	"time"
 )
 
 type ResourceService interface {
-	MigrateResource(resource *model.Resource)
 	Init(data *model.InitData)
 	CheckResourceExists(ctx context.Context, namespace, name string) (bool, errors.ServiceError)
 	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
@@ -90,7 +92,10 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 			return err
 		}
 
-		err = bck.UpgradeResource(ctx, nil, resource, forceMigration)
+		err = bck.UpgradeResource(ctx, backend.UpgradeResourceParams{
+			Resource:       resource,
+			ForceMigration: forceMigration,
+		})
 
 		if err != nil {
 			return err
@@ -121,6 +126,24 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	txCtx := context.WithValue(ctx, "transactionKey", txk)
 
+	var success = false
+
+	defer func() {
+		if success {
+			err = systemBackend.CommitTransaction(txCtx)
+
+			if err != nil {
+				log.Print(err)
+			}
+		} else {
+			err = systemBackend.RollbackTransaction(txCtx)
+
+			if err != nil {
+				log.Print(err)
+			}
+		}
+	}()
+
 	result, _, err := systemBackend.AddRecords(txCtx, backend.BulkRecordsParams{
 		Resource:       system.ResourceResource,
 		Records:        []*model.Record{mapping.ResourceToRecord(resource)},
@@ -132,29 +155,54 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("Resource is already exiss: " + resource.Name))
 	}
 
+	if err != nil && err.Code() == model.ErrorCode_RECORD_VALIDATION_ERROR {
+		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util.GetErrorFields(err))
+	}
+
+	if err != nil && err.Code() == model.ErrorCode_REFERENCE_VIOLATION {
+		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util.GetErrorFields(err))
+	}
+
 	if err != nil {
 		return nil, err
 	}
 
 	resource.Id = result[0].Id
 
-	propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
-		return mapping.ResourcePropertyToRecord(property, resource)
-	})
+	if len(resource.Properties) > 0 {
 
-	_, _, err = systemBackend.AddRecords(txCtx, backend.BulkRecordsParams{
-		Resource:       system.ResourcePropertyResource,
-		Records:        propertyRecords,
-		CheckVersion:   false,
-		IgnoreIfExists: false,
-	})
+		propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
+			return mapping.ResourcePropertyToRecord(property, resource)
+		})
 
-	if err != nil {
-		_ = r.Delete(ctx, []string{resource.Id}, false, false)
-		return nil, err
+		_, _, err = systemBackend.AddRecords(txCtx, backend.BulkRecordsParams{
+			Resource:       system.ResourcePropertyResource,
+			Records:        propertyRecords,
+			CheckVersion:   false,
+			IgnoreIfExists: false,
+		})
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	//todo add references
+	if len(resource.References) > 0 {
+		referenceRecords := mapping.MapToRecord(resource.References, func(property *model.ResourceReference) *model.Record {
+			return mapping.ResourceReferenceToRecord(property, resource)
+		})
+
+		_, _, err = systemBackend.AddRecords(txCtx, backend.BulkRecordsParams{
+			Resource:       system.ResourceReferenceResource,
+			Records:        referenceRecords,
+			CheckVersion:   false,
+			IgnoreIfExists: false,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	if doMigration {
 		bck, err := r.backendProviderService.GetBackendByDataSourceId(ctx, resource.SourceConfig.DataSource)
@@ -163,39 +211,28 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 			return nil, err
 		}
 
-		err = bck.UpgradeResource(ctx, nil, resource, forceMigration)
+		err = bck.UpgradeResource(ctx, backend.UpgradeResourceParams{
+			Resource:       resource,
+			ForceMigration: forceMigration,
+		})
 
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	err = systemBackend.CommitTransaction(txCtx)
-
-	if err != nil {
-		return nil, err
-	}
+	success = true
 
 	return resource, nil
 }
 
 func validateResource(resource *model.Resource) errors.ServiceError {
 	var errorFields []*model.ErrorField
-	details := ""
 
 	if resource.Name == "" {
 		errorFields = append(errorFields, &model.ErrorField{
 			RecordId: resource.Id,
 			Property: "Name",
-			Message:  "should not be empty",
-			Value:    nil,
-		})
-	}
-
-	if resource.Namespace == "" {
-		errorFields = append(errorFields, &model.ErrorField{
-			RecordId: resource.Id,
-			Property: "Namespace",
 			Message:  "should not be empty",
 			Value:    nil,
 		})
@@ -228,8 +265,78 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 		}
 	}
 
+	for i, prop := range resource.Properties {
+		propertyPrefix := "Properties[" + strconv.Itoa(i) + "]."
+
+		if prop.Name == "" {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: propertyPrefix + "Name",
+				Message:  "should not be blank",
+				Value:    nil,
+			})
+		}
+
+		if prop.SourceConfig == nil {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: propertyPrefix + "SourceConfig",
+				Message:  "should not be nil",
+				Value:    nil,
+			})
+			continue
+		}
+
+		if _, ok := prop.SourceConfig.(*model.ResourceProperty_Computed); ok {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: propertyPrefix + "SourceConfig",
+				Message:  "computed property source type is not supported",
+				Value:    nil,
+			})
+			continue
+		}
+
+		mp := prop.SourceConfig.(*model.ResourceProperty_Mapping)
+
+		if mp.Mapping == nil {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: propertyPrefix + "SourceConfig.Mapping",
+				Message:  "Mapping not be nil",
+				Value:    nil,
+			})
+		} else {
+			if mp.Mapping.Mapping == "" {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "SourceConfig.Mapping",
+					Message:  "Mapping should not be blank",
+					Value:    nil,
+				})
+			}
+		}
+
+		if prop.Type == model.ResourcePropertyType_TYPE_STRING {
+			if prop.Length <= 0 {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "Length",
+					Message:  "Length should be positive number for string type",
+					Value:    nil,
+				})
+			}
+		}
+	}
+
 	if len(errorFields) > 0 {
-		return errors.ResourceValidationError.WithDetails(details).WithErrorFields(errorFields)
+		var details []string
+
+		for _, errorField := range errorFields {
+			details = append(details, fmt.Sprintf("%s: %s", errorField.Property, errorField.Message))
+		}
+
+		return errors.ResourceValidationError.WithDetails(strings.Join(details, ";")).WithErrorFields(errorFields)
 	}
 
 	return nil
@@ -333,21 +440,23 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, na
 func (r *resourceService) Init(data *model.InitData) {
 	r.disableCache = data.Config.DisableCache
 
-	r.MigrateResource(system.ResourceResource)
-	r.MigrateResource(system.ResourcePropertyResource)
-	r.MigrateResource(system.ResourceReferenceResource)
-}
+	var referenceMap = make(map[string]backend.ReferenceMapEntry)
 
-func (r *resourceService) MigrateResource(resource *model.Resource) {
-	if resource.Annotations == nil {
-		resource.Annotations = make(map[string]string)
+	referenceMap[system.ResourceResource.Name] = backend.ReferenceMapEntry{
+		Catalog:  system.ResourceResource.SourceConfig.Catalog,
+		Entity:   system.ResourceResource.SourceConfig.Entity,
+		IdColumn: "id",
 	}
 
-	err := r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), nil, resource, true)
-
-	if err != nil {
-		panic(err)
+	referenceMap[system.DataSourceResource.Name] = backend.ReferenceMapEntry{
+		Catalog:  system.DataSourceResource.SourceConfig.Catalog,
+		Entity:   system.DataSourceResource.SourceConfig.Entity,
+		IdColumn: "id",
 	}
+
+	r.backendProviderService.MigrateResource(system.ResourceResource, referenceMap)
+	r.backendProviderService.MigrateResource(system.ResourcePropertyResource, referenceMap)
+	r.backendProviderService.MigrateResource(system.ResourceReferenceResource, referenceMap)
 }
 
 func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
@@ -362,13 +471,19 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			return err
 		}
 
-		err = r.backendProviderService.GetSystemBackend(ctx).DeleteRecords(ctx, system.ResourceResource, []string{resourceId})
+		if err = r.loadResource(ctx, resource); err != nil {
+			return err
+		}
 
 		if err != nil {
 			return err
 		}
 
-		//@todo cascade delete resource properties and references from backend
+		err = r.backendProviderService.GetSystemBackend(ctx).DeleteRecords(ctx, system.ResourceResource, []string{resourceId})
+
+		if err != nil {
+			return err
+		}
 
 		r.cache.Delete(resourceId)
 

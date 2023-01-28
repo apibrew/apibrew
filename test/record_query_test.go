@@ -96,6 +96,10 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *model
 	var resourceId string
 
 	defer func() {
+		if resourceId == "" {
+			return
+		}
+
 		log.Print("begin delete resource without migration", res.Resource.Namespace, res.Resource.Name)
 		_, err := resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
 			Token:          "test-token",
