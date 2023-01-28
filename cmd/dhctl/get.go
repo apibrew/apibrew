@@ -82,7 +82,7 @@ var getCmd = &cobra.Command{
 
 func init() {
 	getCmd.PersistentFlags().StringP("output", "o", "console", "Output format")
-	getCmd.PersistentFlags().StringP("namespace", "w", "default", "Namespace")
-	getCmd.PersistentFlags().StringP("name", "n", "", "Item name")
+	getCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
+	getCmd.PersistentFlags().String("name", "", "Item name")
 	getCmd.PersistentFlags().String("names", "", "Item names")
 }
