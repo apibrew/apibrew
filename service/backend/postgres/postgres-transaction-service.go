@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/service/errors"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
@@ -16,7 +17,9 @@ type txData struct {
 }
 
 func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, readOnly bool) (transactionKey string, serviceError errors.ServiceError) {
-	log.Tracef("begin transaction readonly=%v", readOnly)
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Tracef("begin transaction readonly=%v", readOnly)
 	conn, serviceErr := p.acquireConnection(ctx)
 
 	if serviceErr != nil {
@@ -31,7 +34,7 @@ func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, r
 
 	if err != nil {
 		cancel()
-		return "", handleDbError(err)
+		return "", handleDbError(ctx, err)
 	}
 
 	txDataInstance := &txData{
@@ -65,7 +68,7 @@ func (p *postgresResourceServiceBackend) CommitTransaction(ctx context.Context) 
 	err := txDataInstance.tx.Commit()
 	txDataInstance.cancel()
 
-	return handleDbError(err)
+	return handleDbError(ctx, err)
 }
 
 func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError) {
@@ -84,7 +87,7 @@ func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context
 	err := txDataInstance.tx.Rollback()
 	txDataInstance.cancel()
 
-	return handleDbError(err)
+	return handleDbError(ctx, err)
 }
 
 func (p *postgresResourceServiceBackend) IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError errors.ServiceError) {

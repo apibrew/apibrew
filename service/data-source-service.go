@@ -57,8 +57,7 @@ func (d *dataSourceService) List(ctx context.Context) ([]*model.DataSource, erro
 	logger.Debug("Begin data-source List")
 	defer logger.Debug("End data-source List")
 
-	systemCtx := security.WithSystemContext(ctx)
-	result, _, err := d.recordService.List(systemCtx, params.RecordListParams{
+	result, _, err := d.recordService.List(ctx, params.RecordListParams{
 		Namespace: system.DataSourceResource.Namespace,
 		Resource:  system.DataSourceResource.Name,
 	})
@@ -91,8 +90,7 @@ func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.Dat
 
 	// insert records via resource service
 	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
-	systemCtx := security.WithSystemContext(ctx)
-	result, _, err := d.recordService.Create(systemCtx, params.RecordCreateParams{
+	result, _, err := d.recordService.Create(ctx, params.RecordCreateParams{
 		Namespace: system.DataSourceResource.Namespace,
 		Resource:  system.DataSourceResource.Name,
 		Records:   records,
@@ -112,8 +110,7 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 
 	// insert records via resource service
 	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
-	systemCtx := security.WithSystemContext(ctx)
-	result, err := d.recordService.Update(systemCtx, params.RecordUpdateParams{
+	result, err := d.recordService.Update(ctx, params.RecordUpdateParams{
 		Namespace: system.DataSourceResource.Namespace,
 		Records:   records,
 	})
@@ -160,8 +157,7 @@ func (d *dataSourceService) Get(ctx context.Context, id string) (*model.DataSour
 	logger.WithField("id", id).Debug("Begin data-source Get")
 	defer logger.Debug("End data-source Get")
 
-	systemCtx := security.WithSystemContext(ctx)
-	record, err := d.recordService.Get(systemCtx, params.RecordGetParams{
+	record, err := d.recordService.Get(ctx, params.RecordGetParams{
 		Namespace: system.DataSourceResource.Namespace,
 		Resource:  system.DataSourceResource.Name,
 		Id:        id,
@@ -179,9 +175,7 @@ func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.Ser
 	logger.WithField("ids", ids).Debug("Begin data-source Delete")
 	defer logger.Debug("End data-source Delete")
 
-	systemCtx := security.WithSystemContext(ctx)
-
-	return d.recordService.Delete(systemCtx, params.RecordDeleteParams{
+	return d.recordService.Delete(ctx, params.RecordDeleteParams{
 		Namespace: system.DataSourceResource.Namespace,
 		Resource:  system.DataSourceResource.Name,
 		Ids:       ids,

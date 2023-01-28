@@ -7,6 +7,7 @@ option go_package = "data-handler/model";
 import 'model/audit.proto';
 import 'model/query.proto';
 import 'model/common.proto';
+import 'model/security.proto';
 
 
 message ResourcePropertyComputedSourceConfig {
@@ -51,6 +52,7 @@ message ResourceProperty {
   bool primary = 6;
   uint32 length = 7;
   bool unique = 8;
+  SecurityContext securityContext = 9;
 }
 
 message ResourceCheck {
@@ -91,6 +93,7 @@ message Resource {
   repeated ResourceCheck checks = 7; // not implemented
   repeated ResourceReference references = 8; // not implemented
   repeated ResourceIndex indexes = 9; // not implemented
+  SecurityContext securityContext = 10;
 
   AuditData auditData = 101;
   uint32 version = 102;

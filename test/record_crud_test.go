@@ -10,7 +10,6 @@ import (
 )
 
 func TestComplexPayload1Fail(t *testing.T) {
-	ctx := prepareTextContext()
 
 	record1 := new(model.Record)
 	record1.Resource = richResource1.Name
@@ -36,7 +35,6 @@ func TestComplexPayload1Fail(t *testing.T) {
 }
 
 func TestComplexPayload1Success(t *testing.T) {
-	ctx := prepareTextContext()
 
 	record1 := new(model.Record)
 	record1.Resource = richResource1.Name

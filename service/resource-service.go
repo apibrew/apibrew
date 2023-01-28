@@ -51,9 +51,19 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
+	resourceRecords := []*model.Record{mapping.ResourceToRecord(resource)}
+
+	if err := checkAccess(ctx, checkAccessParams{
+		Resource:  resource,
+		Records:   &resourceRecords,
+		Operation: model.OperationType_OPERATION_TYPE_UPDATE,
+	}); err != nil {
+		return err
+	}
+
 	result, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, backend.BulkRecordsParams{
 		Resource:       system.ResourceResource,
-		Records:        []*model.Record{mapping.ResourceToRecord(resource)},
+		Records:        resourceRecords,
 		CheckVersion:   false,
 		IgnoreIfExists: false,
 	})

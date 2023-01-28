@@ -50,7 +50,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 	defer logger.Debug("End Authenticate")
 
 	// locate user
-	user, err := s.LocateUser(ctx, username, password)
+	user, err := s.LocateUser(security.WithSystemContext(ctx), username, password)
 
 	if err != nil {
 		return nil, errors.AuthenticationFailedError
@@ -61,8 +61,8 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: security.UserDetails{
-			Username: user.Username,
-			Scopes:   user.Scopes,
+			Username:        user.Username,
+			SecurityContext: user.SecurityContext,
 		},
 		ExpiresAt: expiration,
 		Issuer:    "data-handler",
@@ -101,8 +101,8 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 	newToken, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: security.UserDetails{
-			Username: user.Username,
-			Scopes:   user.Scopes,
+			Username:        user.Username,
+			SecurityContext: user.SecurityContext,
 		},
 		ExpiresAt: expiration,
 		Issuer:    "data-handler",

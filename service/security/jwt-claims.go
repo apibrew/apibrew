@@ -2,6 +2,7 @@ package security
 
 import (
 	"crypto/subtle"
+	"data-handler/model"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
@@ -29,8 +30,8 @@ type JwtUserClaims struct {
 	// the `jti` (JWT ID) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7
 	ID string `json:"jti,omitempty"`
 
-	// scopes
-	Scopes []string `json:"scopes,omitempty"`
+	// securityContext
+	SecurityContext *model.SecurityContext `json:"securityContext,omitempty"`
 
 	// username
 	Username string `json:"username,omitempty"`

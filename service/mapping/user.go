@@ -4,7 +4,6 @@ import (
 	"data-handler/model"
 	"data-handler/service/system"
 	"google.golang.org/protobuf/types/known/structpb"
-	"strings"
 )
 
 func UserToRecord(user *model.User) *model.Record {
@@ -15,7 +14,8 @@ func UserToRecord(user *model.User) *model.Record {
 	if user.Details != nil {
 		properties["details"] = structpb.NewStructValue(user.Details)
 	}
-	properties["scopes"] = structpb.NewStringValue(strings.Join(user.Scopes, ","))
+
+	properties["securityContext"] = SecurityContextToValue(user.SecurityContext)
 
 	return &model.Record{
 		Id:         user.Id,
@@ -47,9 +47,7 @@ func UserFromRecord(record *model.Record) *model.User {
 		user.Password = record.Properties["password"].GetStringValue()
 	}
 
-	if record.Properties["scopes"] != nil {
-		user.Scopes = strings.Split(record.Properties["scopes"].GetStringValue(), ",")
-	}
+	user.SecurityContext = SecurityContextFromValue(record.Properties["securityContext"])
 
 	if record.Properties["details"] != nil {
 		user.Details = record.Properties["details"].GetStructValue()

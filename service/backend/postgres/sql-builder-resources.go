@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/annotations"
 	"data-handler/service/errors"
@@ -25,7 +26,9 @@ type QueryRunner interface {
 	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 }
 
-func resourceCreateTable(runner QueryRunner, resource *model.Resource) errors.ServiceError {
+func resourceCreateTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig, false))
 
 	builder.IfNotExists()
@@ -49,9 +52,9 @@ func resourceCreateTable(runner QueryRunner, resource *model.Resource) errors.Se
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)
 
-	log.Trace("sqlQuery: ", sqlQuery)
+	logger.Trace("sqlQuery: ", sqlQuery)
 
-	return handleDbError(err)
+	return handleDbError(ctx, err)
 }
 
 type ReferenceLocalDetails struct {
@@ -104,7 +107,7 @@ func prepareResourceTableColumnDefinition(property *model.ResourceProperty) stri
 	return ""
 }
 
-func resourceCreateHistoryTable(runner QueryRunner, resource *model.Resource) errors.ServiceError {
+func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig, true))
 
 	builder.IfNotExists()
@@ -125,18 +128,18 @@ func resourceCreateHistoryTable(runner QueryRunner, resource *model.Resource) er
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)
 
-	return handleDbError(err)
+	return handleDbError(ctx, err)
 }
 
-func resourceDropTable(runner QueryRunner, mapping string) errors.ServiceError {
+func resourceDropTable(ctx context.Context, runner QueryRunner, mapping string) errors.ServiceError {
 	_, err := runner.Exec("DROP TABLE " + mapping)
 
-	return handleDbError(err)
+	return handleDbError(ctx, err)
 }
 
 func resourceListEntities(ctx context.Context, runner QueryRunner) (result []string, err errors.ServiceError) {
 	rows, sqlErr := runner.QueryContext(ctx, `select table_schema || '.' || table_name from information_schema.tables`)
-	err = handleDbError(sqlErr)
+	err = handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return
@@ -145,7 +148,7 @@ func resourceListEntities(ctx context.Context, runner QueryRunner) (result []str
 	for rows.Next() {
 		var entityName = new(string)
 
-		err = handleDbError(rows.Scan(entityName))
+		err = handleDbError(ctx, rows.Scan(entityName))
 
 		if err != nil {
 			return

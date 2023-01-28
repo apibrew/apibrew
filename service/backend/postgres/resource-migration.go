@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/model"
 	"data-handler/service/annotations"
 	"data-handler/service/backend"
@@ -14,6 +15,8 @@ import (
 )
 
 func resourceMigrateTable(ctx context.Context, runner QueryRunner, params backend.UpgradeResourceParams, history bool) errors.ServiceError {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	var err errors.ServiceError
 	var existingResource *model.Resource
 
@@ -23,7 +26,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params backen
 	}
 
 	if existingResource, err = resourcePrepareResourceFromEntity(ctx, runner, params.Resource.SourceConfig.Catalog, entityName); err != nil {
-		log.Error("Unable to load resource details: ", err)
+		logger.Error("Unable to load resource details: ", err)
 		return err
 	}
 
@@ -198,10 +201,10 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params backen
 
 	_, sqlError := runner.Exec(alterTableQuery)
 
-	log.Trace("SqlQuery: " + alterTableQuery)
+	logger.Trace("SqlQuery: " + alterTableQuery)
 
 	if sqlError != nil {
-		return handleDbError(sqlError)
+		return handleDbError(ctx, sqlError)
 	}
 
 	return nil
@@ -215,12 +218,12 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	row := runner.QueryRowContext(ctx, `select count(*) from information_schema.tables where table_type = 'BASE TABLE' and tables.table_schema = $1 and tables.table_name = $2`, catalog, entity)
 
 	if row.Err() != nil {
-		return nil, handleDbError(row.Err())
+		return nil, handleDbError(ctx, row.Err())
 	}
 
 	var count = new(int)
 
-	err = handleDbError(row.Scan(&count))
+	err = handleDbError(ctx, row.Scan(&count))
 
 	if err != nil {
 		return
@@ -280,7 +283,7 @@ WHERE o.contype = 'f'
 and (SELECT nspname FROM pg_namespace WHERE oid = m.relnamespace) = $1
 and m.relname   = $2`, catalog, entity)
 
-	err := handleDbError(sqlErr)
+	err := handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return err
@@ -295,7 +298,7 @@ and m.relname   = $2`, catalog, entity)
 		sqlErr = rows.Scan(sourceColumn, targetSchema, targetTable, targetColumn)
 
 		if sqlErr != nil {
-			return handleDbError(sqlErr)
+			return handleDbError(ctx, sqlErr)
 		}
 
 		// locating source property
@@ -340,7 +343,7 @@ from information_schema.columns
                     WHERE contype = 'p') column_key
                    on column_key.conname = key_column_usage.constraint_name
 where columns.table_schema = $1 and columns.table_name = $2 order by columns.ordinal_position`, catalog, entity)
-	err := handleDbError(sqlErr)
+	err := handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return err
@@ -354,7 +357,7 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 		var isNullable = new(bool)
 		var isPrimary = new(bool)
 
-		err = handleDbError(rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary))
+		err = handleDbError(ctx, rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary))
 
 		if err != nil {
 			return err

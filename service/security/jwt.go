@@ -2,6 +2,7 @@ package security
 
 import (
 	"crypto/rsa"
+	"data-handler/model"
 	"data-handler/service/errors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
@@ -17,8 +18,8 @@ type JwtUserDetailsSignParams struct {
 }
 
 type UserDetails struct {
-	Username string
-	Scopes   []string
+	Username        string
+	SecurityContext *model.SecurityContext
 }
 
 func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.ServiceError) {
@@ -31,15 +32,15 @@ func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.Service
 	}
 
 	claims := &JwtUserClaims{
-		Issuer:    params.Issuer,
-		Subject:   params.UserDetails.Username,
-		Audience:  []string{params.Issuer},
-		ExpiresAt: jwt.NewNumericDate(params.ExpiresAt),
-		NotBefore: jwt.NewNumericDate(time.Now()),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ID:        jit.String(),
-		Scopes:    params.UserDetails.Scopes,
-		Username:  params.UserDetails.Username,
+		Issuer:          params.Issuer,
+		Subject:         params.UserDetails.Username,
+		Audience:        []string{params.Issuer},
+		ExpiresAt:       jwt.NewNumericDate(params.ExpiresAt),
+		NotBefore:       jwt.NewNumericDate(time.Now()),
+		IssuedAt:        jwt.NewNumericDate(time.Now()),
+		ID:              jit.String(),
+		SecurityContext: params.UserDetails.SecurityContext,
+		Username:        params.UserDetails.Username,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
@@ -69,7 +70,7 @@ func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*Use
 	}
 
 	return &UserDetails{
-		Username: claims.Username,
-		Scopes:   claims.Scopes,
+		Username:        claims.Username,
+		SecurityContext: claims.SecurityContext,
 	}, nil
 }
