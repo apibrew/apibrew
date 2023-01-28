@@ -3,10 +3,7 @@ package security
 import (
 	"context"
 	"data-handler/model"
-	"data-handler/service/errors"
 )
-
-var systemResourceAccessError = errors.AccessDeniedError.WithMessage("system resource is accessed outside of system context")
 
 const systemContextKey = "SYSTEM_CTX"
 const userContextKey = "USER"
@@ -39,16 +36,4 @@ func IsSystemContext(ctx context.Context) bool {
 
 type HasDataType interface {
 	GetDataType() model.DataType
-}
-
-func CheckSystemResourceAccess(ctx context.Context, objs ...HasDataType) errors.ServiceError {
-	for _, obj := range objs {
-		if obj.GetDataType() == model.DataType_SYSTEM {
-			if !IsSystemContext(ctx) {
-				return systemResourceAccessError
-			}
-		}
-	}
-
-	return nil
 }

@@ -19,6 +19,8 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		return v
 	}))
 
+	properties["securityContext"] = SecurityContextToValue(resource.SecurityContext)
+
 	return &model.Record{
 		Id:         resource.Id,
 		Resource:   system.ResourceResource.Name,
@@ -56,6 +58,7 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 			Entity:     record.Properties["entity"].GetStringValue(),
 			Catalog:    record.Properties["catalog"].GetStringValue(),
 		},
+		SecurityContext: SecurityContextFromValue(record.Properties["securityContext"]),
 		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
 		}),

@@ -18,7 +18,6 @@ type TestRecordCreationValidationSubCase struct {
 }
 
 func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
-	ctx := prepareTextContext()
 
 	subCases := prepareTestRecordCreationValidationSubCase()
 	var resourceIdsForRemoval []string

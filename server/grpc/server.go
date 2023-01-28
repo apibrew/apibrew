@@ -66,9 +66,28 @@ func (g *grpcServer) Serve(lis net.Listener) {
 
 func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	// pass authentication context
-	if rtw, ok := req.(RequestWithToken); ok && !g.initData.Config.DisableAuthentication {
-		token := rtw.GetToken()
+	var token string
 
+	if rtw, ok := req.(RequestWithToken); ok && !g.initData.Config.DisableAuthentication {
+		token = rtw.GetToken()
+	}
+
+	// client track id
+	md, mdExists := metadata.FromIncomingContext(ctx)
+
+	if mdExists {
+		if len(md.Get("ClientTrackId")) > 0 {
+			ctx = logging.WithLogField(ctx, "ClientTrackId", md.Get("ClientTrackId")[0])
+		}
+
+		if token == "" {
+			if len(md.Get("Token")) > 0 {
+				token = md.Get("Token")[0]
+			}
+		}
+	}
+
+	if token != "" {
 		userDetails, err := g.authenticationService.ParseAndVerifyToken(token)
 
 		if err != nil {
@@ -76,6 +95,8 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 		}
 
 		ctx = security.WithUserDetails(ctx, *userDetails)
+
+		ctx = logging.WithLogField(ctx, "User", userDetails.Username)
 	}
 
 	// server track id
@@ -87,15 +108,6 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 
 	if err != nil {
 		return nil, err
-	}
-
-	// client track id
-	md, mdExists := metadata.FromIncomingContext(ctx)
-
-	if mdExists {
-		if len(md.Get("ClientTrackId")) > 0 {
-			ctx = logging.WithLogField(ctx, "ClientTrackId", md.Get("ClientTrackId")[0])
-		}
 	}
 
 	return handler(ctx, req)

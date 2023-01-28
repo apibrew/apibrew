@@ -16,6 +16,7 @@ var authenticationServiceClient stub.AuthenticationServiceClient
 var dataSourceServiceClient stub.DataSourceServiceClient
 var resourceServiceClient stub.ResourceServiceClient
 var recordServiceClient stub.RecordServiceClient
+var userServiceClient stub.UserServiceClient
 
 func init() {
 	application := new(app.App)
@@ -53,4 +54,5 @@ func init() {
 	authenticationServiceClient = stub.NewAuthenticationServiceClient(conn)
 	resourceServiceClient = stub.NewResourceServiceClient(conn)
 	dataSourceServiceClient = stub.NewDataSourceServiceClient(conn)
+	userServiceClient = stub.NewUserServiceClient(conn)
 }

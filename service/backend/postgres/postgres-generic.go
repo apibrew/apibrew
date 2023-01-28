@@ -2,16 +2,19 @@ package postgres
 
 import (
 	"context"
+	"data-handler/logging"
 	"data-handler/service/errors"
 	log "github.com/sirupsen/logrus"
 )
 
 func (p *postgresResourceServiceBackend) DestroyDataSource(ctx context.Context) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	if p.connection != nil {
 		err := p.connection.Close()
 
 		if err != nil {
-			log.Error(err)
+			logger.Error(err)
 		}
 
 		p.connection = nil
@@ -25,7 +28,7 @@ func (p *postgresResourceServiceBackend) GetStatus(ctx context.Context) (connect
 		return
 	}
 
-	err = handleDbError(conn.Ping())
+	err = handleDbError(ctx, conn.Ping())
 
 	testConnection = err == nil
 

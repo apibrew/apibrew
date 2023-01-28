@@ -9,11 +9,8 @@ import (
 )
 
 func TestCreateAndReadDataSource(t *testing.T) {
-	ctx := prepareTextContext()
-
 	res2, err := dataSourceServiceClient.Get(ctx, &stub.GetDataSourceRequest{
-		Token: "test-token",
-		Id:    dataSource1.Id,
+		Id: dataSource1.Id,
 	})
 
 	if err != nil {
@@ -37,7 +34,6 @@ func TestCreateAndReadDataSource(t *testing.T) {
 }
 
 func TestCreateDataSourceStatusTest(t *testing.T) {
-	ctx := prepareTextContext()
 
 	newDataSource := &model.DataSource{
 		Backend:     systemDataSource.Backend,
@@ -75,7 +71,6 @@ func TestCreateDataSourceStatusTest(t *testing.T) {
 }
 
 func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
-	ctx := prepareTextContext()
 
 	newDataSource := &model.DataSource{
 		Backend:     systemDataSource.Backend,
@@ -113,7 +108,6 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 }
 
 func TestListCreatedDataSources(t *testing.T) {
-	ctx := prepareTextContext()
 
 	res, err := dataSourceServiceClient.List(ctx, &stub.ListDataSourceRequest{})
 
@@ -128,7 +122,6 @@ func TestListCreatedDataSources(t *testing.T) {
 }
 
 func TestUpdateDataSource(t *testing.T) {
-	ctx := prepareTextContext()
 
 	newDataSource := &model.DataSource{
 		Backend:     systemDataSource.Backend,
@@ -177,7 +170,6 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	res, err := dataSourceServiceClient.Update(ctx, &stub.UpdateDataSourceRequest{
-		Token:       "test-token",
 		DataSources: []*model.DataSource{newDataSource},
 	})
 
@@ -204,8 +196,7 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	getRes, err := dataSourceServiceClient.Get(ctx, &stub.GetDataSourceRequest{
-		Token: "test-token",
-		Id:    newDataSource.Id,
+		Id: newDataSource.Id,
 	})
 
 	if err != nil {
@@ -231,7 +222,6 @@ func TestUpdateDataSource(t *testing.T) {
 }
 
 func TestUpdateDataSourceStatus(t *testing.T) {
-	ctx := prepareTextContext()
 
 	newDataSource := &model.DataSource{
 		Backend:     systemDataSource.Backend,
@@ -293,7 +283,6 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	log.Info("Step 3")
 
 	dataSourceServiceClient.Update(ctx, &stub.UpdateDataSourceRequest{
-		Token:       "test-token",
 		DataSources: []*model.DataSource{createdDataSource1},
 	})
 	log.Info("Step 4")
@@ -315,7 +304,6 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	createdDataSource1.Version++
 
 	dataSourceServiceClient.Update(ctx, &stub.UpdateDataSourceRequest{
-		Token:       "test-token",
 		DataSources: []*model.DataSource{createdDataSource1},
 	})
 
@@ -326,11 +314,9 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 }
 
 func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, t *testing.T) {
-	ctx := prepareTextContext()
 
 	res, err := dataSourceServiceClient.Status(ctx, &stub.StatusRequest{
-		Token: "test-token",
-		Id:    createdDataSource.Id,
+		Id: createdDataSource.Id,
 	})
 
 	if err != nil {
@@ -349,11 +335,9 @@ func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, t *tes
 }
 
 func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *model.DataSource, t *testing.T) {
-	ctx := prepareTextContext()
 
 	_, err := dataSourceServiceClient.Status(ctx, &stub.StatusRequest{
-		Token: "test-token",
-		Id:    createdDataSource.Id,
+		Id: createdDataSource.Id,
 	})
 
 	if err == nil {

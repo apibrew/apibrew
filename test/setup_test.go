@@ -12,6 +12,8 @@ import (
 	"testing"
 )
 
+var ctx context.Context
+
 func TestMain(m *testing.M) {
 	Setup()
 
@@ -22,18 +24,19 @@ func TestMain(m *testing.M) {
 func Setup() {
 	log.SetLevel(log.TraceLevel)
 	log.SetReportCaller(true)
-	setupDataSources()
-	setupResources()
+	initTextContext()
+	setupDataSources(ctx)
+	setupResources(ctx)
 }
 
-func setupDataSources() {
+func setupDataSources(ctx context.Context) {
 	dataSources := []*model.DataSource{
 		dataSourceDhTest,
 		dhTest,
 		dataSource1,
 	}
 	// creating data sources
-	listDataSourceResp, err := dataSourceServiceClient.List(context.TODO(), &stub.ListDataSourceRequest{})
+	listDataSourceResp, err := dataSourceServiceClient.List(ctx, &stub.ListDataSourceRequest{})
 
 	if err != nil {
 		panic(err)
@@ -58,8 +61,7 @@ func setupDataSources() {
 		}
 	}
 
-	createRes, err := dataSourceServiceClient.Create(context.TODO(), &stub.CreateDataSourceRequest{
-		Token:       "test-token",
+	createRes, err := dataSourceServiceClient.Create(ctx, &stub.CreateDataSourceRequest{
 		DataSources: dataSourcesForCreate,
 	})
 
@@ -89,13 +91,13 @@ func setupDataSources() {
 	}
 }
 
-func setupResources() {
+func setupResources(ctx context.Context) {
 	resources := []*model.Resource{
 		richResource1,
 	}
 	richResource1.SourceConfig.DataSource = dhTest.Id
 	// creating data sources
-	listResourceResp, err := resourceServiceClient.List(context.TODO(), &stub.ListResourceRequest{})
+	listResourceResp, err := resourceServiceClient.List(ctx, &stub.ListResourceRequest{})
 
 	if err != nil {
 		panic(err)
@@ -122,8 +124,7 @@ func setupResources() {
 		}
 	}
 
-	createRes, err := resourceServiceClient.Create(context.TODO(), &stub.CreateResourceRequest{
-		Token:          "test-token",
+	createRes, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:      resourcesForCreate,
 		DoMigration:    true,
 		ForceMigration: true,
@@ -155,8 +156,8 @@ func setupResources() {
 	}
 }
 
-func prepareTextContext() context.Context {
-	ctx := context.TODO()
+func initTextContext() {
+	ctx = context.TODO()
 
 	clientTrackId := helper.RandStringRunes(8)
 
@@ -165,6 +166,18 @@ func prepareTextContext() context.Context {
 	ctx = metadata.AppendToOutgoingContext(ctx, "clientTrackId", clientTrackId)
 
 	log.Info("Init test clientTrackId: ", clientTrackId)
+	ctx = withUserAuthenticationContext(ctx, "admin", "admin")
+}
 
-	return ctx
+func withUserAuthenticationContext(ctx context.Context, username, password string) context.Context {
+	resp, err := authenticationServiceClient.Authenticate(ctx, &stub.AuthenticationRequest{
+		Username: username,
+		Password: password,
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	return metadata.AppendToOutgoingContext(context.TODO(), "token", resp.Token.Content)
 }

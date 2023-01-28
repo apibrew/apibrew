@@ -90,6 +90,7 @@ var ResourceResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_INT32,
 			Required: true,
 		},
+		securityContextProperty,
 	},
 	References: []*model.ResourceReference{
 		{
@@ -98,4 +99,5 @@ var ResourceResource = &model.Resource{
 			Cascade:            false,
 		},
 	},
+	SecurityContext: securityContextDisallowAll,
 }
