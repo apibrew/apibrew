@@ -197,7 +197,7 @@ func (d *dataSourceService) InjectRecordService(service RecordService) {
 }
 
 func (d *dataSourceService) Init(data *model.InitData) {
-	d.resourceService.MigrateResource(system.DataSourceResource)
+	d.backendProviderService.MigrateResource(system.DataSourceResource, nil)
 
 	if len(data.InitDataSources) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
