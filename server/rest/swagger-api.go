@@ -2,13 +2,13 @@ package rest
 
 import (
 	"context"
-	"data-handler/model"
-	"data-handler/service"
-	"data-handler/service/errors"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gorilla/mux"
 	swaggerFiles "github.com/swaggo/files"
 	"github.com/swaggo/http-swagger"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service"
+	"github.com/tislib/data-handler/service/errors"
 	"net/http"
 )
 

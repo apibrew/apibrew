@@ -1,6 +1,6 @@
 package util
 
-import "data-handler/model"
+import "github.com/tislib/data-handler/model"
 
 func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 	if property1.Name != property2.Name {

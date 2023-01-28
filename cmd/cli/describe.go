@@ -1,9 +1,9 @@
 package main
 
 import (
-	"data-handler/cmd/cli/output"
-	"data-handler/server/stub"
 	"github.com/spf13/cobra"
+	"github.com/tislib/data-handler/cmd/cli/output"
+	"github.com/tislib/data-handler/server/stub"
 	"log"
 	"strings"
 )

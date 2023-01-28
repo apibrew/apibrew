@@ -2,14 +2,14 @@ package postgres
 
 import (
 	"context"
-	"data-handler/logging"
-	"data-handler/model"
-	"data-handler/service/annotations"
-	"data-handler/service/backend"
-	"data-handler/service/errors"
-	"data-handler/util"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/annotations"
+	"github.com/tislib/data-handler/service/backend"
+	"github.com/tislib/data-handler/service/errors"
+	"github.com/tislib/data-handler/util"
 	"strconv"
 	"strings"
 )

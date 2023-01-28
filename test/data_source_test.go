@@ -1,9 +1,9 @@
 package test
 
 import (
-	"data-handler/model"
-	"data-handler/server/stub"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/stub"
 	"reflect"
 	"testing"
 )

@@ -1,4 +1,4 @@
-module data-handler
+module github.com/tislib/data-handler
 
 go 1.19
 

@@ -1,8 +1,8 @@
 package bench1
 
 import (
-	"data-handler/model"
-	"data-handler/test/data"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/test/data"
 	"google.golang.org/protobuf/proto"
 	"log"
 	"testing"

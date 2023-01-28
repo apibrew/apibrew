@@ -2,9 +2,9 @@ package grpc
 
 import (
 	"context"
-	"data-handler/server/stub"
-	"data-handler/server/util"
-	"data-handler/service"
+	"github.com/tislib/data-handler/server/stub"
+	"github.com/tislib/data-handler/server/util"
+	"github.com/tislib/data-handler/service"
 )
 
 type NamespaceGrpcService interface {

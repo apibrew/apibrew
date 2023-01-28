@@ -1,7 +1,7 @@
 package test
 
 import (
-	"data-handler/service/types"
+	"github.com/tislib/data-handler/service/types"
 	"testing"
 )
 

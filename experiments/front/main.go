@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"data-handler/model"
-	"data-handler/server/stub"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/stub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

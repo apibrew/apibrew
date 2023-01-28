@@ -2,10 +2,10 @@ package test
 
 import (
 	"context"
-	"data-handler/model"
-	"data-handler/server/stub"
-	util2 "data-handler/server/util"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/stub"
+	util2 "github.com/tislib/data-handler/server/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
 )

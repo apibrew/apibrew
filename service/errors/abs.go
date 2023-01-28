@@ -1,8 +1,8 @@
 package errors
 
 import (
-	"data-handler/model"
 	"fmt"
+	"github.com/tislib/data-handler/model"
 )
 
 type ServiceError interface {

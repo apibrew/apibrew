@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"data-handler/model"
-	"data-handler/service/errors"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"io"

@@ -2,14 +2,14 @@ package postgres
 
 import (
 	"context"
-	"data-handler/logging"
-	"data-handler/model"
-	"data-handler/service/annotations"
-	"data-handler/service/errors"
 	"database/sql"
 	"fmt"
 	"github.com/huandu/go-sqlbuilder"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/annotations"
+	"github.com/tislib/data-handler/service/errors"
 	"strings"
 )
 

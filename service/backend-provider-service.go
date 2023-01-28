@@ -2,15 +2,15 @@ package service
 
 import (
 	"context"
-	"data-handler/logging"
-	"data-handler/model"
-	"data-handler/service/backend"
-	"data-handler/service/backend/postgres"
-	"data-handler/service/errors"
-	"data-handler/service/mapping"
-	"data-handler/service/security"
-	"data-handler/service/system"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/backend"
+	"github.com/tislib/data-handler/service/backend/postgres"
+	"github.com/tislib/data-handler/service/errors"
+	"github.com/tislib/data-handler/service/mapping"
+	"github.com/tislib/data-handler/service/security"
+	"github.com/tislib/data-handler/service/system"
 )
 
 type BackendProviderService interface {

@@ -1,6 +1,6 @@
 package errors
 
-import "data-handler/model"
+import "github.com/tislib/data-handler/model"
 
 var RecordNotFoundError = newServiceError(model.ErrorCode_RECORD_NOT_FOUND, "record not found")
 var ResourceNotFoundError = newServiceError(model.ErrorCode_RESOURCE_NOT_FOUND, "resource not found")

@@ -2,12 +2,12 @@ package grpc
 
 import (
 	"context"
-	"data-handler/server/stub"
-	util2 "data-handler/server/util"
-	"data-handler/service"
-	"data-handler/service/annotations"
-	"data-handler/service/params"
-	"data-handler/util"
+	"github.com/tislib/data-handler/server/stub"
+	util2 "github.com/tislib/data-handler/server/util"
+	"github.com/tislib/data-handler/service"
+	"github.com/tislib/data-handler/service/annotations"
+	"github.com/tislib/data-handler/service/params"
+	"github.com/tislib/data-handler/util"
 )
 
 type recordServiceServer struct {

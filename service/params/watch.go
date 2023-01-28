@@ -1,6 +1,6 @@
 package params
 
-import "data-handler/model"
+import "github.com/tislib/data-handler/model"
 
 type WatchParams struct {
 	Namespace  string

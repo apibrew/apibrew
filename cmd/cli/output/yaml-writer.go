@@ -1,8 +1,8 @@
 package output
 
 import (
-	"data-handler/model"
 	"encoding/json"
+	"github.com/tislib/data-handler/model"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v2"
 	"io"

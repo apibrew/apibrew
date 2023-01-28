@@ -2,15 +2,15 @@ package service
 
 import (
 	"context"
-	"data-handler/logging"
-	"data-handler/model"
-	"data-handler/service/annotations"
-	"data-handler/service/backend"
-	"data-handler/service/errors"
-	"data-handler/service/params"
-	"data-handler/service/system"
-	"data-handler/util"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/logging"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/annotations"
+	"github.com/tislib/data-handler/service/backend"
+	"github.com/tislib/data-handler/service/errors"
+	"github.com/tislib/data-handler/service/params"
+	"github.com/tislib/data-handler/service/system"
+	"github.com/tislib/data-handler/util"
 )
 
 func (r *recordService) List(ctx context.Context, params params.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {

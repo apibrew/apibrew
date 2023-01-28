@@ -1,9 +1,9 @@
 package types
 
 import (
-	"data-handler/model"
 	"errors"
 	"fmt"
+	"github.com/tislib/data-handler/model"
 	"google.golang.org/protobuf/types/known/structpb"
 	"reflect"
 	"time"

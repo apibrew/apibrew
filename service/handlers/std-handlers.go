@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"data-handler/model"
-	"data-handler/service"
-	"data-handler/service/handler"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service"
+	"github.com/tislib/data-handler/service/handler"
 )
 
 type StdHandler interface {

@@ -2,11 +2,11 @@ package security
 
 import (
 	"crypto/rsa"
-	"data-handler/model"
-	"data-handler/service/errors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/errors"
 	"time"
 )
 

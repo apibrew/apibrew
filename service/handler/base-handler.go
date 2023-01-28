@@ -2,9 +2,9 @@ package handler
 
 import (
 	"context"
-	"data-handler/model"
-	"data-handler/service/errors"
-	"data-handler/service/params"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/service/errors"
+	"github.com/tislib/data-handler/service/params"
 )
 
 type Event struct {

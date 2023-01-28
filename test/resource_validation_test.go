@@ -1,10 +1,10 @@
 package test
 
 import (
-	"data-handler/model"
-	"data-handler/server/stub"
-	"data-handler/server/util"
 	"github.com/google/uuid"
+	"github.com/tislib/data-handler/model"
+	"github.com/tislib/data-handler/server/stub"
+	"github.com/tislib/data-handler/server/util"
 	"strconv"
 	"testing"
 )
