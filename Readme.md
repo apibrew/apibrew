@@ -20,3 +20,17 @@ You need to copy and adjust init config for data-handler
 ```
 
 ## Installation (client)
+### Installing via go install
+
+```
+go install github.com/tislib/data-handler/cmd/dhctl@latest
+```
+
+You need to configure client pointing to right server:
+[config](data/dhctl.example.config) and move this file to ~/.dhctl/config
+
+Sample commands
+```
+dhctl get resources
+dhctl get user
+```
