@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package ext;
+
+option go_package = "github.com/tislib/data-handler/pkg/ext";
+
+import 'model/record.proto';
+import 'model/query.proto';
+import 'model/error.proto';
+import "google/api/annotations.proto";
+import 'google/protobuf/struct.proto';
+
+service RecordService {
+  rpc List (ListRecordRequest) returns (ListRecordResponse) {}
+}
+
+message ListRecordRequest {
+  string namespace = 2;
+  string resource = 3;
+  model.BooleanExpression query = 4;
+  uint32 limit = 5;
+  uint64 offset = 6;
+  bool useHistory = 7;
+  bool resolveReferences = 8;
+
+  map<string, string> annotations = 103;
+}
+
+message ListRecordResponse {
+  uint32 total = 1;
+  repeated model.Record content = 2;
+}
