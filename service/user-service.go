@@ -44,8 +44,6 @@ func (u *userService) InjectRecordService(service RecordService) {
 }
 
 func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError) {
-	u.encodePasswords(users)
-
 	// insert records via resource service
 	records := mapping.MapToRecord(users, mapping.UserToRecord)
 
@@ -61,32 +59,11 @@ func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model
 
 	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
 
-	u.cleanPasswords(response)
-
 	return response, nil
 }
 
 func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError) {
-	u.encodePasswords(users)
-
-	for _, user := range users {
-		if user.Password == "" {
-			record, err := u.recordService.Get(ctx, params.RecordGetParams{
-				Namespace: system.UserResource.Namespace,
-				Resource:  system.UserResource.Name,
-				Id:        user.Id,
-			})
-
-			if err != nil {
-				return nil, err
-			}
-
-			existingUser := mapping.UserFromRecord(record)
-			user.Password = existingUser.Password
-		}
-	}
-
-	// insert records via resource service
+	// update records via resource service
 	records := mapping.MapToRecord(users, mapping.UserToRecord)
 
 	result, err := u.recordService.Update(ctx, params.RecordUpdateParams{
@@ -99,8 +76,6 @@ func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model
 	}
 
 	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
-
-	u.cleanPasswords(response)
 
 	return response, nil
 }
@@ -126,8 +101,6 @@ func (u *userService) Get(ctx context.Context, id string) (*model.User, errors.S
 
 	response := mapping.UserFromRecord(record)
 
-	u.cleanPasswords([]*model.User{response})
-
 	return response, nil
 }
 
@@ -146,8 +119,6 @@ func (u *userService) List(ctx context.Context, query *model.BooleanExpression, 
 
 	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
 
-	u.cleanPasswords(response)
-
 	return response, nil
 }
 
@@ -155,7 +126,6 @@ func (d *userService) Init(data *model.InitData) {
 	d.backendProviderService.MigrateResource(system.UserResource, nil)
 
 	if len(data.InitUsers) > 0 {
-		d.encodePasswords(data.InitUsers)
 		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
 			Namespace:      system.UserResource.Namespace,
 			Resource:       system.UserResource.Name,
@@ -166,26 +136,6 @@ func (d *userService) Init(data *model.InitData) {
 		if err != nil {
 			log.Error(err)
 		}
-	}
-}
-
-func (d *userService) encodePasswords(users []*model.User) {
-	for _, user := range users {
-		if user.Password != "" {
-			hashStr, err := security.EncodeKey(user.Password)
-
-			if err != nil {
-				panic(err)
-			}
-
-			user.Password = hashStr
-		}
-	}
-}
-
-func (u *userService) cleanPasswords(users []*model.User) {
-	for _, user := range users {
-		user.Password = ""
 	}
 }
 
