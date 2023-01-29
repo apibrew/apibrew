@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/tislib/data-handler/pkg/model";
+
+import 'model/audit.proto';
+import 'model/common.proto';
+
+message ExtensionServer {
+  string host = 1;
+}
+
+message Extension {
+  string id = 1;
+  string name = 2;
+  DataType type = 3;
+  string namespace = 4;
+  string resource = 5;
+  ExtensionServer server = 6;
+
+  AuditData auditData = 101;
+  uint32 version = 102;
+}
