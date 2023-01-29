@@ -10,7 +10,7 @@ import 'model/error.proto';
 import "google/api/annotations.proto";
 import 'google/protobuf/struct.proto';
 
-service RecordService {
+service RecordExtensionService {
   rpc List (ListRecordRequest) returns (ListRecordResponse) {}
 }
 
