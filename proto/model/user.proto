@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stub.model;
 
-option go_package = "github.com/tislib/data-handler/model";
+option go_package = "github.com/tislib/data-handler/pkg/model";
 
 import 'google/protobuf/struct.proto';
 import 'model/audit.proto';
