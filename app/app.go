@@ -70,7 +70,7 @@ func (app *App) Init() {
 	app.genericHandler = handler.NewGenericHandler()
 	app.namespaceService = service.NewNamespaceService()
 	app.userService = service.NewUserService()
-	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService)
+	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService, app.userService, app.recordService)
 	app.watchService = service.NewWatchService(app.genericHandler)
 
 	app.InjectServices()

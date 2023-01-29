@@ -27,12 +27,12 @@ func (w watchService) Watch(ctx context.Context, p params.WatchParams) <-chan *m
 	out := make(chan *model.WatchMessage, p.BufferSize)
 	watchHandler := &handler.BaseHandler{}
 
-	//go func() {
-	//	<-ctx.Done()
-	//
-	//	w.genericHandler.Unregister(watchHandler)
-	//	close(out)
-	//}()
+	go func() {
+		<-ctx.Done()
+
+		w.genericHandler.Unregister(watchHandler)
+		close(out)
+	}()
 
 	sendEvent := func(records []*model.Record, event model.EventType) {
 		select {
@@ -65,13 +65,13 @@ func (w watchService) Watch(ctx context.Context, p params.WatchParams) <-chan *m
 		return nil
 	}
 
-	w.genericHandler.Register(watchHandler)
-
 	//watchHandler.AfterDelete = func(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError {
-	//	sendEvent([]*model.Record{params.}, model.EventType_CREATE)
+	//	sendEvent([]*model.Record{params}, model.EventType_CREATE)
 	//
 	//	return nil
 	//}
+
+	w.genericHandler.Register(watchHandler)
 
 	return out
 }
