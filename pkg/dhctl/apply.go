@@ -89,11 +89,11 @@ var applyCmd = &cobra.Command{
 							Name:      resource.Name,
 						})
 
-						if err != nil && util.GetErrorCode(err) != model.ErrorCode_RECORD_NOT_FOUND {
+						if err != nil && util.GetErrorCode(err) != model.ErrorCode_RESOURCE_NOT_FOUND {
 							panic(err)
 						}
 
-						if resp.Resource != nil {
+						if resp != nil && resp.Resource != nil {
 							resource.Id = resp.Resource.Id
 						}
 					}

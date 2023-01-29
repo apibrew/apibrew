@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/backend"
 	"github.com/tislib/data-handler/pkg/backend/postgres"
+	"github.com/tislib/data-handler/pkg/backend/virtual"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
@@ -84,6 +85,8 @@ func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceB
 	switch backend {
 	case model.DataSourceBackendType_POSTGRESQL:
 		return postgres.NewPostgresResourceServiceBackend
+	case model.DataSourceBackendType_VIRTUAL:
+		return virtual.NewVirtualBackend
 	case model.DataSourceBackendType_MYSQL:
 		return nil
 	case model.DataSourceBackendType_MONGODB:
@@ -118,14 +121,3 @@ func NewBackendProviderService() BackendProviderService {
 		backendMap: make(map[string]backend.Backend),
 	}
 }
-
-//
-//func (p *postgresResourceServiceBackend) Init() {
-//	err := p.withBackend(context.TODO(), p.systemBackend.GetDataSourceId(), false, func(tx *sql.Tx) errors.ServiceError {
-//		return resourceSetupTables(tx)
-//	})
-//
-//	if err != nil {
-//		panic(err)
-//	}
-//}
