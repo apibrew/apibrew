@@ -92,7 +92,6 @@ func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.Dat
 	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
 	result, _, err := d.recordService.Create(ctx, params.RecordCreateParams{
 		Namespace: system.DataSourceResource.Namespace,
-		Resource:  system.DataSourceResource.Name,
 		Records:   records,
 	})
 

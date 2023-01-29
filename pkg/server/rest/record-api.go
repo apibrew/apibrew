@@ -143,7 +143,6 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 
 	res, inserted, serviceErr := r.recordService.Create(request.Context(), params.RecordCreateParams{
 		Namespace:      "default",
-		Resource:       resourceName,
 		Records:        []*model.Record{record1},
 		IgnoreIfExists: false,
 	})

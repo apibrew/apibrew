@@ -4,13 +4,13 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 )
 
-var DataSourceResource = &model.Resource{
-	Name:      "data-source",
+var ExtensionResource = &model.Resource{
+	Name:      "extension",
 	Namespace: "system",
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Entity:     "data_source",
+		Entity:     "extension",
 	},
 	Properties: []*model.ResourceProperty{
 		{
@@ -22,8 +22,8 @@ var DataSourceResource = &model.Resource{
 			},
 			Length:   64,
 			Primary:  false,
-			Unique:   true,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Unique:   true,
 			Required: true,
 		},
 		{
@@ -39,79 +39,52 @@ var DataSourceResource = &model.Resource{
 			Required: false,
 		},
 		{
-			Name: "backend",
+			Name: "namespace",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "backend",
+					Mapping: "namespace",
 				},
 			},
+			Length:   64,
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_INT32,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Required: true,
 		},
 		{
-			Name: "options_postgres_username",
+			Name: "resource",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "options_postgres_username",
+					Mapping: "resource",
 				},
 			},
-			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   64,
-			Required: false,
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Required: true,
 		},
 		{
-			Name: "options_postgres_password",
+			Name: "serverHost",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "options_postgres_password",
+					Mapping: "server_host",
 				},
 			},
-			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   64,
-			Required: false,
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Required: true,
 		},
 		{
-			Name: "options_postgres_host",
+			Name: "serverPort",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "options_postgres_host"},
-			},
-			Type:     model.ResourcePropertyType_TYPE_STRING,
-			Length:   64,
-			Required: false,
-		},
-		{
-			Name: "options_postgres_port",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "options_postgres_port",
+					Mapping: "server_port",
 				},
 			},
+			Length:   64,
+			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_INT32,
-			Required: false,
-		},
-		{
-			Name: "options_postgres_db_name",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "options_postgres_db_name",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_STRING,
-			Length:   64,
-			Required: false,
-		},
-		{
-			Name: "options_postgres_default_schema",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "options_postgres_default_schema",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_STRING,
-			Length:   64,
-			Required: false,
+			Required: true,
 		},
 	},
 	SecurityContext: securityContextDisallowAll,
