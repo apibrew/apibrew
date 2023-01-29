@@ -15,16 +15,10 @@ COPY go.sum go.sum
 RUN go mod download
 
 COPY proto proto
-COPY generate.go generate.go
-
-COPY data data
-COPY app app
 COPY cmd cmd
-COPY helper helper
-COPY logging logging
-COPY server server
-COPY service service
-COPY util util
+COPY pkg pkg
+
+RUN sh -c "cd proto; buf mod update; buf generate"
 
 FROM buildenv as test
 WORKDIR /app/
@@ -34,27 +28,17 @@ RUN apk add postgresql
 RUN mkdir /run/postgresql
 RUN chown postgres:postgres /run/postgresql/
 
-RUN sh -c "cd proto; buf mod update"
-RUN go generate
-
-COPY test test
-COPY run-tests.sh .
-
-RUN sh /app/run-tests.sh
+RUN sh /app/pkg/test/run-tests.sh
 
 FROM buildenv as builder
-
-RUN sh -c "cd proto; buf mod update"
-RUN go generate
 
 RUN go build -o data-handler cmd/server/main.go
 
 FROM golang:1.19-alpine
 WORKDIR /
 
-COPY data /data
 COPY --from=builder /app/data-handler /bin/data-handler
 
 EXPOSE 9009
 
-CMD ["/bin/data-handler", "-init", "/data/init.json"]
+CMD ["/bin/data-handler", "-init", "/app/config.json"]

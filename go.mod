@@ -6,13 +6,11 @@ require (
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
-	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0
 	github.com/huandu/go-sqlbuilder v1.16.0
 	github.com/jellydator/ttlcache/v3 v3.0.0
-	github.com/ktr0731/grpcdynamic v0.0.0-20200217085124-70a2c3229ec4
 	github.com/lib/pq v1.10.7
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rs/cors v1.8.2
@@ -23,6 +21,7 @@ require (
 	github.com/swaggo/files v1.0.0
 	github.com/swaggo/http-swagger v1.3.3
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
+	golang.org/x/net v0.5.0
 	google.golang.org/genproto v0.0.0-20230117162540-28d6b9783ac4
 	google.golang.org/grpc v1.52.0
 	google.golang.org/protobuf v1.28.1
@@ -36,7 +35,7 @@ require (
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
 	github.com/go-openapi/spec v0.20.6 // indirect
 	github.com/go-openapi/swag v0.21.1 // indirect
-	github.com/google/gnostic v0.6.9 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -56,7 +55,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/swaggo/swag v1.8.1 // indirect
-	golang.org/x/net v0.5.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect

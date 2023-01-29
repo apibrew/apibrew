@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stub;
 
-option go_package = "github.com/tislib/data-handler/grpc/stub";
+option go_package = "github.com/tislib/data-handler/pkg/stub";
 
 import 'model/error.proto';
 import 'model/resource.proto';
