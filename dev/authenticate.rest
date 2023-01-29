@@ -8,8 +8,8 @@ POST http://localhost:9009/authentication/token
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "admin",
+  "username": "taleh5",
+  "password": "taleh5",
   "term": 3
 }
 
@@ -17,16 +17,14 @@ Content-Type: application/json
 
 
 
-POST http://localhost:9009/generic/user
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJhZG1pbiIsImF1ZCI6WyJkYXRhLWhhbmRsZXIiXSwiZXhwIjoxNjc0MTcyOTUwLCJuYmYiOjE2NzQwMDAxNTAsImlhdCI6MTY3NDAwMDE1MCwianRpIjoiZmFhMTY0YTMtNjdlNC00MDZjLWFiODktNzVmMmZiMDQyYzRkIiwic2NvcGVzIjpbInN1cGVyLXVzZXIiXSwidXNlcm5hbWUiOiJhZG1pbiJ9.kdkk7bwYF4rfXaMvakaY-2CUOVqkFjEoaGiU3xLt0plZg1xL23mJPVU96SSCQzcveIua-3FkGnkBgV8u-zET6utoI3FWxnuQhKXwfv68RaovCEbLftemAJTEFd3eajvZvtXe0DcSDfcs_yUK56XD06fD5zyiVY9Hfom7OZuzdtw
+POST http://localhost:9009/users
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tL3Rpc2xpYi9kYXRhLWhhbmRsZXIiLCJzdWIiOiJhZG1pbiIsImF1ZCI6WyJnaXRodWIuY29tL3Rpc2xpYi9kYXRhLWhhbmRsZXIiXSwiZXhwIjoxNzM4MDI4MTczLCJuYmYiOjE2NzQ5NTYxNzMsImlhdCI6MTY3NDk1NjE3MywianRpIjoiY2QxODc3YWQtMDk5MS00OWQxLWJiMTItZmY5NDcwMmM2MWQ2Iiwic2VjdXJpdHlDb250ZXh0Ijp7ImNvbnN0cmFpbnRzIjpbeyJuYW1lc3BhY2UiOiIqIiwicmVzb3VyY2UiOiIqIiwiYmVmb3JlIjp7fSwiYWZ0ZXIiOnt9LCJvcGVyYXRpb24iOjR9XX0sInVzZXJuYW1lIjoiYWRtaW4ifQ.vBIt1lf-3Fz-9E4Y_189hlwMUo_Pe9y7skifnm7gfRcdefM4MSQmh7E3XZTW1JRlEUn1EZYNr7A1IwUGekkUKQekia3vs_34bgS7GhqCPhicM-TKqsxDRheAfLdV32Cv-AOevLbJd1TP0hcskLfiU3DhYFwtVliCjm38u4YGRI8
 Content-Type: application/json
 
 {
   "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYXRhLWhhbmRsZXIiLCJzdWIiOiJ0YWxlaDIiLCJhdWQiOlsiZGF0YS1oYW5kbGVyIl0sImV4cCI6MTczNzEzMTIzMywibmJmIjoxNjc0MDU5MjMzLCJpYXQiOjE2NzQwNTkyMzMsImp0aSI6ImUxMDZjNGY2LTFjZjYtNDFkOS1hMjRiLTU4MmM3NTc0MTk5MiIsInNjb3BlcyI6WyIiXSwidXNlcm5hbWUiOiJ0YWxlaDIifQ.kCMUqaAWwsMzSUkP7Px-1Xl4_L7j8ZsEi0x_3iWzUv8oV8mCBws9N9IAun-5_z2JZo9Tl5tWterHJzGJ5xsmHd3YRl_e0th4MoJBMdQ3cJcKVaFzBwbEpV5o8WQc_4yJgmKNslEGf2Ib-OMSHK7Cq9K2cgjIxdCMbVaeL2w-uSQ",
-  "user": {
-    "username": "taleh2",
-    "password": "taleh2"
-  }
+  "username": "taleh5",
+  "password": "taleh5"
 }
 
 ###
