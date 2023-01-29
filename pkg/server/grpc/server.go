@@ -8,7 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	service2 "github.com/tislib/data-handler/pkg/service"
+	service "github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/service/security"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/grpc"
@@ -25,14 +25,15 @@ type Server interface {
 
 type grpcServer struct {
 	grpcServer            *grpc.Server
-	resourceService       service2.ResourceService
-	recordService         service2.RecordService
-	authenticationService service2.AuthenticationService
-	dataSourceService     service2.DataSourceService
-	namespaceService      service2.NamespaceService
-	userService           service2.UserService
+	resourceService       service.ResourceService
+	recordService         service.RecordService
+	authenticationService service.AuthenticationService
+	dataSourceService     service.DataSourceService
+	namespaceService      service.NamespaceService
+	userService           service.UserService
 	initData              *model.InitData
-	watchService          service2.WatchService
+	watchService          service.WatchService
+	extensionService      service.ExtensionService
 }
 
 func (g *grpcServer) Stop() {
@@ -56,6 +57,7 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterUserServiceServer(g.grpcServer, NewUserServiceServer(g.userService))
 	stub.RegisterNamespaceServiceServer(g.grpcServer, NewNamespaceServiceServer(g.namespaceService))
 	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.watchService))
+	stub.RegisterExtensionServiceServer(g.grpcServer, NewExtensionServiceServer(g.extensionService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) {
@@ -122,5 +124,6 @@ func NewGrpcServer(container app.Container) Server {
 		dataSourceService:     container.GetDataSourceService(),
 		namespaceService:      container.GetNamespaceService(),
 		userService:           container.GetUserService(),
+		extensionService:      container.GetExtensionService(),
 	}
 }

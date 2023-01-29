@@ -16,7 +16,6 @@ type RecordListParams struct {
 
 type RecordCreateParams struct {
 	Namespace      string
-	Resource       string
 	Records        []*model.Record
 	IgnoreIfExists bool
 }

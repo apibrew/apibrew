@@ -426,6 +426,8 @@ func (r *resourceService) GetSystemResourceByName(ctx context.Context, resourceN
 		return system.DataSourceResource, nil
 	} else if resourceName == system.NamespaceResource.Name {
 		return system.NamespaceResource, nil
+	} else if resourceName == system.ExtensionResource.Name {
+		return system.ExtensionResource, nil
 	}
 
 	return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("system/%s", resourceName))

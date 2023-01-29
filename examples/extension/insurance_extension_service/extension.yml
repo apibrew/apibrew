@@ -1,0 +1,8 @@
+type: record
+resource: extension
+properties:
+  name: insurance_extension_service
+  namespace: default
+  resource: country
+  serverHost: 127.0.0.1
+  serverPort: 40234

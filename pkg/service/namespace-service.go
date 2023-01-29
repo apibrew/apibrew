@@ -48,7 +48,6 @@ func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Names
 
 	result, _, err := u.recordService.Create(ctx, params.RecordCreateParams{
 		Namespace: system.NamespaceResource.Namespace,
-		Resource:  system.NamespaceResource.Name,
 		Records:   records,
 	})
 
@@ -119,7 +118,6 @@ func (d *namespaceService) Init(data *model.InitData) {
 	if len(data.InitNamespaces) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
 			Namespace:      system.NamespaceResource.Namespace,
-			Resource:       system.NamespaceResource.Name,
 			Records:        mapping.MapToRecord(data.InitNamespaces, mapping.NamespaceToRecord),
 			IgnoreIfExists: true,
 		})

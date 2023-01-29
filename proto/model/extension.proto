@@ -9,15 +9,17 @@ import 'model/common.proto';
 
 message ExtensionServer {
   string host = 1;
+  int32 port = 2;
 }
 
 message Extension {
   string id = 1;
   string name = 2;
-  DataType type = 3;
-  string namespace = 4;
-  string resource = 5;
-  ExtensionServer server = 6;
+  string description = 3;
+  DataType type = 4;
+  string namespace = 5;
+  string resource = 6;
+  ExtensionServer server = 7;
 
   AuditData auditData = 101;
   uint32 version = 102;

@@ -4,74 +4,81 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	service2 "github.com/tislib/data-handler/pkg/service"
+	service "github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/service/handler"
 	"github.com/tislib/data-handler/pkg/service/handlers"
 )
 
 type App struct {
 	initData               *model.InitData
-	authenticationService  service2.AuthenticationService
-	dataSourceService      service2.DataSourceService
-	resourceService        service2.ResourceService
-	recordService          service2.RecordService
-	backendProviderService service2.BackendProviderService
-	namespaceService       service2.NamespaceService
-	userService            service2.UserService
+	authenticationService  service.AuthenticationService
+	dataSourceService      service.DataSourceService
+	resourceService        service.ResourceService
+	recordService          service.RecordService
+	backendProviderService service.BackendProviderService
+	namespaceService       service.NamespaceService
+	userService            service.UserService
 	genericHandler         *handler.GenericHandler
 	stdHandler             handlers.StdHandler
-	watchService           service2.WatchService
+	watchService           service.WatchService
+	extensionService       service.ExtensionService
 }
 
 type Container interface {
-	GetRecordService() service2.RecordService
-	GetAuthenticationService() service2.AuthenticationService
-	GetResourceService() service2.ResourceService
-	GetDataSourceService() service2.DataSourceService
-	GetWatchService() service2.WatchService
-	GetNamespaceService() service2.NamespaceService
-	GetUserService() service2.UserService
+	GetRecordService() service.RecordService
+	GetAuthenticationService() service.AuthenticationService
+	GetResourceService() service.ResourceService
+	GetDataSourceService() service.DataSourceService
+	GetWatchService() service.WatchService
+	GetNamespaceService() service.NamespaceService
+	GetUserService() service.UserService
+	GetExtensionService() service.ExtensionService
 }
 
-func (app *App) GetWatchService() service2.WatchService {
+func (app *App) GetWatchService() service.WatchService {
 	return app.watchService
 }
 
-func (app *App) GetNamespaceService() service2.NamespaceService {
+func (app *App) GetNamespaceService() service.NamespaceService {
 	return app.namespaceService
 }
 
-func (app *App) GetUserService() service2.UserService {
+func (app *App) GetExtensionService() service.ExtensionService {
+	return app.extensionService
+}
+
+func (app *App) GetUserService() service.UserService {
 	return app.userService
 }
 
-func (app *App) GetRecordService() service2.RecordService {
+func (app *App) GetRecordService() service.RecordService {
 	return app.recordService
 }
 
-func (app *App) GetAuthenticationService() service2.AuthenticationService {
+func (app *App) GetAuthenticationService() service.AuthenticationService {
 	return app.authenticationService
 }
 
-func (app *App) GetResourceService() service2.ResourceService {
+func (app *App) GetResourceService() service.ResourceService {
 	return app.resourceService
 }
 
-func (app *App) GetDataSourceService() service2.DataSourceService {
+func (app *App) GetDataSourceService() service.DataSourceService {
 	return app.dataSourceService
 }
 
 func (app *App) Init() {
-	app.authenticationService = service2.NewAuthenticationService()
-	app.dataSourceService = service2.NewDataSourceService()
-	app.resourceService = service2.NewResourceService()
-	app.backendProviderService = service2.NewBackendProviderService()
-	app.recordService = service2.NewRecordService()
+	app.authenticationService = service.NewAuthenticationService()
+	app.dataSourceService = service.NewDataSourceService()
+	app.resourceService = service.NewResourceService()
+	app.backendProviderService = service.NewBackendProviderService()
+	app.recordService = service.NewRecordService()
 	app.genericHandler = handler.NewGenericHandler()
-	app.namespaceService = service2.NewNamespaceService()
-	app.userService = service2.NewUserService()
+	app.namespaceService = service.NewNamespaceService()
+	app.userService = service.NewUserService()
 	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService, app.userService, app.recordService)
-	app.watchService = service2.NewWatchService(app.genericHandler)
+	app.watchService = service.NewWatchService(app.genericHandler)
+	app.extensionService = service.NewExtensionService()
 
 	app.InjectServices()
 	app.initServices()
@@ -86,6 +93,8 @@ func (app *App) initServices() {
 	app.userService.Init(app.initData)
 	app.authenticationService.Init(app.initData)
 	app.stdHandler.Init(app.initData)
+
+	app.extensionService.Init(app.initData)
 }
 
 func (app *App) InjectServices() {
@@ -108,6 +117,10 @@ func (app *App) InjectServices() {
 	app.recordService.InjectGenericHandler(app.genericHandler)
 
 	app.authenticationService.InjectRecordService(app.recordService)
+
+	app.extensionService.InjectRecordService(app.recordService)
+	app.extensionService.InjectBackendProviderService(app.backendProviderService)
+	app.extensionService.InjectGenericHandler(app.genericHandler)
 
 }
 

@@ -50,7 +50,18 @@ func (g *GenericHandler) BeforeList(ctx context.Context, resource *model.Resourc
 }
 
 func (g *GenericHandler) List(ctx context.Context, params params.RecordListParams) (handled bool, records []*model.Record, total uint32, err errors.ServiceError) {
-	return false, nil, 0, nil
+	for _, item := range g.handlers {
+		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, &model.Resource{Namespace: params.Namespace, Name: params.Resource}) {
+			continue
+		}
+		if item.List != nil {
+			if handled, records, total, err = item.List(ctx, params); handled {
+				return
+			}
+		}
+	}
+
+	return
 }
 
 func (g *GenericHandler) AfterList(ctx context.Context, resource *model.Resource, params params.RecordListParams, records []*model.Record, total uint32) errors.ServiceError {
