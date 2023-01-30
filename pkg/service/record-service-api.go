@@ -31,7 +31,7 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 		return nil, 0, err
 	}
 
-	if handled, records, total, err := r.genericHandler.List(ctx, params); handled {
+	if handled, records, total, err := r.genericHandler.List(ctx, resource, params); handled {
 		return records, total, err
 	}
 
@@ -115,7 +115,7 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 			return nil, nil, errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
 		}
 
-		if err = r.validateRecords(resource, list); err != nil {
+		if err = r.validateRecords(resource, list, false); err != nil {
 			return nil, nil, err
 		}
 
@@ -233,7 +233,7 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 			return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
 		}
 
-		err = r.validateRecords(resource, list)
+		err = r.validateRecords(resource, list, true)
 
 		if err != nil {
 			success = false
@@ -430,11 +430,11 @@ func (r *recordService) Delete(ctx context.Context, params params.RecordDeletePa
 		return errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
 	}
 
-	if err = r.genericHandler.BeforeDelete(ctx, params); err != nil {
+	if err = r.genericHandler.BeforeDelete(ctx, resource, params); err != nil {
 		return err
 	}
 
-	if handled, err := r.genericHandler.Delete(ctx, params); handled {
+	if handled, err := r.genericHandler.Delete(ctx, resource, params); handled {
 		return err
 	}
 
@@ -448,7 +448,7 @@ func (r *recordService) Delete(ctx context.Context, params params.RecordDeletePa
 		return err
 	}
 
-	if err = r.genericHandler.AfterDelete(ctx, params); err != nil {
+	if err = r.genericHandler.AfterDelete(ctx, resource, params); err != nil {
 		return err
 	}
 

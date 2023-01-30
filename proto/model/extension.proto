@@ -12,6 +12,26 @@ message ExtensionServer {
   int32 port = 2;
 }
 
+enum ExtensionOperationType {
+  ExtensionOperationTypeCreate = 0;
+  ExtensionOperationTypeUpdate = 1;
+  ExtensionOperationTypeList = 2;
+  ExtensionOperationTypeGet = 3;
+  ExtensionOperationTypeDelete = 4;
+}
+
+enum ExtensionOperationStep {
+  ExtensionOperationStepBefore = 0;
+  ExtensionOperationStepInstead = 1;
+  ExtensionOperationStepAfter = 2;
+}
+
+message ExtensionOperation {
+    ExtensionOperationType operationType = 1;
+    ExtensionOperationStep step = 2;
+    bool sync = 3; // sync operation is always true for instead step
+}
+
 message Extension {
   string id = 1;
   string name = 2;
@@ -20,6 +40,7 @@ message Extension {
   string namespace = 5;
   string resource = 6;
   ExtensionServer server = 7;
+  repeated ExtensionOperation operations = 8;
 
   AuditData auditData = 101;
   uint32 version = 102;
