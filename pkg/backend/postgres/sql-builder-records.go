@@ -159,7 +159,11 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			packedVal := record.Properties[property.Name]
+			packedVal, exists := record.Properties[property.Name]
+
+			if !exists {
+				continue
+			}
 
 			propertyType := types.ByResourcePropertyType(property.Type)
 			var val interface{}

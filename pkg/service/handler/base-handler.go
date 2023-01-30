@@ -11,7 +11,7 @@ type Event struct {
 }
 
 type BeforeList func(ctx context.Context, resource *model.Resource, params params.RecordListParams) errors.ServiceError
-type List func(ctx context.Context, params params.RecordListParams) (handled bool, records []*model.Record, total uint32, err errors.ServiceError)
+type List func(ctx context.Context, resource *model.Resource, params params.RecordListParams) (handled bool, records []*model.Record, total uint32, err errors.ServiceError)
 type AfterList func(ctx context.Context, resource *model.Resource, params params.RecordListParams, records []*model.Record, total uint32) errors.ServiceError
 
 type BeforeCreate func(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) errors.ServiceError
@@ -26,9 +26,9 @@ type BeforeGet func(ctx context.Context, resource *model.Resource, id string) er
 type Get func(ctx context.Context, resource *model.Resource, id string) (handled bool, record *model.Record, error errors.ServiceError)
 type AfterGet func(ctx context.Context, resource *model.Resource, id string, res *model.Record) errors.ServiceError
 
-type BeforeDelete func(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
-type Delete func(ctx context.Context, params params.RecordDeleteParams) (handled bool, err errors.ServiceError)
-type AfterDelete func(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
+type BeforeDelete func(ctx context.Context, resource *model.Resource, params params.RecordDeleteParams) errors.ServiceError
+type Delete func(ctx context.Context, resource *model.Resource, params params.RecordDeleteParams) (handled bool, err errors.ServiceError)
+type AfterDelete func(ctx context.Context, resource *model.Resource, params params.RecordDeleteParams) errors.ServiceError
 
 type BaseHandler struct {
 	Id string

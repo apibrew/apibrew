@@ -8,7 +8,6 @@ import (
 	"github.com/tislib/data-handler/pkg/service/handler"
 	"github.com/tislib/data-handler/pkg/service/params"
 	"github.com/tislib/data-handler/pkg/service/security"
-	"github.com/tislib/data-handler/pkg/system"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -60,18 +59,6 @@ func (h *userHandler) BeforeUpdate(ctx context.Context, resource *model.Resource
 			}
 
 			user.Properties["password"] = structpb.NewStringValue(hashStr)
-		} else {
-			record, err := h.recordService.Get(ctx, params.RecordGetParams{
-				Namespace: system.UserResource.Namespace,
-				Resource:  system.UserResource.Name,
-				Id:        user.Id,
-			})
-
-			if err != nil {
-				return err
-			}
-
-			user.Properties["password"] = record.Properties["password"]
 		}
 	}
 
@@ -110,6 +97,6 @@ func (h *userHandler) prepareHandler() *handler.BaseHandler {
 
 func (h *userHandler) cleanPasswords(users []*model.Record) {
 	for _, user := range users {
-		user.Properties["password"] = nil
+		delete(user.Properties, "password")
 	}
 }

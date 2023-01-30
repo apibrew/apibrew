@@ -55,7 +55,7 @@ func (r *recordService) Init(data *model.InitData) {
 
 }
 
-func (r *recordService) validateRecords(resource *model.Resource, list []*model.Record) errors.ServiceError {
+func (r *recordService) validateRecords(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)
@@ -67,7 +67,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 	for _, record := range list {
 		for _, property := range resource.Properties {
 			propertyType := types.ByResourcePropertyType(property.Type)
-			packedVal := record.Properties[property.Name]
+			packedVal, exists := record.Properties[property.Name]
 
 			if packedVal != nil {
 				err := propertyType.ValidatePackedValue(packedVal)
@@ -104,7 +104,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 
 			isEmpty := propertyType.IsEmpty(val)
 
-			if property.Required && isEmpty {
+			if property.Required && isEmpty && (exists || !isUpdate) {
 				fieldErrors = append(fieldErrors, &model.ErrorField{
 					RecordId: record.Id,
 					Property: property.Name,

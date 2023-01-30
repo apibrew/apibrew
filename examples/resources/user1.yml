@@ -1,0 +1,50 @@
+auditData:
+  createdBy: test-user
+  createdOn: "2023-01-29T09:07:14.594160Z"
+  updatedBy: ""
+  updatedOn: "2023-01-29T09:07:14.594160Z"
+dataType: USER
+id: 52883660-9fb4-11ed-a8d2-b29c4ac91271
+properties:
+  securityContext:
+  - after: 0
+    before: 0
+    namespace: ""
+    operation: 0
+    permit: 0
+    principal: ""
+    property: ""
+    recordIds: []
+    resource: user
+  - after: 0
+    before: 0
+    namespace: ""
+    operation: 1
+    permit: 0
+    principal: ""
+    property: ""
+    recordIds: []
+    resource: namespace
+  - after: 0
+    before: 0
+    namespace: ""
+    operation: 0
+    permit: 0
+    principal: ""
+    property: ""
+    recordIds: []
+    resource: namespace
+  - after: 0
+    before: 0
+    namespace: ""
+    operation: 0
+    permit: 0
+    principal: ""
+    property: ""
+    recordIds: []
+    resource: country
+  username: dh_test
+references: {}
+resource: user
+type: record
+version: 1
