@@ -18,6 +18,28 @@ type extensionHandler struct {
 	recordClient ext.RecordExtensionServiceClient
 }
 
+func (h *extensionHandler) BeforeList(ctx context.Context, resource *model.Resource, params params.RecordListParams) errors.ServiceError {
+	_, err := h.recordClient.BeforeList(ctx, &ext.BeforeListRecordRequest{
+		Resource: resource,
+		Params: &ext.RecordListParams{
+			Namespace:         resource.Namespace,
+			Resource:          resource.Name,
+			Query:             params.Query,
+			Limit:             params.Limit,
+			Offset:            params.Offset,
+			UseHistory:        params.UseHistory,
+			ResolveReferences: params.ResolveReferences,
+		},
+	})
+
+	if err != nil {
+		log.Error(err)
+		return errors.InternalError.WithDetails("External communication error")
+	}
+
+	return nil
+}
+
 func (h *extensionHandler) List(ctx context.Context, resource *model.Resource, params params.RecordListParams) (bool, []*model.Record, uint32, errors.ServiceError) {
 	resp, err := h.recordClient.List(ctx, &ext.ListRecordRequest{
 		Resource: resource,
@@ -38,6 +60,30 @@ func (h *extensionHandler) List(ctx context.Context, resource *model.Resource, p
 	}
 
 	return true, resp.Records, resp.Total, nil
+}
+
+func (h *extensionHandler) AfterList(ctx context.Context, resource *model.Resource, params params.RecordListParams, records []*model.Record, total uint32) errors.ServiceError {
+	_, err := h.recordClient.AfterList(ctx, &ext.AfterListRecordRequest{
+		Resource: resource,
+		Params: &ext.RecordListParams{
+			Namespace:         resource.Namespace,
+			Resource:          resource.Name,
+			Query:             params.Query,
+			Limit:             params.Limit,
+			Offset:            params.Offset,
+			UseHistory:        params.UseHistory,
+			ResolveReferences: params.ResolveReferences,
+		},
+		Records: records,
+		Total:   total,
+	})
+
+	if err != nil {
+		log.Error(err)
+		return errors.InternalError.WithDetails("External communication error")
+	}
+
+	return nil
 }
 
 func (h *extensionHandler) Create(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) (bool, []*model.Record, []bool, errors.ServiceError) {
@@ -132,7 +178,7 @@ func NewExtensionHandler(extension *model.Extension) *handler.BaseHandler {
 				} else {
 					h.BeforeList = func(ctx context.Context, resource *model.Resource, params params.RecordListParams) errors.ServiceError {
 						go func() {
-							err := exth.BeforeList(ctx, resource, params)
+							err := exth.BeforeList(context.TODO(), resource, params)
 
 							if err != nil {
 								log.Error(err)
@@ -149,7 +195,7 @@ func NewExtensionHandler(extension *model.Extension) *handler.BaseHandler {
 				} else {
 					h.AfterList = func(ctx context.Context, resource *model.Resource, params params.RecordListParams, records []*model.Record, total uint32) errors.ServiceError {
 						go func() {
-							err := exth.AfterList(ctx, resource, params, records, total)
+							err := exth.AfterList(context.TODO(), resource, params, records, total)
 
 							if err != nil {
 								log.Error(err)
@@ -168,7 +214,7 @@ func NewExtensionHandler(extension *model.Extension) *handler.BaseHandler {
 				} else {
 					h.BeforeCreate = func(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) errors.ServiceError {
 						go func() {
-							err := exth.BeforeCreate(ctx, resource, params)
+							err := exth.BeforeCreate(context.TODO(), resource, params)
 
 							if err != nil {
 								log.Error(err)
@@ -185,7 +231,7 @@ func NewExtensionHandler(extension *model.Extension) *handler.BaseHandler {
 				} else {
 					h.AfterCreate = func(ctx context.Context, resource *model.Resource, params params.RecordCreateParams, records []*model.Record) errors.ServiceError {
 						go func() {
-							err := exth.AfterCreate(ctx, resource, params, records)
+							err := exth.AfterCreate(context.TODO(), resource, params, records)
 
 							if err != nil {
 								log.Error(err)

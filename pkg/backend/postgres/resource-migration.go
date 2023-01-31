@@ -303,6 +303,7 @@ and m.relname   = $2`, catalog, entity)
 
 		// locating source property
 		var sourceProperty *model.ResourceProperty
+
 		for _, property := range resource.Properties {
 			if property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping == *sourceColumn {
 				sourceProperty = property
