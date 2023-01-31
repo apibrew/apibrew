@@ -5,17 +5,27 @@ import (
 	"github.com/tislib/data-handler/pkg/ext"
 	"github.com/tislib/data-handler/pkg/model"
 	"google.golang.org/grpc"
+	"log"
 	"net"
+	"time"
 )
 
 type recordExtensionService struct {
 	ext.RecordExtensionServiceServer
 }
 
+func (r *recordExtensionService) BeforeList(ctx context.Context, req *ext.BeforeListRecordRequest) (*ext.BeforeListRecordResponse, error) {
+	log.Print("BeforeList called")
+
+	time.Sleep(1 * time.Second)
+
+	return &ext.BeforeListRecordResponse{}, nil
+}
+
 func (r *recordExtensionService) List(ctx context.Context, req *ext.ListRecordRequest) (*ext.ListRecordResponse, error) {
 	return &ext.ListRecordResponse{
 		Total: 1,
-		Content: []*model.Record{
+		Records: []*model.Record{
 			{
 				Resource: "test-resource",
 				Version:  76,

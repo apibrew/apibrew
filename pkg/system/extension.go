@@ -86,6 +86,15 @@ var ExtensionResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_INT32,
 			Required: true,
 		},
+		{
+			Name: "operations",
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "operations",
+				},
+			},
+			Type: model.ResourcePropertyType_TYPE_OBJECT,
+		},
 	},
 	SecurityContext: securityContextDisallowAll,
 }

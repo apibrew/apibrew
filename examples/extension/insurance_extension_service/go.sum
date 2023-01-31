@@ -3,8 +3,8 @@ github.com/golang/protobuf v1.5.2 h1:ROPKBNFfQgOUMifHyP+KYbvpjbdoFNs+aK7DXlji0Tw
 github.com/golang/protobuf v1.5.2/go.mod h1:XVQd3VNwM+JqD3oG2Ue2ip4fOMUkwXdXDdiuN0vRsmY=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
-github.com/tislib/data-handler v1.0.5 h1:cWP2+VZoyzxEyjIqlaomuhk0m5l/4ZoQ8e8puJSBCB4=
-github.com/tislib/data-handler v1.0.5/go.mod h1:FH0fqNylDdkesLq/U/QHFdCaky2rn8HJSo6dIdlPw8Y=
+github.com/tislib/data-handler v1.0.6 h1:uSxYwdcCj9MA18DQYLlqVPi46gmqYkhvpy1uZlD7bog=
+github.com/tislib/data-handler v1.0.6/go.mod h1:FH0fqNylDdkesLq/U/QHFdCaky2rn8HJSo6dIdlPw8Y=
 golang.org/x/net v0.5.0 h1:GyT4nK/YDHSqa1c4753ouYCDajOYKTja9Xb/OHtgvSw=
 golang.org/x/net v0.5.0/go.mod h1:DivGGAXEgPSlEBzxGzZI+ZLohi+xUj054jfeKui00ws=
 golang.org/x/sys v0.4.0 h1:Zr2JFtRQNX3BCZ8YtxRE9hNJYC8J6I1MVbMg6owUp18=
