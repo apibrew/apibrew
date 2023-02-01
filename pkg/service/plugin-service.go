@@ -6,6 +6,7 @@ import (
 	plugin2 "github.com/tislib/data-handler/pkg/plugin"
 	"os"
 	"plugin"
+	"strings"
 )
 
 type PluginService interface {
@@ -16,22 +17,23 @@ type pluginService struct {
 }
 
 func (p pluginService) Init(data *model.InitData) {
-	if data.Config.PluginsFolder == "" {
-		return
-	}
+	for _, pluginsPath := range strings.Split(data.Config.PluginsPath, ":") {
 
-	files, err := os.ReadDir(data.Config.PluginsFolder)
-	if err != nil {
-		panic(err)
-	}
+		files, err := os.ReadDir(pluginsPath)
+		if err != nil {
+			panic(err)
+		}
 
-	for _, file := range files {
-		p.loadPlugin(file)
+		for _, file := range files {
+			if strings.HasSuffix(file.Name(), ".so") {
+				p.loadPlugin(pluginsPath + "/" + file.Name())
+			}
+		}
 	}
 }
 
-func (p pluginService) loadPlugin(file os.DirEntry) {
-	pl, err := plugin.Open(file.Name())
+func (p pluginService) loadPlugin(path string) {
+	pl, err := plugin.Open(path)
 
 	if err != nil {
 		panic(err)

@@ -5,7 +5,7 @@ import (
 	"github.com/tislib/data-handler/pkg/service/handler"
 )
 
-const MetaDataKey = "MetaDataKeys"
+const MetaDataKey = "MetaDataKey"
 
 type HandlerRegistration struct {
 	handler  *handler.BaseHandler
