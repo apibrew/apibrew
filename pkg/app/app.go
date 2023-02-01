@@ -22,6 +22,7 @@ type App struct {
 	stdHandler             handlers.StdHandler
 	watchService           service.WatchService
 	extensionService       service.ExtensionService
+	pluginService          service.PluginService
 }
 
 type Container interface {
@@ -33,6 +34,7 @@ type Container interface {
 	GetNamespaceService() service.NamespaceService
 	GetUserService() service.UserService
 	GetExtensionService() service.ExtensionService
+	GetPluginService() service.PluginService
 }
 
 func (app *App) GetWatchService() service.WatchService {
@@ -79,6 +81,7 @@ func (app *App) Init() {
 	app.stdHandler = handlers.NewStdHandler(app.genericHandler, app.dataSourceService, app.userService, app.recordService)
 	app.watchService = service.NewWatchService(app.genericHandler)
 	app.extensionService = service.NewExtensionService()
+	app.pluginService = service.NewPluginService()
 
 	app.InjectServices()
 	app.initServices()
@@ -95,6 +98,7 @@ func (app *App) initServices() {
 	app.stdHandler.Init(app.initData)
 
 	app.extensionService.Init(app.initData)
+	app.pluginService.Init(app.initData)
 }
 
 func (app *App) InjectServices() {

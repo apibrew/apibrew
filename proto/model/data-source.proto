@@ -13,6 +13,7 @@ enum DataSourceBackendType {
   MYSQL = 2;
   ORACLE = 3;
   MONGODB = 4;
+  CUSTOM = 5;
 }
 
 message PostgresqlOptions {
@@ -35,6 +36,7 @@ message VirtualOptions {
 message DataSource {
   string id = 1; // id; read only
   DataSourceBackendType backend = 2;
+  string customBackendName = 3;
   DataType type = 4; // read only
   string name = 5;
   string description = 6;
