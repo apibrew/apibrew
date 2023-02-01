@@ -34,7 +34,7 @@ type Container interface {
 	GetNamespaceService() service.NamespaceService
 	GetUserService() service.UserService
 	GetExtensionService() service.ExtensionService
-	GetPluginService() service.PluginService
+	//GetPluginService() service.PluginService
 }
 
 func (app *App) GetWatchService() service.WatchService {

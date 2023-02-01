@@ -17,7 +17,7 @@ message AppConfig {
   string jwtPublicKey = 4;
   bool disableAuthentication = 5;
   bool disableCache = 6;
-  string pluginsFolder = 7;
+  string pluginsPath = 7;
 }
 
 message InitData {
