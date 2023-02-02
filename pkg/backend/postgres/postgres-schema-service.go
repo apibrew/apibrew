@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/backend"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
@@ -41,7 +41,7 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 	return resource, nil
 }
 
-func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, params backend.UpgradeResourceParams) errors.ServiceError {
+func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		if err := resourceCreateTable(ctx, tx, params.Resource); err != nil {
 			return err

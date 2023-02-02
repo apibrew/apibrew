@@ -2,6 +2,7 @@ package security
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 )
 
@@ -14,18 +15,18 @@ func WithSystemContext(ctx context.Context) context.Context {
 	return context.WithValue(ctx, systemContextKey, true)
 }
 
-func WithUserDetails(ctx context.Context, userDetails UserDetails) context.Context {
+func WithUserDetails(ctx context.Context, userDetails abs.UserDetails) context.Context {
 	return context.WithValue(ctx, userContextKey, userDetails)
 }
 
-func GetUserDetailsFromContext(ctx context.Context) *UserDetails {
+func GetUserDetailsFromContext(ctx context.Context) *abs.UserDetails {
 	if ctx.Value(userContextKey) == nil {
 		return nil
 	}
 
-	var res = new(UserDetails)
+	var res = new(abs.UserDetails)
 
-	*res = ctx.Value(userContextKey).(UserDetails)
+	*res = ctx.Value(userContextKey).(abs.UserDetails)
 
 	return res
 }

@@ -2,14 +2,14 @@ package grpc
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/server/util"
-	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/stub"
 )
 
 type dataSourceServiceServer struct {
 	stub.DataSourceServiceServer
-	service service.DataSourceService
+	service abs.DataSourceService
 }
 
 func (d *dataSourceServiceServer) ListEntities(ctx context.Context, request *stub.ListEntitiesRequest) (*stub.ListEntitiesResponse, error) {
@@ -75,7 +75,7 @@ func (d *dataSourceServiceServer) Delete(ctx context.Context, request *stub.Dele
 	return &stub.DeleteDataSourceResponse{}, util.ToStatusError(err)
 }
 
-func NewDataSourceServiceServer(dataSourceService service.DataSourceService) stub.DataSourceServiceServer {
+func NewDataSourceServiceServer(dataSourceService abs.DataSourceService) stub.DataSourceServiceServer {
 	return &dataSourceServiceServer{
 		service: dataSourceService,
 	}

@@ -5,20 +5,30 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
-	"github.com/tislib/data-handler/pkg/app"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/server/grpc"
 	"github.com/tislib/data-handler/pkg/server/rest"
+	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/util"
 	"net"
+	"net/http"
 	"strings"
 )
 
+import _ "net/http/pprof"
+
 func Run() {
-	log.SetLevel(log.TraceLevel)
-	log.SetReportCaller(true)
 	init := flag.String("init", "", "Initial Data for configuring system")
-	grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
+	debug := flag.Bool("debug", false, "Debug flag")
+	//grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
+
+	if *debug {
+		log.SetLevel(log.TraceLevel)
+		log.SetReportCaller(true)
+	} else {
+		log.SetLevel(log.InfoLevel)
+		log.SetReportCaller(false)
+	}
 
 	flag.Parse()
 
@@ -37,13 +47,13 @@ func Run() {
 		log.Fatalf("failed to load init data: %v", err)
 	}
 
-	app := new(app.App)
+	app := new(service.App)
 
 	app.SetInitData(initData)
 
-	if grayLogAddr != nil {
-		app.SetGrayLogAddr(*grayLogAddr)
-	}
+	//if grayLogAddr != nil {
+	//	app.SetGrayLogAddr(*grayLogAddr)
+	//}
 
 	app.Init()
 
@@ -58,14 +68,21 @@ func Run() {
 	httpl := tcpm.Match(cmux.HTTP1Fast())
 	grpcl := tcpm.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
 	http2 := tcpm.Match(cmux.HTTP2())
+	http2Tls := tcpm.Match(cmux.TLS())
 
 	grpcServer := grpc.NewGrpcServer(app)
 	grpcServer.Init(initData)
 	restServer := rest.NewServer(app)
+	restServer.Init(initData)
 
 	go grpcServer.Serve(grpcl)
-	go restServer.Serve(httpl)
-	go restServer.Serve(http2)
+	go restServer.ServeHttp(httpl)
+	go restServer.ServeH2C(http2)
+	go restServer.ServeHttp2Tls(http2Tls)
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 
 	if err = tcpm.Serve(); err != nil {
 		grpcServer.Stop()

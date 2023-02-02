@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package stub.model;
+package model;
 
 option go_package = "github.com/tislib/data-handler/pkg/model";
 

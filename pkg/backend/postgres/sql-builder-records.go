@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/huandu/go-sqlbuilder"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/backend"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
@@ -159,7 +159,11 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 
 	for _, property := range resource.Properties {
 		if source, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			packedVal := record.Properties[property.Name]
+			packedVal, exists := record.Properties[property.Name]
+
+			if !exists {
+				continue
+			}
 
 			propertyType := types.ByResourcePropertyType(property.Type)
 			var val interface{}
@@ -211,7 +215,7 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 	return nil
 }
 
-func recordList(ctx context.Context, runner QueryRunner, params backend.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
+func recordList(ctx context.Context, runner QueryRunner, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	// find count

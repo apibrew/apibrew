@@ -3,15 +3,15 @@ package grpc
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/server/util"
-	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/stub"
 )
 
 type authenticationServiceServer struct {
 	stub.AuthenticationServiceServer
-	service service.AuthenticationService
+	service abs.AuthenticationService
 }
 
 type RequestWithToken interface {
@@ -41,6 +41,6 @@ func (s *authenticationServiceServer) RenewToken(ctx context.Context, req *stub.
 	}, util.ToStatusError(err)
 }
 
-func NewAuthenticationServiceServer(service service.AuthenticationService) stub.AuthenticationServiceServer {
+func NewAuthenticationServiceServer(service abs.AuthenticationService) stub.AuthenticationServiceServer {
 	return &authenticationServiceServer{service: service}
 }

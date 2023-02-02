@@ -3,12 +3,11 @@ package grpc
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/app"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	service2 "github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/service/security"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/grpc"
@@ -25,14 +24,15 @@ type Server interface {
 
 type grpcServer struct {
 	grpcServer            *grpc.Server
-	resourceService       service2.ResourceService
-	recordService         service2.RecordService
-	authenticationService service2.AuthenticationService
-	dataSourceService     service2.DataSourceService
-	namespaceService      service2.NamespaceService
-	userService           service2.UserService
+	resourceService       abs.ResourceService
+	recordService         abs.RecordService
+	authenticationService abs.AuthenticationService
+	dataSourceService     abs.DataSourceService
+	namespaceService      abs.NamespaceService
+	userService           abs.UserService
 	initData              *model.InitData
-	watchService          service2.WatchService
+	watchService          abs.WatchService
+	extensionService      abs.ExtensionService
 }
 
 func (g *grpcServer) Stop() {
@@ -56,6 +56,7 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterUserServiceServer(g.grpcServer, NewUserServiceServer(g.userService))
 	stub.RegisterNamespaceServiceServer(g.grpcServer, NewNamespaceServiceServer(g.namespaceService))
 	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.watchService))
+	stub.RegisterExtensionServiceServer(g.grpcServer, NewExtensionServiceServer(g.extensionService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) {
@@ -113,7 +114,7 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 	return handler(ctx, req)
 }
 
-func NewGrpcServer(container app.Container) Server {
+func NewGrpcServer(container abs.Container) Server {
 	return &grpcServer{
 		resourceService:       container.GetResourceService(),
 		recordService:         container.GetRecordService(),
@@ -122,5 +123,6 @@ func NewGrpcServer(container app.Container) Server {
 		dataSourceService:     container.GetDataSourceService(),
 		namespaceService:      container.GetNamespaceService(),
 		userService:           container.GetUserService(),
+		extensionService:      container.GetExtensionService(),
 	}
 }

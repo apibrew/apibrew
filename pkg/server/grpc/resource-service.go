@@ -2,16 +2,16 @@ package grpc
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/server/util"
-	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
 )
 
 type resourceGrpcService struct {
 	stub.ResourceServiceServer
-	resourceService service.ResourceService
+	resourceService abs.ResourceService
 }
 
 func (r resourceGrpcService) Create(ctx context.Context, request *stub.CreateResourceRequest) (*stub.CreateResourceResponse, error) {
@@ -88,6 +88,6 @@ func (r resourceGrpcService) GetSystemResource(ctx context.Context, request *stu
 	}, util.ToStatusError(err)
 }
 
-func NewResourceServiceServer(service service.ResourceService) stub.ResourceServiceServer {
+func NewResourceServiceServer(service abs.ResourceService) stub.ResourceServiceServer {
 	return &resourceGrpcService{resourceService: service}
 }

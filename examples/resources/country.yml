@@ -1,0 +1,42 @@
+annotations: {}
+auditData:
+  createdBy: test-usr
+  createdOn: "2022-10-22T10:27:12.031781Z"
+  updatedBy: ""
+  updatedOn: null
+checks: []
+dataType: USER
+indexes: []
+name: country
+namespace: default
+properties:
+- length: 255
+  mapping:
+    autoGeneration: NONE
+    mapping: name
+    sourceDef: ""
+  name: name
+  primary: false
+  required: true
+  securityContext: null
+  type: TYPE_STRING
+  unique: false
+- length: 255
+  mapping:
+    autoGeneration: NONE
+    mapping: description
+    sourceDef: ""
+  name: description
+  primary: false
+  required: false
+  securityContext: null
+  type: TYPE_STRING
+  unique: false
+references: []
+securityContext: null
+sourceConfig:
+  catalog: ""
+  dataSource: 529c786e-9fb4-11ed-a8d2-b29c4ac91278
+  entity: country
+type: resource
+version: 0

@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/server/util"
-	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/stub"
 )
 
@@ -13,7 +13,7 @@ type NamespaceGrpcService interface {
 
 type NamespaceServiceServer struct {
 	stub.NamespaceServiceServer
-	service service.NamespaceService
+	service abs.NamespaceService
 }
 
 func (u *NamespaceServiceServer) Create(ctx context.Context, request *stub.CreateNamespaceRequest) (*stub.CreateNamespaceResponse, error) {
@@ -54,6 +54,6 @@ func (u *NamespaceServiceServer) List(ctx context.Context, request *stub.ListNam
 	}, util.ToStatusError(err)
 }
 
-func NewNamespaceServiceServer(service service.NamespaceService) stub.NamespaceServiceServer {
+func NewNamespaceServiceServer(service abs.NamespaceService) stub.NamespaceServiceServer {
 	return &NamespaceServiceServer{service: service}
 }

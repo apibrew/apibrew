@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 	"fmt"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/params"
 	"math/rand"
 )
 
@@ -34,7 +34,7 @@ func (g *GenericHandler) RegisterWithSelector(handler *BaseHandler, selector Eve
 	g.selectorMap[handler] = selector
 }
 
-func (g *GenericHandler) BeforeList(ctx context.Context, resource *model.Resource, params params.RecordListParams) errors.ServiceError {
+func (g *GenericHandler) BeforeList(ctx context.Context, resource *model.Resource, params abs.RecordListParams) errors.ServiceError {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
@@ -49,11 +49,22 @@ func (g *GenericHandler) BeforeList(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (g *GenericHandler) List(ctx context.Context, params params.RecordListParams) (handled bool, records []*model.Record, total uint32, err errors.ServiceError) {
-	return false, nil, 0, nil
+func (g *GenericHandler) List(ctx context.Context, resource *model.Resource, params abs.RecordListParams) (handled bool, records []*model.Record, total uint32, err errors.ServiceError) {
+	for _, item := range g.handlers {
+		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
+			continue
+		}
+		if item.List != nil {
+			if handled, records, total, err = item.List(ctx, resource, params); handled {
+				return
+			}
+		}
+	}
+
+	return
 }
 
-func (g *GenericHandler) AfterList(ctx context.Context, resource *model.Resource, params params.RecordListParams, records []*model.Record, total uint32) errors.ServiceError {
+func (g *GenericHandler) AfterList(ctx context.Context, resource *model.Resource, params abs.RecordListParams, records []*model.Record, total uint32) errors.ServiceError {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
@@ -68,7 +79,7 @@ func (g *GenericHandler) AfterList(ctx context.Context, resource *model.Resource
 	return nil
 }
 
-func (g *GenericHandler) BeforeCreate(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) errors.ServiceError {
+func (g *GenericHandler) BeforeCreate(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams) errors.ServiceError {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
@@ -81,11 +92,22 @@ func (g *GenericHandler) BeforeCreate(ctx context.Context, resource *model.Resou
 	return nil
 }
 
-func (g *GenericHandler) Create(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) (handled bool, records []*model.Record, inserted []bool, err errors.ServiceError) {
-	return false, nil, nil, nil
+func (g *GenericHandler) Create(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams) (handled bool, records []*model.Record, inserted []bool, err errors.ServiceError) {
+	for _, item := range g.handlers {
+		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
+			continue
+		}
+		if item.List != nil {
+			if handled, records, inserted, err = item.Create(ctx, resource, params); handled {
+				return
+			}
+		}
+	}
+
+	return
 }
 
-func (g *GenericHandler) AfterCreate(ctx context.Context, resource *model.Resource, params params.RecordCreateParams, records []*model.Record) errors.ServiceError {
+func (g *GenericHandler) AfterCreate(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams, records []*model.Record) errors.ServiceError {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
@@ -102,7 +124,7 @@ func (g *GenericHandler) AfterCreate(ctx context.Context, resource *model.Resour
 	return nil
 }
 
-func (g *GenericHandler) BeforeUpdate(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams) errors.ServiceError {
+func (g *GenericHandler) BeforeUpdate(ctx context.Context, resource *model.Resource, params abs.RecordUpdateParams) errors.ServiceError {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
@@ -119,11 +141,22 @@ func (g *GenericHandler) BeforeUpdate(ctx context.Context, resource *model.Resou
 	return nil
 }
 
-func (g *GenericHandler) Update(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams) (handled bool, records []*model.Record, err errors.ServiceError) {
-	return false, nil, nil
+func (g *GenericHandler) Update(ctx context.Context, resource *model.Resource, params abs.RecordUpdateParams) (handled bool, records []*model.Record, err errors.ServiceError) {
+	for _, item := range g.handlers {
+		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
+			continue
+		}
+		if item.List != nil {
+			if handled, records, err = item.Update(ctx, resource, params); handled {
+				return
+			}
+		}
+	}
+
+	return
 }
 
-func (g *GenericHandler) AfterUpdate(ctx context.Context, resource *model.Resource, params params.RecordUpdateParams, records []*model.Record) errors.ServiceError {
+func (g *GenericHandler) AfterUpdate(ctx context.Context, resource *model.Resource, params abs.RecordUpdateParams, records []*model.Record) errors.ServiceError {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
@@ -158,7 +191,18 @@ func (g *GenericHandler) BeforeGet(ctx context.Context, resource *model.Resource
 }
 
 func (g *GenericHandler) Get(ctx context.Context, resource *model.Resource, id string) (handled bool, record *model.Record, error errors.ServiceError) {
-	return false, nil, nil
+	for _, item := range g.handlers {
+		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
+			continue
+		}
+		if item.List != nil {
+			if handled, record, error = item.Get(ctx, resource, id); handled {
+				return
+			}
+		}
+	}
+
+	return
 }
 
 func (g *GenericHandler) AfterGet(ctx context.Context, resource *model.Resource, id string, res *model.Record) errors.ServiceError {
@@ -178,7 +222,7 @@ func (g *GenericHandler) AfterGet(ctx context.Context, resource *model.Resource,
 	return nil
 }
 
-func (g *GenericHandler) BeforeDelete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError {
+func (g *GenericHandler) BeforeDelete(ctx context.Context, resource *model.Resource, params abs.RecordDeleteParams) errors.ServiceError {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, &model.Resource{Namespace: params.Namespace, Name: params.Resource}) {
 			continue
@@ -187,7 +231,7 @@ func (g *GenericHandler) BeforeDelete(ctx context.Context, params params.RecordD
 			continue
 		}
 
-		if err := item.BeforeDelete(ctx, params); err != nil {
+		if err := item.BeforeDelete(ctx, resource, params); err != nil {
 			return err
 		}
 	}
@@ -195,11 +239,22 @@ func (g *GenericHandler) BeforeDelete(ctx context.Context, params params.RecordD
 	return nil
 }
 
-func (g *GenericHandler) Delete(ctx context.Context, params params.RecordDeleteParams) (handled bool, err errors.ServiceError) {
-	return false, nil
+func (g *GenericHandler) Delete(ctx context.Context, resource *model.Resource, params abs.RecordDeleteParams) (handled bool, err errors.ServiceError) {
+	for _, item := range g.handlers {
+		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
+			continue
+		}
+		if item.List != nil {
+			if handled, err = item.Delete(ctx, resource, params); handled {
+				return
+			}
+		}
+	}
+
+	return
 }
 
-func (g *GenericHandler) AfterDelete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError {
+func (g *GenericHandler) AfterDelete(ctx context.Context, resource *model.Resource, params abs.RecordDeleteParams) errors.ServiceError {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, &model.Resource{Namespace: params.Namespace, Name: params.Resource}) {
 			continue
@@ -208,7 +263,7 @@ func (g *GenericHandler) AfterDelete(ctx context.Context, params params.RecordDe
 			continue
 		}
 
-		if err := item.AfterDelete(ctx, params); err != nil {
+		if err := item.AfterDelete(ctx, resource, params); err != nil {
 			return err
 		}
 	}

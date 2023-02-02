@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	util2 "github.com/tislib/data-handler/pkg/server/util"
-	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 )
@@ -14,7 +14,7 @@ type UserGrpcService interface {
 
 type userServiceServer struct {
 	stub.UserServiceServer
-	service service.UserService
+	service abs.UserService
 }
 
 func (u *userServiceServer) Create(ctx context.Context, request *stub.CreateUserRequest) (*stub.CreateUserResponse, error) {
@@ -57,6 +57,6 @@ func (u *userServiceServer) List(ctx context.Context, request *stub.ListUserRequ
 	}, util2.ToStatusError(err)
 }
 
-func NewUserServiceServer(service service.UserService) stub.UserServiceServer {
+func NewUserServiceServer(service abs.UserService) stub.UserServiceServer {
 	return &userServiceServer{service: service}
 }

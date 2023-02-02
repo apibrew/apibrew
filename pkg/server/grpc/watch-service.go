@@ -3,14 +3,13 @@ package grpc
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/service"
-	"github.com/tislib/data-handler/pkg/service/params"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/stub"
 )
 
 type watchGrpcService struct {
 	stub.WatchServiceServer
-	watchService service.WatchService
+	watchService abs.WatchService
 }
 
 func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.WatchService_WatchServer) error {
@@ -19,7 +18,7 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.WatchService_W
 		cancel()
 	}()
 
-	out := w.watchService.Watch(localCtx, params.WatchParams{
+	out := w.watchService.Watch(localCtx, abs.WatchParams{
 		Namespace:  req.Namespace,
 		Resource:   req.Resource,
 		Query:      req.Query,
@@ -39,6 +38,6 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.WatchService_W
 	return nil
 }
 
-func NewWatchServiceServer(service service.WatchService) stub.WatchServiceServer {
+func NewWatchServiceServer(service abs.WatchService) stub.WatchServiceServer {
 	return &watchGrpcService{watchService: service}
 }

@@ -8,8 +8,8 @@ POST http://localhost:9009/authentication/token
 Content-Type: application/json
 
 {
-  "username": "taleh5",
-  "password": "taleh5",
+  "username": "admin",
+  "password": "admin",
   "term": 3
 }
 
