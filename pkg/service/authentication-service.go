@@ -28,7 +28,6 @@ type CheckParams struct {
 }
 
 type AuthenticationService interface {
-	InjectRecordService(service RecordService)
 	Init(data *model.InitData)
 	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
@@ -127,10 +126,6 @@ type RequestWithToken interface {
 	GetToken() string
 }
 
-func (s *authenticationService) InjectRecordService(service RecordService) {
-	s.recordService = service
-}
-
 func (s *authenticationService) LocateUser(ctx context.Context, username, password string) (*model.User, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
@@ -209,6 +204,8 @@ func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Ti
 	}
 }
 
-func NewAuthenticationService() AuthenticationService {
-	return &authenticationService{}
+func NewAuthenticationService(recordService RecordService) AuthenticationService {
+	return &authenticationService{
+		recordService: recordService,
+	}
 }

@@ -8,8 +8,8 @@ import (
 const MetaDataKey = "MetaDataKey"
 
 type HandlerRegistration struct {
-	handler  *handler.BaseHandler
-	selector handler.EventSelector
+	Handler  *handler.BaseHandler
+	Selector handler.EventSelector
 }
 
 type BackendRegistration struct {

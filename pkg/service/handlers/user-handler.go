@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	service2 "github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/service/handler"
 	"github.com/tislib/data-handler/pkg/service/params"
 	"github.com/tislib/data-handler/pkg/service/security"
@@ -13,8 +12,6 @@ import (
 
 type userHandler struct {
 	handler.BaseHandler
-	userService   service2.UserService
-	recordService service2.RecordService
 }
 
 func (h *userHandler) BeforeCreate(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) errors.ServiceError {

@@ -13,9 +13,7 @@ import (
 )
 
 type DataSourceService interface {
-	InjectResourceService(service ResourceService)
 	Init(*model.InitData)
-	InjectRecordService(service RecordService)
 	ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError)
 	List(ctx context.Context) ([]*model.DataSource, errors.ServiceError)
 	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
@@ -24,7 +22,6 @@ type DataSourceService interface {
 	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, catalog, entity string) (*model.Resource, errors.ServiceError)
 	Get(ctx context.Context, id string) (*model.DataSource, errors.ServiceError)
 	Delete(ctx context.Context, ids []string) errors.ServiceError
-	InjectBackendProviderService(service BackendProviderService)
 }
 
 type dataSourceService struct {
@@ -32,10 +29,6 @@ type dataSourceService struct {
 	recordService          RecordService
 	ServiceName            string
 	backendProviderService BackendProviderService
-}
-
-func (d *dataSourceService) InjectBackendProviderService(backendProviderService BackendProviderService) {
-	d.backendProviderService = backendProviderService
 }
 
 func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError) {
@@ -181,14 +174,6 @@ func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.Ser
 	})
 }
 
-func (d *dataSourceService) InjectResourceService(service ResourceService) {
-	d.resourceService = service
-}
-
-func (d *dataSourceService) InjectRecordService(service RecordService) {
-	d.recordService = service
-}
-
 func (d *dataSourceService) Init(data *model.InitData) {
 	d.backendProviderService.MigrateResource(system.DataSourceResource, nil)
 
@@ -205,8 +190,11 @@ func (d *dataSourceService) Init(data *model.InitData) {
 	}
 }
 
-func NewDataSourceService() DataSourceService {
+func NewDataSourceService(resourceService ResourceService, recordService RecordService, backendProviderService BackendProviderService) DataSourceService {
 	return &dataSourceService{
-		ServiceName: "DataSourceService",
+		ServiceName:            "DataSourceService",
+		resourceService:        resourceService,
+		recordService:          recordService,
+		backendProviderService: backendProviderService,
 	}
 }

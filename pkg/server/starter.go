@@ -5,10 +5,10 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
-	"github.com/tislib/data-handler/pkg/app"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/server/grpc"
 	"github.com/tislib/data-handler/pkg/server/rest"
+	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/util"
 	"net"
 	"net/http"
@@ -47,7 +47,7 @@ func Run() {
 		log.Fatalf("failed to load init data: %v", err)
 	}
 
-	app := new(app.App)
+	app := new(service.App)
 
 	app.SetInitData(initData)
 

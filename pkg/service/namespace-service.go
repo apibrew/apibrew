@@ -12,8 +12,6 @@ import (
 )
 
 type NamespaceService interface {
-	InjectRecordService(service RecordService)
-	InjectResourceService(service ResourceService)
 	Init(data *model.InitData)
 	Create(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError)
 	Update(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError)
@@ -32,14 +30,6 @@ type namespaceService struct {
 
 func (u *namespaceService) InjectBackendProviderService(backendProviderService BackendProviderService) {
 	u.backendProviderService = backendProviderService
-}
-
-func (u *namespaceService) InjectResourceService(service ResourceService) {
-	u.resourceService = service
-}
-
-func (u *namespaceService) InjectRecordService(service RecordService) {
-	u.recordService = service
 }
 
 func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
@@ -128,8 +118,11 @@ func (d *namespaceService) Init(data *model.InitData) {
 	}
 }
 
-func NewNamespaceService() NamespaceService {
+func NewNamespaceService(resourceService ResourceService, recordService RecordService, backendProviderService BackendProviderService) NamespaceService {
 	return &namespaceService{
-		serviceName: "NamespaceService",
+		serviceName:            "NamespaceService",
+		resourceService:        resourceService,
+		recordService:          recordService,
+		backendProviderService: backendProviderService,
 	}
 }

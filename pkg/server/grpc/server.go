@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/app"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
@@ -115,7 +114,7 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 	return handler(ctx, req)
 }
 
-func NewGrpcServer(container app.Container) Server {
+func NewGrpcServer(container service.Container) Server {
 	return &grpcServer{
 		resourceService:       container.GetResourceService(),
 		recordService:         container.GetRecordService(),

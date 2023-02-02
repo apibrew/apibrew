@@ -18,6 +18,9 @@ type pluginService struct {
 
 func (p pluginService) Init(data *model.InitData) {
 	for _, pluginsPath := range strings.Split(data.Config.PluginsPath, ":") {
+		if pluginsPath == "" {
+			continue
+		}
 
 		files, err := os.ReadDir(pluginsPath)
 		if err != nil {
@@ -26,6 +29,7 @@ func (p pluginService) Init(data *model.InitData) {
 
 		for _, file := range files {
 			if strings.HasSuffix(file.Name(), ".so") {
+				log.Print("Loading plugin: " + file.Name())
 				p.loadPlugin(pluginsPath + "/" + file.Name())
 			}
 		}
@@ -39,15 +43,23 @@ func (p pluginService) loadPlugin(path string) {
 		panic(err)
 	}
 
+	log.Print("plugin loaded")
+
 	symbol, err := pl.Lookup(plugin2.MetaDataKey)
 
 	if err != nil {
 		panic(err)
 	}
 
-	if meta, ok := symbol.(plugin2.MetaData); ok {
-		log.Print(meta.Handlers)
+	log.Print(symbol.(*plugin2.MetaData))
+
+	if meta, ok := symbol.(*plugin2.MetaData); ok {
+		for _, handler := range meta.Handlers {
+			log.Print(handler)
+		}
 	}
+
+	log.Print("plugin run successful")
 }
 
 func NewPluginService() PluginService {

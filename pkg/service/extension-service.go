@@ -177,9 +177,12 @@ func (d *extensionService) configureExtension(extension *model.Extension) {
 	d.genericHandler.RegisterWithSelector(hdlr, handler.ResourceSelector(&model.Resource{Namespace: extension.Namespace, Name: extension.Resource}))
 }
 
-func NewExtensionService() ExtensionService {
+func NewExtensionService(recordService RecordService, backendProviderService BackendProviderService, genericHandler *handler.GenericHandler) ExtensionService {
 	return &extensionService{
-		ServiceName:         "ExtensionService",
-		extensionVersionMap: make(map[string]uint32),
+		ServiceName:            "ExtensionService",
+		extensionVersionMap:    make(map[string]uint32),
+		recordService:          recordService,
+		backendProviderService: backendProviderService,
+		genericHandler:         genericHandler,
 	}
 }
