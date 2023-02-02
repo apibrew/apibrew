@@ -6,9 +6,9 @@ import (
 	"github.com/gorilla/mux"
 	swaggerFiles "github.com/swaggo/files"
 	"github.com/swaggo/http-swagger"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service"
 	"net/http"
 )
 
@@ -17,7 +17,7 @@ type SwaggerApi interface {
 }
 
 type swaggerApi struct {
-	resourceService service.ResourceService
+	resourceService abs.ResourceService
 }
 
 func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
@@ -184,7 +184,7 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 	return schema
 }
 
-func NewSwaggerApi(resourceService service.ResourceService) SwaggerApi {
+func NewSwaggerApi(resourceService abs.ResourceService) SwaggerApi {
 	return &swaggerApi{
 		resourceService: resourceService,
 	}

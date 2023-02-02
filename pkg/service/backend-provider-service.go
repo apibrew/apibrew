@@ -3,27 +3,19 @@ package service
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/backend"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/backend/postgres"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/mapping"
+	"github.com/tislib/data-handler/pkg/resources"
+	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/service/security"
-	"github.com/tislib/data-handler/pkg/system"
 )
-
-type BackendProviderService interface {
-	Init(data *model.InitData)
-	GetSystemBackend(ctx context.Context) backend.Backend
-	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (backend.Backend, errors.ServiceError)
-	DestroyBackend(ctx context.Context, id string) error
-	MigrateResource(resource *model.Resource, referenceMap map[string]backend.ReferenceMapEntry)
-}
 
 type backendProviderService struct {
 	systemDataSource *model.DataSource
-	backendMap       map[string]backend.Backend
+	backendMap       map[string]abs.Backend
 }
 
 func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) error {
@@ -40,7 +32,7 @@ func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceI
 	return nil
 }
 
-func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (backend.Backend, errors.ServiceError) {
+func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (abs.Backend, errors.ServiceError) {
 	if b.backendMap[dataSourceId] != nil {
 		return b.backendMap[dataSourceId], nil
 	}
@@ -53,7 +45,7 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 		return b.GetSystemBackend(ctx), nil
 	} else {
 		systemCtx := security.WithSystemContext(context.TODO())
-		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, system.DataSourceResource, dataSourceId)
+		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, dataSourceId)
 
 		if err != nil {
 			return nil, err
@@ -63,11 +55,11 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 	}
 }
 
-func (b *backendProviderService) GetSystemBackend(ctx context.Context) backend.Backend {
+func (b *backendProviderService) GetSystemBackend(ctx context.Context) abs.Backend {
 	return b.GetBackend(b.systemDataSource)
 }
 
-func (b *backendProviderService) GetBackend(dataSource *model.DataSource) backend.Backend {
+func (b *backendProviderService) GetBackend(dataSource *model.DataSource) abs.Backend {
 	if b.backendMap[dataSource.Id] != nil {
 		return b.backendMap[dataSource.Id]
 	}
@@ -80,13 +72,15 @@ func (b *backendProviderService) GetBackend(dataSource *model.DataSource) backen
 	return instance
 }
 
-func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceBackendType) backend.Constructor {
+func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceBackendType) abs.BackendConstructor {
 	switch backend {
 	case model.DataSourceBackendType_POSTGRESQL:
 		return postgres.NewPostgresResourceServiceBackend
 	case model.DataSourceBackendType_MYSQL:
 		return nil
 	case model.DataSourceBackendType_MONGODB:
+		return nil
+	case model.DataSourceBackendType_CUSTOM:
 		return nil
 	}
 
@@ -97,12 +91,12 @@ func (b *backendProviderService) Init(data *model.InitData) {
 	b.systemDataSource = data.SystemDataSource
 }
 
-func (b *backendProviderService) MigrateResource(resource *model.Resource, referenceMap map[string]backend.ReferenceMapEntry) {
+func (b *backendProviderService) MigrateResource(resource *model.Resource, referenceMap map[string]abs.ReferenceMapEntry) {
 	if resource.Annotations == nil {
 		resource.Annotations = make(map[string]string)
 	}
 
-	err := b.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), backend.UpgradeResourceParams{
+	err := b.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
 		Resource:       resource,
 		ForceMigration: true,
 		ReferenceMap:   referenceMap,
@@ -113,19 +107,8 @@ func (b *backendProviderService) MigrateResource(resource *model.Resource, refer
 	}
 }
 
-func NewBackendProviderService() BackendProviderService {
+func NewBackendProviderService() abs.BackendProviderService {
 	return &backendProviderService{
-		backendMap: make(map[string]backend.Backend),
+		backendMap: make(map[string]abs.Backend),
 	}
 }
-
-//
-//func (p *postgresResourceServiceBackend) Init() {
-//	err := p.withBackend(context.TODO(), p.systemBackend.GetDataSourceId(), false, func(tx *sql.Tx) errors.ServiceError {
-//		return resourceSetupTables(tx)
-//	})
-//
-//	if err != nil {
-//		panic(err)
-//	}
-//}

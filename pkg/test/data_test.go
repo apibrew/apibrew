@@ -24,8 +24,8 @@ var systemDataSource = &model.DataSource{
 
 var dhTest = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
-	Name:        "data-source-1",
-	Description: "data-source-1",
+	Name:        "dh-test",
+	Description: "dh-test",
 	Options: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
 			Username:      "dh_test",
@@ -247,6 +247,37 @@ var richResource1 = &model.Resource{
 				},
 			},
 			Required: true,
+		},
+	},
+}
+
+var simpleVirtualResource1 = &model.Resource{
+	Name:      "virtualResource",
+	Namespace: "default",
+	DataType:  2,
+	Virtual:   true,
+	Properties: []*model.ResourceProperty{
+		{
+			Name: "name",
+			Type: model.ResourcePropertyType_TYPE_STRING,
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "name",
+				},
+			},
+			Length:   255,
+			Required: true,
+		},
+		{
+			Name: "description",
+			Type: model.ResourcePropertyType_TYPE_STRING,
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "description",
+				},
+			},
+			Length:   255,
+			Required: false,
 		},
 	},
 }

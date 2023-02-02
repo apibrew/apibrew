@@ -1,0 +1,19 @@
+type: record
+resource: extension
+id: b1f5dbd8-a0be-11ed-be7f-b29c4ac91271
+properties:
+  name: insurance_extension_service
+  namespace: default
+  resource: country
+  serverHost: 127.0.0.1
+  serverPort: 40234
+  operations:
+    - operationType: 2
+      step: 0
+      sync: false
+#    - operationType: 2
+#      step: 1
+#      sync: true
+#    - operationType: 2
+#      step: 2
+#      sync: true

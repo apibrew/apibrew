@@ -1,61 +1,31 @@
 package service
 
 import (
-	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/handler"
-	"github.com/tislib/data-handler/pkg/service/params"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"strings"
 )
 
-type RecordService interface {
-	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
-	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
-	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
-
-	Init(data *model.InitData)
-	InjectBackendProviderService(backendProviderService BackendProviderService)
-	InjectResourceService(service ResourceService)
-
-	List(ctx context.Context, params params.RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
-	Create(ctx context.Context, params params.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError)
-	Update(ctx context.Context, params params.RecordUpdateParams) ([]*model.Record, errors.ServiceError)
-	Get(ctx context.Context, params params.RecordGetParams) (*model.Record, errors.ServiceError)
-	Delete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
-	InjectGenericHandler(handler *handler.GenericHandler)
-}
-
 type recordService struct {
 	ServiceName            string
-	resourceService        ResourceService
+	resourceService        abs.ResourceService
 	genericHandler         *handler.GenericHandler
-	backendServiceProvider BackendProviderService
+	backendServiceProvider abs.BackendProviderService
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
 	return PrepareQuery(resource, queryMap)
 }
 
-func (r *recordService) InjectBackendProviderService(backendProviderService BackendProviderService) {
-	r.backendServiceProvider = backendProviderService
-}
-
-func (r *recordService) InjectGenericHandler(genericHandler *handler.GenericHandler) {
-	r.genericHandler = genericHandler
-}
-
-func (r *recordService) InjectResourceService(service ResourceService) {
-	r.resourceService = service
-}
-
 func (r *recordService) Init(data *model.InitData) {
 
 }
 
-func (r *recordService) validateRecords(resource *model.Resource, list []*model.Record) errors.ServiceError {
+func (r *recordService) validateRecords(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)
@@ -67,7 +37,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 	for _, record := range list {
 		for _, property := range resource.Properties {
 			propertyType := types.ByResourcePropertyType(property.Type)
-			packedVal := record.Properties[property.Name]
+			packedVal, exists := record.Properties[property.Name]
 
 			if packedVal != nil {
 				err := propertyType.ValidatePackedValue(packedVal)
@@ -104,7 +74,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 
 			isEmpty := propertyType.IsEmpty(val)
 
-			if property.Required && isEmpty {
+			if property.Required && isEmpty && (exists || !isUpdate) {
 				fieldErrors = append(fieldErrors, &model.ErrorField{
 					RecordId: record.Id,
 					Property: property.Name,
@@ -134,6 +104,11 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 	}), ";")).WithErrorFields(fieldErrors)
 }
 
-func NewRecordService() RecordService {
-	return &recordService{ServiceName: "RecordService"}
+func NewRecordService(resourceService abs.ResourceService, backendProviderService abs.BackendProviderService, genericHandler *handler.GenericHandler) abs.RecordService {
+	return &recordService{
+		ServiceName:            "RecordService",
+		resourceService:        resourceService,
+		backendServiceProvider: backendProviderService,
+		genericHandler:         genericHandler,
+	}
 }

@@ -4,9 +4,8 @@ import (
 	"context"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
-	service2 "github.com/tislib/data-handler/pkg/service"
-	"github.com/tislib/data-handler/pkg/service/params"
 	"github.com/tislib/data-handler/pkg/stub"
 	"net/http"
 	"strconv"
@@ -18,8 +17,8 @@ type RecordApi interface {
 }
 
 type recordApi struct {
-	recordService   service2.RecordService
-	resourceService service2.ResourceService
+	recordService   abs.RecordService
+	resourceService abs.ResourceService
 }
 
 func (r *recordApi) ConfigureRouter(router *mux.Router) {
@@ -102,7 +101,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		}
 	}
 
-	result, total, serviceErr := r.recordService.List(request.Context(), params.RecordListParams{
+	result, total, serviceErr := r.recordService.List(request.Context(), abs.RecordListParams{
 		Query:      query,
 		Namespace:  "default",
 		Resource:   resourceName,
@@ -141,9 +140,8 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	res, inserted, serviceErr := r.recordService.Create(request.Context(), params.RecordCreateParams{
+	res, inserted, serviceErr := r.recordService.Create(request.Context(), abs.RecordCreateParams{
 		Namespace:      "default",
-		Resource:       resourceName,
 		Records:        []*model.Record{record1},
 		IgnoreIfExists: false,
 	})
@@ -162,7 +160,7 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 	resourceName := vars["resourceName"]
 	id := vars["id"]
 
-	record, serviceErr := r.recordService.Get(request.Context(), params.RecordGetParams{
+	record, serviceErr := r.recordService.Get(request.Context(), abs.RecordGetParams{
 		Namespace: "default",
 		Resource:  resourceName,
 		Id:        id,
@@ -193,7 +191,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 	record.Resource = resourceName
 	record.Id = id
 
-	result, serviceErr := r.recordService.Update(request.Context(), params.RecordUpdateParams{
+	result, serviceErr := r.recordService.Update(request.Context(), abs.RecordUpdateParams{
 		Namespace:    "",
 		Records:      []*model.Record{record},
 		CheckVersion: false,
@@ -216,7 +214,7 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 	resourceName := vars["resourceName"]
 	id := vars["id"]
 
-	serviceErr := r.recordService.Delete(request.Context(), params.RecordDeleteParams{
+	serviceErr := r.recordService.Delete(request.Context(), abs.RecordDeleteParams{
 		Namespace: "default",
 		Resource:  resourceName,
 		Ids:       []string{id},
@@ -242,7 +240,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		return
 	}
 
-	result, total, serviceErr := r.recordService.List(request.Context(), params.RecordListParams{
+	result, total, serviceErr := r.recordService.List(request.Context(), abs.RecordListParams{
 		Query:      listRecordRequest.Query,
 		Namespace:  "default",
 		Resource:   listRecordRequest.Resource,
@@ -272,7 +270,7 @@ func (r *recordApi) handleRecordBatchCreate(writer http.ResponseWriter, request 
 	writer.Write([]byte("Not implemented"))
 }
 
-func NewRecordApi(recordService service2.RecordService, resourceService service2.ResourceService) RecordApi {
+func NewRecordApi(recordService abs.RecordService, resourceService abs.ResourceService) RecordApi {
 	return &recordApi{
 		recordService:   recordService,
 		resourceService: resourceService,

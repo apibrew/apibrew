@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "github.com/tislib/data-handler/pkg/stub";
+import "google/api/annotations.proto";
+import 'model/query.proto';
+import 'model/extension.proto';
+
+service ExtensionService {
+  rpc List (ListExtensionRequest) returns (ListExtensionResponse) {}
+  rpc Get (GetExtensionRequest) returns (GetExtensionResponse) {}
+  rpc Create (CreateExtensionRequest) returns (CreateExtensionResponse) {}
+  rpc Update (UpdateExtensionRequest) returns (UpdateExtensionResponse) {}
+  rpc Delete (DeleteExtensionRequest) returns (DeleteExtensionResponse) {}
+}
+
+message ListExtensionRequest {
+  string token = 1;
+}
+
+message ListExtensionResponse {
+  repeated model.RemoteExtension content = 1;
+}
+
+message GetExtensionRequest {
+  string token = 1;
+  string id = 2;
+}
+
+message GetExtensionResponse {
+  model.RemoteExtension extension = 1;
+}
+
+message CreateExtensionRequest {
+  string token = 1;
+  repeated model.RemoteExtension extensions = 2;
+}
+
+message CreateExtensionResponse {
+  repeated model.RemoteExtension extensions = 1;
+}
+
+message UpdateExtensionRequest {
+  string token = 1;
+  repeated model.RemoteExtension extensions = 2;
+}
+
+message UpdateExtensionResponse {
+  repeated model.RemoteExtension extensions = 1;
+}
+
+message DeleteExtensionRequest {
+  string token = 1;
+  repeated string ids = 2;
+}
+
+message DeleteExtensionResponse {
+}

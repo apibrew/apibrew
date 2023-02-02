@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package stub.model;
+package model;
 
 option go_package = "github.com/tislib/data-handler/pkg/model";
 
@@ -17,6 +17,7 @@ message AppConfig {
   string jwtPublicKey = 4;
   bool disableAuthentication = 5;
   bool disableCache = 6;
+  string pluginsPath = 7;
 }
 
 message InitData {
