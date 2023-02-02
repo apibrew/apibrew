@@ -4,14 +4,12 @@ import (
 	"context"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/service/handler"
 	"github.com/tislib/data-handler/pkg/service/params"
 )
 
 type dataSourceHandler struct {
 	handler.BaseHandler
-	dataSourceService service.DataSourceService
 }
 
 func (h *dataSourceHandler) BeforeCreate(ctx context.Context, resource *model.Resource, params params.RecordCreateParams) errors.ServiceError {

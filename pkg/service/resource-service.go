@@ -22,7 +22,6 @@ type ResourceService interface {
 	CheckResourceExists(ctx context.Context, namespace, name string) (bool, errors.ServiceError)
 	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
 	GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, errors.ServiceError)
-	InjectBackendProviderService(backendProviderService BackendProviderService)
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
 	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
 	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
@@ -34,10 +33,6 @@ type resourceService struct {
 	cache                  *ttlcache.Cache[string, *model.Resource]
 	disableCache           bool
 	backendProviderService BackendProviderService
-}
-
-func (r *resourceService) InjectBackendProviderService(backendProviderService BackendProviderService) {
-	r.backendProviderService = backendProviderService
 }
 
 func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
@@ -607,8 +602,9 @@ func (r *resourceService) loadResource(ctx context.Context, resource *model.Reso
 	return nil
 }
 
-func NewResourceService() ResourceService {
+func NewResourceService(backendProviderService BackendProviderService) ResourceService {
 	return &resourceService{
+		backendProviderService: backendProviderService,
 		cache: ttlcache.New[string, *model.Resource](
 			ttlcache.WithTTL[string, *model.Resource](1 * time.Minute),
 		),

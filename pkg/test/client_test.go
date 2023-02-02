@@ -3,8 +3,8 @@ package test
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/app"
 	grpc2 "github.com/tislib/data-handler/pkg/server/grpc"
+	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -19,7 +19,7 @@ var recordServiceClient stub.RecordServiceClient
 var userServiceClient stub.UserServiceClient
 
 func init() {
-	application := new(app.App)
+	application := new(service.App)
 
 	var initData = prepareInitData()
 

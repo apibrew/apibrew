@@ -5,10 +5,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
-	"github.com/tislib/data-handler/pkg/app"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/stub"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -151,7 +151,7 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 	})
 }
 
-func NewServer(container app.Container) Server {
+func NewServer(container service.Container) Server {
 	return &server{
 		recordApi:  NewRecordApi(container.GetRecordService(), container.GetResourceService()),
 		swaggerApi: NewSwaggerApi(container.GetResourceService()),

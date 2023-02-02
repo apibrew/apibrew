@@ -12,8 +12,6 @@ import (
 )
 
 type UserService interface {
-	InjectRecordService(service RecordService)
-	InjectResourceService(service ResourceService)
 	Init(data *model.InitData)
 	Create(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError)
 	Update(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError)
@@ -34,15 +32,6 @@ type userService struct {
 func (u *userService) InjectBackendProviderService(backendProviderService BackendProviderService) {
 	u.backendProviderService = backendProviderService
 }
-
-func (u *userService) InjectResourceService(service ResourceService) {
-	u.resourceService = service
-}
-
-func (u *userService) InjectRecordService(service RecordService) {
-	u.recordService = service
-}
-
 func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError) {
 	// insert records via resource service
 	records := mapping.MapToRecord(users, mapping.UserToRecord)
@@ -146,8 +135,11 @@ func (d *userService) Init(data *model.InitData) {
 	}
 }
 
-func NewUserService() UserService {
+func NewUserService(resourceService ResourceService, recordService RecordService, backendProviderService BackendProviderService) UserService {
 	return &userService{
-		serviceName: "UserService",
+		serviceName:            "UserService",
+		recordService:          recordService,
+		resourceService:        resourceService,
+		backendProviderService: backendProviderService,
 	}
 }
