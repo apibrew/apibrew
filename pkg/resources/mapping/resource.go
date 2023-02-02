@@ -2,7 +2,7 @@ package mapping
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/system"
+	"github.com/tislib/data-handler/pkg/resources"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -11,9 +11,11 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 
 	properties["name"] = structpb.NewStringValue(resource.Name)
 	properties["namespace"] = structpb.NewStringValue(resource.Namespace)
-	properties["dataSource"] = structpb.NewStringValue(resource.SourceConfig.DataSource)
-	properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
-	properties["catalog"] = structpb.NewStringValue(resource.SourceConfig.Catalog)
+	if resource.SourceConfig != nil {
+		properties["dataSource"] = structpb.NewStringValue(resource.SourceConfig.DataSource)
+		properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
+		properties["catalog"] = structpb.NewStringValue(resource.SourceConfig.Catalog)
+	}
 	properties["type"] = structpb.NewNumberValue(float64(resource.DataType.Number()))
 	properties["annotations"], _ = structpb.NewValue(convertMap(resource.Annotations, func(v string) interface{} {
 		return v
@@ -23,7 +25,7 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 
 	return &model.Record{
 		Id:         resource.Id,
-		Resource:   system.ResourceResource.Name,
+		Resource:   resources.ResourceResource.Name,
 		DataType:   resource.DataType,
 		Properties: properties,
 		AuditData:  resource.AuditData,

@@ -1,35 +1,20 @@
 package service
 
 import (
-	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/handler"
-	"github.com/tislib/data-handler/pkg/service/params"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"strings"
 )
 
-type RecordService interface {
-	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
-	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
-	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
-
-	Init(data *model.InitData)
-
-	List(ctx context.Context, params params.RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
-	Create(ctx context.Context, params params.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError)
-	Update(ctx context.Context, params params.RecordUpdateParams) ([]*model.Record, errors.ServiceError)
-	Get(ctx context.Context, params params.RecordGetParams) (*model.Record, errors.ServiceError)
-	Delete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError
-}
-
 type recordService struct {
 	ServiceName            string
-	resourceService        ResourceService
+	resourceService        abs.ResourceService
 	genericHandler         *handler.GenericHandler
-	backendServiceProvider BackendProviderService
+	backendServiceProvider abs.BackendProviderService
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
@@ -119,7 +104,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 	}), ";")).WithErrorFields(fieldErrors)
 }
 
-func NewRecordService(resourceService ResourceService, backendProviderService BackendProviderService, genericHandler *handler.GenericHandler) RecordService {
+func NewRecordService(resourceService abs.ResourceService, backendProviderService abs.BackendProviderService, genericHandler *handler.GenericHandler) abs.RecordService {
 	return &recordService{
 		ServiceName:            "RecordService",
 		resourceService:        resourceService,

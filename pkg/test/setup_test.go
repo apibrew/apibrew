@@ -94,6 +94,7 @@ func setupDataSources(ctx context.Context) {
 func setupResources(ctx context.Context) {
 	resources := []*model.Resource{
 		richResource1,
+		simpleVirtualResource1,
 	}
 	richResource1.SourceConfig.DataSource = dhTest.Id
 	// creating data sources

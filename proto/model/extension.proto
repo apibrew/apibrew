@@ -32,15 +32,19 @@ message ExtensionOperation {
     bool sync = 3; // sync operation is always true for instead step
 }
 
-message Extension {
+message ExtensionConfig {
+  string namespace = 5;
+  string resource = 6;
+  repeated ExtensionOperation operations = 8;
+}
+
+message RemoteExtension {
   string id = 1;
   string name = 2;
   string description = 3;
   DataType type = 4;
-  string namespace = 5;
-  string resource = 6;
   ExtensionServer server = 7;
-  repeated ExtensionOperation operations = 8;
+  ExtensionConfig config = 8;
 
   AuditData auditData = 101;
   uint32 version = 102;

@@ -2,72 +2,58 @@ package service
 
 import (
 	"context"
+	"fmt"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
+	"github.com/tislib/data-handler/pkg/ext"
+	"github.com/tislib/data-handler/pkg/extension"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/resources"
+	mapping2 "github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/service/handler"
-	"github.com/tislib/data-handler/pkg/service/mapping"
-	"github.com/tislib/data-handler/pkg/service/params"
 	"github.com/tislib/data-handler/pkg/service/security"
-	"github.com/tislib/data-handler/pkg/system"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"time"
 )
 
-type ExtensionService interface {
-	Init(*model.InitData)
-	InjectRecordService(service RecordService)
-	List(ctx context.Context) ([]*model.Extension, errors.ServiceError)
-	Create(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)
-	Update(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)
-	Get(ctx context.Context, id string) (*model.Extension, errors.ServiceError)
-	Delete(ctx context.Context, ids []string) errors.ServiceError
-	InjectBackendProviderService(service BackendProviderService)
-	InjectGenericHandler(handler *handler.GenericHandler)
-}
-
 type extensionService struct {
-	recordService          RecordService
+	recordService          abs.RecordService
 	ServiceName            string
-	backendProviderService BackendProviderService
+	backendProviderService abs.BackendProviderService
 	extensionVersionMap    map[string]uint32
 	genericHandler         *handler.GenericHandler
+	extensionHandlerMap    map[abs.Extension]*handler.BaseHandler
 }
 
-func (d *extensionService) InjectGenericHandler(genericHandler *handler.GenericHandler) {
-	d.genericHandler = genericHandler
-}
-
-func (d *extensionService) InjectBackendProviderService(backendProviderService BackendProviderService) {
-	d.backendProviderService = backendProviderService
-}
-
-func (d *extensionService) List(ctx context.Context) ([]*model.Extension, errors.ServiceError) {
+func (d *extensionService) List(ctx context.Context) ([]*model.RemoteExtension, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.Debug("Begin data-source List")
 	defer logger.Debug("End data-source List")
 
-	result, _, err := d.recordService.List(ctx, params.RecordListParams{
-		Namespace: system.ExtensionResource.Namespace,
-		Resource:  system.ExtensionResource.Name,
+	result, _, err := d.recordService.List(ctx, abs.RecordListParams{
+		Namespace: resources.ExtensionResource.Namespace,
+		Resource:  resources.ExtensionResource.Name,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.ExtensionFromRecord), nil
+	return mapping2.MapFromRecord(result, mapping2.ExtensionFromRecord), nil
 }
 
-func (d *extensionService) Create(ctx context.Context, extensions []*model.Extension) ([]*model.Extension, errors.ServiceError) {
+func (d *extensionService) Create(ctx context.Context, extensions []*model.RemoteExtension) ([]*model.RemoteExtension, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("extensions", extensions).Debug("Begin data-source Create")
 	defer logger.Debug("End data-source Create")
 
 	// insert records via resource service
-	records := mapping.MapToRecord(extensions, mapping.ExtensionToRecord)
-	result, _, err := d.recordService.Create(ctx, params.RecordCreateParams{
-		Namespace: system.ExtensionResource.Namespace,
+	records := mapping2.MapToRecord(extensions, mapping2.ExtensionToRecord)
+	result, _, err := d.recordService.Create(ctx, abs.RecordCreateParams{
+		Namespace: resources.ExtensionResource.Namespace,
 		Records:   records,
 	})
 
@@ -75,18 +61,18 @@ func (d *extensionService) Create(ctx context.Context, extensions []*model.Exten
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.ExtensionFromRecord), nil
+	return mapping2.MapFromRecord(result, mapping2.ExtensionFromRecord), nil
 }
 
-func (d *extensionService) Update(ctx context.Context, extensions []*model.Extension) ([]*model.Extension, errors.ServiceError) {
+func (d *extensionService) Update(ctx context.Context, extensions []*model.RemoteExtension) ([]*model.RemoteExtension, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("extensions", extensions).Debug("Begin data-source Update")
 	defer logger.Debug("End data-source Update")
 
 	// insert records via resource service
-	records := mapping.MapToRecord(extensions, mapping.ExtensionToRecord)
-	result, err := d.recordService.Update(ctx, params.RecordUpdateParams{
-		Namespace: system.ExtensionResource.Namespace,
+	records := mapping2.MapToRecord(extensions, mapping2.ExtensionToRecord)
+	result, err := d.recordService.Update(ctx, abs.RecordUpdateParams{
+		Namespace: resources.ExtensionResource.Namespace,
 		Records:   records,
 	})
 
@@ -94,17 +80,17 @@ func (d *extensionService) Update(ctx context.Context, extensions []*model.Exten
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.ExtensionFromRecord), nil
+	return mapping2.MapFromRecord(result, mapping2.ExtensionFromRecord), nil
 }
 
-func (d *extensionService) Get(ctx context.Context, id string) (*model.Extension, errors.ServiceError) {
+func (d *extensionService) Get(ctx context.Context, id string) (*model.RemoteExtension, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("id", id).Debug("Begin data-source Get")
 	defer logger.Debug("End data-source Get")
 
-	record, err := d.recordService.Get(ctx, params.RecordGetParams{
-		Namespace: system.ExtensionResource.Namespace,
-		Resource:  system.ExtensionResource.Name,
+	record, err := d.recordService.Get(ctx, abs.RecordGetParams{
+		Namespace: resources.ExtensionResource.Namespace,
+		Resource:  resources.ExtensionResource.Name,
 		Id:        id,
 	})
 
@@ -112,7 +98,7 @@ func (d *extensionService) Get(ctx context.Context, id string) (*model.Extension
 		return nil, err
 	}
 
-	return mapping.ExtensionFromRecord(record), nil
+	return mapping2.ExtensionFromRecord(record), nil
 }
 
 func (d *extensionService) Delete(ctx context.Context, ids []string) errors.ServiceError {
@@ -120,19 +106,15 @@ func (d *extensionService) Delete(ctx context.Context, ids []string) errors.Serv
 	logger.WithField("ids", ids).Debug("Begin data-source Delete")
 	defer logger.Debug("End data-source Delete")
 
-	return d.recordService.Delete(ctx, params.RecordDeleteParams{
-		Namespace: system.ExtensionResource.Namespace,
-		Resource:  system.ExtensionResource.Name,
+	return d.recordService.Delete(ctx, abs.RecordDeleteParams{
+		Namespace: resources.ExtensionResource.Namespace,
+		Resource:  resources.ExtensionResource.Name,
 		Ids:       ids,
 	})
 }
 
-func (d *extensionService) InjectRecordService(service RecordService) {
-	d.recordService = service
-}
-
 func (d *extensionService) Init(data *model.InitData) {
-	d.backendProviderService.MigrateResource(system.ExtensionResource, nil)
+	d.backendProviderService.MigrateResource(resources.ExtensionResource, nil)
 
 	d.runConfigureExtensions()
 
@@ -163,24 +145,45 @@ func (d *extensionService) runConfigureExtensions() {
 	log.Debug("Finish reconfiguring extension services")
 }
 
-func (d *extensionService) configureExtension(extension *model.Extension) {
-	if d.extensionVersionMap[extension.Name] == extension.Version {
+func (d *extensionService) RegisterExtension(extension abs.Extension) {
+	d.extensionHandlerMap[extension] = NewExtensionHandler(extension)
+	d.genericHandler.RegisterWithSelector(d.extensionHandlerMap[extension], handler.ResourceSelector(&model.Resource{Namespace: extension.GetExtensionConfig().Namespace, Name: extension.GetExtensionConfig().Resource}))
+}
+
+func (d *extensionService) UnRegisterExtension(extension abs.Extension) {
+	d.genericHandler.Unregister(d.extensionHandlerMap[extension])
+	delete(d.extensionHandlerMap, extension)
+}
+
+func (d *extensionService) configureExtension(remoteExtension *model.RemoteExtension) {
+	if d.extensionVersionMap[remoteExtension.Name] == remoteExtension.Version {
 		return
 	}
 
-	d.extensionVersionMap[extension.Name] = extension.Version
+	d.extensionVersionMap[remoteExtension.Name] = remoteExtension.Version
 
-	log.Debug("Start reconfiguring extension: " + extension.Name)
+	log.Debug("Start reconfiguring extension: " + remoteExtension.Name)
+	var opts []grpc.DialOption
 
-	hdlr := NewExtensionHandler(extension)
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	d.genericHandler.RegisterWithSelector(hdlr, handler.ResourceSelector(&model.Resource{Namespace: extension.Namespace, Name: extension.Resource}))
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", remoteExtension.Server.Host, remoteExtension.Server.Port), opts...)
+	if err != nil {
+		panic(err)
+	}
+
+	client := ext.NewRecordExtensionServiceClient(conn)
+
+	hdlr := NewExtensionHandler(extension.FromRecordExtensionServiceClient(client, remoteExtension.Config))
+
+	d.genericHandler.RegisterWithSelector(hdlr, handler.ResourceSelector(&model.Resource{Namespace: remoteExtension.Config.Namespace, Name: remoteExtension.Config.Resource}))
 }
 
-func NewExtensionService(recordService RecordService, backendProviderService BackendProviderService, genericHandler *handler.GenericHandler) ExtensionService {
+func NewExtensionService(recordService abs.RecordService, backendProviderService abs.BackendProviderService, genericHandler *handler.GenericHandler) abs.ExtensionService {
 	return &extensionService{
 		ServiceName:            "ExtensionService",
 		extensionVersionMap:    make(map[string]uint32),
+		extensionHandlerMap:    make(map[abs.Extension]*handler.BaseHandler),
 		recordService:          recordService,
 		backendProviderService: backendProviderService,
 		genericHandler:         genericHandler,

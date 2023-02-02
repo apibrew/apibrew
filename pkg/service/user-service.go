@@ -3,41 +3,31 @@ package service
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/mapping"
-	"github.com/tislib/data-handler/pkg/service/params"
+	"github.com/tislib/data-handler/pkg/resources"
+	mapping2 "github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/service/security"
-	"github.com/tislib/data-handler/pkg/system"
 )
 
-type UserService interface {
-	Init(data *model.InitData)
-	Create(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError)
-	Update(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError)
-	Delete(ctx context.Context, ids []string) errors.ServiceError
-	Get(ctx context.Context, id string) (*model.User, errors.ServiceError)
-	List(ctx context.Context, query *model.BooleanExpression, limit uint32, offset uint64) ([]*model.User, errors.ServiceError)
-	InjectBackendProviderService(service BackendProviderService)
-}
-
 type userService struct {
-	recordService          RecordService
-	authenticationService  AuthenticationService
+	recordService          abs.RecordService
+	authenticationService  abs.AuthenticationService
 	serviceName            string
-	resourceService        ResourceService
-	backendProviderService BackendProviderService
+	resourceService        abs.ResourceService
+	backendProviderService abs.BackendProviderService
 }
 
-func (u *userService) InjectBackendProviderService(backendProviderService BackendProviderService) {
+func (u *userService) InjectBackendProviderService(backendProviderService abs.BackendProviderService) {
 	u.backendProviderService = backendProviderService
 }
 func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError) {
 	// insert records via resource service
-	records := mapping.MapToRecord(users, mapping.UserToRecord)
+	records := mapping2.MapToRecord(users, mapping2.UserToRecord)
 
-	result, _, err := u.recordService.Create(ctx, params.RecordCreateParams{
-		Namespace: system.UserResource.Namespace,
+	result, _, err := u.recordService.Create(ctx, abs.RecordCreateParams{
+		Namespace: resources.UserResource.Namespace,
 		Records:   records,
 	})
 
@@ -45,17 +35,17 @@ func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model
 		return nil, err
 	}
 
-	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
+	response := mapping2.MapFromRecord(result, mapping2.UserFromRecord)
 
 	return response, nil
 }
 
 func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model.User, errors.ServiceError) {
 	// update records via resource service
-	records := mapping.MapToRecord(users, mapping.UserToRecord)
+	records := mapping2.MapToRecord(users, mapping2.UserToRecord)
 
-	result, err := u.recordService.Update(ctx, params.RecordUpdateParams{
-		Namespace: system.UserResource.Namespace,
+	result, err := u.recordService.Update(ctx, abs.RecordUpdateParams{
+		Namespace: resources.UserResource.Namespace,
 		Records:   records,
 	})
 
@@ -63,23 +53,23 @@ func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model
 		return nil, err
 	}
 
-	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
+	response := mapping2.MapFromRecord(result, mapping2.UserFromRecord)
 
 	return response, nil
 }
 
 func (u *userService) Delete(ctx context.Context, ids []string) errors.ServiceError {
-	return u.recordService.Delete(ctx, params.RecordDeleteParams{
-		Namespace: system.UserResource.Namespace,
-		Resource:  system.UserResource.Name,
+	return u.recordService.Delete(ctx, abs.RecordDeleteParams{
+		Namespace: resources.UserResource.Namespace,
+		Resource:  resources.UserResource.Name,
 		Ids:       ids,
 	})
 }
 
 func (u *userService) Get(ctx context.Context, id string) (*model.User, errors.ServiceError) {
-	record, err := u.recordService.Get(ctx, params.RecordGetParams{
-		Namespace: system.UserResource.Namespace,
-		Resource:  system.UserResource.Name,
+	record, err := u.recordService.Get(ctx, abs.RecordGetParams{
+		Namespace: resources.UserResource.Namespace,
+		Resource:  resources.UserResource.Name,
 		Id:        id,
 	})
 
@@ -87,16 +77,16 @@ func (u *userService) Get(ctx context.Context, id string) (*model.User, errors.S
 		return nil, err
 	}
 
-	response := mapping.UserFromRecord(record)
+	response := mapping2.UserFromRecord(record)
 
 	return response, nil
 }
 
 func (u *userService) List(ctx context.Context, query *model.BooleanExpression, limit uint32, offset uint64) ([]*model.User, errors.ServiceError) {
-	result, _, err := u.recordService.List(ctx, params.RecordListParams{
+	result, _, err := u.recordService.List(ctx, abs.RecordListParams{
 		Query:     query,
-		Namespace: system.UserResource.Namespace,
-		Resource:  system.UserResource.Name,
+		Namespace: resources.UserResource.Namespace,
+		Resource:  resources.UserResource.Name,
 		Limit:     limit,
 		Offset:    offset,
 	})
@@ -105,13 +95,13 @@ func (u *userService) List(ctx context.Context, query *model.BooleanExpression, 
 		return nil, err
 	}
 
-	response := mapping.MapFromRecord(result, mapping.UserFromRecord)
+	response := mapping2.MapFromRecord(result, mapping2.UserFromRecord)
 
 	return response, nil
 }
 
 func (d *userService) Init(data *model.InitData) {
-	d.backendProviderService.MigrateResource(system.UserResource, nil)
+	d.backendProviderService.MigrateResource(resources.UserResource, nil)
 
 	if len(data.InitUsers) > 0 {
 		for _, user := range data.InitUsers {
@@ -123,9 +113,9 @@ func (d *userService) Init(data *model.InitData) {
 
 			user.Password = hashStr
 		}
-		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
-			Namespace:      system.UserResource.Namespace,
-			Records:        mapping.MapToRecord(data.InitUsers, mapping.UserToRecord),
+		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
+			Namespace:      resources.UserResource.Namespace,
+			Records:        mapping2.MapToRecord(data.InitUsers, mapping2.UserToRecord),
 			IgnoreIfExists: true,
 		})
 
@@ -135,7 +125,7 @@ func (d *userService) Init(data *model.InitData) {
 	}
 }
 
-func NewUserService(resourceService ResourceService, recordService RecordService, backendProviderService BackendProviderService) UserService {
+func NewUserService(resourceService abs.ResourceService, recordService abs.RecordService, backendProviderService abs.BackendProviderService) abs.UserService {
 	return &userService{
 		serviceName:            "UserService",
 		recordService:          recordService,

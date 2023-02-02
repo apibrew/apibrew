@@ -94,6 +94,7 @@ message Resource {
   repeated ResourceReference references = 8; // not implemented
   repeated ResourceIndex indexes = 9; // not implemented
   SecurityContext securityContext = 10;
+  bool virtual = 11;
 
   AuditData auditData = 101;
   uint32 version = 102;

@@ -2,6 +2,7 @@ package service
 
 import (
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/handler"
@@ -10,65 +11,53 @@ import (
 
 type App struct {
 	initData               *model.InitData
-	authenticationService  AuthenticationService
-	dataSourceService      DataSourceService
-	resourceService        ResourceService
-	recordService          RecordService
-	backendProviderService BackendProviderService
-	namespaceService       NamespaceService
-	userService            UserService
+	authenticationService  abs.AuthenticationService
+	dataSourceService      abs.DataSourceService
+	resourceService        abs.ResourceService
+	recordService          abs.RecordService
+	backendProviderService abs.BackendProviderService
+	namespaceService       abs.NamespaceService
+	userService            abs.UserService
 	genericHandler         *handler.GenericHandler
 	stdHandler             handlers.StdHandler
-	watchService           WatchService
-	extensionService       ExtensionService
-	pluginService          PluginService
+	watchService           abs.WatchService
+	extensionService       abs.ExtensionService
+	pluginService          abs.PluginService
 }
 
-type Container interface {
-	GetRecordService() RecordService
-	GetAuthenticationService() AuthenticationService
-	GetResourceService() ResourceService
-	GetDataSourceService() DataSourceService
-	GetWatchService() WatchService
-	GetNamespaceService() NamespaceService
-	GetUserService() UserService
-	GetExtensionService() ExtensionService
-	GetPluginService() PluginService
-}
-
-func (app *App) GetWatchService() WatchService {
+func (app *App) GetWatchService() abs.WatchService {
 	return app.watchService
 }
 
-func (app *App) GetNamespaceService() NamespaceService {
+func (app *App) GetNamespaceService() abs.NamespaceService {
 	return app.namespaceService
 }
 
-func (app *App) GetExtensionService() ExtensionService {
+func (app *App) GetExtensionService() abs.ExtensionService {
 	return app.extensionService
 }
 
-func (app *App) GetUserService() UserService {
+func (app *App) GetUserService() abs.UserService {
 	return app.userService
 }
 
-func (app *App) GetRecordService() RecordService {
+func (app *App) GetRecordService() abs.RecordService {
 	return app.recordService
 }
 
-func (app *App) GetAuthenticationService() AuthenticationService {
+func (app *App) GetAuthenticationService() abs.AuthenticationService {
 	return app.authenticationService
 }
 
-func (app *App) GetResourceService() ResourceService {
+func (app *App) GetResourceService() abs.ResourceService {
 	return app.resourceService
 }
 
-func (app *App) GetDataSourceService() DataSourceService {
+func (app *App) GetDataSourceService() abs.DataSourceService {
 	return app.dataSourceService
 }
 
-func (app *App) GetPluginService() PluginService {
+func (app *App) GetPluginService() abs.PluginService {
 	return app.pluginService
 }
 

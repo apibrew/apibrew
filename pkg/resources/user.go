@@ -1,23 +1,25 @@
-package system
+package resources
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
 )
 
-var NamespaceResource = &model.Resource{
-	Name:      "namespace",
+var UserResource = &model.Resource{
+	Name:      "user",
 	Namespace: "system",
 	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Entity:     "namespace",
+		Entity:     "user",
 	},
 	Properties: []*model.ResourceProperty{
 		{
-			Name: "name",
+			Name: "username",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "name",
+					Mapping:        "username",
+					SourceDef:      "",
+					AutoGeneration: 0,
 				},
 			},
 			Primary:  false,
@@ -27,17 +29,17 @@ var NamespaceResource = &model.Resource{
 			Unique:   true,
 		},
 		{
-			Name: "description",
+			Name: "password",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "description",
+					Mapping: "password",
 				},
 			},
-			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
-			Required: false,
+			Required: true,
 		},
+		securityContextProperty,
 		{
 			Name: "details",
 			SourceConfig: &model.ResourceProperty_Mapping{
@@ -45,11 +47,8 @@ var NamespaceResource = &model.Resource{
 					Mapping: "details",
 				},
 			},
-			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_OBJECT,
-			Required: false,
+			Type: model.ResourcePropertyType_TYPE_OBJECT,
 		},
-		securityContextProperty,
 	},
 	SecurityContext: securityContextDisallowAll,
 }

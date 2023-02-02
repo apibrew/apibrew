@@ -3,41 +3,27 @@ package service
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/mapping"
-	"github.com/tislib/data-handler/pkg/service/params"
+	"github.com/tislib/data-handler/pkg/resources"
+	mapping2 "github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/service/security"
-	"github.com/tislib/data-handler/pkg/system"
 )
 
-type NamespaceService interface {
-	Init(data *model.InitData)
-	Create(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError)
-	Update(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError)
-	Delete(ctx context.Context, ids []string) errors.ServiceError
-	Get(ctx context.Context, id string) (*model.Namespace, errors.ServiceError)
-	List(ctx context.Context) ([]*model.Namespace, errors.ServiceError)
-	InjectBackendProviderService(service BackendProviderService)
-}
-
 type namespaceService struct {
-	recordService          RecordService
+	recordService          abs.RecordService
 	serviceName            string
-	resourceService        ResourceService
-	backendProviderService BackendProviderService
-}
-
-func (u *namespaceService) InjectBackendProviderService(backendProviderService BackendProviderService) {
-	u.backendProviderService = backendProviderService
+	resourceService        abs.ResourceService
+	backendProviderService abs.BackendProviderService
 }
 
 func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
 	// insert records via resource service
-	records := mapping.MapToRecord(namespaces, mapping.NamespaceToRecord)
+	records := mapping2.MapToRecord(namespaces, mapping2.NamespaceToRecord)
 
-	result, _, err := u.recordService.Create(ctx, params.RecordCreateParams{
-		Namespace: system.NamespaceResource.Namespace,
+	result, _, err := u.recordService.Create(ctx, abs.RecordCreateParams{
+		Namespace: resources.NamespaceResource.Namespace,
 		Records:   records,
 	})
 
@@ -45,15 +31,15 @@ func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Names
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.NamespaceFromRecord), nil
+	return mapping2.MapFromRecord(result, mapping2.NamespaceFromRecord), nil
 }
 
 func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
 	// insert records via resource service
-	records := mapping.MapToRecord(namespaces, mapping.NamespaceToRecord)
+	records := mapping2.MapToRecord(namespaces, mapping2.NamespaceToRecord)
 
-	result, err := u.recordService.Update(ctx, params.RecordUpdateParams{
-		Namespace: system.NamespaceResource.Namespace,
+	result, err := u.recordService.Update(ctx, abs.RecordUpdateParams{
+		Namespace: resources.NamespaceResource.Namespace,
 		Records:   records,
 	})
 
@@ -61,23 +47,23 @@ func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Names
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.NamespaceFromRecord), nil
+	return mapping2.MapFromRecord(result, mapping2.NamespaceFromRecord), nil
 }
 
 func (u *namespaceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
 
-	return u.recordService.Delete(ctx, params.RecordDeleteParams{
-		Namespace: system.NamespaceResource.Namespace,
-		Resource:  system.NamespaceResource.Name,
+	return u.recordService.Delete(ctx, abs.RecordDeleteParams{
+		Namespace: resources.NamespaceResource.Namespace,
+		Resource:  resources.NamespaceResource.Name,
 		Ids:       ids,
 	})
 }
 
 func (u *namespaceService) Get(ctx context.Context, id string) (*model.Namespace, errors.ServiceError) {
 
-	record, err := u.recordService.Get(ctx, params.RecordGetParams{
-		Namespace: system.NamespaceResource.Namespace,
-		Resource:  system.NamespaceResource.Name,
+	record, err := u.recordService.Get(ctx, abs.RecordGetParams{
+		Namespace: resources.NamespaceResource.Namespace,
+		Resource:  resources.NamespaceResource.Name,
 		Id:        id,
 	})
 
@@ -85,30 +71,30 @@ func (u *namespaceService) Get(ctx context.Context, id string) (*model.Namespace
 		return nil, err
 	}
 
-	return mapping.NamespaceFromRecord(record), nil
+	return mapping2.NamespaceFromRecord(record), nil
 }
 
 func (u *namespaceService) List(ctx context.Context) ([]*model.Namespace, errors.ServiceError) {
 
-	result, _, err := u.recordService.List(ctx, params.RecordListParams{
-		Namespace: system.NamespaceResource.Namespace,
-		Resource:  system.NamespaceResource.Name,
+	result, _, err := u.recordService.List(ctx, abs.RecordListParams{
+		Namespace: resources.NamespaceResource.Namespace,
+		Resource:  resources.NamespaceResource.Name,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.NamespaceFromRecord), err
+	return mapping2.MapFromRecord(result, mapping2.NamespaceFromRecord), err
 }
 
 func (d *namespaceService) Init(data *model.InitData) {
-	d.backendProviderService.MigrateResource(system.NamespaceResource, nil)
+	d.backendProviderService.MigrateResource(resources.NamespaceResource, nil)
 
 	if len(data.InitNamespaces) > 0 {
-		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
-			Namespace:      system.NamespaceResource.Namespace,
-			Records:        mapping.MapToRecord(data.InitNamespaces, mapping.NamespaceToRecord),
+		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
+			Namespace:      resources.NamespaceResource.Namespace,
+			Records:        mapping2.MapToRecord(data.InitNamespaces, mapping2.NamespaceToRecord),
 			IgnoreIfExists: true,
 		})
 
@@ -118,7 +104,7 @@ func (d *namespaceService) Init(data *model.InitData) {
 	}
 }
 
-func NewNamespaceService(resourceService ResourceService, recordService RecordService, backendProviderService BackendProviderService) NamespaceService {
+func NewNamespaceService(resourceService abs.ResourceService, recordService abs.RecordService, backendProviderService abs.BackendProviderService) abs.NamespaceService {
 	return &namespaceService{
 		serviceName:            "NamespaceService",
 		resourceService:        resourceService,

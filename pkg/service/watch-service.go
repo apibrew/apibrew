@@ -2,24 +2,20 @@ package service
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	handler2 "github.com/tislib/data-handler/pkg/service/handler"
-	params2 "github.com/tislib/data-handler/pkg/service/params"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
-type WatchService interface {
-	Watch(ctx context.Context, params params2.WatchParams) <-chan *model.WatchMessage
-}
-
 type watchService struct {
 	genericHandler *handler2.GenericHandler
 }
 
-func (w watchService) Watch(ctx context.Context, p params2.WatchParams) <-chan *model.WatchMessage {
+func (w watchService) Watch(ctx context.Context, p abs.WatchParams) <-chan *model.WatchMessage {
 	if p.BufferSize < 0 || p.BufferSize > 1000 {
 		p.BufferSize = 100
 	}
@@ -48,12 +44,12 @@ func (w watchService) Watch(ctx context.Context, p params2.WatchParams) <-chan *
 		}
 	}
 
-	watchHandler.AfterList = func(ctx context.Context, resource *model.Resource, params params2.RecordListParams, records []*model.Record, total uint32) errors.ServiceError {
+	watchHandler.AfterList = func(ctx context.Context, resource *model.Resource, params abs.RecordListParams, records []*model.Record, total uint32) errors.ServiceError {
 		sendEvent(records, model.EventType_LIST)
 		return nil
 	}
 
-	watchHandler.AfterCreate = func(ctx context.Context, resource *model.Resource, params params2.RecordCreateParams, records []*model.Record) errors.ServiceError {
+	watchHandler.AfterCreate = func(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams, records []*model.Record) errors.ServiceError {
 		sendEvent(records, model.EventType_CREATE)
 
 		return nil
@@ -76,6 +72,6 @@ func (w watchService) Watch(ctx context.Context, p params2.WatchParams) <-chan *
 	return out
 }
 
-func NewWatchService(genericHandler *handler2.GenericHandler) WatchService {
+func NewWatchService(genericHandler *handler2.GenericHandler) abs.WatchService {
 	return &watchService{genericHandler: genericHandler}
 }

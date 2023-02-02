@@ -3,32 +3,20 @@ package service
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/mapping"
-	"github.com/tislib/data-handler/pkg/service/params"
+	"github.com/tislib/data-handler/pkg/resources"
+	mapping2 "github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/service/security"
-	"github.com/tislib/data-handler/pkg/system"
 )
 
-type DataSourceService interface {
-	Init(*model.InitData)
-	ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError)
-	List(ctx context.Context) ([]*model.DataSource, errors.ServiceError)
-	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
-	Create(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)
-	Update(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)
-	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, catalog, entity string) (*model.Resource, errors.ServiceError)
-	Get(ctx context.Context, id string) (*model.DataSource, errors.ServiceError)
-	Delete(ctx context.Context, ids []string) errors.ServiceError
-}
-
 type dataSourceService struct {
-	resourceService        ResourceService
-	recordService          RecordService
+	resourceService        abs.ResourceService
+	recordService          abs.RecordService
 	ServiceName            string
-	backendProviderService BackendProviderService
+	backendProviderService abs.BackendProviderService
 }
 
 func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError) {
@@ -50,16 +38,16 @@ func (d *dataSourceService) List(ctx context.Context) ([]*model.DataSource, erro
 	logger.Debug("Begin data-source List")
 	defer logger.Debug("End data-source List")
 
-	result, _, err := d.recordService.List(ctx, params.RecordListParams{
-		Namespace: system.DataSourceResource.Namespace,
-		Resource:  system.DataSourceResource.Name,
+	result, _, err := d.recordService.List(ctx, abs.RecordListParams{
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.DataSourceFromRecord), nil
+	return mapping2.MapFromRecord(result, mapping2.DataSourceFromRecord), nil
 }
 
 func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
@@ -82,9 +70,9 @@ func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.Dat
 	defer logger.Debug("End data-source Create")
 
 	// insert records via resource service
-	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
-	result, _, err := d.recordService.Create(ctx, params.RecordCreateParams{
-		Namespace: system.DataSourceResource.Namespace,
+	records := mapping2.MapToRecord(dataSources, mapping2.DataSourceToRecord)
+	result, _, err := d.recordService.Create(ctx, abs.RecordCreateParams{
+		Namespace: resources.DataSourceResource.Namespace,
 		Records:   records,
 	})
 
@@ -92,7 +80,7 @@ func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.Dat
 		return nil, err
 	}
 
-	return mapping.MapFromRecord(result, mapping.DataSourceFromRecord), nil
+	return mapping2.MapFromRecord(result, mapping2.DataSourceFromRecord), nil
 }
 
 func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.DataSource) ([]*model.DataSource, errors.ServiceError) {
@@ -101,9 +89,9 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 	defer logger.Debug("End data-source Update")
 
 	// insert records via resource service
-	records := mapping.MapToRecord(dataSources, mapping.DataSourceToRecord)
-	result, err := d.recordService.Update(ctx, params.RecordUpdateParams{
-		Namespace: system.DataSourceResource.Namespace,
+	records := mapping2.MapToRecord(dataSources, mapping2.DataSourceToRecord)
+	result, err := d.recordService.Update(ctx, abs.RecordUpdateParams{
+		Namespace: resources.DataSourceResource.Namespace,
 		Records:   records,
 	})
 
@@ -115,7 +103,7 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 		_ = d.backendProviderService.DestroyBackend(ctx, item.Id) //@fixme
 	}
 
-	return mapping.MapFromRecord(result, mapping.DataSourceFromRecord), nil
+	return mapping2.MapFromRecord(result, mapping2.DataSourceFromRecord), nil
 }
 
 func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id string, catalog, entity string) (*model.Resource, errors.ServiceError) {
@@ -149,9 +137,9 @@ func (d *dataSourceService) Get(ctx context.Context, id string) (*model.DataSour
 	logger.WithField("id", id).Debug("Begin data-source Get")
 	defer logger.Debug("End data-source Get")
 
-	record, err := d.recordService.Get(ctx, params.RecordGetParams{
-		Namespace: system.DataSourceResource.Namespace,
-		Resource:  system.DataSourceResource.Name,
+	record, err := d.recordService.Get(ctx, abs.RecordGetParams{
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
 		Id:        id,
 	})
 
@@ -159,7 +147,7 @@ func (d *dataSourceService) Get(ctx context.Context, id string) (*model.DataSour
 		return nil, err
 	}
 
-	return mapping.DataSourceFromRecord(record), nil
+	return mapping2.DataSourceFromRecord(record), nil
 }
 
 func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
@@ -167,20 +155,20 @@ func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.Ser
 	logger.WithField("ids", ids).Debug("Begin data-source Delete")
 	defer logger.Debug("End data-source Delete")
 
-	return d.recordService.Delete(ctx, params.RecordDeleteParams{
-		Namespace: system.DataSourceResource.Namespace,
-		Resource:  system.DataSourceResource.Name,
+	return d.recordService.Delete(ctx, abs.RecordDeleteParams{
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
 		Ids:       ids,
 	})
 }
 
 func (d *dataSourceService) Init(data *model.InitData) {
-	d.backendProviderService.MigrateResource(system.DataSourceResource, nil)
+	d.backendProviderService.MigrateResource(resources.DataSourceResource, nil)
 
 	if len(data.InitDataSources) > 0 {
-		_, _, err := d.recordService.Create(security.SystemContext, params.RecordCreateParams{
-			Namespace:      system.DataSourceResource.Namespace,
-			Records:        mapping.MapToRecord(data.InitDataSources, mapping.DataSourceToRecord),
+		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
+			Namespace:      resources.DataSourceResource.Namespace,
+			Records:        mapping2.MapToRecord(data.InitDataSources, mapping2.DataSourceToRecord),
 			IgnoreIfExists: true,
 		})
 
@@ -190,7 +178,7 @@ func (d *dataSourceService) Init(data *model.InitData) {
 	}
 }
 
-func NewDataSourceService(resourceService ResourceService, recordService RecordService, backendProviderService BackendProviderService) DataSourceService {
+func NewDataSourceService(resourceService abs.ResourceService, recordService abs.RecordService, backendProviderService abs.BackendProviderService) abs.DataSourceService {
 	return &dataSourceService{
 		ServiceName:            "DataSourceService",
 		resourceService:        resourceService,

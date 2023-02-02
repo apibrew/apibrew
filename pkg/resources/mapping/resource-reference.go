@@ -2,7 +2,7 @@ package mapping
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/system"
+	"github.com/tislib/data-handler/pkg/resources"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -14,7 +14,7 @@ func ResourceReferenceToRecord(property *model.ResourceReference, resource *mode
 	properties["cascade"] = structpb.NewBoolValue(property.Cascade)
 
 	return &model.Record{
-		Resource:   system.ResourceReferenceResource.Name,
+		Resource:   resources.ResourceReferenceResource.Name,
 		DataType:   model.DataType_SYSTEM,
 		Properties: properties,
 	}

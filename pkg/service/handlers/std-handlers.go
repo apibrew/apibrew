@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/handler"
-	"github.com/tislib/data-handler/pkg/system"
 )
 
 type StdHandler interface {
@@ -17,8 +17,8 @@ type stdHandler struct {
 }
 
 func (s *stdHandler) Init(data *model.InitData) {
-	s.genericHandler.RegisterWithSelector(s.dataSourceHandler.prepareHandler(), handler.ResourceSelector(system.DataSourceResource))
-	s.genericHandler.RegisterWithSelector(s.userHandler.prepareHandler(), handler.ResourceSelector(system.UserResource))
+	s.genericHandler.RegisterWithSelector(s.dataSourceHandler.prepareHandler(), handler.ResourceSelector(resources.DataSourceResource))
+	s.genericHandler.RegisterWithSelector(s.userHandler.prepareHandler(), handler.ResourceSelector(resources.UserResource))
 }
 
 func NewStdHandler(genericHandler *handler.GenericHandler) StdHandler {

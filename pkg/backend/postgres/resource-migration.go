@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/backend"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-func resourceMigrateTable(ctx context.Context, runner QueryRunner, params backend.UpgradeResourceParams, history bool) errors.ServiceError {
+func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	var err errors.ServiceError

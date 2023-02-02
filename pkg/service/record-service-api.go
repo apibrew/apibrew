@@ -3,17 +3,16 @@ package service
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/backend"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/resources"
 	annotations2 "github.com/tislib/data-handler/pkg/service/annotations"
-	"github.com/tislib/data-handler/pkg/service/params"
-	"github.com/tislib/data-handler/pkg/system"
 	"github.com/tislib/data-handler/pkg/util"
 )
 
-func (r *recordService) List(ctx context.Context, params params.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
+func (r *recordService) List(ctx context.Context, params abs.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
 	resource, err := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if err != nil {
@@ -41,7 +40,7 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 		return nil, 0, err
 	}
 
-	records, total, err := bck.ListRecords(ctx, backend.ListRecordParams{
+	records, total, err := bck.ListRecords(ctx, abs.ListRecordParams{
 		Resource:          resource,
 		Query:             params.Query,
 		Limit:             params.Limit,
@@ -69,7 +68,7 @@ func (r *recordService) List(ctx context.Context, params params.RecordListParams
 	return records, total, err
 }
 
-func (r *recordService) Create(ctx context.Context, params params.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
+func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
 	var entityRecordMap = make(map[string][]*model.Record)
 
 	for _, record := range params.Records {
@@ -163,7 +162,7 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 			}
 		})
 
-		records, inserted, err = bck.AddRecords(txCtx, backend.BulkRecordsParams{
+		records, inserted, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
 			Resource:       resource,
 			Records:        list,
 			IgnoreIfExists: params.IgnoreIfExists,
@@ -188,10 +187,10 @@ func (r *recordService) Create(ctx context.Context, params params.RecordCreatePa
 }
 
 func isResourceRelatedResource(resource *model.Resource) bool {
-	return resource.Namespace == system.ResourceResource.Namespace && (resource.Name == system.ResourceResource.Name || resource.Name == system.ResourcePropertyResource.Name || resource.Name == system.ResourceReferenceResource.Name)
+	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name || resource.Name == resources.ResourcePropertyResource.Name || resource.Name == resources.ResourceReferenceResource.Name)
 }
 
-func (r *recordService) Update(ctx context.Context, params params.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
+func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
 	var entityRecordMap = make(map[string][]*model.Record)
 
 	for _, record := range params.Records {
@@ -285,7 +284,7 @@ func (r *recordService) Update(ctx context.Context, params params.RecordUpdatePa
 			}
 		})
 
-		records, err = bck.UpdateRecords(txCtx, backend.BulkRecordsParams{
+		records, err = bck.UpdateRecords(txCtx, abs.BulkRecordsParams{
 			Resource:     resource,
 			Records:      list,
 			CheckVersion: params.CheckVersion,
@@ -380,7 +379,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 		return nil, err
 	}
 
-	res, total, err := r.List(ctx, params.RecordListParams{
+	res, total, err := r.List(ctx, abs.RecordListParams{
 		Query:             query,
 		Namespace:         namespace,
 		Resource:          resourceName,
@@ -401,11 +400,11 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	return res[0], nil
 }
 
-func (r *recordService) Get(ctx context.Context, params params.RecordGetParams) (*model.Record, errors.ServiceError) {
+func (r *recordService) Get(ctx context.Context, params abs.RecordGetParams) (*model.Record, errors.ServiceError) {
 	return r.GetRecord(ctx, params.Namespace, params.Resource, params.Id)
 }
 
-func (r *recordService) Delete(ctx context.Context, params params.RecordDeleteParams) errors.ServiceError {
+func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParams) errors.ServiceError {
 	resource, err := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if err != nil {

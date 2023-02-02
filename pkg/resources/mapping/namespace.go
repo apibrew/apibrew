@@ -2,7 +2,7 @@ package mapping
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/system"
+	"github.com/tislib/data-handler/pkg/resources"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -19,7 +19,7 @@ func NamespaceToRecord(namespace *model.Namespace) *model.Record {
 
 	return &model.Record{
 		Id:         namespace.Id,
-		Resource:   system.NamespaceResource.Name,
+		Resource:   resources.NamespaceResource.Name,
 		DataType:   namespace.Type,
 		Properties: properties,
 		AuditData:  namespace.AuditData,

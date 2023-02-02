@@ -20,7 +20,7 @@ message ListExtensionRequest {
 }
 
 message ListExtensionResponse {
-  repeated model.Extension content = 1;
+  repeated model.RemoteExtension content = 1;
 }
 
 message GetExtensionRequest {
@@ -29,25 +29,25 @@ message GetExtensionRequest {
 }
 
 message GetExtensionResponse {
-  model.Extension extension = 1;
+  model.RemoteExtension extension = 1;
 }
 
 message CreateExtensionRequest {
   string token = 1;
-  repeated model.Extension extensions = 2;
+  repeated model.RemoteExtension extensions = 2;
 }
 
 message CreateExtensionResponse {
-  repeated model.Extension extensions = 1;
+  repeated model.RemoteExtension extensions = 1;
 }
 
 message UpdateExtensionRequest {
   string token = 1;
-  repeated model.Extension extensions = 2;
+  repeated model.RemoteExtension extensions = 2;
 }
 
 message UpdateExtensionResponse {
-  repeated model.Extension extensions = 1;
+  repeated model.RemoteExtension extensions = 1;
 }
 
 message DeleteExtensionRequest {
