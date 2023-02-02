@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/server/util"
-	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/stub"
 )
 
@@ -13,7 +13,7 @@ type ExtensionGrpcService interface {
 
 type ExtensionServiceServer struct {
 	stub.ExtensionServiceServer
-	service service.ExtensionService
+	service abs.ExtensionService
 }
 
 func (u *ExtensionServiceServer) Create(ctx context.Context, request *stub.CreateExtensionRequest) (*stub.CreateExtensionResponse, error) {
@@ -54,6 +54,6 @@ func (u *ExtensionServiceServer) List(ctx context.Context, request *stub.ListExt
 	}, util.ToStatusError(err)
 }
 
-func NewExtensionServiceServer(service service.ExtensionService) stub.ExtensionServiceServer {
+func NewExtensionServiceServer(service abs.ExtensionService) stub.ExtensionServiceServer {
 	return &ExtensionServiceServer{service: service}
 }

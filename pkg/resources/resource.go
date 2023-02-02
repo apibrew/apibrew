@@ -1,4 +1,4 @@
-package system
+package resources
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
@@ -29,6 +29,20 @@ var ResourceResource = &model.Resource{
 			Unique:   true,
 		},
 		{
+			Name: "virtual",
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping:        "virtual",
+					SourceDef:      "",
+					AutoGeneration: 0,
+				},
+			},
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Length:   256,
+			Required: false,
+		},
+		{
 			Name: "namespace",
 			SourceConfig: &model.ResourceProperty_Mapping{
 				Mapping: &model.ResourcePropertyMappingConfig{
@@ -48,7 +62,7 @@ var ResourceResource = &model.Resource{
 			},
 			Type:     model.ResourcePropertyType_TYPE_UUID,
 			Length:   256,
-			Required: true,
+			Required: false,
 		},
 		{
 			Name: "entity",
@@ -59,7 +73,7 @@ var ResourceResource = &model.Resource{
 			},
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
-			Required: true,
+			Required: false,
 		},
 		{
 			Name: "catalog",
@@ -70,7 +84,7 @@ var ResourceResource = &model.Resource{
 			},
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
-			Required: true,
+			Required: false,
 		},
 		{
 			Name: "annotations",

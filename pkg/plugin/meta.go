@@ -1,7 +1,7 @@
 package plugin
 
 import (
-	"github.com/tislib/data-handler/pkg/backend"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/service/handler"
 )
 
@@ -13,7 +13,7 @@ type HandlerRegistration struct {
 }
 
 type BackendRegistration struct {
-	backend backend.Backend
+	backend abs.Backend
 	name    string
 }
 

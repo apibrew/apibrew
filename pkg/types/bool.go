@@ -29,7 +29,7 @@ func (u boolType) Pointer(required bool) any {
 	if required {
 		return new(bool)
 	} else {
-		return new(bool)
+		return new(*bool)
 	}
 }
 

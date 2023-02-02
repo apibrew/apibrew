@@ -1,4 +1,4 @@
-package system
+package resources
 
 import (
 	"github.com/tislib/data-handler/pkg/model"

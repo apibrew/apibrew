@@ -5,37 +5,20 @@ import (
 	"crypto/rsa"
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/mapping"
+	"github.com/tislib/data-handler/pkg/resources"
+	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/service/security"
-	"github.com/tislib/data-handler/pkg/system"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
 	"time"
 )
 
-type ResourceIdentifier interface {
-}
-
-type CheckParams struct {
-	Ctx       context.Context
-	Token     string
-	Service   string
-	Method    string
-	Resources any
-}
-
-type AuthenticationService interface {
-	Init(data *model.InitData)
-	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError)
-	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
-	ParseAndVerifyToken(token string) (*security.UserDetails, errors.ServiceError)
-}
-
 type authenticationService struct {
-	recordService         RecordService
+	recordService         abs.RecordService
 	privateKey            *rsa.PrivateKey
 	publicKey             *rsa.PublicKey
 	DisableAuthentication bool
@@ -59,7 +42,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 	expiration := s.ExpirationFromTerm(term)
 	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
-		UserDetails: security.UserDetails{
+		UserDetails: abs.UserDetails{
 			Username:        user.Username,
 			SecurityContext: user.SecurityContext,
 		},
@@ -99,7 +82,7 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 
 	newToken, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
-		UserDetails: security.UserDetails{
+		UserDetails: abs.UserDetails{
 			Username:        user.Username,
 			SecurityContext: user.SecurityContext,
 		},
@@ -118,7 +101,7 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 	}, nil
 }
 
-func (s *authenticationService) ParseAndVerifyToken(token string) (*security.UserDetails, errors.ServiceError) {
+func (s *authenticationService) ParseAndVerifyToken(token string) (*abs.UserDetails, errors.ServiceError) {
 	return security.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
 }
 
@@ -151,7 +134,7 @@ func (s *authenticationService) FindUser(ctx context.Context, username string) (
 
 	logger.Debug("FindUser with username: ", username)
 
-	res, err := s.recordService.FindBy(ctx, system.UserResource.Namespace, system.UserResource.Name, "username", username)
+	res, err := s.recordService.FindBy(ctx, resources.UserResource.Namespace, resources.UserResource.Name, "username", username)
 
 	if err != nil {
 		return nil, err
@@ -204,7 +187,7 @@ func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Ti
 	}
 }
 
-func NewAuthenticationService(recordService RecordService) AuthenticationService {
+func NewAuthenticationService(recordService abs.RecordService) abs.AuthenticationService {
 	return &authenticationService{
 		recordService: recordService,
 	}

@@ -2,7 +2,7 @@ package mapping
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/system"
+	"github.com/tislib/data-handler/pkg/resources"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -19,7 +19,7 @@ func UserToRecord(user *model.User) *model.Record {
 
 	return &model.Record{
 		Id:         user.Id,
-		Resource:   system.UserResource.Name,
+		Resource:   resources.UserResource.Name,
 		DataType:   user.Type,
 		Properties: properties,
 		AuditData:  user.AuditData,

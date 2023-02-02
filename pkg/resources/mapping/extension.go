@@ -2,25 +2,25 @@ package mapping
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/system"
+	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func ExtensionToRecord(extension *model.Extension) *model.Record {
+func ExtensionToRecord(extension *model.RemoteExtension) *model.Record {
 	properties := make(map[string]*structpb.Value)
 
 	properties["name"] = structpb.NewStringValue(extension.Name)
 	properties["description"] = structpb.NewStringValue(extension.Description)
-	properties["namespace"] = structpb.NewStringValue(extension.Namespace)
-	properties["resource"] = structpb.NewStringValue(extension.Resource)
+	properties["namespace"] = structpb.NewStringValue(extension.Config.Namespace)
+	properties["resource"] = structpb.NewStringValue(extension.Config.Resource)
 
 	if extension.Server != nil {
 		properties["serverHost"] = structpb.NewStringValue(extension.Server.Host)
 		properties["serverPort"] = structpb.NewNumberValue(float64(extension.Server.Port))
 	}
 
-	listVal, err := structpb.NewList(util.ArrayMap(extension.Operations, func(op *model.ExtensionOperation) interface{} {
+	listVal, err := structpb.NewList(util.ArrayMap(extension.Config.Operations, func(op *model.ExtensionOperation) interface{} {
 		return map[string]interface{}{
 			"operationType": op.OperationType.Number(),
 			"step":          op.Step.Number(),
@@ -36,7 +36,7 @@ func ExtensionToRecord(extension *model.Extension) *model.Record {
 
 	return &model.Record{
 		Id:         extension.Id,
-		Resource:   system.DataSourceResource.Name,
+		Resource:   resources.DataSourceResource.Name,
 		DataType:   extension.Type,
 		Properties: properties,
 		AuditData:  extension.AuditData,
@@ -44,17 +44,19 @@ func ExtensionToRecord(extension *model.Extension) *model.Record {
 	}
 }
 
-func ExtensionFromRecord(record *model.Record) *model.Extension {
+func ExtensionFromRecord(record *model.Record) *model.RemoteExtension {
 	if record == nil {
 		return nil
 	}
 
-	result := &model.Extension{
-		Id:        record.Id,
-		Name:      record.Properties["name"].GetStringValue(),
-		Type:      record.DataType,
-		Namespace: record.Properties["namespace"].GetStringValue(),
-		Resource:  record.Properties["resource"].GetStringValue(),
+	result := &model.RemoteExtension{
+		Id:   record.Id,
+		Name: record.Properties["name"].GetStringValue(),
+		Type: record.DataType,
+		Config: &model.ExtensionConfig{
+			Namespace: record.Properties["namespace"].GetStringValue(),
+			Resource:  record.Properties["resource"].GetStringValue(),
+		},
 		Server: &model.ExtensionServer{
 			Host: record.Properties["serverHost"].GetStringValue(),
 			Port: int32(record.Properties["serverPort"].GetNumberValue()),
@@ -67,7 +69,7 @@ func ExtensionFromRecord(record *model.Record) *model.Extension {
 		for _, value := range record.Properties["operations"].GetListValue().Values {
 			fields := value.GetStructValue().GetFields()
 
-			result.Operations = append(result.Operations, &model.ExtensionOperation{
+			result.Config.Operations = append(result.Config.Operations, &model.ExtensionOperation{
 				OperationType: model.ExtensionOperationType(fields["operationType"].GetNumberValue()),
 				Step:          model.ExtensionOperationStep(fields["step"].GetNumberValue()),
 				Sync:          fields["sync"].GetBoolValue(),

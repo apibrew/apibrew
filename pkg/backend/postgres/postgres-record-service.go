@@ -5,14 +5,14 @@ import (
 	"database/sql"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/backend"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	annotations2 "github.com/tislib/data-handler/pkg/service/annotations"
 )
 
-func (p *postgresResourceServiceBackend) ListRecords(ctx context.Context, params backend.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
+func (p *postgresResourceServiceBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("Begin listing: %v", params)
@@ -26,7 +26,7 @@ func (p *postgresResourceServiceBackend) ListRecords(ctx context.Context, params
 	return
 }
 
-func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params backend.BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError) {
+func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	var inserted bool
@@ -61,7 +61,7 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 	return params.Records, inserted, nil
 }
 
-func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, params backend.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
+func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
 	err := p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		for _, record := range params.Records {
 			err := recordUpdate(ctx, tx, params.Resource, record, params.CheckVersion)

@@ -250,3 +250,34 @@ var richResource1 = &model.Resource{
 		},
 	},
 }
+
+var simpleVirtualResource1 = &model.Resource{
+	Name:      "virtualResource",
+	Namespace: "default",
+	DataType:  2,
+	Virtual:   true,
+	Properties: []*model.ResourceProperty{
+		{
+			Name: "name",
+			Type: model.ResourcePropertyType_TYPE_STRING,
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "name",
+				},
+			},
+			Length:   255,
+			Required: true,
+		},
+		{
+			Name: "description",
+			Type: model.ResourcePropertyType_TYPE_STRING,
+			SourceConfig: &model.ResourceProperty_Mapping{
+				Mapping: &model.ResourcePropertyMappingConfig{
+					Mapping: "description",
+				},
+			},
+			Length:   255,
+			Required: false,
+		},
+	},
+}

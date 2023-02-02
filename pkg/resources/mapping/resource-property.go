@@ -2,7 +2,7 @@ package mapping
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/system"
+	"github.com/tislib/data-handler/pkg/resources"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -26,7 +26,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["securityContext"] = SecurityContextToValue(resource.SecurityContext)
 
 	return &model.Record{
-		Resource:   system.ResourcePropertyResource.Name,
+		Resource:   resources.ResourcePropertyResource.Name,
 		DataType:   model.DataType_SYSTEM,
 		Properties: properties,
 	}

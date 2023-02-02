@@ -3,11 +3,11 @@ package grpc
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	service "github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/service/security"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/grpc"
@@ -24,15 +24,15 @@ type Server interface {
 
 type grpcServer struct {
 	grpcServer            *grpc.Server
-	resourceService       service.ResourceService
-	recordService         service.RecordService
-	authenticationService service.AuthenticationService
-	dataSourceService     service.DataSourceService
-	namespaceService      service.NamespaceService
-	userService           service.UserService
+	resourceService       abs.ResourceService
+	recordService         abs.RecordService
+	authenticationService abs.AuthenticationService
+	dataSourceService     abs.DataSourceService
+	namespaceService      abs.NamespaceService
+	userService           abs.UserService
 	initData              *model.InitData
-	watchService          service.WatchService
-	extensionService      service.ExtensionService
+	watchService          abs.WatchService
+	extensionService      abs.ExtensionService
 }
 
 func (g *grpcServer) Stop() {
@@ -114,7 +114,7 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 	return handler(ctx, req)
 }
 
-func NewGrpcServer(container service.Container) Server {
+func NewGrpcServer(container abs.Container) Server {
 	return &grpcServer{
 		resourceService:       container.GetResourceService(),
 		recordService:         container.GetRecordService(),

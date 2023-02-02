@@ -5,21 +5,16 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/model"
 	"time"
 )
 
 type JwtUserDetailsSignParams struct {
 	Key         rsa.PrivateKey
-	UserDetails UserDetails
+	UserDetails abs.UserDetails
 	ExpiresAt   time.Time
 	Issuer      string
-}
-
-type UserDetails struct {
-	Username        string
-	SecurityContext *model.SecurityContext
 }
 
 func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.ServiceError) {
@@ -56,7 +51,7 @@ func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.Service
 	return signedToken, nil
 }
 
-func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*UserDetails, errors.ServiceError) {
+func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*abs.UserDetails, errors.ServiceError) {
 	claims := new(JwtUserClaims)
 
 	_, err := jwt.ParseWithClaims(tokenContent, claims, func(token *jwt.Token) (interface{}, error) {
@@ -69,7 +64,7 @@ func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*Use
 		return nil, errors.InternalError.WithDetails(err.Error())
 	}
 
-	return &UserDetails{
+	return &abs.UserDetails{
 		Username:        claims.Username,
 		SecurityContext: claims.SecurityContext,
 	}, nil

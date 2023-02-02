@@ -2,16 +2,13 @@ package service
 
 import (
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 	plugin2 "github.com/tislib/data-handler/pkg/plugin"
 	"os"
 	"plugin"
 	"strings"
 )
-
-type PluginService interface {
-	Init(data *model.InitData)
-}
 
 type pluginService struct {
 }
@@ -62,6 +59,6 @@ func (p pluginService) loadPlugin(path string) {
 	log.Print("plugin run successful")
 }
 
-func NewPluginService() PluginService {
+func NewPluginService() abs.PluginService {
 	return &pluginService{}
 }

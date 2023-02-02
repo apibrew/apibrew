@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
-	"github.com/tislib/data-handler/pkg/backend"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 )
 
@@ -15,7 +15,7 @@ type postgresResourceServiceBackend struct {
 	transactionMap    map[string]*txData
 }
 
-func NewPostgresResourceServiceBackend(connectionDetails backend.DataSourceConnectionDetails) backend.Backend {
+func NewPostgresResourceServiceBackend(connectionDetails abs.DataSourceConnectionDetails) abs.Backend {
 	return &postgresResourceServiceBackend{
 		connectionDetails: connectionDetails.(*model.DataSource_PostgresqlParams),
 		transactionMap:    make(map[string]*txData),
