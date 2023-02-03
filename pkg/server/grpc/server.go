@@ -57,6 +57,7 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterNamespaceServiceServer(g.grpcServer, NewNamespaceServiceServer(g.namespaceService))
 	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.watchService))
 	stub.RegisterExtensionServiceServer(g.grpcServer, NewExtensionServiceServer(g.extensionService))
+	stub.RegisterGenericServiceServer(g.grpcServer, NewGenericService(g.recordService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) {
