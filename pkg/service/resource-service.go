@@ -412,6 +412,8 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, na
 }
 
 func (r *resourceService) Init(data *model.InitData) {
+	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
+
 	r.backendProviderService.MigrateResource(resources.ResourceResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ResourcePropertyResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ResourceReferenceResource, r.schema)
