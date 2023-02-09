@@ -43,11 +43,11 @@ func dereferenceReflect(rfVal reflect.Value) interface{} {
 func ByResourcePropertyType(resourcePropertyType model.ResourcePropertyType) PropertyType {
 	switch resourcePropertyType {
 	case model.ResourcePropertyType_TYPE_INT32:
-		return int32Type{}
+		return Int32Type
 	case model.ResourcePropertyType_TYPE_INT64:
-		return int64Type{}
+		return Int64Type
 	case model.ResourcePropertyType_TYPE_FLOAT32:
-		return float32Type{}
+		return Float32Type
 	case model.ResourcePropertyType_TYPE_FLOAT64:
 		return float64Type{}
 	case model.ResourcePropertyType_TYPE_STRING:
@@ -59,10 +59,18 @@ func ByResourcePropertyType(resourcePropertyType model.ResourcePropertyType) Pro
 	case model.ResourcePropertyType_TYPE_TIME:
 		return timeType{}
 	case model.ResourcePropertyType_TYPE_TIMESTAMP:
-		return timestampType{}
+		return TimestampType
 	case model.ResourcePropertyType_TYPE_BOOL:
 		return boolType{}
 	case model.ResourcePropertyType_TYPE_OBJECT:
+		return objectType{}
+	case model.ResourcePropertyType_TYPE_REFERENCE:
+		return referenceType{}
+	case model.ResourcePropertyType_TYPE_ENUM:
+		return StringType
+	case model.ResourcePropertyType_TYPE_MAP:
+		return objectType{}
+	case model.ResourcePropertyType_TYPE_LIST:
 		return objectType{}
 	case model.ResourcePropertyType_TYPE_BYTES:
 		return bytesType{}

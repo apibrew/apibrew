@@ -89,8 +89,6 @@ func (u *namespaceService) List(ctx context.Context) ([]*model.Namespace, errors
 }
 
 func (d *namespaceService) Init(data *model.InitData) {
-	d.backendProviderService.MigrateResource(resources.NamespaceResource, nil)
-
 	if len(data.InitNamespaces) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
 			Namespace:      resources.NamespaceResource.Namespace,

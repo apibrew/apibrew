@@ -52,6 +52,10 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 					Type: model.ResourcePropertyType_TYPE_STRING,
 				},
 				{},
+				{
+					Name: "Type321",
+					Type: model.ResourcePropertyType_TYPE_REFERENCE,
+				},
 			},
 		}},
 		DoMigration:    true,
@@ -65,8 +69,8 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 
 	errorFields := util.GetErrorFields(err)
 
-	if len(errorFields) != 5 {
-		t.Error("There should be 5 errors; but " + strconv.Itoa(len(errorFields)))
+	if len(errorFields) != 7 {
+		t.Error("There should be 7 errors; but " + strconv.Itoa(len(errorFields)))
 		return
 	}
 
@@ -78,21 +82,28 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 		t.Error("errorFields[1].Property should be SourceConfig: " + errorFields[1].Property)
 	}
 
-	if errorFields[2].Property != "Properties[0].SourceConfig" {
-		t.Error("errorFields[2].Property should be Properties[0].SourceConfig: " + errorFields[2].Property)
+	if errorFields[2].Property != "Properties[0].Mapping" {
+		t.Error("errorFields[2].Property should be Properties[0].Mapping: " + errorFields[2].Property)
 	}
 
-	if errorFields[3].Property != "Properties[1].Name" {
-		t.Error("errorFields[3].Property should be Properties[1].Name: " + errorFields[3].Property)
+	if errorFields[3].Property != "Properties[0].Length" {
+		t.Error("errorFields[3].Property should be Properties[0].Length: " + errorFields[3].Property)
 	}
 
-	if errorFields[4].Property != "Properties[1].SourceConfig" {
-		t.Error("errorFields[4].Property should be Properties[1].SourceConfig: " + errorFields[4].Property)
+	if errorFields[4].Property != "Properties[1].Name" {
+		t.Error("errorFields[4].Property should be Properties[1].Name: " + errorFields[4].Property)
+	}
+
+	if errorFields[5].Property != "Properties[1].Mapping" {
+		t.Error("errorFields[5].Property should be Properties[1].Mapping: " + errorFields[5].Property)
+	}
+
+	if errorFields[6].Property != "Properties[2].Mapping" {
+		t.Error("errorFields[2].Property should be Properties[2].Mapping: " + errorFields[6].Property)
 	}
 }
 
 func TestCreateResourceWithSameName(t *testing.T) {
-
 	_, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:      []*model.Resource{richResource1},
 		DoMigration:    true,
@@ -100,17 +111,16 @@ func TestCreateResourceWithSameName(t *testing.T) {
 	})
 
 	if err == nil {
-		t.Error("Error should be provided for Resource is already exits")
+		t.Error("Error should be provided for resource is already exits")
 		return
 	}
 
 	if util.GetErrorCode(err) != model.ErrorCode_ALREADY_EXISTS {
-		t.Error("Error code should be provided for ErrorCode_ALREADY_EXISTS")
+		t.Error("Error code should be provided for ErrorCode_ALREADY_EXISTS but: "+util.GetErrorCode(err).String(), err.Error())
 	}
 }
 
 func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
-
 	randUUid, _ := uuid.NewRandom()
 
 	resp, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
@@ -139,7 +149,7 @@ func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
 	}()
 
 	if err == nil {
-		t.Error("Error should be provided for Resource is already exits")
+		t.Error("Error should be provided for resource is already exits")
 		return
 	}
 

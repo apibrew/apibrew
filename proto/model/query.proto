@@ -47,9 +47,10 @@ message BooleanExpression {
     PairExpression greaterThan = 6;
     PairExpression lessThanOrEqual = 7;
     PairExpression greaterThanOrEqual = 8;
-    Expression isNull = 9;
+    PairExpression in = 9;
+    Expression isNull = 10;
 
     // other
-    RegexMatchExpression regexMatch = 10;
+    RegexMatchExpression regexMatch = 11;
   }
 }

@@ -45,7 +45,7 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 		return b.GetSystemBackend(ctx), nil
 	} else {
 		systemCtx := security.WithSystemContext(context.TODO())
-		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, dataSourceId)
+		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, &abs.Schema{}, dataSourceId)
 
 		if err != nil {
 			return nil, err
@@ -91,7 +91,7 @@ func (b *backendProviderService) Init(data *model.InitData) {
 	b.systemDataSource = data.SystemDataSource
 }
 
-func (b *backendProviderService) MigrateResource(resource *model.Resource, referenceMap map[string]abs.ReferenceMapEntry) {
+func (b *backendProviderService) MigrateResource(resource *model.Resource, schema abs.Schema) {
 	if resource.Annotations == nil {
 		resource.Annotations = make(map[string]string)
 	}
@@ -99,7 +99,7 @@ func (b *backendProviderService) MigrateResource(resource *model.Resource, refer
 	err := b.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
 		Resource:       resource,
 		ForceMigration: true,
-		ReferenceMap:   referenceMap,
+		Schema:         &schema,
 	})
 
 	if err != nil {

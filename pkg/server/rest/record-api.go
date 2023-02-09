@@ -3,8 +3,8 @@ package rest
 import (
 	"context"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"net/http"
@@ -44,22 +44,18 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 func (r *recordApi) matchFunc(request *http.Request, match *mux.RouteMatch) bool {
 	pathParts := strings.Split(request.URL.Path, "/")
 	resourceName := pathParts[1]
-	exists, err := r.resourceService.CheckResourceExists(context.TODO(), "default", resourceName)
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return exists
+
+	return r.resourceService.CheckResourceExists(context.TODO(), "default", resourceName)
 }
 
 func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	resourceName := vars["resourceName"]
 
-	resource, err := r.resourceService.GetResourceByName(request.Context(), "", resourceName)
+	resource := r.resourceService.GetResourceByName(request.Context(), "", resourceName)
 
-	if err != nil {
-		handleClientError(writer, err)
+	if resource == nil {
+		handleClientError(writer, errors.ResourceNotFoundError)
 		return
 	}
 

@@ -46,13 +46,12 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	c.configureTable(table)
 
 	for _, item := range resource.Properties {
-		mapping := item.SourceConfig.(*model.ResourceProperty_Mapping)
 
 		typeStr := strings.ToLower(item.Type.String())[5:]
 
 		data = append(data, []string{
 			item.Name,
-			mapping.Mapping.Mapping,
+			item.Mapping,
 			typeStr,
 			strconv.FormatBool(item.Required),
 			strconv.FormatBool(item.Unique),
@@ -67,25 +66,8 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	table.Render()
 
 	c.out(w, "")
-	c.out(w, "References:")
 
 	table = tablewriter.NewWriter(w)
-	table.SetHeader([]string{"Property", "Referenced Resource", "Cascade"})
-	c.configureTable(table)
-
-	data = [][]string{}
-
-	for _, item := range resource.References {
-		data = append(data, []string{
-			item.PropertyName,
-			item.ReferencedResource,
-			strconv.FormatBool(item.Cascade),
-		})
-	}
-
-	for _, v := range data {
-		table.Append(v)
-	}
 	table.Render()
 
 	w.Flush()

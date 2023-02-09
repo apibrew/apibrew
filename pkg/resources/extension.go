@@ -15,11 +15,8 @@ var ExtensionResource = &model.Resource{
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "name",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "name",
-				},
-			},
+
+			Mapping:  "name",
 			Length:   64,
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
@@ -28,11 +25,8 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "description",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "description",
-				},
-			},
+
+			Mapping:  "description",
 			Length:   64,
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
@@ -40,11 +34,8 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "namespace",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "namespace",
-				},
-			},
+
+			Mapping:  "namespace",
 			Length:   64,
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
@@ -52,11 +43,8 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "resource",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "resource",
-				},
-			},
+
+			Mapping:  "resource",
 			Length:   64,
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
@@ -64,11 +52,8 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "serverHost",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "server_host",
-				},
-			},
+
+			Mapping:  "server_host",
 			Length:   64,
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
@@ -76,11 +61,8 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "serverPort",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "server_port",
-				},
-			},
+
+			Mapping:  "server_port",
 			Length:   64,
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_INT32,
@@ -88,12 +70,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "operations",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "operations",
-				},
-			},
-			Type: model.ResourcePropertyType_TYPE_OBJECT,
+
+			Mapping: "operations",
+			Type:    model.ResourcePropertyType_TYPE_OBJECT,
 		},
 	},
 	SecurityContext: securityContextDisallowAll,

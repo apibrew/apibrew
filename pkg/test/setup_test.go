@@ -113,9 +113,8 @@ func setupResources(ctx context.Context) {
 
 			if cd.Name == ds.Name {
 				found = true
-				*cd = *ds
 				cd.Id = ds.Id
-				cd.SourceConfig.DataSource = ds.SourceConfig.DataSource
+				cd.SourceConfig = ds.SourceConfig
 				break
 			}
 		}

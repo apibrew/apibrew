@@ -114,8 +114,6 @@ func (d *extensionService) Delete(ctx context.Context, ids []string) errors.Serv
 }
 
 func (d *extensionService) Init(data *model.InitData) {
-	d.backendProviderService.MigrateResource(resources.ExtensionResource, nil)
-
 	d.runConfigureExtensions()
 
 	go d.keepExtensionsRunning()

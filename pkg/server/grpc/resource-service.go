@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/service/annotations"
@@ -57,15 +58,20 @@ func (r resourceGrpcService) Delete(ctx context.Context, request *stub.DeleteRes
 }
 
 func (r resourceGrpcService) List(ctx context.Context, request *stub.ListResourceRequest) (*stub.ListResourceResponse, error) {
-	resources, err := r.resourceService.List(annotations.WithContext(ctx, request))
+	resources := r.resourceService.List(annotations.WithContext(ctx, request))
 
 	return &stub.ListResourceResponse{
 		Resources: resources,
-	}, util.ToStatusError(err)
+	}, nil
 }
 
 func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceRequest) (*stub.GetResourceResponse, error) {
-	resource, err := r.resourceService.Get(annotations.WithContext(ctx, request), request.Id)
+	resource := r.resourceService.Get(annotations.WithContext(ctx, request), request.Id)
+
+	var err errors.ServiceError
+	if resource == nil {
+		err = errors.ResourceNotFoundError
+	}
 
 	return &stub.GetResourceResponse{
 		Resource: resource,
@@ -73,7 +79,12 @@ func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceR
 }
 
 func (r resourceGrpcService) GetByName(ctx context.Context, request *stub.GetResourceByNameRequest) (*stub.GetResourceByNameResponse, error) {
-	resource, err := r.resourceService.GetResourceByName(annotations.WithContext(ctx, request), request.Namespace, request.Name)
+	resource := r.resourceService.GetResourceByName(annotations.WithContext(ctx, request), request.Namespace, request.Name)
+
+	var err errors.ServiceError
+	if resource == nil {
+		err = errors.ResourceNotFoundError
+	}
 
 	return &stub.GetResourceByNameResponse{
 		Resource: resource,
@@ -81,7 +92,12 @@ func (r resourceGrpcService) GetByName(ctx context.Context, request *stub.GetRes
 }
 
 func (r resourceGrpcService) GetSystemResource(ctx context.Context, request *stub.GetSystemResourceRequest) (*stub.GetSystemResourceResponse, error) {
-	resource, err := r.resourceService.GetSystemResourceByName(annotations.WithContext(ctx, request), request.GetName())
+	resource := r.resourceService.GetSystemResourceByName(annotations.WithContext(ctx, request), request.GetName())
+
+	var err errors.ServiceError
+	if resource == nil {
+		err = errors.ResourceNotFoundError
+	}
 
 	return &stub.GetSystemResourceResponse{
 		Resource: resource,

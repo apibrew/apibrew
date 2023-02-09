@@ -4,8 +4,16 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 )
 
+func IsSameIdentifiedResourceProperty(property1, property2 *model.ResourceProperty) bool {
+	if property1.Mapping != property2.Mapping {
+		return false
+	}
+
+	return true
+}
+
 func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
-	if property1.Name != property2.Name {
+	if property1.Mapping != property2.Mapping {
 		return false
 	}
 
@@ -21,12 +29,22 @@ func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 		return false
 	}
 
-	//if property1.SourceConfig != property2.SourceConfig { @todo fixme
-	//	return false
-	//}
-
-	if property1.Length != property2.Length {
+	if property1.Type == model.ResourcePropertyType_TYPE_STRING && property1.Length != property2.Length {
 		return false
+	}
+
+	if property1.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if (property1.Reference == nil) != (property2.Reference == nil) {
+			return false
+		}
+
+		if property1.Reference.ReferencedResource != property2.Reference.ReferencedResource {
+			return false
+		}
+
+		if property1.Reference.Cascade != property2.Reference.Cascade {
+			return false
+		}
 	}
 
 	return true

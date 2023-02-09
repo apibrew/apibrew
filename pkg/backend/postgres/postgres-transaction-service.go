@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/errors"
+	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"time"
 )
@@ -16,7 +17,7 @@ type txData struct {
 	cancel context.CancelFunc
 }
 
-func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, readOnly bool) (transactionKey string, serviceError errors.ServiceError) {
+func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, readOnly bool) (string, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("begin transaction readonly=%v", readOnly)
@@ -41,6 +42,8 @@ func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, r
 		tx:     tx,
 		cancel: cancel,
 	}
+
+	transactionKey := helper.RandStringRunes(8)
 
 	p.transactionMap[transactionKey] = txDataInstance
 

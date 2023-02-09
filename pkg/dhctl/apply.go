@@ -108,7 +108,7 @@ var applyCmd = &cobra.Command{
 
 						check(err)
 
-						log.Println("Resource updated: " + resource.Name)
+						log.Println("resource updated: " + resource.Name)
 					} else {
 						_, err := resourceServiceClient.Create(context.TODO(), &stub.CreateResourceRequest{
 							Token:          authToken,
@@ -119,7 +119,7 @@ var applyCmd = &cobra.Command{
 
 						check(err)
 
-						log.Println("Resource created: " + resource.Name)
+						log.Println("resource created: " + resource.Name)
 					}
 				case "record":
 					delete(body, "type")

@@ -101,8 +101,6 @@ func (u *userService) List(ctx context.Context, query *model.BooleanExpression, 
 }
 
 func (d *userService) Init(data *model.InitData) {
-	d.backendProviderService.MigrateResource(resources.UserResource, nil)
-
 	if len(data.InitUsers) > 0 {
 		for _, user := range data.InitUsers {
 			hashStr, err := security.EncodeKey(user.Password)

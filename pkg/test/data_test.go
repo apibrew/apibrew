@@ -98,65 +98,47 @@ var richResource1 = &model.Resource{
 		{
 			Name: "int32_o",
 			Type: model.ResourcePropertyType_TYPE_INT32,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "int32_o",
-				},
-			},
+
+			Mapping:  "int32_o",
 			Required: false,
 		},
 		{
 			Name: "int32",
 			Type: model.ResourcePropertyType_TYPE_INT32,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "int32",
-				},
-			},
+
+			Mapping:  "int32",
 			Required: true,
 		},
 
 		{
 			Name: "int64",
 			Type: model.ResourcePropertyType_TYPE_INT64,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "int64",
-				},
-			},
+
+			Mapping:  "int64",
 			Required: true,
 		},
 
 		{
 			Name: "float",
 			Type: model.ResourcePropertyType_TYPE_FLOAT32,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "float",
-				},
-			},
+
+			Mapping:  "float",
 			Required: true,
 		},
 
 		{
 			Name: "double",
 			Type: model.ResourcePropertyType_TYPE_FLOAT64,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "double",
-				},
-			},
+
+			Mapping:  "double",
 			Required: true,
 		},
 
 		{
 			Name: "text",
 			Type: model.ResourcePropertyType_TYPE_STRING,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "text",
-				},
-			},
+
+			Mapping:  "text",
 			Length:   255,
 			Required: true,
 		},
@@ -164,88 +146,64 @@ var richResource1 = &model.Resource{
 		{
 			Name: "string",
 			Type: model.ResourcePropertyType_TYPE_STRING,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "string",
-				},
-			},
+
+			Mapping:  "string",
 			Required: true,
 			Length:   255,
 		},
 		{
 			Name: "uuid",
 			Type: model.ResourcePropertyType_TYPE_UUID,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "uuid",
-				},
-			},
+
+			Mapping:  "uuid",
 			Required: true,
 		},
 
 		{
 			Name: "date",
 			Type: model.ResourcePropertyType_TYPE_DATE,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "date",
-				},
-			},
+
+			Mapping:  "date",
 			Required: true,
 		},
 
 		{
 			Name: "time",
 			Type: model.ResourcePropertyType_TYPE_TIME,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "time",
-				},
-			},
+
+			Mapping:  "time",
 			Required: true,
 		},
 
 		{
 			Name: "timestamp",
 			Type: model.ResourcePropertyType_TYPE_TIMESTAMP,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "timestamp",
-				},
-			},
+
+			Mapping:  "timestamp",
 			Required: true,
 		},
 
 		{
 			Name: "bool",
 			Type: model.ResourcePropertyType_TYPE_BOOL,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "bool",
-				},
-			},
+
+			Mapping:  "bool",
 			Required: true,
 		},
 
 		{
 			Name: "object",
 			Type: model.ResourcePropertyType_TYPE_OBJECT,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "object",
-				},
-			},
+
+			Mapping:  "object",
 			Required: true,
 		},
 
 		{
 			Name: "bytes",
 			Type: model.ResourcePropertyType_TYPE_BYTES,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "bytes",
-				},
-			},
+
+			Mapping:  "bytes",
 			Required: true,
 		},
 	},
@@ -260,22 +218,16 @@ var simpleVirtualResource1 = &model.Resource{
 		{
 			Name: "name",
 			Type: model.ResourcePropertyType_TYPE_STRING,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "name",
-				},
-			},
+
+			Mapping:  "name",
 			Length:   255,
 			Required: true,
 		},
 		{
 			Name: "description",
 			Type: model.ResourcePropertyType_TYPE_STRING,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "description",
-				},
-			},
+
+			Mapping:  "description",
 			Length:   255,
 			Required: false,
 		},

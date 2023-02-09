@@ -14,6 +14,16 @@ func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
 	return list
 }
 
+type HasId interface {
+	GetId() string
+}
+
+func ArrayMapToId[T HasId](arr []T) []string {
+	return ArrayMap(arr, func(t T) string {
+		return t.GetId()
+	})
+}
+
 func ArrayMapWithError[T interface{}, R interface{}](arr []T, mapper func(T) (R, errors.ServiceError)) ([]R, errors.ServiceError) {
 	var list []R
 

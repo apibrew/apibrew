@@ -1,0 +1,38 @@
+type: resource
+name: book
+namespace: default
+properties:
+  - name: name
+    length: 255
+    required: true
+    mapping:
+      mapping: name
+    type: TYPE_STRING
+  - name: description
+    length: 255
+    required: false
+    mapping:
+      mapping: description
+    type: TYPE_STRING
+---
+type: resource
+name: author
+namespace: default
+properties:
+  - name: name
+    length: 255
+    required: true
+    mapping:
+      mapping: name
+    type: TYPE_STRING
+  - name: description
+    length: 255
+    required: false
+    mapping:
+      mapping: description
+    type: TYPE_STRING
+sourceConfig:
+  catalog: ""
+  dataSource: 529c786e-9fb4-11ed-a8d2-b29c4ac91278
+  entity: country
+---

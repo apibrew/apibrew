@@ -9,8 +9,6 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0
-	github.com/huandu/go-sqlbuilder v1.16.0
-	github.com/jellydator/ttlcache/v3 v3.0.0
 	github.com/lib/pq v1.10.7
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rs/cors v1.8.2
