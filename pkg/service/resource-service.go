@@ -11,6 +11,7 @@ import (
 	mapping "github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/server/util"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 	"strings"
 )
@@ -116,7 +117,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	result, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, abs.BulkRecordsParams{
+	result, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
 		Resource:       resources.ResourceResource,
 		Records:        resourceRecords,
 		CheckVersion:   false,
@@ -137,6 +138,22 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
 		return mapping.ResourcePropertyToRecord(property, resource)
 	})
+
+	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, abs.ListRecordParams{
+		Resource: resources.ResourcePropertyResource,
+		Query:    newEqualExpression("resource", structpb.NewStringValue(resource.Id)),
+		Schema:   &r.schema,
+		Limit:    1000000,
+	})
+
+	var propertyNameIdMap = make(map[string]string)
+	for _, prop := range propertyRecordList {
+		propertyNameIdMap[prop.Properties["name"].GetStringValue()] = prop.Id
+	}
+
+	for _, prop := range propertyRecords {
+		prop.Id = propertyNameIdMap[prop.Properties["name"].GetStringValue()]
+	}
 
 	_, err = r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
 		Resource:       resources.ResourcePropertyResource,
@@ -162,6 +179,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
 			Resource:       resource,
 			ForceMigration: forceMigration,
+			Schema:         &r.schema,
 		})
 
 		if err != nil {

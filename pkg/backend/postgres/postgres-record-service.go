@@ -64,7 +64,7 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
 	err := p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		for _, record := range params.Records {
-			err := recordUpdate(ctx, tx, params.Resource, record, params.CheckVersion)
+			err := recordUpdate(ctx, tx, params.Resource, record, params.CheckVersion, params.Schema)
 
 			if err != nil {
 				return err

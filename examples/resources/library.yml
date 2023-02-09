@@ -1,3 +1,5 @@
+type: resource
+id: f2926948-a863-11ed-989d-b29c4ac91271
 name: author
 namespace: default
 properties:
@@ -17,9 +19,10 @@ sourceConfig:
   catalog: ""
   dataSource: e7596c9c-a7b5-11ed-96c5-b29c4ac91271
   entity: author
-type: resource
 ---
+type: resource
 name: book
+id: f2947ae4-a863-11ed-989d-b29c4ac91271
 namespace: default
 properties:
   - length: 255
@@ -46,5 +49,3 @@ sourceConfig:
   catalog: ""
   dataSource: e7596c9c-a7b5-11ed-96c5-b29c4ac91271
   entity: book
-type: resource
----
