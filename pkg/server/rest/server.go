@@ -66,7 +66,7 @@ func (r *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 			if req.URL.RawQuery == "" {
 				req.URL.RawQuery = "token=" + token
 			} else {
-				req.URL.RawQuery = req.URL.RawQuery + "token=" + token
+				req.URL.RawQuery = req.URL.RawQuery + "&token=" + token
 			}
 		}
 
