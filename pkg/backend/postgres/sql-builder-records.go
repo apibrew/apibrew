@@ -77,25 +77,7 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 			}
 
 			if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
-				refType := val.(types.ReferenceType)
-
-				if refType["id"] != nil {
-					row = append(row, argPlaceHolder(refType["id"]))
-				} else {
-					var where []string
-					for k, v := range refType {
-						where = append(where, fmt.Sprintf("%s=%s", k, argPlaceHolder(v)))
-					}
-
-					if len(where) == 0 {
-						row = append(row, argPlaceHolder(nil))
-					} else {
-						referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
-						innerSql := fmt.Sprintf("select id from %s where %s", referencedResource.SourceConfig.Entity, strings.Join(where, " AND "))
-
-						row = append(row, fmt.Sprintf("(%s)", innerSql))
-					}
-				}
+				row = append(row, resolveReference(val, argPlaceHolder, schema, resource, property))
 
 				continue
 			}
@@ -148,7 +130,29 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 	return true, handleDbError(ctx, err)
 }
 
-func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool) errors.ServiceError {
+func resolveReference(val interface{}, argPlaceHolder func(val interface{}) string, schema *abs.Schema, resource *model.Resource, property *model.ResourceProperty) string {
+	refType := val.(types.ReferenceType)
+
+	if refType["id"] != nil {
+		return argPlaceHolder(refType["id"])
+	} else {
+		var where []string
+		for k, v := range refType {
+			where = append(where, fmt.Sprintf("%s=%s", k, argPlaceHolder(v)))
+		}
+
+		if len(where) == 0 {
+			return argPlaceHolder(nil)
+		} else {
+			referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+			innerSql := fmt.Sprintf("select id from %s where %s", referencedResource.SourceConfig.Entity, strings.Join(where, " AND "))
+
+			return fmt.Sprintf("(%s)", innerSql)
+		}
+	}
+}
+
+func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	if record.AuditData == nil {
@@ -183,7 +187,11 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 			return serviceError
 		}
 
-		updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("\"%s\"", property.Mapping), val))
+		if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+			updateBuilder.SetMore(fmt.Sprintf("\"%s\"=%s", property.Mapping, resolveReference(val, updateBuilder.Var, schema, resource, property)))
+		} else {
+			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("\"%s\"", property.Mapping), val))
+		}
 	}
 
 	updateBuilder.SetMore(updateBuilder.Equal("updated_on", record.AuditData.UpdatedOn.AsTime()))
