@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "github.com/tislib/data-handler/pkg/stub";
+
+import 'model/query.proto';
+import 'model/error.proto';
+import 'google/protobuf/struct.proto';
+import "google/protobuf/any.proto";
+
+service GenericService {
+  rpc Create (CreateRequest) returns (CreateResponse) {}
+  rpc Update (UpdateRequest) returns (UpdateResponse) {}
+  rpc UpdateMulti (UpdateMultiRequest) returns (UpdateMultiResponse) {}
+  rpc Delete (DeleteRequest)   returns (DeleteResponse) {}
+  rpc List (ListRequest) returns (ListResponse) {}
+  rpc Search (SearchRequest) returns (SearchResponse) {}
+  rpc Get (GetRequest) returns (GetResponse) {}
+}
+
+message ListRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  map<string, string> filters = 4;
+  uint32 limit = 5;
+  uint64 offset = 6;
+  bool useHistory = 7;
+  bool resolveReferences = 8;
+
+  map<string, string> annotations = 103;
+}
+
+message ListResponse {
+  uint32 total = 1;
+  repeated google.protobuf.Any content = 2;
+}
+
+message SearchRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  model.BooleanExpression query = 4;
+  uint32 limit = 5;
+  uint64 offset = 6;
+  bool useHistory = 7;
+  bool resolveReferences = 8;
+
+  map<string, string> annotations = 103;
+}
+
+message SearchResponse {
+  uint32 total = 1;
+  repeated google.protobuf.Any content = 2;
+}
+
+message CreateRequest {
+  string token = 1;
+  string namespace = 2;
+  repeated google.protobuf.Any items = 4;
+  bool ignoreIfExists = 5;
+
+  map<string, string> annotations = 103;
+}
+
+message CreateResponse {
+  repeated google.protobuf.Any items = 2;
+  repeated bool inserted = 4;
+}
+
+message UpdateRequest {
+  string token = 1;
+  string namespace = 2;
+  repeated google.protobuf.Any items = 4;
+  bool checkVersion = 5;
+
+  map<string, string> annotations = 103;
+}
+
+message UpdateResponse {
+  repeated google.protobuf.Any items = 2;
+}
+
+message UpdateMultiRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  model.BooleanExpression query = 4;
+  map<string, google.protobuf.Value> properties = 5;
+
+  map<string, string> annotations = 103;
+}
+
+message UpdateMultiResponse {
+  repeated google.protobuf.Any items = 2;
+}
+
+message DeleteRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  repeated string id = 4;
+  repeated string ids = 5;
+
+  map<string, string> annotations = 103;
+}
+
+message DeleteResponse {
+}
+
+message GetRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  string id = 4;
+
+  map<string, string> annotations = 103;
+}
+
+message GetResponse {
+  google.protobuf.Any item = 1;
+}
