@@ -1,5 +1,4 @@
 type: resource
-id: f2926948-a863-11ed-989d-b29c4ac91271
 name: author
 namespace: default
 properties:
@@ -22,7 +21,6 @@ sourceConfig:
 ---
 type: resource
 name: book
-id: f2947ae4-a863-11ed-989d-b29c4ac91271
 namespace: default
 properties:
   - length: 255
@@ -39,7 +37,7 @@ properties:
     unique: false
   - length: 255
     mapping: "author"
-    name: description
+    name: author
     required: true
     type: TYPE_REFERENCE
     reference:
