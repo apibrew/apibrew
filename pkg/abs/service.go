@@ -18,7 +18,7 @@ type BackendProviderService interface {
 	GetSystemBackend(ctx context.Context) Backend
 	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	DestroyBackend(ctx context.Context, id string) error
-	MigrateResource(resource *model.Resource, referenceMap map[string]ReferenceMapEntry)
+	MigrateResource(resource *model.Resource, schema Schema)
 }
 
 type DataSourceService interface {
@@ -53,14 +53,16 @@ type RecordService interface {
 
 type ResourceService interface {
 	Init(data *model.InitData)
-	CheckResourceExists(ctx context.Context, namespace, name string) (bool, errors.ServiceError)
-	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
-	GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, errors.ServiceError)
+	CheckResourceExists(ctx context.Context, namespace, name string) bool
+	GetResourceByName(ctx context.Context, namespace, resource string) *model.Resource
+	GetSystemResourceByName(ctx context.Context, resourceName string) *model.Resource
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
 	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
 	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
-	List(ctx context.Context) ([]*model.Resource, errors.ServiceError)
-	Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError)
+	List(ctx context.Context) []*model.Resource
+	ReloadSchema(ctx context.Context) errors.ServiceError
+	Get(ctx context.Context, id string) *model.Resource
+	GetSchema() *Schema
 }
 
 type UserService interface {
@@ -111,7 +113,7 @@ type RecordListParams struct {
 	Limit             uint32
 	Offset            uint64
 	UseHistory        bool
-	ResolveReferences bool
+	ResolveReferences []string
 }
 
 type RecordCreateParams struct {

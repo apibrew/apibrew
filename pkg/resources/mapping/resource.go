@@ -3,6 +3,7 @@ package mapping
 import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
+	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -12,7 +13,7 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	properties["name"] = structpb.NewStringValue(resource.Name)
 	properties["namespace"] = structpb.NewStringValue(resource.Namespace)
 	if resource.SourceConfig != nil {
-		properties["dataSource"] = structpb.NewStringValue(resource.SourceConfig.DataSource)
+		properties["dataSource"] = util.StructKv("id", resource.SourceConfig.DataSource)
 		properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
 		properties["catalog"] = structpb.NewStringValue(resource.SourceConfig.Catalog)
 	}
@@ -56,7 +57,7 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		Name:      record.Properties["name"].GetStringValue(),
 		Namespace: record.Properties["namespace"].GetStringValue(),
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: record.Properties["dataSource"].GetStringValue(),
+			DataSource: record.Properties["dataSource"].GetStructValue().GetFields()["id"].GetStringValue(),
 			Entity:     record.Properties["entity"].GetStringValue(),
 			Catalog:    record.Properties["catalog"].GetStringValue(),
 		},

@@ -256,6 +256,10 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 	var cases []TestRecordCreationValidationSubCase
 
 	for _, typ := range typs {
+		if typ == model.ResourcePropertyType_TYPE_REFERENCE {
+			continue
+		}
+
 		propNames := []string{
 			fakePropertyName(),
 			fakePropertyName(),
@@ -265,39 +269,27 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 		length := uint32(32)
 		resource := fakeResource(
 			&model.ResourceProperty{
-				Name: propNames[0],
-				Type: typ,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: propNames[0],
-					},
-				},
+				Name:     propNames[0],
+				Type:     typ,
+				Mapping:  propNames[0],
 				Required: false,
 				Primary:  false,
 				Length:   length,
 				Unique:   false,
 			},
 			&model.ResourceProperty{
-				Name: propNames[1],
-				Type: typ,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: propNames[1],
-					},
-				},
+				Name:     propNames[1],
+				Type:     typ,
+				Mapping:  propNames[1],
 				Required: true,
 				Primary:  false,
 				Length:   length,
 				Unique:   false,
 			},
 			&model.ResourceProperty{
-				Name: propNames[2],
-				Type: typ,
-				SourceConfig: &model.ResourceProperty_Mapping{
-					Mapping: &model.ResourcePropertyMappingConfig{
-						Mapping: propNames[2],
-					},
-				},
+				Name:     propNames[2],
+				Type:     typ,
+				Mapping:  propNames[2],
 				Required: false,
 				Primary:  false,
 				Length:   length,

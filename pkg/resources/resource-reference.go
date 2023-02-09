@@ -15,13 +15,8 @@ var ResourceReferenceResource = &model.Resource{
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "propertyName",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:        "property_name",
-					SourceDef:      "",
-					AutoGeneration: 0,
-				},
-			},
+
+			Mapping:  "property_name",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
@@ -29,13 +24,8 @@ var ResourceReferenceResource = &model.Resource{
 		},
 		{
 			Name: "referencedResource",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:        "referenced_resource",
-					SourceDef:      "",
-					AutoGeneration: 0,
-				},
-			},
+
+			Mapping:  "referenced_resource",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
@@ -43,33 +33,22 @@ var ResourceReferenceResource = &model.Resource{
 		},
 		{
 			Name: "cascade",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:        "cascade",
-					SourceDef:      "",
-					AutoGeneration: 0,
-				},
-			},
+
+			Mapping:  "cascade",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_BOOL,
 			Required: true,
 		},
 		{
 			Name: "resource",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "resource",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_UUID,
+
+			Mapping:  "resource",
+			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
 			Required: true,
-		},
-	},
-	References: []*model.ResourceReference{
-		{
-			PropertyName:       "resource",
-			ReferencedResource: "resource",
-			Cascade:            true,
+			Reference: &model.Reference{
+				ReferencedResource: ResourceResource.Name,
+				Cascade:            false,
+			},
 		},
 	},
 	SecurityContext: securityContextDisallowAll,

@@ -14,129 +14,83 @@ var ResourcePropertyResource = &model.Resource{
 	},
 	Properties: []*model.ResourceProperty{
 		{
-			Name: "name",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:        "name",
-					SourceDef:      "",
-					AutoGeneration: 0,
-				},
-			},
+			Name:     "name",
+			Mapping:  "name",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: true,
 		},
 		{
-			Name: "type",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "type",
-				},
-			},
+			Name:     "type",
+			Mapping:  "type",
 			Type:     model.ResourcePropertyType_TYPE_INT32,
 			Required: true,
 		},
 		{
-			Name: "sourceType",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "source_type",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_INT32,
-			Required: true,
-		},
-		{
-			Name: "sourceMapping",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "source_mapping",
-				},
-			},
+			Name:     "mapping",
+			Mapping:  "source_mapping",
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   64,
 			Required: true,
 		},
 		{
-			Name: "sourceDef",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "source_def",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_STRING,
-			Length:   64,
-			Required: true,
-		},
-		{
-			Name: "sourcePrimary",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "source_primary",
-				},
-			},
+			Name:     "sourcePrimary",
+			Mapping:  "source_primary",
 			Type:     model.ResourcePropertyType_TYPE_BOOL,
 			Required: true,
 		},
 		{
-			Name: "sourceAutoGeneration",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "source_auto_generation",
-				},
-			},
+			Name:     "required",
+			Mapping:  "required",
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Required: true,
+		},
+		{
+			Name:     "unique",
+			Mapping:  "unique",
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Required: true,
+		},
+		{
+			Name:     "length",
+			Mapping:  "length",
 			Type:     model.ResourcePropertyType_TYPE_INT32,
 			Required: true,
 		},
 		{
-			Name: "required",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "required",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Name:     "resource",
+			Mapping:  "resource",
+			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
 			Required: true,
+			Reference: &model.Reference{
+				ReferencedResource: ResourceResource.Name,
+				Cascade:            true,
+			},
 		},
 		{
-			Name: "unique",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "unique",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Required: true,
-		},
-		{
-			Name: "length",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "length",
-				},
-			},
+			Name:     "subType",
+			Mapping:  "sub_type",
 			Type:     model.ResourcePropertyType_TYPE_INT32,
-			Required: true,
+			Required: false,
 		},
 		{
-			Name: "resource",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "resource",
-				},
+			Name:    "reference_resource",
+			Mapping: "reference_resource",
+			Type:    model.ResourcePropertyType_TYPE_REFERENCE,
+			Reference: &model.Reference{
+				ReferencedResource: ResourceResource.Name,
+				Cascade:            true,
 			},
-			Type:     model.ResourcePropertyType_TYPE_UUID,
-			Required: true,
+			Required: false,
+		},
+		{
+			Name:     "reference_cascade",
+			Mapping:  "reference_cascade",
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Required: false,
 		},
 		securityContextProperty,
-	},
-	References: []*model.ResourceReference{
-		{
-			PropertyName:       "resource",
-			ReferencedResource: "resource",
-			Cascade:            true,
-		},
 	},
 	SecurityContext: securityContextDisallowAll,
 }

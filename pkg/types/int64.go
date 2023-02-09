@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+var Int64Type = int64Type{}
+
 // float64
 type int64Type struct {
 }

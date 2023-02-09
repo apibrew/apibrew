@@ -31,6 +31,14 @@ func getPsqlTypeFromProperty(propertyType model.ResourcePropertyType, length uin
 		return "JSONB"
 	case model.ResourcePropertyType_TYPE_BYTES:
 		return "BYTEA"
+	case model.ResourcePropertyType_TYPE_ENUM:
+		return "VARCHAR(64)"
+	case model.ResourcePropertyType_TYPE_REFERENCE:
+		return "UUID"
+	case model.ResourcePropertyType_TYPE_MAP:
+		return "JSONB"
+	case model.ResourcePropertyType_TYPE_LIST:
+		return "JSONB"
 
 	default:
 		panic("unknown property type")
