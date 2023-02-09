@@ -412,10 +412,6 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, na
 }
 
 func (r *resourceService) Init(data *model.InitData) {
-	if err := r.ReloadSchema(context.TODO()); err != nil {
-		panic(err)
-	}
-
 	r.backendProviderService.MigrateResource(resources.ResourceResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ResourcePropertyResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ResourceReferenceResource, r.schema)
@@ -424,6 +420,10 @@ func (r *resourceService) Init(data *model.InitData) {
 	r.backendProviderService.MigrateResource(resources.NamespaceResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.DataSourceResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ExtensionResource, r.schema)
+
+	if err := r.ReloadSchema(context.TODO()); err != nil {
+		panic(err)
+	}
 }
 
 func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
