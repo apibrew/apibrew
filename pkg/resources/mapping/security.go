@@ -50,6 +50,10 @@ func SecurityContextFromValue(value *structpb.Value) *model.SecurityContext {
 
 	securityContext := new(model.SecurityContext)
 
+	if value.GetListValue() == nil {
+		return nil
+	}
+
 	for _, value := range value.GetListValue().Values {
 		obj := value.GetStructValue()
 

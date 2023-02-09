@@ -8,7 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	annotations2 "github.com/tislib/data-handler/pkg/service/annotations"
+	annotations "github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/util"
 	"strconv"
 	"strings"
@@ -30,181 +30,153 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 		return err
 	}
 
-	var notChangedColumns = make(map[string]bool)
-	var changedColumns = make(map[string]bool)
-	var newPrevMap = make(map[*model.ResourceProperty]*model.ResourceProperty)
-	var removedColumns = make(map[string]bool)
-	var newColumns = make(map[string]bool)
-	var changesCount = 0
-
-	// check left
-	for _, existingProperty := range existingResource.Properties {
-		existingColName := getPropertyColumnName(existingProperty)
-
-		found := false
-		for _, newProperty := range params.Resource.Properties {
-			newColName := getPropertyColumnName(newProperty)
-			if existingColName == newColName {
-				if util.IsSameResourceProperty(existingProperty, newProperty) {
-					notChangedColumns[existingColName] = true
-				} else {
-					changedColumns[existingColName] = true
-					newPrevMap[newProperty] = existingProperty
+	// fixing references
+	for _, prop := range existingResource.Properties {
+		if prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+			for _, resource := range params.Schema.Resources {
+				if prop.Reference.ReferencedResource == "["+resource.SourceConfig.Entity+"]" {
+					prop.Reference.ReferencedResource = resource.Name
 				}
-				found = true
 			}
-		}
-		if !found {
-			removedColumns[existingColName] = true
 		}
 	}
 
-	// check right
-	for _, newProperty := range params.Resource.Properties {
-		newColName := getPropertyColumnName(newProperty)
+	var tableName = getTableName(params.Resource.GetSourceConfig(), history)
 
-		found := false
-		for _, existingProperty := range existingResource.Properties {
-			existingColName := getPropertyColumnName(existingProperty)
-			if existingColName == newColName {
-				found = true
+	err = arrayDiffer(existingResource.Properties,
+		params.Resource.Properties,
+		util.IsSameIdentifiedResourceProperty,
+		util.IsSameResourceProperty,
+		func(property *model.ResourceProperty) errors.ServiceError {
+			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(params.Resource, property, *params.Schema))
+
+			logger.Info("DB Migrate Sql: " + sql)
+			_, sqlError := runner.ExecContext(ctx, sql)
+			return handleDbError(ctx, sqlError)
+		}, func(prevProperty, property *model.ResourceProperty) errors.ServiceError {
+			return migrateResourceColumn(prevProperty, property, tableName, existingResource, logger, runner, ctx, *params.Schema)
+		}, func(property *model.ResourceProperty) errors.ServiceError {
+			if params.ForceMigration {
+				sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, property.Mapping)
+
+				logger.Info("DB Migrate Sql: " + sql)
+				_, sqlError := runner.ExecContext(ctx, sql)
+				return handleDbError(ctx, sqlError)
+			} else {
+				return nil
 			}
+		})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model.ResourceProperty, tableName string, existingResource *model.Resource, logger *log.Entry, runner QueryRunner, ctx context.Context, schema abs.Schema) errors.ServiceError {
+	var sql = fmt.Sprintf("ALTER TABLE %s ", tableName)
+	changes := 0
+	if getPsqlTypeFromProperty(prevProperty.Type, property.Length) != getPsqlTypeFromProperty(property.Type, property.Length) {
+		sql = sql + fmt.Sprintf("\n ALTER COLUMN \"%s\" TYPE %s", property.Mapping, getPsqlTypeFromProperty(property.Type, property.Length))
+		changes++
+	}
+
+	if prevProperty.Required && !property.Required {
+		sql = sql + fmt.Sprintf("\n ALTER COLUMN \"%s\" DROP NOT NULL", property.Mapping)
+		changes++
+	}
+
+	if !prevProperty.Required && property.Required {
+		sql = sql + fmt.Sprintf("\n ALTER COLUMN \"%s\" SET NOT NULL", property.Mapping)
+		changes++
+	}
+
+	if prevProperty.Unique && !property.Unique {
+		sql = sql + fmt.Sprintf("\n DROP CONSTRAINT \"%s\"", property.Mapping+"_uniq")
+		changes++
+	}
+
+	if !prevProperty.Unique && property.Unique {
+		sql = sql + fmt.Sprintf("\n ADD CONSTRAINT \"%s\" UNIQUE (\"%s\")", existingResource.SourceConfig.Entity+"_"+property.Mapping+"_uniq", property.Mapping)
+		changes++
+	}
+
+	if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if prevProperty.Reference == nil && property.Reference != nil {
+			referencedResource := schema.ResourceByNamespaceSlashName["default"+"/"+property.Reference.ReferencedResource]
+			var refClause = ""
+			if property.Reference.Cascade {
+				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
+			}
+
+			sql = sql + fmt.Sprintf("\n ADD CONSTRAINT \"%s\" FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\") "+refClause, existingResource.SourceConfig.Entity+"_"+property.Mapping+"_fk", property.Mapping, referencedResource.SourceConfig.Entity, "id")
+			changes++
 		}
-		if !found {
-			newColumns[newColName] = true
+
+		if (prevProperty.Reference == nil) != (property.Reference == nil) {
+			log.Print("a")
+		} else if prevProperty.Reference.ReferencedResource != property.Reference.ReferencedResource {
+			log.Print("b")
+		} else if prevProperty.Reference.Cascade != property.Reference.Cascade {
+			log.Print("c")
+		} else {
+			panic("Unknown condition")
 		}
 	}
 
-	if len(changedColumns) == 0 && len(newColumns) == 0 && (!params.ForceMigration || len(removedColumns) == 0) {
-		// no need to migration
+	if changes == 0 {
 		return nil
 	}
 
-	// create new properties
-	var alterTableQuery = fmt.Sprintf(`ALTER TABLE %s`, getTableName(params.Resource.GetSourceConfig(), history))
+	logger.Info("DB Migrate Sql: " + sql)
+	_, sqlError := runner.ExecContext(ctx, sql)
+	return handleDbError(ctx, sqlError)
+}
 
-	var alterTableQueryDefs []string
+func arrayDiffer[T interface{}](existing []T, updated []T, hasSameId func(a, b T) bool, isEqual func(a, b T) bool, onNew func(rec T) errors.ServiceError, onUpdate func(e, u T) errors.ServiceError, onDelete func(rec T) errors.ServiceError) errors.ServiceError {
+	for _, e := range existing {
+		found := false
+		for _, u := range updated {
+			if hasSameId(e, u) {
+				if !isEqual(e, u) {
+					err := onUpdate(e, u)
 
-	for _, property := range params.Resource.Properties {
-		colName := getPropertyColumnName(property)
-		if !newColumns[colName] {
-			continue
-		}
-
-		alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ADD COLUMN %s", prepareResourceTableColumnDefinition(property)))
-		changesCount++
-	}
-
-	// delete properties (IF FORCE MIGRATION)
-	if params.ForceMigration {
-		for _, property := range existingResource.Properties {
-			colName := getPropertyColumnName(property)
-			if !removedColumns[colName] {
-				continue
-			}
-
-			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("DROP COLUMN \"%s\"", colName))
-			changesCount++
-		}
-	}
-
-	// change updated columns
-	for _, property := range params.Resource.Properties {
-		colName := getPropertyColumnName(property)
-		if !changedColumns[colName] {
-			continue
-		}
-		prevProperty := newPrevMap[property]
-
-		if prevProperty.Type != property.Type {
-			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN \"%s\" TYPE %s", colName, getPsqlTypeFromProperty(property.Type, property.Length)))
-			changesCount++
-		}
-
-		if prevProperty.Required && !property.Required {
-			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN \"%s\" DROP NOT NULL", colName))
-			changesCount++
-		}
-
-		if !prevProperty.Required && property.Required {
-			alterTableQueryDefs = append(alterTableQueryDefs, fmt.Sprintf("ALTER COLUMN \"%s\" SET NOT NULL", colName))
-			changesCount++
-		}
-	}
-
-	if params.ReferenceMap != nil {
-
-		for _, existingFk := range existingResource.References {
-			found := false
-			for _, newFk := range params.Resource.References {
-				if existingFk.PropertyName == newFk.PropertyName {
-					found = true
-					break
+					if err != nil {
+						return err
+					}
 				}
-			}
-			if !found {
-				// not implemented
-				//alterTableQuery += " " + fmt.Sprintf("ADD CONSTRAINT FOREIGN KEY (%s) REFERENCES %s (%s)")
+
+				found = true
+				break
 			}
 		}
 
-		for _, newFk := range params.Resource.References {
-			// locating property
-			var sourceProperty *model.ResourceProperty
+		if !found {
+			err := onDelete(e)
 
-			for _, property := range params.Resource.Properties {
-				if property.Name == newFk.PropertyName {
-					sourceProperty = property
-				}
-			}
-
-			if sourceProperty == nil {
-				return errors.LogicalError.WithDetails("Source property could not be found: " + newFk.ReferencedResource)
-			}
-
-			var sourceColumn = sourceProperty.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping
-
-			found := false
-			for _, existingFk := range existingResource.References {
-				if existingFk.PropertyName == newFk.PropertyName || existingFk.PropertyName == "["+sourceColumn+"]" {
-					found = true
-					break
-				}
-			}
-			if !found {
-
-				targetTable := params.ReferenceMap[newFk.ReferencedResource]
-
-				if targetTable.Entity == "" {
-					return errors.LogicalError.WithDetails("Reference map not found for: " + newFk.ReferencedResource)
-				}
-
-				if targetTable.Catalog == "" {
-					targetTable.Catalog = "public"
-				}
-
-				sqlPart := fmt.Sprintf("ADD CONSTRAINT \"fk_%s_%s\" FOREIGN KEY (\"%s\") REFERENCES \"%s\".\"%s\" (\"%s\")", sourceColumn, targetTable.Entity, sourceColumn, targetTable.Catalog, targetTable.Entity, targetTable.IdColumn)
-				if newFk.Cascade {
-					sqlPart += " on update cascade on delete cascade"
-				}
-				alterTableQueryDefs = append(alterTableQueryDefs, sqlPart)
-				changesCount++
+			if err != nil {
+				return err
 			}
 		}
 	}
 
-	alterTableQuery += "\n" + strings.Join(alterTableQueryDefs, ",")
+	for _, u := range updated {
+		found := false
+		for _, e := range existing {
 
-	if changesCount == 0 {
-		return nil
-	}
+			if hasSameId(e, u) {
+				found = true
+			}
+		}
 
-	_, sqlError := runner.Exec(alterTableQuery)
+		if !found {
+			err := onNew(u)
 
-	logger.Trace("SqlQuery: " + alterTableQuery)
-
-	if sqlError != nil {
-		return handleDbError(ctx, sqlError)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
@@ -236,7 +208,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 
 	resource = new(model.Resource)
 	resource.Annotations = make(map[string]string)
-	annotations2.Enable(resource, annotations2.AutoCreated, annotations2.DisableMigration, annotations2.DisableAudit)
+	annotations.Enable(resource, annotations.AutoCreated, annotations.DisableMigration, annotations.DisableAudit)
 	resource.AuditData = new(model.AuditData)
 	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
@@ -255,82 +227,24 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 
 	// references
 
-	err = resourcePrepareReferences(ctx, runner, catalog, entity, resource)
-	if err != nil {
-		return
-	}
-
 	doResourceCleanup(resource)
 
 	return
 }
 
-func resourcePrepareReferences(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
-	rows, sqlErr := runner.QueryContext(ctx, `SELECT
-       (SELECT a.attname
-        FROM pg_attribute a
-        WHERE a.attrelid = m.oid AND a.attnum = o.conkey[1] AND a.attisdropped = false)  AS source_column,
-       (SELECT nspname FROM pg_namespace WHERE oid = f.relnamespace)                     AS target_schema,
-       f.relname                                                                         AS target_table,
-       (SELECT a.attname
-        FROM pg_attribute a
-        WHERE a.attrelid = f.oid AND a.attnum = o.confkey[1] AND a.attisdropped = false) AS target_column
-FROM pg_constraint o
-         LEFT JOIN pg_class f ON f.oid = o.confrelid
-         LEFT JOIN pg_class m ON m.oid = o.conrelid
-WHERE o.contype = 'f'
-  AND o.conrelid IN (SELECT oid FROM pg_class c WHERE c.relkind = 'r')
-and (SELECT nspname FROM pg_namespace WHERE oid = m.relnamespace) = $1
-and m.relname   = $2`, catalog, entity)
-
-	err := handleDbError(ctx, sqlErr)
-
-	if err != nil {
-		return err
-	}
-
-	for rows.Next() {
-		sourceColumn := new(string)
-		targetSchema := new(string)
-		targetTable := new(string)
-		targetColumn := new(string)
-
-		sqlErr = rows.Scan(sourceColumn, targetSchema, targetTable, targetColumn)
-
-		if sqlErr != nil {
-			return handleDbError(ctx, sqlErr)
-		}
-
-		// locating source property
-		var sourceProperty *model.ResourceProperty
-
-		for _, property := range resource.Properties {
-			if property.SourceConfig.(*model.ResourceProperty_Mapping).Mapping.Mapping == *sourceColumn {
-				sourceProperty = property
-				break
-			}
-		}
-
-		if sourceProperty == nil {
-			return errors.LogicalError.WithDetails("Source property cannot be located")
-		}
-
-		resource.References = append(resource.References, &model.ResourceReference{
-			PropertyName:       "[" + sourceProperty.Name + "]",
-			ReferencedResource: "[" + *targetTable + "]",
-			Cascade:            true,
-		})
-	}
-
-	return nil
-}
-
 func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
-	rows, sqlErr := runner.QueryContext(ctx, `select columns.column_name,
+	rows, sqlErr := runner.QueryContext(ctx, `
+
+select columns.column_name,
        columns.udt_name as column_type,
        columns.character_maximum_length as length,
        columns.is_nullable = 'YES' as is_nullable,
-       column_key.constraint_def is not null as is_primary
+       column_pkey.constraint_def is not null as is_primary,
+       column_ukey.constraint_def is not null as is_unique,
+       column_fkey.constraint_def is not null as is_referenced,
+       column_fkey.target_schema,
+       column_fkey.target_table,
+       column_fkey.target_column
 from information_schema.columns
          left join information_schema.key_column_usage on key_column_usage.table_name = columns.table_name and
                                                           key_column_usage.table_schema = columns.table_schema and
@@ -341,9 +255,31 @@ from information_schema.columns
                            pg_get_constraintdef(c.oid) as constraint_def
                     FROM pg_constraint c
                              JOIN pg_namespace n ON n.oid = c.connamespace
-                    WHERE contype = 'p') column_key
-                   on column_key.conname = key_column_usage.constraint_name
-where columns.table_schema = $1 and columns.table_name = $2 order by columns.ordinal_position`, catalog, entity)
+                    WHERE contype = 'p') column_pkey  on column_pkey.conname = key_column_usage.constraint_name
+         left join (SELECT nspname                     as table_schema,
+                           conname,
+                           contype,
+                           pg_get_constraintdef(c.oid) as constraint_def
+                    FROM pg_constraint c
+                             JOIN pg_namespace n ON n.oid = c.connamespace
+                    WHERE contype = 'u') column_ukey  on column_ukey.conname = key_column_usage.constraint_name
+         left join (SELECT nspname                     as table_schema,
+                           conname,
+                           contype,
+                           pg_get_constraintdef(c.oid) as constraint_def,
+                           (SELECT nspname FROM pg_namespace WHERE oid = f.relnamespace)                     AS target_schema,
+                           f.relname                                                                         AS target_table,
+                           (SELECT a.attname
+                            FROM pg_attribute a
+                            WHERE a.attrelid = f.oid AND a.attnum = c.confkey[1] AND a.attisdropped = false) AS target_column
+                    FROM pg_constraint c
+                             JOIN pg_namespace n ON n.oid = c.connamespace
+                             LEFT JOIN pg_class f ON f.oid = c.confrelid
+                             LEFT JOIN pg_class m ON m.oid = c.conrelid
+                    WHERE contype = 'f' and c.conrelid IN (SELECT oid FROM pg_class c WHERE c.relkind = 'r')) column_fkey  on column_fkey.conname = key_column_usage.constraint_name
+where columns.table_schema = $1 and columns.table_name = $2 order by columns.ordinal_position
+
+`, catalog, entity)
 	err := handleDbError(ctx, sqlErr)
 
 	if err != nil {
@@ -357,8 +293,13 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 		var columnLength = new(*int)
 		var isNullable = new(bool)
 		var isPrimary = new(bool)
+		var isUnique = new(bool)
+		var isReferenced = new(bool)
+		var targetSchema = new(*string)
+		var targetTable = new(*string)
+		var targetColumn = new(*string)
 
-		err = handleDbError(ctx, rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary))
+		err = handleDbError(ctx, rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary, isUnique, isReferenced, targetSchema, targetTable, targetColumn))
 
 		if err != nil {
 			return err
@@ -368,24 +309,25 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 
 		if *columnLength != nil {
 			sourceDef = *columnType + "(" + strconv.Itoa(**columnLength) + ")"
+			annotations.Set(resource, annotations.SourceDef, sourceDef)
 		} else {
 			*columnLength = new(int)
 			**columnLength = 0
 		}
 
-		if *isPrimary && !annotations2.IsEnabled(resource, annotations2.DoPrimaryKeyLookup) {
+		if *isPrimary && !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 			primaryCount++
 
 			if primaryCount > 1 {
-				annotations2.Enable(resource, annotations2.DoPrimaryKeyLookup)
+				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
 			}
 
 			if *columnName != "id" {
-				annotations2.Enable(resource, annotations2.DoPrimaryKeyLookup)
+				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
 			}
 
 			if *columnType != "uuid" {
-				annotations2.Enable(resource, annotations2.DoPrimaryKeyLookup)
+				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
 			}
 		}
 
@@ -398,15 +340,21 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 		property := &model.ResourceProperty{
 			Name: *columnName,
 			Type: typ,
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:   *columnName,
-					SourceDef: sourceDef,
-				},
-			},
+
+			Mapping: *columnName,
+			//SourceDef: sourceDef,
 			Primary:  *isPrimary,
 			Required: !*isNullable,
+			Unique:   *isUnique,
 			Length:   uint32(**columnLength),
+		}
+
+		if *isReferenced {
+			property.Type = model.ResourcePropertyType_TYPE_REFERENCE
+			property.Reference = &model.Reference{
+				ReferencedResource: fmt.Sprintf("[%s]", **targetTable),
+				Cascade:            false,
+			}
 		}
 
 		resource.Properties = append(resource.Properties, property)
@@ -446,7 +394,7 @@ func doResourceCleanup(resource *model.Resource) {
 			continue
 		}
 
-		if property.Primary && !annotations2.IsEnabled(resource, annotations2.DoPrimaryKeyLookup) {
+		if property.Primary && !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 			// ignore id column if it is same as standard id column
 			continue
 		}
@@ -457,14 +405,6 @@ func doResourceCleanup(resource *model.Resource) {
 	resource.Properties = newColumns
 
 	if enableAudit {
-		annotations2.Disable(resource, annotations2.DisableAudit)
-	}
-}
-
-func getPropertyColumnName(property *model.ResourceProperty) string {
-	if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-		return sourceConfig.Mapping.Mapping
-	} else {
-		return ""
+		annotations.Disable(resource, annotations.DisableAudit)
 	}
 }

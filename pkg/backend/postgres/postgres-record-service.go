@@ -9,19 +9,19 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	annotations2 "github.com/tislib/data-handler/pkg/service/annotations"
+	annotations "github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 func (p *postgresResourceServiceBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	logger.Tracef("Begin listing: %v", params)
+	logger.Tracef("Begin listing: %s/%s", params.Resource.Namespace, params.Resource.Name)
 	err = p.withBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
 		result, total, err = recordList(ctx, tx, params)
 
 		return err
 	})
-	logger.Tracef("Begin listed: %v", params)
+	logger.Tracef("Finish listing: %s/%s", params.Resource.Namespace, params.Resource.Name)
 
 	return
 }
@@ -32,17 +32,17 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 	var inserted bool
 	var err errors.ServiceError
 
-	logger.Tracef("Begin creating: %v", params.Records)
+	logger.Tracef("Begin creating: %s/%s", params.Resource.Namespace, params.Resource.Name)
 
 	err = p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
-		inserted, err = recordInsert(ctx, tx, params.Resource, params.Records, params.IgnoreIfExists, false)
+		inserted, err = recordInsert(ctx, tx, params.Resource, params.Records, params.IgnoreIfExists, params.Schema, false)
 
 		if err != nil {
 			return err
 		}
 
-		if inserted && annotations2.IsEnabled(params.Resource, annotations2.KeepHistory) {
-			_, err = recordInsert(ctx, tx, params.Resource, params.Records, false, true)
+		if inserted && annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
+			_, err = recordInsert(ctx, tx, params.Resource, params.Records, false, params.Schema, true)
 
 			if err != nil {
 				return err
@@ -56,7 +56,7 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 		return nil, inserted, err
 	}
 
-	logger.Tracef("Records created: %v; %v", params.Records, inserted)
+	logger.Tracef("Records created: %s/%s", params.Resource.Namespace, params.Resource.Name)
 
 	return params.Records, inserted, nil
 }
@@ -64,15 +64,15 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
 	err := p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
 		for _, record := range params.Records {
-			err := recordUpdate(ctx, tx, params.Resource, record, params.CheckVersion)
+			err := recordUpdate(ctx, tx, params.Resource, record, params.CheckVersion, params.Schema)
 
 			if err != nil {
 				return err
 			}
 		}
 
-		if annotations2.IsEnabled(params.Resource, annotations2.KeepHistory) {
-			_, err := recordInsert(ctx, tx, params.Resource, params.Records, false, false)
+		if annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
+			_, err := recordInsert(ctx, tx, params.Resource, params.Records, false, params.Schema, false)
 
 			if err != nil {
 				return err
@@ -89,11 +89,11 @@ func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, para
 	return params.Records, nil
 }
 
-func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
 	var record *model.Record = nil
 	err := p.withBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
 		var err errors.ServiceError
-		record, err = readRecord(ctx, tx, resource, id)
+		record, err = readRecord(ctx, tx, resource, schema, id)
 
 		if err == sql.ErrNoRows {
 			return errors.RecordNotFoundError.WithDetails(fmt.Sprintf("namespace %s; resource %s; id %v", resource.Namespace, resource.Name, id))

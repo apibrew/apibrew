@@ -46,10 +46,10 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 		namespace := vars["namespace"]
 		resourceName := vars["resourceName"]
 
-		resource, serviceErr := s.resourceService.GetResourceByName(req.Context(), namespace, resourceName)
+		resource := s.resourceService.GetResourceByName(req.Context(), namespace, resourceName)
 
-		if serviceErr != nil {
-			handleServiceError(w, serviceErr)
+		if resource == nil {
+			handleServiceError(w, errors.ResourceNotFoundError)
 			return
 		}
 
@@ -84,11 +84,7 @@ func (s *swaggerApi) prepareDoc(ctx context.Context) (*openapi3.T, errors.Servic
 		panic(err)
 	}
 
-	list, serviceErr := s.resourceService.List(ctx)
-
-	if serviceErr != nil {
-		return nil, serviceErr
-	}
+	list := s.resourceService.List(ctx)
 
 	for _, item := range list {
 		s.appendResourceApis(ctx, doc, item)

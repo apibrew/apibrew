@@ -4,12 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/huandu/go-sqlbuilder"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	annotations2 "github.com/tislib/data-handler/pkg/service/annotations"
+	annotations "github.com/tislib/data-handler/pkg/service/annotations"
 	"strings"
 )
 
@@ -33,14 +34,13 @@ func resourceCreateTable(ctx context.Context, runner QueryRunner, resource *mode
 
 	builder.IfNotExists()
 
-	if !annotations2.IsEnabled(resource, annotations2.DoPrimaryKeyLookup) {
-		builder.Define("id", "uuid", "NOT NULL", "PRIMARY KEY")
+	serviceError := definePrimaryKeyColumn(resource, builder)
+	if serviceError != nil {
+		return serviceError
 	}
 
-	prepareCreateTableQuery(resource, builder)
-
 	// audit
-	if !annotations2.IsEnabled(resource, annotations2.DisableAudit) {
+	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
 		builder.Define("created_on", "timestamp", "NOT NULL")
 		builder.Define("updated_on", "timestamp", "NULL")
 		builder.Define("created_by", DbNameType, "NOT NULL")
@@ -57,6 +57,26 @@ func resourceCreateTable(ctx context.Context, runner QueryRunner, resource *mode
 	return handleDbError(ctx, err)
 }
 
+func definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) errors.ServiceError {
+	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
+		builder.Define("id", "uuid", "NOT NULL", "PRIMARY KEY")
+	} else {
+		pkFound := false
+		for _, prop := range resource.Properties {
+			if prop.Primary {
+				builder.Define(prop.Mapping, getPsqlTypeFromProperty(prop.Type, prop.Length), "NOT NULL", "PRIMARY KEY")
+				pkFound = true
+				break
+			}
+		}
+
+		if !pkFound {
+			return errors.LogicalError.WithDetails("Primary property not found and DoPrimaryKeyLookup annotation is enabled")
+		}
+	}
+	return nil
+}
+
 type ReferenceLocalDetails struct {
 	sourceTableName       string
 	fkConstraintName      string
@@ -66,45 +86,32 @@ type ReferenceLocalDetails struct {
 	joinAlias             string
 }
 
-func prepareCreateTableQuery(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
+func prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) string {
+	uniqModifier := ""
+	nullModifier := "NULL"
+	if property.Required {
+		nullModifier = "NOT NULL"
+	}
+	if property.Unique {
+		uniqModifier = "UNIQUE"
+	}
+	sqlType := getPsqlTypeFromProperty(property.Type, property.Length)
 
-	var primaryKeys []string
-	for _, property := range resource.Properties {
-		columnDef := prepareResourceTableColumnDefinition(property)
+	var def = []string{fmt.Sprintf("\"%s\"", property.Mapping), sqlType, nullModifier, uniqModifier}
 
-		if columnDef != "" {
-			builder.Define(columnDef)
-		}
-
-		if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-			if property.Primary {
-				primaryKeys = append(primaryKeys, sourceConfig.Mapping.Mapping)
+	if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if property.Reference != nil {
+			referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+			var refClause = ""
+			if property.Reference.Cascade {
+				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
+			def = append(def, fmt.Sprintf(" CONSTRAINT \"%s\" REFERENCES \"%s\" (\"%s\") %s", resource.SourceConfig.Entity+"_"+property.Mapping+"_fk", referencedResource.SourceConfig.Entity, "id", refClause))
+
 		}
 	}
-	if len(primaryKeys) > 0 {
-		builder.Define("PRIMARY KEY (" + strings.Join(primaryKeys, ",") + ")")
-	}
-}
 
-func prepareResourceTableColumnDefinition(property *model.ResourceProperty) string {
-	if sourceConfig, ok := property.SourceConfig.(*model.ResourceProperty_Mapping); ok {
-		uniqModifier := ""
-		nullModifier := "NULL"
-		if property.Required {
-			nullModifier = "NOT NULL"
-		}
-		if property.Unique {
-			uniqModifier = "UNIQUE"
-		}
-		sqlType := getPsqlTypeFromProperty(property.Type, property.Length)
-
-		var def = []string{fmt.Sprintf("\"%s\"", sourceConfig.Mapping.Mapping), sqlType, nullModifier, uniqModifier}
-
-		return strings.Join(def, " ")
-	}
-
-	return ""
+	return strings.Join(def, " ")
 }
 
 func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
@@ -112,9 +119,10 @@ func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resourc
 
 	builder.IfNotExists()
 
-	builder.Define("id", "uuid", "NOT NULL")
-
-	prepareCreateTableQuery(resource, builder)
+	serviceError := definePrimaryKeyColumn(resource, builder)
+	if serviceError != nil {
+		return serviceError
+	}
 
 	builder.Define("created_on", "timestamp", "NOT NULL")
 	builder.Define("updated_on", "timestamp", "NULL")
@@ -131,8 +139,14 @@ func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resourc
 	return handleDbError(ctx, err)
 }
 
-func resourceDropTable(ctx context.Context, runner QueryRunner, mapping string) errors.ServiceError {
-	_, err := runner.Exec("DROP TABLE " + mapping)
+func resourceDropTable(ctx context.Context, runner QueryRunner, mapping string, forceMigration bool) errors.ServiceError {
+	s := "DROP TABLE " + mapping
+
+	if forceMigration {
+		s += " CASCADE;"
+	}
+
+	_, err := runner.Exec(s)
 
 	return handleDbError(ctx, err)
 }

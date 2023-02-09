@@ -8,15 +8,15 @@ import (
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
-	annotations2 "github.com/tislib/data-handler/pkg/service/annotations"
+	annotations "github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/util"
 )
 
 func (r *recordService) List(ctx context.Context, params abs.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
-	resource, err := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
-	if err != nil {
-		return nil, 0, err
+	if resource == nil {
+		return nil, 0, errors.ResourceNotFoundError
 	}
 
 	if err := checkAccess(ctx, checkAccessParams{
@@ -26,7 +26,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, err
 	}
 
-	if err = r.genericHandler.BeforeList(ctx, resource, params); err != nil {
+	if err := r.genericHandler.BeforeList(ctx, resource, params); err != nil {
 		return nil, 0, err
 	}
 
@@ -47,6 +47,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		Offset:            params.Offset,
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
+		Schema:            r.resourceService.GetSchema(),
 	})
 
 	if err != nil {
@@ -92,14 +93,14 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 			handler()
 		}
 	}()
+	var txCtxMap = make(map[string]context.Context)
 
 	for resourceName, list := range entityRecordMap {
-		var resource *model.Resource
-		resource, err = r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName)
+		resource := r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName)
 
-		if err != nil {
+		if resource == nil {
 			success = false
-			return nil, nil, err
+			return nil, nil, errors.ResourceNotFoundError
 		}
 
 		if err = checkAccess(ctx, checkAccessParams{
@@ -111,7 +112,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 		}
 
 		if isResourceRelatedResource(resource) {
-			return nil, nil, errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
+			return nil, nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 		}
 
 		if err = r.validateRecords(resource, list, false); err != nil {
@@ -136,36 +137,45 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 			return nil, []bool{}, err
 		}
 
-		tx, err := bck.BeginTransaction(ctx, false)
+		if txCtxMap[resource.SourceConfig.DataSource] == nil {
+			tx, err := bck.BeginTransaction(ctx, false)
 
-		if err != nil {
-			success = false
-			return nil, []bool{}, err
+			if err != nil {
+				success = false
+				return nil, []bool{}, err
+			}
+
+			txCtxMap[resource.SourceConfig.DataSource] = context.WithValue(ctx, "transactionKey", tx)
+
+			log.Print("Begin transaction: ", tx)
+
+			postOperationHandlers = append(postOperationHandlers, func() {
+				if success {
+					log.Print("Commit transaction: ", tx)
+					err = bck.CommitTransaction(txCtxMap[resource.SourceConfig.DataSource])
+
+					if err != nil {
+						log.Print(err)
+						success = false
+					}
+				} else {
+					log.Print("Rollback transaction: ", tx)
+					err = bck.RollbackTransaction(txCtxMap[resource.SourceConfig.DataSource])
+
+					if err != nil {
+						log.Print(err)
+					}
+				}
+			})
 		}
 
-		txCtx := context.WithValue(ctx, "transactionKey", tx)
-
-		postOperationHandlers = append(postOperationHandlers, func() {
-			if success {
-				err = bck.CommitTransaction(txCtx)
-
-				if err != nil {
-					log.Print(err)
-					success = false
-				}
-			} else {
-				err = bck.RollbackTransaction(txCtx)
-
-				if err != nil {
-					log.Print(err)
-				}
-			}
-		})
+		var txCtx = txCtxMap[resource.SourceConfig.DataSource]
 
 		records, inserted, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
 			Resource:       resource,
 			Records:        list,
 			IgnoreIfExists: params.IgnoreIfExists,
+			Schema:         r.resourceService.GetSchema(),
 		})
 
 		insertedArray = append(insertedArray, inserted)
@@ -210,13 +220,14 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 	}()
 
 	for resourceName, list := range entityRecordMap {
-		var resource *model.Resource
-		if resource, err = r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName); err != nil {
-			return nil, err
+		resource := r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName)
+
+		if resource == nil {
+			return nil, errors.ResourceNotFoundError
 		}
 
 		if isResourceRelatedResource(resource) {
-			return nil, errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
+			return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 		}
 
 		if err = checkAccess(ctx, checkAccessParams{
@@ -227,7 +238,7 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 			return nil, err
 		}
 
-		if annotations2.IsEnabled(resource, annotations2.KeepHistory) && !params.CheckVersion {
+		if annotations.IsEnabled(resource, annotations.KeepHistory) && !params.CheckVersion {
 			success = false
 			return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
 		}
@@ -288,6 +299,7 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 			Resource:     resource,
 			Records:      list,
 			CheckVersion: params.CheckVersion,
+			Schema:       r.resourceService.GetSchema(),
 		})
 
 		if err != nil {
@@ -306,17 +318,17 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 }
 
 func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError) {
-	resource, err := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
+	resource := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
 
-	if err != nil {
-		return nil, err
+	if resource == nil {
+		return nil, errors.ResourceNotFoundError
 	}
 
 	if isResourceRelatedResource(resource) {
-		return nil, errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
+		return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
 
-	if err = checkAccess(ctx, checkAccessParams{
+	if err := checkAccess(ctx, checkAccessParams{
 		Resource: resource,
 		Records: &[]*model.Record{
 			{
@@ -328,7 +340,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	if err = r.genericHandler.BeforeGet(ctx, resource, id); err != nil {
+	if err := r.genericHandler.BeforeGet(ctx, resource, id); err != nil {
 		return nil, err
 	}
 
@@ -342,7 +354,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	res, err := bck.GetRecord(ctx, resource, id)
+	res, err := bck.GetRecord(ctx, resource, r.resourceService.GetSchema(), id)
 
 	if err != nil {
 		return nil, err
@@ -361,10 +373,10 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	logger.Debug("Begin record-service FindBy")
 	defer logger.Debug("Finish record-service FindBy")
 
-	resource, err := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
+	resource := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
 
-	if err != nil {
-		return nil, err
+	if resource == nil {
+		return nil, errors.ResourceNotFoundError
 	}
 
 	queryMap := make(map[string]interface{})
@@ -386,7 +398,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 		Limit:             2,
 		Offset:            0,
 		UseHistory:        false,
-		ResolveReferences: false,
+		ResolveReferences: []string{},
 	})
 
 	if total == 0 {
@@ -405,10 +417,10 @@ func (r *recordService) Get(ctx context.Context, params abs.RecordGetParams) (*m
 }
 
 func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParams) errors.ServiceError {
-	resource, err := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
-	if err != nil {
-		return err
+	if resource == nil {
+		return errors.ResourceNotFoundError
 	}
 
 	var recordForCheck = util.ArrayMap(params.Ids, func(t string) *model.Record {
@@ -417,7 +429,7 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 		}
 	})
 
-	if err = checkAccess(ctx, checkAccessParams{
+	if err := checkAccess(ctx, checkAccessParams{
 		Resource:  resource,
 		Records:   &recordForCheck,
 		Operation: model.OperationType_OPERATION_TYPE_DELETE,
@@ -426,10 +438,10 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 	}
 
 	if isResourceRelatedResource(resource) {
-		return errors.LogicalError.WithDetails("Resource and related resources cannot be modified from records API")
+		return errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
 
-	if err = r.genericHandler.BeforeDelete(ctx, resource, params); err != nil {
+	if err := r.genericHandler.BeforeDelete(ctx, resource, params); err != nil {
 		return err
 	}
 

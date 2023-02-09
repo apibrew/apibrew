@@ -22,6 +22,8 @@ func Run() {
 	debug := flag.Bool("debug", false, "Debug flag")
 	//grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
 
+	*debug = true
+
 	if *debug {
 		log.SetLevel(log.TraceLevel)
 		log.SetReportCaller(true)

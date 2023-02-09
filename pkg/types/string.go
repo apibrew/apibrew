@@ -1,6 +1,10 @@
 package types
 
-import "google.golang.org/protobuf/types/known/structpb"
+import (
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+var StringType = stringType{}
 
 // string
 type stringType struct {

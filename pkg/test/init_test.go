@@ -8,7 +8,7 @@ import (
 
 func init() {
 	log.SetLevel(log.TraceLevel)
-	//log.SetReportCaller(true)
+	log.SetReportCaller(true)
 
 	logging.SetupGrayLog("tiswork.tisserv.net:12201", "test")
 }

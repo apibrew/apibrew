@@ -8,22 +8,12 @@ import 'model/audit.proto';
 import 'model/query.proto';
 import 'model/common.proto';
 import 'model/security.proto';
-
-
-message ResourcePropertyComputedSourceConfig {
-  //  FunctionCall functionCall = 1;
-}
+import 'google/protobuf/struct.proto';
 
 enum AutoGenerationType {
   NONE = 0;
   IDENTITY = 1;
   RANDOMIZED_UUID = 2;
-}
-
-message ResourcePropertyMappingConfig {
-  string mapping = 1;
-  string sourceDef = 2;
-  AutoGenerationType autoGeneration = 5;
 }
 
 enum ResourcePropertyType {
@@ -39,42 +29,32 @@ enum ResourcePropertyType {
   TYPE_TIME = 10;
   TYPE_TIMESTAMP = 11;
   TYPE_OBJECT = 12;
+  TYPE_MAP = 13;
+  TYPE_LIST = 14;
+  TYPE_REFERENCE = 15;
+  TYPE_ENUM = 16;
 }
 
 message ResourceProperty {
   string name = 1; // uniq(per resource) // name
   ResourcePropertyType type = 2;
-  oneof sourceConfig {
-    ResourcePropertyMappingConfig mapping = 3;
-    ResourcePropertyComputedSourceConfig computed = 4; // not implemented
-  }
+  string mapping = 3;
   bool required = 5;
   bool primary = 6;
   uint32 length = 7;
   bool unique = 8;
   SecurityContext securityContext = 9;
+  google.protobuf.Value defaultValue = 10;
+  google.protobuf.Value enumValues = 11; // if type is enum
+  Reference reference = 12; // if type is reference
+  ResourcePropertyType subType = 13; // if type is map or list
+
+  map<string, string> annotations = 103;
 }
 
-message ResourceCheck {
-  BooleanExpression check = 1;
-  bool permissive = 2; // if permissive, instead of rejecting payload, we will log it
-}
-
-message ResourceReference {
-  string propertyName = 1;
+message Reference {
   string referencedResource = 2;
   bool cascade = 3;
-}
-
-enum ResourceIndexType {
-  BTREE = 0;
-  HASH = 1;
-}
-
-message ResourceIndex {
-  repeated string propertyNames = 1;
-  bool unique = 2;
-  ResourceIndexType indexType = 3;
 }
 
 message ResourceSourceConfig {
@@ -90,9 +70,6 @@ message Resource {
   DataType dataType = 4; // read only
   ResourceSourceConfig sourceConfig = 5;
   repeated ResourceProperty properties = 6;
-  repeated ResourceCheck checks = 7; // not implemented
-  repeated ResourceReference references = 8; // not implemented
-  repeated ResourceIndex indexes = 9; // not implemented
   SecurityContext securityContext = 10;
   bool virtual = 11;
 

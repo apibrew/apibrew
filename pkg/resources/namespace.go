@@ -15,11 +15,8 @@ var NamespaceResource = &model.Resource{
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "name",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "name",
-				},
-			},
+
+			Mapping:  "name",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
@@ -28,11 +25,8 @@ var NamespaceResource = &model.Resource{
 		},
 		{
 			Name: "description",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "description",
-				},
-			},
+
+			Mapping:  "description",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
@@ -40,11 +34,8 @@ var NamespaceResource = &model.Resource{
 		},
 		{
 			Name: "details",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "details",
-				},
-			},
+
+			Mapping:  "details",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_OBJECT,
 			Required: false,
