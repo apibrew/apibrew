@@ -8,7 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	annotations2 "github.com/tislib/data-handler/pkg/service/annotations"
+	annotations "github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context) (result []string, err errors.ServiceError) {
@@ -51,7 +51,7 @@ func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, pa
 			return err
 		}
 
-		if annotations2.IsEnabled(params.Resource, annotations2.KeepHistory) {
+		if annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
 			if err := resourceCreateHistoryTable(ctx, tx, params.Resource); err != nil {
 				return err
 			}
@@ -67,14 +67,14 @@ func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, pa
 
 func (p *postgresResourceServiceBackend) DowngradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
-		err := resourceDropTable(ctx, tx, getTableName(resource.SourceConfig, false))
+		err := resourceDropTable(ctx, tx, getTableName(resource.SourceConfig, false), forceMigration)
 
 		if err != nil {
 			return err
 		}
 
-		if annotations2.IsEnabled(resource, annotations2.KeepHistory) {
-			err = resourceDropTable(ctx, tx, getTableName(resource.SourceConfig, true))
+		if annotations.IsEnabled(resource, annotations.KeepHistory) {
+			err = resourceDropTable(ctx, tx, getTableName(resource.SourceConfig, true), forceMigration)
 
 			if err != nil {
 				return err

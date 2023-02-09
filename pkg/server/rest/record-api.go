@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"net/http"
@@ -56,10 +57,10 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	resourceName := vars["resourceName"]
 
-	resource, err := r.resourceService.GetResourceByName(request.Context(), "", resourceName)
+	resource := r.resourceService.GetResourceByName(request.Context(), "", resourceName)
 
-	if err != nil {
-		handleClientError(writer, err)
+	if resource == nil {
+		handleClientError(writer, errors.ResourceNotFoundError)
 		return
 	}
 

@@ -15,13 +15,8 @@ var ResourceResource = &model.Resource{
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "name",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:        "name",
-					SourceDef:      "",
-					AutoGeneration: 0,
-				},
-			},
+
+			Mapping:  "name",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
@@ -30,13 +25,8 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name: "virtual",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:        "virtual",
-					SourceDef:      "",
-					AutoGeneration: 0,
-				},
-			},
+
+			Mapping:  "virtual",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_BOOL,
 			Length:   256,
@@ -44,76 +34,55 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name: "namespace",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "namespace",
-				},
-			},
+
+			Mapping:  "namespace",
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: true,
 		},
 		{
 			Name: "dataSource",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "source_data_source",
-				},
-			},
-			Type:     model.ResourcePropertyType_TYPE_UUID,
+
+			Mapping:  "source_data_source",
+			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
 			Length:   256,
 			Required: false,
+			Reference: &model.Reference{
+				ReferencedResource: DataSourceResource.Name,
+				Cascade:            false,
+			},
 		},
 		{
 			Name: "entity",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "source_mapping",
-				},
-			},
+
+			Mapping:  "source_mapping",
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
 			Name: "catalog",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "source_catalog",
-				},
-			},
+
+			Mapping:  "source_catalog",
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
 			Name: "annotations",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "annotations",
-				},
-			},
+
+			Mapping:  "annotations",
 			Type:     model.ResourcePropertyType_TYPE_OBJECT,
 			Required: false,
 		},
 		{
 			Name: "type",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "type",
-				},
-			},
+
+			Mapping:  "type",
 			Type:     model.ResourcePropertyType_TYPE_INT32,
 			Required: true,
 		},
 		securityContextProperty,
-	},
-	References: []*model.ResourceReference{
-		{
-			PropertyName:       "dataSource",
-			ReferencedResource: DataSourceResource.Name,
-			Cascade:            false,
-		},
 	},
 	SecurityContext: securityContextDisallowAll,
 }

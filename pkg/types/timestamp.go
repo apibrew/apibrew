@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+var TimestampType = timestampType{}
+
 // string
 type timestampType struct {
 }

@@ -5,6 +5,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+var Float32Type = float32Type{}
+
 // float32
 type float32Type struct {
 }

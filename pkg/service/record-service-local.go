@@ -15,7 +15,13 @@ func PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*m
 			if err != nil {
 				return nil, errors.RecordValidationError.WithDetails(err.Error())
 			}
-			criteria = append(criteria, newEqualExpression(property.Name, val))
+
+			if val.GetListValue() != nil {
+				criteria = append(criteria, newInExpression(property.Name, val))
+			} else {
+				criteria = append(criteria, newEqualExpression(property.Name, val))
+			}
+
 		}
 	}
 
@@ -46,6 +52,25 @@ func newEqualExpression(propertyName string, val *structpb.Value) *model.Boolean
 	return &model.BooleanExpression{
 		Expression: &model.BooleanExpression_Equal{
 			Equal: &model.PairExpression{
+				Left: &model.Expression{
+					Expression: &model.Expression_Property{
+						Property: propertyName,
+					},
+				},
+				Right: &model.Expression{
+					Expression: &model.Expression_Value{
+						Value: val,
+					},
+				},
+			},
+		},
+	}
+}
+
+func newInExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
+	return &model.BooleanExpression{
+		Expression: &model.BooleanExpression_In{
+			In: &model.PairExpression{
 				Left: &model.Expression{
 					Expression: &model.Expression_Property{
 						Property: propertyName,

@@ -70,7 +70,7 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	c.out(w, "References:")
 
 	table = tablewriter.NewWriter(w)
-	table.SetHeader([]string{"Property", "Referenced Resource", "Cascade"})
+	table.SetHeader([]string{"Property", "Referenced resource", "Cascade"})
 	c.configureTable(table)
 
 	data = [][]string{}

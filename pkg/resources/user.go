@@ -15,13 +15,8 @@ var UserResource = &model.Resource{
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "username",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping:        "username",
-					SourceDef:      "",
-					AutoGeneration: 0,
-				},
-			},
+
+			Mapping:  "username",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
@@ -30,11 +25,8 @@ var UserResource = &model.Resource{
 		},
 		{
 			Name: "password",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "password",
-				},
-			},
+
+			Mapping:  "password",
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: true,
@@ -42,12 +34,10 @@ var UserResource = &model.Resource{
 		securityContextProperty,
 		{
 			Name: "details",
-			SourceConfig: &model.ResourceProperty_Mapping{
-				Mapping: &model.ResourcePropertyMappingConfig{
-					Mapping: "details",
-				},
-			},
-			Type: model.ResourcePropertyType_TYPE_OBJECT,
+
+			Mapping:         "details",
+			Type:            model.ResourcePropertyType_TYPE_OBJECT,
+			SecurityContext: securityContextDisallowAll,
 		},
 	},
 	SecurityContext: securityContextDisallowAll,

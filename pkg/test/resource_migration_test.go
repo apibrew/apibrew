@@ -50,8 +50,8 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //func TestResourceMigration_CrunchbaseMigrationWithResourceCreation(t *testing.T) {
 //
 //
-//	withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
-//		resource2 := proto.Clone(resource1).(*model.Resource)
+//	withAutoLoadedResource(ctx, t, container, dataSourceDhTest, "public", "organization", func(resource1 *model.resource) {
+//		resource2 := proto.Clone(resource1).(*model.resource)
 //
 //		resource2.Name = "organization_copy_new"
 //		resource2.SourceConfig.Catalog = "public"
@@ -66,7 +66,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //
 //		createRes, err := container.resourceService.Create(ctx, &stub.CreateResourceRequest{
 //			Token:          "test-token",
-//			Resources:      []*model.Resource{resource2},
+//			Resources:      []*model.resource{resource2},
 //			DoMigration:    true,
 //			ForceMigration: false,
 //		})
@@ -78,7 +78,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //					Namespace: resource2.Namespace,
 //					Name:      resource2.Name,
 //				})
-//				resource2.Id = res2.Resource.Id
+//				resource2.Id = res2.resource.Id
 //
 //			} else {
 //				t.Error(err)
@@ -90,7 +90,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //
 //		list, err := container.recordService.List(ctx, &stub.ListRecordRequest{
 //			Token:    "test-token",
-//			Resource: resource1.Name,
+//			resource: resource1.Name,
 //		})
 //
 //		if err != nil {
@@ -104,7 +104,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //		}
 //
 //		var records = util.ArrayMap(list.Content, func(record *model.Record) *model.Record {
-//			record.Resource = resource2.Name
+//			record.resource = resource2.Name
 //
 //			return record
 //		})
@@ -124,7 +124,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //
 //		_, err = container.recordService.Delete(ctx, &stub.DeleteRecordRequest{
 //			Token:    "test-token",
-//			Resource: resource2.Name,
+//			resource: resource2.Name,
 //			Ids: util.ArrayMap(list.Content, func(record *model.Record) string {
 //				return record.Id
 //			}),

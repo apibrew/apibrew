@@ -5,12 +5,8 @@ import (
 )
 
 var securityContextProperty = &model.ResourceProperty{
-	Name: "securityContext",
-	SourceConfig: &model.ResourceProperty_Mapping{
-		Mapping: &model.ResourcePropertyMappingConfig{
-			Mapping: "security_context",
-		},
-	},
+	Name:     "securityContext",
+	Mapping:  "security_context",
 	Type:     model.ResourcePropertyType_TYPE_OBJECT,
 	Length:   256,
 	Required: false,
