@@ -48,7 +48,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 		util.IsSameIdentifiedResourceProperty,
 		util.IsSameResourceProperty,
 		func(property *model.ResourceProperty) errors.ServiceError {
-			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(existingResource, property, *params.Schema))
+			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(params.Resource, property, *params.Schema))
 
 			logger.Info("DB Migrate Sql: " + sql)
 			_, sqlError := runner.ExecContext(ctx, sql)

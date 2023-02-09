@@ -432,13 +432,19 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, na
 func (r *resourceService) Init(data *model.InitData) {
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
 
+	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
+	for _, resource := range r.schema.Resources {
+		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
+	}
+
+	r.backendProviderService.MigrateResource(resources.DataSourceResource, r.schema)
+
 	r.backendProviderService.MigrateResource(resources.ResourceResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ResourcePropertyResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ResourceReferenceResource, r.schema)
 
 	r.backendProviderService.MigrateResource(resources.UserResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.NamespaceResource, r.schema)
-	r.backendProviderService.MigrateResource(resources.DataSourceResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ExtensionResource, r.schema)
 
 	if err := r.ReloadSchema(context.TODO()); err != nil {
