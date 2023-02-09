@@ -17,6 +17,7 @@ var authenticationServiceClient stub.AuthenticationServiceClient
 var dataSourceServiceClient stub.DataSourceServiceClient
 var resourceServiceClient stub.ResourceServiceClient
 var recordServiceClient stub.RecordServiceClient
+var genericServiceClient stub.GenericServiceClient
 var extensionServiceClient stub.ExtensionServiceClient
 var userServiceClient stub.UserServiceClient
 
@@ -62,4 +63,5 @@ func init() {
 	dataSourceServiceClient = stub.NewDataSourceServiceClient(conn)
 	userServiceClient = stub.NewUserServiceClient(conn)
 	extensionServiceClient = stub.NewExtensionServiceClient(conn)
+	genericServiceClient = stub.NewGenericServiceClient(conn)
 }
