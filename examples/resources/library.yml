@@ -1,0 +1,50 @@
+name: author
+namespace: default
+properties:
+  - length: 255
+    mapping: "name"
+    name: name
+    required: true
+    type: TYPE_STRING
+    unique: false
+  - length: 255
+    mapping: "description"
+    name: description
+    required: true
+    type: TYPE_STRING
+    unique: false
+sourceConfig:
+  catalog: ""
+  dataSource: e7596c9c-a7b5-11ed-96c5-b29c4ac91271
+  entity: author
+type: resource
+---
+name: book
+namespace: default
+properties:
+  - length: 255
+    mapping: "name"
+    name: name
+    required: true
+    type: TYPE_STRING
+    unique: false
+  - length: 255
+    mapping: "description"
+    name: description
+    required: true
+    type: TYPE_STRING
+    unique: false
+  - length: 255
+    mapping: "author"
+    name: description
+    required: true
+    type: TYPE_REFERENCE
+    reference:
+      referencedResource: author
+    unique: false
+sourceConfig:
+  catalog: ""
+  dataSource: e7596c9c-a7b5-11ed-96c5-b29c4ac91271
+  entity: book
+type: resource
+---
