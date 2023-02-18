@@ -107,24 +107,8 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 
 	_, err := runner.ExecContext(ctx, query, args...)
 
-	if len(records) == 1 && records[0].Resource == "author" {
-		ra := runner.QueryRow("select count(*) from author")
-		var i = new(int32)
-		err3 := ra.Scan(&i)
-
-		log.Print(i, err3)
-	}
-
 	if err != nil {
-		logger.Error("SQL ERROR: ", err)
-
-		ra := runner.QueryRow("select count(*) from author")
-		var i = new(int32)
-		err3 := ra.Scan(&i)
-
-		log.Print(i, err3)
-
-		return false, handleDbError(ctx, err)
+		logger.Error(err)
 	}
 
 	return true, handleDbError(ctx, err)

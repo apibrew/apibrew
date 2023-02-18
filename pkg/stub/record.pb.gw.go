@@ -32,7 +32,7 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 var (
-	filter_RecordService_Create_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "record": 1, "resource": 2}, Base: []int{1, 2, 4, 5, 0, 0, 4, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 7, 4}}
+	filter_RecordService_Create_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
 )
 
 func request_RecordService_Create_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -56,14 +56,14 @@ func request_RecordService_Create_0(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
 	}
 
-	val, ok = pathParams["record.resource"]
+	val, ok = pathParams["resource"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "record.resource")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "resource")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "record.resource", val)
+	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "record.resource", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -99,14 +99,14 @@ func local_request_RecordService_Create_0(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
 	}
 
-	val, ok = pathParams["record.resource"]
+	val, ok = pathParams["resource"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "record.resource")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "resource")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "record.resource", val)
+	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "record.resource", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -122,7 +122,7 @@ func local_request_RecordService_Create_0(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_Create_1 = &utilities.DoubleArray{Encoding: map[string]int{"record": 0, "namespace": 1, "resource": 2}, Base: []int{1, 4, 6, 7, 2, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 5, 2, 2, 3, 3, 4}}
+	filter_RecordService_Create_1 = &utilities.DoubleArray{Encoding: map[string]int{"record": 0, "namespace": 1, "resource": 2}, Base: []int{1, 2, 4, 6, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 3, 4, 4}}
 )
 
 func request_RecordService_Create_1(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -154,14 +154,14 @@ func request_RecordService_Create_1(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
 	}
 
-	val, ok = pathParams["record.resource"]
+	val, ok = pathParams["resource"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "record.resource")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "resource")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "record.resource", val)
+	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "record.resource", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -205,14 +205,14 @@ func local_request_RecordService_Create_1(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
 	}
 
-	val, ok = pathParams["record.resource"]
+	val, ok = pathParams["resource"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "record.resource")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "resource")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "record.resource", val)
+	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "record.resource", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -228,7 +228,7 @@ func local_request_RecordService_Create_1(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "record": 1, "resource": 2}, Base: []int{1, 2, 4, 5, 0, 0, 4, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 7, 4}}
+	filter_RecordService_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
 )
 
 func request_RecordService_Update_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -252,14 +252,14 @@ func request_RecordService_Update_0(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
 	}
 
-	val, ok = pathParams["record.resource"]
+	val, ok = pathParams["resource"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "record.resource")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "resource")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "record.resource", val)
+	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "record.resource", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -295,14 +295,14 @@ func local_request_RecordService_Update_0(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
 	}
 
-	val, ok = pathParams["record.resource"]
+	val, ok = pathParams["resource"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "record.resource")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "resource")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "record.resource", val)
+	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "record.resource", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -318,7 +318,7 @@ func local_request_RecordService_Update_0(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_Update_1 = &utilities.DoubleArray{Encoding: map[string]int{"record": 0, "namespace": 1, "resource": 2, "id": 3}, Base: []int{1, 6, 8, 9, 10, 2, 0, 4, 0, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 1, 2, 6, 2, 8, 2, 2, 3, 3, 4, 5}}
+	filter_RecordService_Update_1 = &utilities.DoubleArray{Encoding: map[string]int{"record": 0, "namespace": 1, "resource": 2, "id": 3}, Base: []int{1, 4, 6, 8, 9, 2, 0, 0, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 1, 2, 6, 2, 2, 3, 3, 4, 4, 5}}
 )
 
 func request_RecordService_Update_1(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -350,14 +350,14 @@ func request_RecordService_Update_1(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
 	}
 
-	val, ok = pathParams["record.resource"]
+	val, ok = pathParams["resource"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "record.resource")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "resource")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "record.resource", val)
+	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "record.resource", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
 	}
 
 	val, ok = pathParams["record.id"]
@@ -411,14 +411,14 @@ func local_request_RecordService_Update_1(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
 	}
 
-	val, ok = pathParams["record.resource"]
+	val, ok = pathParams["resource"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "record.resource")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "resource")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "record.resource", val)
+	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "record.resource", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
 	}
 
 	val, ok = pathParams["record.id"]
@@ -1035,7 +1035,7 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{record.resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1060,7 +1060,7 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{record.resource}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1085,7 +1085,7 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{record.resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1110,7 +1110,7 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{record.resource}/{record.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{record.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1152,7 +1152,7 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("PUT", pattern_RecordService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_RecordService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1324,7 +1324,7 @@ func RegisterRecordServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{record.resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1346,7 +1346,7 @@ func RegisterRecordServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{record.resource}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1368,7 +1368,7 @@ func RegisterRecordServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{record.resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1390,7 +1390,7 @@ func RegisterRecordServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{record.resource}/{record.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{record.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1428,7 +1428,7 @@ func RegisterRecordServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("PUT", pattern_RecordService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_RecordService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1569,13 +1569,13 @@ func (m response_RecordService_Get_0) XXX_ResponseBody() interface{} {
 }
 
 var (
-	pattern_RecordService_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "record.resource", "_bulk"}, ""))
+	pattern_RecordService_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_bulk"}, ""))
 
-	pattern_RecordService_Create_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "record.resource"}, ""))
+	pattern_RecordService_Create_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "resource"}, ""))
 
-	pattern_RecordService_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "record.resource", "_bulk"}, ""))
+	pattern_RecordService_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_bulk"}, ""))
 
-	pattern_RecordService_Update_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "record.resource", "record.id"}, ""))
+	pattern_RecordService_Update_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "resource", "record.id"}, ""))
 
 	pattern_RecordService_UpdateMulti_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_multi"}, ""))
 

@@ -12,11 +12,11 @@ import (
 func TestComplexPayload1Fail(t *testing.T) {
 
 	record1 := new(model.Record)
-	record1.Resource = richResource1.Name
 
 	_, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
-		Token:   "",
-		Records: []*model.Record{record1},
+		Token:    "",
+		Resource: richResource1.Name,
+		Records:  []*model.Record{record1},
 	})
 
 	if err == nil {
@@ -37,7 +37,6 @@ func TestComplexPayload1Fail(t *testing.T) {
 func TestComplexPayload1Success(t *testing.T) {
 
 	record1 := new(model.Record)
-	record1.Resource = richResource1.Name
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"bool":   true,
 		"bytes":  "YXNk",
@@ -63,8 +62,9 @@ func TestComplexPayload1Success(t *testing.T) {
 	}
 
 	res, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
-		Token:   "",
-		Records: []*model.Record{record1},
+		Token:    "",
+		Resource: richResource1.Name,
+		Records:  []*model.Record{record1},
 	})
 
 	if err != nil {

@@ -73,6 +73,7 @@ func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.Dat
 	records := mapping2.MapToRecord(dataSources, mapping2.DataSourceToRecord)
 	result, _, err := d.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
 		Records:   records,
 	})
 
@@ -92,6 +93,7 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 	records := mapping2.MapToRecord(dataSources, mapping2.DataSourceToRecord)
 	result, err := d.recordService.Update(ctx, abs.RecordUpdateParams{
 		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
 		Records:   records,
 	})
 
@@ -166,6 +168,7 @@ func (d *dataSourceService) Init(data *model.InitData) {
 	if len(data.InitDataSources) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
 			Namespace:      resources.DataSourceResource.Namespace,
+			Resource:       resources.DataSourceResource.Name,
 			Records:        mapping2.MapToRecord(data.InitDataSources, mapping2.DataSourceToRecord),
 			IgnoreIfExists: true,
 		})

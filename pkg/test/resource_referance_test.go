@@ -101,9 +101,9 @@ func TestResourceReferenceViolation(t *testing.T) {
 	}()
 
 	_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+		Resource: "book",
 		Records: []*model.Record{
 			{
-				Resource: "book",
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-book"),
 					"description": structpb.NewStringValue("descp-1"),
@@ -153,16 +153,26 @@ func TestResourceReferenceSuccess(t *testing.T) {
 	}()
 
 	_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+		Resource: "author",
 		Records: []*model.Record{
 			{
-				Resource: "author",
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-author"),
 					"description": structpb.NewStringValue("descp-1"),
 				},
 			},
+		},
+	})
+
+	if err != nil {
+		t.Error("It should create records")
+		return
+	}
+
+	_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+		Resource: "book",
+		Records: []*model.Record{
 			{
-				Resource: "book",
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-book"),
 					"description": structpb.NewStringValue("descp-1"),
