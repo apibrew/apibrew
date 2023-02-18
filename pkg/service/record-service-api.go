@@ -70,12 +70,6 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 }
 
 func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
-	var entityRecordMap = make(map[string][]*model.Record)
-
-	for _, record := range params.Records {
-		entityRecordMap[record.Resource] = append(entityRecordMap[record.Resource], record)
-	}
-
 	var result []*model.Record
 
 	for _, item := range params.Records {
@@ -86,112 +80,107 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 	var err errors.ServiceError
 
 	var success = true
-	var postOperationHandlers []func()
+	var txCtx context.Context
+
+	if params.Resource == "" {
+		return nil, nil, errors.RecordValidationError.WithMessage("Resource name is empty")
+	}
+
+	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+
+	if resource == nil {
+		success = false
+		return nil, nil, errors.ResourceNotFoundError
+	}
+
+	if err = checkAccess(ctx, checkAccessParams{
+		Resource:  resource,
+		Records:   &params.Records,
+		Operation: model.OperationType_OPERATION_TYPE_CREATE,
+	}); err != nil {
+		return nil, nil, err
+	}
+
+	if len(params.Records) == 0 {
+		return nil, nil, nil
+	}
+
+	if isResourceRelatedResource(resource) {
+		return nil, nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
+	}
+
+	if err = r.validateRecords(resource, params.Records, false); err != nil {
+		return nil, nil, err
+	}
+
+	if err = r.genericHandler.BeforeCreate(ctx, resource, params); err != nil {
+		return nil, nil, err
+	}
+
+	var records []*model.Record
+	var inserted bool
+
+	if handled, records, inserted, err := r.genericHandler.Create(ctx, resource, params); handled {
+		return records, inserted, err
+	}
+
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
+
+	if err != nil {
+		success = false
+		return nil, []bool{}, err
+	}
+
+	tx, err := bck.BeginTransaction(ctx, false)
+
+	if err != nil {
+		success = false
+		return nil, []bool{}, err
+	}
+
+	txCtx = context.WithValue(ctx, "transactionKey", tx)
+
+	log.Print("Begin transaction: ", tx)
 
 	defer func() {
-		for _, handler := range postOperationHandlers {
-			handler()
-		}
-	}()
-	var txCtxMap = make(map[string]context.Context)
-
-	for resourceName, list := range entityRecordMap {
-		resource := r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName)
-
-		if resource == nil {
-			success = false
-			return nil, nil, errors.ResourceNotFoundError
-		}
-
-		if err = checkAccess(ctx, checkAccessParams{
-			Resource:  resource,
-			Records:   &list,
-			Operation: model.OperationType_OPERATION_TYPE_CREATE,
-		}); err != nil {
-			return nil, nil, err
-		}
-
-		if isResourceRelatedResource(resource) {
-			return nil, nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
-		}
-
-		if err = r.validateRecords(resource, list, false); err != nil {
-			return nil, nil, err
-		}
-
-		if err = r.genericHandler.BeforeCreate(ctx, resource, params); err != nil {
-			return nil, nil, err
-		}
-
-		var records []*model.Record
-		var inserted bool
-
-		if handled, records, inserted, err := r.genericHandler.Create(ctx, resource, params); handled {
-			return records, inserted, err
-		}
-
-		bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
-
-		if err != nil {
-			success = false
-			return nil, []bool{}, err
-		}
-
-		if txCtxMap[resource.SourceConfig.DataSource] == nil {
-			tx, err := bck.BeginTransaction(ctx, false)
+		if success {
+			log.Print("Commit transaction: ", tx)
+			err = bck.CommitTransaction(txCtx)
 
 			if err != nil {
+				log.Print(err)
 				success = false
-				return nil, []bool{}, err
 			}
+		} else {
+			log.Print("Rollback transaction: ", tx)
+			err = bck.RollbackTransaction(txCtx)
 
-			txCtxMap[resource.SourceConfig.DataSource] = context.WithValue(ctx, "transactionKey", tx)
-
-			log.Print("Begin transaction: ", tx)
-
-			postOperationHandlers = append(postOperationHandlers, func() {
-				if success {
-					log.Print("Commit transaction: ", tx)
-					err = bck.CommitTransaction(txCtxMap[resource.SourceConfig.DataSource])
-
-					if err != nil {
-						log.Print(err)
-						success = false
-					}
-				} else {
-					log.Print("Rollback transaction: ", tx)
-					err = bck.RollbackTransaction(txCtxMap[resource.SourceConfig.DataSource])
-
-					if err != nil {
-						log.Print(err)
-					}
-				}
-			})
+			if err != nil {
+				log.Print(err)
+			}
 		}
+	}()
 
-		var txCtx = txCtxMap[resource.SourceConfig.DataSource]
+	records, inserted, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
+		Resource:       resource,
+		Records:        params.Records,
+		IgnoreIfExists: params.IgnoreIfExists,
+		Schema:         r.resourceService.GetSchema(),
+	})
 
-		records, inserted, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
-			Resource:       resource,
-			Records:        list,
-			IgnoreIfExists: params.IgnoreIfExists,
-			Schema:         r.resourceService.GetSchema(),
-		})
+	insertedArray = append(insertedArray, inserted)
 
-		insertedArray = append(insertedArray, inserted)
-
-		if err != nil {
-			success = false
-			return nil, nil, err
-		}
-
-		if err = r.genericHandler.AfterCreate(ctx, resource, params, records); err != nil {
-			success = false
-			return nil, nil, err
-		}
-
-		result = append(result, records...)
+	if err != nil {
+		success = false
+		return nil, nil, err
 	}
+
+	if err = r.genericHandler.AfterCreate(ctx, resource, params, records); err != nil {
+		success = false
+		return nil, nil, err
+	}
+
+	result = append(result, records...)
 
 	return result, insertedArray, nil
 }
@@ -201,118 +190,111 @@ func isResourceRelatedResource(resource *model.Resource) bool {
 }
 
 func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
-	var entityRecordMap = make(map[string][]*model.Record)
-
-	for _, record := range params.Records {
-		entityRecordMap[record.Resource] = append(entityRecordMap[record.Resource], record)
-	}
-
 	var result []*model.Record
 	var err errors.ServiceError
 
 	var success = true
-	var postOperationHandlers []func()
+
+	if params.Resource == "" {
+		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
+	}
+
+	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+
+	if resource == nil {
+		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + params.Resource)
+	}
+
+	if isResourceRelatedResource(resource) {
+		return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
+	}
+
+	if err = checkAccess(ctx, checkAccessParams{
+		Resource:  resource,
+		Records:   &params.Records,
+		Operation: model.OperationType_OPERATION_TYPE_UPDATE,
+	}); err != nil {
+		return nil, err
+	}
+
+	if len(params.Records) == 0 {
+		return nil, nil
+	}
+
+	if annotations.IsEnabled(resource, annotations.KeepHistory) && !params.CheckVersion {
+		success = false
+		return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
+	}
+
+	err = r.validateRecords(resource, params.Records, true)
+
+	if err != nil {
+		success = false
+		return nil, err
+	}
+
+	if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {
+		success = false
+		return nil, err
+	}
+
+	if handled, records, err := r.genericHandler.Update(ctx, resource, params); handled {
+		success = false
+		return records, err
+	}
+
+	var records []*model.Record
+
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
+
+	if err != nil {
+		success = false
+		return nil, err
+	}
+
+	tx, err := bck.BeginTransaction(ctx, false)
+
+	if err != nil {
+		success = false
+		return nil, err
+	}
+
+	txCtx := context.WithValue(ctx, "transactionKey", tx)
 
 	defer func() {
-		for _, handler := range postOperationHandlers {
-			handler()
+		if success {
+			err = bck.CommitTransaction(txCtx)
+
+			if err != nil {
+				log.Print(err)
+				success = false
+			}
+		} else {
+			err = bck.RollbackTransaction(txCtx)
+
+			if err != nil {
+				log.Print(err)
+			}
 		}
 	}()
 
-	for resourceName, list := range entityRecordMap {
-		resource := r.resourceService.GetResourceByName(ctx, params.Namespace, resourceName)
+	records, err = bck.UpdateRecords(txCtx, abs.BulkRecordsParams{
+		Resource:     resource,
+		Records:      params.Records,
+		CheckVersion: params.CheckVersion,
+		Schema:       r.resourceService.GetSchema(),
+	})
 
-		if resource == nil {
-			return nil, errors.ResourceNotFoundError
-		}
-
-		if isResourceRelatedResource(resource) {
-			return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
-		}
-
-		if err = checkAccess(ctx, checkAccessParams{
-			Resource:  resource,
-			Records:   &list,
-			Operation: model.OperationType_OPERATION_TYPE_UPDATE,
-		}); err != nil {
-			return nil, err
-		}
-
-		if annotations.IsEnabled(resource, annotations.KeepHistory) && !params.CheckVersion {
-			success = false
-			return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
-		}
-
-		err = r.validateRecords(resource, list, true)
-
-		if err != nil {
-			success = false
-			return nil, err
-		}
-
-		if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {
-			success = false
-			return nil, err
-		}
-
-		if handled, records, err := r.genericHandler.Update(ctx, resource, params); handled {
-			success = false
-			return records, err
-		}
-
-		var records []*model.Record
-
-		bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
-
-		if err != nil {
-			success = false
-			return nil, err
-		}
-
-		tx, err := bck.BeginTransaction(ctx, false)
-
-		if err != nil {
-			success = false
-			return nil, err
-		}
-
-		txCtx := context.WithValue(ctx, "transactionKey", tx)
-
-		postOperationHandlers = append(postOperationHandlers, func() {
-			if success {
-				err = bck.CommitTransaction(txCtx)
-
-				if err != nil {
-					log.Print(err)
-					success = false
-				}
-			} else {
-				err = bck.RollbackTransaction(txCtx)
-
-				if err != nil {
-					log.Print(err)
-				}
-			}
-		})
-
-		records, err = bck.UpdateRecords(txCtx, abs.BulkRecordsParams{
-			Resource:     resource,
-			Records:      list,
-			CheckVersion: params.CheckVersion,
-			Schema:       r.resourceService.GetSchema(),
-		})
-
-		if err != nil {
-			success = false
-			return nil, err
-		}
-
-		if err = r.genericHandler.AfterUpdate(ctx, resource, params, records); err != nil {
-			return nil, err
-		}
-
-		result = append(result, records...)
+	if err != nil {
+		success = false
+		return nil, err
 	}
+
+	if err = r.genericHandler.AfterUpdate(ctx, resource, params, records); err != nil {
+		return nil, err
+	}
+
+	result = append(result, records...)
 
 	return result, nil
 }

@@ -12,7 +12,6 @@ import 'model/common.proto';
 
 message Record {
   string id = 1; // id; read only
-  string resource = 2; // create only
   DataType data_type = 3; // read only
   map<string, google.protobuf.Value> properties = 4;
 

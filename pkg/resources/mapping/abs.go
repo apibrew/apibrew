@@ -36,12 +36,12 @@ func MessageToRecord(message proto.Message) *model.Record {
 	return nil
 }
 
-func MessageFromRecord(namespace string, record *model.Record) proto.Message {
+func MessageFromRecord(resource, namespace string, record *model.Record) proto.Message {
 	if namespace == "" {
 		namespace = "default"
 	}
 
-	if record.Resource == "user" && namespace == "default" {
+	if resource == "user" && namespace == "default" {
 		return UserFromRecord(record)
 	}
 

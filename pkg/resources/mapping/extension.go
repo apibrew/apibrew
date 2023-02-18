@@ -2,7 +2,6 @@ package mapping
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -36,7 +35,6 @@ func ExtensionToRecord(extension *model.RemoteExtension) *model.Record {
 
 	return &model.Record{
 		Id:         extension.Id,
-		Resource:   resources.DataSourceResource.Name,
 		DataType:   extension.Type,
 		Properties: properties,
 		AuditData:  extension.AuditData,

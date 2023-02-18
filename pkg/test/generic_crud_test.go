@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -22,6 +23,7 @@ func TestCreateUser1(t *testing.T) {
 
 	_, err = genericServiceClient.Create(ctx, &stub.CreateRequest{
 		Namespace: "system",
+		Resource:  resources.UserResource.Name,
 		Items:     []*anypb.Any{any1},
 	})
 

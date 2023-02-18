@@ -54,6 +54,7 @@ func (d *extensionService) Create(ctx context.Context, extensions []*model.Remot
 	records := mapping2.MapToRecord(extensions, mapping2.ExtensionToRecord)
 	result, _, err := d.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.ExtensionResource.Namespace,
+		Resource:  resources.ExtensionResource.Name,
 		Records:   records,
 	})
 
@@ -73,6 +74,7 @@ func (d *extensionService) Update(ctx context.Context, extensions []*model.Remot
 	records := mapping2.MapToRecord(extensions, mapping2.ExtensionToRecord)
 	result, err := d.recordService.Update(ctx, abs.RecordUpdateParams{
 		Namespace: resources.ExtensionResource.Namespace,
+		Resource:  resources.ExtensionResource.Name,
 		Records:   records,
 	})
 

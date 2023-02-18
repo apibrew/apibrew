@@ -52,10 +52,16 @@ func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, r
 		delete(p.transactionMap, transactionKey)
 	}()
 
+	logger.Tracef("BeginTransaction: " + transactionKey)
+
 	return transactionKey, nil
 }
 
 func (p *postgresResourceServiceBackend) CommitTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Tracef("CommitTransaction")
+
 	transactionKey := ctx.Value(ctxTransactionKey)
 
 	if transactionKey == nil {
@@ -75,6 +81,10 @@ func (p *postgresResourceServiceBackend) CommitTransaction(ctx context.Context) 
 }
 
 func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Tracef("RollbackTransaction")
+
 	transactionKey := ctx.Value(ctxTransactionKey)
 
 	if transactionKey == nil {
