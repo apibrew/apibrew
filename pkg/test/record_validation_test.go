@@ -88,7 +88,6 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
 
 		validRecord := &model.Record{
-			Resource:   subCase.resource.Name,
 			Properties: properties,
 		}
 
@@ -96,7 +95,8 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 	}
 
 	resp, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
-		Records: records,
+		Resource: subCase.resource.Name,
+		Records:  records,
 	})
 
 	if err != nil {
@@ -142,7 +142,6 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
 
 		validRecord := &model.Record{
-			Resource:   subCase.resource.Name,
 			Properties: properties,
 		}
 
@@ -150,7 +149,8 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 	}
 
 	resp, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
-		Records: records,
+		Resource: subCase.resource.Name,
+		Records:  records,
 	})
 
 	if err != nil {
@@ -173,7 +173,8 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 	}
 
 	updateResp, err := recordServiceClient.Update(ctx, &stub.UpdateRecordRequest{
-		Records: records,
+		Resource: subCase.resource.Name,
+		Records:  records,
 	})
 
 	if err != nil {
@@ -221,7 +222,6 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeInvalidValue(subCase.recordType))
 
 		validRecord := &model.Record{
-			Resource:   subCase.resource.Name,
 			Properties: properties,
 		}
 
@@ -229,7 +229,8 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 	}
 
 	_, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
-		Records: records,
+		Resource: subCase.resource.Name,
+		Records:  records,
 	})
 
 	if err == nil {

@@ -30,11 +30,12 @@ func (g *genericServiceServer) Create(ctx context.Context, request *stub.CreateR
 
 	records, inserted, serviceErr := g.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
 		Namespace:      request.Namespace,
+		Resource:       request.Resource,
 		Records:        records,
 		IgnoreIfExists: request.IgnoreIfExists,
 	})
 
-	items, err := g.recordsToItems(request.Namespace, records)
+	items, err := g.recordsToItems(request.Resource, request.Namespace, records)
 
 	return &stub.CreateResponse{
 		Items:    items,
@@ -51,11 +52,12 @@ func (g *genericServiceServer) Update(ctx context.Context, request *stub.UpdateR
 
 	records, serviceErr := g.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
 		Namespace:    request.Namespace,
+		Resource:     request.Resource,
 		Records:      records,
 		CheckVersion: request.CheckVersion,
 	})
 
-	items, err := g.recordsToItems(request.Namespace, records)
+	items, err := g.recordsToItems(request.Resource, request.Namespace, records)
 
 	return &stub.UpdateResponse{
 		Items: items,
@@ -85,7 +87,7 @@ func (g *genericServiceServer) List(ctx context.Context, request *stub.ListReque
 		ResolveReferences: request.ResolveReferences,
 	})
 
-	items, err := g.recordsToItems(request.Namespace, records)
+	items, err := g.recordsToItems(request.Resource, request.Namespace, records)
 
 	if err != nil {
 		return nil, err
@@ -108,7 +110,7 @@ func (g *genericServiceServer) Search(ctx context.Context, request *stub.SearchR
 		ResolveReferences: request.ResolveReferences,
 	})
 
-	items, err := g.recordsToItems(request.Namespace, records)
+	items, err := g.recordsToItems(request.Resource, request.Namespace, records)
 
 	if err != nil {
 		return nil, err
@@ -129,7 +131,7 @@ func (g *genericServiceServer) Get(ctx context.Context, request *stub.GetRequest
 
 	item := new(anypb.Any)
 
-	message := mapping.MessageFromRecord(request.Namespace, record)
+	message := mapping.MessageFromRecord(request.Resource, request.Namespace, record)
 
 	err := anypb.MarshalFrom(item, message, proto.MarshalOptions{})
 
@@ -142,13 +144,13 @@ func (g *genericServiceServer) Get(ctx context.Context, request *stub.GetRequest
 	}, util.ToStatusError(serviceErr)
 }
 
-func (g *genericServiceServer) recordsToItems(namespace string, records []*model.Record) ([]*anypb.Any, error) {
+func (g *genericServiceServer) recordsToItems(resource, namespace string, records []*model.Record) ([]*anypb.Any, error) {
 	var items []*anypb.Any
 
 	for _, record := range records {
 		item := new(anypb.Any)
 
-		message := mapping.MessageFromRecord(namespace, record)
+		message := mapping.MessageFromRecord(resource, namespace, record)
 
 		err := anypb.MarshalFrom(item, message, proto.MarshalOptions{})
 

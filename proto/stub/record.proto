@@ -13,9 +13,9 @@ import 'google/protobuf/struct.proto';
 service RecordService {
   rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {
     option (google.api.http) = {
-      post: "/records/{namespace}/{record.resource}/_bulk",
+      post: "/records/{namespace}/{resource}/_bulk",
       additional_bindings {
-        post: "/records/{namespace}/{record.resource}",
+        post: "/records/{namespace}/{resource}",
         body: "record",
         response_body: "record"
       }
@@ -24,9 +24,9 @@ service RecordService {
 
   rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {
     option (google.api.http) = {
-      put: "/records/{namespace}/{record.resource}/_bulk",
+      put: "/records/{namespace}/{resource}/_bulk",
       additional_bindings {
-        put: "/records/{namespace}/{record.resource}/{record.id}",
+        put: "/records/{namespace}/{resource}/{record.id}",
         body: "record",
         response_body: "record"
       }
@@ -41,7 +41,7 @@ service RecordService {
 
   rpc Delete (DeleteRecordRequest)   returns (DeleteRecordResponse) {
     option (google.api.http) = {
-      put: "/records/{namespace}/{resource}/_bulk",
+      delete: "/records/{namespace}/{resource}/_bulk",
       additional_bindings {
         delete: "/records/{namespace}/{resource}/{id}",
       }
@@ -108,9 +108,10 @@ message SearchRecordResponse {
 message CreateRecordRequest {
   string token = 1;
   string namespace = 2;
-  model.Record record = 3;
-  repeated model.Record records = 4;
-  bool ignoreIfExists = 5;
+  string resource = 3;
+  model.Record record = 4;
+  repeated model.Record records = 5;
+  bool ignoreIfExists = 6;
 
   map<string, string> annotations = 103;
 }
@@ -124,9 +125,10 @@ message CreateRecordResponse {
 message UpdateRecordRequest {
   string token = 1;
   string namespace = 2;
-  model.Record record = 3;
-  repeated model.Record records = 4;
-  bool checkVersion = 5;
+  string resource = 3;
+  model.Record record = 4;
+  repeated model.Record records = 5;
+  bool checkVersion = 6;
 
   map<string, string> annotations = 103;
 }

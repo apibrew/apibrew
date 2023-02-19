@@ -24,6 +24,7 @@ func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Names
 
 	result, _, err := u.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.NamespaceResource.Namespace,
+		Resource:  resources.ExtensionResource.Name,
 		Records:   records,
 	})
 
@@ -40,6 +41,7 @@ func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Names
 
 	result, err := u.recordService.Update(ctx, abs.RecordUpdateParams{
 		Namespace: resources.NamespaceResource.Namespace,
+		Resource:  resources.ExtensionResource.Name,
 		Records:   records,
 	})
 

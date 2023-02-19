@@ -17,16 +17,14 @@ type testExtension struct {
 
 var simpleVirtualResourceRecords = []*model.Record{
 	{
-		Id:       "5429846c-a309-11ed-a8fc-0242ac120002",
-		Resource: simpleVirtualResource1.Name,
+		Id: "5429846c-a309-11ed-a8fc-0242ac120002",
 		Properties: map[string]*structpb.Value{
 			"name":        structpb.NewStringValue("rec-1"),
 			"description": structpb.NewStringValue("rec-1-desc"),
 		},
 	},
 	{
-		Id:       "54298994-a309-11ed-a8fc-0242ac120002",
-		Resource: simpleVirtualResource1.Name,
+		Id: "54298994-a309-11ed-a8fc-0242ac120002",
 		Properties: map[string]*structpb.Value{
 			"name":        structpb.NewStringValue("rec-2"),
 			"description": structpb.NewStringValue("rec-2-desc"),

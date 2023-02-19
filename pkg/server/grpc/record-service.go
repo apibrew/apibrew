@@ -50,6 +50,7 @@ func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRe
 func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	records, inserted, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
 		Namespace:      request.Namespace,
+		Resource:       request.Resource,
 		Records:        util.ArrayPrepend(request.Records, request.Record),
 		IgnoreIfExists: request.IgnoreIfExists,
 	})
@@ -64,6 +65,7 @@ func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRe
 func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
 	records, err := r.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
 		Namespace:    request.Namespace,
+		Resource:     request.Resource,
 		Records:      util.ArrayPrepend(request.Records, request.Record),
 		CheckVersion: request.CheckVersion,
 	})

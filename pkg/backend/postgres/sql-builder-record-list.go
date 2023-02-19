@@ -140,7 +140,6 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 
 	for rows.Next() {
 		record := new(model.Record)
-		record.Resource = r.resource.Name
 		record.DataType = model.DataType_USER
 
 		err = r.scanRecord(record, rows)
