@@ -24,6 +24,7 @@ func init() {
 	rootCmd.AddCommand(describeCmd)
 	rootCmd.AddCommand(backupCmd)
 	rootCmd.AddCommand(applyCmd)
+	rootCmd.AddCommand(generatorCmd)
 	defineRootFlags()
 }
 

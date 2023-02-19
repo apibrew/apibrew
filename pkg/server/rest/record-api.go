@@ -128,7 +128,6 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	record1.Resource = resourceName
 	record1.DataType = model.DataType_USER
 
 	if err != nil {
@@ -138,6 +137,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 
 	res, inserted, serviceErr := r.recordService.Create(request.Context(), abs.RecordCreateParams{
 		Namespace:      "default",
+		Resource:       resourceName,
 		Records:        []*model.Record{record1},
 		IgnoreIfExists: false,
 	})
@@ -184,11 +184,11 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	record.Resource = resourceName
 	record.Id = id
 
 	result, serviceErr := r.recordService.Update(request.Context(), abs.RecordUpdateParams{
 		Namespace:    "",
+		Resource:     resourceName,
 		Records:      []*model.Record{record},
 		CheckVersion: false,
 	})
