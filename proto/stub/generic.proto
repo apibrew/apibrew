@@ -58,6 +58,7 @@ message SearchResponse {
 message CreateRequest {
   string token = 1;
   string namespace = 2;
+  string resource = 3;
   repeated google.protobuf.Any items = 4;
   bool ignoreIfExists = 5;
 
@@ -72,6 +73,7 @@ message CreateResponse {
 message UpdateRequest {
   string token = 1;
   string namespace = 2;
+  string resource = 3;
   repeated google.protobuf.Any items = 4;
   bool checkVersion = 5;
 

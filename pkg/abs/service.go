@@ -118,12 +118,14 @@ type RecordListParams struct {
 
 type RecordCreateParams struct {
 	Namespace      string
+	Resource       string
 	Records        []*model.Record
 	IgnoreIfExists bool
 }
 
 type RecordUpdateParams struct {
 	Namespace    string
+	Resource     string
 	Records      []*model.Record
 	CheckVersion bool
 }

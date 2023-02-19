@@ -21,13 +21,13 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 			}
 
 			var records = util.ArrayMap(list.Content, func(record *model.Record) *model.Record {
-				record.Resource = resource2.Name
 
 				return record
 			})
 
 			_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
-				Records: records,
+				Resource: resource2.Name,
+				Records:  records,
 			})
 
 			if err != nil {

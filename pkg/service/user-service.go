@@ -28,6 +28,7 @@ func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model
 
 	result, _, err := u.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.UserResource.Namespace,
+		Resource:  resources.UserResource.Name,
 		Records:   records,
 	})
 
@@ -46,6 +47,7 @@ func (u *userService) Update(ctx context.Context, users []*model.User) ([]*model
 
 	result, err := u.recordService.Update(ctx, abs.RecordUpdateParams{
 		Namespace: resources.UserResource.Namespace,
+		Resource:  resources.UserResource.Name,
 		Records:   records,
 	})
 
@@ -113,6 +115,7 @@ func (d *userService) Init(data *model.InitData) {
 		}
 		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
 			Namespace:      resources.UserResource.Namespace,
+			Resource:       resources.UserResource.Name,
 			Records:        mapping2.MapToRecord(data.InitUsers, mapping2.UserToRecord),
 			IgnoreIfExists: true,
 		})
