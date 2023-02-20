@@ -6,7 +6,6 @@ import (
 	"github.com/tislib/data-handler/pkg/generator"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
-	"log"
 	"os"
 )
 
@@ -25,11 +24,6 @@ var generatorCmd = &cobra.Command{
 
 		pkg, err := cmd.Flags().GetString("package")
 		check(err)
-
-		generateObjects, err := cmd.Flags().GetStringArray("generateObjects")
-		check(err)
-
-		log.Println(namespace, path, pkg, generateObjects)
 
 		resp, err := resourceServiceClient.List(cmd.Context(), &stub.ListResourceRequest{
 			Token: authToken,
@@ -54,11 +48,13 @@ var generatorCmd = &cobra.Command{
 		}
 
 		for _, resource := range filteredResources {
-			if resource.Namespace == "system" {
+			if namespace != resource.Namespace {
 				continue
 			}
-			code := generator.GenerateResourceCode(resource, generator.GenerateResourceCodeParams{
-				Package: pkg,
+
+			code := generator.GenerateGoResourceCode(resource, generator.GenerateResourceCodeParams{
+				Package:   pkg,
+				Resources: resp.Resources,
 			})
 
 			resourceFileName := slug.Make(resource.Namespace) + "-" + slug.Make(resource.Name) + ".go"
@@ -71,8 +67,7 @@ var generatorCmd = &cobra.Command{
 }
 
 func init() {
-	generatorCmd.PersistentFlags().StringP("namespace", "n", "empty", "Namespace")
+	generatorCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	generatorCmd.PersistentFlags().StringP("path", "p", "", "Path")
 	generatorCmd.PersistentFlags().String("package", "", "Package")
-	generatorCmd.PersistentFlags().StringArray("generateObjects", []string{}, "Generate Objects(resource, mapping)")
 }
