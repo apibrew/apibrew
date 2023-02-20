@@ -55,5 +55,5 @@ func (o objectType) ValidatePackedValue(value *structpb.Value) error {
 }
 
 func (o objectType) Default() any {
-	return nil
+	return map[string]interface{}{}
 }
