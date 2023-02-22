@@ -2,15 +2,12 @@ package test
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 )
 
 func init() {
 	log.SetLevel(log.TraceLevel)
 	log.SetReportCaller(true)
-
-	logging.SetupGrayLog("tiswork.tisserv.net:12201", "test")
 }
 
 func prepareInitData() *model.InitData {

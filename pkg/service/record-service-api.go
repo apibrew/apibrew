@@ -34,7 +34,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return records, total, err
 	}
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		return nil, 0, err
@@ -124,7 +124,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 		return records, inserted, err
 	}
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		success = false
@@ -245,7 +245,7 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 
 	var records []*model.Record
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		success = false
@@ -330,7 +330,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return res, err
 	}
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		return nil, err
@@ -431,7 +431,7 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 		return err
 	}
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceId(ctx, resource.GetSourceConfig().DataSource)
+	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		return err

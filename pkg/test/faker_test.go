@@ -44,7 +44,7 @@ func fakeResource(properties ...*model.ResourceProperty) *model.Resource {
 		Name:      name,
 		Namespace: "default",
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: dhTest.Id,
+			DataSource: dhTest.Name,
 			Catalog:    "public",
 			Entity:     name,
 		},

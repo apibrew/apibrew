@@ -15,7 +15,7 @@ var AuthenticationFailedError = newServiceError(model.ErrorCode_AUTHENTICATION_F
 var AccessDeniedError = newServiceError(model.ErrorCode_ACCESS_DENIED, "Access denied")
 var BackendConnectionAuthenticationError = newServiceError(model.ErrorCode_BACKEND_ERROR, "Backend error")
 var UniqueViolation = newServiceError(model.ErrorCode_UNIQUE_VIOLATION, "Unique violation")
-var ForeignKeyViolation = newServiceError(model.ErrorCode_REFERENCE_VIOLATION, "Reference violation")
+var ReferenceViolation = newServiceError(model.ErrorCode_REFERENCE_VIOLATION, "Reference violation")
 
 // RecordValidationError @fixme
 var AlreadyExistsError = newServiceError(model.ErrorCode_ALREADY_EXISTS, "Already Exists")

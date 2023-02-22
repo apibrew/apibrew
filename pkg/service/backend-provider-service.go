@@ -55,7 +55,45 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 	}
 }
 
-func (b *backendProviderService) GetSystemBackend(ctx context.Context) abs.Backend {
+func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context, dataSourceName string) (abs.Backend, errors.ServiceError) {
+	if b.backendMap[dataSourceName] != nil {
+		return b.backendMap[dataSourceName], nil
+	}
+
+	logger := log.WithFields(logging.CtxFields(ctx))
+	logger.WithField("dataSourceName", dataSourceName).Debug("Begin data-source GetDataSourceBackendById")
+	defer logger.Debug("End data-source GetDataSourceBackendById")
+
+	if dataSourceName == b.systemDataSource.Name {
+		return b.GetSystemBackend(ctx), nil
+	} else {
+		systemCtx := security.WithSystemContext(context.TODO())
+		query, err := PrepareQuery(resources.DataSourceResource, map[string]interface{}{
+			"name": dataSourceName,
+		})
+
+		records, _, err := b.GetSystemBackend(ctx).ListRecords(systemCtx, abs.ListRecordParams{
+			Resource: resources.DataSourceResource,
+			Query:    query,
+			Limit:    1,
+			Schema:   &abs.Schema{},
+		})
+
+		if len(records) == 0 {
+			return nil, errors.RecordNotFoundError.WithMessage("Data source not found with name: " + dataSourceName)
+		}
+
+		var record = records[0]
+
+		if err != nil {
+			return nil, err
+		}
+
+		return b.GetBackend(mapping.DataSourceFromRecord(record)), nil
+	}
+}
+
+func (b *backendProviderService) GetSystemBackend(_ context.Context) abs.Backend {
 	return b.GetBackend(b.systemDataSource)
 }
 
@@ -68,6 +106,7 @@ func (b *backendProviderService) GetBackend(dataSource *model.DataSource) abs.Ba
 	instance := constructor(dataSource.GetOptions())
 
 	b.backendMap[dataSource.Id] = instance
+	b.backendMap[dataSource.Name] = instance
 
 	return instance
 }

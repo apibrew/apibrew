@@ -74,7 +74,7 @@ func handlePqErr(err *pq.Error) errors.ServiceError {
 	case "23505":
 		return errors.UniqueViolation.WithDetails(err.Message)
 	case "23503":
-		return errors.ForeignKeyViolation.WithDetails(err.Message)
+		return errors.ReferenceViolation.WithDetails(err.Message)
 	default:
 		return errors.InternalError.WithMessage(err.Message)
 	}

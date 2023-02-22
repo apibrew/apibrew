@@ -29,8 +29,7 @@ var ResourceResource = &model.Resource{
 			Mapping:  "virtual",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_BOOL,
-			Length:   256,
-			Required: false,
+			Required: true,
 		},
 		{
 			Name: "namespace",

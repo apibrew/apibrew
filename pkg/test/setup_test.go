@@ -51,7 +51,7 @@ func setupDataSources(ctx context.Context) {
 
 			if cd.Name == ds.Name {
 				found = true
-				*cd = *ds
+				cd.Id = ds.Id
 				break
 			}
 		}
@@ -80,7 +80,7 @@ func setupDataSources(ctx context.Context) {
 
 			if cd.Name == ds.Name {
 				found = true
-				*cd = *ds
+				cd.Id = ds.Id
 				break
 			}
 		}
@@ -96,7 +96,6 @@ func setupResources(ctx context.Context) {
 		richResource1,
 		simpleVirtualResource1,
 	}
-	richResource1.SourceConfig.DataSource = dhTest.Id
 	// creating data sources
 	listResourceResp, err := resourceServiceClient.List(ctx, &stub.ListResourceRequest{})
 
@@ -113,8 +112,6 @@ func setupResources(ctx context.Context) {
 
 			if cd.Name == ds.Name {
 				found = true
-				cd.Id = ds.Id
-				cd.SourceConfig = ds.SourceConfig
 				break
 			}
 		}
@@ -135,17 +132,16 @@ func setupResources(ctx context.Context) {
 		return
 	}
 
-	for _, cd := range resources {
+	for _, cd := range resourcesForCreate {
 		if cd.Id != "" {
 			continue
 		}
 
 		found := false
 		for _, ds := range createRes.Resources {
-
 			if cd.Name == ds.Name {
 				found = true
-				*cd = *ds
+				cd.Id = ds.Id
 				break
 			}
 		}

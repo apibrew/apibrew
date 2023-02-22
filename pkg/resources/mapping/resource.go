@@ -11,8 +11,9 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 
 	properties["name"] = structpb.NewStringValue(resource.Name)
 	properties["namespace"] = structpb.NewStringValue(resource.Namespace)
+	properties["virtual"] = structpb.NewBoolValue(resource.Virtual)
 	if resource.SourceConfig != nil {
-		properties["dataSource"] = util.StructKv("id", resource.SourceConfig.DataSource)
+		properties["dataSource"] = util.StructKv("name", resource.SourceConfig.DataSource)
 		properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
 		properties["catalog"] = structpb.NewStringValue(resource.SourceConfig.Catalog)
 	}
@@ -54,8 +55,9 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		Version:   record.Version,
 		Name:      record.Properties["name"].GetStringValue(),
 		Namespace: record.Properties["namespace"].GetStringValue(),
+		Virtual:   record.Properties["virtual"].GetBoolValue(),
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: record.Properties["dataSource"].GetStructValue().GetFields()["id"].GetStringValue(),
+			DataSource: record.Properties["dataSource"].GetStructValue().GetFields()["name"].GetStringValue(),
 			Entity:     record.Properties["entity"].GetStringValue(),
 			Catalog:    record.Properties["catalog"].GetStringValue(),
 		},
