@@ -74,6 +74,8 @@ var dataSource1 = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1",
 	Description: "data-source-1",
+	Type:        model.DataType_USER,
+	Version:     1,
 	Options: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
 			Username:      "dh_test",
