@@ -14,7 +14,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 		{
 			Name: "author",
 			SourceConfig: &model.ResourceSourceConfig{
-				DataSource: dhTest.Id,
+				DataSource: dhTest.Name,
 				Catalog:    "",
 				Entity:     "author",
 			},
@@ -39,7 +39,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 		{
 			Name: "book",
 			SourceConfig: &model.ResourceSourceConfig{
-				DataSource: dhTest.Id,
+				DataSource: dhTest.Name,
 				Catalog:    "",
 				Entity:     "book",
 			},

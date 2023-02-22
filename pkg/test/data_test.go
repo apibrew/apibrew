@@ -91,7 +91,7 @@ var richResource1 = &model.Resource{
 	Namespace: "default",
 	DataType:  2,
 	SourceConfig: &model.ResourceSourceConfig{
-		DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
+		DataSource: dhTest.Name,
 		Entity:     "rich_test_3995",
 	},
 	Properties: []*model.ResourceProperty{
