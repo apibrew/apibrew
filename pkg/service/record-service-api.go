@@ -8,9 +8,11 @@ import (
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
-	annotations "github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/util"
 )
+
+var virtualResourceBackendAccessError = errors.LogicalError.WithMessage("Virtual resource is trying to access real backend")
 
 func (r *recordService) List(ctx context.Context, params abs.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
 	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
@@ -34,6 +36,10 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return records, total, err
 	}
 
+	if resource.Virtual {
+		return nil, 0, virtualResourceBackendAccessError
+	}
+
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
@@ -48,6 +54,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 		Schema:            r.resourceService.GetSchema(),
+		ResultChan:        params.ResultChan,
 	})
 
 	if err != nil {
@@ -122,6 +129,10 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 
 	if handled, records, inserted, err := r.genericHandler.Create(ctx, resource, params); handled {
 		return records, inserted, err
+	}
+
+	if resource.Virtual {
+		return nil, nil, virtualResourceBackendAccessError
 	}
 
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
@@ -243,6 +254,10 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		return records, err
 	}
 
+	if resource.Virtual {
+		return nil, virtualResourceBackendAccessError
+	}
+
 	var records []*model.Record
 
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
@@ -328,6 +343,10 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 
 	if handled, res, err := r.genericHandler.Get(ctx, resource, id); handled {
 		return res, err
+	}
+
+	if resource.Virtual {
+		return nil, virtualResourceBackendAccessError
 	}
 
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
@@ -429,6 +448,10 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 
 	if handled, err := r.genericHandler.Delete(ctx, resource, params); handled {
 		return err
+	}
+
+	if resource.Virtual {
+		return virtualResourceBackendAccessError
 	}
 
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)

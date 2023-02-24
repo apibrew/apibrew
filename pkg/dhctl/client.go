@@ -34,7 +34,7 @@ func initClient(ctx context.Context) {
 		authResp, err := authenticationServiceClient.Authenticate(ctx, &stub.AuthenticationRequest{
 			Username: configServer.Authentication.Username,
 			Password: configServer.Authentication.Password,
-			Term:     0,
+			Term:     2,
 		})
 
 		if err != nil {
