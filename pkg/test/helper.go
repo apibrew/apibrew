@@ -16,22 +16,18 @@ func DeepEqual(t *testing.T, a interface{}, b interface{}, prefix string) {
 		return
 	}
 
-	for va.Kind() == reflect.Ptr {
-		if va.IsNil() && vb.IsNil() {
-			return
-		} else if va.IsNil() {
-			fmt.Printf("%sValue: <nil> != %v\n", prefix, vb.Interface())
-			return
-		} else if vb.IsNil() {
-			fmt.Printf("%sValue: %v != <nil>\n", prefix, va.Interface())
-			return
-		} else {
-			va = va.Elem()
-			vb = vb.Elem()
-		}
-	}
-
 	switch va.Kind() {
+	case reflect.Ptr:
+		if va.IsNil() != vb.IsNil() {
+			fmt.Printf("%sPointer[Nil]: %v != %v\n", prefix, va.IsNil(), vb.IsNil())
+			return
+		}
+
+		if va.IsNil() {
+			return
+		}
+
+		DeepEqual(t, va.Elem().Interface(), vb.Elem().Interface(), prefix)
 	case reflect.Struct:
 		for i := 0; i < va.NumField(); i++ {
 			fa := va.Field(i)
