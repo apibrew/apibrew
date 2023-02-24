@@ -515,7 +515,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 	if propEx, ok := query.Expression.(*model.Expression_Property); ok {
 		for _, ap := range additionalProperties {
 			if ap == propEx.Property {
-				return ap, nil
+				return fmt.Sprintf("t." + ap), nil
 			}
 		}
 		property := locatePropertyByName(resource, propEx.Property)
@@ -524,7 +524,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 			return "", errors.PropertyNotFoundError.WithDetails(propEx.Property)
 		}
 
-		return propEx.Property, nil
+		return fmt.Sprintf("t." + property.Mapping), nil
 	}
 
 	if propEx, ok := query.Expression.(*model.Expression_Value); ok {

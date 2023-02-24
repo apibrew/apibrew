@@ -113,6 +113,16 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 	logger.WithField("id", id).WithField("entity", entity).Debug("Begin data-source PrepareResourceFromEntity")
 	defer logger.Debug("End data-source PrepareResourceFromEntity")
 
+	dsRecord, err := d.recordService.Get(ctx, abs.RecordGetParams{
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Id:        id,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	bck, err := d.backendProviderService.GetBackendByDataSourceId(ctx, id)
 
 	if err != nil {
@@ -126,7 +136,7 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 	}
 
 	resource.SourceConfig = &model.ResourceSourceConfig{
-		DataSource: id,
+		DataSource: dsRecord.Properties["name"].GetStringValue(),
 		Catalog:    catalog,
 		Entity:     entity,
 	}

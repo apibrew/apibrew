@@ -27,10 +27,12 @@ func (r *resourceService) GetSchema() *abs.Schema {
 
 func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError {
 	records, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, abs.ListRecordParams{
-		Resource:          resources.ResourceResource,
-		Limit:             1000000,
-		ResolveReferences: []string{},
-		Schema:            &r.schema,
+		Resource: resources.ResourceResource,
+		Limit:    1000000,
+		ResolveReferences: []string{
+			"dataSource",
+		},
+		Schema: &r.schema,
 	})
 
 	r.schema.Resources = mapping.MapFromRecord(records, mapping.ResourceFromRecord)
@@ -76,10 +78,6 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 		}
 
 		propResource.Properties = append(propResource.Properties, property)
-
-		if property.Name == "author" {
-			log.Print("Found")
-		}
 	}
 
 	if log.GetLevel() == log.TraceLevel {
@@ -90,7 +88,6 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 			fmt.Println(jsonRes)
 			fmt.Println("================")
 		}
-
 	}
 
 	return nil
@@ -167,10 +164,8 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	//todo add references
-
 	if !resource.Virtual && doMigration {
-		bck, err := r.backendProviderService.GetBackendByDataSourceId(ctx, resource.SourceConfig.DataSource)
+		bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
 
 		if err != nil {
 			return err
@@ -261,6 +256,20 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
+	// fetch inserted record
+
+	insertedRecord, err := systemBackend.GetRecord(txCtx, resources.ResourceResource, r.GetSchema(), result[0].Id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	insertedResource := mapping.ResourceFromRecord(insertedRecord)
+
+	if !insertedResource.Virtual && insertedResource.SourceConfig.DataSource == "" {
+		return nil, errors.ResourceValidationError.WithMessage("DataSource not found with name: " + resource.SourceConfig.DataSource)
+	}
+
 	resource.Id = result[0].Id
 
 	if len(resource.Properties) > 0 {
@@ -281,25 +290,8 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 	}
 
-	//if len(resource.References) > 0 {
-	//	referenceRecords := mapping.MapToRecord(resource.References, func(property *model.ResourceReference) *model.Record {
-	//		return mapping.ResourceReferenceToRecord(property, resource)
-	//	})
-	//
-	//	_, _, err = systemBackend.AddRecords(txCtx, abs.BulkRecordsParams{
-	//		resource:       resources.ResourceReferenceResource,
-	//		Records:        referenceRecords,
-	//		CheckVersion:   false,
-	//		IgnoreIfExists: false,
-	//	})
-	//
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//}
-
 	if !resource.Virtual && doMigration {
-		bck, err := r.backendProviderService.GetBackendByDataSourceId(ctx, resource.SourceConfig.DataSource)
+		bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
 
 		if err != nil {
 			return nil, err
@@ -408,7 +400,7 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 	return nil
 }
 
-func (r *resourceService) GetResourceByName(ctx context.Context, namespace string, resourceName string) *model.Resource {
+func (r *resourceService) GetResourceByName(_ context.Context, namespace string, resourceName string) *model.Resource {
 	if namespace == "" {
 		namespace = "default"
 	}
@@ -429,7 +421,7 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, na
 	return r.GetResourceByName(ctx, namespace, name) != nil
 }
 
-func (r *resourceService) Init(data *model.InitData) {
+func (r *resourceService) Init(_ *model.InitData) {
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
 
 	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
@@ -477,7 +469,7 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 		}
 
 		if !resource.Virtual && doMigration {
-			bck, err := r.backendProviderService.GetBackendByDataSourceId(ctx, resource.SourceConfig.DataSource)
+			bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
 
 			if err != nil {
 				return err
@@ -512,21 +504,16 @@ func (r *resourceService) mustModifyResource(resource *model.Resource) errors.Se
 	return nil
 }
 
-func (r *resourceService) List(ctx context.Context) []*model.Resource {
+func (r *resourceService) List(_ context.Context) []*model.Resource {
 	return r.schema.Resources
 }
 
-func (r *resourceService) Get(ctx context.Context, id string) *model.Resource {
+func (r *resourceService) Get(_ context.Context, id string) *model.Resource {
 	for _, item := range r.schema.Resources {
 		if item.Id == id {
 			return item
 		}
 	}
-
-	return nil
-}
-
-func (r *resourceService) loadResource(ctx context.Context, resource *model.Resource) errors.ServiceError {
 
 	return nil
 }
