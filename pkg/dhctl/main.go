@@ -21,8 +21,6 @@ func init() {
 	log.SetReportCaller(true)
 
 	rootCmd.AddCommand(getCmd)
-	rootCmd.AddCommand(describeCmd)
-	rootCmd.AddCommand(backupCmd)
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(generatorCmd)
 	defineRootFlags()

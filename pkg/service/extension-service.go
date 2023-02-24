@@ -123,7 +123,7 @@ func (d *extensionService) Init(data *model.InitData) {
 
 func (d *extensionService) keepExtensionsRunning() {
 	for {
-		time.Sleep(10 * time.Second)
+		time.Sleep(10 * time.Minute)
 
 		d.runConfigureExtensions()
 	}

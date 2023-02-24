@@ -8,15 +8,20 @@ import (
 
 type Writer interface {
 	WriteResources(resources []*model.Resource)
-	WriteRecords(resource *model.Resource, records []*model.Record)
-	DescribeResource(resource *model.Resource)
+	WriteRecords(resource *model.Resource, recordsChan chan *model.Record)
 }
 
 func NewOutputWriter(outputFormat string) Writer {
 	switch outputFormat {
 	case "console":
 		return &consoleWriter{
-			writer: os.Stdout,
+			writer:   os.Stdout,
+			describe: false,
+		}
+	case "describe":
+		return &consoleWriter{
+			writer:   os.Stdout,
+			describe: true,
 		}
 	case "yaml":
 		return &yamlWriter{

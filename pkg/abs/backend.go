@@ -56,6 +56,7 @@ type ListRecordParams struct {
 	UseHistory        bool
 	ResolveReferences []string
 	Schema            *Schema
+	ResultChan        chan<- *model.Record
 }
 
 type UpgradeResourceParams struct {

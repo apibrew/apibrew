@@ -61,6 +61,13 @@ service RecordService {
     };
   }
 
+  rpc SearchStream (SearchRecordRequest) returns (stream model.Record) {
+    option (google.api.http) = {
+      post: "/records/{namespace}/{resource}/_search_stream",
+      body: "*"
+    };
+  }
+
   rpc Get (GetRecordRequest) returns (GetRecordResponse) {
     option (google.api.http) = {
       get: "/records/{namespace}/{resource}/{id}",

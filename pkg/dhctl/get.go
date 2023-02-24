@@ -1,13 +1,8 @@
 package dhctl
 
 import (
-	"context"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/dhctl/output"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/stub"
-	"log"
-	"strings"
 )
 
 var getCmd = &cobra.Command{
@@ -18,71 +13,22 @@ var getCmd = &cobra.Command{
 		initClient(cmd.Context())
 
 		o := getFlag(cmd, "output", true)
-		name := getFlag(cmd, "name", false)
-		names := getFlag(cmd, "names", false)
-		namespace := getFlag(cmd, "namespace", false)
 
-		if len(args) == 0 {
-			log.Fatal("type should be provided")
-		}
-
-		getType := args[0]
+		selection := selectData(cmd, args)
 
 		writer := output.NewOutputWriter(o)
 
-		if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
-			resp, err := resourceServiceClient.List(cmd.Context(), &stub.ListResourceRequest{
-				Token: authToken,
-			})
+		if selection.resources != nil {
+			writer.WriteResources(selection.resources)
+		}
 
-			check(err)
-
-			var filteredResources []*model.Resource
-
-			if name != "" {
-				for _, item := range resp.Resources {
-					if item.Name == name {
-						filteredResources = append(filteredResources, item)
-					}
-				}
-			} else if names != "" {
-				for _, ni := range strings.Split(names, ",") {
-					for _, item := range resp.Resources {
-						if item.Name == ni {
-							filteredResources = append(filteredResources, item)
-						}
-					}
-				}
-			} else {
-				filteredResources = resp.Resources
-			}
-
-			writer.WriteResources(filteredResources)
-		} else {
-			resp, err := recordServiceClient.List(context.TODO(), &stub.ListRecordRequest{
-				Token:     authToken,
-				Namespace: namespace,
-				Resource:  getType,
-			})
-
-			check(err)
-
-			resourceResp, err := resourceServiceClient.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
-				Token:     authToken,
-				Namespace: namespace,
-				Name:      getType,
-			})
-
-			check(err)
-
-			writer.WriteRecords(resourceResp.Resource, resp.Content)
+		for _, records := range selection.records {
+			writer.WriteRecords(records.resource, records.records)
 		}
 	},
 }
 
 func init() {
 	getCmd.PersistentFlags().StringP("output", "o", "console", "Output format")
-	getCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
-	getCmd.PersistentFlags().String("name", "", "Item name")
-	getCmd.PersistentFlags().String("names", "", "Item names")
+	initSelectorFlags(getCmd)
 }

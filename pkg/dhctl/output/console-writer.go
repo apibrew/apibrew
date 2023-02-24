@@ -12,7 +12,8 @@ import (
 )
 
 type consoleWriter struct {
-	writer io.Writer
+	writer   io.Writer
+	describe bool
 }
 
 func (c consoleWriter) DescribeResource(resource *model.Resource) {
@@ -92,6 +93,16 @@ func (c consoleWriter) configureTable(table *tablewriter.Table) {
 }
 
 func (c consoleWriter) WriteResources(resources []*model.Resource) {
+	if c.describe {
+		for _, resource := range resources {
+			c.DescribeResource(resource)
+		}
+	} else {
+		c.ShowResourceTable(resources)
+	}
+}
+
+func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
@@ -115,7 +126,7 @@ func (c consoleWriter) WriteResources(resources []*model.Resource) {
 	table.Render() // Send output
 }
 
-func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.Record) {
+func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
@@ -128,7 +139,7 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.R
 	table.SetHeader(columns)
 	c.configureTable(table)
 
-	for _, item := range records {
+	for item := range recordsChan {
 		row := []string{
 			item.Id,
 			strconv.Itoa(int(item.Version)),

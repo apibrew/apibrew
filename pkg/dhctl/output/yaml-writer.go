@@ -18,10 +18,6 @@ type yamlWriter struct {
 	hasMessageWritten bool
 }
 
-func (c *yamlWriter) DescribeResource(resource *model.Resource) {
-	c.WriteResources([]*model.Resource{resource})
-}
-
 func (c *yamlWriter) WriteResources(resources []*model.Resource) {
 	for _, resource := range resources {
 		c.writePrefix()
@@ -47,8 +43,8 @@ func (c *yamlWriter) WriteResources(resources []*model.Resource) {
 	}
 }
 
-func (c *yamlWriter) WriteRecords(resource *model.Resource, records []*model.Record) {
-	for _, record := range records {
+func (c *yamlWriter) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
+	for record := range recordsChan {
 		c.writePrefix()
 		body, err := jsonMo.Marshal(record)
 
@@ -59,6 +55,8 @@ func (c *yamlWriter) WriteRecords(resource *model.Resource, records []*model.Rec
 		err = json.Unmarshal(body, &data)
 
 		data["type"] = "record"
+		data["namespace"] = resource.Namespace
+		data["resource"] = resource.Name
 
 		check(err)
 
