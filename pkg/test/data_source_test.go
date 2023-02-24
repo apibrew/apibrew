@@ -4,7 +4,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
-	"reflect"
 	"testing"
 )
 
@@ -25,12 +24,7 @@ func TestCreateAndReadDataSource(t *testing.T) {
 
 	dataSource1.AuditData = res2.DataSource.AuditData
 
-	if !reflect.DeepEqual(dataSource1, res2.DataSource) {
-		log.Println(dataSource1)
-		log.Println(res2.DataSource)
-		t.Error("Backend is different")
-		return
-	}
+	DeepEqual(t, dataSource1, res2.DataSource, "")
 }
 
 func TestCreateDataSourceStatusTest(t *testing.T) {
