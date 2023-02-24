@@ -17,6 +17,7 @@ type BackendProviderService interface {
 	Init(data *model.InitData)
 	GetSystemBackend(ctx context.Context) Backend
 	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
+	GetBackendByDataSourceName(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	DestroyBackend(ctx context.Context, id string) error
 	MigrateResource(resource *model.Resource, schema Schema)
 }

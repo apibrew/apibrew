@@ -74,6 +74,8 @@ var dataSource1 = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1",
 	Description: "data-source-1",
+	Type:        model.DataType_USER,
+	Version:     1,
 	Options: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
 			Username:      "dh_test",
@@ -91,7 +93,7 @@ var richResource1 = &model.Resource{
 	Namespace: "default",
 	DataType:  2,
 	SourceConfig: &model.ResourceSourceConfig{
-		DataSource: "0f96d8ca-4d48-11ed-a348-b29c4ac91271",
+		DataSource: dhTest.Name,
 		Entity:     "rich_test_3995",
 	},
 	Properties: []*model.ResourceProperty{
