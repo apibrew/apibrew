@@ -1,11 +1,16 @@
 package output
 
 import (
-	"github.com/tislib/data-handler/pkg/batch"
 	"github.com/tislib/data-handler/pkg/model"
 	"io"
 	"log"
 )
+
+type Element struct {
+	typ      string
+	record   *model.Record
+	resource *model.Resource
+}
 
 type Writer interface {
 	WriteResources(resources []*model.Resource)
@@ -13,29 +18,19 @@ type Writer interface {
 	IsBinary() bool
 }
 
-func NewOutputWriter(format string, w io.Writer) Writer {
+func NewOutputReader(format string, w io.Writer) Writer {
 	switch format {
-	case "console":
-		return &consoleWriter{
-			writer:   w,
-			describe: false,
-		}
-	case "describe":
-		return &consoleWriter{
-			writer:   w,
-			describe: true,
-		}
 	case "yaml":
-		return &yamlWriter{
+		return &yamlReader{
 			writer: w,
 		}
 	case "yml":
-		return &yamlWriter{
+		return &yamlReader{
 			writer: w,
 		}
 	case "pb":
-		return &protobufWriter{
-			batchWriter: batch.NewWriter(w),
+		return &protobufReader{
+			writer: w,
 		}
 	}
 

@@ -50,7 +50,7 @@ func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRe
 	}, util2.ToStatusError(err)
 }
 
-func (r *recordServiceServer) SearchStream(request *stub.SearchRecordRequest, resp stub.RecordService_SearchStreamServer) error {
+func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp stub.RecordService_ReadStreamServer) error {
 	ctx, err := interceptRequest(r.authenticationService, resp.Context(), request)
 
 	if err != nil {

@@ -93,7 +93,7 @@ func selectData(cmd *cobra.Command, args []string) SelectedRecordsResult {
 }
 
 func readSelectData3(ctx context.Context, resource *model.Resource, result *SelectedRecordsResult) {
-	resp, err := recordServiceClient.SearchStream(ctx, &stub.SearchRecordRequest{
+	resp, err := recordServiceClient.ReadStream(ctx, &stub.ReadStreamRequest{
 		Token:     authToken,
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
