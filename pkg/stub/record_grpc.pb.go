@@ -29,7 +29,8 @@ type RecordServiceClient interface {
 	Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error)
 	List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error)
 	Search(ctx context.Context, in *SearchRecordRequest, opts ...grpc.CallOption) (*SearchRecordResponse, error)
-	SearchStream(ctx context.Context, in *SearchRecordRequest, opts ...grpc.CallOption) (RecordService_SearchStreamClient, error)
+	ReadStream(ctx context.Context, in *ReadStreamRequest, opts ...grpc.CallOption) (RecordService_ReadStreamClient, error)
+	WriteStream(ctx context.Context, opts ...grpc.CallOption) (RecordService_WriteStreamClient, error)
 	Get(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error)
 }
 
@@ -95,12 +96,12 @@ func (c *recordServiceClient) Search(ctx context.Context, in *SearchRecordReques
 	return out, nil
 }
 
-func (c *recordServiceClient) SearchStream(ctx context.Context, in *SearchRecordRequest, opts ...grpc.CallOption) (RecordService_SearchStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RecordService_ServiceDesc.Streams[0], "/stub.RecordService/SearchStream", opts...)
+func (c *recordServiceClient) ReadStream(ctx context.Context, in *ReadStreamRequest, opts ...grpc.CallOption) (RecordService_ReadStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &RecordService_ServiceDesc.Streams[0], "/stub.RecordService/ReadStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &recordServiceSearchStreamClient{stream}
+	x := &recordServiceReadStreamClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -110,17 +111,51 @@ func (c *recordServiceClient) SearchStream(ctx context.Context, in *SearchRecord
 	return x, nil
 }
 
-type RecordService_SearchStreamClient interface {
+type RecordService_ReadStreamClient interface {
 	Recv() (*model.Record, error)
 	grpc.ClientStream
 }
 
-type recordServiceSearchStreamClient struct {
+type recordServiceReadStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *recordServiceSearchStreamClient) Recv() (*model.Record, error) {
+func (x *recordServiceReadStreamClient) Recv() (*model.Record, error) {
 	m := new(model.Record)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *recordServiceClient) WriteStream(ctx context.Context, opts ...grpc.CallOption) (RecordService_WriteStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &RecordService_ServiceDesc.Streams[1], "/stub.RecordService/WriteStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &recordServiceWriteStreamClient{stream}
+	return x, nil
+}
+
+type RecordService_WriteStreamClient interface {
+	Send(*model.Record) error
+	CloseAndRecv() (*WriteStreamResponse, error)
+	grpc.ClientStream
+}
+
+type recordServiceWriteStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *recordServiceWriteStreamClient) Send(m *model.Record) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *recordServiceWriteStreamClient) CloseAndRecv() (*WriteStreamResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(WriteStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -146,7 +181,8 @@ type RecordServiceServer interface {
 	Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error)
 	List(context.Context, *ListRecordRequest) (*ListRecordResponse, error)
 	Search(context.Context, *SearchRecordRequest) (*SearchRecordResponse, error)
-	SearchStream(*SearchRecordRequest, RecordService_SearchStreamServer) error
+	ReadStream(*ReadStreamRequest, RecordService_ReadStreamServer) error
+	WriteStream(RecordService_WriteStreamServer) error
 	Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error)
 	mustEmbedUnimplementedRecordServiceServer()
 }
@@ -173,8 +209,11 @@ func (UnimplementedRecordServiceServer) List(context.Context, *ListRecordRequest
 func (UnimplementedRecordServiceServer) Search(context.Context, *SearchRecordRequest) (*SearchRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
-func (UnimplementedRecordServiceServer) SearchStream(*SearchRecordRequest, RecordService_SearchStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method SearchStream not implemented")
+func (UnimplementedRecordServiceServer) ReadStream(*ReadStreamRequest, RecordService_ReadStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ReadStream not implemented")
+}
+func (UnimplementedRecordServiceServer) WriteStream(RecordService_WriteStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method WriteStream not implemented")
 }
 func (UnimplementedRecordServiceServer) Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
@@ -300,25 +339,51 @@ func _RecordService_Search_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordService_SearchStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(SearchRecordRequest)
+func _RecordService_ReadStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ReadStreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(RecordServiceServer).SearchStream(m, &recordServiceSearchStreamServer{stream})
+	return srv.(RecordServiceServer).ReadStream(m, &recordServiceReadStreamServer{stream})
 }
 
-type RecordService_SearchStreamServer interface {
+type RecordService_ReadStreamServer interface {
 	Send(*model.Record) error
 	grpc.ServerStream
 }
 
-type recordServiceSearchStreamServer struct {
+type recordServiceReadStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *recordServiceSearchStreamServer) Send(m *model.Record) error {
+func (x *recordServiceReadStreamServer) Send(m *model.Record) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func _RecordService_WriteStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(RecordServiceServer).WriteStream(&recordServiceWriteStreamServer{stream})
+}
+
+type RecordService_WriteStreamServer interface {
+	SendAndClose(*WriteStreamResponse) error
+	Recv() (*model.Record, error)
+	grpc.ServerStream
+}
+
+type recordServiceWriteStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *recordServiceWriteStreamServer) SendAndClose(m *WriteStreamResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *recordServiceWriteStreamServer) Recv() (*model.Record, error) {
+	m := new(model.Record)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func _RecordService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -377,9 +442,14 @@ var RecordService_ServiceDesc = grpc.ServiceDesc{
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "SearchStream",
-			Handler:       _RecordService_SearchStream_Handler,
+			StreamName:    "ReadStream",
+			Handler:       _RecordService_ReadStream_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "WriteStream",
+			Handler:       _RecordService_WriteStream_Handler,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "stub/record.proto",

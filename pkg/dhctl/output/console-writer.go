@@ -16,6 +16,10 @@ type consoleWriter struct {
 	describe bool
 }
 
+func (c consoleWriter) IsBinary() bool {
+	return false
+}
+
 func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	const padding = 3
 	w := tabwriter.NewWriter(c.writer, 0, 0, padding, ' ', 0)

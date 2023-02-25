@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/spf13/cobra"
+	"github.com/tislib/data-handler/pkg/batch"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
@@ -38,6 +39,24 @@ var applyCmd = &cobra.Command{
 
 		if file == "" {
 			log.Fatal("file should provided")
+		}
+
+		if strings.HasSuffix(file, ".pbe") {
+			in, err := os.Open(file)
+
+			check(err)
+
+			batchExecutor := batch.NewExecutor(batch.ExecutorParams{
+				Input:                 in,
+				ResourceServiceClient: resourceServiceClient,
+				RecordServiceClient:   recordServiceClient,
+			})
+
+			err = batchExecutor.Restore(in)
+
+			check(err)
+
+			return
 		}
 
 		fileData, err := os.ReadFile(file)

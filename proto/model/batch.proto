@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/tislib/data-handler/pkg/model";
+
+import 'model/record.proto';
+import 'model/resource.proto';
+
+enum BatchMode {
+  BATCH_CREATE = 0;
+  BATCH_UPDATE = 1;
+  BATCH_DELETE = 2;
+}
+
+message BatchHeader {
+  BatchMode mode = 1;
+
+  map<string, string> annotations = 103;
+}
+
+message BatchRecordsPart {
+  string namespace = 1;
+  string resource = 2;
+  repeated model.Record records = 3;
+}
+
+message Batch {
+  BatchHeader header = 1;
+  repeated model.Resource resources = 2;
+  repeated model.BatchRecordsPart batchRecords = 3;
+}
