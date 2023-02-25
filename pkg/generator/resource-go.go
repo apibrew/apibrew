@@ -32,6 +32,7 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 	sb.WriteRune('\n')
 	sb.WriteString(fmt.Sprintf("import \"time\" \n"))
 	sb.WriteString(fmt.Sprintf("import \"github.com/tislib/data-handler/pkg/model\" \n"))
+	sb.WriteString(fmt.Sprintf("import \"github.com/tislib/data-handler/pkg/client\" \n"))
 	if uuidNeeded {
 		sb.WriteString(fmt.Sprintf("import \"github.com/google/uuid\" \n"))
 	}
@@ -51,6 +52,12 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 	sb.WriteRune('\n')
 	writeResourceStructToPropertiesFunc(&sb, resource, params)
 	sb.WriteRune('\n')
+	writeResourceGetResourceNameFunc(&sb, resource, params)
+	sb.WriteRune('\n')
+	writeResourceGetNamespaceNameFunc(&sb, resource, params)
+	sb.WriteRune('\n')
+	writeResourceNewRepository(&sb, resource, params)
+	sb.WriteRune('\n')
 
 	formatted, err := format.Source([]byte(sb.String()))
 	if err != nil {
@@ -59,6 +66,26 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 	}
 
 	return string(formatted)
+}
+
+func writeResourceNewRepository(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
+	resourceStructName := dashCaseToCamelCase(resource.Name)
+
+	sb.WriteString(fmt.Sprintf("func New%sRepository(dhClient client.DhClient) client.Repository[*%s] {\n", resourceStructName, resourceStructName))
+	sb.WriteString(fmt.Sprintf("return client.NewRepository[*%s](dhClient, client.RepositoryParams[*%s]{Instance: new(%s)}) \n", resourceStructName, resourceStructName, resourceStructName))
+	sb.WriteString("}\n")
+}
+
+func writeResourceGetResourceNameFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
+	sb.WriteString(fmt.Sprintf("func (s*%s) GetResourceName() string {\n", dashCaseToCamelCase(resource.Name)))
+	sb.WriteString(fmt.Sprintf("return \"%s\"\n", resource.Name))
+	sb.WriteString("}\n")
+}
+
+func writeResourceGetNamespaceNameFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
+	sb.WriteString(fmt.Sprintf("func (s*%s) GetNamespace() string {\n", dashCaseToCamelCase(resource.Name)))
+	sb.WriteString(fmt.Sprintf("return \"%s\"\n", resource.Namespace))
+	sb.WriteString("}\n")
 }
 
 func writeResourceStructGetIdFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
