@@ -4,11 +4,10 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/client"
 	grpc2 "github.com/tislib/data-handler/pkg/server/grpc"
 	"github.com/tislib/data-handler/pkg/service"
 	"github.com/tislib/data-handler/pkg/stub"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"time"
 )
@@ -51,20 +50,16 @@ func init() {
 
 	time.Sleep(10 * time.Millisecond)
 
-	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	dhClient, err := client.NewDhClient(client.DhClientParams{
+		Addr:     addr,
+		Insecure: true,
+	})
 
-	conn, err := grpc.Dial(addr, opts...)
-
-	if err != nil {
-		panic(err)
-	}
-
-	recordServiceClient = stub.NewRecordServiceClient(conn)
-	authenticationServiceClient = stub.NewAuthenticationServiceClient(conn)
-	resourceServiceClient = stub.NewResourceServiceClient(conn)
-	dataSourceServiceClient = stub.NewDataSourceServiceClient(conn)
-	userServiceClient = stub.NewUserServiceClient(conn)
-	extensionServiceClient = stub.NewExtensionServiceClient(conn)
-	genericServiceClient = stub.NewGenericServiceClient(conn)
+	recordServiceClient = dhClient.GetRecordServiceClient()
+	authenticationServiceClient = dhClient.GetAuthenticationServiceClient()
+	resourceServiceClient = dhClient.GetResourceServiceClient()
+	dataSourceServiceClient = dhClient.GetDataSourceServiceClient()
+	userServiceClient = dhClient.GetUserServiceClient()
+	extensionServiceClient = dhClient.GetExtensionServiceClient()
+	genericServiceClient = dhClient.GetGenericServiceClient()
 }
