@@ -8,7 +8,6 @@ package stub
 
 import (
 	context "context"
-	log "github.com/sirupsen/logrus"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -43,9 +42,6 @@ func NewRecordServiceClient(cc grpc.ClientConnInterface) RecordServiceClient {
 func (c *recordServiceClient) Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error) {
 	out := new(CreateRecordResponse)
 	err := c.cc.Invoke(ctx, "/stub.RecordService/Create", in, out, opts...)
-	if in.Resource == "" {
-		log.Print("Resource name is really empty")
-	}
 	if err != nil {
 		return nil, err
 	}

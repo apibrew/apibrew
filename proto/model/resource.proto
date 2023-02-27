@@ -63,6 +63,30 @@ message ResourceSourceConfig {
   string entity = 3;
 }
 
+enum Order {
+  ORDER_UNKNOWN = 0;
+  ORDER_ASC = 1;
+  ORDER_DESC = 2;
+}
+
+message ResourceIndexProperty {
+  string name = 1;
+  Order order = 2;
+}
+
+enum ResourceIndexType {
+  BTREE = 0;
+  HASH = 1;
+}
+
+message ResourceIndex {
+  repeated ResourceIndexProperty properties = 1;
+  ResourceIndexType indexType = 2;
+  bool unique = 3;
+
+  map<string, string> annotations = 103;
+}
+
 message Resource {
   string id = 1; // id; read only
   string name = 2; // uniq(per namespace) // name
@@ -70,6 +94,7 @@ message Resource {
   DataType dataType = 4; // read only
   ResourceSourceConfig sourceConfig = 5;
   repeated ResourceProperty properties = 6;
+  repeated ResourceIndex indexes = 7;
   SecurityContext securityContext = 10;
   bool virtual = 11;
 
