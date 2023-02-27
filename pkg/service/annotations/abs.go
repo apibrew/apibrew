@@ -40,6 +40,10 @@ func Set(resource Annotated, name, value string) {
 	resource.GetAnnotations()[name] = value
 }
 
+func Get(resource Annotated, name string) string {
+	return resource.GetAnnotations()[name]
+}
+
 func Disable(resource Annotated, names ...string) {
 	for _, name := range names {
 		resource.GetAnnotations()[name] = "false"
