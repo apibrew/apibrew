@@ -71,7 +71,83 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 		return err
 	}
 
+	if !history {
+		err = arrayDiffer(existingResource.Indexes,
+			params.Resource.Indexes,
+			util.IsSameIdentifiedResourceIndex,
+			util.IsSameResourceIndex,
+			func(index *model.ResourceIndex) errors.ServiceError {
+				var sql = ""
+				if annotations.Get(index, annotations.SourceDef) != "" {
+					sql = annotations.Get(index, annotations.SourceDef)
+				} else {
+					sql, err = prepareIndexDef(index, params, params.Resource, sql)
+					if err != nil {
+						return err
+					}
+				}
+
+				logger.Info("DB Migrate Sql: " + sql)
+				_, sqlError := runner.ExecContext(ctx, sql)
+				return handleDbError(ctx, sqlError)
+			}, func(prevProperty, property *model.ResourceIndex) errors.ServiceError {
+				return errors.LogicalError.WithDetails("Cannot alter index")
+			}, func(index *model.ResourceIndex) errors.ServiceError {
+				if params.ForceMigration {
+					sql := fmt.Sprintf("DROP INDEX %s", annotations.Get(index, annotations.SourceIdentity))
+
+					logger.Info("DB Migrate Sql: " + sql)
+					_, sqlError := runner.ExecContext(ctx, sql)
+					return handleDbError(ctx, sqlError)
+				} else {
+					return nil
+				}
+			})
+	}
+
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource, sql string) (string, errors.ServiceError) {
+	var uniqueStr = ""
+
+	if index.Unique {
+		uniqueStr = "unique"
+	}
+
+	var cols []string
+	var colsEscaped []string
+
+	for _, indexProp := range index.Properties {
+		var prop *model.ResourceProperty
+		for _, prop = range params.Resource.Properties {
+			if prop.Name == indexProp.Name {
+				break
+			}
+		}
+
+		if prop == nil {
+			return "", errors.LogicalError.WithDetails("Property not found with name: " + prop.Name)
+		}
+
+		cols = append(cols, prop.Mapping)
+		colsEscaped = append(colsEscaped, fmt.Sprintf("\"%s\"", prop.Mapping))
+	}
+
+	var indexName = resource.SourceConfig.Entity + "_" + strings.Join(cols, "_")
+
+	if index.Unique {
+		indexName = indexName + "_uniq_idx"
+	} else {
+		indexName = indexName + "_idx"
+	}
+
+	sql = fmt.Sprintf("create %s index \"%s\" on %s(%s)", uniqueStr, indexName, resource.SourceConfig.Entity, strings.Join(colsEscaped, ","))
+	return sql, nil
 }
 
 func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model.ResourceProperty, tableName string, existingResource *model.Resource, logger *log.Entry, runner QueryRunner, ctx context.Context, schema abs.Schema) errors.ServiceError {
@@ -225,6 +301,13 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 		return
 	}
 
+	// indexes
+
+	err = resourcePrepareIndexes(ctx, runner, catalog, entity, resource)
+	if err != nil {
+		return
+	}
+
 	// references
 
 	doResourceCleanup(resource)
@@ -358,6 +441,85 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 		}
 
 		resource.Properties = append(resource.Properties, property)
+	}
+	return err
+}
+
+func resourcePrepareIndexes(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
+	rows, sqlErr := runner.QueryContext(ctx, `
+
+select i.relname as index_name,
+       indisunique,
+       ixs.indexdef,
+       string_agg(a.attname, ',') 
+from pg_class t,
+     pg_class i,
+     pg_index ix,
+     pg_indexes ixs,
+     pg_attribute a
+where t.oid = ix.indrelid
+  and i.oid = ix.indexrelid
+  and a.attrelid = t.oid
+  and a.attnum = ANY (ix.indkey)
+  and t.relkind = 'r'
+  and ixs.indexname = i.relname
+  and ixs.schemaname = $1
+  and ixs.tablename = $2
+group by 1, 2, 3
+having count(distinct a.attname) > 1
+
+`, catalog, entity)
+	err := handleDbError(ctx, sqlErr)
+
+	if err != nil {
+		return err
+	}
+
+	for rows.Next() {
+		var indexName = new(string)
+		var unique = new(bool)
+		var indexDef = new(string)
+		var colsStr = new(string)
+
+		err = handleDbError(ctx, rows.Scan(indexName, unique, indexDef, colsStr))
+
+		var cols = strings.Split(*colsStr, ",")
+
+		if err != nil {
+			return err
+		}
+
+		var properties []*model.ResourceIndexProperty
+
+		for _, col := range cols {
+			var prop *model.ResourceProperty
+			for _, prop = range resource.Properties {
+				if prop.Mapping == col {
+					break
+				}
+			}
+
+			if prop == nil {
+				return errors.LogicalError.WithDetails("Property not found with col: " + col)
+			}
+
+			properties = append(properties, &model.ResourceIndexProperty{
+				Name:  prop.Name,
+				Order: model.Order_ORDER_UNKNOWN,
+			})
+		}
+
+		var resourceIndex = &model.ResourceIndex{
+			Properties:  properties,
+			IndexType:   model.ResourceIndexType_BTREE,
+			Unique:      *unique,
+			Annotations: map[string]string{},
+		}
+
+		annotations.Set(resourceIndex, annotations.SourceDef, *indexDef)
+		annotations.Set(resourceIndex, annotations.SourceIdentity, *indexName)
+
+		resource.Indexes = append(resource.Indexes, resourceIndex)
 	}
 	return err
 }
