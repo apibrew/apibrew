@@ -23,7 +23,10 @@ func init() {
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(generatorCmd)
-	defineRootFlags()
+	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(prepareCmd)
+	rootCmd.AddCommand(updateCmd)
+	defineRootFlags(rootCmd)
 }
 
 func Run() {

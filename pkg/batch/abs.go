@@ -1,6 +1,7 @@
 package batch
 
 import (
+	"context"
 	"github.com/tislib/data-handler/pkg/model"
 	"os"
 )
@@ -16,5 +17,5 @@ type Reader interface {
 }
 
 type Executor interface {
-	Restore(in *os.File) error
+	Restore(ctx context.Context, in *os.File) error
 }
