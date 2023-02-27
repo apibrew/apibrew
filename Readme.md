@@ -34,4 +34,4 @@ Sample commands
 dhctl get resources
 dhctl get user -n system
 ```
-For detailed documentation: [link](docs/dhctl.md)
+For detailed documentation: [link](docs/content/dhctl.md)
