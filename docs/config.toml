@@ -15,6 +15,7 @@ enableRobotsTXT = true
 # Needed for mermaid shortcodes
 [params]
     geekdocMenuBundle = true
+    geekdocRepo = "https://github.com/tislib/data-handler"
 [markup]
     [markup.goldmark.renderer]
 # Needed for mermaid shortcode
