@@ -12,6 +12,37 @@ func IsSameIdentifiedResourceProperty(property1, property2 *model.ResourceProper
 	return true
 }
 
+func IsSameIdentifiedResourceIndex(index1, index2 *model.ResourceIndex) bool {
+	return IsSameResourceIndex(index1, index2)
+}
+
+func IsSameResourceIndex(index1, index2 *model.ResourceIndex) bool {
+	if len(index1.Properties) != len(index2.Properties) {
+		return false
+	}
+
+	if index1.Unique != index2.Unique {
+		return false
+	}
+
+	for _, prop1 := range index1.Properties {
+		var found = false
+		for _, prop2 := range index2.Properties {
+			if prop1.Name == prop2.Name {
+				found = true
+			}
+		}
+
+		if !found {
+			return false
+		}
+	}
+
+	//todo check property order and index type
+
+	return true
+}
+
 func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 	if property1.Mapping != property2.Mapping {
 		return false

@@ -1,6 +1,7 @@
 package mapping
 
 import (
+	"encoding/json"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -23,6 +24,16 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	}))
 
 	properties["securityContext"] = SecurityContextToValue(resource.SecurityContext)
+
+	if resource.Indexes != nil {
+		var lv []*structpb.Value
+
+		for _, index := range resource.Indexes {
+			lv = append(lv, ResourceIndexToValue(index))
+		}
+
+		properties["indexes"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
+	}
 
 	return &model.Record{
 		Id:         resource.Id,
@@ -67,5 +78,49 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		}),
 	}
 
+	if record.Properties["indexes"] != nil {
+		list := record.Properties["indexes"].GetListValue()
+
+		for _, val := range list.Values {
+			resource.Indexes = append(resource.Indexes, ResourceIndexFromValue(val))
+		}
+	}
+
 	return resource
+}
+
+func ResourceIndexFromValue(val *structpb.Value) *model.ResourceIndex {
+	jData, err := val.MarshalJSON()
+
+	if err != nil {
+		panic(err)
+	}
+
+	var ri = new(model.ResourceIndex)
+
+	err = json.Unmarshal(jData, ri)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ri
+}
+
+func ResourceIndexToValue(index *model.ResourceIndex) *structpb.Value {
+	jData, err := json.Marshal(index)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var val = &structpb.Value{}
+
+	err = val.UnmarshalJSON(jData)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return val
 }
