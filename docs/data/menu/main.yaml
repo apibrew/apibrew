@@ -1,5 +1,15 @@
 ---
 main:
-  - name: About Data Handler
-    ref: "/about"
+  - name: Usage
+    ref: "/usage"
     icon: "gdoc_notification"
+  - name: Installation
+    ref: "/installation"
+    icon: "gdoc_path"
+    sub:
+      - name: Docker
+        ref: "/installation/docker"
+      - name: Kubernetes
+        ref: "/installation/kubernetes"
+      - name: Source
+        ref: "/installation/source"
