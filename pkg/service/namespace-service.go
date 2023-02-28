@@ -94,13 +94,29 @@ func (d *namespaceService) Init(data *model.InitData) {
 	if len(data.InitNamespaces) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
 			Namespace:      resources.NamespaceResource.Namespace,
+			Resource:       resources.NamespaceResource.Name,
 			Records:        mapping2.MapToRecord(data.InitNamespaces, mapping2.NamespaceToRecord),
 			IgnoreIfExists: true,
 		})
 
 		if err != nil {
-			log.Error(err)
+			log.Fatal(err)
 		}
+	}
+
+	_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
+		Namespace: resources.NamespaceResource.Namespace,
+		Resource:  resources.NamespaceResource.Name,
+		Records: []*model.Record{mapping2.NamespaceToRecord(&model.Namespace{
+			Name:        "default",
+			Type:        model.DataType_STATIC,
+			Description: "default namespace",
+		})},
+		IgnoreIfExists: true,
+	})
+
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
