@@ -121,7 +121,7 @@ func (d *userService) Init(data *model.InitData) {
 		})
 
 		if err != nil {
-			log.Error(err)
+			log.Fatal(err)
 		}
 	}
 }

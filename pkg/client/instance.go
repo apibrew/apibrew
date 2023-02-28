@@ -22,6 +22,11 @@ type dhClient struct {
 	userServiceClient           stub.UserServiceClient
 	extensionServiceClient      stub.ExtensionServiceClient
 	genericServiceClient        stub.GenericServiceClient
+	namespaceServiceClient      stub.NamespaceServiceClient
+}
+
+func (d *dhClient) GetNamespaceServiceClient() stub.NamespaceServiceClient {
+	return d.namespaceServiceClient
 }
 
 func (d *dhClient) GetToken() string {
@@ -78,5 +83,6 @@ func NewDhClient(params DhClientParams) (DhClient, error) {
 		userServiceClient:           stub.NewUserServiceClient(conn),
 		extensionServiceClient:      stub.NewExtensionServiceClient(conn),
 		genericServiceClient:        stub.NewGenericServiceClient(conn),
+		namespaceServiceClient:      stub.NewNamespaceServiceClient(conn),
 	}, nil
 }

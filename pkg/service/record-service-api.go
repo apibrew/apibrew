@@ -232,6 +232,10 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		return nil, nil
 	}
 
+	if resource.Immutable {
+		return nil, errors.RecordValidationError.WithMessage("Immutable resource cannot be modified or deleted: " + params.Resource)
+	}
+
 	if annotations.IsEnabled(resource, annotations.KeepHistory) && !params.CheckVersion {
 		success = false
 		return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
@@ -242,6 +246,21 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 	if err != nil {
 		success = false
 		return nil, err
+	}
+
+	// prevent immutable properties to be updated
+
+	var immutableColsMap = make(map[string]bool)
+	for _, prop := range resource.Properties {
+		if prop.Immutable {
+			immutableColsMap[prop.Name] = true
+		}
+	}
+
+	for _, record := range params.Records {
+		for key := range immutableColsMap {
+			delete(record.Properties, key)
+		}
 	}
 
 	if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {
@@ -440,6 +459,10 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 
 	if isResourceRelatedResource(resource) {
 		return errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
+	}
+
+	if resource.Immutable {
+		return errors.RecordValidationError.WithMessage("Immutable resource cannot be modified or deleted: " + params.Resource)
 	}
 
 	if err := r.genericHandler.BeforeDelete(ctx, resource, params); err != nil {
