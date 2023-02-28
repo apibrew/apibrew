@@ -16,6 +16,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["sourcePrimary"] = structpb.NewBoolValue(property.Primary)
 	properties["length"] = structpb.NewNumberValue(float64(property.Length))
 	properties["unique"] = structpb.NewBoolValue(property.Unique)
+	properties["immutable"] = structpb.NewBoolValue(property.Immutable)
 
 	properties["mapping"] = structpb.NewStringValue(property.Mapping)
 	properties["securityContext"] = SecurityContextToValue(resource.SecurityContext)
@@ -54,6 +55,7 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		Required:        record.Properties["required"].GetBoolValue(),
 		Length:          uint32(record.Properties["length"].GetNumberValue()),
 		Unique:          record.Properties["unique"].GetBoolValue(),
+		Immutable:       record.Properties["immutable"].GetBoolValue(),
 		SecurityContext: SecurityContextFromValue(record.Properties["securityContext"]),
 		Reference:       reference,
 	}

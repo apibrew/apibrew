@@ -53,6 +53,12 @@ var ResourcePropertyResource = &model.Resource{
 			Required: true,
 		},
 		{
+			Name:     "immutable",
+			Mapping:  "immutable",
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Required: true,
+		},
+		{
 			Name:     "length",
 			Mapping:  "length",
 			Type:     model.ResourcePropertyType_TYPE_INT32,

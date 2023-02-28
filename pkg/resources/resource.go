@@ -43,6 +43,14 @@ var ResourceResource = &model.Resource{
 			Required: true,
 		},
 		{
+			Name: "immutable",
+
+			Mapping:  "immutable",
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Required: true,
+		},
+		{
 			Name: "dataSource",
 
 			Mapping:  "source_data_source",
