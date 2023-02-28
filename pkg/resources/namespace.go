@@ -16,12 +16,13 @@ var NamespaceResource = &model.Resource{
 		{
 			Name: "name",
 
-			Mapping:  "name",
-			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
-			Length:   256,
-			Required: true,
-			Unique:   true,
+			Mapping:   "name",
+			Primary:   false,
+			Type:      model.ResourcePropertyType_TYPE_STRING,
+			Length:    256,
+			Required:  true,
+			Unique:    true,
+			Immutable: true,
 		},
 		{
 			Name: "description",
