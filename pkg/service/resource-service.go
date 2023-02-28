@@ -31,6 +31,7 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 		Limit:    1000000,
 		ResolveReferences: []string{
 			"dataSource",
+			"namespace",
 		},
 		Schema: &r.schema,
 	})
@@ -429,6 +430,7 @@ func (r *resourceService) Init(_ *model.InitData) {
 		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
 	}
 
+	r.backendProviderService.MigrateResource(resources.NamespaceResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.DataSourceResource, r.schema)
 
 	r.backendProviderService.MigrateResource(resources.ResourceResource, r.schema)
@@ -436,7 +438,6 @@ func (r *resourceService) Init(_ *model.InitData) {
 	r.backendProviderService.MigrateResource(resources.ResourceReferenceResource, r.schema)
 
 	r.backendProviderService.MigrateResource(resources.UserResource, r.schema)
-	r.backendProviderService.MigrateResource(resources.NamespaceResource, r.schema)
 	r.backendProviderService.MigrateResource(resources.ExtensionResource, r.schema)
 
 	if err := r.ReloadSchema(context.TODO()); err != nil {

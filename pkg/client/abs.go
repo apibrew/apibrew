@@ -13,6 +13,7 @@ type DhClient interface {
 	GetResourceServiceClient() stub.ResourceServiceClient
 	GetRecordServiceClient() stub.RecordServiceClient
 	GetGenericServiceClient() stub.GenericServiceClient
+	GetNamespaceServiceClient() stub.NamespaceServiceClient
 	GetExtensionServiceClient() stub.ExtensionServiceClient
 	GetUserServiceClient() stub.UserServiceClient
 	GetToken() string
