@@ -1,5 +1,6 @@
-Data Handler [![Build Status](https://app.travis-ci.com/tislib/data-handler.svg?branch=master)](https://app.travis-ci.com/tislib/data-handler)
+Data Handler [![Build Status](https://app.travis-ci.com/tislib/data-handler.svg?branch=master)](https://app.travis-ci.com/tislib/data-handler) 
 ======================
+**Website: [https://datahandler.talehibrahimli.com/](https://datahandler.talehibrahimli.com/)**
 
 Data Handler is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
 
@@ -34,4 +35,4 @@ Sample commands
 dhctl get resources
 dhctl get user -n system
 ```
-For detailed documentation: [link](docs/dhctl.md)
+For detailed documentation: [link](docs/content/old/dhctl.md)

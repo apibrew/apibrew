@@ -21,7 +21,18 @@ var ResourceResource = &model.Resource{
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: true,
-			Unique:   true,
+			Unique:   false,
+		},
+		{
+			Name: "namespace",
+
+			Mapping:  "namespace",
+			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
+			Required: true,
+			Reference: &model.Reference{
+				ReferencedResource: NamespaceResource.Name,
+				Cascade:            false,
+			},
 		},
 		{
 			Name: "virtual",
@@ -32,11 +43,11 @@ var ResourceResource = &model.Resource{
 			Required: true,
 		},
 		{
-			Name: "namespace",
+			Name: "immutable",
 
-			Mapping:  "namespace",
-			Type:     model.ResourcePropertyType_TYPE_STRING,
-			Length:   256,
+			Mapping:  "immutable",
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
 			Required: true,
 		},
 		{
@@ -44,7 +55,6 @@ var ResourceResource = &model.Resource{
 
 			Mapping:  "source_data_source",
 			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
-			Length:   256,
 			Required: false,
 			Reference: &model.Reference{
 				ReferencedResource: DataSourceResource.Name,
@@ -75,6 +85,13 @@ var ResourceResource = &model.Resource{
 			Required: false,
 		},
 		{
+			Name: "indexes",
+
+			Mapping:  "indexes",
+			Type:     model.ResourcePropertyType_TYPE_OBJECT,
+			Required: false,
+		},
+		{
 			Name: "type",
 
 			Mapping:  "type",
@@ -82,6 +99,19 @@ var ResourceResource = &model.Resource{
 			Required: true,
 		},
 		securityContextProperty,
+	},
+	Indexes: []*model.ResourceIndex{
+		{
+			Properties: []*model.ResourceIndexProperty{
+				{
+					Name: "namespace",
+				},
+				{
+					Name: "name",
+				},
+			},
+			Unique: true,
+		},
 	},
 	SecurityContext: securityContextDisallowAll,
 }
