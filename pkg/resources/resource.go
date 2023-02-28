@@ -27,9 +27,12 @@ var ResourceResource = &model.Resource{
 			Name: "namespace",
 
 			Mapping:  "namespace",
-			Type:     model.ResourcePropertyType_TYPE_STRING,
-			Length:   256,
+			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
 			Required: true,
+			Reference: &model.Reference{
+				ReferencedResource: NamespaceResource.Name,
+				Cascade:            false,
+			},
 		},
 		{
 			Name: "virtual",
@@ -40,11 +43,18 @@ var ResourceResource = &model.Resource{
 			Required: true,
 		},
 		{
+			Name: "immutable",
+
+			Mapping:  "immutable",
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Required: true,
+		},
+		{
 			Name: "dataSource",
 
 			Mapping:  "source_data_source",
 			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
-			Length:   256,
 			Required: false,
 			Reference: &model.Reference{
 				ReferencedResource: DataSourceResource.Name,

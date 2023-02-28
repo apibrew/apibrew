@@ -11,8 +11,9 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	properties := make(map[string]*structpb.Value)
 
 	properties["name"] = structpb.NewStringValue(resource.Name)
-	properties["namespace"] = structpb.NewStringValue(resource.Namespace)
+	properties["namespace"] = util.StructKv("name", resource.Namespace)
 	properties["virtual"] = structpb.NewBoolValue(resource.Virtual)
+	properties["immutable"] = structpb.NewBoolValue(resource.Immutable)
 	if resource.SourceConfig != nil {
 		properties["dataSource"] = util.StructKv("name", resource.SourceConfig.DataSource)
 		properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
@@ -65,8 +66,9 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		AuditData: record.AuditData,
 		Version:   record.Version,
 		Name:      record.Properties["name"].GetStringValue(),
-		Namespace: record.Properties["namespace"].GetStringValue(),
+		Namespace: record.Properties["namespace"].GetStructValue().GetFields()["name"].GetStringValue(),
 		Virtual:   record.Properties["virtual"].GetBoolValue(),
+		Immutable: record.Properties["immutable"].GetBoolValue(),
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: record.Properties["dataSource"].GetStructValue().GetFields()["name"].GetStringValue(),
 			Entity:     record.Properties["entity"].GetStringValue(),

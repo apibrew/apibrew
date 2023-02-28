@@ -24,7 +24,7 @@ func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Names
 
 	result, _, err := u.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.NamespaceResource.Namespace,
-		Resource:  resources.ExtensionResource.Name,
+		Resource:  resources.NamespaceResource.Name,
 		Records:   records,
 	})
 
@@ -41,7 +41,7 @@ func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Names
 
 	result, err := u.recordService.Update(ctx, abs.RecordUpdateParams{
 		Namespace: resources.NamespaceResource.Namespace,
-		Resource:  resources.ExtensionResource.Name,
+		Resource:  resources.NamespaceResource.Name,
 		Records:   records,
 	})
 
@@ -53,7 +53,6 @@ func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Names
 }
 
 func (u *namespaceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
-
 	return u.recordService.Delete(ctx, abs.RecordDeleteParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
@@ -94,13 +93,29 @@ func (d *namespaceService) Init(data *model.InitData) {
 	if len(data.InitNamespaces) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
 			Namespace:      resources.NamespaceResource.Namespace,
+			Resource:       resources.NamespaceResource.Name,
 			Records:        mapping2.MapToRecord(data.InitNamespaces, mapping2.NamespaceToRecord),
 			IgnoreIfExists: true,
 		})
 
 		if err != nil {
-			log.Error(err)
+			log.Fatal(err)
 		}
+	}
+
+	_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
+		Namespace: resources.NamespaceResource.Namespace,
+		Resource:  resources.NamespaceResource.Name,
+		Records: []*model.Record{mapping2.NamespaceToRecord(&model.Namespace{
+			Name:        "default",
+			Type:        model.DataType_STATIC,
+			Description: "default namespace",
+		})},
+		IgnoreIfExists: true,
+	})
+
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
