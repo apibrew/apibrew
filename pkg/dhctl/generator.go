@@ -14,7 +14,6 @@ var generatorCmd = &cobra.Command{
 	Short: "generate - Generate codes",
 	Run: func(cmd *cobra.Command, args []string) {
 		parseRootFlags(cmd)
-		initClient(cmd.Context())
 
 		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)

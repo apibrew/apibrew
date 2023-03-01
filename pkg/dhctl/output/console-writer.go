@@ -35,12 +35,14 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	c.out(w, "  Entity: \t\t %s", resource.SourceConfig.Entity)
 	c.out(w, "")
 
-	c.out(w, "AuditData:")
-	c.out(w, "  Created By: \t\t %s", resource.AuditData.CreatedBy)
-	c.out(w, "  Created On: \t\t %s", resource.AuditData.CreatedOn.AsTime().String())
-	c.out(w, "  Updated By: \t\t %s", resource.AuditData.UpdatedBy)
-	c.out(w, "  Updated On: \t\t %s", resource.AuditData.UpdatedOn.AsTime().String())
-	c.out(w, "")
+	if resource.AuditData != nil {
+		c.out(w, "AuditData:")
+		c.out(w, "  Created By: \t\t %s", resource.AuditData.CreatedBy)
+		c.out(w, "  Created On: \t\t %s", resource.AuditData.CreatedOn.AsTime().String())
+		c.out(w, "  Updated By: \t\t %s", resource.AuditData.UpdatedBy)
+		c.out(w, "  Updated On: \t\t %s", resource.AuditData.UpdatedOn.AsTime().String())
+		c.out(w, "")
+	}
 
 	c.out(w, "Properties:")
 

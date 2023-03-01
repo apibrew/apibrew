@@ -14,7 +14,6 @@ var prepareCmd = &cobra.Command{
 	Short: "prepare - Create resource from existing table",
 	Run: func(cmd *cobra.Command, args []string) {
 		parseRootFlags(cmd)
-		initClient(cmd.Context())
 
 		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)

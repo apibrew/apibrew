@@ -23,7 +23,6 @@ var applyCmd = &cobra.Command{
 	Short: "apply - apply resources",
 	Run: func(cmd *cobra.Command, args []string) {
 		parseRootFlags(cmd)
-		initClient(cmd.Context())
 
 		file, err := cmd.Flags().GetString("file")
 		check(err)
