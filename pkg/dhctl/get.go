@@ -3,6 +3,7 @@ package dhctl
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/tislib/data-handler/pkg/dhctl/flags"
 	"github.com/tislib/data-handler/pkg/dhctl/output"
 	"io"
 	"os"
@@ -13,12 +14,13 @@ var getCmd = &cobra.Command{
 	Short: "get - get type",
 	Run: func(cmd *cobra.Command, args []string) {
 		parseRootFlags(cmd)
-		initClient(cmd.Context())
 
 		f := getFlag(cmd, "format", true)
 		o := getFlag(cmd, "output", false)
 
-		selection := selectData(cmd, args)
+		var selection = &flags.SelectedRecordsResult{}
+
+		selectorFlags.Parse(selection, cmd, args)
 
 		var w io.Writer
 		if o == "" || o == "-" {
@@ -49,19 +51,19 @@ var getCmd = &cobra.Command{
 			log.Fatal("format is binary but output is not specified")
 		}
 
-		if selection.resources != nil {
-			writer.WriteResources(selection.resources)
+		if selection.Resources != nil {
+			writer.WriteResources(selection.Resources)
 		}
 
-		for _, records := range selection.records {
-			writer.WriteRecords(records.resource, records.records)
+		for _, records := range selection.Records {
+			writer.WriteRecords(records.Resource, records.Records)
 		}
 
 	},
 }
 
-func init() {
+func initGetCmd() {
 	getCmd.PersistentFlags().StringP("format", "f", "console", "format")
 	getCmd.PersistentFlags().StringP("output", "o", "", "output")
-	initSelectorFlags(getCmd)
+	selectorFlags.Declare(getCmd)
 }

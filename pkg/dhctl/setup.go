@@ -3,6 +3,8 @@ package dhctl
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/client"
+	"github.com/tislib/data-handler/pkg/dhctl/flags"
 	"github.com/tislib/data-handler/pkg/stub"
 )
 import "google.golang.org/grpc"
@@ -13,8 +15,9 @@ var dataSourceServiceClient stub.DataSourceServiceClient
 var resourceServiceClient stub.ResourceServiceClient
 var recordServiceClient stub.RecordServiceClient
 var authToken string
+var selectorFlags flags.FlagHelper[*flags.SelectedRecordsResult]
 
-func initClient(ctx context.Context) {
+func init() {
 	configServer := locateConfigServer()
 	conn, err := grpc.Dial(configServer.Host, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
@@ -31,7 +34,7 @@ func initClient(ctx context.Context) {
 	if configServer.Authentication.Token != "" {
 		authToken = configServer.Authentication.Token
 	} else {
-		authResp, err := authenticationServiceClient.Authenticate(ctx, &stub.AuthenticationRequest{
+		authResp, err := authenticationServiceClient.Authenticate(context.TODO(), &stub.AuthenticationRequest{
 			Username: configServer.Authentication.Username,
 			Password: configServer.Authentication.Password,
 			Term:     2,
@@ -43,6 +46,18 @@ func initClient(ctx context.Context) {
 
 		authToken = authResp.Token.Content
 	}
+
+	dhClient, err := client.NewDhClient(client.DhClientParams{
+		Addr:     configServer.Host,
+		Insecure: true,
+		Token:    authToken,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	selectorFlags = flags.NewSelectorFlags(dhClient)
 }
 
 func locateConfigServer() ConfigServer {
