@@ -12,7 +12,12 @@ import (
 )
 
 type consoleWriter struct {
-	writer io.Writer
+	writer   io.Writer
+	describe bool
+}
+
+func (c consoleWriter) IsBinary() bool {
+	return false
 }
 
 func (c consoleWriter) DescribeResource(resource *model.Resource) {
@@ -30,12 +35,14 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	c.out(w, "  Entity: \t\t %s", resource.SourceConfig.Entity)
 	c.out(w, "")
 
-	c.out(w, "AuditData:")
-	c.out(w, "  Created By: \t\t %s", resource.AuditData.CreatedBy)
-	c.out(w, "  Created On: \t\t %s", resource.AuditData.CreatedOn.AsTime().String())
-	c.out(w, "  Updated By: \t\t %s", resource.AuditData.UpdatedBy)
-	c.out(w, "  Updated On: \t\t %s", resource.AuditData.UpdatedOn.AsTime().String())
-	c.out(w, "")
+	if resource.AuditData != nil {
+		c.out(w, "AuditData:")
+		c.out(w, "  Created By: \t\t %s", resource.AuditData.CreatedBy)
+		c.out(w, "  Created On: \t\t %s", resource.AuditData.CreatedOn.AsTime().String())
+		c.out(w, "  Updated By: \t\t %s", resource.AuditData.UpdatedBy)
+		c.out(w, "  Updated On: \t\t %s", resource.AuditData.UpdatedOn.AsTime().String())
+		c.out(w, "")
+	}
 
 	c.out(w, "Properties:")
 
@@ -70,7 +77,7 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	table = tablewriter.NewWriter(w)
 	table.Render()
 
-	w.Flush()
+	_ = w.Flush()
 }
 
 func (c consoleWriter) out(w io.Writer, format string, a ...interface{}) {
@@ -92,20 +99,31 @@ func (c consoleWriter) configureTable(table *tablewriter.Table) {
 }
 
 func (c consoleWriter) WriteResources(resources []*model.Resource) {
+	if c.describe {
+		for _, resource := range resources {
+			c.DescribeResource(resource)
+		}
+	} else {
+		c.ShowResourceTable(resources)
+	}
+}
+
+func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
-	table.SetHeader([]string{"Name", "Namespace", "DataSource", "Catalog", "Entity", "Version"})
+	table.SetHeader([]string{"Id", "Name", "Namespace", "DataSource", "Catalog", "Entity", "Version"})
 	c.configureTable(table)
 
 	for _, item := range resources {
 		data = append(data, []string{
+			item.Id,
 			item.Name,
 			item.Namespace,
 			item.SourceConfig.DataSource,
 			item.SourceConfig.Catalog,
 			item.SourceConfig.Entity,
-			string(item.Version),
+			strconv.Itoa(int(item.Version)),
 		})
 	}
 
@@ -115,7 +133,7 @@ func (c consoleWriter) WriteResources(resources []*model.Resource) {
 	table.Render() // Send output
 }
 
-func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.Record) {
+func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
@@ -128,7 +146,7 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, records []*model.R
 	table.SetHeader(columns)
 	c.configureTable(table)
 
-	for _, item := range records {
+	for item := range recordsChan {
 		row := []string{
 			item.Id,
 			strconv.Itoa(int(item.Version)),

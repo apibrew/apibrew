@@ -115,6 +115,7 @@ type RecordListParams struct {
 	Offset            uint64
 	UseHistory        bool
 	ResolveReferences []string
+	ResultChan        chan<- *model.Record
 }
 
 type RecordCreateParams struct {

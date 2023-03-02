@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/spf13/cobra"
+	"github.com/tislib/data-handler/pkg/batch"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
@@ -22,7 +23,6 @@ var applyCmd = &cobra.Command{
 	Short: "apply - apply resources",
 	Run: func(cmd *cobra.Command, args []string) {
 		parseRootFlags(cmd)
-		initClient(cmd.Context())
 
 		file, err := cmd.Flags().GetString("file")
 		check(err)
@@ -40,138 +40,156 @@ var applyCmd = &cobra.Command{
 			log.Fatal("file should provided")
 		}
 
-		fileData, err := os.ReadFile(file)
-
-		check(err)
-
-		var jsonUMo = protojson.UnmarshalOptions{
-			AllowPartial:   false,
-			DiscardUnknown: false,
-			Resolver:       nil,
-		}
-
-		var createRecords []*model.Record
-		var updateRecords []*model.Record
-
-		if strings.HasSuffix(file, "yml") || strings.HasSuffix(file, "yaml") {
-			decoder := yaml.NewDecoder(bytes.NewReader(fileData))
-
-			for {
-				var body map[string]interface{}
-				err = decoder.Decode(&body)
-
-				if err == io.EOF {
-					break
-				}
-
-				check(err)
-
-				body = convert(body).(map[string]interface{})
-
-				switch body["type"].(string) {
-				case "resource":
-					delete(body, "type")
-
-					jsonData, err := json.Marshal(body)
-
-					check(err)
-
-					var resource = new(model.Resource)
-					err = jsonUMo.Unmarshal(jsonData, resource)
-
-					check(err)
-
-					// locating resource
-					if resource.Id == "" {
-						resp, err := resourceServiceClient.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
-							Token:     authToken,
-							Namespace: resource.Namespace,
-							Name:      resource.Name,
-						})
-
-						if err != nil && util.GetErrorCode(err) != model.ErrorCode_RESOURCE_NOT_FOUND {
-							panic(err)
-						}
-
-						if resp != nil && resp.Resource != nil {
-							resource.Id = resp.Resource.Id
-						}
-					}
-
-					if resource.Id != "" {
-						_, err := resourceServiceClient.Update(context.TODO(), &stub.UpdateResourceRequest{
-							Token:          authToken,
-							Resources:      []*model.Resource{resource},
-							DoMigration:    migrate,
-							ForceMigration: force,
-						})
-
-						check(err)
-
-						log.Println("resource updated: " + resource.Name)
-					} else {
-						_, err := resourceServiceClient.Create(context.TODO(), &stub.CreateResourceRequest{
-							Token:          authToken,
-							Resources:      []*model.Resource{resource},
-							DoMigration:    migrate,
-							ForceMigration: force,
-						})
-
-						check(err)
-
-						log.Println("resource created: " + resource.Name)
-					}
-				case "record":
-					delete(body, "type")
-
-					jsonData, err := json.Marshal(body)
-
-					check(err)
-
-					var record = new(model.Record)
-					err = jsonUMo.Unmarshal(jsonData, record)
-
-					check(err)
-
-					if record.Id != "" {
-						updateRecords = append(updateRecords, record)
-					} else {
-						createRecords = append(createRecords, record)
-					}
-
-				}
-			}
-		}
-
-		if len(updateRecords) > 0 {
-			_, err := recordServiceClient.Update(context.TODO(), &stub.UpdateRecordRequest{
-				Token:        authToken,
-				Namespace:    namespace,
-				Records:      updateRecords,
-				CheckVersion: false,
-			})
+		if strings.HasSuffix(file, ".pbe") {
+			in, err := os.Open(file)
 
 			check(err)
 
-			log.Println("Record updated: " + strconv.Itoa(len(updateRecords)))
-		}
-
-		if len(createRecords) > 0 {
-			_, err := recordServiceClient.Create(context.TODO(), &stub.CreateRecordRequest{
-				Token:          authToken,
-				Namespace:      namespace,
-				Records:        createRecords,
-				IgnoreIfExists: true,
+			batchExecutor := batch.NewExecutor(batch.ExecutorParams{
+				Input:                 in,
+				ResourceServiceClient: GetDhClient().GetResourceServiceClient(),
+				RecordServiceClient:   GetDhClient().GetRecordServiceClient(),
 			})
+
+			err = batchExecutor.Restore(context.TODO(), in)
 
 			check(err)
 
-			log.Println("Record created: " + strconv.Itoa(len(createRecords)))
+			return
+		} else if strings.HasSuffix(file, "yml") || strings.HasSuffix(file, "yaml") {
+			fileData, err := os.ReadFile(file)
+
+			check(err)
+			applyYaml(fileData, migrate, namespace, force)
 		}
 
 		log.Println(migrate)
 
 	},
+}
+
+func applyYaml(fileData []byte, migrate bool, namespace string, force bool) {
+	var jsonUMo = protojson.UnmarshalOptions{
+		AllowPartial:   false,
+		DiscardUnknown: false,
+		Resolver:       nil,
+	}
+
+	var createRecords []*model.Record
+	var updateRecords []*model.Record
+	decoder := yaml.NewDecoder(bytes.NewReader(fileData))
+
+	for {
+		var body map[string]interface{}
+		var err = decoder.Decode(&body)
+
+		if err == io.EOF {
+			break
+		}
+
+		check(err)
+
+		body = convert(body).(map[string]interface{})
+
+		switch body["type"].(string) {
+		case "resource":
+			delete(body, "type")
+
+			jsonData, err := json.Marshal(body)
+
+			check(err)
+
+			var resource = new(model.Resource)
+			err = jsonUMo.Unmarshal(jsonData, resource)
+
+			check(err)
+
+			// locating resource
+			if resource.Id == "" {
+				resp, err := GetDhClient().GetResourceServiceClient().GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+					Token:     GetDhClient().GetToken(),
+					Namespace: resource.Namespace,
+					Name:      resource.Name,
+				})
+
+				if err != nil && util.GetErrorCode(err) != model.ErrorCode_RESOURCE_NOT_FOUND {
+					panic(err)
+				}
+
+				if resp != nil && resp.Resource != nil {
+					resource.Id = resp.Resource.Id
+				}
+			}
+
+			if resource.Id != "" {
+				_, err := GetDhClient().GetResourceServiceClient().Update(context.TODO(), &stub.UpdateResourceRequest{
+					Token:          GetDhClient().GetToken(),
+					Resources:      []*model.Resource{resource},
+					DoMigration:    migrate,
+					ForceMigration: force,
+				})
+
+				check(err)
+
+				log.Println("resource updated: " + resource.Name)
+			} else {
+				_, err := GetDhClient().GetResourceServiceClient().Create(context.TODO(), &stub.CreateResourceRequest{
+					Token:          GetDhClient().GetToken(),
+					Resources:      []*model.Resource{resource},
+					DoMigration:    migrate,
+					ForceMigration: force,
+				})
+
+				check(err)
+
+				log.Println("resource created: " + resource.Name)
+			}
+		case "record":
+			delete(body, "type")
+
+			jsonData, err := json.Marshal(body)
+
+			check(err)
+
+			var record = new(model.Record)
+			err = jsonUMo.Unmarshal(jsonData, record)
+
+			check(err)
+
+			if record.Id != "" {
+				updateRecords = append(updateRecords, record)
+			} else {
+				createRecords = append(createRecords, record)
+			}
+
+		}
+	}
+
+	if len(updateRecords) > 0 {
+		_, err := GetDhClient().GetRecordServiceClient().Update(context.TODO(), &stub.UpdateRecordRequest{
+			Token:        GetDhClient().GetToken(),
+			Namespace:    namespace,
+			Records:      updateRecords,
+			CheckVersion: false,
+		})
+
+		check(err)
+
+		log.Println("Record updated: " + strconv.Itoa(len(updateRecords)))
+	}
+
+	if len(createRecords) > 0 {
+		_, err := GetDhClient().GetRecordServiceClient().Create(context.TODO(), &stub.CreateRecordRequest{
+			Token:          GetDhClient().GetToken(),
+			Namespace:      namespace,
+			Records:        createRecords,
+			IgnoreIfExists: true,
+		})
+
+		check(err)
+
+		log.Println("Record created: " + strconv.Itoa(len(createRecords)))
+	}
 }
 
 func convert(i interface{}) interface{} {
