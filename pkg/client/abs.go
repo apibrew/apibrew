@@ -17,6 +17,8 @@ type DhClient interface {
 	GetExtensionServiceClient() stub.ExtensionServiceClient
 	GetUserServiceClient() stub.UserServiceClient
 	GetToken() string
+	AuthenticateWithToken(token string)
+	AuthenticateWithUsernameAndPassword(username string, password string) error
 }
 
 type Entity interface {

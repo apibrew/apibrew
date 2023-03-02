@@ -7,7 +7,10 @@ import (
 	"github.com/tislib/data-handler/pkg/dhctl/flags"
 	"github.com/tislib/data-handler/pkg/dhctl/output"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/resources"
+	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
 	"os"
 )
@@ -31,6 +34,15 @@ func protoMessageCreateCmd[T proto.Message](params protoMessageCreateCmdParams[T
 		Use: params.use,
 		Run: func(cmd *cobra.Command, args []string) {
 			defineRootFlags(cmd)
+
+			err := cmd.PersistentFlags().Parse(args)
+
+			if err != nil {
+				log.Error(err)
+			}
+
+			parseRootFlags(cmd)
+
 			if params.before != nil {
 				params.before(cmd)
 			}
@@ -51,8 +63,8 @@ var createRecordCmd = &cobra.Command{
 	Use:   "record",
 	Short: "Create record",
 	Run: func(cmd *cobra.Command, args []string) {
+		parseRootFlags(cmd)
 
-		defineRootFlags(cmd)
 		cmd.Flags().String("name", "", "")
 
 		err := cmd.Flags().Parse(args)
@@ -75,12 +87,11 @@ func initCreateCmd() {
 		use: "resource",
 		before: func(cmd *cobra.Command) {
 			migrate = cmd.PersistentFlags().BoolP("migrate", "m", true, "")
-			force = cmd.PersistentFlags().BoolP("force", "f", true, "")
+			force = cmd.PersistentFlags().BoolP("force", "f", false, "")
 		},
 		handle: func(resource *model.Resource) {
-			log.Println(resource)
-			resp, err := resourceServiceClient.Create(context.TODO(), &stub.CreateResourceRequest{
-				Token:          authToken,
+			resp, err := GetDhClient().GetResourceServiceClient().Create(context.TODO(), &stub.CreateResourceRequest{
+				Token:          GetDhClient().GetToken(),
 				Resources:      []*model.Resource{resource},
 				DoMigration:    *migrate,
 				ForceMigration: *force,
@@ -96,5 +107,21 @@ func initCreateCmd() {
 	createCmd.AddCommand(protoMessageCreateCmd[*model.DataSource](protoMessageCreateCmdParams[*model.DataSource]{
 		msg: &model.DataSource{},
 		use: "data-source",
+		handle: func(dataSource *model.DataSource) {
+			resp, err := GetDhClient().GetDataSourceServiceClient().Create(context.TODO(), &stub.CreateDataSourceRequest{
+				Token:       GetDhClient().GetToken(),
+				DataSources: []*model.DataSource{dataSource},
+			})
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			result := util.ArrayMap[*model.DataSource, *model.Record](resp.DataSources, mapping.DataSourceToRecord)
+
+			writer.WriteRecords(resources.DataSourceResource, util.ArrToChan(result))
+		},
 	}))
+
+	createCmd.AddCommand(createRecordCmd)
 }

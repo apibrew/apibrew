@@ -24,8 +24,8 @@ var generatorCmd = &cobra.Command{
 		pkg, err := cmd.Flags().GetString("package")
 		check(err)
 
-		resp, err := resourceServiceClient.List(cmd.Context(), &stub.ListResourceRequest{
-			Token: authToken,
+		resp, err := GetDhClient().GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
+			Token: GetDhClient().GetToken(),
 		})
 
 		check(err)
