@@ -2,7 +2,6 @@ package dhctl
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -17,20 +16,22 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	log.SetLevel(log.TraceLevel)
-	log.SetReportCaller(true)
-
 	rootCmd.AddCommand(getCmd)
-	rootCmd.AddCommand(describeCmd)
-	rootCmd.AddCommand(backupCmd)
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(generatorCmd)
-	defineRootFlags()
+	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(prepareCmd)
+	rootCmd.AddCommand(updateCmd)
+	rootCmd.AddCommand(deleteCmd)
+	defineRootFlags(rootCmd)
 }
 
 func Run() {
+	initGetCmd()
+	initCreateCmd()
+
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "Whoops. There was an error while executing your CLI '%s'", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Whoops. There was an error while executing your CLI '%s'", err)
 		os.Exit(1)
 	}
 }

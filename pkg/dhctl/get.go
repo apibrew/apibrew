@@ -1,13 +1,12 @@
 package dhctl
 
 import (
-	"context"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/tislib/data-handler/pkg/dhctl/flags"
 	"github.com/tislib/data-handler/pkg/dhctl/output"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/stub"
-	"log"
-	"strings"
+	"io"
+	"os"
 )
 
 var getCmd = &cobra.Command{
@@ -15,74 +14,56 @@ var getCmd = &cobra.Command{
 	Short: "get - get type",
 	Run: func(cmd *cobra.Command, args []string) {
 		parseRootFlags(cmd)
-		initClient(cmd.Context())
 
-		o := getFlag(cmd, "output", true)
-		name := getFlag(cmd, "name", false)
-		names := getFlag(cmd, "names", false)
-		namespace := getFlag(cmd, "namespace", false)
+		f := getFlag(cmd, "format", true)
+		o := getFlag(cmd, "output", false)
 
-		if len(args) == 0 {
-			log.Fatal("type should be provided")
-		}
+		var selection = &flags.SelectedRecordsResult{}
 
-		getType := args[0]
+		selectorFlags.Parse(selection, cmd, args)
 
-		writer := output.NewOutputWriter(o)
+		var w io.Writer
+		if o == "" || o == "-" {
+			w = os.Stdout
+		} else {
+			var err error
+			var wf *os.File
+			wf, err = os.Create(o)
 
-		if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
-			resp, err := resourceServiceClient.List(cmd.Context(), &stub.ListResourceRequest{
-				Token: authToken,
-			})
-
-			check(err)
-
-			var filteredResources []*model.Resource
-
-			if name != "" {
-				for _, item := range resp.Resources {
-					if item.Name == name {
-						filteredResources = append(filteredResources, item)
-					}
-				}
-			} else if names != "" {
-				for _, ni := range strings.Split(names, ",") {
-					for _, item := range resp.Resources {
-						if item.Name == ni {
-							filteredResources = append(filteredResources, item)
-						}
-					}
-				}
-			} else {
-				filteredResources = resp.Resources
+			if err != nil {
+				log.Fatal(err)
 			}
 
-			writer.WriteResources(filteredResources)
-		} else {
-			resp, err := recordServiceClient.List(context.TODO(), &stub.ListRecordRequest{
-				Token:     authToken,
-				Namespace: namespace,
-				Resource:  getType,
-			})
+			w = wf
 
-			check(err)
+			defer func() {
+				err = wf.Close()
 
-			resourceResp, err := resourceServiceClient.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
-				Token:     authToken,
-				Namespace: namespace,
-				Name:      getType,
-			})
-
-			check(err)
-
-			writer.WriteRecords(resourceResp.Resource, resp.Content)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}()
 		}
+
+		writer := output.NewOutputWriter(f, w)
+
+		if writer.IsBinary() && o == "" {
+			log.Fatal("format is binary but output is not specified")
+		}
+
+		if selection.Resources != nil {
+			writer.WriteResources(selection.Resources)
+		}
+
+		for _, records := range selection.Records {
+			writer.WriteRecords(records.Resource, records.Records)
+		}
+
 	},
 }
 
-func init() {
-	getCmd.PersistentFlags().StringP("output", "o", "console", "Output format")
-	getCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
-	getCmd.PersistentFlags().String("name", "", "Item name")
-	getCmd.PersistentFlags().String("names", "", "Item names")
+func initGetCmd() {
+	getCmd.PersistentFlags().StringP("format", "f", "console", "format")
+	getCmd.PersistentFlags().StringP("output", "o", "", "output")
+	selectorFlags.Declare(getCmd)
 }

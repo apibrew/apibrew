@@ -61,6 +61,20 @@ service RecordService {
     };
   }
 
+  rpc ReadStream (ReadStreamRequest) returns (stream model.Record) {
+    option (google.api.http) = {
+      post: "/records/_search_read_stream",
+      body: "*"
+    };
+  }
+
+  rpc WriteStream (stream model.Record) returns (WriteStreamResponse) {
+    option (google.api.http) = {
+      post: "/records/_search_write_stream",
+      body: "*"
+    };
+  }
+
   rpc Get (GetRecordRequest) returns (GetRecordResponse) {
     option (google.api.http) = {
       get: "/records/{namespace}/{resource}/{id}",
@@ -98,6 +112,26 @@ message SearchRecordRequest {
   repeated string resolveReferences = 8;
 
   map<string, string> annotations = 103;
+}
+
+message ReadStreamRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  model.BooleanExpression query = 4;
+  uint32 limit = 5;
+  uint64 offset = 6;
+  bool useHistory = 7;
+  repeated string resolveReferences = 8;
+  bool useTransaction = 9;
+
+  map<string, string> annotations = 103;
+}
+
+message WriteStreamResponse {
+  repeated bool success = 1;
+  repeated bool created = 2;
+  repeated bool updated = 3;
 }
 
 message SearchRecordResponse {

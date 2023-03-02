@@ -43,6 +43,7 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	g.initData = initData
 	var opts = []grpc.ServerOption{
 		grpc.UnaryInterceptor(g.grpcIntercept),
+		grpc.StreamInterceptor(g.grpcStreamIntercept),
 	}
 
 	g.grpcServer = grpc.NewServer(opts...)
@@ -52,7 +53,7 @@ func (g *grpcServer) Init(initData *model.InitData) {
 	stub.RegisterResourceServiceServer(g.grpcServer, NewResourceServiceServer(g.resourceService))
 	stub.RegisterAuthenticationServiceServer(g.grpcServer, NewAuthenticationServiceServer(g.authenticationService))
 	stub.RegisterDataSourceServiceServer(g.grpcServer, NewDataSourceServiceServer(g.dataSourceService))
-	stub.RegisterRecordServiceServer(g.grpcServer, NewRecordServiceServer(g.recordService))
+	stub.RegisterRecordServiceServer(g.grpcServer, NewRecordServiceServer(g.recordService, g.authenticationService))
 	stub.RegisterUserServiceServer(g.grpcServer, NewUserServiceServer(g.userService))
 	stub.RegisterNamespaceServiceServer(g.grpcServer, NewNamespaceServiceServer(g.namespaceService))
 	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.watchService))
@@ -67,10 +68,24 @@ func (g *grpcServer) Serve(lis net.Listener) {
 }
 
 func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	ctx, err := interceptRequest(g.authenticationService, ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return handler(ctx, req)
+}
+
+func (g *grpcServer) grpcStreamIntercept(req interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	return handler(req, ss)
+}
+
+func interceptRequest(authenticationService abs.AuthenticationService, ctx context.Context, req interface{}) (context.Context, error) {
 	// pass authentication context
 	var token string
 
-	if rtw, ok := req.(RequestWithToken); ok && !g.initData.Config.DisableAuthentication {
+	if rtw, ok := req.(RequestWithToken); ok {
 		token = rtw.GetToken()
 	}
 
@@ -90,10 +105,10 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 	}
 
 	if token != "" {
-		userDetails, err := g.authenticationService.ParseAndVerifyToken(token)
+		userDetails, err := authenticationService.ParseAndVerifyToken(token)
 
 		if err != nil {
-			return nil, errors.AuthenticationFailedError
+			return ctx, errors.AuthenticationFailedError
 		}
 
 		ctx = security.WithUserDetails(ctx, *userDetails)
@@ -109,10 +124,10 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 	ctx = logging.WithLogField(ctx, "TrackId", trackId)
 
 	if err != nil {
-		return nil, err
+		return ctx, err
 	}
 
-	return handler(ctx, req)
+	return ctx, nil
 }
 
 func NewGrpcServer(container abs.Container) Server {

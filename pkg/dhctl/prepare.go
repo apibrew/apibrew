@@ -9,9 +9,9 @@ import (
 	"os"
 )
 
-var generatorCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "generate - Generate codes",
+var prepareCmd = &cobra.Command{
+	Use:   "prepare",
+	Short: "prepare - Create resource from existing table",
 	Run: func(cmd *cobra.Command, args []string) {
 		parseRootFlags(cmd)
 
@@ -66,7 +66,7 @@ var generatorCmd = &cobra.Command{
 }
 
 func init() {
-	generatorCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
-	generatorCmd.PersistentFlags().StringP("path", "p", "", "Path")
-	generatorCmd.PersistentFlags().String("package", "", "Package")
+	prepareCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
+	prepareCmd.PersistentFlags().StringP("path", "p", "", "Path")
+	prepareCmd.PersistentFlags().String("package", "", "Package")
 }

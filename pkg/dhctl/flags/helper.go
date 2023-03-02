@@ -1,4 +1,4 @@
-package dhctl
+package flags
 
 import (
 	log "github.com/sirupsen/logrus"

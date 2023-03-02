@@ -13,16 +13,16 @@ var jsonMo = protojson.MarshalOptions{
 	EmitUnpopulated: true,
 }
 
-type yamlWriter struct {
+type yamlReader struct {
 	writer            io.Writer
 	hasMessageWritten bool
 }
 
-func (c *yamlWriter) IsBinary() bool {
+func (c *yamlReader) IsBinary() bool {
 	return false
 }
 
-func (c *yamlWriter) WriteResources(resources []*model.Resource) {
+func (c *yamlReader) WriteResources(resources []*model.Resource) {
 	for _, resource := range resources {
 		c.writePrefix()
 		body, err := jsonMo.Marshal(resource)
@@ -47,7 +47,7 @@ func (c *yamlWriter) WriteResources(resources []*model.Resource) {
 	}
 }
 
-func (c *yamlWriter) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
+func (c *yamlReader) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
 	for record := range recordsChan {
 		c.writePrefix()
 		body, err := jsonMo.Marshal(record)
@@ -74,7 +74,7 @@ func (c *yamlWriter) WriteRecords(resource *model.Resource, recordsChan chan *mo
 	}
 }
 
-func (c *yamlWriter) writePrefix() {
+func (c *yamlReader) writePrefix() {
 	if c.hasMessageWritten {
 		c.writer.Write([]byte("---\n"))
 	}

@@ -58,6 +58,7 @@ type recordLister struct {
 	logger            *log.Entry
 	where             string
 	builder           *sqlbuilder.SelectBuilder
+	resultChan        chan<- *model.Record
 }
 
 func (r *recordLister) Prepare() errors.ServiceError {
@@ -95,20 +96,8 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 		return nil, 0, err
 	}
 
-	// find count
-	countBuilder := r.builder.Copy()
-	countBuilder.Select("count(*)")
-
-	countQuery, args := countBuilder.Build()
-
-	countRow := r.runner.QueryRowContext(r.ctx, countQuery, args...)
-	err = handleDbError(r.ctx, countRow.Scan(&total))
-
-	if err != nil {
-		return
-	}
-
-	if total == 0 {
+	total, err = r.ExecCount()
+	if err != nil || total == 0 {
 		return
 	}
 
@@ -139,6 +128,12 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 	}()
 
 	for rows.Next() {
+		select {
+		case <-r.ctx.Done():
+			break
+		default:
+		}
+
 		record := new(model.Record)
 		record.DataType = model.DataType_USER
 
@@ -147,7 +142,11 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 			return
 		}
 
-		result = append(result, record)
+		if r.resultChan != nil {
+			r.resultChan <- record
+		} else {
+			result = append(result, record)
+		}
 
 		if annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
 			for _, prop := range r.resource.Properties {
@@ -157,6 +156,18 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 			}
 		}
 	}
+
+	return
+}
+
+func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
+	countBuilder := r.builder.Copy()
+	countBuilder.Select("count(*)")
+
+	countQuery, args := countBuilder.Build()
+
+	countRow := r.runner.QueryRowContext(r.ctx, countQuery, args...)
+	err = handleDbError(r.ctx, countRow.Scan(&total))
 
 	return
 }
@@ -564,6 +575,7 @@ func recordList(ctx context.Context, runner QueryRunner, params abs.ListRecordPa
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 		Schema:            *params.Schema,
+		resultChan:        params.ResultChan,
 	}).Exec()
 }
 
