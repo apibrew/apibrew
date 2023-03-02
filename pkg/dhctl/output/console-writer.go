@@ -77,7 +77,7 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	table = tablewriter.NewWriter(w)
 	table.Render()
 
-	w.Flush()
+	_ = w.Flush()
 }
 
 func (c consoleWriter) out(w io.Writer, format string, a ...interface{}) {
@@ -112,17 +112,18 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
-	table.SetHeader([]string{"Name", "Namespace", "DataSource", "Catalog", "Entity", "Version"})
+	table.SetHeader([]string{"Id", "Name", "Namespace", "DataSource", "Catalog", "Entity", "Version"})
 	c.configureTable(table)
 
 	for _, item := range resources {
 		data = append(data, []string{
+			item.Id,
 			item.Name,
 			item.Namespace,
 			item.SourceConfig.DataSource,
 			item.SourceConfig.Catalog,
 			item.SourceConfig.Entity,
-			string(item.Version),
+			strconv.Itoa(int(item.Version)),
 		})
 	}
 

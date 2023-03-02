@@ -12,7 +12,7 @@ import (
 )
 
 type selectorFlags struct {
-	client client.DhClient
+	client func() client.DhClient
 }
 
 func (s selectorFlags) Declare(cmd *cobra.Command) {
@@ -33,8 +33,8 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 	getType := args[0]
 
 	if getType == "all" || getType == "*" {
-		resp, err := s.client.GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
-			Token: s.client.GetToken(),
+		resp, err := s.client().GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
+			Token: s.client().GetToken(),
 		})
 
 		check(err)
@@ -48,9 +48,9 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 
 			s.readSelectData3(cmd.Context(), resource, result)
 		}
-	} else if getType == "type" || getType == "types" || getType == "Resource" || getType == "Resources" {
-		resp, err := s.client.GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
-			Token: s.client.GetToken(),
+	} else if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
+		resp, err := s.client().GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
+			Token: s.client().GetToken(),
 		})
 
 		check(err)
@@ -77,8 +77,8 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 
 		result.Resources = filteredResources
 	} else {
-		resourceResp, err := s.client.GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
-			Token:     s.client.GetToken(),
+		resourceResp, err := s.client().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+			Token:     s.client().GetToken(),
 			Namespace: namespace,
 			Name:      getType,
 		})
@@ -101,8 +101,8 @@ type SelectedRecordsResult struct {
 }
 
 func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, result *SelectedRecordsResult) {
-	resp, err := s.client.GetRecordServiceClient().ReadStream(ctx, &stub.ReadStreamRequest{
-		Token:     s.client.GetToken(),
+	resp, err := s.client().GetRecordServiceClient().ReadStream(ctx, &stub.ReadStreamRequest{
+		Token:     s.client().GetToken(),
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
 	})
@@ -139,6 +139,6 @@ func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Reso
 	}()
 }
 
-func NewSelectorFlags(client client.DhClient) FlagHelper[*SelectedRecordsResult] {
-	return &selectorFlags{client: client}
+func NewSelectorFlags(clientGetter func() client.DhClient) FlagHelper[*SelectedRecordsResult] {
+	return &selectorFlags{client: clientGetter}
 }

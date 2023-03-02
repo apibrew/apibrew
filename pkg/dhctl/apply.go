@@ -47,8 +47,8 @@ var applyCmd = &cobra.Command{
 
 			batchExecutor := batch.NewExecutor(batch.ExecutorParams{
 				Input:                 in,
-				ResourceServiceClient: resourceServiceClient,
-				RecordServiceClient:   recordServiceClient,
+				ResourceServiceClient: GetDhClient().GetResourceServiceClient(),
+				RecordServiceClient:   GetDhClient().GetRecordServiceClient(),
 			})
 
 			err = batchExecutor.Restore(context.TODO(), in)
@@ -106,8 +106,8 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool) {
 
 			// locating resource
 			if resource.Id == "" {
-				resp, err := resourceServiceClient.GetByName(context.TODO(), &stub.GetResourceByNameRequest{
-					Token:     authToken,
+				resp, err := GetDhClient().GetResourceServiceClient().GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+					Token:     GetDhClient().GetToken(),
 					Namespace: resource.Namespace,
 					Name:      resource.Name,
 				})
@@ -122,8 +122,8 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool) {
 			}
 
 			if resource.Id != "" {
-				_, err := resourceServiceClient.Update(context.TODO(), &stub.UpdateResourceRequest{
-					Token:          authToken,
+				_, err := GetDhClient().GetResourceServiceClient().Update(context.TODO(), &stub.UpdateResourceRequest{
+					Token:          GetDhClient().GetToken(),
 					Resources:      []*model.Resource{resource},
 					DoMigration:    migrate,
 					ForceMigration: force,
@@ -133,8 +133,8 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool) {
 
 				log.Println("resource updated: " + resource.Name)
 			} else {
-				_, err := resourceServiceClient.Create(context.TODO(), &stub.CreateResourceRequest{
-					Token:          authToken,
+				_, err := GetDhClient().GetResourceServiceClient().Create(context.TODO(), &stub.CreateResourceRequest{
+					Token:          GetDhClient().GetToken(),
 					Resources:      []*model.Resource{resource},
 					DoMigration:    migrate,
 					ForceMigration: force,
@@ -166,8 +166,8 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool) {
 	}
 
 	if len(updateRecords) > 0 {
-		_, err := recordServiceClient.Update(context.TODO(), &stub.UpdateRecordRequest{
-			Token:        authToken,
+		_, err := GetDhClient().GetRecordServiceClient().Update(context.TODO(), &stub.UpdateRecordRequest{
+			Token:        GetDhClient().GetToken(),
 			Namespace:    namespace,
 			Records:      updateRecords,
 			CheckVersion: false,
@@ -179,8 +179,8 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool) {
 	}
 
 	if len(createRecords) > 0 {
-		_, err := recordServiceClient.Create(context.TODO(), &stub.CreateRecordRequest{
-			Token:          authToken,
+		_, err := GetDhClient().GetRecordServiceClient().Create(context.TODO(), &stub.CreateRecordRequest{
+			Token:          GetDhClient().GetToken(),
 			Namespace:      namespace,
 			Records:        createRecords,
 			IgnoreIfExists: true,

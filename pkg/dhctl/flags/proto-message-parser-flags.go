@@ -20,6 +20,38 @@ type protoMessageParserFlags[T proto.Message] struct {
 
 func (p *protoMessageParserFlags[T]) Declare(cmd *cobra.Command) {
 	p.prepareFlags("", cmd, p.pr.Descriptor().Fields())
+	cmd.PersistentFlags().SetNormalizeFunc(func(f *pflag.FlagSet, flagName string) pflag.NormalizedName {
+		if p.normalizedFlags[flagName] {
+			return pflag.NormalizedName(flagName)
+		}
+
+		p.normalizedFlags[flagName] = true
+
+		for pattern, actualFlagName := range p.arrIndexMatchMap {
+			if pattern.MatchString(flagName) && flagName != actualFlagName {
+				var foundFlag pflag.Flag
+				f.VisitAll(func(flag *pflag.Flag) {
+					if flag.Name == actualFlagName {
+						foundFlag = *flag
+					}
+				})
+
+				typ := foundFlag.Value.Type()
+				switch typ {
+				case "string":
+					f.String(flagName, "", "")
+				case "bool":
+					f.Bool(flagName, false, "")
+				case "uint32":
+					f.Uint32(flagName, 0, "")
+				default:
+					log.Fatal("Unknown type: " + foundFlag.Value.Type())
+				}
+			}
+		}
+
+		return pflag.NormalizedName(flagName)
+	})
 }
 
 func (p *protoMessageParserFlags[T]) prepareFlags(path string, cmd *cobra.Command, fields protoreflect.FieldDescriptors) {
@@ -97,51 +129,7 @@ func (p *protoMessageParserFlags[T]) prepareFlags(path string, cmd *cobra.Comman
 }
 
 func (p *protoMessageParserFlags[T]) Parse(elem T, cmd *cobra.Command, args []string) {
-	err := p.prepareParse(cmd, args)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	p.parseLocal("", p.pr.Descriptor().Fields(), elem, cmd, args)
-}
-
-func (p *protoMessageParserFlags[T]) prepareParse(cmd *cobra.Command, args []string) error {
-	cmd.PersistentFlags().SetNormalizeFunc(func(f *pflag.FlagSet, flagName string) pflag.NormalizedName {
-		if p.normalizedFlags[flagName] {
-			return pflag.NormalizedName(flagName)
-		}
-
-		p.normalizedFlags[flagName] = true
-
-		for pattern, actualFlagName := range p.arrIndexMatchMap {
-			if pattern.MatchString(flagName) && flagName != actualFlagName {
-				var foundFlag pflag.Flag
-				f.VisitAll(func(flag *pflag.Flag) {
-					if flag.Name == actualFlagName {
-						foundFlag = *flag
-					}
-				})
-
-				typ := foundFlag.Value.Type()
-				switch typ {
-				case "string":
-					f.String(flagName, "", "")
-				case "bool":
-					f.Bool(flagName, false, "")
-				case "uint32":
-					f.Uint32(flagName, 0, "")
-				default:
-					log.Fatal("Unknown type: " + foundFlag.Value.Type())
-				}
-			}
-		}
-
-		return pflag.NormalizedName(flagName)
-	})
-
-	err := cmd.PersistentFlags().Parse(args)
-	return err
 }
 
 func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect.FieldDescriptors, elem proto.Message, cmd *cobra.Command, args []string) {
@@ -198,7 +186,7 @@ func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect
 					continue
 				}
 
-				instance := field.Enum().Values().ByName(protoreflect.Name(valX))
+				instance := field.Enum().Values().ByName(protoreflect.Name(strings.ToUpper(valX)))
 
 				if valX != "" && instance == nil {
 					log.Fatalf("Unknown value for enum: %s => %s", field.Enum().Name(), valX)
@@ -217,10 +205,6 @@ func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect
 
 						var found = false
 						cmd.PersistentFlags().VisitAll(func(flag *pflag.Flag) {
-							if strings.Contains(flag.Name, "[index]") {
-								return
-							}
-
 							if strings.HasPrefix(flag.Name, newName) {
 								found = true
 							}
@@ -245,9 +229,20 @@ func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect
 
 					elem.ProtoReflect().Set(field, protoreflect.ValueOfMap(l))
 				} else {
-					var l = elem.ProtoReflect().NewField(field)
-					p.parseLocal(name, field.Message().Fields(), l.Message().Interface(), cmd, args)
-					elem.ProtoReflect().Set(field, l)
+					var found = false
+					var newName = "--" + name + "-"
+					for _, arg := range args {
+						if strings.HasPrefix(arg, newName) {
+							found = true
+						}
+					}
+
+					if found {
+						var l = elem.ProtoReflect().NewField(field)
+						instance := l.Message().Interface()
+						p.parseLocal(name, field.Message().Fields(), instance, cmd, args)
+						elem.ProtoReflect().Set(field, l)
+					}
 				}
 			case "bool":
 				val, err := cmd.Flags().GetBool(name)

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -23,6 +24,26 @@ type dhClient struct {
 	extensionServiceClient      stub.ExtensionServiceClient
 	genericServiceClient        stub.GenericServiceClient
 	namespaceServiceClient      stub.NamespaceServiceClient
+}
+
+func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
+	authResp, err := d.authenticationServiceClient.Authenticate(context.TODO(), &stub.AuthenticationRequest{
+		Username: username,
+		Password: password,
+		Term:     2,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	d.params.Token = authResp.Token.Content
+
+	return nil
+}
+
+func (d *dhClient) AuthenticateWithToken(token string) {
+	d.params.Token = token
 }
 
 func (d *dhClient) GetNamespaceServiceClient() stub.NamespaceServiceClient {
