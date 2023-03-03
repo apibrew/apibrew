@@ -23,6 +23,7 @@ func init() {
 	rootCmd.AddCommand(prepareCmd)
 	rootCmd.AddCommand(updateCmd)
 	rootCmd.AddCommand(deleteCmd)
+	rootCmd.AddCommand(dataSourceCmd)
 	defineRootFlags(rootCmd)
 }
 
