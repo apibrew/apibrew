@@ -153,6 +153,10 @@ func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect
 			continue
 		}
 
+		if !cmd.PersistentFlags().Changed(name) {
+			continue
+		}
+
 		if fullName == "google.protobuf.Timestamp" {
 			val, err := cmd.PersistentFlags().GetString(name)
 

@@ -29,6 +29,7 @@ func init() {
 func Run() {
 	initGetCmd()
 	initCreateCmd()
+	initUpdateCmd()
 
 	if err := rootCmd.Execute(); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Whoops. There was an error while executing your CLI '%s'", err)
