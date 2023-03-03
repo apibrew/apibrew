@@ -153,7 +153,7 @@ func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect
 			continue
 		}
 
-		if !cmd.PersistentFlags().Changed(name) {
+		if kind != "message" && !cmd.PersistentFlags().Changed(name) {
 			continue
 		}
 
@@ -182,6 +182,8 @@ func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect
 					continue
 				}
 
+				log.Print(elem.ProtoReflect().IsValid())
+
 				elem.ProtoReflect().Set(field, protoreflect.ValueOfString(val))
 			case "enum":
 				valX, err := cmd.PersistentFlags().GetString(name)
@@ -202,7 +204,7 @@ func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect
 			case "message":
 				var i = 0
 				if field.IsList() {
-					var l = elem.ProtoReflect().NewField(field).List()
+					var l = elem.ProtoReflect().Get(field).List()
 
 					for {
 						newName := fmt.Sprintf("%s-%d", name, i)
@@ -242,8 +244,14 @@ func (p *protoMessageParserFlags[T]) parseLocal(path string, fields protoreflect
 					}
 
 					if found {
-						var l = elem.ProtoReflect().NewField(field)
+						var l = elem.ProtoReflect().Get(field)
 						instance := l.Message().Interface()
+
+						if !instance.ProtoReflect().IsValid() {
+							l = elem.ProtoReflect().NewField(field)
+							instance = l.Message().Interface()
+						}
+
 						p.parseLocal(name, field.Message().Fields(), instance, cmd, args)
 						elem.ProtoReflect().Set(field, l)
 					}
