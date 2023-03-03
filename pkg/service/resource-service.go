@@ -97,6 +97,10 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
 	resource.DataType = model.DataType_USER
 
+	if resource.Namespace == "" {
+		resource.Namespace = "default"
+	}
+
 	if err := validateResource(resource); err != nil {
 		return err
 	}
@@ -405,6 +409,7 @@ func (r *resourceService) GetResourceByName(_ context.Context, namespace string,
 	if namespace == "" {
 		namespace = "default"
 	}
+
 	for _, item := range r.schema.Resources {
 		if item.Namespace == namespace && item.Name == resourceName {
 			return item

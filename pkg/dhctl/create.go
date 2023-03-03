@@ -5,22 +5,18 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/dhctl/flags"
-	"github.com/tislib/data-handler/pkg/dhctl/output"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
-	"os"
 )
 
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "create - Create resource from existing table",
 }
-
-var writer = output.NewOutputWriter("describe", os.Stdout)
 
 type protoMessageCreateCmdParams[T proto.Message] struct {
 	msg    T
@@ -113,7 +109,7 @@ var createRecordCmd = &cobra.Command{
 			return
 		}
 
-		writer.WriteRecords(resource.Resource, util.ArrToChan(res.Records))
+		describeWriter.WriteRecords(resource.Resource, util.ArrToChan(res.Records))
 	},
 }
 
@@ -140,7 +136,7 @@ func initCreateCmd() {
 				log.Fatal(err)
 			}
 
-			writer.WriteResources(resp.Resources)
+			describeWriter.WriteResources(resp.Resources)
 		},
 	}))
 	createCmd.AddCommand(protoMessageCreateCmd[*model.DataSource](protoMessageCreateCmdParams[*model.DataSource]{
@@ -158,7 +154,7 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.DataSource, *model.Record](resp.DataSources, mapping.DataSourceToRecord)
 
-			writer.WriteRecords(resources.DataSourceResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.DataSourceResource, util.ArrToChan(result))
 		},
 	}))
 	createCmd.AddCommand(protoMessageCreateCmd[*model.Namespace](protoMessageCreateCmdParams[*model.Namespace]{
@@ -176,7 +172,7 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.Namespace, *model.Record](resp.Namespaces, mapping.NamespaceToRecord)
 
-			writer.WriteRecords(resources.NamespaceResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.NamespaceResource, util.ArrToChan(result))
 		},
 	}))
 	createCmd.AddCommand(protoMessageCreateCmd[*model.User](protoMessageCreateCmdParams[*model.User]{
@@ -194,7 +190,7 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.User, *model.Record](resp.Users, mapping.UserToRecord)
 
-			writer.WriteRecords(resources.UserResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.UserResource, util.ArrToChan(result))
 		},
 	}))
 	createCmd.AddCommand(protoMessageCreateCmd[*model.RemoteExtension](protoMessageCreateCmdParams[*model.RemoteExtension]{
@@ -212,7 +208,7 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.RemoteExtension, *model.Record](resp.Extensions, mapping.ExtensionToRecord)
 
-			writer.WriteRecords(resources.UserResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.UserResource, util.ArrToChan(result))
 		},
 	}))
 
