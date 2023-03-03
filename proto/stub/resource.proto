@@ -48,7 +48,6 @@ message UpdateResourceResponse {
 
 message DeleteResourceRequest {
   string token = 1;
-  string namespace = 2;
   repeated string ids = 3;
 
   bool doMigration = 4;
@@ -72,7 +71,6 @@ message ListResourceResponse {
 
 message GetResourceRequest {
   string token = 1;
-  string namespace = 2;
   string id = 3;
 
   map<string, string> annotations = 103;

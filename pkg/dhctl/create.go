@@ -5,14 +5,12 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/dhctl/flags"
-	"github.com/tislib/data-handler/pkg/dhctl/output"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
-	"os"
 )
 
 var createCmd = &cobra.Command{
@@ -60,25 +58,62 @@ func protoMessageCreateCmd[T proto.Message](params protoMessageCreateCmdParams[T
 }
 
 var createRecordCmd = &cobra.Command{
-	Use:   "record",
-	Short: "Create record",
+	Use:                "record",
+	Short:              "Create record <resource>",
+	DisableFlagParsing: true,
 	Run: func(cmd *cobra.Command, args []string) {
+		defineRootFlags(cmd)
+
+		err := cmd.PersistentFlags().Parse(args)
+
+		if err != nil {
+			log.Error(err)
+		}
+
 		parseRootFlags(cmd)
 
-		cmd.Flags().String("name", "", "")
+		namespace := cmd.Flags().StringP("namespace", "n", "", "")
 
-		err := cmd.Flags().Parse(args)
-		check(err)
+		if len(args) == 0 {
+			log.Fatal("resource not specified")
+		}
 
-		parseRootFlags(cmd)
+		resourceName := args[0]
 
-		log.Print(cmd.Flags().Args())
+		resource, err := GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+			Token:     GetDhClient().GetToken(),
+			Namespace: *namespace,
+			Name:      resourceName,
+		})
+
+		if err != nil {
+			log.Error(err)
+		}
+
+		fp := flags.NewRecordParserFlags(resource.Resource)
+
+		fp.Declare(cmd)
+
+		var record = &model.Record{}
+		fp.Parse(record, cmd, args)
+
+		res, err := GetDhClient().GetRecordServiceClient().Create(cmd.Context(), &stub.CreateRecordRequest{
+			Token:     GetDhClient().GetToken(),
+			Namespace: *namespace,
+			Resource:  resourceName,
+			Record:    record,
+		})
+
+		if err != nil {
+			log.Error(err)
+			return
+		}
+
+		describeWriter.WriteRecords(resource.Resource, util.ArrToChan(res.Records))
 	},
 }
 
 func initCreateCmd() {
-	writer := output.NewOutputWriter("describe", os.Stdout)
-
 	var migrate *bool
 	var force *bool
 
@@ -101,7 +136,7 @@ func initCreateCmd() {
 				log.Fatal(err)
 			}
 
-			writer.WriteResources(resp.Resources)
+			describeWriter.WriteResources(resp.Resources)
 		},
 	}))
 	createCmd.AddCommand(protoMessageCreateCmd[*model.DataSource](protoMessageCreateCmdParams[*model.DataSource]{
@@ -119,7 +154,61 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.DataSource, *model.Record](resp.DataSources, mapping.DataSourceToRecord)
 
-			writer.WriteRecords(resources.DataSourceResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.DataSourceResource, util.ArrToChan(result))
+		},
+	}))
+	createCmd.AddCommand(protoMessageCreateCmd[*model.Namespace](protoMessageCreateCmdParams[*model.Namespace]{
+		msg: &model.Namespace{},
+		use: "namespace",
+		handle: func(namespace *model.Namespace) {
+			resp, err := GetDhClient().GetNamespaceServiceClient().Create(context.TODO(), &stub.CreateNamespaceRequest{
+				Token:      GetDhClient().GetToken(),
+				Namespaces: []*model.Namespace{namespace},
+			})
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			result := util.ArrayMap[*model.Namespace, *model.Record](resp.Namespaces, mapping.NamespaceToRecord)
+
+			describeWriter.WriteRecords(resources.NamespaceResource, util.ArrToChan(result))
+		},
+	}))
+	createCmd.AddCommand(protoMessageCreateCmd[*model.User](protoMessageCreateCmdParams[*model.User]{
+		msg: &model.User{},
+		use: "user",
+		handle: func(user *model.User) {
+			resp, err := GetDhClient().GetUserServiceClient().Create(context.TODO(), &stub.CreateUserRequest{
+				Token: GetDhClient().GetToken(),
+				Users: []*model.User{user},
+			})
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			result := util.ArrayMap[*model.User, *model.Record](resp.Users, mapping.UserToRecord)
+
+			describeWriter.WriteRecords(resources.UserResource, util.ArrToChan(result))
+		},
+	}))
+	createCmd.AddCommand(protoMessageCreateCmd[*model.RemoteExtension](protoMessageCreateCmdParams[*model.RemoteExtension]{
+		msg: &model.RemoteExtension{},
+		use: "extension",
+		handle: func(extension *model.RemoteExtension) {
+			resp, err := GetDhClient().GetExtensionServiceClient().Create(context.TODO(), &stub.CreateExtensionRequest{
+				Token:      GetDhClient().GetToken(),
+				Extensions: []*model.RemoteExtension{extension},
+			})
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			result := util.ArrayMap[*model.RemoteExtension, *model.Record](resp.Extensions, mapping.ExtensionToRecord)
+
+			describeWriter.WriteRecords(resources.UserResource, util.ArrToChan(result))
 		},
 	}))
 
