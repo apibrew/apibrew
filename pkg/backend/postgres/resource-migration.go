@@ -41,7 +41,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 		}
 	}
 
-	var tableName = getTableName(params.Resource.GetSourceConfig(), history)
+	var tableName = getFullTableName(params.Resource.GetSourceConfig(), history)
 
 	err = arrayDiffer(existingResource.Properties,
 		params.Resource.Properties,

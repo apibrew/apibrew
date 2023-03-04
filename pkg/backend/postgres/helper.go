@@ -103,17 +103,18 @@ func DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (inte
 	return val, nil
 }
 
-func getTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
-	def := ""
-
-	if sourceConfig.Catalog != "" {
-		def = fmt.Sprintf("\"%s\".", sourceConfig.Catalog)
-	}
-
-	def = fmt.Sprintf("\"%s\"", sourceConfig.Entity)
+func getFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
+	var tableName string
 
 	if history {
-		def = fmt.Sprintf("\"%s_h\"", sourceConfig.Entity)
+		tableName = sourceConfig.Entity + "_h"
+	} else {
+		tableName = sourceConfig.Entity
+	}
+
+	def := ""
+	if sourceConfig.Catalog != "" {
+		def = fmt.Sprintf("\"%s\".\"%s\"", sourceConfig.Catalog, tableName)
 	} else {
 		def = fmt.Sprintf("\"%s\"", sourceConfig.Entity)
 	}

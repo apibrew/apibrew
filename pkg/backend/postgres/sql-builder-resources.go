@@ -30,7 +30,7 @@ type QueryRunner interface {
 func resourceCreateTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig, false))
+	builder := sqlbuilder.CreateTable(getFullTableName(resource.SourceConfig, false))
 
 	builder.IfNotExists()
 
@@ -115,7 +115,7 @@ func prepareResourceTableColumnDefinition(resource *model.Resource, property *mo
 }
 
 func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
-	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig, true))
+	builder := sqlbuilder.CreateTable(getFullTableName(resource.SourceConfig, true))
 
 	builder.IfNotExists()
 

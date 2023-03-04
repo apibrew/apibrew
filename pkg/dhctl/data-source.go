@@ -16,6 +16,7 @@ var dataSourceId *string
 var dataSourceName *string
 var dataSourcePrepareEntityNames *string
 var dataSourcePrepareCatalogs *string
+var dataSourcePrepareApplyNamespace *string
 
 func prepareResourcesFromDataSource(ctx context.Context, dataSource *model.DataSource) <-chan *model.Resource {
 	ch := make(chan *model.Resource)
@@ -165,16 +166,55 @@ var dataSourcePrepareDescribe = &cobra.Command{
 	},
 }
 
+var dataSourcePrepareApply = &cobra.Command{
+	Use:   "apply",
+	Short: "apply - Apply resource candidate from data source prepare",
+	Run: func(cmd *cobra.Command, args []string) {
+		dataSource := loadDataSourceByNameOrId(cmd.Context(), *dataSourceId, *dataSourceName)
+
+		ch := prepareResourcesFromDataSource(cmd.Context(), dataSource)
+
+		for item := range ch {
+			resource, err := GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+				Token:     GetDhClient().GetToken(),
+				Namespace: *dataSourcePrepareApplyNamespace,
+				Name:      item.Name,
+			})
+
+			if err == nil {
+				item.Id = resource.Resource.Id
+				check2(GetDhClient().GetResourceServiceClient().Update(cmd.Context(), &stub.UpdateResourceRequest{
+					Token: GetDhClient().GetToken(),
+					Resources: []*model.Resource{
+						item,
+					},
+				}))
+				log.Printf("Resource Updated: %s/%s \n", *dataSourcePrepareApplyNamespace, item.Name)
+			} else {
+				check2(GetDhClient().GetResourceServiceClient().Create(cmd.Context(), &stub.CreateResourceRequest{
+					Token: GetDhClient().GetToken(),
+					Resources: []*model.Resource{
+						item,
+					},
+				}))
+				log.Printf("Resource Created: %s/%s \n", *dataSourcePrepareApplyNamespace, item.Name)
+			}
+		}
+	},
+}
+
 func init() {
 	dataSourceName = dataSourceCmd.PersistentFlags().StringP("name", "m", "", "Data Source name")
 	dataSourceId = dataSourceCmd.PersistentFlags().StringP("id", "", "", "Data Source Id")
 
 	dataSourcePrepareEntityNames = dataSourcePrepareCmd.PersistentFlags().StringP("entity", "e", "*", "Select entities for resource preparation, default value is * for selection of all entities, you can use comma to select multiple entities")
 	dataSourcePrepareCatalogs = dataSourcePrepareCmd.PersistentFlags().StringP("catalog", "c", "*", "Select catalogs for resource preparation, default value is * for selection of all catalogs, you can use comma to select multiple catalogs")
+	dataSourcePrepareApplyNamespace = dataSourcePrepareApply.PersistentFlags().StringP("namespace", "n", "default", "namespace")
 
 	dataSourceCmd.AddCommand(dataSourceStatusCmd)
 	dataSourceCmd.AddCommand(dataSourcePrepareCmd)
 	dataSourceCmd.AddCommand(dataSourceListEntitiesCmd)
 
 	dataSourcePrepareCmd.AddCommand(dataSourcePrepareDescribe)
+	dataSourcePrepareCmd.AddCommand(dataSourcePrepareApply)
 }
