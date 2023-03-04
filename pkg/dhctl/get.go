@@ -65,5 +65,7 @@ var getCmd = &cobra.Command{
 func initGetCmd() {
 	getCmd.PersistentFlags().StringP("format", "f", "console", "format")
 	getCmd.PersistentFlags().StringP("output", "o", "", "output")
+	getCmd.PersistentFlags().Int64("limit", 100, "limit")
+	getCmd.PersistentFlags().Int64("offset", 0, "offset")
 	selectorFlags.Declare(getCmd)
 }

@@ -175,9 +175,11 @@ var dataSourcePrepareApply = &cobra.Command{
 		ch := prepareResourcesFromDataSource(cmd.Context(), dataSource)
 
 		for item := range ch {
+			item.Namespace = *dataSourcePrepareApplyNamespace
+
 			resource, err := GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 				Token:     GetDhClient().GetToken(),
-				Namespace: *dataSourcePrepareApplyNamespace,
+				Namespace: item.Namespace,
 				Name:      item.Name,
 			})
 

@@ -47,6 +47,15 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 			recordNewId, _ := uuid.NewUUID()
 			record.Id = recordNewId.String()
 		}
+
+		if annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
+			err := computeRecordFromProperties(ctx, resource, record)
+
+			if err != nil {
+				return false, err
+			}
+		}
+
 		now := time.Now()
 		if !history {
 			record.AuditData = &model.AuditData{
@@ -198,8 +207,16 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 		return handleDbError(ctx, err)
 	}
 
+	if annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
+		err := computeRecordFromProperties(ctx, resource, record)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	if affected == 0 {
-		return errors.RecordNotFoundError
+		return errors.RecordNotFoundError.WithDetails("No records are affected by update")
 	}
 
 	return nil
@@ -261,6 +278,27 @@ func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Reso
 	if err != nil {
 		return handleDbError(ctx, err)
 	}
+
+	return nil
+}
+
+func computeRecordFromProperties(ctx context.Context, resource *model.Resource, record *model.Record) errors.ServiceError {
+	var idParts []string
+	for _, prop := range resource.Properties {
+		val := record.Properties[prop.Name]
+		if val != nil && prop.Primary {
+			typ := types.ByResourcePropertyType(prop.Type)
+			unpacked, err := typ.UnPack(val)
+			if err != nil {
+				return handleDbError(ctx, err)
+			}
+			if unpacked == nil {
+				continue
+			}
+			idParts = append(idParts, typ.String(unpacked))
+		}
+	}
+	record.Id = strings.Join(idParts, "-")
 
 	return nil
 }
