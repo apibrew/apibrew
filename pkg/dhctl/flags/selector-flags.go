@@ -26,6 +26,9 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 	names := getFlag(cmd, "names", false)
 	namespace := getFlag(cmd, "namespace", false)
 
+	limit, _ := cmd.PersistentFlags().GetInt64("limit")
+	offset, _ := cmd.PersistentFlags().GetInt64("offset")
+
 	if len(args) == 0 {
 		log.Fatal("type should be provided")
 	}
@@ -46,7 +49,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 				continue
 			}
 
-			s.readSelectData3(cmd.Context(), resource, result)
+			s.readSelectData3(cmd.Context(), resource, result, limit, offset)
 		}
 	} else if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
 		resp, err := s.client().GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
@@ -85,7 +88,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 
 		check(err)
 
-		s.readSelectData3(cmd.Context(), resourceResp.Resource, result)
+		s.readSelectData3(cmd.Context(), resourceResp.Resource, result, limit, offset)
 	}
 
 }
@@ -100,11 +103,13 @@ type SelectedRecordsResult struct {
 	Resources []*model.Resource
 }
 
-func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, result *SelectedRecordsResult) {
+func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, result *SelectedRecordsResult, limit int64, offset int64) {
 	resp, err := s.client().GetRecordServiceClient().ReadStream(ctx, &stub.ReadStreamRequest{
 		Token:     s.client().GetToken(),
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
+		Limit:     uint32(limit),
+		Offset:    uint64(offset),
 	})
 
 	check(err)

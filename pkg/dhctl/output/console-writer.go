@@ -169,10 +169,12 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 }
 
 func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
-	var data [][]string
-
 	table := tablewriter.NewWriter(c.writer)
-	columns := []string{"Id", "Version"}
+	columns := []string{"Id"}
+
+	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+		columns = append(columns, "version")
+	}
 
 	for _, prop := range resource.Properties {
 		columns = append(columns, prop.Name)
@@ -181,10 +183,14 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *
 	table.SetHeader(columns)
 	c.configureTable(table)
 
+	var i = 0
 	for item := range recordsChan {
 		row := []string{
 			item.Id,
-			strconv.Itoa(int(item.Version)),
+		}
+
+		if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+			row = append(row, strconv.Itoa(int(item.Version)))
 		}
 
 		for _, prop := range resource.Properties {
@@ -202,12 +208,14 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *
 				row = append(row, valStr)
 			}
 		}
+		i++
 
-		data = append(data, row)
+		table.Append(row)
+
+		if i%1000 == 0 {
+			table.Render()
+		}
 	}
 
-	for _, v := range data {
-		table.Append(v)
-	}
-	table.Render() // Send output
+	table.Render()
 }

@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 	util2 "github.com/tislib/data-handler/pkg/server/util"
@@ -54,6 +56,7 @@ func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp s
 	ctx, cancel := context.WithCancel(ictx)
 
 	defer func() {
+		log.Println("cancelled")
 		cancel()
 	}()
 
@@ -64,15 +67,25 @@ func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp s
 	resultChan := make(chan *model.Record, 100)
 
 	defer func() {
+		log.Print("Closing chan")
 		close(resultChan)
 	}()
 
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered in f", r)
+				cancel()
+				close(resultChan)
+			}
+		}()
+
 		for record := range resultChan {
 			err2 := resp.Send(record)
 
 			if err2 != nil {
 				cancel()
+				break
 			}
 		}
 	}()

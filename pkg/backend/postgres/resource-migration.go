@@ -294,6 +294,11 @@ select count(*) as count from information_schema.views where views.table_schema 
 	resource.AuditData = new(model.AuditData)
 	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
+
+	if catalog != "public" && catalog != "" {
+		resource.Name = catalog + "_" + resource.Name
+	}
+
 	resource.Namespace = "default"
 	resource.SourceConfig = &model.ResourceSourceConfig{
 		Catalog: catalog,

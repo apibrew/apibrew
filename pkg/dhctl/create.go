@@ -64,11 +64,7 @@ var createRecordCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		defineRootFlags(cmd)
 
-		err := cmd.PersistentFlags().Parse(args)
-
-		if err != nil {
-			log.Fatal(err)
-		}
+		_ = cmd.PersistentFlags().Parse(args)
 
 		parseRootFlags(cmd)
 
@@ -89,6 +85,12 @@ var createRecordCmd = &cobra.Command{
 		fp := flags.NewRecordParserFlags(resource)
 
 		fp.Declare(cmd)
+
+		err := cmd.PersistentFlags().Parse(args)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		var record = &model.Record{}
 		fp.Parse(record, cmd, args)
