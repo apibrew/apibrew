@@ -131,7 +131,7 @@ func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Reso
 			}
 
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			res.Records <- record

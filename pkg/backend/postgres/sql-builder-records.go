@@ -23,7 +23,7 @@ import (
 func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema, history bool) (bool, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	query := fmt.Sprintf("INSERT INTO %s", getTableName(resource.SourceConfig, history))
+	query := fmt.Sprintf("INSERT INTO %s", getFullTableName(resource.SourceConfig, history))
 
 	cols := prepareResourceRecordCols(resource)
 
@@ -143,7 +143,7 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 		record.AuditData = &model.AuditData{}
 	}
 
-	updateBuilder := sqlbuilder.Update(getTableName(resource.SourceConfig, false))
+	updateBuilder := sqlbuilder.Update(getFullTableName(resource.SourceConfig, false))
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 	if checkVersion {
 		updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))
@@ -237,7 +237,7 @@ func readRecord(ctx context.Context, runner QueryRunner, resource *model.Resourc
 func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	deleteBuilder := sqlbuilder.DeleteFrom(getTableName(resource.SourceConfig, false) + " as t")
+	deleteBuilder := sqlbuilder.DeleteFrom(getFullTableName(resource.SourceConfig, false) + " as t")
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	if checkHasOwnId(resource) {

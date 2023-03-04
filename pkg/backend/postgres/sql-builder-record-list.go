@@ -63,12 +63,13 @@ type recordLister struct {
 
 func (r *recordLister) Prepare() errors.ServiceError {
 	r.logger = log.WithFields(logging.CtxFields(r.ctx))
-	r.tableName = getTableName(r.resource.SourceConfig, r.UseHistory)
-	r.tableAlias = r.tableName + " as t"
+	r.tableName = getFullTableName(r.resource.SourceConfig, r.UseHistory)
+	r.tableAlias = "t"
 
 	r.builder = sqlbuilder.Select()
 	r.builder.SetFlavor(sqlbuilder.PostgreSQL)
-	r.builder.From(r.tableAlias)
+
+	r.builder.From(r.tableName + " as " + r.tableAlias)
 
 	r.expandProps("t", r.resource)
 
@@ -165,6 +166,7 @@ func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
 	countBuilder.Select("count(*)")
 
 	countQuery, args := countBuilder.Build()
+	r.logger.Tracef("countQuery: %s", countQuery)
 
 	countRow := r.runner.QueryRowContext(r.ctx, countQuery, args...)
 	err = handleDbError(r.ctx, countRow.Scan(&total))
