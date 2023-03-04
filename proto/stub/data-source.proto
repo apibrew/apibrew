@@ -46,7 +46,7 @@ message ListEntitiesRequest {
 }
 
 message ListEntitiesResponse {
-  repeated string entities = 1;
+  repeated model.DataSourceCatalog catalogs = 1;
 }
 
 message ListDataSourceRequest {

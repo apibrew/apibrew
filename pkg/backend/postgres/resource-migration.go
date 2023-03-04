@@ -263,7 +263,13 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 		catalog = "public"
 	}
 	// check if entity exists
-	row := runner.QueryRowContext(ctx, `select count(*) from information_schema.tables where table_type = 'BASE TABLE' and tables.table_schema = $1 and tables.table_name = $2`, catalog, entity)
+	row := runner.QueryRowContext(ctx, `
+select sum(count) from (
+select count(*) as count from information_schema.tables where table_type = 'BASE TABLE' and tables.table_schema = $1 and tables.table_name = $2
+union all
+select count(*) as count from information_schema.views where views.table_schema = $1 and views.table_name = $2
+)_
+`, catalog, entity)
 
 	if row.Err() != nil {
 		return nil, handleDbError(ctx, row.Err())
@@ -278,7 +284,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	}
 
 	if *count == 0 {
-		err = errors.RecordNotFoundError
+		err = errors.RecordNotFoundError.WithMessage(fmt.Sprintf("Entity not found: %s/%s", catalog, entity))
 		return
 	}
 
@@ -392,7 +398,6 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 
 		if *columnLength != nil {
 			sourceDef = *columnType + "(" + strconv.Itoa(**columnLength) + ")"
-			annotations.Set(resource, annotations.SourceDef, sourceDef)
 		} else {
 			*columnLength = new(int)
 			**columnLength = 0
@@ -424,12 +429,12 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 			Name: *columnName,
 			Type: typ,
 
-			Mapping: *columnName,
-			//SourceDef: sourceDef,
-			Primary:  *isPrimary,
-			Required: !*isNullable,
-			Unique:   *isUnique,
-			Length:   uint32(**columnLength),
+			Mapping:     *columnName,
+			Primary:     *isPrimary,
+			Required:    !*isNullable,
+			Unique:      *isUnique,
+			Length:      uint32(**columnLength),
+			Annotations: make(map[string]string),
 		}
 
 		if *isReferenced {
@@ -439,6 +444,8 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 				Cascade:            false,
 			}
 		}
+
+		annotations.Set(property, annotations.SourceDef, sourceDef)
 
 		resource.Properties = append(resource.Properties, property)
 	}
@@ -518,6 +525,20 @@ having count(distinct a.attname) > 1
 
 		annotations.Set(resourceIndex, annotations.SourceDef, *indexDef)
 		annotations.Set(resourceIndex, annotations.SourceIdentity, *indexName)
+
+		// check for duplicate index
+
+		isDuplicate := false
+
+		for _, existingIndex := range resource.Indexes {
+			if util.IsSameResourceIndex(existingIndex, resourceIndex) {
+				isDuplicate = true
+			}
+		}
+
+		if isDuplicate {
+			continue
+		}
 
 		resource.Indexes = append(resource.Indexes, resourceIndex)
 	}

@@ -11,7 +11,7 @@ import (
 	annotations "github.com/tislib/data-handler/pkg/service/annotations"
 )
 
-func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context) (result []string, err errors.ServiceError) {
+func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context) (result []*model.DataSourceCatalog, err errors.ServiceError) {
 	err = p.withBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
 		result, err = resourceListEntities(ctx, tx)
 

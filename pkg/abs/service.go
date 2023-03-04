@@ -24,7 +24,7 @@ type BackendProviderService interface {
 
 type DataSourceService interface {
 	Init(*model.InitData)
-	ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError)
+	ListEntities(ctx context.Context, id string) ([]*model.DataSourceCatalog, errors.ServiceError)
 	List(ctx context.Context) ([]*model.DataSource, errors.ServiceError)
 	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
 	Create(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)

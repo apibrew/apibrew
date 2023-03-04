@@ -16,7 +16,7 @@ func (d *dataSourceServiceServer) ListEntities(ctx context.Context, request *stu
 	res, err := d.service.ListEntities(ctx, request.Id)
 
 	return &stub.ListEntitiesResponse{
-		Entities: res,
+		Catalogs: res,
 	}, util.ToStatusError(err)
 }
 
