@@ -9,4 +9,4 @@ const DoPrimaryKeyLookup = "DoPrimaryKeyLookup"
 
 // property params
 const SourceDef = "SourceDef"
-const SourceIdentity = "SourceDef"
+const SourceIdentity = "SourceIdentity"

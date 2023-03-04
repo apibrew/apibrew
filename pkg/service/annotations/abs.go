@@ -1,6 +1,9 @@
 package annotations
 
-import "golang.org/x/net/context"
+import (
+	"golang.org/x/net/context"
+	"strings"
+)
 
 type Annotated interface {
 	GetAnnotations() map[string]string
@@ -48,4 +51,14 @@ func Disable(resource Annotated, names ...string) {
 	for _, name := range names {
 		resource.GetAnnotations()[name] = "false"
 	}
+}
+
+func ToString(resource Annotated) string {
+	var parts []string
+
+	for key, value := range resource.GetAnnotations() {
+		parts = append(parts, key+"="+value)
+	}
+
+	return strings.Join(parts, ";")
 }

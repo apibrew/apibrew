@@ -47,3 +47,7 @@ func ArrayMapToInterface[T interface{}](arr []T) []interface{} {
 		return t
 	})
 }
+
+func ArrayMapToString[T interface{}](arr []T, fn func(t T) string) []string {
+	return ArrayMap(arr, fn)
+}
