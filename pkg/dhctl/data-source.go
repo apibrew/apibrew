@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
 	"os"
 	"strconv"
@@ -74,7 +75,11 @@ func prepareResourcesFromDataSource(ctx context.Context, dataSource *model.DataS
 					Entity:  entity.Name,
 				}))
 
-				ch <- res.Resource
+				resource := res.Resource
+
+				annotations.Enable(resource, annotations.DisableBackup)
+
+				ch <- resource
 			}
 		}
 	}()

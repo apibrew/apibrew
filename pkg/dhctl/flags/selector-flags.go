@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/client"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
 	"io"
 	"strings"
@@ -26,6 +27,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 	names := getFlag(cmd, "names", false)
 	namespace := getFlag(cmd, "namespace", false)
 
+	backup, _ := cmd.PersistentFlags().GetBool("backup")
 	limit, _ := cmd.PersistentFlags().GetInt64("limit")
 	offset, _ := cmd.PersistentFlags().GetInt64("offset")
 
@@ -46,6 +48,11 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 
 		for _, resource := range resp.Resources {
 			if resource.Virtual {
+				continue
+			}
+
+			if backup && annotations.IsEnabled(resource, annotations.DisableBackup) {
+				log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resource.Namespace, resource.Name)
 				continue
 			}
 
