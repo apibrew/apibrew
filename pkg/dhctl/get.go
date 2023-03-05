@@ -7,6 +7,7 @@ import (
 	"github.com/tislib/data-handler/pkg/dhctl/output"
 	"io"
 	"os"
+	"strconv"
 )
 
 var getCmd = &cobra.Command{
@@ -55,9 +56,15 @@ var getCmd = &cobra.Command{
 			writer.WriteResources(selection.Resources)
 		}
 
-		for _, records := range selection.Records {
-			writer.WriteRecords(records.Resource, records.Records)
+		for _, recordProvider := range selection.RecordProviders {
+			log.Print("Before begin")
+			records := recordProvider()
+			log.Println("Begin " + records.Resource.Name + " " + strconv.Itoa(int(records.Total)))
+			writer.WriteRecords(records.Resource, records.Total, records.Records)
+			log.Println("End2 " + records.Resource.Name)
 		}
+
+		log.Println("DONE ALL")
 
 	},
 }
@@ -67,6 +74,6 @@ func initGetCmd() {
 	getCmd.PersistentFlags().StringP("output", "o", "", "output")
 	getCmd.PersistentFlags().Int64("limit", 100, "limit")
 	getCmd.PersistentFlags().Int64("offset", 0, "offset")
-	getCmd.PersistentFlags().Bool("Backup", false, "backup")
+	getCmd.PersistentFlags().Bool("backup", false, "backup")
 	selectorFlags.Declare(getCmd)
 }

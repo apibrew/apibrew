@@ -168,7 +168,7 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	table.Render() // Send output
 }
 
-func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
+func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, recordsChan chan *model.Record) {
 	table := tablewriter.NewWriter(c.writer)
 	columns := []string{"Id"}
 

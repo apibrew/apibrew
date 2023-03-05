@@ -124,6 +124,7 @@ message ReadStreamRequest {
   bool useHistory = 7;
   repeated string resolveReferences = 8;
   bool useTransaction = 9;
+  bool packRecords = 10;
 
   map<string, string> annotations = 103;
 }

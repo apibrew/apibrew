@@ -59,6 +59,7 @@ type recordLister struct {
 	where             string
 	builder           *sqlbuilder.SelectBuilder
 	resultChan        chan<- *model.Record
+	packRecords       bool
 }
 
 func (r *recordLister) Prepare() errors.ServiceError {
@@ -153,12 +154,19 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 			result = append(result, record)
 		}
 
-		if annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
+		if !r.packRecords && annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
 			err := computeRecordFromProperties(r.ctx, r.resource, record)
 
 			if err != nil {
 				return nil, 0, err
 			}
+		}
+
+		if r.packRecords {
+			for _, prop := range r.resource.Properties {
+				record.PropertiesPacked = append(record.PropertiesPacked, record.Properties[prop.Name])
+			}
+			record.Properties = nil
 		}
 	}
 
@@ -309,7 +317,9 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 		return serviceErr
 	}
 
-	delete(record.Properties, "id")
+	if !annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
+		delete(record.Properties, "id")
+	}
 
 	return nil
 }
@@ -582,6 +592,7 @@ func recordList(ctx context.Context, runner QueryRunner, params abs.ListRecordPa
 		ResolveReferences: params.ResolveReferences,
 		Schema:            *params.Schema,
 		resultChan:        params.ResultChan,
+		packRecords:       params.PackRecords,
 	}).Exec()
 }
 
