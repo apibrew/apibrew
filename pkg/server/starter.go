@@ -20,9 +20,8 @@ import _ "net/http/pprof"
 func Run() {
 	init := flag.String("init", "", "Initial Data for configuring system")
 	debug := flag.Bool("debug", false, "Debug flag")
+	flag.Parse()
 	//grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
-
-	*debug = true
 
 	if *debug {
 		log.SetLevel(log.TraceLevel)

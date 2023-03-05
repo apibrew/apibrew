@@ -47,7 +47,7 @@ func (c *yamlWriter) WriteResources(resources []*model.Resource) {
 	}
 }
 
-func (c *yamlWriter) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
+func (c *yamlWriter) WriteRecords(resource *model.Resource, total uint32, recordsChan chan *model.Record) {
 	for record := range recordsChan {
 		c.writePrefix()
 		body, err := jsonMo.Marshal(record)

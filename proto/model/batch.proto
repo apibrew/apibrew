@@ -6,6 +6,7 @@ option go_package = "github.com/tislib/data-handler/pkg/model";
 
 import 'model/record.proto';
 import 'model/resource.proto';
+import 'google/protobuf/struct.proto';
 
 enum BatchMode {
   BATCH_CREATE = 0;
@@ -22,7 +23,7 @@ message BatchHeader {
 message BatchRecordsPart {
   string namespace = 1;
   string resource = 2;
-  repeated model.Record records = 3;
+  repeated google.protobuf.Value values = 3;
 }
 
 message Batch {

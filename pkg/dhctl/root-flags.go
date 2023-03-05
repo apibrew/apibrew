@@ -20,6 +20,4 @@ func parseRootFlags(cmd *cobra.Command) {
 		log.SetLevel(log.TraceLevel)
 		log.SetReportCaller(true)
 	}
-
-	log.Print("server:", server)
 }

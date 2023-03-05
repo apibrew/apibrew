@@ -57,6 +57,7 @@ type ListRecordParams struct {
 	ResolveReferences []string
 	Schema            *Schema
 	ResultChan        chan<- *model.Record
+	PackRecords       bool
 }
 
 type UpgradeResourceParams struct {

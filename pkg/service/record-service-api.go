@@ -54,6 +54,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 		Schema:            r.resourceService.GetSchema(),
+		PackRecords:       params.PackRecords,
 		ResultChan:        params.ResultChan,
 	})
 

@@ -7,6 +7,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 	"io"
 	"os"
 )
@@ -64,20 +65,54 @@ func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 		})
 
 		if err != nil {
-			return err
-		}
-
-		for _, r := range resp.Resources {
-			log.Tracef("Resource created: %s/%s(%s)", r.Namespace, r.Name, r.Id)
+			log.Error(err)
+		} else {
+			for _, r := range resp.Resources {
+				log.Tracef("Resource created: %s/%s(%s)", r.Namespace, r.Name, r.Id)
+			}
 		}
 
 		for _, res := range batch.BatchRecords {
-			resp, err := e.params.RecordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+			var records []*model.Record
+
+			// override config
+			if e.params.OverrideConfig.Namespace != "" {
+				res.Namespace = e.params.OverrideConfig.Namespace
+			}
+
+			resourceResp, err := e.params.ResourceServiceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
 				Token:       e.params.Token,
 				Namespace:   res.Namespace,
-				Resource:    res.Resource,
+				Name:        res.Resource,
 				Annotations: batch.Header.Annotations,
-				Records:     res.Records,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			resPropertyCount := len(resourceResp.Resource.Properties)
+			recordCount := len(res.Values) / resPropertyCount
+
+			for i := 0; i < recordCount; i++ {
+				var record = new(model.Record)
+				record.Properties = make(map[string]*structpb.Value, resPropertyCount)
+
+				for pi, prop := range resourceResp.Resource.Properties {
+					idx := resPropertyCount*i + pi
+					record.Properties[prop.Name] = res.Values[idx]
+				}
+
+				records = append(records, record)
+			}
+
+			resp, err := e.params.RecordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+				Token:          e.params.Token,
+				Namespace:      res.Namespace,
+				Resource:       res.Resource,
+				Annotations:    batch.Header.Annotations,
+				Records:        records,
+				IgnoreIfExists: true,
 			})
 
 			if err != nil {
@@ -93,10 +128,16 @@ func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 	return nil
 }
 
+type OverrideConfig struct {
+	Namespace  string
+	DataSource string
+}
+
 type ExecutorParams struct {
 	Input                 io.Reader
 	ResourceServiceClient stub.ResourceServiceClient
 	RecordServiceClient   stub.RecordServiceClient
+	OverrideConfig        OverrideConfig
 	Token                 string
 	DoMigration           bool
 	ForceMigration        bool

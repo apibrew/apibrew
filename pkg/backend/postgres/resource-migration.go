@@ -189,16 +189,6 @@ func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model
 			sql = sql + fmt.Sprintf("\n ADD CONSTRAINT \"%s\" FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\") "+refClause, existingResource.SourceConfig.Entity+"_"+property.Mapping+"_fk", property.Mapping, referencedResource.SourceConfig.Entity, "id")
 			changes++
 		}
-
-		if (prevProperty.Reference == nil) != (property.Reference == nil) {
-			log.Print("a")
-		} else if prevProperty.Reference.ReferencedResource != property.Reference.ReferencedResource {
-			log.Print("b")
-		} else if prevProperty.Reference.Cascade != property.Reference.Cascade {
-			log.Print("c")
-		} else {
-			panic("Unknown condition")
-		}
 	}
 
 	if changes == 0 {
@@ -381,6 +371,8 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 	}
 
 	primaryCount := 0
+	primaryFound := false
+
 	for rows.Next() {
 		var columnName = new(string)
 		var columnType = new(string)
@@ -424,6 +416,10 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 			}
 		}
 
+		if *isPrimary {
+			primaryFound = true
+		}
+
 		typ := getPropertyTypeFromPsql(*columnType)
 
 		if typ == model.ResourcePropertyType_TYPE_STRING && uint32(**columnLength) == 0 {
@@ -454,6 +450,11 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 
 		resource.Properties = append(resource.Properties, property)
 	}
+
+	if !primaryFound {
+		annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
+	}
+
 	return err
 }
 
