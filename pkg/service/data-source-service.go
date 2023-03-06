@@ -19,7 +19,7 @@ type dataSourceService struct {
 	backendProviderService abs.BackendProviderService
 }
 
-func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]string, errors.ServiceError) {
+func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]*model.DataSourceCatalog, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("req", id).Debug("Begin data-source ListEntities")
 	defer logger.Debug("End data-source ListEntities")

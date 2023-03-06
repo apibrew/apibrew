@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
@@ -51,7 +52,13 @@ func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRe
 }
 
 func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp stub.RecordService_ReadStreamServer) error {
-	ctx, err := interceptRequest(r.authenticationService, resp.Context(), request)
+	ictx, err := interceptRequest(r.authenticationService, resp.Context(), request)
+	ctx, cancel := context.WithCancel(ictx)
+
+	defer func() {
+		log.Println("cancelled")
+		cancel()
+	}()
 
 	if err != nil {
 		return err
@@ -59,32 +66,43 @@ func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp s
 
 	resultChan := make(chan *model.Record, 100)
 
-	go func() {
-		_, total, err := r.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
-			Namespace:         request.Namespace,
-			Resource:          request.Resource,
-			Limit:             request.Limit,
-			Query:             request.Query,
-			Offset:            request.Offset,
-			UseHistory:        request.UseHistory,
-			ResolveReferences: request.ResolveReferences,
-			ResultChan:        resultChan,
-		})
-
+	defer func() {
+		log.Print("Closing chan")
 		close(resultChan)
-		resp.Context().Done()
+	}()
 
-		if err != nil || total == 0 {
-			log.Print(err)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered in f", r)
+				cancel()
+				close(resultChan)
+			}
+		}()
+
+		for record := range resultChan {
+			err2 := resp.Send(record)
+
+			if err2 != nil {
+				cancel()
+				break
+			}
 		}
 	}()
 
-	for record := range resultChan {
-		err2 := resp.Send(record)
+	_, _, err = r.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
+		Namespace:         request.Namespace,
+		Resource:          request.Resource,
+		Limit:             request.Limit,
+		Query:             request.Query,
+		Offset:            request.Offset,
+		UseHistory:        request.UseHistory,
+		ResolveReferences: request.ResolveReferences,
+		ResultChan:        resultChan,
+	})
 
-		if err2 != nil {
-			return err2
-		}
+	if err != nil {
+		return err
 	}
 
 	return nil

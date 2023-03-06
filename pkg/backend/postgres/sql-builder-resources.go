@@ -30,7 +30,7 @@ type QueryRunner interface {
 func resourceCreateTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig, false))
+	builder := sqlbuilder.CreateTable(getFullTableName(resource.SourceConfig, false))
 
 	builder.IfNotExists()
 
@@ -115,7 +115,7 @@ func prepareResourceTableColumnDefinition(resource *model.Resource, property *mo
 }
 
 func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
-	builder := sqlbuilder.CreateTable(getTableName(resource.SourceConfig, true))
+	builder := sqlbuilder.CreateTable(getFullTableName(resource.SourceConfig, true))
 
 	builder.IfNotExists()
 
@@ -151,24 +151,47 @@ func resourceDropTable(ctx context.Context, runner QueryRunner, mapping string, 
 	return handleDbError(ctx, err)
 }
 
-func resourceListEntities(ctx context.Context, runner QueryRunner) (result []string, err errors.ServiceError) {
-	rows, sqlErr := runner.QueryContext(ctx, `select table_schema || '.' || table_name from information_schema.tables`)
+func resourceListEntities(ctx context.Context, runner QueryRunner) (result []*model.DataSourceCatalog, err errors.ServiceError) {
+	rows, sqlErr := runner.QueryContext(ctx, `
+select table_schema, table_name, false
+from information_schema.tables
+where table_schema not in ('information_schema', 'pg_catalog')
+union all
+select table_schema, table_name, true
+from information_schema.views
+where table_schema not in ('information_schema', 'pg_catalog')
+order by table_schema
+`)
 	err = handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return
 	}
 
-	for rows.Next() {
-		var entityName = new(string)
+	var catalog *model.DataSourceCatalog
 
-		err = handleDbError(ctx, rows.Scan(entityName))
+	for rows.Next() {
+		var catalogName = new(string)
+		var entityName = new(string)
+		var readOnly = new(bool)
+
+		err = handleDbError(ctx, rows.Scan(catalogName, entityName, readOnly))
 
 		if err != nil {
 			return
 		}
 
-		result = append(result, *entityName)
+		if catalog == nil || catalog.Name != *catalogName {
+			if catalog != nil {
+				result = append(result, catalog)
+			}
+			catalog = &model.DataSourceCatalog{Name: *catalogName}
+		}
+
+		catalog.Entities = append(catalog.Entities, &model.DataSourceEntity{
+			Name:     *entityName,
+			ReadOnly: *readOnly,
+		})
 	}
 
 	return

@@ -63,12 +63,13 @@ type recordLister struct {
 
 func (r *recordLister) Prepare() errors.ServiceError {
 	r.logger = log.WithFields(logging.CtxFields(r.ctx))
-	r.tableName = getTableName(r.resource.SourceConfig, r.UseHistory)
-	r.tableAlias = r.tableName + " as t"
+	r.tableName = getFullTableName(r.resource.SourceConfig, r.UseHistory)
+	r.tableAlias = "t"
 
 	r.builder = sqlbuilder.Select()
 	r.builder.SetFlavor(sqlbuilder.PostgreSQL)
-	r.builder.From(r.tableAlias)
+
+	r.builder.From(r.tableName + " as " + r.tableAlias)
 
 	r.expandProps("t", r.resource)
 
@@ -81,8 +82,12 @@ func (r *recordLister) Prepare() errors.ServiceError {
 		r.builder.Where(where)
 	}
 
-	if r.Limit == 0 || r.Limit > 10000 {
+	if r.Limit == 0 {
 		r.Limit = 100
+	}
+
+	if r.Limit > 10000 && r.resultChan == nil {
+		r.Limit = 10000
 	}
 
 	r.builder.Limit(int(r.Limit))
@@ -149,10 +154,10 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 		}
 
 		if annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
-			for _, prop := range r.resource.Properties {
-				if prop.Primary {
-					record.Id = record.Properties[prop.Name].GetStringValue()
-				}
+			err := computeRecordFromProperties(r.ctx, r.resource, record)
+
+			if err != nil {
+				return nil, 0, err
 			}
 		}
 	}
@@ -165,6 +170,7 @@ func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
 	countBuilder.Select("count(*)")
 
 	countQuery, args := countBuilder.Build()
+	r.logger.Tracef("countQuery: %s", countQuery)
 
 	countRow := r.runner.QueryRowContext(r.ctx, countQuery, args...)
 	err = handleDbError(r.ctx, countRow.Scan(&total))
@@ -272,7 +278,7 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 		record.AuditData = &model.AuditData{}
 	}
 
-	if propertyPointers["t_id"] != nil {
+	if propertyPointers["t_id"] != nil && !annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
 		record.Id = (**(propertyPointers["t_id"].(**uuid.UUID))).String()
 	}
 
@@ -311,7 +317,7 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 func (r *recordLister) mapRecordProperties(recordId string, resource *model.Resource, pathPrefix string, propertyPointers map[string]interface{}) (map[string]*structpb.Value, errors.ServiceError) {
 	properties := make(map[string]*structpb.Value)
 
-	if propertyPointers[pathPrefix+"id"] != nil {
+	if propertyPointers[pathPrefix+"id"] != nil && !annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
 		id := (**(propertyPointers[pathPrefix+"id"].(**uuid.UUID))).String()
 		properties["id"] = structpb.NewStringValue(id)
 	}
