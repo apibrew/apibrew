@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 }
 
 func Setup() {
-	log.SetLevel(log.TraceLevel)
+	log.SetLevel(log.DebugLevel)
 	log.SetReportCaller(true)
 	initTextContext()
 	setupDataSources(ctx)
