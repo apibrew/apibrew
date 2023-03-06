@@ -27,7 +27,7 @@ func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, r
 		return "", serviceErr
 	}
 
-	transactionCtx, cancel := context.WithTimeout(context.TODO(), time.Second*30)
+	transactionCtx, cancel := context.WithTimeout(context.TODO(), time.Minute*10)
 
 	tx, err := conn.BeginTx(transactionCtx, &sql.TxOptions{
 		ReadOnly: readOnly,
@@ -50,9 +50,21 @@ func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, r
 	go func() {
 		<-transactionCtx.Done()
 		delete(p.transactionMap, transactionKey)
+
+		log.Println(transactionCtx.Err())
+
+		if transactionCtx.Err() == context.DeadlineExceeded {
+			logger.Warnf("Timeout Rollback transaction: " + transactionKey)
+
+			err = tx.Rollback()
+
+			if err != nil {
+				logger.Error(err)
+			}
+		}
 	}()
 
-	logger.Tracef("BeginTransaction: " + transactionKey)
+	logger.Debugf("BeginTransaction: " + transactionKey)
 
 	return transactionKey, nil
 }
@@ -67,6 +79,8 @@ func (p *postgresResourceServiceBackend) CommitTransaction(ctx context.Context) 
 	if transactionKey == nil {
 		return errors.LogicalError.WithDetails("Transaction not found")
 	}
+
+	logger.Debugf("CommitTransaction %s", transactionKey)
 
 	txDataInstance := p.transactionMap[transactionKey.(string)]
 
@@ -90,6 +104,8 @@ func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context
 	if transactionKey == nil {
 		return errors.LogicalError.WithDetails("Transaction not found")
 	}
+
+	logger.Debugf("RollbackTransaction %s", transactionKey)
 
 	txDataInstance := p.transactionMap[transactionKey.(string)]
 

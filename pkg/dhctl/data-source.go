@@ -250,5 +250,6 @@ func init() {
 	dataSourcePrepareCmd.AddCommand(dataSourcePrepareDescribe)
 	dataSourcePrepareCmd.AddCommand(dataSourcePrepareApply)
 
-	overrideFlags.Declare(dataSourcePrepareCmd)
+	overrideFlags.Declare(dataSourcePrepareDescribe)
+	overrideFlags.Declare(dataSourcePrepareApply)
 }

@@ -172,7 +172,7 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, reco
 	table := tablewriter.NewWriter(c.writer)
 	columns := []string{"Id"}
 
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
 		columns = append(columns, "version")
 	}
 
@@ -189,7 +189,7 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, reco
 			item.Id,
 		}
 
-		if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+		if !annotations.IsEnabled(resource, annotations.DisableVersion) {
 			row = append(row, strconv.Itoa(int(item.Version)))
 		}
 

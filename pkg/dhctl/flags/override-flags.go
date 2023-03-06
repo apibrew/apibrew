@@ -5,18 +5,16 @@ import (
 )
 
 type overrideFlags struct {
-	overrideNamespace  *string
-	overrideDataSource *string
 }
 
 func (s *overrideFlags) Declare(cmd *cobra.Command) {
-	s.overrideNamespace = cmd.PersistentFlags().String("override-namespace", "", "Override namespace")
-	s.overrideDataSource = cmd.PersistentFlags().String("override-data-source", "", "Override data source")
+	cmd.PersistentFlags().String("override-namespace", "", "Override namespace")
+	cmd.PersistentFlags().String("override-data-source", "", "Override data source")
 }
 
 func (s *overrideFlags) Parse(result *OverrideConfig, cmd *cobra.Command, args []string) {
-	result.Namespace = *s.overrideNamespace
-	result.DataSource = *s.overrideDataSource
+	result.Namespace, _ = cmd.PersistentFlags().GetString("override-namespace")
+	result.DataSource, _ = cmd.PersistentFlags().GetString("override-data-source")
 }
 
 type OverrideConfig struct {

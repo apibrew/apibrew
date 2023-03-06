@@ -34,6 +34,9 @@ var applyCmd = &cobra.Command{
 		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)
 
+		dataOnly, err := cmd.Flags().GetBool("data-only")
+		check(err)
+
 		force, err := cmd.Flags().GetBool("force")
 		check(err)
 
@@ -54,6 +57,7 @@ var applyCmd = &cobra.Command{
 				Token:                 GetDhClient().GetToken(),
 				ResourceServiceClient: GetDhClient().GetResourceServiceClient(),
 				RecordServiceClient:   GetDhClient().GetRecordServiceClient(),
+				DataOnly:              dataOnly,
 				OverrideConfig: batch.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,
@@ -228,6 +232,7 @@ func init() {
 	applyCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	applyCmd.PersistentFlags().BoolP("migrate", "m", false, "Migrate")
 	applyCmd.PersistentFlags().Bool("force", false, "Force")
+	applyCmd.PersistentFlags().Bool("data-only", false, "Data Only")
 
 	overrideFlags.Declare(applyCmd)
 }

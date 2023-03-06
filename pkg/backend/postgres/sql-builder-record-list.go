@@ -116,8 +116,6 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 
 	sqlQuery, args := selectBuilder.Build()
 
-	r.logger.Tracef("SQL: %s", sqlQuery)
-
 	rows, sqlErr := r.runner.Query(sqlQuery, args...)
 	err = handleDbError(r.ctx, sqlErr)
 
@@ -209,6 +207,9 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 		r.colList = append(r.colList, gCol("updated_on", model.ResourcePropertyType_TYPE_TIMESTAMP))
 		r.colList = append(r.colList, gCol("created_by", model.ResourcePropertyType_TYPE_STRING))
 		r.colList = append(r.colList, gCol("updated_by", model.ResourcePropertyType_TYPE_STRING))
+	}
+
+	if !annotations.IsEnabled(r.resource, annotations.DisableVersion) {
 		r.colList = append(r.colList, gCol("version", model.ResourcePropertyType_TYPE_INT32))
 	}
 
