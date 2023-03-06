@@ -9,6 +9,7 @@ import (
 )
 
 var selectorFlags = flags.NewSelectorFlags(GetDhClient)
+var overrideFlags = flags.NewOverrideFlags()
 var describeWriter = output.NewOutputWriter("describe", os.Stdout)
 
 var dhClient client.DhClient

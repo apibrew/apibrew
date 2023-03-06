@@ -57,6 +57,8 @@ func protoMessageCreateCmd[T proto.Message](params protoMessageCreateCmdParams[T
 	return res
 }
 
+var createRecordNamespace *string
+
 var createRecordCmd = &cobra.Command{
 	Use:                "record",
 	Short:              "Create record <resource>",
@@ -68,8 +70,6 @@ var createRecordCmd = &cobra.Command{
 
 		parseRootFlags(cmd)
 
-		namespace := cmd.Flags().StringP("namespace", "n", "", "")
-
 		if len(args) == 0 {
 			log.Fatal("resource not specified")
 		}
@@ -78,7 +78,7 @@ var createRecordCmd = &cobra.Command{
 
 		resource := check2(GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 			Token:     GetDhClient().GetToken(),
-			Namespace: *namespace,
+			Namespace: *createRecordNamespace,
 			Name:      resourceName,
 		})).Resource
 
@@ -97,12 +97,12 @@ var createRecordCmd = &cobra.Command{
 
 		records := check2(GetDhClient().GetRecordServiceClient().Create(cmd.Context(), &stub.CreateRecordRequest{
 			Token:     GetDhClient().GetToken(),
-			Namespace: *namespace,
+			Namespace: *createRecordNamespace,
 			Resource:  resourceName,
 			Record:    record,
 		})).Records
 
-		describeWriter.WriteRecords(resource, util.ArrToChan(records))
+		describeWriter.WriteRecords(resource, 0, util.ArrToChan(records))
 	},
 }
 
@@ -147,7 +147,7 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.DataSource, *model.Record](resp.DataSources, mapping.DataSourceToRecord)
 
-			describeWriter.WriteRecords(resources.DataSourceResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.DataSourceResource, 0, util.ArrToChan(result))
 		},
 	}))
 	createCmd.AddCommand(protoMessageCreateCmd[*model.Namespace](protoMessageCreateCmdParams[*model.Namespace]{
@@ -165,7 +165,7 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.Namespace, *model.Record](resp.Namespaces, mapping.NamespaceToRecord)
 
-			describeWriter.WriteRecords(resources.NamespaceResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.NamespaceResource, 0, util.ArrToChan(result))
 		},
 	}))
 	createCmd.AddCommand(protoMessageCreateCmd[*model.User](protoMessageCreateCmdParams[*model.User]{
@@ -183,7 +183,7 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.User, *model.Record](resp.Users, mapping.UserToRecord)
 
-			describeWriter.WriteRecords(resources.UserResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.UserResource, 0, util.ArrToChan(result))
 		},
 	}))
 	createCmd.AddCommand(protoMessageCreateCmd[*model.RemoteExtension](protoMessageCreateCmdParams[*model.RemoteExtension]{
@@ -201,9 +201,11 @@ func initCreateCmd() {
 
 			result := util.ArrayMap[*model.RemoteExtension, *model.Record](resp.Extensions, mapping.ExtensionToRecord)
 
-			describeWriter.WriteRecords(resources.UserResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.UserResource, 0, util.ArrToChan(result))
 		},
 	}))
+
+	createRecordNamespace = createRecordCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 
 	createCmd.AddCommand(createRecordCmd)
 }

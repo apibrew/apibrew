@@ -42,7 +42,7 @@ func (c *protobufReader) writeMessage(message proto.Message) {
 	check(err)
 }
 
-func (c *protobufReader) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
+func (c *protobufReader) WriteRecords(resource *model.Resource, total uint32, recordsChan chan *model.Record) {
 	for record := range recordsChan {
 		c.writeMessage(record)
 	}

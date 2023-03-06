@@ -190,11 +190,14 @@ func writeResourceStruct(sb *strings.Builder, resource *model.Resource, params G
 	}
 
 	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		sb.WriteString(fmt.Sprintf("    Version uint64\n"))
 		sb.WriteString(fmt.Sprintf("    CreatedBy string\n"))
 		sb.WriteString(fmt.Sprintf("    UpdatedBy *string\n"))
 		sb.WriteString(fmt.Sprintf("    CreatedOn time.Time\n"))
 		sb.WriteString(fmt.Sprintf("    UpdatedOn *time.Time\n"))
+	}
+
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
+		sb.WriteString(fmt.Sprintf("    Version uint64\n"))
 	}
 
 	sb.WriteString("}\n")

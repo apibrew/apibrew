@@ -47,7 +47,12 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 		result.Resources = resp.Resources
 
 		for _, resource := range resp.Resources {
+			log.Println(resource.Name)
 			if resource.Virtual {
+				continue
+			}
+
+			if namespace != "" && resource.Namespace != namespace {
 				continue
 			}
 
@@ -55,8 +60,11 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 				log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resource.Namespace, resource.Name)
 				continue
 			}
-
-			s.readSelectData3(cmd.Context(), resource, result, limit, offset)
+			func(localResource *model.Resource) {
+				result.RecordProviders = append(result.RecordProviders, func() SelectedRecordData {
+					return s.readSelectData3(cmd.Context(), localResource, backup, limit, offset)
+				})
+			}(resource)
 		}
 	} else if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
 		resp, err := s.client().GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
@@ -95,42 +103,67 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 
 		check(err)
 
-		s.readSelectData3(cmd.Context(), resourceResp.Resource, result, limit, offset)
+		if backup && annotations.IsEnabled(resourceResp.Resource, annotations.DisableBackup) {
+			log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resourceResp.Resource.Namespace, resourceResp.Resource.Name)
+			return
+		}
+
+		result.RecordProviders = []func() SelectedRecordData{
+			func() SelectedRecordData {
+				return s.readSelectData3(cmd.Context(), resourceResp.Resource, backup, limit, offset)
+			},
+		}
 	}
 
 }
 
 type SelectedRecordData struct {
+	Total    uint32
 	Resource *model.Resource
 	Records  chan *model.Record
 }
 
 type SelectedRecordsResult struct {
-	Records   []SelectedRecordData
-	Resources []*model.Resource
+	RecordProviders []func() SelectedRecordData
+	Resources       []*model.Resource
 }
 
-func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, result *SelectedRecordsResult, limit int64, offset int64) {
-	resp, err := s.client().GetRecordServiceClient().ReadStream(ctx, &stub.ReadStreamRequest{
+func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, backup bool, limit int64, offset int64) SelectedRecordData {
+	log.Println("readSelectData3 1 " + resource.Name)
+
+	countRes, err := s.client().GetRecordServiceClient().List(ctx, &stub.ListRecordRequest{
 		Token:     s.client().GetToken(),
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
-		Limit:     uint32(limit),
+		Limit:     1,
 		Offset:    uint64(offset),
 	})
 
 	check(err)
 
+	log.Println("readSelectData3 2")
+	resp, err := s.client().GetRecordServiceClient().ReadStream(ctx, &stub.ReadStreamRequest{
+		Token:       s.client().GetToken(),
+		Namespace:   resource.Namespace,
+		Resource:    resource.Name,
+		Limit:       uint32(limit),
+		Offset:      uint64(offset),
+		PackRecords: backup,
+	})
+
+	check(err)
+
+	log.Println("readSelectData3 3")
 	var res = SelectedRecordData{
 		Resource: resource,
+		Total:    countRes.Total,
 		Records:  make(chan *model.Record),
 	}
-
-	result.Records = append(result.Records, res)
 
 	go func() {
 		defer func() {
 			close(res.Records)
+			resp.CloseSend()
 		}()
 
 		for {
@@ -149,6 +182,8 @@ func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Reso
 			res.Records <- record
 		}
 	}()
+
+	return res
 }
 
 func NewSelectorFlags(clientGetter func() client.DhClient) FlagHelper[*SelectedRecordsResult] {

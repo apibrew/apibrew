@@ -19,24 +19,23 @@ import _ "net/http/pprof"
 
 func Run() {
 	init := flag.String("init", "", "Initial Data for configuring system")
-	debug := flag.Bool("debug", false, "Debug flag")
+	logLevelStr := flag.String("log-level", "info", "Debug flag")
+	flag.Parse()
 	//grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
 
-	*debug = true
+	logLevel, err := log.ParseLevel(*logLevelStr)
 
-	if *debug {
-		log.SetLevel(log.TraceLevel)
-		log.SetReportCaller(true)
-	} else {
-		log.SetLevel(log.InfoLevel)
-		log.SetReportCaller(false)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	log.SetReportCaller(logLevel == log.TraceLevel)
+	log.SetLevel(logLevel)
 
 	flag.Parse()
 
 	initData := &model.InitData{}
 
-	var err error
 	if strings.HasSuffix(*init, "pb") {
 		err = util.Read(*init, initData)
 	} else if strings.HasSuffix(*init, "json") {

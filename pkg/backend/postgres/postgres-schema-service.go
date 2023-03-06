@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
@@ -12,7 +11,7 @@ import (
 )
 
 func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context) (result []*model.DataSourceCatalog, err errors.ServiceError) {
-	err = p.withBackend(ctx, true, func(tx *sql.Tx) errors.ServiceError {
+	err = p.withBackend(ctx, true, func(tx QueryRunner) errors.ServiceError {
 		result, err = resourceListEntities(ctx, tx)
 
 		return err
@@ -24,7 +23,7 @@ func (p *postgresResourceServiceBackend) ListEntities(ctx context.Context) (resu
 func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.Context, catalog string, entity string) (resource *model.Resource, err errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	err = p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
+	err = p.withBackend(ctx, false, func(tx QueryRunner) errors.ServiceError {
 		if resource, err = resourcePrepareResourceFromEntity(ctx, tx, catalog, entity); err != nil {
 			logger.Errorf("[PrepareResourceFromEntity] Unable to load resource details for %s Err: %s", entity, err)
 			return err
@@ -42,7 +41,7 @@ func (p *postgresResourceServiceBackend) PrepareResourceFromEntity(ctx context.C
 }
 
 func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) errors.ServiceError {
-	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
+	return p.withBackend(ctx, false, func(tx QueryRunner) errors.ServiceError {
 		if err := resourceCreateTable(ctx, tx, params.Resource); err != nil {
 			return err
 		}
@@ -66,7 +65,7 @@ func (p *postgresResourceServiceBackend) UpgradeResource(ctx context.Context, pa
 }
 
 func (p *postgresResourceServiceBackend) DowngradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError {
-	return p.withBackend(ctx, false, func(tx *sql.Tx) errors.ServiceError {
+	return p.withBackend(ctx, false, func(tx QueryRunner) errors.ServiceError {
 		err := resourceDropTable(ctx, tx, getFullTableName(resource.SourceConfig, false), forceMigration)
 
 		if err != nil {

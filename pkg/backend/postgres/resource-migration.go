@@ -50,7 +50,6 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 		func(property *model.ResourceProperty) errors.ServiceError {
 			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(params.Resource, property, *params.Schema))
 
-			logger.Info("DB Migrate Sql: " + sql)
 			_, sqlError := runner.ExecContext(ctx, sql)
 			return handleDbError(ctx, sqlError)
 		}, func(prevProperty, property *model.ResourceProperty) errors.ServiceError {
@@ -59,7 +58,6 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 			if params.ForceMigration {
 				sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, property.Mapping)
 
-				logger.Info("DB Migrate Sql: " + sql)
 				_, sqlError := runner.ExecContext(ctx, sql)
 				return handleDbError(ctx, sqlError)
 			} else {
@@ -87,7 +85,6 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 					}
 				}
 
-				logger.Info("DB Migrate Sql: " + sql)
 				_, sqlError := runner.ExecContext(ctx, sql)
 				return handleDbError(ctx, sqlError)
 			}, func(prevProperty, property *model.ResourceIndex) errors.ServiceError {
@@ -96,7 +93,6 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 				if params.ForceMigration {
 					sql := fmt.Sprintf("DROP INDEX %s", annotations.Get(index, annotations.SourceIdentity))
 
-					logger.Info("DB Migrate Sql: " + sql)
 					_, sqlError := runner.ExecContext(ctx, sql)
 					return handleDbError(ctx, sqlError)
 				} else {
@@ -189,23 +185,12 @@ func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model
 			sql = sql + fmt.Sprintf("\n ADD CONSTRAINT \"%s\" FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\") "+refClause, existingResource.SourceConfig.Entity+"_"+property.Mapping+"_fk", property.Mapping, referencedResource.SourceConfig.Entity, "id")
 			changes++
 		}
-
-		if (prevProperty.Reference == nil) != (property.Reference == nil) {
-			log.Print("a")
-		} else if prevProperty.Reference.ReferencedResource != property.Reference.ReferencedResource {
-			log.Print("b")
-		} else if prevProperty.Reference.Cascade != property.Reference.Cascade {
-			log.Print("c")
-		} else {
-			panic("Unknown condition")
-		}
 	}
 
 	if changes == 0 {
 		return nil
 	}
 
-	logger.Info("DB Migrate Sql: " + sql)
 	_, sqlError := runner.ExecContext(ctx, sql)
 	return handleDbError(ctx, sqlError)
 }
@@ -263,13 +248,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 		catalog = "public"
 	}
 	// check if entity exists
-	row := runner.QueryRowContext(ctx, `
-select sum(count) from (
-select count(*) as count from information_schema.tables where table_type = 'BASE TABLE' and tables.table_schema = $1 and tables.table_name = $2
-union all
-select count(*) as count from information_schema.views where views.table_schema = $1 and views.table_name = $2
-)_
-`, catalog, entity)
+	row := runner.QueryRowContext(ctx, getSql("entity-exists"), catalog, entity)
 
 	if row.Err() != nil {
 		return nil, handleDbError(ctx, row.Err())
@@ -290,7 +269,7 @@ select count(*) as count from information_schema.views where views.table_schema 
 
 	resource = new(model.Resource)
 	resource.Annotations = make(map[string]string)
-	annotations.Enable(resource, annotations.AutoCreated, annotations.DisableMigration, annotations.DisableAudit)
+	annotations.Enable(resource, annotations.AutoCreated)
 	resource.AuditData = new(model.AuditData)
 	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
@@ -327,53 +306,7 @@ select count(*) as count from information_schema.views where views.table_schema 
 }
 
 func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
-	rows, sqlErr := runner.QueryContext(ctx, `
-
-select columns.column_name,
-       columns.udt_name as column_type,
-       columns.character_maximum_length as length,
-       columns.is_nullable = 'YES' as is_nullable,
-       column_pkey.constraint_def is not null as is_primary,
-       column_ukey.constraint_def is not null as is_unique,
-       column_fkey.constraint_def is not null as is_referenced,
-       column_fkey.target_schema,
-       column_fkey.target_table,
-       column_fkey.target_column
-from information_schema.columns
-         left join information_schema.key_column_usage on key_column_usage.table_name = columns.table_name and
-                                                          key_column_usage.table_schema = columns.table_schema and
-                                                          key_column_usage.column_name = columns.column_name
-         left join (SELECT nspname                     as table_schema,
-                           conname,
-                           contype,
-                           pg_get_constraintdef(c.oid) as constraint_def
-                    FROM pg_constraint c
-                             JOIN pg_namespace n ON n.oid = c.connamespace
-                    WHERE contype = 'p') column_pkey  on column_pkey.conname = key_column_usage.constraint_name
-         left join (SELECT nspname                     as table_schema,
-                           conname,
-                           contype,
-                           pg_get_constraintdef(c.oid) as constraint_def
-                    FROM pg_constraint c
-                             JOIN pg_namespace n ON n.oid = c.connamespace
-                    WHERE contype = 'u') column_ukey  on column_ukey.conname = key_column_usage.constraint_name
-         left join (SELECT nspname                     as table_schema,
-                           conname,
-                           contype,
-                           pg_get_constraintdef(c.oid) as constraint_def,
-                           (SELECT nspname FROM pg_namespace WHERE oid = f.relnamespace)                     AS target_schema,
-                           f.relname                                                                         AS target_table,
-                           (SELECT a.attname
-                            FROM pg_attribute a
-                            WHERE a.attrelid = f.oid AND a.attnum = c.confkey[1] AND a.attisdropped = false) AS target_column
-                    FROM pg_constraint c
-                             JOIN pg_namespace n ON n.oid = c.connamespace
-                             LEFT JOIN pg_class f ON f.oid = c.confrelid
-                             LEFT JOIN pg_class m ON m.oid = c.conrelid
-                    WHERE contype = 'f' and c.conrelid IN (SELECT oid FROM pg_class c WHERE c.relkind = 'r')) column_fkey  on column_fkey.conname = key_column_usage.constraint_name
-where columns.table_schema = $1 and columns.table_name = $2 order by columns.ordinal_position
-
-`, catalog, entity)
+	rows, sqlErr := runner.QueryContext(ctx, getSql("prepare-properties"), catalog, entity)
 	err := handleDbError(ctx, sqlErr)
 
 	if err != nil {
@@ -381,6 +314,8 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 	}
 
 	primaryCount := 0
+	primaryFound := false
+
 	for rows.Next() {
 		var columnName = new(string)
 		var columnType = new(string)
@@ -424,6 +359,10 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 			}
 		}
 
+		if *isPrimary {
+			primaryFound = true
+		}
+
 		typ := getPropertyTypeFromPsql(*columnType)
 
 		if typ == model.ResourcePropertyType_TYPE_STRING && uint32(**columnLength) == 0 {
@@ -454,33 +393,16 @@ where columns.table_schema = $1 and columns.table_name = $2 order by columns.ord
 
 		resource.Properties = append(resource.Properties, property)
 	}
+
+	if !primaryFound {
+		annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
+	}
+
 	return err
 }
 
 func resourcePrepareIndexes(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
-	rows, sqlErr := runner.QueryContext(ctx, `
-
-select i.relname as index_name,
-       indisunique,
-       ixs.indexdef,
-       string_agg(a.attname, ',') 
-from pg_class t,
-     pg_class i,
-     pg_index ix,
-     pg_indexes ixs,
-     pg_attribute a
-where t.oid = ix.indrelid
-  and i.oid = ix.indexrelid
-  and a.attrelid = t.oid
-  and a.attnum = ANY (ix.indkey)
-  and t.relkind = 'r'
-  and ixs.indexname = i.relname
-  and ixs.schemaname = $1
-  and ixs.tablename = $2
-group by 1, 2, 3
-having count(distinct a.attname) > 1
-
-`, catalog, entity)
+	rows, sqlErr := runner.QueryContext(ctx, getSql("prepare-indexes"), catalog, entity)
 	err := handleDbError(ctx, sqlErr)
 
 	if err != nil {
@@ -573,7 +495,7 @@ func doResourceCleanup(resource *model.Resource) {
 			versionDetected = true
 		}
 	}
-	enableAudit := createdOnDetected && updatedOnDetected && createdByDetected && updatedByDetected && versionDetected
+	enableAudit := createdOnDetected && updatedOnDetected && createdByDetected && updatedByDetected
 
 	var newColumns []*model.ResourceProperty
 
@@ -592,7 +514,11 @@ func doResourceCleanup(resource *model.Resource) {
 
 	resource.Properties = newColumns
 
-	if enableAudit {
-		annotations.Disable(resource, annotations.DisableAudit)
+	if !enableAudit {
+		annotations.Enable(resource, annotations.DisableAudit)
+	}
+
+	if !versionDetected {
+		annotations.Enable(resource, annotations.DisableVersion)
 	}
 }

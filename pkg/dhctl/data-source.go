@@ -5,6 +5,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/tislib/data-handler/pkg/dhctl/flags"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
@@ -17,7 +18,7 @@ var dataSourceId *string
 var dataSourceName *string
 var dataSourcePrepareEntityNames *string
 var dataSourcePrepareCatalogs *string
-var dataSourcePrepareApplyNamespace *string
+var dataSourcePrepareApplyMigrate *bool
 
 func prepareResourcesFromDataSource(ctx context.Context, dataSource *model.DataSource) <-chan *model.Resource {
 	ch := make(chan *model.Resource)
@@ -77,7 +78,9 @@ func prepareResourcesFromDataSource(ctx context.Context, dataSource *model.DataS
 
 				resource := res.Resource
 
-				annotations.Enable(resource, annotations.DisableBackup)
+				if entity.ReadOnly {
+					annotations.Enable(resource, annotations.DisableBackup)
+				}
 
 				ch <- resource
 			}
@@ -165,7 +168,18 @@ var dataSourcePrepareDescribe = &cobra.Command{
 
 		ch := prepareResourcesFromDataSource(cmd.Context(), dataSource)
 
+		var overrideConfig = new(flags.OverrideConfig)
+		overrideFlags.Parse(overrideConfig, cmd, args)
+
 		for item := range ch {
+			if overrideConfig.Namespace != "" {
+				item.Namespace = overrideConfig.Namespace
+			}
+
+			if overrideConfig.DataSource != "" {
+				item.SourceConfig.DataSource = overrideConfig.DataSource
+			}
+
 			describeWriter.WriteResources([]*model.Resource{item})
 		}
 	},
@@ -179,8 +193,17 @@ var dataSourcePrepareApply = &cobra.Command{
 
 		ch := prepareResourcesFromDataSource(cmd.Context(), dataSource)
 
+		var overrideConfig = new(flags.OverrideConfig)
+		overrideFlags.Parse(overrideConfig, cmd, args)
+
 		for item := range ch {
-			item.Namespace = *dataSourcePrepareApplyNamespace
+			if overrideConfig.Namespace != "" {
+				item.Namespace = overrideConfig.Namespace
+			}
+
+			if overrideConfig.DataSource != "" {
+				item.SourceConfig.DataSource = overrideConfig.DataSource
+			}
 
 			resource, err := GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 				Token:     GetDhClient().GetToken(),
@@ -195,28 +218,30 @@ var dataSourcePrepareApply = &cobra.Command{
 					Resources: []*model.Resource{
 						item,
 					},
+					DoMigration: *dataSourcePrepareApplyMigrate,
 				}))
-				log.Printf("Resource Updated: %s/%s \n", *dataSourcePrepareApplyNamespace, item.Name)
+				log.Printf("Resource Updated: %s/%s \n", item.Namespace, item.Name)
 			} else {
 				check2(GetDhClient().GetResourceServiceClient().Create(cmd.Context(), &stub.CreateResourceRequest{
 					Token: GetDhClient().GetToken(),
 					Resources: []*model.Resource{
 						item,
 					},
+					DoMigration: *dataSourcePrepareApplyMigrate,
 				}))
-				log.Printf("Resource Created: %s/%s \n", *dataSourcePrepareApplyNamespace, item.Name)
+				log.Printf("Resource Created: %s/%s \n", item.Namespace, item.Name)
 			}
 		}
 	},
 }
 
 func init() {
-	dataSourceName = dataSourceCmd.PersistentFlags().StringP("name", "m", "", "Data Source name")
-	dataSourceId = dataSourceCmd.PersistentFlags().StringP("id", "", "", "Data Source Id")
+	dataSourceName = dataSourceCmd.PersistentFlags().String("name", "", "Data Source name")
+	dataSourceId = dataSourceCmd.PersistentFlags().String("id", "", "Data Source Id")
 
 	dataSourcePrepareEntityNames = dataSourcePrepareCmd.PersistentFlags().StringP("entity", "e", "*", "Select entities for resource preparation, default value is * for selection of all entities, you can use comma to select multiple entities")
 	dataSourcePrepareCatalogs = dataSourcePrepareCmd.PersistentFlags().StringP("catalog", "c", "*", "Select catalogs for resource preparation, default value is * for selection of all catalogs, you can use comma to select multiple catalogs")
-	dataSourcePrepareApplyNamespace = dataSourcePrepareApply.PersistentFlags().StringP("namespace", "n", "default", "namespace")
+	dataSourcePrepareApplyMigrate = dataSourcePrepareApply.PersistentFlags().BoolP("migrate", "m", false, "migrate")
 
 	dataSourceCmd.AddCommand(dataSourceStatusCmd)
 	dataSourceCmd.AddCommand(dataSourcePrepareCmd)
@@ -224,4 +249,7 @@ func init() {
 
 	dataSourcePrepareCmd.AddCommand(dataSourcePrepareDescribe)
 	dataSourcePrepareCmd.AddCommand(dataSourcePrepareApply)
+
+	overrideFlags.Declare(dataSourcePrepareDescribe)
+	overrideFlags.Declare(dataSourcePrepareApply)
 }

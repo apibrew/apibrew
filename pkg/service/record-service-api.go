@@ -54,6 +54,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 		Schema:            r.resourceService.GetSchema(),
+		PackRecords:       params.PackRecords,
 		ResultChan:        params.ResultChan,
 	})
 
@@ -151,11 +152,8 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 
 	txCtx = context.WithValue(ctx, "transactionKey", tx)
 
-	log.Print("Begin transaction: ", tx)
-
 	defer func() {
 		if success {
-			log.Print("Commit transaction: ", tx)
 			err = bck.CommitTransaction(txCtx)
 
 			if err != nil {
@@ -163,7 +161,6 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 				success = false
 			}
 		} else {
-			log.Print("Rollback transaction: ", tx)
 			err = bck.RollbackTransaction(txCtx)
 
 			if err != nil {

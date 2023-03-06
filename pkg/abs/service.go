@@ -116,6 +116,7 @@ type RecordListParams struct {
 	UseHistory        bool
 	ResolveReferences []string
 	ResultChan        chan<- *model.Record
+	PackRecords       bool
 }
 
 type RecordCreateParams struct {

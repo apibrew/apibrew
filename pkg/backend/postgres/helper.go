@@ -6,14 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/lib/pq"
+	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
+	_ "github.com/tislib/data-handler/pkg/backend/postgres/sql/statik"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
+	"io"
 	"net"
+	"net/http"
 	"runtime/debug"
 )
 
@@ -34,12 +38,13 @@ func handleDbError(ctx context.Context, err error) errors.ServiceError {
 		return nil
 	}
 
+	logger.Errorf("Db Error: %s", err)
+
 	if err == sql.ErrNoRows {
 		return errors.RecordNotFoundError
 	}
 
-	logger.Errorf("Db Error: %s", err)
-	logger.Tracef("Stack: " + string(debug.Stack()))
+	logger.Debug("Stack: " + string(debug.Stack()))
 
 	if err == sql.ErrTxDone {
 		logger.Panic("Illegal situation")
@@ -155,7 +160,37 @@ func prepareResourceRecordCols(resource *model.Resource) []string {
 		cols = append(cols, "updated_on")
 		cols = append(cols, "created_by")
 		cols = append(cols, "updated_by")
+	}
+
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
 		cols = append(cols, "version")
 	}
 	return cols
+}
+
+var statikFS http.FileSystem
+
+func init() {
+	var err error
+	statikFS, err = fs.New()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func getSql(name string) string {
+	entityExistsFile, err := statikFS.Open("/" + name + ".sql")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data, err := io.ReadAll(entityExistsFile)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(data)
 }

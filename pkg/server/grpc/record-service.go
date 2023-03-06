@@ -98,6 +98,7 @@ func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp s
 		Offset:            request.Offset,
 		UseHistory:        request.UseHistory,
 		ResolveReferences: request.ResolveReferences,
+		PackRecords:       request.PackRecords,
 		ResultChan:        resultChan,
 	})
 

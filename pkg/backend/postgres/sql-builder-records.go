@@ -100,6 +100,9 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 			row = append(row, argPlaceHolder(record.AuditData.UpdatedOn.AsTime()))
 			row = append(row, argPlaceHolder(record.AuditData.CreatedBy))
 			row = append(row, argPlaceHolder(record.AuditData.UpdatedBy))
+		}
+
+		if !annotations.IsEnabled(resource, annotations.DisableVersion) {
 			row = append(row, argPlaceHolder(record.Version))
 		}
 
@@ -146,8 +149,6 @@ func resolveReference(val interface{}, argPlaceHolder func(val interface{}) stri
 }
 
 func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) errors.ServiceError {
-	logger := log.WithFields(logging.CtxFields(ctx))
-
 	if record.AuditData == nil {
 		record.AuditData = &model.AuditData{}
 	}
@@ -192,8 +193,6 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 	updateBuilder.SetMore("version = version + 1")
 
 	sqlQuery, args := updateBuilder.Build()
-
-	logger.Tracef("SQL: %s", sqlQuery)
 
 	result, err := runner.ExecContext(ctx, sqlQuery, args...)
 
@@ -252,8 +251,6 @@ func readRecord(ctx context.Context, runner QueryRunner, resource *model.Resourc
 }
 
 func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
-	logger := log.WithFields(logging.CtxFields(ctx))
-
 	deleteBuilder := sqlbuilder.DeleteFrom(getFullTableName(resource.SourceConfig, false) + " as t")
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
@@ -270,8 +267,6 @@ func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Reso
 	}
 
 	sqlQuery, args := deleteBuilder.Build()
-
-	logger.Tracef("SQL: %s", sqlQuery)
 
 	_, err := runner.Exec(sqlQuery, args...)
 

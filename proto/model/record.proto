@@ -8,12 +8,11 @@ import 'google/protobuf/struct.proto';
 import 'model/audit.proto';
 import 'model/common.proto';
 
-
-
 message Record {
   string id = 1; // id; read only
   DataType data_type = 3; // read only
   map<string, google.protobuf.Value> properties = 4;
+  repeated google.protobuf.Value propertiesPacked = 5;
 
   AuditData auditData = 101; // read only
   uint32 version = 102; // read only
