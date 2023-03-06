@@ -169,6 +169,7 @@ func withUserAuthenticationContext(ctx context.Context, username, password strin
 	resp, err := authenticationServiceClient.Authenticate(ctx, &stub.AuthenticationRequest{
 		Username: username,
 		Password: password,
+		Term:     model.TokenTerm_MIDDLE,
 	})
 
 	if err != nil {
