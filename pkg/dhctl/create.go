@@ -36,7 +36,7 @@ func protoMessageCreateCmd[T proto.Message](params protoMessageCreateCmdParams[T
 			err := cmd.PersistentFlags().Parse(args)
 
 			if err != nil {
-				log.Error(err)
+				log.Fatal(err)
 			}
 
 			parseRootFlags(cmd)
@@ -64,11 +64,7 @@ var createRecordCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		defineRootFlags(cmd)
 
-		err := cmd.PersistentFlags().Parse(args)
-
-		if err != nil {
-			log.Error(err)
-		}
+		_ = cmd.PersistentFlags().Parse(args)
 
 		parseRootFlags(cmd)
 
@@ -80,36 +76,33 @@ var createRecordCmd = &cobra.Command{
 
 		resourceName := args[0]
 
-		resource, err := GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+		resource := check2(GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 			Token:     GetDhClient().GetToken(),
 			Namespace: *namespace,
 			Name:      resourceName,
-		})
+		})).Resource
 
-		if err != nil {
-			log.Error(err)
-		}
-
-		fp := flags.NewRecordParserFlags(resource.Resource)
+		fp := flags.NewRecordParserFlags(resource)
 
 		fp.Declare(cmd)
+
+		err := cmd.PersistentFlags().Parse(args)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		var record = &model.Record{}
 		fp.Parse(record, cmd, args)
 
-		res, err := GetDhClient().GetRecordServiceClient().Create(cmd.Context(), &stub.CreateRecordRequest{
+		records := check2(GetDhClient().GetRecordServiceClient().Create(cmd.Context(), &stub.CreateRecordRequest{
 			Token:     GetDhClient().GetToken(),
 			Namespace: *namespace,
 			Resource:  resourceName,
 			Record:    record,
-		})
+		})).Records
 
-		if err != nil {
-			log.Error(err)
-			return
-		}
-
-		describeWriter.WriteRecords(resource.Resource, util.ArrToChan(res.Records))
+		describeWriter.WriteRecords(resource, util.ArrToChan(records))
 	},
 }
 

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
+	"github.com/tislib/data-handler/pkg/util"
 	"io"
 	"strconv"
 	"strings"
@@ -44,12 +46,20 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 		c.out(w, "")
 	}
 
+	if len(resource.Annotations) > 0 {
+		c.out(w, "Annotations:")
+		for key, value := range resource.Annotations {
+			c.out(w, fmt.Sprintf("%s:\t%s", key, value))
+		}
+		c.out(w, "")
+	}
+
 	c.out(w, "Properties:")
 
 	var data [][]string
 
 	table := tablewriter.NewWriter(w)
-	table.SetHeader([]string{"Name", "Mapping", "Type", "Required", "Unique", "Primary", "Length"})
+	table.SetHeader([]string{"Name", "Mapping", "Type", "Required", "Unique", "Primary", "Length", "Annotations"})
 	c.configureTable(table)
 
 	for _, item := range resource.Properties {
@@ -64,6 +74,7 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 			strconv.FormatBool(item.Unique),
 			strconv.FormatBool(item.Primary),
 			strconv.Itoa(int(item.Length)),
+			annotations.ToString(item),
 		})
 	}
 
@@ -71,12 +82,36 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 		table.Append(v)
 	}
 	table.Render()
+	_ = w.Flush()
+
+	if len(resource.Indexes) > 0 {
+		table = tablewriter.NewWriter(w)
+
+		c.out(c.writer, "")
+		c.out(c.writer, "Indexes:")
+
+		data = [][]string{}
+		table.SetHeader([]string{"IndexType", "Unique", "Properties", "Annotations"})
+		c.configureTable(table)
+
+		for _, item := range resource.Indexes {
+			data = append(data, []string{
+				item.IndexType.String(),
+				strconv.FormatBool(item.Unique),
+				strings.Join(util.ArrayMapToString(item.Properties, func(t *model.ResourceIndexProperty) string {
+					return t.Name
+				}), ", "),
+				annotations.ToString(item),
+			})
+		}
+
+		for _, v := range data {
+			table.Append(v)
+		}
+		table.Render()
+	}
 
 	c.out(w, "")
-
-	table = tablewriter.NewWriter(w)
-	table.Render()
-
 	_ = w.Flush()
 }
 
@@ -134,10 +169,12 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 }
 
 func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *model.Record) {
-	var data [][]string
-
 	table := tablewriter.NewWriter(c.writer)
-	columns := []string{"Id", "Version"}
+	columns := []string{"Id"}
+
+	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+		columns = append(columns, "version")
+	}
 
 	for _, prop := range resource.Properties {
 		columns = append(columns, prop.Name)
@@ -146,10 +183,14 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *
 	table.SetHeader(columns)
 	c.configureTable(table)
 
+	var i = 0
 	for item := range recordsChan {
 		row := []string{
 			item.Id,
-			strconv.Itoa(int(item.Version)),
+		}
+
+		if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+			row = append(row, strconv.Itoa(int(item.Version)))
 		}
 
 		for _, prop := range resource.Properties {
@@ -167,12 +208,14 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, recordsChan chan *
 				row = append(row, valStr)
 			}
 		}
+		i++
 
-		data = append(data, row)
+		table.Append(row)
+
+		if i%1000 == 0 {
+			table.Render()
+		}
 	}
 
-	for _, v := range data {
-		table.Append(v)
-	}
-	table.Render() // Send output
+	table.Render()
 }

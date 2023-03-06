@@ -44,7 +44,7 @@ func protoMessageUpdateCmd[T proto.Message](params protoMessageUpdateCmdParams[T
 			err := cmd.PersistentFlags().Parse(args)
 
 			if err != nil {
-				log.Error(err)
+				log.Fatal(err)
 			}
 
 			parseRootFlags(cmd)
@@ -88,7 +88,7 @@ var updateRecordCmd = &cobra.Command{
 		err := cmd.PersistentFlags().Parse(args)
 
 		if err != nil {
-			log.Error(err)
+			log.Fatal(err)
 		}
 
 		parseRootFlags(cmd)

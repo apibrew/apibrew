@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/client"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
 	"io"
 	"strings"
@@ -25,6 +26,10 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 	name := getFlag(cmd, "name", false)
 	names := getFlag(cmd, "names", false)
 	namespace := getFlag(cmd, "namespace", false)
+
+	backup, _ := cmd.PersistentFlags().GetBool("backup")
+	limit, _ := cmd.PersistentFlags().GetInt64("limit")
+	offset, _ := cmd.PersistentFlags().GetInt64("offset")
 
 	if len(args) == 0 {
 		log.Fatal("type should be provided")
@@ -46,7 +51,12 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 				continue
 			}
 
-			s.readSelectData3(cmd.Context(), resource, result)
+			if backup && annotations.IsEnabled(resource, annotations.DisableBackup) {
+				log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resource.Namespace, resource.Name)
+				continue
+			}
+
+			s.readSelectData3(cmd.Context(), resource, result, limit, offset)
 		}
 	} else if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
 		resp, err := s.client().GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
@@ -85,7 +95,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 
 		check(err)
 
-		s.readSelectData3(cmd.Context(), resourceResp.Resource, result)
+		s.readSelectData3(cmd.Context(), resourceResp.Resource, result, limit, offset)
 	}
 
 }
@@ -100,11 +110,13 @@ type SelectedRecordsResult struct {
 	Resources []*model.Resource
 }
 
-func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, result *SelectedRecordsResult) {
+func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, result *SelectedRecordsResult, limit int64, offset int64) {
 	resp, err := s.client().GetRecordServiceClient().ReadStream(ctx, &stub.ReadStreamRequest{
 		Token:     s.client().GetToken(),
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
+		Limit:     uint32(limit),
+		Offset:    uint64(offset),
 	})
 
 	check(err)
@@ -131,7 +143,7 @@ func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Reso
 			}
 
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			res.Records <- record
