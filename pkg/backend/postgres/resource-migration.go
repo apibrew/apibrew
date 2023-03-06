@@ -269,7 +269,7 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 
 	resource = new(model.Resource)
 	resource.Annotations = make(map[string]string)
-	annotations.Enable(resource, annotations.AutoCreated, annotations.DisableMigration, annotations.DisableAudit)
+	annotations.Enable(resource, annotations.AutoCreated)
 	resource.AuditData = new(model.AuditData)
 	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
@@ -514,11 +514,11 @@ func doResourceCleanup(resource *model.Resource) {
 
 	resource.Properties = newColumns
 
-	if enableAudit {
-		annotations.Disable(resource, annotations.DisableAudit)
+	if !enableAudit {
+		annotations.Enable(resource, annotations.DisableAudit)
 	}
 
-	if versionDetected {
-		annotations.Disable(resource, annotations.DisableVersion)
+	if !versionDetected {
+		annotations.Enable(resource, annotations.DisableVersion)
 	}
 }
