@@ -103,7 +103,7 @@ func (b *backendProviderService) GetBackend(dataSource *model.DataSource) abs.Ba
 	}
 
 	constructor := b.GetBackendConstructor(dataSource.GetBackend())
-	instance := constructor(dataSource.GetOptions())
+	instance := constructor(dataSource)
 
 	b.backendMap[dataSource.Id] = instance
 	b.backendMap[dataSource.Name] = instance
@@ -128,6 +128,8 @@ func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceB
 
 func (b *backendProviderService) Init(data *model.InitData) {
 	b.systemDataSource = data.SystemDataSource
+	b.systemDataSource.Id = "system"
+	b.systemDataSource.Name = "system"
 }
 
 func (b *backendProviderService) MigrateResource(resource *model.Resource, schema abs.Schema) {

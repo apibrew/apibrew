@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/batch"
+	"github.com/tislib/data-handler/pkg/dhctl/flags"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
@@ -33,8 +34,14 @@ var applyCmd = &cobra.Command{
 		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)
 
+		dataOnly, err := cmd.Flags().GetBool("data-only")
+		check(err)
+
 		force, err := cmd.Flags().GetBool("force")
 		check(err)
+
+		var overrideConfig = new(flags.OverrideConfig)
+		overrideFlags.Parse(overrideConfig, cmd, args)
 
 		if file == "" {
 			log.Fatal("file should provided")
@@ -47,8 +54,14 @@ var applyCmd = &cobra.Command{
 
 			batchExecutor := batch.NewExecutor(batch.ExecutorParams{
 				Input:                 in,
+				Token:                 GetDhClient().GetToken(),
 				ResourceServiceClient: GetDhClient().GetResourceServiceClient(),
 				RecordServiceClient:   GetDhClient().GetRecordServiceClient(),
+				DataOnly:              dataOnly,
+				OverrideConfig: batch.OverrideConfig{
+					Namespace:  overrideConfig.Namespace,
+					DataSource: overrideConfig.DataSource,
+				},
 			})
 
 			err = batchExecutor.Restore(context.TODO(), in)
@@ -60,7 +73,7 @@ var applyCmd = &cobra.Command{
 			fileData, err := os.ReadFile(file)
 
 			check(err)
-			applyYaml(fileData, migrate, namespace, force)
+			applyYaml(fileData, migrate, namespace, force, overrideConfig)
 		}
 
 		log.Println(migrate)
@@ -68,7 +81,7 @@ var applyCmd = &cobra.Command{
 	},
 }
 
-func applyYaml(fileData []byte, migrate bool, namespace string, force bool) {
+func applyYaml(fileData []byte, migrate bool, namespace string, force bool, overrideConfig *flags.OverrideConfig) {
 	var jsonUMo = protojson.UnmarshalOptions{
 		AllowPartial:   false,
 		DiscardUnknown: false,
@@ -219,4 +232,7 @@ func init() {
 	applyCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	applyCmd.PersistentFlags().BoolP("migrate", "m", false, "Migrate")
 	applyCmd.PersistentFlags().Bool("force", false, "Force")
+	applyCmd.PersistentFlags().Bool("data-only", false, "Data Only")
+
+	overrideFlags.Declare(applyCmd)
 }

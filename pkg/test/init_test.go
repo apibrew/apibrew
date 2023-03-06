@@ -1,14 +1,8 @@
 package test
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 )
-
-func init() {
-	log.SetLevel(log.TraceLevel)
-	log.SetReportCaller(true)
-}
 
 func prepareInitData() *model.InitData {
 	return &model.InitData{

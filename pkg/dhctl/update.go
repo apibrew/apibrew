@@ -109,7 +109,7 @@ var updateRecordCmd = &cobra.Command{
 			Record:    record,
 		}))
 
-		describeWriter.WriteRecords(resource.Resource, util.ArrToChan([]*model.Record{
+		describeWriter.WriteRecords(resource.Resource, 0, util.ArrToChan([]*model.Record{
 			check2(GetDhClient().GetRecordServiceClient().Get(cmd.Context(), &stub.GetRecordRequest{
 				Token:     GetDhClient().GetToken(),
 				Namespace: *updateRecordCmdNamespace,
@@ -171,7 +171,7 @@ func initUpdateCmd() {
 				DataSources: []*model.DataSource{dataSource},
 			}))
 
-			describeWriter.WriteRecords(resources.DataSourceResource, util.ArrToChan([]*model.Record{
+			describeWriter.WriteRecords(resources.DataSourceResource, 0, util.ArrToChan([]*model.Record{
 				mapping.DataSourceToRecord(check2(GetDhClient().GetDataSourceServiceClient().Get(context.TODO(), &stub.GetDataSourceRequest{
 					Token: GetDhClient().GetToken(),
 					Id:    resp.DataSources[0].Id,
@@ -194,7 +194,7 @@ func initUpdateCmd() {
 				Namespaces: []*model.Namespace{namespace},
 			}))
 
-			describeWriter.WriteRecords(resources.NamespaceResource, util.ArrToChan([]*model.Record{
+			describeWriter.WriteRecords(resources.NamespaceResource, 0, util.ArrToChan([]*model.Record{
 				mapping.NamespaceToRecord(check2(GetDhClient().GetNamespaceServiceClient().Get(context.TODO(), &stub.GetNamespaceRequest{
 					Token: GetDhClient().GetToken(),
 					Id:    resp.Namespaces[0].Id,
@@ -219,7 +219,7 @@ func initUpdateCmd() {
 
 			result := util.ArrayMap[*model.User, *model.Record](resp.Users, mapping.UserToRecord)
 
-			describeWriter.WriteRecords(resources.UserResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.UserResource, 0, util.ArrToChan(result))
 		},
 	}))
 	updateCmd.AddCommand(protoMessageUpdateCmd[*model.RemoteExtension](protoMessageUpdateCmdParams[*model.RemoteExtension]{
@@ -239,7 +239,7 @@ func initUpdateCmd() {
 
 			result := util.ArrayMap[*model.RemoteExtension, *model.Record](resp.Extensions, mapping.ExtensionToRecord)
 
-			describeWriter.WriteRecords(resources.UserResource, util.ArrToChan(result))
+			describeWriter.WriteRecords(resources.UserResource, 0, util.ArrToChan(result))
 		},
 	}))
 

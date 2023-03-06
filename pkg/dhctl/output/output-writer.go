@@ -9,7 +9,7 @@ import (
 
 type Writer interface {
 	WriteResources(resources []*model.Resource)
-	WriteRecords(resource *model.Resource, recordsChan chan *model.Record)
+	WriteRecords(resource *model.Resource, total uint32, recordsChan chan *model.Record)
 	IsBinary() bool
 }
 

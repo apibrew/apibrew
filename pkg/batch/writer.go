@@ -3,6 +3,7 @@ package batch
 import (
 	"encoding/binary"
 	"errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"google.golang.org/protobuf/proto"
 	"io"
@@ -69,15 +70,24 @@ func (w *writer) WriteResource(resource ...*model.Resource) error {
 }
 
 func (w *writer) WriteRecord(namespace string, resourceName string, record ...*model.Record) error {
+	log.Infof("Writing records for %s/%s (%d)", namespace, resourceName, len(record))
+
 	if w.batch == nil {
 		return errors.New("batch is not started")
 	}
 
-	w.batch.BatchRecords = append(w.batch.BatchRecords, &model.BatchRecordsPart{
+	batchPart := &model.BatchRecordsPart{
 		Namespace: namespace,
 		Resource:  resourceName,
-		Records:   record,
-	})
+	}
+
+	for _, item := range record {
+		batchPart.Values = append(batchPart.Values, item.PropertiesPacked...)
+	}
+
+	w.batch.BatchRecords = append(w.batch.BatchRecords, batchPart)
+
+	log.Info("Done")
 
 	return nil
 }

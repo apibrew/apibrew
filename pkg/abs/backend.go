@@ -57,6 +57,7 @@ type ListRecordParams struct {
 	ResolveReferences []string
 	Schema            *Schema
 	ResultChan        chan<- *model.Record
+	PackRecords       bool
 }
 
 type UpgradeResourceParams struct {
@@ -76,4 +77,4 @@ type AddResourceParams struct {
 type DataSourceConnectionDetails interface {
 }
 
-type BackendConstructor func(dataSource DataSourceConnectionDetails) Backend
+type BackendConstructor func(dataSource *model.DataSource) Backend
