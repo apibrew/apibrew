@@ -56,17 +56,19 @@ func (e executor) Restore(ctx context.Context, in *os.File) error {
 
 func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 	if batch.Header.Mode == model.BatchMode_BATCH_CREATE {
-		resp, err := e.params.ResourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
-			Token:          e.params.Token,
-			Resources:      batch.Resources,
-			DoMigration:    e.params.DoMigration,
-			ForceMigration: e.params.ForceMigration,
-			Annotations:    batch.Header.Annotations,
-		})
+		if !e.params.DataOnly {
+			resp, err := e.params.ResourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+				Token:          e.params.Token,
+				Resources:      batch.Resources,
+				DoMigration:    e.params.DoMigration,
+				ForceMigration: e.params.ForceMigration,
+				Annotations:    batch.Header.Annotations,
+			})
 
-		if err != nil {
-			log.Error(err)
-		} else {
+			if err != nil {
+				log.Fatal(err)
+			}
+
 			for _, r := range resp.Resources {
 				log.Tracef("Resource created: %s/%s(%s)", r.Namespace, r.Name, r.Id)
 			}
@@ -88,7 +90,7 @@ func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 			})
 
 			if err != nil {
-				return err
+				log.Fatal(err)
 			}
 
 			resPropertyCount := len(resourceResp.Resource.Properties)
@@ -141,6 +143,7 @@ type ExecutorParams struct {
 	Token                 string
 	DoMigration           bool
 	ForceMigration        bool
+	DataOnly              bool
 }
 
 func NewExecutor(params ExecutorParams) Executor {

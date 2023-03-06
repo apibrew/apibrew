@@ -52,6 +52,10 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 				continue
 			}
 
+			if namespace != "" && resource.Namespace != namespace {
+				continue
+			}
+
 			if backup && annotations.IsEnabled(resource, annotations.DisableBackup) {
 				log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resource.Namespace, resource.Name)
 				continue
@@ -98,6 +102,11 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 		})
 
 		check(err)
+
+		if backup && annotations.IsEnabled(resourceResp.Resource, annotations.DisableBackup) {
+			log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resourceResp.Resource.Namespace, resourceResp.Resource.Name)
+			return
+		}
 
 		result.RecordProviders = []func() SelectedRecordData{
 			func() SelectedRecordData {

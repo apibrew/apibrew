@@ -77,4 +77,4 @@ type AddResourceParams struct {
 type DataSourceConnectionDetails interface {
 }
 
-type BackendConstructor func(dataSource DataSourceConnectionDetails) Backend
+type BackendConstructor func(dataSource *model.DataSource) Backend
