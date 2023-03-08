@@ -86,7 +86,7 @@ func (x *Namespace) GetType() DataType {
 	if x != nil {
 		return x.Type
 	}
-	return DataType_SYSTEM
+	return DataType_USER
 }
 
 func (x *Namespace) GetDescription() string {

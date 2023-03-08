@@ -124,8 +124,8 @@ func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resourc
 	return handleDbError(ctx, err)
 }
 
-func resourceDropTable(ctx context.Context, runner QueryRunner, mapping string, forceMigration bool) errors.ServiceError {
-	s := "DROP TABLE " + mapping
+func resourceDropTable(ctx context.Context, runner QueryRunner, resource *model.Resource, history bool, forceMigration bool) errors.ServiceError {
+	s := "DROP TABLE " + getFullTableName(resource.SourceConfig, history)
 
 	if forceMigration {
 		s += " CASCADE;"

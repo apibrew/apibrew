@@ -10,23 +10,28 @@ import (
 )
 
 type App struct {
-	initData               *model.InitData
-	authenticationService  abs.AuthenticationService
-	dataSourceService      abs.DataSourceService
-	resourceService        abs.ResourceService
-	recordService          abs.RecordService
-	backendProviderService abs.BackendProviderService
-	namespaceService       abs.NamespaceService
-	userService            abs.UserService
-	genericHandler         *handler.GenericHandler
-	stdHandler             handlers.StdHandler
-	watchService           abs.WatchService
-	extensionService       abs.ExtensionService
-	pluginService          abs.PluginService
+	initData                 *model.InitData
+	authenticationService    abs.AuthenticationService
+	dataSourceService        abs.DataSourceService
+	resourceService          abs.ResourceService
+	recordService            abs.RecordService
+	backendProviderService   abs.BackendProviderService
+	namespaceService         abs.NamespaceService
+	userService              abs.UserService
+	genericHandler           *handler.GenericHandler
+	stdHandler               handlers.StdHandler
+	watchService             abs.WatchService
+	extensionService         abs.ExtensionService
+	pluginService            abs.PluginService
+	resourceMigrationService abs.ResourceMigrationService
 }
 
 func (app *App) GetWatchService() abs.WatchService {
 	return app.watchService
+}
+
+func (app *App) GetResourceMigrationService() abs.ResourceMigrationService {
+	return app.resourceMigrationService
 }
 
 func (app *App) GetNamespaceService() abs.NamespaceService {
@@ -64,8 +69,9 @@ func (app *App) GetPluginService() abs.PluginService {
 func (app *App) Init() {
 	app.backendProviderService = NewBackendProviderService()
 	app.genericHandler = handler.NewGenericHandler()
+	app.resourceMigrationService = NewResourceMigrationService()
 
-	app.resourceService = NewResourceService(app.backendProviderService)
+	app.resourceService = NewResourceService(app.backendProviderService, app.resourceMigrationService)
 	app.recordService = NewRecordService(app.resourceService, app.backendProviderService, app.genericHandler)
 
 	app.dataSourceService = NewDataSourceService(app.resourceService, app.recordService, app.backendProviderService)

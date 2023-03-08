@@ -77,7 +77,7 @@ func (x *Record) GetDataType() DataType {
 	if x != nil {
 		return x.DataType
 	}
-	return DataType_SYSTEM
+	return DataType_USER
 }
 
 func (x *Record) GetProperties() map[string]*structpb.Value {

@@ -2,15 +2,8 @@ package util
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 )
-
-func IsSameIdentifiedResourceProperty(property1, property2 *model.ResourceProperty) bool {
-	if property1.Mapping != property2.Mapping {
-		return false
-	}
-
-	return true
-}
 
 func IsSameIdentifiedResourceIndex(index1, index2 *model.ResourceIndex) bool {
 	return IsSameResourceIndex(index1, index2)
@@ -48,6 +41,10 @@ func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 		return false
 	}
 
+	if property1.Name != property2.Name {
+		return false
+	}
+
 	if property1.Type != property2.Type {
 		return false
 	}
@@ -79,4 +76,23 @@ func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 	}
 
 	return true
+}
+
+func IsSameIdentifiedResourceProperty(property1, property2 *model.ResourceProperty) bool {
+	if property1.Mapping == property2.Mapping {
+		return true
+	}
+
+	if property1.Name == property2.Name {
+		return true
+	}
+
+	property1MatchKey := annotations.Get(property1, annotations.SourceMatchKey)
+	property2MatchKey := annotations.Get(property2, annotations.SourceMatchKey)
+
+	if property1MatchKey != "" && property1MatchKey == property2MatchKey {
+		return true
+	}
+
+	return false
 }

@@ -26,6 +26,7 @@ type ResourceServiceClient interface {
 	Update(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error)
 	Delete(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*DeleteResourceResponse, error)
 	List(ctx context.Context, in *ListResourceRequest, opts ...grpc.CallOption) (*ListResourceResponse, error)
+	PrepareResourceMigrationPlan(ctx context.Context, in *PrepareResourceMigrationPlanRequest, opts ...grpc.CallOption) (*PrepareResourceMigrationPlanResponse, error)
 	Get(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error)
 	GetByName(ctx context.Context, in *GetResourceByNameRequest, opts ...grpc.CallOption) (*GetResourceByNameResponse, error)
 	GetSystemResource(ctx context.Context, in *GetSystemResourceRequest, opts ...grpc.CallOption) (*GetSystemResourceResponse, error)
@@ -75,6 +76,15 @@ func (c *resourceServiceClient) List(ctx context.Context, in *ListResourceReques
 	return out, nil
 }
 
+func (c *resourceServiceClient) PrepareResourceMigrationPlan(ctx context.Context, in *PrepareResourceMigrationPlanRequest, opts ...grpc.CallOption) (*PrepareResourceMigrationPlanResponse, error) {
+	out := new(PrepareResourceMigrationPlanResponse)
+	err := c.cc.Invoke(ctx, "/stub.ResourceService/PrepareResourceMigrationPlan", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *resourceServiceClient) Get(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error) {
 	out := new(GetResourceResponse)
 	err := c.cc.Invoke(ctx, "/stub.ResourceService/Get", in, out, opts...)
@@ -110,6 +120,7 @@ type ResourceServiceServer interface {
 	Update(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error)
 	Delete(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error)
 	List(context.Context, *ListResourceRequest) (*ListResourceResponse, error)
+	PrepareResourceMigrationPlan(context.Context, *PrepareResourceMigrationPlanRequest) (*PrepareResourceMigrationPlanResponse, error)
 	Get(context.Context, *GetResourceRequest) (*GetResourceResponse, error)
 	GetByName(context.Context, *GetResourceByNameRequest) (*GetResourceByNameResponse, error)
 	GetSystemResource(context.Context, *GetSystemResourceRequest) (*GetSystemResourceResponse, error)
@@ -131,6 +142,9 @@ func (UnimplementedResourceServiceServer) Delete(context.Context, *DeleteResourc
 }
 func (UnimplementedResourceServiceServer) List(context.Context, *ListResourceRequest) (*ListResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedResourceServiceServer) PrepareResourceMigrationPlan(context.Context, *PrepareResourceMigrationPlanRequest) (*PrepareResourceMigrationPlanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrepareResourceMigrationPlan not implemented")
 }
 func (UnimplementedResourceServiceServer) Get(context.Context, *GetResourceRequest) (*GetResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
@@ -226,6 +240,24 @@ func _ResourceService_List_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ResourceService_PrepareResourceMigrationPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PrepareResourceMigrationPlanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResourceServiceServer).PrepareResourceMigrationPlan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/stub.ResourceService/PrepareResourceMigrationPlan",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResourceServiceServer).PrepareResourceMigrationPlan(ctx, req.(*PrepareResourceMigrationPlanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ResourceService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetResourceRequest)
 	if err := dec(in); err != nil {
@@ -302,6 +334,10 @@ var ResourceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _ResourceService_List_Handler,
+		},
+		{
+			MethodName: "PrepareResourceMigrationPlan",
+			Handler:    _ResourceService_PrepareResourceMigrationPlan_Handler,
 		},
 		{
 			MethodName: "Get",

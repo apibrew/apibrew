@@ -335,7 +335,7 @@ func (x *DataSource) GetType() DataType {
 	if x != nil {
 		return x.Type
 	}
-	return DataType_SYSTEM
+	return DataType_USER
 }
 
 func (x *DataSource) GetName() string {

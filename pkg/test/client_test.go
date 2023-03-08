@@ -23,6 +23,9 @@ var namespaceServiceClient stub.NamespaceServiceClient
 var container abs.Container
 
 func init() {
+	log.SetLevel(log.DebugLevel)
+	log.SetReportCaller(false)
+
 	application := new(service.App)
 
 	var initData = prepareInitData()

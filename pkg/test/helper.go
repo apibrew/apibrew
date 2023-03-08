@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"google.golang.org/grpc/status"
 	"reflect"
 	"testing"
 	"unicode"
@@ -61,5 +62,21 @@ func DeepEqual(t *testing.T, a interface{}, b interface{}, prefix string) {
 		if va.Interface() != vb.Interface() {
 			t.Error(fmt.Sprintf("%sValue: %v != %v\n", prefix, va.Interface(), vb.Interface()))
 		}
+	}
+}
+
+func checker[T any](t *testing.T) func(val T, err error) T {
+	return func(val T, err error) T {
+		if err != nil {
+			st, isStatus := status.FromError(err)
+
+			if isStatus {
+				t.Error(st.Message())
+			} else {
+				t.Error(err)
+			}
+		}
+
+		return val
 	}
 }
