@@ -108,6 +108,14 @@ func (r *resourceMigrationService) preparePlanStepsForNewResource(resource *mode
 		})
 	}
 
+	for index := range resource.Indexes {
+		steps = append(steps, &model.ResourceMigrationStep{
+			Kind: &model.ResourceMigrationStep_CreateIndex{CreateIndex: &model.ResourceMigrationCreateIndex{
+				Index: uint32(index),
+			}},
+		})
+	}
+
 	return steps
 }
 
