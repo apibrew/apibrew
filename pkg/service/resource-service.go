@@ -10,19 +10,54 @@ import (
 	"github.com/tislib/data-handler/pkg/resources"
 	mapping "github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/server/util"
+	util2 "github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type resourceService struct {
-	backendProviderService abs.BackendProviderService
-	schema                 abs.Schema
+	backendProviderService   abs.BackendProviderService
+	schema                   abs.Schema
+	resourceMigrationService abs.ResourceMigrationService
+	mu                       sync.Mutex
 }
 
 func (r *resourceService) GetSchema() *abs.Schema {
 	return &r.schema
+}
+
+func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError) {
+	var result []*model.ResourceMigrationPlan
+
+	for _, resource := range resources {
+		var existingResource *model.Resource
+		var err errors.ServiceError
+
+		if prepareFromDataSource {
+			existingResource, err = r.backendProviderService.GetSystemBackend(ctx).PrepareResourceFromEntity(ctx, resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
+
+			if err != nil {
+				if !errors.RecordNotFoundError.Is(err) {
+					return nil, err
+				}
+			}
+		} else {
+			existingResource = r.Get(ctx, resource.Id)
+		}
+
+		plan, err := r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)
+
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, plan)
+	}
+
+	return result, nil
 }
 
 func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError {
@@ -95,6 +130,17 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 }
 
 func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
+	r.mu.Lock()
+	defer func() {
+		r.mu.Unlock()
+	}()
+
+	existingResource := r.Get(ctx, resource.Id)
+
+	if existingResource == nil {
+		return errors.ResourceNotFoundError
+	}
+
 	resource.DataType = model.DataType_USER
 
 	if resource.Namespace == "" {
@@ -119,23 +165,125 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	result, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
-		Resource:       resources.ResourceResource,
-		Records:        resourceRecords,
-		CheckVersion:   false,
-		IgnoreIfExists: false,
-		Schema:         r.GetSchema(),
-	})
-
-	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
-		return errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exiss: " + resource.Name))
+	// running migration through existing resource
+	//reload schema for comparing
+	if err := r.ReloadSchema(ctx); err != nil {
+		return err
 	}
 
+	// prepare local migration plan
+	plan, err := r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)
 	if err != nil {
 		return err
 	}
 
-	resource.Id = result[0].Id
+	if err := r.ApplyPlan(ctx, plan); err != nil {
+		return err
+	}
+
+	if !resource.Virtual && doMigration {
+		bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
+
+		if err != nil {
+			return err
+		}
+
+		// prepare local migration plan for backend
+		preparedResource, err := bck.PrepareResourceFromEntity(ctx, existingResource.SourceConfig.Catalog, existingResource.SourceConfig.Entity)
+
+		if !errors.RecordNotFoundError.Is(err) && err != nil {
+			return err
+		}
+
+		migrationPlan, err := r.resourceMigrationService.PreparePlan(ctx, preparedResource, resource)
+		if err != nil {
+			return err
+		}
+
+		err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
+			Resource:       resource,
+			MigrationPlan:  migrationPlan,
+			ForceMigration: forceMigration,
+			Schema:         &r.schema,
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
+	r.mustReloadResources(context.TODO())
+
+	return nil
+}
+
+func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMigrationPlan) errors.ServiceError {
+	var currentPropertyMap = util2.GetNamedMap(plan.CurrentResource.Properties)
+	var existingPropertyMap = util2.GetNamedMap(plan.ExistingResource.Properties)
+
+	for _, step := range plan.Steps {
+		switch sk := step.Kind.(type) {
+		case *model.ResourceMigrationStep_UpdateResource:
+			resourceRecords := []*model.Record{mapping.ResourceToRecord(plan.CurrentResource)}
+
+			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
+				Resource:       resources.ResourceResource,
+				Records:        resourceRecords,
+				CheckVersion:   false,
+				IgnoreIfExists: false,
+				Schema:         r.GetSchema(),
+			})
+
+			if err != nil {
+				return err
+			}
+		case *model.ResourceMigrationStep_CreateResource:
+		case *model.ResourceMigrationStep_DeleteResource:
+		case *model.ResourceMigrationStep_CreateProperty:
+			_, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, abs.BulkRecordsParams{
+				Resource:       resources.ResourcePropertyResource,
+				Records:        []*model.Record{mapping.ResourcePropertyToRecord(currentPropertyMap[sk.CreateProperty.Property], plan.CurrentResource)},
+				CheckVersion:   false,
+				IgnoreIfExists: false,
+				Schema:         r.GetSchema(),
+			})
+
+			if err != nil {
+				return err
+			}
+
+			if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
+				return errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exiss: " + plan.CurrentResource.Name))
+			}
+
+			if err != nil {
+				return err
+			}
+		case *model.ResourceMigrationStep_DeleteProperty:
+			err := r.backendProviderService.GetSystemBackend(ctx).DeleteRecords(ctx, resources.ResourcePropertyResource, []string{existingPropertyMap[sk.DeleteProperty.ExistingProperty].Id})
+
+			if err != nil {
+				return err
+			}
+		case *model.ResourceMigrationStep_UpdateProperty:
+			propertyRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.UpdateProperty.Property], plan.CurrentResource)
+			propertyRecord.Id = existingPropertyMap[sk.UpdateProperty.ExistingProperty].Id
+
+			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
+				Resource:       resources.ResourcePropertyResource,
+				Records:        []*model.Record{propertyRecord},
+				CheckVersion:   false,
+				IgnoreIfExists: false,
+				Schema:         r.GetSchema(),
+			})
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	resource := plan.CurrentResource
 
 	propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
 		return mapping.ResourcePropertyToRecord(property, resource)
@@ -168,26 +316,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	if err != nil {
 		return err
 	}
-
-	if !resource.Virtual && doMigration {
-		bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
-
-		if err != nil {
-			return err
-		}
-
-		err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
-			Resource:       resource,
-			ForceMigration: forceMigration,
-			Schema:         &r.schema,
-		})
-
-		if err != nil {
-			return err
-		}
-	}
-
-	r.mustReloadResources(context.TODO())
 
 	return nil
 }
@@ -302,8 +430,20 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 			return nil, err
 		}
 
+		preparedResource, err := bck.PrepareResourceFromEntity(ctx, resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
+
+		if !errors.RecordNotFoundError.Is(err) && err != nil {
+			return nil, err
+		}
+
+		migrationPlan, err := r.resourceMigrationService.PreparePlan(ctx, preparedResource, resource)
+		if err != nil {
+			return nil, err
+		}
+
 		err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
 			Resource:       resource,
+			MigrationPlan:  migrationPlan,
 			ForceMigration: forceMigration,
 			Schema:         &r.schema,
 		})
@@ -435,17 +575,55 @@ func (r *resourceService) Init(_ *model.InitData) {
 		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
 	}
 
-	r.backendProviderService.MigrateResource(resources.NamespaceResource, r.schema)
-	r.backendProviderService.MigrateResource(resources.DataSourceResource, r.schema)
+	r.MigrateResource(resources.NamespaceResource, r.schema)
+	r.MigrateResource(resources.DataSourceResource, r.schema)
 
-	r.backendProviderService.MigrateResource(resources.ResourceResource, r.schema)
-	r.backendProviderService.MigrateResource(resources.ResourcePropertyResource, r.schema)
-	r.backendProviderService.MigrateResource(resources.ResourceReferenceResource, r.schema)
+	r.MigrateResource(resources.ResourceResource, r.schema)
+	r.MigrateResource(resources.ResourcePropertyResource, r.schema)
 
-	r.backendProviderService.MigrateResource(resources.UserResource, r.schema)
-	r.backendProviderService.MigrateResource(resources.ExtensionResource, r.schema)
+	r.MigrateResource(resources.UserResource, r.schema)
+	r.MigrateResource(resources.ExtensionResource, r.schema)
 
 	if err := r.ReloadSchema(context.TODO()); err != nil {
+		panic(err)
+	}
+}
+
+func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.Schema) {
+	if resource.Annotations == nil {
+		resource.Annotations = make(map[string]string)
+	}
+
+	preparedResource, err := r.backendProviderService.GetSystemBackend(context.TODO()).PrepareResourceFromEntity(context.TODO(), resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
+
+	if err != nil && !errors.RecordNotFoundError.Is(err) {
+		panic(err)
+	}
+
+	migrationPlan, err := r.resourceMigrationService.PreparePlan(context.TODO(), preparedResource, resource)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(migrationPlan.Steps) == 0 {
+		return
+	}
+
+	fmt.Println("========" + resource.Namespace + "/" + resource.Name + "=======")
+	for _, step := range migrationPlan.Steps {
+		jsonRes := protojson.Format(step)
+		fmt.Println(jsonRes)
+	}
+	fmt.Println("================")
+
+	err = r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
+		Resource:       resource,
+		MigrationPlan:  migrationPlan,
+		ForceMigration: true,
+		Schema:         &schema,
+	})
+
+	if err != nil {
 		panic(err)
 	}
 }
@@ -516,7 +694,7 @@ func (r *resourceService) List(_ context.Context) []*model.Resource {
 
 func (r *resourceService) Get(_ context.Context, id string) *model.Resource {
 	for _, item := range r.schema.Resources {
-		if item.Id == id {
+		if item.Id != "" && item.Id == id {
 			return item
 		}
 	}
@@ -524,8 +702,9 @@ func (r *resourceService) Get(_ context.Context, id string) *model.Resource {
 	return nil
 }
 
-func NewResourceService(backendProviderService abs.BackendProviderService) abs.ResourceService {
+func NewResourceService(backendProviderService abs.BackendProviderService, resourceMigrationService abs.ResourceMigrationService) abs.ResourceService {
 	return &resourceService{
-		backendProviderService: backendProviderService,
+		backendProviderService:   backendProviderService,
+		resourceMigrationService: resourceMigrationService,
 	}
 }

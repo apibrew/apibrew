@@ -12,9 +12,22 @@ service ResourceService {
   rpc Update(UpdateResourceRequest) returns(UpdateResourceResponse) {}
   rpc Delete(DeleteResourceRequest) returns(DeleteResourceResponse) {}
   rpc List(ListResourceRequest) returns(ListResourceResponse) {}
+  rpc PrepareResourceMigrationPlan(PrepareResourceMigrationPlanRequest) returns(PrepareResourceMigrationPlanResponse) {}
   rpc Get(GetResourceRequest) returns(GetResourceResponse) {}
   rpc GetByName(GetResourceByNameRequest) returns(GetResourceByNameResponse) {}
   rpc GetSystemResource(GetSystemResourceRequest) returns(GetSystemResourceResponse) {}
+}
+
+message PrepareResourceMigrationPlanRequest {
+  string token = 1;
+  bool prepareFromDataSource = 2;
+  repeated model.Resource resources = 3;
+
+  map<string, string> annotations = 103;
+}
+
+message PrepareResourceMigrationPlanResponse {
+  repeated model.ResourceMigrationPlan plans = 1;
 }
 
 message CreateResourceRequest {

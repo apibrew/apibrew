@@ -5,7 +5,7 @@ package model;
 option go_package = "github.com/tislib/data-handler/pkg/model";
 
 enum DataType {
-  SYSTEM = 0;
-  STATIC = 1;
-  USER = 3;
+  USER = 0;
+  SYSTEM = 1;
+  STATIC = 2;
 }

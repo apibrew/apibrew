@@ -65,6 +65,7 @@ type UpgradeResourceParams struct {
 	Resource        *model.Resource
 	ForceMigration  bool
 	Schema          *Schema
+	MigrationPlan   *model.ResourceMigrationPlan
 }
 
 type AddResourceParams struct {

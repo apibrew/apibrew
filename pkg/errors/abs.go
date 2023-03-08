@@ -13,6 +13,7 @@ type ServiceError interface {
 	WithDetails(details string) ServiceError
 	WithErrorFields(errors []*model.ErrorField) ServiceError
 	GetDetails() string
+	Is(err error) bool
 }
 
 type serviceError struct {
@@ -60,6 +61,18 @@ func (s serviceError) WithDetails(details string) ServiceError {
 func (s serviceError) WithErrorFields(errorFields []*model.ErrorField) ServiceError {
 	s.errorFields = errorFields
 	return s
+}
+
+func (s serviceError) Is(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	if se, ok := err.(serviceError); ok {
+		return s.Code() == se.Code()
+	}
+
+	return false
 }
 
 func newServiceError(code model.ErrorCode, message string) ServiceError {
