@@ -194,7 +194,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 }
 
 func isResourceRelatedResource(resource *model.Resource) bool {
-	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name || resource.Name == resources.ResourcePropertyResource.Name || resource.Name == resources.ResourceReferenceResource.Name)
+	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name || resource.Name == resources.ResourcePropertyResource.Name)
 }
 
 func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {

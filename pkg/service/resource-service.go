@@ -580,7 +580,6 @@ func (r *resourceService) Init(_ *model.InitData) {
 
 	r.MigrateResource(resources.ResourceResource, r.schema)
 	r.MigrateResource(resources.ResourcePropertyResource, r.schema)
-	r.MigrateResource(resources.ResourceReferenceResource, r.schema)
 
 	r.MigrateResource(resources.UserResource, r.schema)
 	r.MigrateResource(resources.ExtensionResource, r.schema)
