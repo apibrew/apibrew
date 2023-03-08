@@ -23,16 +23,17 @@ type Server interface {
 }
 
 type grpcServer struct {
-	grpcServer            *grpc.Server
-	resourceService       abs.ResourceService
-	recordService         abs.RecordService
-	authenticationService abs.AuthenticationService
-	dataSourceService     abs.DataSourceService
-	namespaceService      abs.NamespaceService
-	userService           abs.UserService
-	initData              *model.InitData
-	watchService          abs.WatchService
-	extensionService      abs.ExtensionService
+	grpcServer               *grpc.Server
+	resourceService          abs.ResourceService
+	resourceMigrationService abs.ResourceMigrationService
+	recordService            abs.RecordService
+	authenticationService    abs.AuthenticationService
+	dataSourceService        abs.DataSourceService
+	namespaceService         abs.NamespaceService
+	userService              abs.UserService
+	initData                 *model.InitData
+	watchService             abs.WatchService
+	extensionService         abs.ExtensionService
 }
 
 func (g *grpcServer) Stop() {
@@ -132,13 +133,14 @@ func interceptRequest(authenticationService abs.AuthenticationService, ctx conte
 
 func NewGrpcServer(container abs.Container) Server {
 	return &grpcServer{
-		resourceService:       container.GetResourceService(),
-		recordService:         container.GetRecordService(),
-		watchService:          container.GetWatchService(),
-		authenticationService: container.GetAuthenticationService(),
-		dataSourceService:     container.GetDataSourceService(),
-		namespaceService:      container.GetNamespaceService(),
-		userService:           container.GetUserService(),
-		extensionService:      container.GetExtensionService(),
+		resourceService:          container.GetResourceService(),
+		resourceMigrationService: container.GetResourceMigrationService(),
+		recordService:            container.GetRecordService(),
+		watchService:             container.GetWatchService(),
+		authenticationService:    container.GetAuthenticationService(),
+		dataSourceService:        container.GetDataSourceService(),
+		namespaceService:         container.GetNamespaceService(),
+		userService:              container.GetUserService(),
+		extensionService:         container.GetExtensionService(),
 	}
 }

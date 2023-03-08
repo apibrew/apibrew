@@ -132,22 +132,6 @@ func (b *backendProviderService) Init(data *model.InitData) {
 	b.systemDataSource.Name = "system"
 }
 
-func (b *backendProviderService) MigrateResource(resource *model.Resource, schema abs.Schema) {
-	if resource.Annotations == nil {
-		resource.Annotations = make(map[string]string)
-	}
-
-	err := b.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
-		Resource:       resource,
-		ForceMigration: true,
-		Schema:         &schema,
-	})
-
-	if err != nil {
-		panic(err)
-	}
-}
-
 func NewBackendProviderService() abs.BackendProviderService {
 	return &backendProviderService{
 		backendMap: make(map[string]abs.Backend),

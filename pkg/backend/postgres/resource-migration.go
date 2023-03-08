@@ -14,7 +14,97 @@ import (
 	"strings"
 )
 
+func resourceMigrateTableNew(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
+	var currentPropertyMap = util.GetNamedMap(params.MigrationPlan.CurrentResource.Properties)
+	var existingPropertyMap = util.GetNamedMap(params.MigrationPlan.ExistingResource.Properties)
+
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	entityName := params.Resource.SourceConfig.Entity
+	if history {
+		entityName = entityName + "_h"
+	}
+
+	var tableName = getFullTableName(params.Resource.GetSourceConfig(), history)
+
+	for _, step := range params.MigrationPlan.Steps {
+		switch sk := step.Kind.(type) {
+		case *model.ResourceMigrationStep_CreateResource:
+			if err := resourceCreateTable(ctx, runner, params.Resource); err != nil {
+				return err
+			}
+		case *model.ResourceMigrationStep_DeleteResource:
+			if params.ForceMigration {
+				if err := resourceDropTable(ctx, runner, params.Resource, false, true); err != nil {
+					return err
+				}
+
+				if err := resourceDropTable(ctx, runner, params.Resource, true, true); err != nil {
+					return err
+				}
+			}
+		case *model.ResourceMigrationStep_CreateProperty:
+			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(params.Resource, currentPropertyMap[sk.CreateProperty.Property], *params.Schema))
+
+			_, sqlError := runner.ExecContext(ctx, sql)
+
+			if sqlError != nil {
+				return handleDbError(ctx, sqlError)
+			}
+		case *model.ResourceMigrationStep_UpdateProperty:
+			err := migrateResourceColumn(existingPropertyMap[sk.UpdateProperty.ExistingProperty], currentPropertyMap[sk.UpdateProperty.Property], tableName, params.MigrationPlan.ExistingResource, logger, runner, ctx, *params.Schema)
+
+			if err != nil {
+				return err
+			}
+		case *model.ResourceMigrationStep_DeleteProperty:
+			if params.ForceMigration {
+				sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, existingPropertyMap[sk.DeleteProperty.ExistingProperty].Mapping)
+
+				_, sqlError := runner.ExecContext(ctx, sql)
+				err := handleDbError(ctx, sqlError)
+
+				if err != nil {
+					return handleDbError(ctx, err)
+				}
+			}
+		}
+	}
+
+	if !history {
+		for _, step := range params.MigrationPlan.Steps {
+			switch sk := step.Kind.(type) {
+			case *model.ResourceMigrationStep_CreateIndex:
+				var err errors.ServiceError
+				var sql = ""
+				if annotations.Get(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], annotations.SourceDef) != "" {
+					sql = annotations.Get(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], annotations.SourceDef)
+				} else {
+					sql, err = prepareIndexDef(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], params, params.Resource, sql)
+					if err != nil {
+						return err
+					}
+				}
+
+				_, sqlError := runner.ExecContext(ctx, sql)
+				return handleDbError(ctx, sqlError)
+			case *model.ResourceMigrationStep_DeleteIndex:
+				sql := fmt.Sprintf("DROP INDEX %s", annotations.Get(params.MigrationPlan.ExistingResource.Indexes[sk.DeleteIndex.ExistingIndex], annotations.SourceIdentity))
+
+				_, sqlError := runner.ExecContext(ctx, sql)
+				return handleDbError(ctx, sqlError)
+			}
+		}
+	}
+
+	return nil
+}
+
 func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
+	if params.MigrationPlan != nil {
+		return resourceMigrateTableNew(ctx, runner, params, history)
+	}
+
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	var err errors.ServiceError
@@ -43,7 +133,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 
 	var tableName = getFullTableName(params.Resource.GetSourceConfig(), history)
 
-	err = arrayDiffer(existingResource.Properties,
+	err = util.ArrayDiffer(existingResource.Properties,
 		params.Resource.Properties,
 		util.IsSameIdentifiedResourceProperty,
 		util.IsSameResourceProperty,
@@ -70,7 +160,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 	}
 
 	if !history {
-		err = arrayDiffer(existingResource.Indexes,
+		err = util.ArrayDiffer(existingResource.Indexes,
 			params.Resource.Indexes,
 			util.IsSameIdentifiedResourceIndex,
 			util.IsSameResourceIndex,
@@ -147,30 +237,31 @@ func prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParam
 }
 
 func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model.ResourceProperty, tableName string, existingResource *model.Resource, logger *log.Entry, runner QueryRunner, ctx context.Context, schema abs.Schema) errors.ServiceError {
-	var sql = fmt.Sprintf("ALTER TABLE %s ", tableName)
+	var sqlPrefix = fmt.Sprintf("ALTER TABLE %s ", tableName)
+	var sqlParts []string
 	changes := 0
 	if getPsqlTypeFromProperty(prevProperty.Type, property.Length) != getPsqlTypeFromProperty(property.Type, property.Length) {
-		sql = sql + fmt.Sprintf("\n ALTER COLUMN \"%s\" TYPE %s", property.Mapping, getPsqlTypeFromProperty(property.Type, property.Length))
+		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" TYPE %s", property.Mapping, getPsqlTypeFromProperty(property.Type, property.Length)))
 		changes++
 	}
 
 	if prevProperty.Required && !property.Required {
-		sql = sql + fmt.Sprintf("\n ALTER COLUMN \"%s\" DROP NOT NULL", property.Mapping)
+		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" DROP NOT NULL", property.Mapping))
 		changes++
 	}
 
 	if !prevProperty.Required && property.Required {
-		sql = sql + fmt.Sprintf("\n ALTER COLUMN \"%s\" SET NOT NULL", property.Mapping)
+		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" SET NOT NULL", property.Mapping))
 		changes++
 	}
 
 	if prevProperty.Unique && !property.Unique {
-		sql = sql + fmt.Sprintf("\n DROP CONSTRAINT \"%s\"", property.Mapping+"_uniq")
+		sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT \"%s\"", property.Mapping+"_uniq"))
 		changes++
 	}
 
 	if !prevProperty.Unique && property.Unique {
-		sql = sql + fmt.Sprintf("\n ADD CONSTRAINT \"%s\" UNIQUE (\"%s\")", existingResource.SourceConfig.Entity+"_"+property.Mapping+"_uniq", property.Mapping)
+		sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT \"%s\" UNIQUE (\"%s\")", existingResource.SourceConfig.Entity+"_"+property.Mapping+"_uniq", property.Mapping))
 		changes++
 	}
 
@@ -182,7 +273,7 @@ func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
 
-			sql = sql + fmt.Sprintf("\n ADD CONSTRAINT \"%s\" FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\") "+refClause, existingResource.SourceConfig.Entity+"_"+property.Mapping+"_fk", property.Mapping, referencedResource.SourceConfig.Entity, "id")
+			sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT \"%s\" FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\") "+refClause, existingResource.SourceConfig.Entity+"_"+property.Mapping+"_fk", property.Mapping, referencedResource.SourceConfig.Entity, "id"))
 			changes++
 		}
 	}
@@ -191,56 +282,10 @@ func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model
 		return nil
 	}
 
+	sql := sqlPrefix + "\n" + strings.Join(sqlParts, ",\n")
+
 	_, sqlError := runner.ExecContext(ctx, sql)
 	return handleDbError(ctx, sqlError)
-}
-
-func arrayDiffer[T interface{}](existing []T, updated []T, hasSameId func(a, b T) bool, isEqual func(a, b T) bool, onNew func(rec T) errors.ServiceError, onUpdate func(e, u T) errors.ServiceError, onDelete func(rec T) errors.ServiceError) errors.ServiceError {
-	for _, e := range existing {
-		found := false
-		for _, u := range updated {
-			if hasSameId(e, u) {
-				if !isEqual(e, u) {
-					err := onUpdate(e, u)
-
-					if err != nil {
-						return err
-					}
-				}
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			err := onDelete(e)
-
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	for _, u := range updated {
-		found := false
-		for _, e := range existing {
-
-			if hasSameId(e, u) {
-				found = true
-			}
-		}
-
-		if !found {
-			err := onNew(u)
-
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
 }
 
 func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {
@@ -370,7 +415,7 @@ func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog 
 		}
 
 		property := &model.ResourceProperty{
-			Name: *columnName,
+			Name: util.SnakeCaseToCamelCase(*columnName),
 			Type: typ,
 
 			Mapping:     *columnName,
@@ -479,19 +524,19 @@ func doResourceCleanup(resource *model.Resource) {
 	updatedByDetected := false
 	versionDetected := false
 	for _, property := range resource.Properties {
-		if property.Name == "created_on" && property.Type == model.ResourcePropertyType_TYPE_TIMESTAMP {
+		if property.Mapping == "created_on" && property.Type == model.ResourcePropertyType_TYPE_TIMESTAMP {
 			createdOnDetected = true
 		}
-		if property.Name == "updated_on" && property.Type == model.ResourcePropertyType_TYPE_TIMESTAMP {
+		if property.Mapping == "updated_on" && property.Type == model.ResourcePropertyType_TYPE_TIMESTAMP {
 			updatedOnDetected = true
 		}
-		if property.Name == "created_by" && property.Type == model.ResourcePropertyType_TYPE_STRING {
+		if property.Mapping == "created_by" && property.Type == model.ResourcePropertyType_TYPE_STRING {
 			createdByDetected = true
 		}
-		if property.Name == "updated_by" && property.Type == model.ResourcePropertyType_TYPE_STRING {
+		if property.Mapping == "updated_by" && property.Type == model.ResourcePropertyType_TYPE_STRING {
 			updatedByDetected = true
 		}
-		if property.Name == "version" && property.Type == model.ResourcePropertyType_TYPE_INT32 {
+		if property.Mapping == "version" && property.Type == model.ResourcePropertyType_TYPE_INT32 {
 			versionDetected = true
 		}
 	}
@@ -500,7 +545,7 @@ func doResourceCleanup(resource *model.Resource) {
 	var newColumns []*model.ResourceProperty
 
 	for _, property := range resource.Properties {
-		if enableAudit && isAuditColumn(property.Name) {
+		if enableAudit && isAuditColumn(property.Mapping) {
 			continue
 		}
 

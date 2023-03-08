@@ -104,6 +104,14 @@ func (r resourceGrpcService) GetSystemResource(ctx context.Context, request *stu
 	}, util.ToStatusError(err)
 }
 
-func NewResourceServiceServer(service abs.ResourceService) stub.ResourceServiceServer {
-	return &resourceGrpcService{resourceService: service}
+func (r resourceGrpcService) PrepareResourceMigrationPlan(ctx context.Context, request *stub.PrepareResourceMigrationPlanRequest) (*stub.PrepareResourceMigrationPlanResponse, error) {
+	plans, err := r.resourceService.PrepareResourceMigrationPlan(annotations.WithContext(ctx, request), request.Resources, request.PrepareFromDataSource)
+
+	return &stub.PrepareResourceMigrationPlanResponse{
+		Plans: plans,
+	}, util.ToStatusError(err)
+}
+
+func NewResourceServiceServer(resourceService abs.ResourceService) stub.ResourceServiceServer {
+	return &resourceGrpcService{resourceService: resourceService}
 }
