@@ -19,7 +19,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["immutable"] = structpb.NewBoolValue(property.Immutable)
 
 	properties["mapping"] = structpb.NewStringValue(property.Mapping)
-	properties["securityContext"] = SecurityContextToValue(resource.SecurityContext)
+	properties["securityContext"] = SecurityContextToValue(property.SecurityContext)
 
 	if property.Reference != nil {
 		properties["reference_resource"] = util.StructKv("name", property.Reference.ReferencedResource)
@@ -27,6 +27,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	}
 
 	return &model.Record{
+		Id:         property.Id,
 		DataType:   model.DataType_SYSTEM,
 		Properties: properties,
 	}
@@ -38,16 +39,24 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	var reference = &model.Reference{}
+	var hasReference bool
 
 	if record.Properties["reference_resource"] != nil {
 		reference.ReferencedResource = record.Properties["reference_resource"].GetStructValue().GetFields()["name"].GetStringValue()
+		hasReference = true
 	}
 
 	if record.Properties["reference_cascade"] != nil {
 		reference.Cascade = record.Properties["reference_cascade"].GetBoolValue()
+		hasReference = true
+	}
+
+	if !hasReference {
+		reference = nil
 	}
 
 	var resource = &model.ResourceProperty{
+		Id:              record.Id,
 		Name:            record.Properties["name"].GetStringValue(),
 		Type:            model.ResourcePropertyType(record.Properties["type"].GetNumberValue()),
 		Mapping:         record.Properties["mapping"].GetStringValue(),

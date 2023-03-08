@@ -8,7 +8,6 @@ var securityContextProperty = &model.ResourceProperty{
 	Name:     "securityContext",
 	Mapping:  "security_context",
 	Type:     model.ResourcePropertyType_TYPE_OBJECT,
-	Length:   256,
 	Required: false,
 }
 

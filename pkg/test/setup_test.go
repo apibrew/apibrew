@@ -22,8 +22,6 @@ func TestMain(m *testing.M) {
 }
 
 func Setup() {
-	log.SetLevel(log.DebugLevel)
-	log.SetReportCaller(true)
 	initTextContext()
 	setupDataSources(ctx)
 	setupResources(ctx)

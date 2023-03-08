@@ -19,7 +19,6 @@ type BackendProviderService interface {
 	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	GetBackendByDataSourceName(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	DestroyBackend(ctx context.Context, id string) error
-	MigrateResource(resource *model.Resource, schema Schema)
 }
 
 type DataSourceService interface {
@@ -64,6 +63,11 @@ type ResourceService interface {
 	ReloadSchema(ctx context.Context) errors.ServiceError
 	Get(ctx context.Context, id string) *model.Resource
 	GetSchema() *Schema
+	PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError)
+}
+
+type ResourceMigrationService interface {
+	PreparePlan(ctx context.Context, existingResource *model.Resource, resource *model.Resource) (*model.ResourceMigrationPlan, errors.ServiceError)
 }
 
 type UserService interface {

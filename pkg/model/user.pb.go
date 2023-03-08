@@ -80,7 +80,7 @@ func (x *User) GetType() DataType {
 	if x != nil {
 		return x.Type
 	}
-	return DataType_SYSTEM
+	return DataType_USER
 }
 
 func (x *User) GetUsername() string {
