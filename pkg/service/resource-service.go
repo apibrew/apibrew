@@ -613,12 +613,10 @@ func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.S
 		return
 	}
 
-	fmt.Println("========" + resource.Namespace + "/" + resource.Name + "=======")
 	for _, step := range migrationPlan.Steps {
 		jsonRes := protojson.Format(step)
-		fmt.Println(jsonRes)
+		log.Tracef("Migration plan for %s/%s \n %s", resource.Namespace, resource.Name, jsonRes)
 	}
-	fmt.Println("================")
 
 	err = r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
 		Resource:       resource,
