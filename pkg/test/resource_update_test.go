@@ -94,6 +94,10 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 		Resources: []*model.Resource{resource1},
 	})
 
+	if err != nil {
+		assert.Error(t, err)
+	}
+
 	assert.Len(t, res.Plans, 1)
 	assert.Len(t, res.Plans[0].Steps, 4)
 

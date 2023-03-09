@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
@@ -126,9 +127,16 @@ func (s *server) configureRoutes() {
 	r.PathPrefix("/authentication").Handler(m)
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
-	stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
-	stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
+
+	if err := stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
 
 	s.swaggerApi.ConfigureRouter(r)
 	s.recordApi.ConfigureRouter(r)

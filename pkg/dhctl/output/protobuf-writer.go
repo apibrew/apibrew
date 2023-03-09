@@ -10,7 +10,6 @@ import (
 
 type protobufWriter struct {
 	batchWriter batch.Writer
-	started     bool
 }
 
 func (c *protobufWriter) IsBinary() bool {
@@ -38,7 +37,10 @@ func (c *protobufWriter) WriteResources(resources []*model.Resource) {
 		log.Fatal(err)
 	}
 
-	c.batchWriter.WriteResource(resources...)
+	if err := c.batchWriter.WriteResource(resources...); err != nil {
+		log.Fatal(err)
+	}
+
 	if err := c.batchWriter.EndBatch(); err != nil {
 		log.Fatal(err)
 	}
@@ -91,14 +93,19 @@ func (c *protobufWriter) WriteRecords(resource *model.Resource, total uint32, re
 		i++
 
 		if len(buf) == 10000 {
-			c.batchWriter.WriteRecord(resource.Namespace, resource.Name, buf...)
+			if err := c.batchWriter.WriteRecord(resource.Namespace, resource.Name, buf...); err != nil {
+				log.Fatal(err)
+			}
+
 			buf = []*model.Record{}
 			c.nextBatch()
 		}
 	}
 
 	if len(buf) > 0 {
-		c.batchWriter.WriteRecord(resource.Namespace, resource.Name, buf...)
+		if err := c.batchWriter.WriteRecord(resource.Namespace, resource.Name, buf...); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	if err := c.batchWriter.EndBatch(); err != nil {

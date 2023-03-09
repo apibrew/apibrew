@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
@@ -38,7 +39,6 @@ func setupDataSources(ctx context.Context) {
 
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	var dataSourcesForCreate []*model.DataSource
@@ -65,7 +65,6 @@ func setupDataSources(ctx context.Context) {
 
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	for _, cd := range dataSources {
@@ -99,7 +98,6 @@ func setupResources(ctx context.Context) {
 
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	var resourcesForCreate []*model.Resource
@@ -127,7 +125,6 @@ func setupResources(ctx context.Context) {
 
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	for _, cd := range resourcesForCreate {
@@ -156,7 +153,7 @@ func initTextContext() {
 	clientTrackId := helper.RandStringRunes(8)
 
 	ctx = logging.WithLogField(ctx, "clientTrackId", clientTrackId)
-	ctx = context.WithValue(ctx, "clientTrackId", clientTrackId)
+	ctx = context.WithValue(ctx, abs.ClientTrackIdContextKey, clientTrackId)
 	ctx = metadata.AppendToOutgoingContext(ctx, "clientTrackId", clientTrackId)
 
 	log.Info("Init test clientTrackId: ", clientTrackId)

@@ -30,14 +30,14 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 
 	sb.WriteString(fmt.Sprintf("package %s\n", params.Package))
 	sb.WriteRune('\n')
-	sb.WriteString(fmt.Sprintf("import \"time\" \n"))
-	sb.WriteString(fmt.Sprintf("import \"github.com/tislib/data-handler/pkg/model\" \n"))
-	sb.WriteString(fmt.Sprintf("import \"github.com/tislib/data-handler/pkg/client\" \n"))
+	sb.WriteString("import \"time\" \n")
+	sb.WriteString("import \"github.com/tislib/data-handler/pkg/model\" \n")
+	sb.WriteString("import \"github.com/tislib/data-handler/pkg/client\" \n")
 	if uuidNeeded {
-		sb.WriteString(fmt.Sprintf("import \"github.com/google/uuid\" \n"))
+		sb.WriteString("import \"github.com/google/uuid\" \n")
 	}
-	sb.WriteString(fmt.Sprintf("import \"github.com/tislib/data-handler/pkg/types\" \n"))
-	sb.WriteString(fmt.Sprintf("import \"google.golang.org/protobuf/types/known/structpb\" \n"))
+	sb.WriteString("import \"github.com/tislib/data-handler/pkg/types\" \n")
+	sb.WriteString("import \"google.golang.org/protobuf/types/known/structpb\" \n")
 	sb.WriteRune('\n')
 
 	writeResourceStruct(&sb, resource, params)
@@ -173,7 +173,7 @@ func writeResourceStruct(sb *strings.Builder, resource *model.Resource, params G
 	sb.WriteString(fmt.Sprintf("type %s struct {\n", dashCaseToCamelCase(resource.Name)))
 
 	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-		sb.WriteString(fmt.Sprintf("    Id string\n"))
+		sb.WriteString("    Id string\n")
 	}
 
 	for _, prop := range resource.Properties {
@@ -190,14 +190,14 @@ func writeResourceStruct(sb *strings.Builder, resource *model.Resource, params G
 	}
 
 	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		sb.WriteString(fmt.Sprintf("    CreatedBy string\n"))
-		sb.WriteString(fmt.Sprintf("    UpdatedBy *string\n"))
-		sb.WriteString(fmt.Sprintf("    CreatedOn time.Time\n"))
-		sb.WriteString(fmt.Sprintf("    UpdatedOn *time.Time\n"))
+		sb.WriteString("    CreatedBy string\n")
+		sb.WriteString("    UpdatedBy *string\n")
+		sb.WriteString("    CreatedOn time.Time\n")
+		sb.WriteString("    UpdatedOn *time.Time\n")
 	}
 
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		sb.WriteString(fmt.Sprintf("    Version uint64\n"))
+		sb.WriteString("    Version uint64\n")
 	}
 
 	sb.WriteString("}\n")

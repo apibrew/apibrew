@@ -1,7 +1,6 @@
 package security
 
 import (
-	"crypto/subtle"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/tislib/data-handler/pkg/model"
@@ -117,13 +116,13 @@ func verifyNbf(nbf *time.Time, now time.Time, required bool) bool {
 	return now.After(*nbf) || now.Equal(*nbf)
 }
 
-func verifyIss(iss string, cmp string, required bool) bool {
-	if iss == "" {
-		return !required
-	}
-	if subtle.ConstantTimeCompare([]byte(iss), []byte(cmp)) != 0 {
-		return true
-	} else {
-		return false
-	}
-}
+//func verifyIss(iss string, cmp string, required bool) bool {
+//	if iss == "" {
+//		return !required
+//	}
+//	if subtle.ConstantTimeCompare([]byte(iss), []byte(cmp)) != 0 {
+//		return true
+//	} else {
+//		return false
+//	}
+//}

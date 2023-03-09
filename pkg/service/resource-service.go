@@ -296,6 +296,10 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		Limit:    1000000,
 	})
 
+	if err != nil {
+		return err
+	}
+
 	var propertyNameIdMap = make(map[string]string)
 	for _, prop := range propertyRecordList {
 		propertyNameIdMap[prop.Properties["name"].GetStringValue()] = prop.Id
@@ -343,7 +347,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
-	txCtx := context.WithValue(ctx, "transactionKey", txk)
+	txCtx := context.WithValue(ctx, abs.TransactionContextKey, txk)
 
 	var success = false
 
