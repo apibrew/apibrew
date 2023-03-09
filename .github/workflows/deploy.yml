@@ -20,9 +20,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             return context.payload.ref.replace(/\/refs\/tags\//, '');
-      - uses: actions/checkout@v3
       - name: Build the Docker image
-      - run: | 
+        uses: actions/checkout@v3
+        run: | 
           docker build . --progress=plain --no-cache -t tislib/data-handler:${steps.tag.outputs.result}
           docker push tislib/data-handler:${steps.tag.outputs.result}
 
