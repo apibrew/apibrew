@@ -5,7 +5,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const fieldsKey = "logFields"
+type contextKey struct{}
+
+var fieldsKey = contextKey{}
 
 func WithLogFields(ctx context.Context, fields log.Fields) context.Context {
 	currentFields := CtxFields(ctx)

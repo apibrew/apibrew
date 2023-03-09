@@ -55,6 +55,10 @@ func init() {
 		Insecure: true,
 	})
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	recordServiceClient = dhClient.GetRecordServiceClient()
 	authenticationServiceClient = dhClient.GetAuthenticationServiceClient()
 	resourceServiceClient = dhClient.GetResourceServiceClient()

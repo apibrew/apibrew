@@ -62,15 +62,6 @@ func definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.Create
 	return nil
 }
 
-type ReferenceLocalDetails struct {
-	sourceTableName       string
-	fkConstraintName      string
-	sourceTableColumn     string
-	referencedTable       string
-	referencedTableColumn string
-	joinAlias             string
-}
-
 func prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) string {
 	uniqModifier := ""
 	nullModifier := "NULL"

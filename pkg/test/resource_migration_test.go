@@ -41,7 +41,9 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 				}),
 			})
 
-			//log.Print(list, resp)
+			if err != nil {
+				t.Error(err)
+			}
 		})
 	})
 }

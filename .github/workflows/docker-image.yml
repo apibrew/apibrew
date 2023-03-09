@@ -2,13 +2,31 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "master", "develop" ]
+    tags:
+      - v*
+    branches:
+      - master
+      - develop
   pull_request:
-    branches: [ "master", "develop" ]
 jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.17'
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: docker build . --progress=plain --no-cache --target=test
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: v1.29
+

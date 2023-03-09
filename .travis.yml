@@ -1,7 +1,0 @@
-language: ruby
-
-services:
-  - docker
-
-script:
-  - docker build . --progress=plain --no-cache --target=test

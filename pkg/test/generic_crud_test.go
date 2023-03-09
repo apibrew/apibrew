@@ -4,6 +4,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
+	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/protobuf/types/known/anypb"
 	"testing"
@@ -27,7 +28,7 @@ func TestCreateUser1(t *testing.T) {
 		Items:     []*anypb.Any{any1},
 	})
 
-	/*if err == nil {
+	if err == nil {
 		t.Error("Save should fail")
 	}
 
@@ -39,5 +40,5 @@ func TestCreateUser1(t *testing.T) {
 
 	if len(errorFields) != 13 {
 		t.Error("There must be 14 error field")
-	}*/
+	}
 }

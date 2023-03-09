@@ -13,7 +13,6 @@ import (
 
 type userService struct {
 	recordService          abs.RecordService
-	authenticationService  abs.AuthenticationService
 	serviceName            string
 	resourceService        abs.ResourceService
 	backendProviderService abs.BackendProviderService

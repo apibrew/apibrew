@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
 	"github.com/swaggo/http-swagger"
 	"github.com/tislib/data-handler/pkg/abs"
@@ -38,7 +39,11 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 			return
 		}
 
-		w.Write(data)
+		_, err = w.Write(data)
+
+		if err != nil {
+			log.Error(err)
+		}
 	})
 
 	r.HandleFunc("/docs/resources/{namespace}/{resourceName}.json", func(w http.ResponseWriter, req *http.Request) {
@@ -62,7 +67,12 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 			return
 		}
 
-		w.Write(data)
+		_, err = w.Write(data)
+
+		if err != nil {
+			log.Error(err)
+		}
+
 	})
 
 	r.HandleFunc("/docs", func(writer http.ResponseWriter, request *http.Request) {
