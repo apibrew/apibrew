@@ -1,6 +1,8 @@
 FROM golang:1.19-alpine as buildenv
 
 WORKDIR /app/
+RUN apk add build-base
+
 COPY go.mod go.mod
 COPY go.sum go.sum
 RUN go mod download
@@ -23,7 +25,7 @@ FROM buildenv as builder
 
 RUN go build -o data-handler cmd/server/main.go
 
-FROM golang:1.19-alpine
+FROM golang:1.19-alpine as app
 WORKDIR /
 
 COPY --from=builder /app/data-handler /bin/data-handler
