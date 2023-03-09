@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v3
       - run: | 
           docker build . --progress=plain --no-cache -t tislib/data-handler:${GITHUB_REF##*/}
-          docker push tislib/data-handler:${GITHUB_REF##*/}
+          docker tag tislib/data-handler:${GITHUB_REF##*/} tislib/data-handler:latest
+          docker push tislib/data-handler:latest
 
 
