@@ -14,8 +14,7 @@ var ResourceResource = &model.Resource{
 	},
 	Properties: []*model.ResourceProperty{
 		{
-			Name: "name",
-
+			Name:     "name",
 			Mapping:  "name",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_STRING,
@@ -24,8 +23,7 @@ var ResourceResource = &model.Resource{
 			Unique:   false,
 		},
 		{
-			Name: "namespace",
-
+			Name:     "namespace",
 			Mapping:  "namespace",
 			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
 			Required: true,
@@ -35,24 +33,28 @@ var ResourceResource = &model.Resource{
 			},
 		},
 		{
-			Name: "virtual",
-
+			Name:     "virtual",
 			Mapping:  "virtual",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_BOOL,
 			Required: true,
 		},
 		{
-			Name: "immutable",
-
+			Name:     "immutable",
 			Mapping:  "immutable",
 			Primary:  false,
 			Type:     model.ResourcePropertyType_TYPE_BOOL,
 			Required: true,
 		},
 		{
-			Name: "dataSource",
-
+			Name:     "abstract",
+			Mapping:  "abstract",
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_BOOL,
+			Required: true,
+		},
+		{
+			Name:     "dataSource",
 			Mapping:  "source_data_source",
 			Type:     model.ResourcePropertyType_TYPE_REFERENCE,
 			Required: false,
@@ -62,38 +64,33 @@ var ResourceResource = &model.Resource{
 			},
 		},
 		{
-			Name: "entity",
-
+			Name:     "entity",
 			Mapping:  "source_mapping",
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
-			Name: "catalog",
-
+			Name:     "catalog",
 			Mapping:  "source_catalog",
 			Type:     model.ResourcePropertyType_TYPE_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
-			Name: "annotations",
-
+			Name:     "annotations",
 			Mapping:  "annotations",
 			Type:     model.ResourcePropertyType_TYPE_OBJECT,
 			Required: false,
 		},
 		{
-			Name: "indexes",
-
+			Name:     "indexes",
 			Mapping:  "indexes",
 			Type:     model.ResourcePropertyType_TYPE_OBJECT,
 			Required: false,
 		},
 		{
-			Name: "type",
-
+			Name:     "type",
 			Mapping:  "type",
 			Type:     model.ResourcePropertyType_TYPE_INT32,
 			Required: true,

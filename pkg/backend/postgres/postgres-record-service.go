@@ -9,7 +9,7 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	annotations "github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 func (p *postgresResourceServiceBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
