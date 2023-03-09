@@ -50,7 +50,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 		Issuer:    "github.com/tislib/data-handler",
 	})
 
-	logger.Trace("Token prepared: %s", token)
+	logger.Tracef("Token prepared: %s", token)
 
 	if err != nil {
 		logger.Warning("Token preparation error", err)

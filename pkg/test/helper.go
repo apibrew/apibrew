@@ -2,7 +2,6 @@ package test
 
 import (
 	"fmt"
-	"google.golang.org/grpc/status"
 	"reflect"
 	"testing"
 	"unicode"
@@ -13,14 +12,14 @@ func DeepEqual(t *testing.T, a interface{}, b interface{}, prefix string) {
 	vb := reflect.ValueOf(b)
 
 	if va.Type() != vb.Type() {
-		t.Error(fmt.Sprintf("%sType: %s != %s\n", prefix, va.Type(), vb.Type()))
+		t.Errorf("%sType: %s != %s\n", prefix, va.Type(), vb.Type())
 		return
 	}
 
 	switch va.Kind() {
 	case reflect.Ptr:
 		if va.IsNil() != vb.IsNil() {
-			fmt.Printf("%sPointer[Nil]: %v != %v\n", prefix, va.IsNil(), vb.IsNil())
+			t.Errorf("%sPointer[Nil]: %v != %v\n", prefix, va.IsNil(), vb.IsNil())
 			return
 		}
 
@@ -42,7 +41,7 @@ func DeepEqual(t *testing.T, a interface{}, b interface{}, prefix string) {
 		}
 	case reflect.Array, reflect.Slice:
 		if va.Len() != vb.Len() {
-			t.Error(fmt.Sprintf("%sLength: %d != %d\n", prefix, va.Len(), vb.Len()))
+			t.Errorf("%sLength: %d != %d\n", prefix, va.Len(), vb.Len())
 			return
 		}
 
@@ -51,7 +50,7 @@ func DeepEqual(t *testing.T, a interface{}, b interface{}, prefix string) {
 		}
 	case reflect.Map:
 		if va.Len() != vb.Len() {
-			t.Error(fmt.Sprintf("%sLength: %d != %d\n", prefix, va.Len(), vb.Len()))
+			t.Errorf("%sLength: %d != %d\n", prefix, va.Len(), vb.Len())
 			return
 		}
 
@@ -60,23 +59,7 @@ func DeepEqual(t *testing.T, a interface{}, b interface{}, prefix string) {
 		}
 	default:
 		if va.Interface() != vb.Interface() {
-			t.Error(fmt.Sprintf("%sValue: %v != %v\n", prefix, va.Interface(), vb.Interface()))
+			t.Errorf("%sValue: %v != %v\n", prefix, va.Interface(), vb.Interface())
 		}
-	}
-}
-
-func checker[T any](t *testing.T) func(val T, err error) T {
-	return func(val T, err error) T {
-		if err != nil {
-			st, isStatus := status.FromError(err)
-
-			if isStatus {
-				t.Error(st.Message())
-			} else {
-				t.Error(err)
-			}
-		}
-
-		return val
 	}
 }

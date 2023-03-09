@@ -138,8 +138,8 @@ func (d *extensionService) runConfigureExtensions() {
 		panic(err)
 	}
 
-	for _, extension := range extensions {
-		d.configureExtension(extension)
+	for _, ext := range extensions {
+		d.configureExtension(ext)
 	}
 
 	log.Debug("Finish reconfiguring extension services")

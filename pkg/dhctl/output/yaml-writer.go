@@ -2,6 +2,7 @@ package output
 
 import (
 	"encoding/json"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v2"
@@ -76,7 +77,9 @@ func (c *yamlWriter) WriteRecords(resource *model.Resource, total uint32, record
 
 func (c *yamlWriter) writePrefix() {
 	if c.hasMessageWritten {
-		c.writer.Write([]byte("---\n"))
+		if _, err := c.writer.Write([]byte("---\n")); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	c.hasMessageWritten = true

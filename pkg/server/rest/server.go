@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
@@ -38,13 +39,13 @@ type server struct {
 	keyFile    string
 }
 
-func (r *server) Init(data *model.InitData) {
-	r.configureRoutes()
-	r.keyFile = "/Users/taleh/Projects/data-handler/dev/server.key"
-	r.certFile = "/Users/taleh/Projects/data-handler/dev/server.crt"
+func (s *server) Init(*model.InitData) {
+	s.configureRoutes()
+	s.keyFile = "/Users/taleh/Projects/data-handler/dev/server.key"
+	s.certFile = "/Users/taleh/Projects/data-handler/dev/server.crt"
 }
 
-func (r *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
+func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		authorizationHeader := req.Header.Get("Authorization")
 
@@ -126,9 +127,16 @@ func (s *server) configureRoutes() {
 	r.PathPrefix("/authentication").Handler(m)
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
-	stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
-	stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts)
+
+	if err := stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
 
 	s.swaggerApi.ConfigureRouter(r)
 	s.recordApi.ConfigureRouter(r)

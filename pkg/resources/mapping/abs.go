@@ -48,6 +48,7 @@ func MessageFromRecord(resource, namespace string, record *model.Record) proto.M
 	return nil
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func MessageToAny[T proto.Message](message T) (*anypb.Any, error) {
 	any1 := new(anypb.Any)
 
@@ -60,6 +61,7 @@ func MessageToAny[T proto.Message](message T) (*anypb.Any, error) {
 	return any1, nil
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func MessageFromAny[T proto.Message](any1 *anypb.Any, instance T) error {
 	return anypb.UnmarshalTo(any1, instance, proto.UnmarshalOptions{})
 }

@@ -1,7 +1,6 @@
 package util
 
 import (
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -19,10 +18,4 @@ func MapStructValue(v map[string]interface{}) *structpb.Value {
 	}
 
 	return structpb.NewStructValue(st)
-}
-
-func DebugIf(debug bool, args ...any) {
-	if debug {
-		log.Print(args)
-	}
 }

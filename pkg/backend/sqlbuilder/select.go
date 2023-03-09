@@ -26,6 +26,8 @@ const (
 type JoinOption string
 
 // Join options.
+//
+//goland:noinspection GoUnusedConst,GoUnusedConst,GoUnusedConst,GoUnusedConst,GoUnusedConst,GoUnusedConst
 const (
 	FullJoin       JoinOption = "FULL"
 	FullOuterJoin  JoinOption = "FULL OUTER"

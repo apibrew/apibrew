@@ -8,7 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
-	mapping "github.com/tislib/data-handler/pkg/resources/mapping"
+	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/server/util"
 	util2 "github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -296,6 +296,10 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		Limit:    1000000,
 	})
 
+	if err != nil {
+		return err
+	}
+
 	var propertyNameIdMap = make(map[string]string)
 	for _, prop := range propertyRecordList {
 		propertyNameIdMap[prop.Properties["name"].GetStringValue()] = prop.Id
@@ -343,7 +347,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
-	txCtx := context.WithValue(ctx, "transactionKey", txk)
+	txCtx := context.WithValue(ctx, abs.TransactionContextKey, txk)
 
 	var success = false
 
@@ -609,12 +613,10 @@ func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.S
 		return
 	}
 
-	fmt.Println("========" + resource.Namespace + "/" + resource.Name + "=======")
 	for _, step := range migrationPlan.Steps {
 		jsonRes := protojson.Format(step)
-		fmt.Println(jsonRes)
+		log.Tracef("Migration plan for %s/%s \n %s", resource.Namespace, resource.Name, jsonRes)
 	}
-	fmt.Println("================")
 
 	err = r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
 		Resource:       resource,
