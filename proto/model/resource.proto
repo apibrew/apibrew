@@ -100,6 +100,7 @@ message Resource {
   SecurityContext securityContext = 10;
   bool virtual = 11;
   bool immutable = 12; // if true, delete and update will not be allowed on this resource
+  bool abstract = 13; // if abstract, resource is only available to internal and extension side operations
 
   AuditData auditData = 101;
   uint32 version = 102;

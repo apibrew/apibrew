@@ -28,15 +28,22 @@ option (openapi.v3.document) = {
     security_schemes: {
       additional_properties: [
         {
-          name: "BasicAuth";
+          name: "BearerAuth";
           value: {
             security_scheme: {
               type: "http";
-              scheme: "basic";
+              scheme: "bearer";
+              bearer_format: "JWT";
             }
           }
         }
       ]
+    }
+  }
+  security: {
+    additional_properties: {
+      name: 'bearerAuth',
+      value: {}
     }
   }
 };

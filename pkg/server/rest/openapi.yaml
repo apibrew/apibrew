@@ -1172,9 +1172,12 @@ components:
                     items:
                         type: boolean
     securitySchemes:
-        BasicAuth:
+        BearerAuth:
             type: http
-            scheme: basic
+            scheme: bearer
+            bearerFormat: JWT
+security:
+    - bearerAuth: []
 tags:
     - name: AuthenticationService
     - name: RecordService
