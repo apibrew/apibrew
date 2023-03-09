@@ -9,7 +9,6 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	mapping "github.com/tislib/data-handler/pkg/resources/mapping"
-	"github.com/tislib/data-handler/pkg/server/util"
 	util2 "github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -378,11 +377,11 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	if err != nil && err.Code() == model.ErrorCode_RECORD_VALIDATION_ERROR {
-		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util.GetErrorFields(err))
+		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util2.GetErrorFields(err))
 	}
 
 	if err != nil && err.Code() == model.ErrorCode_REFERENCE_VIOLATION {
-		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util.GetErrorFields(err))
+		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util2.GetErrorFields(err))
 	}
 
 	if err != nil {

@@ -2,7 +2,6 @@ package test
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
-	util2 "github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -120,8 +119,8 @@ func TestResourceReferenceViolation(t *testing.T) {
 		return
 	}
 
-	if util2.GetErrorCode(err) != model.ErrorCode_REFERENCE_VIOLATION {
-		t.Error("Error should be model.ErrorCode_REFERENCE_VIOLATION but: " + util2.GetErrorCode(err).String())
+	if util.GetErrorCode(err) != model.ErrorCode_REFERENCE_VIOLATION {
+		t.Error("Error should be model.ErrorCode_REFERENCE_VIOLATION but: " + util.GetErrorCode(err).String())
 		return
 	}
 }

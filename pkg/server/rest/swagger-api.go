@@ -4,11 +4,13 @@ import (
 	"context"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
 	"github.com/swaggo/http-swagger"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
+	"io"
 	"net/http"
 )
 
@@ -23,8 +25,16 @@ type swaggerApi struct {
 func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 	swaggerFiles.Handler.Prefix = "/docs/"
 
+	file, err := statikFS.Open("/openapi.yaml")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	openApiData, err := io.ReadAll(file)
+
 	r.HandleFunc("/docs/api.json", func(w http.ResponseWriter, req *http.Request) {
-		doc, serviceErr := s.prepareDoc(req.Context())
+		doc, serviceErr := s.prepareDoc(req.Context(), openApiData)
 
 		if serviceErr != nil {
 			handleServiceError(w, serviceErr)
@@ -40,6 +50,10 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 
 		w.Write(data)
 	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	r.HandleFunc("/docs/resources/{namespace}/{resourceName}.json", func(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
@@ -75,10 +89,10 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 	))
 }
 
-func (s *swaggerApi) prepareDoc(ctx context.Context) (*openapi3.T, errors.ServiceError) {
+func (s *swaggerApi) prepareDoc(ctx context.Context, openApiData []byte) (*openapi3.T, errors.ServiceError) {
 	loader := openapi3.NewLoader()
 
-	doc, err := loader.LoadFromFile("openapi.base.yml")
+	doc, err := loader.LoadFromData(openApiData)
 
 	if err != nil {
 		panic(err)
