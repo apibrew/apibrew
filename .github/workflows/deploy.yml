@@ -23,7 +23,7 @@ jobs:
       - name: Build the Docker image
         uses: actions/checkout@v3
       - run: | 
-          docker build . --progress=plain --no-cache -t tislib/data-handler:${steps.tag.outputs.result}
+          docker build . --progress=plain --no-cache -t tislib/data-handler:${{ steps.tag.outputs.result }}
           docker push tislib/data-handler:${steps.tag.outputs.result}
 
 
