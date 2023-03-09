@@ -2,7 +2,6 @@ package test
 
 import (
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
@@ -154,8 +153,7 @@ func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
 		return
 	}
 
-	if util.GetErrorCode(err) != model.ErrorCode_ALREADY_EXISTS {
-		log.Print(err)
-		t.Error("Error code should be provided for ErrorCode_ALREADY_EXISTS: " + util.GetErrorCode(err).String())
+	if util.GetErrorCode(err) != model.ErrorCode_RESOURCE_VALIDATION_ERROR {
+		t.Error("Error code should be provided for ErrorCode_RESOURCE_VALIDATION_ERROR: " + util.GetErrorCode(err).String())
 	}
 }
