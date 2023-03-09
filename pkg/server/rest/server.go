@@ -75,11 +75,11 @@ func (r *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 	})
 }
 
-func (s *server) ServeH2C(lis net.Listener) {
+func (r *server) ServeH2C(lis net.Listener) {
 	h2s := &http2.Server{}
 
 	srv := &http.Server{
-		Handler: h2c.NewHandler(s.handler, h2s),
+		Handler: h2c.NewHandler(r.handler, h2s),
 	}
 
 	if err := srv.Serve(lis); err != nil {
@@ -87,9 +87,9 @@ func (s *server) ServeH2C(lis net.Listener) {
 	}
 }
 
-func (s *server) ServeHttp(lis net.Listener) {
+func (r *server) ServeHttp(lis net.Listener) {
 	srv := &http.Server{
-		Handler: s.handler,
+		Handler: r.handler,
 	}
 
 	if err := srv.Serve(lis); err != nil {
@@ -97,21 +97,21 @@ func (s *server) ServeHttp(lis net.Listener) {
 	}
 }
 
-func (s *server) ServeHttp2Tls(tls net.Listener) {
+func (r *server) ServeHttp2Tls(tls net.Listener) {
 	srv := &http.Server{
-		Handler: s.handler,
+		Handler: r.handler,
 	}
 
-	if err := srv.ServeTLS(tls, s.certFile, s.keyFile); err != nil {
+	if err := srv.ServeTLS(tls, r.certFile, r.keyFile); err != nil {
 		panic(err)
 	}
 }
 
-func (s *server) configureRoutes() {
+func (r *server) configureRoutes() {
 	r := mux.NewRouter()
 
-	r.Use(s.AuthenticationMiddleWare)
-	r.Use(s.TrackingMiddleWare)
+	r.Use(r.AuthenticationMiddleWare)
+	r.Use(r.TrackingMiddleWare)
 
 	c := cors.New(cors.Options{
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
@@ -138,13 +138,13 @@ func (s *server) configureRoutes() {
 		log.Fatal(err)
 	}
 
-	s.swaggerApi.ConfigureRouter(r)
-	s.recordApi.ConfigureRouter(r)
+	r.swaggerApi.ConfigureRouter(r)
+	r.recordApi.ConfigureRouter(r)
 
-	s.handler = c.Handler(r)
+	r.handler = c.Handler(r)
 }
 
-func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
+func (r *server) TrackingMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		trackId := helper.RandStringRunes(8)
 		w.Header().Set("TrackId", trackId)

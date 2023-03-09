@@ -153,7 +153,7 @@ func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
 		return
 	}
 
-	if util.GetErrorCode(err) != model.ErrorCode_RESOURCE_VALIDATION_ERROR {
+	if util.GetErrorCode(err) != model.ErrorCode_ALREADY_EXISTS {
 		t.Error("Error code should be provided for ErrorCode_RESOURCE_VALIDATION_ERROR: " + util.GetErrorCode(err).String())
 	}
 }

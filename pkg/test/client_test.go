@@ -16,7 +16,6 @@ var authenticationServiceClient stub.AuthenticationServiceClient
 var dataSourceServiceClient stub.DataSourceServiceClient
 var resourceServiceClient stub.ResourceServiceClient
 var recordServiceClient stub.RecordServiceClient
-var genericServiceClient stub.GenericServiceClient
 var userServiceClient stub.UserServiceClient
 var namespaceServiceClient stub.NamespaceServiceClient
 
@@ -64,6 +63,5 @@ func init() {
 	resourceServiceClient = dhClient.GetResourceServiceClient()
 	dataSourceServiceClient = dhClient.GetDataSourceServiceClient()
 	userServiceClient = dhClient.GetUserServiceClient()
-	genericServiceClient = dhClient.GetGenericServiceClient()
 	namespaceServiceClient = dhClient.GetNamespaceServiceClient()
 }
