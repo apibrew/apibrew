@@ -8,22 +8,17 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	annotations "github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/util"
 	"strconv"
 	"strings"
 )
 
-func resourceMigrateTableNew(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
+func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
 	var currentPropertyMap = util.GetNamedMap(params.MigrationPlan.CurrentResource.Properties)
 	var existingPropertyMap = util.GetNamedMap(params.MigrationPlan.ExistingResource.Properties)
 
 	logger := log.WithFields(logging.CtxFields(ctx))
-
-	entityName := params.Resource.SourceConfig.Entity
-	if history {
-		entityName = entityName + "_h"
-	}
 
 	var tableName = getFullTableName(params.Resource.GetSourceConfig(), history)
 
@@ -76,11 +71,11 @@ func resourceMigrateTableNew(ctx context.Context, runner QueryRunner, params abs
 			switch sk := step.Kind.(type) {
 			case *model.ResourceMigrationStep_CreateIndex:
 				var err errors.ServiceError
-				var sql = ""
+				var sql string
 				if annotations.Get(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], annotations.SourceDef) != "" {
 					sql = annotations.Get(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], annotations.SourceDef)
 				} else {
-					sql, err = prepareIndexDef(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], params, params.Resource, sql)
+					sql, err = prepareIndexDef(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], params, params.Resource)
 					if err != nil {
 						return err
 					}
@@ -100,105 +95,7 @@ func resourceMigrateTableNew(ctx context.Context, runner QueryRunner, params abs
 	return nil
 }
 
-func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
-	if params.MigrationPlan != nil {
-		return resourceMigrateTableNew(ctx, runner, params, history)
-	}
-
-	logger := log.WithFields(logging.CtxFields(ctx))
-
-	var err errors.ServiceError
-	var existingResource *model.Resource
-
-	entityName := params.Resource.SourceConfig.Entity
-	if history {
-		entityName = entityName + "_h"
-	}
-
-	if existingResource, err = resourcePrepareResourceFromEntity(ctx, runner, params.Resource.SourceConfig.Catalog, entityName); err != nil {
-		logger.Error("Unable to load resource details: ", err)
-		return err
-	}
-
-	// fixing references
-	for _, prop := range existingResource.Properties {
-		if prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
-			for _, resource := range params.Schema.Resources {
-				if prop.Reference.ReferencedResource == "["+resource.SourceConfig.Entity+"]" {
-					prop.Reference.ReferencedResource = resource.Name
-				}
-			}
-		}
-	}
-
-	var tableName = getFullTableName(params.Resource.GetSourceConfig(), history)
-
-	err = util.ArrayDiffer(existingResource.Properties,
-		params.Resource.Properties,
-		util.IsSameIdentifiedResourceProperty,
-		util.IsSameResourceProperty,
-		func(property *model.ResourceProperty) errors.ServiceError {
-			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(params.Resource, property, *params.Schema))
-
-			_, sqlError := runner.ExecContext(ctx, sql)
-			return handleDbError(ctx, sqlError)
-		}, func(prevProperty, property *model.ResourceProperty) errors.ServiceError {
-			return migrateResourceColumn(prevProperty, property, tableName, existingResource, logger, runner, ctx, *params.Schema)
-		}, func(property *model.ResourceProperty) errors.ServiceError {
-			if params.ForceMigration {
-				sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, property.Mapping)
-
-				_, sqlError := runner.ExecContext(ctx, sql)
-				return handleDbError(ctx, sqlError)
-			} else {
-				return nil
-			}
-		})
-
-	if err != nil {
-		return err
-	}
-
-	if !history {
-		err = util.ArrayDiffer(existingResource.Indexes,
-			params.Resource.Indexes,
-			util.IsSameIdentifiedResourceIndex,
-			util.IsSameResourceIndex,
-			func(index *model.ResourceIndex) errors.ServiceError {
-				var sql = ""
-				if annotations.Get(index, annotations.SourceDef) != "" {
-					sql = annotations.Get(index, annotations.SourceDef)
-				} else {
-					sql, err = prepareIndexDef(index, params, params.Resource, sql)
-					if err != nil {
-						return err
-					}
-				}
-
-				_, sqlError := runner.ExecContext(ctx, sql)
-				return handleDbError(ctx, sqlError)
-			}, func(prevProperty, property *model.ResourceIndex) errors.ServiceError {
-				return errors.LogicalError.WithDetails("Cannot alter index")
-			}, func(index *model.ResourceIndex) errors.ServiceError {
-				if params.ForceMigration {
-					sql := fmt.Sprintf("DROP INDEX %s", annotations.Get(index, annotations.SourceIdentity))
-
-					_, sqlError := runner.ExecContext(ctx, sql)
-					return handleDbError(ctx, sqlError)
-				} else {
-					return nil
-				}
-			})
-	}
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource, sql string) (string, errors.ServiceError) {
+func prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource) (string, errors.ServiceError) {
 	var uniqueStr = ""
 
 	if index.Unique {
@@ -232,7 +129,7 @@ func prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParam
 		indexName = indexName + "_idx"
 	}
 
-	sql = fmt.Sprintf("create %s index \"%s\" on %s(%s)", uniqueStr, indexName, resource.SourceConfig.Entity, strings.Join(colsEscaped, ","))
+	sql := fmt.Sprintf("create %s index \"%s\" on %s(%s)", uniqueStr, indexName, resource.SourceConfig.Entity, strings.Join(colsEscaped, ","))
 	return sql, nil
 }
 

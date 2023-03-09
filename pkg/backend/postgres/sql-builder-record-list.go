@@ -12,7 +12,7 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	annotations "github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -27,7 +27,6 @@ type colDetails struct {
 	def          string
 	alias        string
 	property     *model.ResourceProperty
-	generic      bool
 	propertyType model.ResourcePropertyType
 	required     bool
 	resource     *model.Resource
@@ -56,7 +55,6 @@ type recordLister struct {
 	ResolveReferences []string
 	Schema            abs.Schema
 	logger            *log.Entry
-	where             string
 	builder           *sqlbuilder.SelectBuilder
 	resultChan        chan<- *model.Record
 	packRecords       bool
@@ -75,7 +73,7 @@ func (r *recordLister) Prepare() errors.ServiceError {
 	r.expandProps("t", r.resource)
 
 	if r.query != nil {
-		var where = ""
+		var where string
 		where, err := r.applyCondition(r.resource, r.query)
 		if err != nil {
 			return err

@@ -1,7 +1,6 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"github.com/tislib/data-handler/pkg/model"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -93,7 +92,7 @@ func canCast[T interface{}](typeName string, val interface{}) error {
 	if _, ok := val.(T); ok {
 		return nil
 	} else {
-		return errors.New(fmt.Sprintf("value is not %s: %v", typeName, val))
+		return fmt.Errorf("value is not %s: %v", typeName, val)
 	}
 
 }
@@ -114,7 +113,7 @@ func canCastNumber[T number](typeName string, val interface{}) error {
 
 	castedValue := float64(T(val.(float64)))
 	if val.(float64)-castedValue > 0.000001 {
-		return errors.New(fmt.Sprintf("value is not in type %s: %v", typeName, val))
+		return fmt.Errorf("value is not in type %s: %v", typeName, val)
 	}
 
 	return nil

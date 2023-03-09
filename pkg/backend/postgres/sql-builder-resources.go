@@ -7,7 +7,7 @@ import (
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	annotations "github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"strings"
 )
 
@@ -60,15 +60,6 @@ func definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.Create
 		}
 	}
 	return nil
-}
-
-type ReferenceLocalDetails struct {
-	sourceTableName       string
-	fkConstraintName      string
-	sourceTableColumn     string
-	referencedTable       string
-	referencedTableColumn string
-	joinAlias             string
 }
 
 func prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) string {

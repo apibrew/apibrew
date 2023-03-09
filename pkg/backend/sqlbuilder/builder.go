@@ -44,6 +44,8 @@ func (fb *flavoredBuilder) BuildWithFlavor(flavor Flavor, initialArg ...interfac
 }
 
 // WithFlavor creates a new Builder based on builder with a default flavor.
+//
+//goland:noinspection GoUnusedExportedFunction
 func WithFlavor(builder Builder, flavor Flavor) Builder {
 	return &flavoredBuilder{
 		builder: builder,
@@ -54,6 +56,8 @@ func WithFlavor(builder Builder, flavor Flavor) Builder {
 // Buildf creates a Builder from a format string using `fmt.Sprintf`-like syntax.
 // As all arguments will be converted to a string internally, e.g. "$0",
 // only `%v` and `%s` are valid.
+//
+//goland:noinspection GoUnusedExportedFunction
 func Buildf(format string, arg ...interface{}) Builder {
 	args := &Args{
 		Flavor: DefaultFlavor,
@@ -73,6 +77,8 @@ func Buildf(format string, arg ...interface{}) Builder {
 // Build creates a Builder from a format string.
 // The format string uses special syntax to represent arguments.
 // See doc in `Args#Compile` for syntax details.
+//
+//goland:noinspection GoUnusedExportedFunction
 func Build(format string, arg ...interface{}) Builder {
 	args := &Args{
 		Flavor: DefaultFlavor,
@@ -90,6 +96,8 @@ func Build(format string, arg ...interface{}) Builder {
 
 // BuildNamed creates a Builder from a format string.
 // The format string uses `${key}` to refer the value of named by key.
+//
+//goland:noinspection GoUnusedExportedFunction
 func BuildNamed(format string, named map[string]interface{}) Builder {
 	args := &Args{
 		Flavor:    DefaultFlavor,

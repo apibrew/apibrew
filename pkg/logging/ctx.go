@@ -3,9 +3,8 @@ package logging
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 )
-
-const fieldsKey = "logFields"
 
 func WithLogFields(ctx context.Context, fields log.Fields) context.Context {
 	currentFields := CtxFields(ctx)
@@ -18,7 +17,7 @@ func WithLogFields(ctx context.Context, fields log.Fields) context.Context {
 		data[k] = v
 	}
 
-	return context.WithValue(ctx, fieldsKey, data)
+	return context.WithValue(ctx, abs.LogFieldsContextKey, data)
 }
 
 func WithLogField(ctx context.Context, key string, value interface{}) context.Context {
@@ -28,8 +27,8 @@ func WithLogField(ctx context.Context, key string, value interface{}) context.Co
 }
 
 func CtxFields(ctx context.Context) log.Fields {
-	if ctx.Value(fieldsKey) != nil {
-		return ctx.Value(fieldsKey).(log.Fields)
+	if ctx.Value(abs.LogFieldsContextKey) != nil {
+		return ctx.Value(abs.LogFieldsContextKey).(log.Fields)
 	} else {
 		return make(map[string]interface{})
 	}

@@ -6,33 +6,30 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 )
 
-const systemContextKey = "SYSTEM_CTX"
-const userContextKey = "USER"
-
 var SystemContext = WithSystemContext(context.TODO())
 
 func WithSystemContext(ctx context.Context) context.Context {
-	return context.WithValue(ctx, systemContextKey, true)
+	return context.WithValue(ctx, abs.SystemContextKey, true)
 }
 
 func WithUserDetails(ctx context.Context, userDetails abs.UserDetails) context.Context {
-	return context.WithValue(ctx, userContextKey, userDetails)
+	return context.WithValue(ctx, abs.UserContextKey, userDetails)
 }
 
 func GetUserDetailsFromContext(ctx context.Context) *abs.UserDetails {
-	if ctx.Value(userContextKey) == nil {
+	if ctx.Value(abs.UserContextKey) == nil {
 		return nil
 	}
 
 	var res = new(abs.UserDetails)
 
-	*res = ctx.Value(userContextKey).(abs.UserDetails)
+	*res = ctx.Value(abs.UserContextKey).(abs.UserDetails)
 
 	return res
 }
 
 func IsSystemContext(ctx context.Context) bool {
-	return ctx.Value(systemContextKey) != nil && ctx.Value(systemContextKey).(bool)
+	return ctx.Value(abs.SystemContextKey) != nil && ctx.Value(abs.SystemContextKey).(bool)
 }
 
 type HasDataType interface {
