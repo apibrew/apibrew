@@ -9,6 +9,7 @@ import (
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
+	_ "github.com/tislib/data-handler/pkg/server/rest/statik"
 	"github.com/tislib/data-handler/pkg/stub"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"

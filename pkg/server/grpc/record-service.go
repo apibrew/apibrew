@@ -6,7 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
-	util2 "github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
@@ -31,7 +30,7 @@ func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecord
 	return &stub.ListRecordResponse{
 		Content: records,
 		Total:   total,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRecordRequest) (*stub.SearchRecordResponse, error) {
@@ -48,7 +47,7 @@ func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRe
 	return &stub.SearchRecordResponse{
 		Content: records,
 		Total:   total,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp stub.RecordService_ReadStreamServer) error {
@@ -121,7 +120,7 @@ func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRe
 		Record:   util.ArrayFirst(records),
 		Records:  records,
 		Inserted: inserted,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
@@ -135,7 +134,7 @@ func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRe
 	return &stub.UpdateRecordResponse{
 		Record:  util.ArrayFirst(records),
 		Records: records,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
@@ -147,7 +146,7 @@ func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRe
 
 	return &stub.GetRecordResponse{
 		Record: record,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (r *recordServiceServer) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
@@ -157,7 +156,7 @@ func (r *recordServiceServer) Delete(ctx context.Context, request *stub.DeleteRe
 		Ids:       request.Ids,
 	})
 
-	return &stub.DeleteRecordResponse{}, util2.ToStatusError(err)
+	return &stub.DeleteRecordResponse{}, util.ToStatusError(err)
 }
 
 func NewRecordServiceServer(service abs.RecordService, authenticationService abs.AuthenticationService) stub.RecordServiceServer {

@@ -3,8 +3,16 @@
 
 openapi: 3.0.3
 info:
-    title: ""
-    version: 0.0.1
+    title: Title from annotation
+    description: Description from annotation
+    contact:
+        name: Contact Name
+        url: https://github.com/google/gnostic
+        email: gnostic@google.com
+    license:
+        name: Apache License
+        url: https://github.com/google/gnostic/blob/master/LICENSE
+    version: Version from annotation
 paths:
     /authentication/token:
         put:
@@ -53,7 +61,108 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /records/{namespace}/{record.resource}/_bulk:
+    /records/_search_read_stream:
+        post:
+            tags:
+                - RecordService
+            operationId: RecordService_ReadStream
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReadStreamRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Record'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/_search_write_stream:
+        post:
+            tags:
+                - RecordService
+            operationId: RecordService_WriteStream
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Record'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WriteStreamResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/{namespace}/{resource}:
+        get:
+            tags:
+                - RecordService
+            operationId: RecordService_List
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint64
+                - name: useHistory
+                  in: query
+                  schema:
+                    type: boolean
+                - name: resolveReferences
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/{namespace}/{resource}/_bulk:
         put:
             tags:
                 - RecordService
@@ -64,7 +173,7 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: record.resource
+                - name: resource
                   in: path
                   required: true
                   schema:
@@ -77,15 +186,17 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: record.resource
-                  in: query
-                  schema:
-                    type: string
                 - name: record.dataType
                   in: query
                   schema:
                     type: integer
                     format: enum
+                - name: record.propertiesPacked
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
                 - name: record.auditData.createdOn.seconds
                   in: query
                   description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
@@ -150,7 +261,7 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: record.resource
+                - name: resource
                   in: path
                   required: true
                   schema:
@@ -163,15 +274,17 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: record.resource
-                  in: query
-                  schema:
-                    type: string
                 - name: record.dataType
                   in: query
                   schema:
                     type: integer
                     format: enum
+                - name: record.propertiesPacked
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
                 - name: record.auditData.createdOn.seconds
                   in: query
                   description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
@@ -226,59 +339,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /records/{namespace}/{resource}:
-        get:
-            tags:
-                - RecordService
-            operationId: RecordService_List
-            parameters:
-                - name: namespace
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: resource
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint64
-                - name: useHistory
-                  in: query
-                  schema:
-                    type: boolean
-                - name: resolveReferences
-                  in: query
-                  schema:
-                    type: boolean
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListRecordResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /records/{namespace}/{resource}/_bulk:
-        put:
+        delete:
             tags:
                 - RecordService
             operationId: RecordService_Delete
@@ -316,6 +377,79 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DeleteRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/{namespace}/{resource}/_multi:
+        post:
+            tags:
+                - RecordService
+            operationId: RecordService_UpdateMulti
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.property
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.functionCall.package
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.functionCall.name
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.value
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: query.not.not.equal.right.property
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.right.functionCall.package
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.right.functionCall.name
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.right.value
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: query.not.not.regexMatch.pattern
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.regexMatch.pattern
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateMultiRecordResponse'
                 default:
                     description: Default error response
                     content:
@@ -483,12 +617,10 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.scopes
+                - name: user.signKey
                   in: query
                   schema:
-                    type: array
-                    items:
-                        type: string
+                    type: string
                 - name: user.auditData.createdOn.seconds
                   in: query
                   description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
@@ -565,12 +697,10 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.scopes
+                - name: user.signKey
                   in: query
                   schema:
-                    type: array
-                    items:
-                        type: string
+                    type: string
                 - name: user.auditData.createdOn.seconds
                   in: query
                   description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
@@ -655,6 +785,13 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        Any:
+            type: object
+            properties:
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufAny'
+                yaml:
+                    type: string
         AuditData:
             type: object
             properties:
@@ -702,6 +839,8 @@ components:
                     $ref: '#/components/schemas/PairExpression'
                 greaterThanOrEqual:
                     $ref: '#/components/schemas/PairExpression'
+                in:
+                    $ref: '#/components/schemas/PairExpression'
                 isNull:
                     $ref: '#/components/schemas/Expression'
                 regexMatch:
@@ -716,8 +855,6 @@ components:
         CreateRecordResponse:
             type: object
             properties:
-                record:
-                    $ref: '#/components/schemas/Record'
                 records:
                     type: array
                     items:
@@ -744,23 +881,10 @@ components:
         Expression:
             type: object
             properties:
-                property:
-                    type: string
-                functionCall:
-                    $ref: '#/components/schemas/FunctionCall'
-                value:
-                    $ref: '#/components/schemas/GoogleProtobufValue'
-        FunctionCall:
-            type: object
-            properties:
-                package:
-                    type: string
-                name:
-                    type: string
-                arguments:
+                additionalProperties:
                     type: array
                     items:
-                        $ref: '#/components/schemas/Expression'
+                        $ref: '#/components/schemas/NamedAny'
         GetRecordResponse:
             type: object
             properties:
@@ -784,13 +908,13 @@ components:
         ListRecordResponse:
             type: object
             properties:
-                total:
-                    type: integer
-                    format: uint32
-                content:
+                records:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
+                total:
+                    type: integer
+                    format: uint32
         ListUserResponse:
             type: object
             properties:
@@ -798,6 +922,15 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
+        NamedAny:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Map key
+                value:
+                    $ref: '#/components/schemas/Any'
+            description: Automatically-generated message used to represent maps of Any as ordered (name,value) pairs.
         PairExpression:
             type: object
             properties:
@@ -805,20 +938,53 @@ components:
                     $ref: '#/components/schemas/Expression'
                 right:
                     $ref: '#/components/schemas/Expression'
+        ReadStreamRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                namespace:
+                    type: string
+                resource:
+                    type: string
+                query:
+                    $ref: '#/components/schemas/BooleanExpression'
+                limit:
+                    type: integer
+                    format: uint32
+                offset:
+                    type: integer
+                    format: uint64
+                useHistory:
+                    type: boolean
+                resolveReferences:
+                    type: array
+                    items:
+                        type: string
+                useTransaction:
+                    type: boolean
+                packRecords:
+                    type: boolean
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
         Record:
             type: object
             properties:
                 id:
-                    type: string
-                resource:
                     type: string
                 dataType:
                     type: integer
                     format: enum
                 properties:
                     type: object
-                references:
-                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
+                propertiesPacked:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
@@ -864,7 +1030,13 @@ components:
                 useHistory:
                     type: boolean
                 resolveReferences:
-                    type: boolean
+                    type: array
+                    items:
+                        type: string
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
         SearchRecordResponse:
             type: object
             properties:
@@ -875,6 +1047,40 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
+        SecurityConstraint:
+            type: object
+            properties:
+                namespace:
+                    type: string
+                resource:
+                    type: string
+                property:
+                    type: string
+                before:
+                    type: string
+                    format: date-time
+                after:
+                    type: string
+                    format: date-time
+                principal:
+                    type: string
+                recordIds:
+                    type: array
+                    items:
+                        type: string
+                operation:
+                    type: integer
+                    format: enum
+                permit:
+                    type: integer
+                    format: enum
+        SecurityContext:
+            type: object
+            properties:
+                constraints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SecurityConstraint'
         Status:
             type: object
             properties:
@@ -902,11 +1108,18 @@ components:
                 expiration:
                     type: string
                     format: date-time
-        UpdateRecordResponse:
+        UpdateMultiRecordResponse:
             type: object
             properties:
                 record:
                     $ref: '#/components/schemas/Record'
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+        UpdateRecordResponse:
+            type: object
+            properties:
                 records:
                     type: array
                     items:
@@ -932,17 +1145,36 @@ components:
                     type: string
                 password:
                     type: string
-                scopes:
-                    type: array
-                    items:
-                        type: string
+                securityContext:
+                    $ref: '#/components/schemas/SecurityContext'
                 details:
                     type: object
+                signKey:
+                    type: string
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
                     type: integer
                     format: uint32
+        WriteStreamResponse:
+            type: object
+            properties:
+                success:
+                    type: array
+                    items:
+                        type: boolean
+                created:
+                    type: array
+                    items:
+                        type: boolean
+                updated:
+                    type: array
+                    items:
+                        type: boolean
+    securitySchemes:
+        BasicAuth:
+            type: http
+            scheme: basic
 tags:
     - name: AuthenticationService
     - name: RecordService

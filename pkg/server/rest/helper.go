@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
@@ -109,4 +110,15 @@ func toProtoError(err errors.ServiceError) *model.Error {
 	}
 
 	return err.ProtoError()
+}
+
+var statikFS http.FileSystem
+
+func init() {
+	var err error
+	statikFS, err = fs.NewWithNamespace("rest")
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }

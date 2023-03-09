@@ -4,8 +4,8 @@ import (
 	"context"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
-	util2 "github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
+	util2 "github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
 )
