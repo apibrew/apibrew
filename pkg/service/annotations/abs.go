@@ -23,6 +23,7 @@ func (a *annotated) GetAnnotations() map[string]string {
 	return a.annotations
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func FromCtx(ctx context.Context) Annotated {
 	return &annotated{
 		annotations: ctx.Value(ctxValue).(map[string]string),
@@ -47,6 +48,7 @@ func Get(resource Annotated, name string) string {
 	return resource.GetAnnotations()[name]
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func Disable(resource Annotated, names ...string) {
 	for _, name := range names {
 		resource.GetAnnotations()[name] = "false"

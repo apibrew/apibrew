@@ -18,11 +18,11 @@ type namespaceService struct {
 	backendProviderService abs.BackendProviderService
 }
 
-func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
+func (d *namespaceService) Create(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
 	// insert records via resource service
 	records := mapping2.MapToRecord(namespaces, mapping2.NamespaceToRecord)
 
-	result, _, err := u.recordService.Create(ctx, abs.RecordCreateParams{
+	result, _, err := d.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
 		Records:   records,
@@ -35,11 +35,11 @@ func (u *namespaceService) Create(ctx context.Context, namespaces []*model.Names
 	return mapping2.MapFromRecord(result, mapping2.NamespaceFromRecord), nil
 }
 
-func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
+func (d *namespaceService) Update(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError) {
 	// insert records via resource service
 	records := mapping2.MapToRecord(namespaces, mapping2.NamespaceToRecord)
 
-	result, err := u.recordService.Update(ctx, abs.RecordUpdateParams{
+	result, err := d.recordService.Update(ctx, abs.RecordUpdateParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
 		Records:   records,
@@ -52,17 +52,17 @@ func (u *namespaceService) Update(ctx context.Context, namespaces []*model.Names
 	return mapping2.MapFromRecord(result, mapping2.NamespaceFromRecord), nil
 }
 
-func (u *namespaceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
-	return u.recordService.Delete(ctx, abs.RecordDeleteParams{
+func (d *namespaceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
+	return d.recordService.Delete(ctx, abs.RecordDeleteParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
 		Ids:       ids,
 	})
 }
 
-func (u *namespaceService) Get(ctx context.Context, id string) (*model.Namespace, errors.ServiceError) {
+func (d *namespaceService) Get(ctx context.Context, id string) (*model.Namespace, errors.ServiceError) {
 
-	record, err := u.recordService.Get(ctx, abs.RecordGetParams{
+	record, err := d.recordService.Get(ctx, abs.RecordGetParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
 		Id:        id,
@@ -75,9 +75,9 @@ func (u *namespaceService) Get(ctx context.Context, id string) (*model.Namespace
 	return mapping2.NamespaceFromRecord(record), nil
 }
 
-func (u *namespaceService) List(ctx context.Context) ([]*model.Namespace, errors.ServiceError) {
+func (d *namespaceService) List(ctx context.Context) ([]*model.Namespace, errors.ServiceError) {
 
-	result, _, err := u.recordService.List(ctx, abs.RecordListParams{
+	result, _, err := d.recordService.List(ctx, abs.RecordListParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
 	})

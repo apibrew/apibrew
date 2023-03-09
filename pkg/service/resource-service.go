@@ -8,7 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
-	mapping "github.com/tislib/data-handler/pkg/resources/mapping"
+	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/server/util"
 	util2 "github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"

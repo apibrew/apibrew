@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 )
@@ -69,7 +70,7 @@ func queryLogger(transactionKey, dataSourceName string, runner QueryRunner) Quer
 func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx QueryRunner) errors.ServiceError) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	transactionKey := ctx.Value(ctxTransactionKey)
+	transactionKey := ctx.Value(abs.TransactionContextKey)
 
 	if transactionKey != nil {
 		txDataInstance := p.transactionMap[transactionKey.(string)]
