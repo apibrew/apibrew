@@ -1,14 +1,5 @@
 FROM golang:1.19-alpine as buildenv
 
-RUN apk update && apk add --no-cache make protobuf-dev
-RUN apk add --no-cache protobuf git
-RUN wget https://github.com/bufbuild/buf/releases/download/v1.12.0/buf-Linux-x86_64
-RUN mv buf-Linux-x86_64 /bin/buf
-RUN chmod +x /bin/buf
-RUN go install github.com/golang/protobuf/protoc-gen-go@latest
-RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-RUN go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
-
 WORKDIR /app/
 COPY go.mod go.mod
 COPY go.sum go.sum
@@ -17,8 +8,6 @@ RUN go mod download
 COPY proto proto
 COPY cmd cmd
 COPY pkg pkg
-
-RUN sh -c "cd proto; buf mod update; buf generate"
 
 FROM buildenv as test
 WORKDIR /app/
