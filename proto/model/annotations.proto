@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/tislib/data-handler/pkg/model";
+
+import 'google/protobuf/descriptor.proto';
+import 'model/resource.proto';
+import 'model/common.proto';
+import 'model/security.proto';
+
+extend google.protobuf.MessageOptions {
+  string resourceNamespace = 1003; // create only?
+
+  string resourceDataSource = 1004;
+  string resourceCatalog = 1005;
+  string resourceEntity = 1006;
+
+  repeated ResourceIndex resourceIndexes = 1007;
+  SecurityContext resourceSecurityContext = 1008;
+  bool resourceVirtual = 1009;
+  bool resourceImmutable = 1010;
+  uint32 resourceVersion = 1011;
+}
+
+extend google.protobuf.FieldOptions {
+  string propertyMapping = 2001;
+  bool propertyPrimary = 2002;
+  uint32 propertyLength = 2003;
+  bool propertyUnique = 2004;
+  SecurityContext propertySecurityContext = 2005;
+  Reference propertyReference = 2006;
+  ResourcePropertyType propertySubType = 2007;
+  bool propertyImmutable = 2008;
+}
