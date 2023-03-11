@@ -3,16 +3,16 @@
 
 openapi: 3.0.3
 info:
-    title: Title from annotation
-    description: Description from annotation
+    title: Data Handler
+    description: OpenApi 3.0 definition for Data Handler Rest API
     contact:
-        name: Contact Name
-        url: https://github.com/google/gnostic
-        email: gnostic@google.com
+        name: Taleh Ibrahimli
+        url: https://github.com/tislib/data-handler
+        email: talehsmail@gmail.com
     license:
         name: Apache License
         url: https://github.com/google/gnostic/blob/master/LICENSE
-    version: Version from annotation
+    version: "1.0"
 paths:
     /authentication/token:
         put:

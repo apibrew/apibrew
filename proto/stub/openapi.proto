@@ -11,13 +11,13 @@ import "openapiv3/annotations.proto";
 
 option (openapi.v3.document) = {
   info: {
-    title: "Title from annotation";
-    version: "Version from annotation";
-    description: "Description from annotation";
+    title: "Data Handler";
+    version: "1.0";
+    description: "OpenApi 3.0 definition for Data Handler Rest API";
     contact: {
-      name: "Contact Name";
-      url: "https://github.com/google/gnostic";
-      email: "gnostic@google.com";
+      name: "Taleh Ibrahimli";
+      url: "https://github.com/tislib/data-handler";
+      email: "talehsmail@gmail.com";
     }
     license: {
       name: "Apache License";
