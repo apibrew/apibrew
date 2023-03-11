@@ -13,7 +13,6 @@ import (
 
 type userService struct {
 	recordService          abs.RecordService
-	authenticationService  abs.AuthenticationService
 	serviceName            string
 	resourceService        abs.ResourceService
 	backendProviderService abs.BackendProviderService
@@ -102,7 +101,7 @@ func (u *userService) List(ctx context.Context, query *model.BooleanExpression, 
 	return response, nil
 }
 
-func (d *userService) Init(data *model.InitData) {
+func (u *userService) Init(data *model.InitData) {
 	if len(data.InitUsers) > 0 {
 		for _, user := range data.InitUsers {
 			hashStr, err := security.EncodeKey(user.Password)
@@ -113,7 +112,7 @@ func (d *userService) Init(data *model.InitData) {
 
 			user.Password = hashStr
 		}
-		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
+		_, _, err := u.recordService.Create(security.SystemContext, abs.RecordCreateParams{
 			Namespace:      resources.UserResource.Namespace,
 			Resource:       resources.UserResource.Name,
 			Records:        mapping2.MapToRecord(data.InitUsers, mapping2.UserToRecord),

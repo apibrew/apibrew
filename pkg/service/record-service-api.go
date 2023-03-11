@@ -150,7 +150,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 		return nil, []bool{}, err
 	}
 
-	txCtx = context.WithValue(ctx, "transactionKey", tx)
+	txCtx = context.WithValue(ctx, abs.TransactionContextKey, tx)
 
 	defer func() {
 		if success {
@@ -290,7 +290,7 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		return nil, err
 	}
 
-	txCtx := context.WithValue(ctx, "transactionKey", tx)
+	txCtx := context.WithValue(ctx, abs.TransactionContextKey, tx)
 
 	defer func() {
 		if success {
@@ -417,6 +417,10 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 		UseHistory:        false,
 		ResolveReferences: []string{},
 	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	if total == 0 {
 		return nil, errors.RecordNotFoundError

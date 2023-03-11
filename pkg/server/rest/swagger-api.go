@@ -49,7 +49,11 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 			return
 		}
 
-		w.Write(data)
+		_, err = w.Write(data)
+
+		if err != nil {
+			log.Error(err)
+		}
 	})
 
 	if err != nil {
@@ -77,7 +81,12 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 			return
 		}
 
-		w.Write(data)
+		_, err = w.Write(data)
+
+		if err != nil {
+			log.Error(err)
+		}
+
 	})
 
 	r.HandleFunc("/docs", func(writer http.ResponseWriter, request *http.Request) {

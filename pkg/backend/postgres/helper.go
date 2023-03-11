@@ -149,7 +149,7 @@ func prepareResourceRecordCols(resource *model.Resource) []string {
 	}
 
 	for _, property := range resource.Properties {
-		col := fmt.Sprintf("%s", property.Mapping)
+		col := fmt.Sprintf("\"%s\"", property.Mapping)
 		cols = append(cols, col)
 	}
 
