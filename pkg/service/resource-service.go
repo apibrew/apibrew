@@ -8,8 +8,8 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
-	mapping "github.com/tislib/data-handler/pkg/resources/mapping"
-	util2 "github.com/tislib/data-handler/pkg/util"
+	"github.com/tislib/data-handler/pkg/resources/mapping"
+	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
@@ -217,8 +217,8 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 }
 
 func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMigrationPlan) errors.ServiceError {
-	var currentPropertyMap = util2.GetNamedMap(plan.CurrentResource.Properties)
-	var existingPropertyMap = util2.GetNamedMap(plan.ExistingResource.Properties)
+	var currentPropertyMap = util.GetNamedMap(plan.CurrentResource.Properties)
+	var existingPropertyMap = util.GetNamedMap(plan.ExistingResource.Properties)
 
 	for _, step := range plan.Steps {
 		switch sk := step.Kind.(type) {
@@ -295,6 +295,10 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		Limit:    1000000,
 	})
 
+	if err != nil {
+		return err
+	}
+
 	var propertyNameIdMap = make(map[string]string)
 	for _, prop := range propertyRecordList {
 		propertyNameIdMap[prop.Properties["name"].GetStringValue()] = prop.Id
@@ -326,6 +330,13 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		resource.Namespace = "default"
 	}
 
+	if resource.SourceConfig == nil {
+		resource.SourceConfig = &model.ResourceSourceConfig{
+			DataSource: "default",
+			Entity:     util.ToDashCase(resource.Name),
+		}
+	}
+
 	if err := validateResource(resource); err != nil {
 		return nil, err
 	}
@@ -342,7 +353,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
-	txCtx := context.WithValue(ctx, "transactionKey", txk)
+	txCtx := context.WithValue(ctx, abs.TransactionContextKey, txk)
 
 	var success = false
 
@@ -608,12 +619,10 @@ func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.S
 		return
 	}
 
-	fmt.Println("========" + resource.Namespace + "/" + resource.Name + "=======")
 	for _, step := range migrationPlan.Steps {
 		jsonRes := protojson.Format(step)
-		fmt.Println(jsonRes)
+		log.Tracef("Migration plan for %s/%s \n %s", resource.Namespace, resource.Name, jsonRes)
 	}
-	fmt.Println("================")
 
 	err = r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
 		Resource:       resource,

@@ -4,13 +4,12 @@ import (
 	"context"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"time"
 )
-
-const ctxTransactionKey = "transactionKey"
 
 type txData struct {
 	tx     *sql.Tx
@@ -74,7 +73,7 @@ func (p *postgresResourceServiceBackend) CommitTransaction(ctx context.Context) 
 
 	logger.Tracef("CommitTransaction")
 
-	transactionKey := ctx.Value(ctxTransactionKey)
+	transactionKey := ctx.Value(abs.TransactionContextKey)
 
 	if transactionKey == nil {
 		return errors.LogicalError.WithDetails("Transaction not found")
@@ -99,7 +98,7 @@ func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context
 
 	logger.Tracef("RollbackTransaction")
 
-	transactionKey := ctx.Value(ctxTransactionKey)
+	transactionKey := ctx.Value(abs.TransactionContextKey)
 
 	if transactionKey == nil {
 		return errors.LogicalError.WithDetails("Transaction not found")
@@ -119,7 +118,7 @@ func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context
 	return handleDbError(ctx, err)
 }
 
-func (p *postgresResourceServiceBackend) IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError errors.ServiceError) {
+func (p *postgresResourceServiceBackend) IsTransactionAlive(_ context.Context) (isAlive bool, serviceError errors.ServiceError) {
 	//TODO implement me
 	panic("implement me")
 }

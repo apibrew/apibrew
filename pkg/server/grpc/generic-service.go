@@ -37,6 +37,10 @@ func (g *genericServiceServer) Create(ctx context.Context, request *stub.CreateR
 
 	items, err := g.recordsToItems(request.Resource, request.Namespace, records)
 
+	if err != nil {
+		return nil, err
+	}
+
 	return &stub.CreateResponse{
 		Items:    items,
 		Inserted: inserted,
@@ -58,6 +62,10 @@ func (g *genericServiceServer) Update(ctx context.Context, request *stub.UpdateR
 	})
 
 	items, err := g.recordsToItems(request.Resource, request.Namespace, records)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &stub.UpdateResponse{
 		Items: items,

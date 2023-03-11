@@ -13,7 +13,6 @@ import (
 )
 
 type resourceMigrationService struct {
-	resourceService abs.ResourceService
 }
 
 func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingResource *model.Resource, resource *model.Resource) (*model.ResourceMigrationPlan, errors.ServiceError) {

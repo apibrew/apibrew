@@ -27,10 +27,6 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 
 	cols := prepareResourceRecordCols(resource)
 
-	cols = util.ArrayMap(cols, func(t string) string {
-		return fmt.Sprintf("\"%s\"", t)
-	})
-
 	query = query + fmt.Sprintf(" (%s)", strings.Join(cols, ","))
 	var args []interface{}
 

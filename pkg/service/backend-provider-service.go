@@ -72,6 +72,10 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 			"name": dataSourceName,
 		})
 
+		if err != nil {
+			return nil, err
+		}
+
 		records, _, err := b.GetSystemBackend(ctx).ListRecords(systemCtx, abs.ListRecordParams{
 			Resource: resources.DataSourceResource,
 			Query:    query,
@@ -79,15 +83,15 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 			Schema:   &abs.Schema{},
 		})
 
+		if err != nil {
+			return nil, err
+		}
+
 		if len(records) == 0 {
 			return nil, errors.RecordNotFoundError.WithMessage("Data source not found with name: " + dataSourceName)
 		}
 
 		var record = records[0]
-
-		if err != nil {
-			return nil, err
-		}
 
 		return b.GetBackend(mapping.DataSourceFromRecord(record)), nil
 	}

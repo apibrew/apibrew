@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"fmt"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/types"
@@ -119,15 +118,15 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 		recordValue2, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[2].Name])
 
 		if !propertyType.Equals(createdRecordValue0, recordValue0) {
-			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue0, recordValue0))
+			t.Errorf("values are different: %s <=> %s", createdRecordValue0, recordValue0)
 		}
 
 		if !propertyType.Equals(createdRecordValue1, recordValue1) {
-			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue1, recordValue1))
+			t.Errorf("values are different: %s <=> %s", createdRecordValue1, recordValue1)
 		}
 
 		if !propertyType.Equals(createdRecordValue2, recordValue2) {
-			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue2, recordValue2))
+			t.Errorf("values are different: %s <=> %s", createdRecordValue2, recordValue2)
 		}
 	}
 }
@@ -195,15 +194,15 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 		recordValue2, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[2].Name])
 
 		if !propertyType.Equals(createdRecordValue0, recordValue0) {
-			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue0, recordValue0))
+			t.Errorf("values are different: %s <=> %s", createdRecordValue0, recordValue0)
 		}
 
 		if !propertyType.Equals(createdRecordValue1, recordValue1) {
-			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue1, recordValue1))
+			t.Errorf("values are different: %s <=> %s", createdRecordValue1, recordValue1)
 		}
 
 		if !propertyType.Equals(createdRecordValue2, recordValue2) {
-			t.Error(fmt.Sprintf("values are different: %s <=> %s", createdRecordValue2, recordValue2))
+			t.Errorf("values are different: %s <=> %s", createdRecordValue2, recordValue2)
 		}
 	}
 }

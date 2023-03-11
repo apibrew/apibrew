@@ -113,6 +113,7 @@ func (app *App) CheckInitData(data *model.InitData) {
 	}
 }
 
+//goland:noinspection GoUnusedParameter
 func (app *App) SetGrayLogAddr(addr string) {
 	logging.SetupGrayLog("tiswork.tisserv.net:12201", "test")
 }

@@ -1,7 +1,6 @@
 package test
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"testing"
@@ -260,9 +259,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	newDataSource.Id = resp.DataSources[0].Id
 	createdDataSource1 := resp.DataSources[0]
 
-	log.Info("Step 1")
 	checkNewCreatedDatasourceStatusPasswordWrong(newDataSource, t)
-	log.Info("Step 2")
 
 	createdDataSource1.Options = &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
@@ -274,16 +271,12 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 			DefaultSchema: "public",
 		},
 	}
-	log.Info("Step 3")
 
-	dataSourceServiceClient.Update(ctx, &stub.UpdateDataSourceRequest{
+	_, _ = dataSourceServiceClient.Update(ctx, &stub.UpdateDataSourceRequest{
 		DataSources: []*model.DataSource{createdDataSource1},
 	})
-	log.Info("Step 4")
 
 	checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource1, t)
-
-	log.Info("Step 5")
 
 	createdDataSource1.Options = &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
@@ -297,14 +290,16 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	}
 	createdDataSource1.Version++
 
-	dataSourceServiceClient.Update(ctx, &stub.UpdateDataSourceRequest{
+	_, err = dataSourceServiceClient.Update(ctx, &stub.UpdateDataSourceRequest{
 		DataSources: []*model.DataSource{createdDataSource1},
 	})
 
-	log.Info("Step 6")
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	checkNewCreatedDatasourceStatus(createdDataSource1, t)
-	log.Info("Step 7")
 }
 
 func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, t *testing.T) {

@@ -163,7 +163,11 @@ func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Reso
 	go func() {
 		defer func() {
 			close(res.Records)
-			resp.CloseSend()
+			err := resp.CloseSend()
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}()
 
 		for {

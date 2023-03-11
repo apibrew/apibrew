@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
@@ -255,15 +256,21 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 }
 
 func (r *recordApi) handleRecordBatchDelete(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("Not implemented"))
+	if _, err := writer.Write([]byte("Not implemented")); err != nil {
+		log.Error(err)
+	}
 }
 
 func (r *recordApi) handleRecordBatchUpdate(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("Not implemented"))
+	if _, err := writer.Write([]byte("Not implemented")); err != nil {
+		log.Error(err)
+	}
 }
 
 func (r *recordApi) handleRecordBatchCreate(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("Not implemented"))
+	if _, err := writer.Write([]byte("Not implemented")); err != nil {
+		log.Error(err)
+	}
 }
 
 func NewRecordApi(recordService abs.RecordService, resourceService abs.ResourceService) RecordApi {
