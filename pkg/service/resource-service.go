@@ -388,11 +388,11 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	if err != nil && err.Code() == model.ErrorCode_RECORD_VALIDATION_ERROR {
-		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util2.GetErrorFields(err))
+		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util.GetErrorFields(err))
 	}
 
 	if err != nil && err.Code() == model.ErrorCode_REFERENCE_VIOLATION {
-		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util2.GetErrorFields(err))
+		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util.GetErrorFields(err))
 	}
 
 	if err != nil {

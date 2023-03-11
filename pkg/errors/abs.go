@@ -3,6 +3,7 @@ package errors
 import (
 	"fmt"
 	"github.com/tislib/data-handler/pkg/model"
+	"google.golang.org/grpc/codes"
 )
 
 type ServiceError interface {
@@ -14,13 +15,30 @@ type ServiceError interface {
 	WithErrorFields(errors []*model.ErrorField) ServiceError
 	GetDetails() string
 	Is(err error) bool
+	GetGrpcErrorCode() codes.Code
+	GetFullMessage() string
 }
 
 type serviceError struct {
-	code        model.ErrorCode
-	message     string
-	details     string
-	errorFields []*model.ErrorField
+	code          model.ErrorCode
+	message       string
+	details       string
+	errorFields   []*model.ErrorField
+	grpcErrorCode codes.Code
+}
+
+func (s serviceError) GetFullMessage() string {
+	message := s.message
+
+	if s.details != "" {
+		message = fmt.Sprintf("%s: %s", s.message, s.details)
+	}
+
+	return message
+}
+
+func (s serviceError) GetGrpcErrorCode() codes.Code {
+	return s.grpcErrorCode
 }
 
 func (s serviceError) GetDetails() string {
@@ -36,14 +54,9 @@ func (s serviceError) Error() string {
 }
 
 func (s serviceError) ProtoError() *model.Error {
-	message := s.message
-
-	if s.details != "" {
-		message = fmt.Sprintf("%s: %s", s.message, s.details)
-	}
 	return &model.Error{
 		Code:    s.code,
-		Message: message,
+		Message: s.GetFullMessage(),
 		Fields:  s.errorFields,
 	}
 }
@@ -75,6 +88,6 @@ func (s serviceError) Is(err error) bool {
 	return false
 }
 
-func newServiceError(code model.ErrorCode, message string) ServiceError {
-	return &serviceError{code: code, message: message}
+func newServiceError(code model.ErrorCode, message string, grpcErrorCode codes.Code) ServiceError {
+	return &serviceError{code: code, message: message, grpcErrorCode: grpcErrorCode}
 }

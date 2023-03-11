@@ -19,7 +19,6 @@ message FunctionCall {
 message Expression {
   oneof expression {
     string property = 1;
-    FunctionCall functionCall = 2;
     google.protobuf.Value value = 3;
   }
 }

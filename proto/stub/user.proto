@@ -8,13 +8,14 @@ import 'model/error.proto';
 import 'model/user.proto';
 import 'model/query.proto';
 import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
 
 service UserService {
   rpc Create(CreateUserRequest) returns(CreateUserResponse) {
     option (google.api.http) = {
-      post: "/uses/_bulk"
+      post: "/system/users/_bulk"
       additional_bindings {
-        post: "/users",
+        post: "/system/users",
         body: "user"
         response_body: "user"
       }
@@ -22,7 +23,7 @@ service UserService {
   }
   rpc Update(UpdateUserRequest) returns(UpdateUserResponse) {
     option (google.api.http) = {
-      put: "/uses/_bulk"
+      put: "/system/users/_bulk"
       additional_bindings {
         put: "/users/{user.id}"
         body: "user"
@@ -32,7 +33,7 @@ service UserService {
   }
   rpc Delete(DeleteUserRequest) returns(DeleteUserResponse) {
     option (google.api.http) = {
-      delete: "/uses/_bulk"
+      delete: "/system/users/_bulk"
       additional_bindings {
         delete: "/users/{id}"
       }
@@ -40,12 +41,12 @@ service UserService {
   }
   rpc List(ListUserRequest) returns(ListUserResponse) {
     option (google.api.http) = {
-      get: "/users",
+      get: "/system/users",
     };
   }
   rpc Get(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {
-      get: "/users/{id}",
+      get: "/system/users/{id}",
       response_body: "user"
     };
   }

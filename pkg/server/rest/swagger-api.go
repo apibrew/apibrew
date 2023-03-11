@@ -38,14 +38,14 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 		doc, serviceErr := s.prepareDoc(req.Context(), openApiData)
 
 		if serviceErr != nil {
-			handleServiceError(w, serviceErr)
+			http.Error(w, serviceErr.GetFullMessage(), 500)
 			return
 		}
 
 		data, err := doc.MarshalJSON()
 
 		if err != nil {
-			handleClientError(w, err)
+			http.Error(w, serviceErr.GetFullMessage(), 400)
 			return
 		}
 
@@ -68,7 +68,7 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 		resource := s.resourceService.GetResourceByName(req.Context(), namespace, resourceName)
 
 		if resource == nil {
-			handleServiceError(w, errors.ResourceNotFoundError)
+			http.Error(w, errors.ResourceNotFoundError.GetFullMessage(), 404)
 			return
 		}
 
@@ -77,7 +77,7 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 		data, err := doc.MarshalJSON()
 
 		if err != nil {
-			handleClientError(w, err)
+			http.Error(w, err.Error(), 400)
 			return
 		}
 
@@ -259,8 +259,7 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 	for _, property := range resource.Properties {
 		schema.Properties[property.Name] = &openapi3.SchemaRef{
 			Value: &openapi3.Schema{
-				//Type: property.Type.String(),
-				Type: "string",
+				Type: property.Type.String(),
 			},
 		}
 
