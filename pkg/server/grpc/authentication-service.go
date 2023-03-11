@@ -5,8 +5,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/logging"
-	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/util"
 )
 
 type authenticationServiceServer struct {

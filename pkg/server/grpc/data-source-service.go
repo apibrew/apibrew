@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/util"
 )
 
 type dataSourceServiceServer struct {

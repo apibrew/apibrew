@@ -5,9 +5,9 @@ import (
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
-	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 )

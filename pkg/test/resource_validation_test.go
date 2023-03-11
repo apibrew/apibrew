@@ -3,8 +3,8 @@ package test
 import (
 	"github.com/google/uuid"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/util"
 	"strconv"
 	"testing"
 )
