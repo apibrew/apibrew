@@ -23,53 +23,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type WatchResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Message *model.WatchMessage `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
-}
-
-func (x *WatchResponse) Reset() {
-	*x = WatchResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_stub_watch_proto_msgTypes[0]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *WatchResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WatchResponse) ProtoMessage() {}
-
-func (x *WatchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_stub_watch_proto_msgTypes[0]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use WatchResponse.ProtoReflect.Descriptor instead.
-func (*WatchResponse) Descriptor() ([]byte, []int) {
-	return file_stub_watch_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *WatchResponse) GetMessage() *model.WatchMessage {
-	if x != nil {
-		return x.Message
-	}
-	return nil
-}
-
 type WatchRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -85,7 +38,7 @@ type WatchRequest struct {
 func (x *WatchRequest) Reset() {
 	*x = WatchRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_stub_watch_proto_msgTypes[1]
+		mi := &file_stub_watch_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -98,7 +51,7 @@ func (x *WatchRequest) String() string {
 func (*WatchRequest) ProtoMessage() {}
 
 func (x *WatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_stub_watch_proto_msgTypes[1]
+	mi := &file_stub_watch_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -111,7 +64,7 @@ func (x *WatchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WatchRequest.ProtoReflect.Descriptor instead.
 func (*WatchRequest) Descriptor() ([]byte, []int) {
-	return file_stub_watch_proto_rawDescGZIP(), []int{1}
+	return file_stub_watch_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *WatchRequest) GetToken() string {
@@ -159,11 +112,7 @@ var file_stub_watch_proto_rawDesc = []byte{
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x6f, 0x70,
 	0x65, 0x6e, 0x61, 0x70, 0x69, 0x76, 0x33, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x3e, 0x0a, 0x0d, 0x57, 0x61, 0x74,
-	0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x07, 0x6d, 0x65,
-	0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x6d, 0x6f,
-	0x64, 0x65, 0x6c, 0x2e, 0x57, 0x61, 0x74, 0x63, 0x68, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
-	0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0xb8, 0x01, 0x0a, 0x0c, 0x57, 0x61,
+	0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb8, 0x01, 0x0a, 0x0c, 0x57, 0x61,
 	0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f,
 	0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e,
 	0x12, 0x1c, 0x0a, 0x09, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x70, 0x61, 0x63, 0x65, 0x18, 0x02, 0x20,
@@ -178,8 +127,8 @@ var file_stub_watch_proto_rawDesc = []byte{
 	0x65, 0x6e, 0x74, 0x73, 0x32, 0x59, 0x0a, 0x0c, 0x57, 0x61, 0x74, 0x63, 0x68, 0x53, 0x65, 0x72,
 	0x76, 0x69, 0x63, 0x65, 0x12, 0x49, 0x0a, 0x05, 0x57, 0x61, 0x74, 0x63, 0x68, 0x12, 0x12, 0x2e,
 	0x73, 0x74, 0x75, 0x62, 0x2e, 0x57, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x13, 0x2e, 0x73, 0x74, 0x75, 0x62, 0x2e, 0x57, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x15, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0f, 0x22, 0x0d,
+	0x74, 0x1a, 0x13, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x2e, 0x57, 0x61, 0x74, 0x63, 0x68, 0x4d,
+	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x15, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0f, 0x22, 0x0d,
 	0x2f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x2f, 0x77, 0x61, 0x74, 0x63, 0x68, 0x30, 0x01, 0x42,
 	0x29, 0x5a, 0x27, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x69,
 	0x73, 0x6c, 0x69, 0x62, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2d, 0x68, 0x61, 0x6e, 0x64, 0x6c, 0x65,
@@ -199,25 +148,23 @@ func file_stub_watch_proto_rawDescGZIP() []byte {
 	return file_stub_watch_proto_rawDescData
 }
 
-var file_stub_watch_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_stub_watch_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_stub_watch_proto_goTypes = []interface{}{
-	(*WatchResponse)(nil),           // 0: stub.WatchResponse
-	(*WatchRequest)(nil),            // 1: stub.WatchRequest
-	(*model.WatchMessage)(nil),      // 2: model.WatchMessage
-	(*model.BooleanExpression)(nil), // 3: model.BooleanExpression
-	(model.EventType)(0),            // 4: model.EventType
+	(*WatchRequest)(nil),            // 0: stub.WatchRequest
+	(*model.BooleanExpression)(nil), // 1: model.BooleanExpression
+	(model.EventType)(0),            // 2: model.EventType
+	(*model.WatchMessage)(nil),      // 3: model.WatchMessage
 }
 var file_stub_watch_proto_depIdxs = []int32{
-	2, // 0: stub.WatchResponse.message:type_name -> model.WatchMessage
-	3, // 1: stub.WatchRequest.query:type_name -> model.BooleanExpression
-	4, // 2: stub.WatchRequest.events:type_name -> model.EventType
-	1, // 3: stub.WatchService.Watch:input_type -> stub.WatchRequest
-	0, // 4: stub.WatchService.Watch:output_type -> stub.WatchResponse
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	1, // 0: stub.WatchRequest.query:type_name -> model.BooleanExpression
+	2, // 1: stub.WatchRequest.events:type_name -> model.EventType
+	0, // 2: stub.WatchService.Watch:input_type -> stub.WatchRequest
+	3, // 3: stub.WatchService.Watch:output_type -> model.WatchMessage
+	3, // [3:4] is the sub-list for method output_type
+	2, // [2:3] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_stub_watch_proto_init() }
@@ -227,18 +174,6 @@ func file_stub_watch_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_stub_watch_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*WatchResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_stub_watch_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*WatchRequest); i {
 			case 0:
 				return &v.state
@@ -257,7 +192,7 @@ func file_stub_watch_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_stub_watch_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

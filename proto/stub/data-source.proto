@@ -14,6 +14,7 @@ service DataSourceService {
   rpc Create(CreateDataSourceRequest) returns (CreateDataSourceResponse) {
     option (google.api.http) = {
       post: "/system/data-sources",
+      body: "*"
     };
   }
   rpc List(ListDataSourceRequest) returns (ListDataSourceResponse) {
@@ -24,11 +25,13 @@ service DataSourceService {
   rpc Update(UpdateDataSourceRequest) returns (UpdateDataSourceResponse) {
     option (google.api.http) = {
       put: "/system/data-sources",
+      body: "*"
     };
   }
   rpc Delete(DeleteDataSourceRequest) returns (DeleteDataSourceResponse) {
     option (google.api.http) = {
       delete: "/system/data-sources",
+      body: "*"
     };
   }
   rpc Get(GetDataSourceRequest) returns (GetDataSourceResponse) {
@@ -44,11 +47,13 @@ service DataSourceService {
   rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {
     option (google.api.http) = {
       post: "/system/data-sources/{id}/_list_entities",
+      body: "*"
     };
   }
   rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {
     option (google.api.http) = {
       post: "/system/data-sources/{id}/_prepare_entity",
+      body: "*"
     };
   }
 }

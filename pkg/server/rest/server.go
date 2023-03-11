@@ -120,6 +120,7 @@ func (s *server) configureRoutes() {
 	m := runtime.NewServeMux()
 
 	r.PathPrefix("/records").Handler(m)
+	r.PathPrefix("/authentication").Handler(m)
 	r.PathPrefix("/system").Handler(m)
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}

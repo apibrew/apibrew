@@ -96,6 +96,22 @@ var ResourceResource = &model.Resource{
 			Required: true,
 		},
 		securityContextProperty,
+		{
+			Name:     "title",
+			Mapping:  "title",
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Length:   256,
+			Required: false,
+		},
+		{
+			Name:     "description",
+			Mapping:  "description",
+			Primary:  false,
+			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Length:   256,
+			Required: false,
+		},
 	},
 	Indexes: []*model.ResourceIndex{
 		{

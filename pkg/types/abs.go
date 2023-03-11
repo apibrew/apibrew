@@ -130,3 +130,40 @@ func ValidateDateTime(value interface{}) error {
 
 	return err
 }
+
+func ResourcePropertyTypeToJsonSchemaType(resourcePropertyType model.ResourcePropertyType) string {
+	switch resourcePropertyType {
+	case model.ResourcePropertyType_TYPE_STRING:
+		return "string"
+	case model.ResourcePropertyType_TYPE_INT64:
+		return "number"
+	case model.ResourcePropertyType_TYPE_INT32:
+		return "number"
+	case model.ResourcePropertyType_TYPE_FLOAT64:
+		return "number"
+	case model.ResourcePropertyType_TYPE_FLOAT32:
+		return "number"
+	case model.ResourcePropertyType_TYPE_TIMESTAMP:
+		return "string"
+	case model.ResourcePropertyType_TYPE_TIME:
+		return "string"
+	case model.ResourcePropertyType_TYPE_DATE:
+		return "string"
+	case model.ResourcePropertyType_TYPE_UUID:
+		return "string"
+	case model.ResourcePropertyType_TYPE_ENUM:
+		return "string"
+	case model.ResourcePropertyType_TYPE_BOOL:
+		return "boolean"
+	case model.ResourcePropertyType_TYPE_REFERENCE:
+		return "object"
+	case model.ResourcePropertyType_TYPE_OBJECT:
+		return "object"
+	case model.ResourcePropertyType_TYPE_MAP:
+		return "object"
+	case model.ResourcePropertyType_TYPE_LIST:
+		return "object"
+	default:
+		panic("unknown property type: " + resourcePropertyType.String())
+	}
+}

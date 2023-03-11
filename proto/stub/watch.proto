@@ -11,15 +11,11 @@ import "openapiv3/annotations.proto";
 
 service WatchService {
   // Sends a greeting
-  rpc Watch (WatchRequest) returns (stream WatchResponse) {
+  rpc Watch (WatchRequest) returns (stream model.WatchMessage) {
     option (google.api.http) = {
       post: "/system/watch",
     };
   }
-}
-
-message WatchResponse {
-  model.WatchMessage message = 1;
 }
 
 message WatchRequest {

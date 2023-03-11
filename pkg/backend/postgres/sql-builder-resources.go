@@ -8,6 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/data-handler/pkg/types"
 	"strings"
 )
 
@@ -85,6 +86,13 @@ func prepareResourceTableColumnDefinition(resource *model.Resource, property *mo
 			def = append(def, fmt.Sprintf(" CONSTRAINT \"%s\" REFERENCES \"%s\" (\"%s\") %s", resource.SourceConfig.Entity+"_"+property.Mapping+"_fk", referencedResource.SourceConfig.Entity, "id", refClause))
 
 		}
+	}
+
+	if property.DefaultValue != nil {
+		propertyType := types.ByResourcePropertyType(property.Type)
+		val, _ := propertyType.UnPack(property.DefaultValue)
+
+		def = append(def, fmt.Sprintf("DEFAULT '%s'", val))
 	}
 
 	return strings.Join(def, " ")

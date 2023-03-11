@@ -13,16 +13,19 @@ service ResourceService {
   rpc Create(CreateResourceRequest) returns(CreateResourceResponse) {
     option (google.api.http) = {
       post: "/system/resources",
+      body: "*"
     };
   }
   rpc Update(UpdateResourceRequest) returns(UpdateResourceResponse) {
     option (google.api.http) = {
       put: "/system/resources",
+      body: "*"
     };
   }
   rpc Delete(DeleteResourceRequest) returns(DeleteResourceResponse) {
     option (google.api.http) = {
       delete: "/system/resources",
+      body: "*"
     };
   }
   rpc List(ListResourceRequest) returns(ListResourceResponse) {
@@ -33,6 +36,7 @@ service ResourceService {
   rpc PrepareResourceMigrationPlan(PrepareResourceMigrationPlanRequest) returns(PrepareResourceMigrationPlanResponse) {
     option (google.api.http) = {
       post: "/system/resources/_migrate",
+      body: "*"
     };
   }
   rpc Get(GetResourceRequest) returns(GetResourceResponse) {
