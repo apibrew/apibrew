@@ -36,8 +36,8 @@ func TestCreateResourceValidationForResourceFields(t *testing.T) {
 		return
 	}
 
-	if errorFields[1].Property != "SourceConfig" {
-		t.Error("errorFields[1].Property should be SourceConfig")
+	if errorFields[1].Property != "SourceConfig.Entity" {
+		t.Error("errorFields[1].Property should be SourceConfig: " + errorFields[1].Property)
 		return
 	}
 }
@@ -78,7 +78,7 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 		t.Error("errorFields[0].Property should be Name: " + errorFields[0].Property)
 	}
 
-	if errorFields[1].Property != "SourceConfig" {
+	if errorFields[1].Property != "SourceConfig.Entity" {
 		t.Error("errorFields[1].Property should be SourceConfig: " + errorFields[1].Property)
 	}
 

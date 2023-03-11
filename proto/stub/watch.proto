@@ -6,14 +6,16 @@ option go_package = "github.com/tislib/data-handler/pkg/stub";
 
 import 'model/watch.proto';
 import 'model/query.proto';
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
 
 service WatchService {
   // Sends a greeting
-  rpc Watch (WatchRequest) returns (stream WatchResponse) {}
-}
-
-message WatchResponse {
-  model.WatchMessage message = 1;
+  rpc Watch (WatchRequest) returns (stream model.WatchMessage) {
+    option (google.api.http) = {
+      post: "/system/watch",
+    };
+  }
 }
 
 message WatchRequest {

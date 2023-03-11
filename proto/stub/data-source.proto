@@ -7,16 +7,55 @@ option go_package = "github.com/tislib/data-handler/pkg/stub";
 import 'model/data-source.proto';
 import 'model/error.proto';
 import 'model/resource.proto';
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
 
 service DataSourceService {
-  rpc Create(CreateDataSourceRequest) returns (CreateDataSourceResponse) {}
-  rpc List(ListDataSourceRequest) returns (ListDataSourceResponse) {}
-  rpc Update(UpdateDataSourceRequest) returns (UpdateDataSourceResponse) {}
-  rpc Delete(DeleteDataSourceRequest) returns (DeleteDataSourceResponse) {}
-  rpc Get(GetDataSourceRequest) returns (GetDataSourceResponse) {}
-  rpc Status(StatusRequest) returns (StatusResponse) {}
-  rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {}
-  rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {}
+  rpc Create(CreateDataSourceRequest) returns (CreateDataSourceResponse) {
+    option (google.api.http) = {
+      post: "/system/data-sources",
+      body: "*"
+    };
+  }
+  rpc List(ListDataSourceRequest) returns (ListDataSourceResponse) {
+    option (google.api.http) = {
+      get: "/system/data-sources"
+    };
+  }
+  rpc Update(UpdateDataSourceRequest) returns (UpdateDataSourceResponse) {
+    option (google.api.http) = {
+      put: "/system/data-sources",
+      body: "*"
+    };
+  }
+  rpc Delete(DeleteDataSourceRequest) returns (DeleteDataSourceResponse) {
+    option (google.api.http) = {
+      delete: "/system/data-sources",
+      body: "*"
+    };
+  }
+  rpc Get(GetDataSourceRequest) returns (GetDataSourceResponse) {
+    option (google.api.http) = {
+      get: "/system/data-sources/{id}",
+    };
+  }
+  rpc Status(StatusRequest) returns (StatusResponse) {
+    option (google.api.http) = {
+      get: "/system/data-sources/{id}/_status",
+    };
+  }
+  rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {
+    option (google.api.http) = {
+      post: "/system/data-sources/{id}/_list_entities",
+      body: "*"
+    };
+  }
+  rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {
+    option (google.api.http) = {
+      post: "/system/data-sources/{id}/_prepare_entity",
+      body: "*"
+    };
+  }
 }
 
 message PrepareResourceFromEntityRequest {

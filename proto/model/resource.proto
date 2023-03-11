@@ -36,7 +36,7 @@ enum ResourcePropertyType {
 }
 
 message ResourceProperty {
-  string id = 1;
+  optional string id = 1;
   string name = 2;
   ResourcePropertyType type = 3;
   string mapping = 4;
@@ -44,12 +44,15 @@ message ResourceProperty {
   bool primary = 6;
   uint32 length = 7;
   bool unique = 8;
-  SecurityContext securityContext = 9;
-  google.protobuf.Value defaultValue = 10;
-  google.protobuf.Value enumValues = 11; // if type is enum
-  Reference reference = 12; // if type is reference
-  ResourcePropertyType subType = 13; // if type is map or list
+  optional SecurityContext securityContext = 9;
+  optional google.protobuf.Value defaultValue = 10;
+  repeated google.protobuf.Value enumValues = 11; // if type is enum
+  optional Reference reference = 12; // if type is reference
+  optional ResourcePropertyType subType = 13; // if type is map or list
   bool immutable = 14; // if true, update will not be allowed on this columns
+  optional string title = 15;
+  optional string description = 16;
+  optional google.protobuf.Value exampleValue = 17;
 
   map<string, string> annotations = 103;
 }
@@ -100,6 +103,9 @@ message Resource {
   SecurityContext securityContext = 10;
   bool virtual = 11;
   bool immutable = 12; // if true, delete and update will not be allowed on this resource
+  bool abstract = 13; // if abstract, resource is only available to internal and extension side operations
+  optional string title = 14;
+  optional string description = 15;
 
   AuditData auditData = 101;
   uint32 version = 102;

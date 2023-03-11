@@ -6,15 +6,49 @@ option go_package = "github.com/tislib/data-handler/pkg/stub";
 
 import 'model/error.proto';
 import 'model/resource.proto';
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
 
 service ResourceService {
-  rpc Create(CreateResourceRequest) returns(CreateResourceResponse) {}
-  rpc Update(UpdateResourceRequest) returns(UpdateResourceResponse) {}
-  rpc Delete(DeleteResourceRequest) returns(DeleteResourceResponse) {}
-  rpc List(ListResourceRequest) returns(ListResourceResponse) {}
-  rpc PrepareResourceMigrationPlan(PrepareResourceMigrationPlanRequest) returns(PrepareResourceMigrationPlanResponse) {}
-  rpc Get(GetResourceRequest) returns(GetResourceResponse) {}
-  rpc GetByName(GetResourceByNameRequest) returns(GetResourceByNameResponse) {}
+  rpc Create(CreateResourceRequest) returns(CreateResourceResponse) {
+    option (google.api.http) = {
+      post: "/system/resources",
+      body: "*"
+    };
+  }
+  rpc Update(UpdateResourceRequest) returns(UpdateResourceResponse) {
+    option (google.api.http) = {
+      put: "/system/resources",
+      body: "*"
+    };
+  }
+  rpc Delete(DeleteResourceRequest) returns(DeleteResourceResponse) {
+    option (google.api.http) = {
+      delete: "/system/resources",
+      body: "*"
+    };
+  }
+  rpc List(ListResourceRequest) returns(ListResourceResponse) {
+    option (google.api.http) = {
+      get: "/system/resources",
+    };
+  }
+  rpc PrepareResourceMigrationPlan(PrepareResourceMigrationPlanRequest) returns(PrepareResourceMigrationPlanResponse) {
+    option (google.api.http) = {
+      post: "/system/resources/_migrate",
+      body: "*"
+    };
+  }
+  rpc Get(GetResourceRequest) returns(GetResourceResponse) {
+    option (google.api.http) = {
+      get: "/system/resources/{id}",
+    };
+  }
+  rpc GetByName(GetResourceByNameRequest) returns(GetResourceByNameResponse) {
+    option (google.api.http) = {
+      get: "/system/resources/{namespace}/{name}",
+    };
+  }
   rpc GetSystemResource(GetSystemResourceRequest) returns(GetSystemResourceResponse) {}
 }
 

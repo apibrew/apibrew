@@ -10,7 +10,14 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties := make(map[string]*structpb.Value)
 
 	properties["name"] = structpb.NewStringValue(property.Name)
+	if property.Title != nil {
+		properties["title"] = structpb.NewStringValue(*property.Title)
+	}
+	if property.Description != nil {
+		properties["description"] = structpb.NewStringValue(*property.Description)
+	}
 	properties["type"] = structpb.NewNumberValue(float64(property.Type.Number()))
+	properties["subType"] = structpb.NewNumberValue(float64(property.Type.Number()))
 	properties["resource"] = util.StructKv("id", resource.Id)
 	properties["required"] = structpb.NewBoolValue(property.Required)
 	properties["sourcePrimary"] = structpb.NewBoolValue(property.Primary)
@@ -26,8 +33,16 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 		properties["reference_cascade"] = structpb.NewBoolValue(property.Reference.Cascade)
 	}
 
+	properties["defaultValue"] = property.DefaultValue
+	properties["exampleValue"] = property.ExampleValue
+	properties["enumValues"] = structpb.NewListValue(&structpb.ListValue{Values: property.EnumValues})
+
+	if property.Id == nil {
+		property.Id = new(string)
+	}
+
 	return &model.Record{
-		Id:         property.Id,
+		Id:         *property.Id,
 		DataType:   model.DataType_SYSTEM,
 		Properties: properties,
 	}
@@ -55,8 +70,8 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		reference = nil
 	}
 
-	var resource = &model.ResourceProperty{
-		Id:              record.Id,
+	var resourceProperty = &model.ResourceProperty{
+		Id:              &record.Id,
 		Name:            record.Properties["name"].GetStringValue(),
 		Type:            model.ResourcePropertyType(record.Properties["type"].GetNumberValue()),
 		Mapping:         record.Properties["mapping"].GetStringValue(),
@@ -69,5 +84,19 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		Reference:       reference,
 	}
 
-	return resource
+	if record.Properties["title"] != nil {
+		resourceProperty.Title = new(string)
+		*resourceProperty.Title = record.Properties["title"].GetStringValue()
+	}
+
+	if record.Properties["description"] != nil {
+		resourceProperty.Description = new(string)
+		*resourceProperty.Description = record.Properties["description"].GetStringValue()
+	}
+
+	if record.Properties["defaultValue"] != nil {
+		resourceProperty.DefaultValue = record.Properties["defaultValue"]
+	}
+
+	return resourceProperty
 }

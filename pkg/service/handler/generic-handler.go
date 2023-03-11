@@ -84,6 +84,9 @@ func (g *GenericHandler) BeforeCreate(ctx context.Context, resource *model.Resou
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
 		}
+		if item.BeforeCreate == nil {
+			continue
+		}
 		if err := item.BeforeCreate(ctx, resource, params); err != nil {
 			return err
 		}
