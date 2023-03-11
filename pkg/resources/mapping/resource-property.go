@@ -81,6 +81,8 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		Unique:          record.Properties["unique"].GetBoolValue(),
 		Immutable:       record.Properties["immutable"].GetBoolValue(),
 		SecurityContext: SecurityContextFromValue(record.Properties["securityContext"]),
+		DefaultValue:    record.Properties["defaultValue"],
+		ExampleValue:    record.Properties["exampleValue"],
 		Reference:       reference,
 	}
 
@@ -92,10 +94,6 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	if record.Properties["description"] != nil {
 		resourceProperty.Description = new(string)
 		*resourceProperty.Description = record.Properties["description"].GetStringValue()
-	}
-
-	if record.Properties["defaultValue"] != nil {
-		resourceProperty.DefaultValue = record.Properties["defaultValue"]
 	}
 
 	return resourceProperty

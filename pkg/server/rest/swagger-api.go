@@ -258,10 +258,20 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 	}
 
 	for _, property := range resource.Properties {
+		propSchema := &openapi3.Schema{
+			Type: types.ResourcePropertyTypeToJsonSchemaType(property.Type),
+		}
+
+		if property.ExampleValue != nil {
+			propSchema.Example = property.ExampleValue.AsInterface()
+		}
+
+		if property.DefaultValue != nil {
+			propSchema.Default = property.DefaultValue.AsInterface()
+		}
+
 		schema.Properties[property.Name] = &openapi3.SchemaRef{
-			Value: &openapi3.Schema{
-				Type: types.ResourcePropertyTypeToJsonSchemaType(property.Type),
-			},
+			Value: propSchema,
 		}
 
 		if property.Required {
