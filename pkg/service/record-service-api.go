@@ -10,6 +10,7 @@ import (
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/util"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var virtualResourceBackendAccessError = errors.LogicalError.WithMessage("Virtual resource is trying to access real backend")
@@ -123,6 +124,26 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 
 	if err = r.genericHandler.BeforeCreate(ctx, resource, params); err != nil {
 		return nil, nil, err
+	}
+
+	// prepare default values
+	var defaultValueMap = make(map[string]*structpb.Value)
+	for _, prop := range resource.Properties {
+		if prop.DefaultValue != nil {
+			defaultValueMap[prop.Name] = prop.DefaultValue
+		}
+	}
+	// set default values
+	if len(defaultValueMap) > 0 {
+		for _, record := range params.Records {
+			for key, value := range defaultValueMap {
+				_, exists := record.Properties[key]
+
+				if !exists {
+					record.Properties[key] = value
+				}
+			}
+		}
 	}
 
 	var records []*model.Record

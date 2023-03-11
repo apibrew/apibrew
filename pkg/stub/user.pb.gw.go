@@ -467,7 +467,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/uses/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -492,7 +492,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/users"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/system/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -517,7 +517,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Update", runtime.WithHTTPPathPattern("/uses/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Update", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -567,7 +567,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Delete", runtime.WithHTTPPathPattern("/uses/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Delete", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -617,7 +617,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/List", runtime.WithHTTPPathPattern("/users"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/List", runtime.WithHTTPPathPattern("/system/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -642,7 +642,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Get", runtime.WithHTTPPathPattern("/users/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Get", runtime.WithHTTPPathPattern("/system/users/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -706,7 +706,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/uses/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -728,7 +728,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/users"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/system/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -750,7 +750,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Update", runtime.WithHTTPPathPattern("/uses/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Update", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -794,7 +794,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Delete", runtime.WithHTTPPathPattern("/uses/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Delete", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -838,7 +838,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/List", runtime.WithHTTPPathPattern("/users"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/List", runtime.WithHTTPPathPattern("/system/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -860,7 +860,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Get", runtime.WithHTTPPathPattern("/users/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Get", runtime.WithHTTPPathPattern("/system/users/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -907,21 +907,21 @@ func (m response_UserService_Get_0) XXX_ResponseBody() interface{} {
 }
 
 var (
-	pattern_UserService_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"uses", "_bulk"}, ""))
+	pattern_UserService_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
 
-	pattern_UserService_Create_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"users"}, ""))
+	pattern_UserService_Create_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "users"}, ""))
 
-	pattern_UserService_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"uses", "_bulk"}, ""))
+	pattern_UserService_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
 
 	pattern_UserService_Update_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "user.id"}, ""))
 
-	pattern_UserService_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"uses", "_bulk"}, ""))
+	pattern_UserService_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
 
 	pattern_UserService_Delete_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "id"}, ""))
 
-	pattern_UserService_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"users"}, ""))
+	pattern_UserService_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "users"}, ""))
 
-	pattern_UserService_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "id"}, ""))
+	pattern_UserService_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"system", "users", "id"}, ""))
 )
 
 var (

@@ -6,13 +6,38 @@ option go_package = "github.com/tislib/data-handler/pkg/stub";
 
 import 'model/namespace.proto';
 import 'model/error.proto';
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
 
 service NamespaceService {
-  rpc Create(CreateNamespaceRequest) returns (CreateNamespaceResponse) {}
-  rpc List(ListNamespaceRequest) returns (ListNamespaceResponse) {}
-  rpc Update(UpdateNamespaceRequest) returns (UpdateNamespaceResponse) {}
-  rpc Delete(DeleteNamespaceRequest) returns (DeleteNamespaceResponse) {}
-  rpc Get(GetNamespaceRequest) returns (GetNamespaceResponse) {}
+  rpc Create(CreateNamespaceRequest) returns (CreateNamespaceResponse) {
+    option (google.api.http) = {
+      post: "/system/namespaces",
+      body: "*"
+    };
+  }
+  rpc List(ListNamespaceRequest) returns (ListNamespaceResponse) {
+    option (google.api.http) = {
+      get: "/system/namespaces",
+    };
+  }
+  rpc Update(UpdateNamespaceRequest) returns (UpdateNamespaceResponse) {
+    option (google.api.http) = {
+      put: "/system/namespaces",
+      body: "*"
+    };
+  }
+  rpc Delete(DeleteNamespaceRequest) returns (DeleteNamespaceResponse) {
+    option (google.api.http) = {
+      delete: "/system/namespaces",
+      body: "*"
+    };
+  }
+  rpc Get(GetNamespaceRequest) returns (GetNamespaceResponse) {
+    option (google.api.http) = {
+      get: "/system/namespaces/{id}",
+    };
+  }
 }
 
 message ListNamespaceRequest {

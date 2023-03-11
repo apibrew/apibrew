@@ -10,6 +10,7 @@ import (
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
+	_ "github.com/tislib/data-handler/pkg/server/rest/statik"
 	"github.com/tislib/data-handler/pkg/stub"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -32,11 +33,11 @@ type Server interface {
 }
 
 type server struct {
-	recordApi  RecordApi
-	swaggerApi SwaggerApi
-	handler    http.Handler
-	certFile   string
-	keyFile    string
+	swaggerApi                  SwaggerApi
+	handler                     http.Handler
+	certFile                    string
+	keyFile                     string
+	recordsApiFiltersMiddleWare *recordsApiFiltersMiddleWare
 }
 
 func (s *server) Init(*model.InitData) {
@@ -53,22 +54,18 @@ func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 			tokenParts := strings.Split(authorizationHeader, " ")
 
 			if len(tokenParts) != 2 {
-				handleClientErrorText(w, "authorization header should contain two part") //@todo fixme
+				http.Error(w, "authorization header should contain two part", 400)
 				return
 			}
 
 			if strings.ToLower(tokenParts[0]) != "bearer" {
-				handleClientErrorText(w, "authorization token type should be bearer") //@todo fixme
+				http.Error(w, "authorization token type should be bearer", 400)
 				return
 			}
 
 			token := tokenParts[1]
 
-			if req.URL.RawQuery == "" {
-				req.URL.RawQuery = "token=" + token
-			} else {
-				req.URL.RawQuery = req.URL.RawQuery + "&token=" + token
-			}
+			req.Header.Set("Grpc-Metadata-token", token)
 		}
 
 		next.ServeHTTP(w, req)
@@ -123,8 +120,8 @@ func (s *server) configureRoutes() {
 	m := runtime.NewServeMux()
 
 	r.PathPrefix("/records").Handler(m)
-	r.PathPrefix("/users").Handler(m)
 	r.PathPrefix("/authentication").Handler(m)
+	r.PathPrefix("/system").Handler(m)
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
@@ -137,11 +134,22 @@ func (s *server) configureRoutes() {
 	if err := stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
 		log.Fatal(err)
 	}
+	if err := stub.RegisterResourceServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterNamespaceServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterDataSourceServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterWatchServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+		log.Fatal(err)
+	}
 
 	s.swaggerApi.ConfigureRouter(r)
-	s.recordApi.ConfigureRouter(r)
 
-	s.handler = c.Handler(r)
+	s.handler = s.recordsApiFiltersMiddleWare.handler(c.Handler(r))
 }
 
 func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
@@ -161,7 +169,7 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 
 func NewServer(container abs.Container) Server {
 	return &server{
-		recordApi:  NewRecordApi(container.GetRecordService(), container.GetResourceService()),
-		swaggerApi: NewSwaggerApi(container.GetResourceService()),
+		swaggerApi:                  NewSwaggerApi(container.GetResourceService()),
+		recordsApiFiltersMiddleWare: newRecordsApiFiltersMiddleWare(container.GetResourceService()),
 	}
 }

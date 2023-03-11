@@ -526,6 +526,10 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 		panic("not implemented")
 	}
 
+	if query.Expression == nil {
+		return "", errors.RecordValidationError.WithDetails("Empty expression is sent")
+	}
+
 	panic("unknown boolean expression type: " + query.String())
 }
 

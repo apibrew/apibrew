@@ -36,8 +36,8 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 
 	for _, record := range list {
 		for _, property := range resource.Properties {
-			propertyType := types.ByResourcePropertyType(property.Type)
 			packedVal, exists := record.Properties[property.Name]
+			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
 				err := propertyType.ValidatePackedValue(packedVal)

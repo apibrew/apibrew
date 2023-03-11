@@ -116,8 +116,8 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 		return
 	}
 
-	assert.Equal(t, steps[0].Kind.(*model.ResourceMigrationStep_UpdateProperty).UpdateProperty.ChangedFields, []string{"name", "type", "required"})
-	assert.Equal(t, steps[2].Kind.(*model.ResourceMigrationStep_UpdateProperty).UpdateProperty.ChangedFields, []string{"name", "type", "required"})
+	assert.Equal(t, steps[0].Kind.(*model.ResourceMigrationStep_UpdateProperty).UpdateProperty.ChangedFields, []string{"name", "type", "required", "subType"})
+	assert.Equal(t, steps[2].Kind.(*model.ResourceMigrationStep_UpdateProperty).UpdateProperty.ChangedFields, []string{"name", "type", "required", "subType"})
 
 }
 

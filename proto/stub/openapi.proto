@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "github.com/tislib/data-handler/pkg/stub";
+
+import 'model/error.proto';
+import 'model/token.proto';
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
+
+option (openapi.v3.document) = {
+  info: {
+    title: "Title from annotation";
+    version: "Version from annotation";
+    description: "Description from annotation";
+    contact: {
+      name: "Contact Name";
+      url: "https://github.com/google/gnostic";
+      email: "gnostic@google.com";
+    }
+    license: {
+      name: "Apache License";
+      url: "https://github.com/google/gnostic/blob/master/LICENSE";
+    }
+  }
+  components: {
+    security_schemes: {
+      additional_properties: [
+        {
+          name: "BearerAuth";
+          value: {
+            security_scheme: {
+              type: "http";
+              scheme: "bearer";
+              bearer_format: "JWT";
+            }
+          }
+        }
+      ]
+    }
+  }
+  security: {
+    additional_properties: {
+      name: 'bearerAuth',
+      value: {}
+    }
+  }
+};
