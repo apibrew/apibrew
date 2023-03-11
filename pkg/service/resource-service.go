@@ -9,6 +9,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
+	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -259,14 +260,14 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 				return err
 			}
 		case *model.ResourceMigrationStep_DeleteProperty:
-			err := r.backendProviderService.GetSystemBackend(ctx).DeleteRecords(ctx, resources.ResourcePropertyResource, []string{existingPropertyMap[sk.DeleteProperty.ExistingProperty].Id})
+			err := r.backendProviderService.GetSystemBackend(ctx).DeleteRecords(ctx, resources.ResourcePropertyResource, []string{*existingPropertyMap[sk.DeleteProperty.ExistingProperty].Id})
 
 			if err != nil {
 				return err
 			}
 		case *model.ResourceMigrationStep_UpdateProperty:
 			propertyRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.UpdateProperty.Property], plan.CurrentResource)
-			propertyRecord.Id = existingPropertyMap[sk.UpdateProperty.ExistingProperty].Id
+			propertyRecord.Id = *existingPropertyMap[sk.UpdateProperty.ExistingProperty].Id
 
 			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
 				Resource:       resources.ResourcePropertyResource,
@@ -538,6 +539,40 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 					Message:  "Length should be positive number for string type",
 					Value:    nil,
 				})
+			}
+		}
+
+		// check for additional fields
+		if prop.DefaultValue != nil {
+			propertyType := types.ByResourcePropertyType(prop.Type)
+
+			if prop.DefaultValue != nil {
+				err := propertyType.ValidatePackedValue(prop.DefaultValue)
+
+				if err != nil {
+					errorFields = append(errorFields, &model.ErrorField{
+						RecordId: resource.Id,
+						Property: propertyPrefix + "DefaultValue",
+						Message:  err.Error(),
+						Value:    prop.DefaultValue,
+					})
+				}
+			}
+		}
+		if prop.ExampleValue != nil {
+			propertyType := types.ByResourcePropertyType(prop.Type)
+
+			if prop.ExampleValue != nil {
+				err := propertyType.ValidatePackedValue(prop.ExampleValue)
+
+				if err != nil {
+					errorFields = append(errorFields, &model.ErrorField{
+						RecordId: resource.Id,
+						Property: propertyPrefix + "DefaultValue",
+						Message:  err.Error(),
+						Value:    prop.ExampleValue,
+					})
+				}
 			}
 		}
 	}

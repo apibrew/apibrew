@@ -162,6 +162,8 @@ func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model
 		changes++
 	}
 
+	// fixme Default Value Modification logic
+
 	if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
 		if prevProperty.Reference == nil && property.Reference != nil {
 			referencedResource := schema.ResourceByNamespaceSlashName["default"+"/"+property.Reference.ReferencedResource]

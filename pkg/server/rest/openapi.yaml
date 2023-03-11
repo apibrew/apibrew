@@ -540,11 +540,12 @@ paths:
             tags:
                 - DataSourceService
             operationId: DataSourceService_Update
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateDataSourceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -562,11 +563,12 @@ paths:
             tags:
                 - DataSourceService
             operationId: DataSourceService_Create
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateDataSourceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -584,17 +586,12 @@ paths:
             tags:
                 - DataSourceService
             operationId: DataSourceService_Delete
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: ids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteDataSourceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -647,10 +644,12 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: token
-                  in: query
-                  schema:
-                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListEntitiesRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -675,18 +674,12 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: catalog
-                  in: query
-                  schema:
-                    type: string
-                - name: entity
-                  in: query
-                  schema:
-                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PrepareResourceFromEntityRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -755,11 +748,12 @@ paths:
             tags:
                 - NamespaceService
             operationId: NamespaceService_Update
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateNamespaceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -777,11 +771,12 @@ paths:
             tags:
                 - NamespaceService
             operationId: NamespaceService_Create
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateNamespaceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -799,17 +794,12 @@ paths:
             tags:
                 - NamespaceService
             operationId: NamespaceService_Delete
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: ids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteNamespaceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -878,19 +868,12 @@ paths:
             tags:
                 - ResourceService
             operationId: ResourceService_Update
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: doMigration
-                  in: query
-                  schema:
-                    type: boolean
-                - name: forceMigration
-                  in: query
-                  schema:
-                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateResourceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -908,19 +891,12 @@ paths:
             tags:
                 - ResourceService
             operationId: ResourceService_Create
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: doMigration
-                  in: query
-                  schema:
-                    type: boolean
-                - name: forceMigration
-                  in: query
-                  schema:
-                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateResourceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -938,25 +914,12 @@ paths:
             tags:
                 - ResourceService
             operationId: ResourceService_Delete
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: ids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: string
-                - name: doMigration
-                  in: query
-                  schema:
-                    type: boolean
-                - name: forceMigration
-                  in: query
-                  schema:
-                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteResourceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -975,15 +938,12 @@ paths:
             tags:
                 - ResourceService
             operationId: ResourceService_PrepareResourceMigrationPlan
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: prepareFromDataSource
-                  in: query
-                  schema:
-                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PrepareResourceMigrationPlanRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -1368,7 +1328,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/WatchResponse'
+                                $ref: '#/components/schemas/WatchMessage'
                 default:
                     description: Default error response
                     content:
@@ -1444,6 +1404,15 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/BooleanExpression'
+        CreateDataSourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                dataSources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSource'
         CreateDataSourceResponse:
             type: object
             properties:
@@ -1451,6 +1420,15 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/DataSource'
+        CreateNamespaceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                Namespaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Namespace'
         CreateNamespaceResponse:
             type: object
             properties:
@@ -1469,6 +1447,23 @@ components:
                     type: array
                     items:
                         type: boolean
+        CreateResourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+                doMigration:
+                    type: boolean
+                forceMigration:
+                    type: boolean
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
         CreateResourceResponse:
             type: object
             properties:
@@ -1527,9 +1522,27 @@ components:
                     type: string
                 readOnly:
                     type: boolean
+        DeleteDataSourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
         DeleteDataSourceResponse:
             type: object
             properties: {}
+        DeleteNamespaceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
         DeleteNamespaceResponse:
             type: object
             properties:
@@ -1540,6 +1553,23 @@ components:
         DeleteRecordResponse:
             type: object
             properties: {}
+        DeleteResourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
+                doMigration:
+                    type: boolean
+                forceMigration:
+                    type: boolean
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
         DeleteResourceResponse:
             type: object
             properties: {}
@@ -1603,6 +1633,13 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/DataSource'
+        ListEntitiesRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                id:
+                    type: string
         ListEntitiesResponse:
             type: object
             properties:
@@ -1697,11 +1734,37 @@ components:
                     type: string
                 defaultSchema:
                     type: string
+        PrepareResourceFromEntityRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                id:
+                    type: string
+                catalog:
+                    type: string
+                entity:
+                    type: string
         PrepareResourceFromEntityResponse:
             type: object
             properties:
                 resource:
                     $ref: '#/components/schemas/Resource'
+        PrepareResourceMigrationPlanRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                prepareFromDataSource:
+                    type: boolean
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
         PrepareResourceMigrationPlanResponse:
             type: object
             properties:
@@ -1818,6 +1881,10 @@ components:
                     type: boolean
                 abstract:
                     type: boolean
+                title:
+                    type: string
+                description:
+                    type: string
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
@@ -1953,7 +2020,9 @@ components:
                 defaultValue:
                     $ref: '#/components/schemas/GoogleProtobufValue'
                 enumValues:
-                    $ref: '#/components/schemas/GoogleProtobufValue'
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
                 reference:
                     $ref: '#/components/schemas/Reference'
                 subType:
@@ -1961,6 +2030,12 @@ components:
                     format: enum
                 immutable:
                     type: boolean
+                title:
+                    type: string
+                description:
+                    type: string
+                exampleValue:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
                 annotations:
                     type: object
                     additionalProperties:
@@ -2079,6 +2154,15 @@ components:
                 expiration:
                     type: string
                     format: date-time
+        UpdateDataSourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                dataSources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSource'
         UpdateDataSourceResponse:
             type: object
             properties:
@@ -2095,6 +2179,15 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
+        UpdateNamespaceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                Namespaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Namespace'
         UpdateNamespaceResponse:
             type: object
             properties:
@@ -2109,6 +2202,23 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
+        UpdateResourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+                doMigration:
+                    type: boolean
+                forceMigration:
+                    type: boolean
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
         UpdateResourceResponse:
             type: object
             properties:
@@ -2169,11 +2279,6 @@ components:
                 eventOn:
                     type: string
                     format: date-time
-        WatchResponse:
-            type: object
-            properties:
-                message:
-                    $ref: '#/components/schemas/WatchMessage'
         WriteStreamResponse:
             type: object
             properties:

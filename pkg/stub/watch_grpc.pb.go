@@ -8,6 +8,7 @@ package stub
 
 import (
 	context "context"
+	model "github.com/tislib/data-handler/pkg/model"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -50,7 +51,7 @@ func (c *watchServiceClient) Watch(ctx context.Context, in *WatchRequest, opts .
 }
 
 type WatchService_WatchClient interface {
-	Recv() (*WatchResponse, error)
+	Recv() (*model.WatchMessage, error)
 	grpc.ClientStream
 }
 
@@ -58,8 +59,8 @@ type watchServiceWatchClient struct {
 	grpc.ClientStream
 }
 
-func (x *watchServiceWatchClient) Recv() (*WatchResponse, error) {
-	m := new(WatchResponse)
+func (x *watchServiceWatchClient) Recv() (*model.WatchMessage, error) {
+	m := new(model.WatchMessage)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -104,7 +105,7 @@ func _WatchService_Watch_Handler(srv interface{}, stream grpc.ServerStream) erro
 }
 
 type WatchService_WatchServer interface {
-	Send(*WatchResponse) error
+	Send(*model.WatchMessage) error
 	grpc.ServerStream
 }
 
@@ -112,7 +113,7 @@ type watchServiceWatchServer struct {
 	grpc.ServerStream
 }
 
-func (x *watchServiceWatchServer) Send(m *WatchResponse) error {
+func (x *watchServiceWatchServer) Send(m *model.WatchMessage) error {
 	return x.ServerStream.SendMsg(m)
 }
 

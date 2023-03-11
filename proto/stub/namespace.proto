@@ -13,6 +13,7 @@ service NamespaceService {
   rpc Create(CreateNamespaceRequest) returns (CreateNamespaceResponse) {
     option (google.api.http) = {
       post: "/system/namespaces",
+      body: "*"
     };
   }
   rpc List(ListNamespaceRequest) returns (ListNamespaceResponse) {
@@ -23,11 +24,13 @@ service NamespaceService {
   rpc Update(UpdateNamespaceRequest) returns (UpdateNamespaceResponse) {
     option (google.api.http) = {
       put: "/system/namespaces",
+      body: "*"
     };
   }
   rpc Delete(DeleteNamespaceRequest) returns (DeleteNamespaceResponse) {
     option (google.api.http) = {
       delete: "/system/namespaces",
+      body: "*"
     };
   }
   rpc Get(GetNamespaceRequest) returns (GetNamespaceResponse) {

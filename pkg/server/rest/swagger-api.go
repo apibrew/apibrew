@@ -10,6 +10,7 @@ import (
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"io"
 	"net/http"
@@ -259,7 +260,7 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 	for _, property := range resource.Properties {
 		schema.Properties[property.Name] = &openapi3.SchemaRef{
 			Value: &openapi3.Schema{
-				Type: property.Type.String(),
+				Type: types.ResourcePropertyTypeToJsonSchemaType(property.Type),
 			},
 		}
 

@@ -25,8 +25,8 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.WatchService_W
 		BufferSize: 500,
 	})
 
-	for range out {
-		err := res.Send(&stub.WatchResponse{})
+	for message := range out {
+		err := res.Send(message)
 
 		if err != nil {
 			cancel()

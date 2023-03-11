@@ -11,6 +11,12 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	properties := make(map[string]*structpb.Value)
 
 	properties["name"] = structpb.NewStringValue(resource.Name)
+	if resource.Title != nil {
+		properties["title"] = structpb.NewStringValue(*resource.Title)
+	}
+	if resource.Description != nil {
+		properties["description"] = structpb.NewStringValue(*resource.Description)
+	}
 	properties["namespace"] = util.StructKv("name", resource.Namespace)
 	properties["virtual"] = structpb.NewBoolValue(resource.Virtual)
 	properties["abstract"] = structpb.NewBoolValue(resource.Abstract)
@@ -88,6 +94,16 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		for _, val := range list.Values {
 			resource.Indexes = append(resource.Indexes, ResourceIndexFromValue(val))
 		}
+	}
+
+	if record.Properties["title"] != nil {
+		resource.Title = new(string)
+		*resource.Title = record.Properties["title"].GetStringValue()
+	}
+
+	if record.Properties["description"] != nil {
+		resource.Description = new(string)
+		*resource.Description = record.Properties["description"].GetStringValue()
 	}
 
 	return resource
