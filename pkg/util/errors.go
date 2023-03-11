@@ -3,7 +3,6 @@ package util
 import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
@@ -12,7 +11,7 @@ func ToStatusError(err errors.ServiceError) error {
 		return nil
 	}
 
-	st := status.New(codes.Unknown, err.Error())
+	st := status.New(err.GetGrpcErrorCode(), err.Error())
 
 	st, _ = st.WithDetails(err.ProtoError())
 

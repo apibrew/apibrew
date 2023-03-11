@@ -26,7 +26,7 @@ func checkAccess(ctx context.Context, params checkAccessParams) errors.ServiceEr
 	userDetails := security.GetUserDetailsFromContext(ctx)
 
 	if userDetails == nil {
-		return errors.LogicalError.WithMessage("User details not found in context")
+		return errors.AccessDeniedError.WithDetails("Public access is denied")
 	}
 
 	userSecurityContext := userDetails.SecurityContext
