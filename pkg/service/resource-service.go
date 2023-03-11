@@ -9,8 +9,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
-	"github.com/tislib/data-handler/pkg/server/util"
-	util2 "github.com/tislib/data-handler/pkg/util"
+	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
@@ -218,8 +217,8 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 }
 
 func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMigrationPlan) errors.ServiceError {
-	var currentPropertyMap = util2.GetNamedMap(plan.CurrentResource.Properties)
-	var existingPropertyMap = util2.GetNamedMap(plan.ExistingResource.Properties)
+	var currentPropertyMap = util.GetNamedMap(plan.CurrentResource.Properties)
+	var existingPropertyMap = util.GetNamedMap(plan.ExistingResource.Properties)
 
 	for _, step := range plan.Steps {
 		switch sk := step.Kind.(type) {
@@ -329,6 +328,13 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	if resource.Namespace == "" {
 		resource.Namespace = "default"
+	}
+
+	if resource.SourceConfig == nil {
+		resource.SourceConfig = &model.ResourceSourceConfig{
+			DataSource: "default",
+			Entity:     util.ToDashCase(resource.Name),
+		}
 	}
 
 	if err := validateResource(resource); err != nil {

@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"github.com/tislib/data-handler/pkg/abs"
-	util2 "github.com/tislib/data-handler/pkg/server/util"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 )
@@ -23,7 +22,7 @@ func (u *userServiceServer) Create(ctx context.Context, request *stub.CreateUser
 	return &stub.CreateUserResponse{
 		User:  util.ArrayFirst(users),
 		Users: users,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (u *userServiceServer) Update(ctx context.Context, request *stub.UpdateUserRequest) (*stub.UpdateUserResponse, error) {
@@ -32,13 +31,13 @@ func (u *userServiceServer) Update(ctx context.Context, request *stub.UpdateUser
 	return &stub.UpdateUserResponse{
 		User:  util.ArrayFirst(users),
 		Users: users,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (u *userServiceServer) Delete(ctx context.Context, request *stub.DeleteUserRequest) (*stub.DeleteUserResponse, error) {
 	err := u.service.Delete(ctx, request.Ids)
 
-	return &stub.DeleteUserResponse{}, util2.ToStatusError(err)
+	return &stub.DeleteUserResponse{}, util.ToStatusError(err)
 }
 
 func (u *userServiceServer) Get(ctx context.Context, request *stub.GetUserRequest) (*stub.GetUserResponse, error) {
@@ -46,7 +45,7 @@ func (u *userServiceServer) Get(ctx context.Context, request *stub.GetUserReques
 
 	return &stub.GetUserResponse{
 		User: user,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func (u *userServiceServer) List(ctx context.Context, request *stub.ListUserRequest) (*stub.ListUserResponse, error) {
@@ -54,7 +53,7 @@ func (u *userServiceServer) List(ctx context.Context, request *stub.ListUserRequ
 
 	return &stub.ListUserResponse{
 		Content: users,
-	}, util2.ToStatusError(err)
+	}, util.ToStatusError(err)
 }
 
 func NewUserServiceServer(service abs.UserService) stub.UserServiceServer {
