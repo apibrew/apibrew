@@ -11,7 +11,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 		Name: "test-namespace",
 	}
 
-	res, err := namespaceServiceClient.Create(ctx, &stub.CreateNamespaceRequest{
+	res, err := namespaceClient.Create(ctx, &stub.CreateNamespaceRequest{
 		Namespaces: []*model.Namespace{
 			namespace1,
 		},
@@ -30,7 +30,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 	}
 
 	defer func() {
-		_, _ = namespaceServiceClient.Delete(ctx, &stub.DeleteNamespaceRequest{
+		_, _ = namespaceClient.Delete(ctx, &stub.DeleteNamespaceRequest{
 			Ids: []string{
 				namespace1.Id,
 			},
@@ -41,7 +41,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 
 	namespace1.Name = "test-123321123"
 
-	_, err = namespaceServiceClient.Update(ctx, &stub.UpdateNamespaceRequest{
+	_, err = namespaceClient.Update(ctx, &stub.UpdateNamespaceRequest{
 		Namespaces: []*model.Namespace{
 			namespace1,
 		},
@@ -52,7 +52,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 		return
 	}
 
-	res2, err := namespaceServiceClient.Get(ctx, &stub.GetNamespaceRequest{Id: namespace1.Id})
+	res2, err := namespaceClient.Get(ctx, &stub.GetNamespaceRequest{Id: namespace1.Id})
 
 	if err != nil {
 		t.Error(err)

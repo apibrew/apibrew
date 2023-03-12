@@ -10,7 +10,8 @@ import 'model/error.proto';
 import "google/api/annotations.proto";
 import 'google/protobuf/struct.proto';
 
-service RecordService {
+// Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
+service Record {
   rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {
     option (google.api.http) = {
       post: "/records/{namespace}/{resource}/_bulk",

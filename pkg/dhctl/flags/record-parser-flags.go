@@ -29,37 +29,37 @@ func (p *recordParserFlags) Declare(cmd *cobra.Command) {
 		name := util.ToDashCase(prop.Name)
 
 		switch prop.Type {
-		case model.ResourcePropertyType_TYPE_BOOL:
+		case model.ResourceProperty_BOOL:
 			p.parserMap[prop.Name] = funct(flags.Bool(name, false, ""))
-		case model.ResourcePropertyType_TYPE_STRING:
+		case model.ResourceProperty_STRING:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", ""))
-		case model.ResourcePropertyType_TYPE_FLOAT32:
+		case model.ResourceProperty_FLOAT32:
 			p.parserMap[prop.Name] = funct(flags.Float32(name, 0, ""))
-		case model.ResourcePropertyType_TYPE_FLOAT64:
+		case model.ResourceProperty_FLOAT64:
 			p.parserMap[prop.Name] = funct(flags.Float64(name, 0, ""))
-		case model.ResourcePropertyType_TYPE_INT32:
+		case model.ResourceProperty_INT32:
 			p.parserMap[prop.Name] = funct(flags.Int32(name, 0, ""))
-		case model.ResourcePropertyType_TYPE_INT64:
+		case model.ResourceProperty_INT64:
 			p.parserMap[prop.Name] = funct(flags.Int64(name, 0, ""))
-		case model.ResourcePropertyType_TYPE_BYTES:
+		case model.ResourceProperty_BYTES:
 			p.parserMap[prop.Name] = funct(flags.BytesHex(name, []byte{}, ""))
-		case model.ResourcePropertyType_TYPE_UUID:
+		case model.ResourceProperty_UUID:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", ""))
-		case model.ResourcePropertyType_TYPE_DATE:
+		case model.ResourceProperty_DATE:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", ""))
-		case model.ResourcePropertyType_TYPE_TIME:
+		case model.ResourceProperty_TIME:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", ""))
-		case model.ResourcePropertyType_TYPE_TIMESTAMP:
+		case model.ResourceProperty_TIMESTAMP:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", ""))
-		case model.ResourcePropertyType_TYPE_OBJECT:
+		case model.ResourceProperty_OBJECT:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", "")) //todo fix
-		case model.ResourcePropertyType_TYPE_MAP:
+		case model.ResourceProperty_MAP:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", "")) //todo fix
-		case model.ResourcePropertyType_TYPE_LIST:
+		case model.ResourceProperty_LIST:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", "")) //todo fix
-		case model.ResourcePropertyType_TYPE_REFERENCE:
+		case model.ResourceProperty_REFERENCE:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", "")) //todo fix
-		case model.ResourcePropertyType_TYPE_ENUM:
+		case model.ResourceProperty_ENUM:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", "")) // todo fix
 		}
 	}

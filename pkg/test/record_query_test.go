@@ -27,7 +27,7 @@ func TestListRecord1(t *testing.T) {
 			return
 		}
 
-		res, err := recordServiceClient.Search(ctx, &stub.SearchRecordRequest{
+		res, err := recordClient.Search(ctx, &stub.SearchRecordRequest{
 			Resource: resource.Name,
 			Query: &model.BooleanExpression{
 				Expression: &model.BooleanExpression_And{
@@ -78,7 +78,7 @@ func TestListRecord1(t *testing.T) {
 
 func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *model.DataSource, catalog, entity string, exec func(resource *model.Resource)) {
 	log.Print("begin PrepareResourceFromEntity", catalog, entity, dataSource.Id)
-	res, err := dataSourceServiceClient.PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
+	res, err := dataSourceClient.PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
 		Id:      dataSource.Id,
 		Catalog: catalog,
 		Entity:  entity,
@@ -98,7 +98,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *model
 		}
 
 		log.Print("begin delete resource without migration", res.Resource.Namespace, res.Resource.Name)
-		_, err := resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+		_, err := resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 			Ids:            []string{resourceId},
 			DoMigration:    false,
 			ForceMigration: false,
@@ -115,7 +115,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *model
 	log.Print("finish PrepareResourceFromEntity", catalog, entity, dataSource.Id)
 
 	log.Print("begin create resource without migration", res.Resource.Namespace, res.Resource.Name)
-	createRes, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	createRes, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:      []*model.Resource{res.Resource},
 		DoMigration:    false,
 		ForceMigration: false,
@@ -123,7 +123,7 @@ func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *model
 
 	if err != nil {
 		if util2.GetErrorCode(err) == model.ErrorCode_ALREADY_EXISTS {
-			res2, _ := resourceServiceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
+			res2, _ := resourceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
 				Namespace: res.Resource.Namespace,
 				Name:      res.Resource.Name,
 			})

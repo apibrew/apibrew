@@ -57,7 +57,7 @@ func (e executor) Restore(ctx context.Context, in *os.File) error {
 func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 	if batch.Header.Mode == model.BatchMode_BATCH_CREATE {
 		if !e.params.DataOnly {
-			resp, err := e.params.ResourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+			resp, err := e.params.ResourceClient.Create(ctx, &stub.CreateResourceRequest{
 				Token:          e.params.Token,
 				Resources:      batch.Resources,
 				DoMigration:    e.params.DoMigration,
@@ -82,7 +82,7 @@ func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 				res.Namespace = e.params.OverrideConfig.Namespace
 			}
 
-			resourceResp, err := e.params.ResourceServiceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
+			resourceResp, err := e.params.ResourceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
 				Token:       e.params.Token,
 				Namespace:   res.Namespace,
 				Name:        res.Resource,
@@ -108,7 +108,7 @@ func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 				records = append(records, record)
 			}
 
-			resp, err := e.params.RecordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+			resp, err := e.params.RecordClient.Create(ctx, &stub.CreateRecordRequest{
 				Token:          e.params.Token,
 				Namespace:      res.Namespace,
 				Resource:       res.Resource,
@@ -136,14 +136,14 @@ type OverrideConfig struct {
 }
 
 type ExecutorParams struct {
-	Input                 io.Reader
-	ResourceServiceClient stub.ResourceServiceClient
-	RecordServiceClient   stub.RecordServiceClient
-	OverrideConfig        OverrideConfig
-	Token                 string
-	DoMigration           bool
-	ForceMigration        bool
-	DataOnly              bool
+	Input          io.Reader
+	ResourceClient stub.ResourceClient
+	RecordClient   stub.RecordClient
+	OverrideConfig OverrideConfig
+	Token          string
+	DoMigration    bool
+	ForceMigration bool
+	DataOnly       bool
 }
 
 func NewExecutor(params ExecutorParams) Executor {

@@ -39,7 +39,11 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 				}
 			}
 		case *model.ResourceMigrationStep_CreateProperty:
-			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(params.Resource, currentPropertyMap[sk.CreateProperty.Property], *params.Schema))
+			property := currentPropertyMap[sk.CreateProperty.Property]
+			if property.Primary {
+				continue
+			}
+			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(params.Resource, property, *params.Schema))
 
 			_, sqlError := runner.ExecContext(ctx, sql)
 
@@ -57,10 +61,9 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 				sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, existingPropertyMap[sk.DeleteProperty.ExistingProperty].Mapping)
 
 				_, sqlError := runner.ExecContext(ctx, sql)
-				err := handleDbError(ctx, sqlError)
 
-				if err != nil {
-					return handleDbError(ctx, err)
+				if sqlError != nil {
+					return handleDbError(ctx, sqlError)
 				}
 			}
 		}
@@ -164,7 +167,7 @@ func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model
 
 	// fixme Default Value Modification logic
 
-	if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+	if property.Type == model.ResourceProperty_REFERENCE {
 		if prevProperty.Reference == nil && property.Reference != nil {
 			referencedResource := schema.ResourceByNamespaceSlashName["default"+"/"+property.Reference.ReferencedResource]
 			var refClause = ""
@@ -286,6 +289,8 @@ func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog 
 			**columnLength = 0
 		}
 
+		var isIdentity = false
+
 		if *isPrimary && !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 			primaryCount++
 
@@ -295,10 +300,12 @@ func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog 
 
 			if *columnName != "id" {
 				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
+				isIdentity = true
 			}
 
 			if *columnType != "uuid" {
 				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
+				isIdentity = true
 			}
 		}
 
@@ -308,7 +315,7 @@ func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog 
 
 		typ := getPropertyTypeFromPsql(*columnType)
 
-		if typ == model.ResourcePropertyType_TYPE_STRING && uint32(**columnLength) == 0 {
+		if typ == model.ResourceProperty_STRING && uint32(**columnLength) == 0 {
 			**columnLength = 256
 		}
 
@@ -325,11 +332,15 @@ func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog 
 		}
 
 		if *isReferenced {
-			property.Type = model.ResourcePropertyType_TYPE_REFERENCE
+			property.Type = model.ResourceProperty_REFERENCE
 			property.Reference = &model.Reference{
 				ReferencedResource: fmt.Sprintf("[%s]", **targetTable),
 				Cascade:            false,
 			}
+		}
+
+		if isIdentity {
+			annotations.Enable(property, annotations.Identity)
 		}
 
 		annotations.Set(property, annotations.SourceDef, sourceDef)
@@ -422,19 +433,19 @@ func doResourceCleanup(resource *model.Resource) {
 	updatedByDetected := false
 	versionDetected := false
 	for _, property := range resource.Properties {
-		if property.Mapping == "created_on" && property.Type == model.ResourcePropertyType_TYPE_TIMESTAMP {
+		if property.Mapping == "created_on" && property.Type == model.ResourceProperty_TIMESTAMP {
 			createdOnDetected = true
 		}
-		if property.Mapping == "updated_on" && property.Type == model.ResourcePropertyType_TYPE_TIMESTAMP {
+		if property.Mapping == "updated_on" && property.Type == model.ResourceProperty_TIMESTAMP {
 			updatedOnDetected = true
 		}
-		if property.Mapping == "created_by" && property.Type == model.ResourcePropertyType_TYPE_STRING {
+		if property.Mapping == "created_by" && property.Type == model.ResourceProperty_STRING {
 			createdByDetected = true
 		}
-		if property.Mapping == "updated_by" && property.Type == model.ResourcePropertyType_TYPE_STRING {
+		if property.Mapping == "updated_by" && property.Type == model.ResourceProperty_STRING {
 			updatedByDetected = true
 		}
-		if property.Mapping == "version" && property.Type == model.ResourcePropertyType_TYPE_INT32 {
+		if property.Mapping == "version" && property.Type == model.ResourceProperty_INT32 {
 			versionDetected = true
 		}
 	}

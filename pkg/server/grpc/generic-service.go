@@ -13,15 +13,15 @@ import (
 )
 
 type GenericGrpcService interface {
-	stub.GenericServiceServer
+	stub.GenericServer
 }
 
-type genericServiceServer struct {
-	stub.GenericServiceServer
+type genericServer struct {
+	stub.GenericServer
 	service abs.RecordService
 }
 
-func (g *genericServiceServer) Create(ctx context.Context, request *stub.CreateRequest) (*stub.CreateResponse, error) {
+func (g *genericServer) Create(ctx context.Context, request *stub.CreateRequest) (*stub.CreateResponse, error) {
 	records, err := g.itemsToRecords(request.Items)
 
 	if err != nil {
@@ -47,7 +47,7 @@ func (g *genericServiceServer) Create(ctx context.Context, request *stub.CreateR
 	}, util.ToStatusError(serviceErr)
 }
 
-func (g *genericServiceServer) Update(ctx context.Context, request *stub.UpdateRequest) (*stub.UpdateResponse, error) {
+func (g *genericServer) Update(ctx context.Context, request *stub.UpdateRequest) (*stub.UpdateResponse, error) {
 	records, err := g.itemsToRecords(request.Items)
 
 	if err != nil {
@@ -71,11 +71,11 @@ func (g *genericServiceServer) Update(ctx context.Context, request *stub.UpdateR
 		Items: items,
 	}, util.ToStatusError(serviceErr)
 }
-func (g *genericServiceServer) UpdateMulti(ctx context.Context, request *stub.UpdateMultiRequest) (*stub.UpdateMultiResponse, error) {
+func (g *genericServer) UpdateMulti(ctx context.Context, request *stub.UpdateMultiRequest) (*stub.UpdateMultiResponse, error) {
 	return nil, nil
 }
 
-func (g *genericServiceServer) Delete(ctx context.Context, request *stub.DeleteRequest) (*stub.DeleteResponse, error) {
+func (g *genericServer) Delete(ctx context.Context, request *stub.DeleteRequest) (*stub.DeleteResponse, error) {
 	err := g.service.Delete(annotations.WithContext(ctx, request), abs.RecordDeleteParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
@@ -85,7 +85,7 @@ func (g *genericServiceServer) Delete(ctx context.Context, request *stub.DeleteR
 	return &stub.DeleteResponse{}, util.ToStatusError(err)
 }
 
-func (g *genericServiceServer) List(ctx context.Context, request *stub.ListRequest) (*stub.ListResponse, error) {
+func (g *genericServer) List(ctx context.Context, request *stub.ListRequest) (*stub.ListResponse, error) {
 	records, total, serviceErr := g.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
@@ -107,7 +107,7 @@ func (g *genericServiceServer) List(ctx context.Context, request *stub.ListReque
 	}, util.ToStatusError(serviceErr)
 }
 
-func (g *genericServiceServer) Search(ctx context.Context, request *stub.SearchRequest) (*stub.SearchResponse, error) {
+func (g *genericServer) Search(ctx context.Context, request *stub.SearchRequest) (*stub.SearchResponse, error) {
 	records, total, serviceErr := g.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
@@ -130,7 +130,7 @@ func (g *genericServiceServer) Search(ctx context.Context, request *stub.SearchR
 	}, util.ToStatusError(serviceErr)
 }
 
-func (g *genericServiceServer) Get(ctx context.Context, request *stub.GetRequest) (*stub.GetResponse, error) {
+func (g *genericServer) Get(ctx context.Context, request *stub.GetRequest) (*stub.GetResponse, error) {
 	record, serviceErr := g.service.Get(annotations.WithContext(ctx, request), abs.RecordGetParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
@@ -152,7 +152,7 @@ func (g *genericServiceServer) Get(ctx context.Context, request *stub.GetRequest
 	}, util.ToStatusError(serviceErr)
 }
 
-func (g *genericServiceServer) recordsToItems(resource, namespace string, records []*model.Record) ([]*anypb.Any, error) {
+func (g *genericServer) recordsToItems(resource, namespace string, records []*model.Record) ([]*anypb.Any, error) {
 	var items []*anypb.Any
 
 	for _, record := range records {
@@ -172,7 +172,7 @@ func (g *genericServiceServer) recordsToItems(resource, namespace string, record
 	return items, nil
 }
 
-func (g *genericServiceServer) itemsToRecords(items []*anypb.Any) ([]*model.Record, error) {
+func (g *genericServer) itemsToRecords(items []*anypb.Any) ([]*model.Record, error) {
 	var records []*model.Record
 	for _, item := range items {
 		message, err := item.UnmarshalNew()
@@ -187,6 +187,6 @@ func (g *genericServiceServer) itemsToRecords(items []*anypb.Any) ([]*model.Reco
 	return records, nil
 }
 
-func NewGenericService(service abs.RecordService) stub.GenericServiceServer {
-	return &genericServiceServer{service: service}
+func NewGenericService(service abs.RecordService) stub.GenericServer {
+	return &genericServer{service: service}
 }

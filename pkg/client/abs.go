@@ -8,14 +8,14 @@ import (
 )
 
 type DhClient interface {
-	GetAuthenticationServiceClient() stub.AuthenticationServiceClient
-	GetDataSourceServiceClient() stub.DataSourceServiceClient
-	GetResourceServiceClient() stub.ResourceServiceClient
-	GetRecordServiceClient() stub.RecordServiceClient
-	GetGenericServiceClient() stub.GenericServiceClient
-	GetNamespaceServiceClient() stub.NamespaceServiceClient
-	GetExtensionServiceClient() stub.ExtensionServiceClient
-	GetUserServiceClient() stub.UserServiceClient
+	GetAuthenticationClient() stub.AuthenticationClient
+	GetDataSourceClient() stub.DataSourceClient
+	GetResourceClient() stub.ResourceClient
+	GetRecordClient() stub.RecordClient
+	GetGenericClient() stub.GenericClient
+	GetNamespaceClient() stub.NamespaceClient
+	GetExtensionClient() stub.ExtensionClient
+	GetUserClient() stub.UserClient
 	GetToken() string
 	AuthenticateWithToken(token string)
 	AuthenticateWithUsernameAndPassword(username string, password string) error

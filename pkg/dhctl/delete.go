@@ -33,7 +33,7 @@ var deleteResource = &cobra.Command{
 		}
 
 		if *deleteResourceId == "" {
-			resp, err := GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+			resp, err := GetDhClient().GetResourceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 				Token:     GetDhClient().GetToken(),
 				Namespace: *deleteResourceNamespace,
 				Name:      *deleteResourceName,
@@ -46,7 +46,7 @@ var deleteResource = &cobra.Command{
 			*deleteResourceId = resp.Resource.Id
 		}
 
-		_, err := GetDhClient().GetResourceServiceClient().Delete(cmd.Context(), &stub.DeleteResourceRequest{
+		_, err := GetDhClient().GetResourceClient().Delete(cmd.Context(), &stub.DeleteResourceRequest{
 			Token:          GetDhClient().GetToken(),
 			Ids:            []string{*deleteResourceId},
 			DoMigration:    *deleteResourceMigrate,
@@ -67,7 +67,7 @@ var deleteDataSource = &cobra.Command{
 		}
 
 		if *deleteDataSourceId == "" {
-			resp, err := GetDhClient().GetDataSourceServiceClient().List(cmd.Context(), &stub.ListDataSourceRequest{
+			resp, err := GetDhClient().GetDataSourceClient().List(cmd.Context(), &stub.ListDataSourceRequest{
 				Token: GetDhClient().GetToken(),
 			})
 
@@ -86,7 +86,7 @@ var deleteDataSource = &cobra.Command{
 			}
 		}
 
-		_, err := GetDhClient().GetDataSourceServiceClient().Delete(cmd.Context(), &stub.DeleteDataSourceRequest{
+		_, err := GetDhClient().GetDataSourceClient().Delete(cmd.Context(), &stub.DeleteDataSourceRequest{
 			Token: GetDhClient().GetToken(),
 			Ids:   []string{*deleteDataSourceId},
 		})
@@ -105,7 +105,7 @@ var deleteNamespace = &cobra.Command{
 		}
 
 		if *deleteNamespaceId == "" {
-			resp, err := GetDhClient().GetNamespaceServiceClient().List(cmd.Context(), &stub.ListNamespaceRequest{
+			resp, err := GetDhClient().GetNamespaceClient().List(cmd.Context(), &stub.ListNamespaceRequest{
 				Token: GetDhClient().GetToken(),
 			})
 
@@ -124,7 +124,7 @@ var deleteNamespace = &cobra.Command{
 			}
 		}
 
-		_, err := GetDhClient().GetNamespaceServiceClient().Delete(cmd.Context(), &stub.DeleteNamespaceRequest{
+		_, err := GetDhClient().GetNamespaceClient().Delete(cmd.Context(), &stub.DeleteNamespaceRequest{
 			Token: GetDhClient().GetToken(),
 			Ids:   []string{*deleteNamespaceId},
 		})
@@ -143,7 +143,7 @@ var deleteUser = &cobra.Command{
 		}
 
 		if *deleteUserId == "" {
-			resp, err := GetDhClient().GetUserServiceClient().List(cmd.Context(), &stub.ListUserRequest{
+			resp, err := GetDhClient().GetUserClient().List(cmd.Context(), &stub.ListUserRequest{
 				Token: GetDhClient().GetToken(),
 			})
 
@@ -162,7 +162,7 @@ var deleteUser = &cobra.Command{
 			}
 		}
 
-		_, err := GetDhClient().GetUserServiceClient().Delete(cmd.Context(), &stub.DeleteUserRequest{
+		_, err := GetDhClient().GetUserClient().Delete(cmd.Context(), &stub.DeleteUserRequest{
 			Token: GetDhClient().GetToken(),
 			Ids:   []string{*deleteUserId},
 		})
@@ -181,7 +181,7 @@ var deleteExtension = &cobra.Command{
 		}
 
 		if *deleteExtensionId == "" {
-			resp, err := GetDhClient().GetExtensionServiceClient().List(cmd.Context(), &stub.ListExtensionRequest{
+			resp, err := GetDhClient().GetExtensionClient().List(cmd.Context(), &stub.ListExtensionRequest{
 				Token: GetDhClient().GetToken(),
 			})
 
@@ -200,7 +200,7 @@ var deleteExtension = &cobra.Command{
 			}
 		}
 
-		_, err := GetDhClient().GetExtensionServiceClient().Delete(cmd.Context(), &stub.DeleteExtensionRequest{
+		_, err := GetDhClient().GetExtensionClient().Delete(cmd.Context(), &stub.DeleteExtensionRequest{
 			Token: GetDhClient().GetToken(),
 			Ids:   []string{*deleteExtensionId},
 		})

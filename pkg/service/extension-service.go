@@ -172,9 +172,9 @@ func (d *extensionService) configureExtension(remoteExtension *model.RemoteExten
 		panic(err)
 	}
 
-	client := ext.NewRecordExtensionServiceClient(conn)
+	client := ext.NewRecordExtensionClient(conn)
 
-	hdlr := NewExtensionHandler(extension.FromRecordExtensionServiceClient(client, remoteExtension.Config))
+	hdlr := NewExtensionHandler(extension.FromRecordExtensionClient(client, remoteExtension.Config))
 
 	d.genericHandler.RegisterWithSelector(hdlr, handler.ResourceSelector(&model.Resource{Namespace: remoteExtension.Config.Namespace, Name: remoteExtension.Config.Resource}))
 }

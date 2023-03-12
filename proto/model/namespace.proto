@@ -12,8 +12,6 @@ import 'google/protobuf/struct.proto';
 message Namespace {
   string id = 1;
   string name = 2;
-  DataType type = 3;
-
 
   string description = 4;
   google.protobuf.Struct details = 5;

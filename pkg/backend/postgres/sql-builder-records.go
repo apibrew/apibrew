@@ -70,25 +70,29 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 		}
 
 		for _, property := range resource.Properties {
-			packedVal := record.Properties[property.Name]
-			if packedVal == nil {
-				row = append(row, argPlaceHolder(nil))
-				continue
+			packedVal, exists := record.Properties[property.Name]
+
+			if exists {
+				if packedVal == nil {
+					row = append(row, argPlaceHolder(nil))
+					continue
+				}
+
+				val, serviceError := DbEncode(property, packedVal)
+				if serviceError != nil {
+					return false, serviceError
+				}
+
+				if property.Type == model.ResourceProperty_REFERENCE {
+					row = append(row, resolveReference(val, argPlaceHolder, schema, resource, property))
+
+					continue
+				}
+
+				row = append(row, argPlaceHolder(val))
+			} else {
+				row = append(row, "DEFAULT")
 			}
-
-			val, serviceError := DbEncode(property, packedVal)
-			if serviceError != nil {
-				return false, serviceError
-			}
-
-			if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
-				row = append(row, resolveReference(val, argPlaceHolder, schema, resource, property))
-
-				continue
-			}
-
-			row = append(row, argPlaceHolder(val))
-
 		}
 
 		if !annotations.IsEnabled(resource, annotations.DisableAudit) {
@@ -110,8 +114,6 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 	if ignoreIfExists {
 		query = query + " ON CONFLICT DO NOTHING"
 	}
-
-	logger.Tracef("SQL: %s", query)
 
 	_, err := runner.ExecContext(ctx, query, args...)
 
@@ -177,7 +179,7 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 			return serviceError
 		}
 
-		if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if property.Type == model.ResourceProperty_REFERENCE {
 			updateBuilder.SetMore(fmt.Sprintf("\"%s\"=%s", property.Mapping, resolveReference(val, updateBuilder.Var, schema, resource, property)))
 		} else {
 			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("\"%s\"", property.Mapping), val))

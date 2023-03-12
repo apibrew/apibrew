@@ -83,7 +83,6 @@ func prepareInitDataSources() []*model.DataSource {
 func prepareSystemNamespace() *model.Namespace {
 	return &model.Namespace{
 		Name: "system",
-		Type: model.DataType_SYSTEM,
 	}
 }
 

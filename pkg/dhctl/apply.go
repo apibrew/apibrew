@@ -53,11 +53,11 @@ var applyCmd = &cobra.Command{
 			check(err)
 
 			batchExecutor := batch.NewExecutor(batch.ExecutorParams{
-				Input:                 in,
-				Token:                 GetDhClient().GetToken(),
-				ResourceServiceClient: GetDhClient().GetResourceServiceClient(),
-				RecordServiceClient:   GetDhClient().GetRecordServiceClient(),
-				DataOnly:              dataOnly,
+				Input:          in,
+				Token:          GetDhClient().GetToken(),
+				ResourceClient: GetDhClient().GetResourceClient(),
+				RecordClient:   GetDhClient().GetRecordClient(),
+				DataOnly:       dataOnly,
 				OverrideConfig: batch.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,
@@ -119,7 +119,7 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool, over
 
 			// locating resource
 			if resource.Id == "" {
-				resp, err := GetDhClient().GetResourceServiceClient().GetByName(context.TODO(), &stub.GetResourceByNameRequest{
+				resp, err := GetDhClient().GetResourceClient().GetByName(context.TODO(), &stub.GetResourceByNameRequest{
 					Token:     GetDhClient().GetToken(),
 					Namespace: resource.Namespace,
 					Name:      resource.Name,
@@ -135,7 +135,7 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool, over
 			}
 
 			if resource.Id != "" {
-				_, err := GetDhClient().GetResourceServiceClient().Update(context.TODO(), &stub.UpdateResourceRequest{
+				_, err := GetDhClient().GetResourceClient().Update(context.TODO(), &stub.UpdateResourceRequest{
 					Token:          GetDhClient().GetToken(),
 					Resources:      []*model.Resource{resource},
 					DoMigration:    migrate,
@@ -146,7 +146,7 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool, over
 
 				log.Println("resource updated: " + resource.Name)
 			} else {
-				_, err := GetDhClient().GetResourceServiceClient().Create(context.TODO(), &stub.CreateResourceRequest{
+				_, err := GetDhClient().GetResourceClient().Create(context.TODO(), &stub.CreateResourceRequest{
 					Token:          GetDhClient().GetToken(),
 					Resources:      []*model.Resource{resource},
 					DoMigration:    migrate,
@@ -179,7 +179,7 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool, over
 	}
 
 	if len(updateRecords) > 0 {
-		_, err := GetDhClient().GetRecordServiceClient().Update(context.TODO(), &stub.UpdateRecordRequest{
+		_, err := GetDhClient().GetRecordClient().Update(context.TODO(), &stub.UpdateRecordRequest{
 			Token:        GetDhClient().GetToken(),
 			Namespace:    namespace,
 			Records:      updateRecords,
@@ -192,7 +192,7 @@ func applyYaml(fileData []byte, migrate bool, namespace string, force bool, over
 	}
 
 	if len(createRecords) > 0 {
-		_, err := GetDhClient().GetRecordServiceClient().Create(context.TODO(), &stub.CreateRecordRequest{
+		_, err := GetDhClient().GetRecordClient().Create(context.TODO(), &stub.CreateRecordRequest{
 			Token:          GetDhClient().GetToken(),
 			Namespace:      namespace,
 			Records:        createRecords,

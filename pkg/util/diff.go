@@ -3,6 +3,7 @@ package util
 import "github.com/tislib/data-handler/pkg/errors"
 
 func ArrayDiffer[T interface{}](existing []T, updated []T, hasSameId func(a, b T) bool, isEqual func(a, b T) bool, onNew func(rec T) errors.ServiceError, onUpdate func(e, u T) errors.ServiceError, onDelete func(rec T) errors.ServiceError) errors.ServiceError {
+	// fixme do not match already matched items
 	for _, e := range existing {
 		found := false
 		for _, u := range updated {

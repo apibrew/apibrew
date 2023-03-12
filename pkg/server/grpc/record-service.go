@@ -11,13 +11,13 @@ import (
 	"github.com/tislib/data-handler/pkg/util"
 )
 
-type recordServiceServer struct {
-	stub.RecordServiceServer
+type recordServer struct {
+	stub.RecordServer
 	service               abs.RecordService
 	authenticationService abs.AuthenticationService
 }
 
-func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
+func (r *recordServer) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
 	records, total, err := r.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
@@ -33,7 +33,7 @@ func (r *recordServiceServer) List(ctx context.Context, request *stub.ListRecord
 	}, util.ToStatusError(err)
 }
 
-func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRecordRequest) (*stub.SearchRecordResponse, error) {
+func (r *recordServer) Search(ctx context.Context, request *stub.SearchRecordRequest) (*stub.SearchRecordResponse, error) {
 	records, total, err := r.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
@@ -50,7 +50,7 @@ func (r *recordServiceServer) Search(ctx context.Context, request *stub.SearchRe
 	}, util.ToStatusError(err)
 }
 
-func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp stub.RecordService_ReadStreamServer) error {
+func (r *recordServer) ReadStream(request *stub.ReadStreamRequest, resp stub.Record_ReadStreamServer) error {
 	ictx, err := interceptRequest(r.authenticationService, resp.Context(), request)
 	ctx, cancel := context.WithCancel(ictx)
 
@@ -108,7 +108,7 @@ func (r *recordServiceServer) ReadStream(request *stub.ReadStreamRequest, resp s
 	return nil
 }
 
-func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
+func (r *recordServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	records, inserted, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
 		Namespace:      request.Namespace,
 		Resource:       request.Resource,
@@ -123,7 +123,7 @@ func (r *recordServiceServer) Create(ctx context.Context, request *stub.CreateRe
 	}, util.ToStatusError(err)
 }
 
-func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
+func (r *recordServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
 	records, err := r.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
 		Namespace:    request.Namespace,
 		Resource:     request.Resource,
@@ -137,7 +137,7 @@ func (r *recordServiceServer) Update(ctx context.Context, request *stub.UpdateRe
 	}, util.ToStatusError(err)
 }
 
-func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
+func (r *recordServer) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
 	record, err := r.service.Get(annotations.WithContext(ctx, request), abs.RecordGetParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
@@ -149,7 +149,7 @@ func (r *recordServiceServer) Get(ctx context.Context, request *stub.GetRecordRe
 	}, util.ToStatusError(err)
 }
 
-func (r *recordServiceServer) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
+func (r *recordServer) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
 	err := r.service.Delete(annotations.WithContext(ctx, request), abs.RecordDeleteParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
@@ -159,6 +159,6 @@ func (r *recordServiceServer) Delete(ctx context.Context, request *stub.DeleteRe
 	return &stub.DeleteRecordResponse{}, util.ToStatusError(err)
 }
 
-func NewRecordServiceServer(service abs.RecordService, authenticationService abs.AuthenticationService) stub.RecordServiceServer {
-	return &recordServiceServer{service: service, authenticationService: authenticationService}
+func NewRecordServer(service abs.RecordService, authenticationService abs.AuthenticationService) stub.RecordServer {
+	return &recordServer{service: service, authenticationService: authenticationService}
 }

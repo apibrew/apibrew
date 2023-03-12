@@ -9,7 +9,8 @@ import 'model/resource.proto';
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 
-service ResourceService {
+// Resource service is for managing resources
+service Resource {
   rpc Create(CreateResourceRequest) returns(CreateResourceResponse) {
     option (google.api.http) = {
       post: "/system/resources",

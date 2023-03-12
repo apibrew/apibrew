@@ -9,7 +9,7 @@ import 'model/error.proto';
 import 'google/protobuf/struct.proto';
 import "google/protobuf/any.proto";
 
-service GenericService {
+service Generic {
   rpc Create (CreateRequest) returns (CreateResponse) {}
   rpc Update (UpdateRequest) returns (UpdateResponse) {}
   rpc UpdateMulti (UpdateMultiRequest) returns (UpdateMultiResponse) {}

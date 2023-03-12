@@ -18,10 +18,10 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// DataSourceServiceClient is the client API for DataSourceService service.
+// DataSourceClient is the client API for DataSource service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type DataSourceServiceClient interface {
+type DataSourceClient interface {
 	Create(ctx context.Context, in *CreateDataSourceRequest, opts ...grpc.CallOption) (*CreateDataSourceResponse, error)
 	List(ctx context.Context, in *ListDataSourceRequest, opts ...grpc.CallOption) (*ListDataSourceResponse, error)
 	Update(ctx context.Context, in *UpdateDataSourceRequest, opts ...grpc.CallOption) (*UpdateDataSourceResponse, error)
@@ -32,90 +32,90 @@ type DataSourceServiceClient interface {
 	PrepareResourceFromEntity(ctx context.Context, in *PrepareResourceFromEntityRequest, opts ...grpc.CallOption) (*PrepareResourceFromEntityResponse, error)
 }
 
-type dataSourceServiceClient struct {
+type dataSourceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewDataSourceServiceClient(cc grpc.ClientConnInterface) DataSourceServiceClient {
-	return &dataSourceServiceClient{cc}
+func NewDataSourceClient(cc grpc.ClientConnInterface) DataSourceClient {
+	return &dataSourceClient{cc}
 }
 
-func (c *dataSourceServiceClient) Create(ctx context.Context, in *CreateDataSourceRequest, opts ...grpc.CallOption) (*CreateDataSourceResponse, error) {
+func (c *dataSourceClient) Create(ctx context.Context, in *CreateDataSourceRequest, opts ...grpc.CallOption) (*CreateDataSourceResponse, error) {
 	out := new(CreateDataSourceResponse)
-	err := c.cc.Invoke(ctx, "/stub.DataSourceService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.DataSource/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataSourceServiceClient) List(ctx context.Context, in *ListDataSourceRequest, opts ...grpc.CallOption) (*ListDataSourceResponse, error) {
+func (c *dataSourceClient) List(ctx context.Context, in *ListDataSourceRequest, opts ...grpc.CallOption) (*ListDataSourceResponse, error) {
 	out := new(ListDataSourceResponse)
-	err := c.cc.Invoke(ctx, "/stub.DataSourceService/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.DataSource/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataSourceServiceClient) Update(ctx context.Context, in *UpdateDataSourceRequest, opts ...grpc.CallOption) (*UpdateDataSourceResponse, error) {
+func (c *dataSourceClient) Update(ctx context.Context, in *UpdateDataSourceRequest, opts ...grpc.CallOption) (*UpdateDataSourceResponse, error) {
 	out := new(UpdateDataSourceResponse)
-	err := c.cc.Invoke(ctx, "/stub.DataSourceService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.DataSource/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataSourceServiceClient) Delete(ctx context.Context, in *DeleteDataSourceRequest, opts ...grpc.CallOption) (*DeleteDataSourceResponse, error) {
+func (c *dataSourceClient) Delete(ctx context.Context, in *DeleteDataSourceRequest, opts ...grpc.CallOption) (*DeleteDataSourceResponse, error) {
 	out := new(DeleteDataSourceResponse)
-	err := c.cc.Invoke(ctx, "/stub.DataSourceService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.DataSource/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataSourceServiceClient) Get(ctx context.Context, in *GetDataSourceRequest, opts ...grpc.CallOption) (*GetDataSourceResponse, error) {
+func (c *dataSourceClient) Get(ctx context.Context, in *GetDataSourceRequest, opts ...grpc.CallOption) (*GetDataSourceResponse, error) {
 	out := new(GetDataSourceResponse)
-	err := c.cc.Invoke(ctx, "/stub.DataSourceService/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.DataSource/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataSourceServiceClient) Status(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusResponse, error) {
+func (c *dataSourceClient) Status(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusResponse, error) {
 	out := new(StatusResponse)
-	err := c.cc.Invoke(ctx, "/stub.DataSourceService/Status", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.DataSource/Status", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataSourceServiceClient) ListEntities(ctx context.Context, in *ListEntitiesRequest, opts ...grpc.CallOption) (*ListEntitiesResponse, error) {
+func (c *dataSourceClient) ListEntities(ctx context.Context, in *ListEntitiesRequest, opts ...grpc.CallOption) (*ListEntitiesResponse, error) {
 	out := new(ListEntitiesResponse)
-	err := c.cc.Invoke(ctx, "/stub.DataSourceService/ListEntities", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.DataSource/ListEntities", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataSourceServiceClient) PrepareResourceFromEntity(ctx context.Context, in *PrepareResourceFromEntityRequest, opts ...grpc.CallOption) (*PrepareResourceFromEntityResponse, error) {
+func (c *dataSourceClient) PrepareResourceFromEntity(ctx context.Context, in *PrepareResourceFromEntityRequest, opts ...grpc.CallOption) (*PrepareResourceFromEntityResponse, error) {
 	out := new(PrepareResourceFromEntityResponse)
-	err := c.cc.Invoke(ctx, "/stub.DataSourceService/PrepareResourceFromEntity", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.DataSource/PrepareResourceFromEntity", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// DataSourceServiceServer is the server API for DataSourceService service.
-// All implementations must embed UnimplementedDataSourceServiceServer
+// DataSourceServer is the server API for DataSource service.
+// All implementations must embed UnimplementedDataSourceServer
 // for forward compatibility
-type DataSourceServiceServer interface {
+type DataSourceServer interface {
 	Create(context.Context, *CreateDataSourceRequest) (*CreateDataSourceResponse, error)
 	List(context.Context, *ListDataSourceRequest) (*ListDataSourceResponse, error)
 	Update(context.Context, *UpdateDataSourceRequest) (*UpdateDataSourceResponse, error)
@@ -124,232 +124,232 @@ type DataSourceServiceServer interface {
 	Status(context.Context, *StatusRequest) (*StatusResponse, error)
 	ListEntities(context.Context, *ListEntitiesRequest) (*ListEntitiesResponse, error)
 	PrepareResourceFromEntity(context.Context, *PrepareResourceFromEntityRequest) (*PrepareResourceFromEntityResponse, error)
-	mustEmbedUnimplementedDataSourceServiceServer()
+	mustEmbedUnimplementedDataSourceServer()
 }
 
-// UnimplementedDataSourceServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedDataSourceServiceServer struct {
+// UnimplementedDataSourceServer must be embedded to have forward compatible implementations.
+type UnimplementedDataSourceServer struct {
 }
 
-func (UnimplementedDataSourceServiceServer) Create(context.Context, *CreateDataSourceRequest) (*CreateDataSourceResponse, error) {
+func (UnimplementedDataSourceServer) Create(context.Context, *CreateDataSourceRequest) (*CreateDataSourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedDataSourceServiceServer) List(context.Context, *ListDataSourceRequest) (*ListDataSourceResponse, error) {
+func (UnimplementedDataSourceServer) List(context.Context, *ListDataSourceRequest) (*ListDataSourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedDataSourceServiceServer) Update(context.Context, *UpdateDataSourceRequest) (*UpdateDataSourceResponse, error) {
+func (UnimplementedDataSourceServer) Update(context.Context, *UpdateDataSourceRequest) (*UpdateDataSourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedDataSourceServiceServer) Delete(context.Context, *DeleteDataSourceRequest) (*DeleteDataSourceResponse, error) {
+func (UnimplementedDataSourceServer) Delete(context.Context, *DeleteDataSourceRequest) (*DeleteDataSourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedDataSourceServiceServer) Get(context.Context, *GetDataSourceRequest) (*GetDataSourceResponse, error) {
+func (UnimplementedDataSourceServer) Get(context.Context, *GetDataSourceRequest) (*GetDataSourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedDataSourceServiceServer) Status(context.Context, *StatusRequest) (*StatusResponse, error) {
+func (UnimplementedDataSourceServer) Status(context.Context, *StatusRequest) (*StatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Status not implemented")
 }
-func (UnimplementedDataSourceServiceServer) ListEntities(context.Context, *ListEntitiesRequest) (*ListEntitiesResponse, error) {
+func (UnimplementedDataSourceServer) ListEntities(context.Context, *ListEntitiesRequest) (*ListEntitiesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEntities not implemented")
 }
-func (UnimplementedDataSourceServiceServer) PrepareResourceFromEntity(context.Context, *PrepareResourceFromEntityRequest) (*PrepareResourceFromEntityResponse, error) {
+func (UnimplementedDataSourceServer) PrepareResourceFromEntity(context.Context, *PrepareResourceFromEntityRequest) (*PrepareResourceFromEntityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PrepareResourceFromEntity not implemented")
 }
-func (UnimplementedDataSourceServiceServer) mustEmbedUnimplementedDataSourceServiceServer() {}
+func (UnimplementedDataSourceServer) mustEmbedUnimplementedDataSourceServer() {}
 
-// UnsafeDataSourceServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to DataSourceServiceServer will
+// UnsafeDataSourceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to DataSourceServer will
 // result in compilation errors.
-type UnsafeDataSourceServiceServer interface {
-	mustEmbedUnimplementedDataSourceServiceServer()
+type UnsafeDataSourceServer interface {
+	mustEmbedUnimplementedDataSourceServer()
 }
 
-func RegisterDataSourceServiceServer(s grpc.ServiceRegistrar, srv DataSourceServiceServer) {
-	s.RegisterService(&DataSourceService_ServiceDesc, srv)
+func RegisterDataSourceServer(s grpc.ServiceRegistrar, srv DataSourceServer) {
+	s.RegisterService(&DataSource_ServiceDesc, srv)
 }
 
-func _DataSourceService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DataSource_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateDataSourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataSourceServiceServer).Create(ctx, in)
+		return srv.(DataSourceServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.DataSourceService/Create",
+		FullMethod: "/stub.DataSource/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataSourceServiceServer).Create(ctx, req.(*CreateDataSourceRequest))
+		return srv.(DataSourceServer).Create(ctx, req.(*CreateDataSourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataSourceService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DataSource_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListDataSourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataSourceServiceServer).List(ctx, in)
+		return srv.(DataSourceServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.DataSourceService/List",
+		FullMethod: "/stub.DataSource/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataSourceServiceServer).List(ctx, req.(*ListDataSourceRequest))
+		return srv.(DataSourceServer).List(ctx, req.(*ListDataSourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataSourceService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DataSource_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateDataSourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataSourceServiceServer).Update(ctx, in)
+		return srv.(DataSourceServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.DataSourceService/Update",
+		FullMethod: "/stub.DataSource/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataSourceServiceServer).Update(ctx, req.(*UpdateDataSourceRequest))
+		return srv.(DataSourceServer).Update(ctx, req.(*UpdateDataSourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataSourceService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DataSource_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteDataSourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataSourceServiceServer).Delete(ctx, in)
+		return srv.(DataSourceServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.DataSourceService/Delete",
+		FullMethod: "/stub.DataSource/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataSourceServiceServer).Delete(ctx, req.(*DeleteDataSourceRequest))
+		return srv.(DataSourceServer).Delete(ctx, req.(*DeleteDataSourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataSourceService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DataSource_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDataSourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataSourceServiceServer).Get(ctx, in)
+		return srv.(DataSourceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.DataSourceService/Get",
+		FullMethod: "/stub.DataSource/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataSourceServiceServer).Get(ctx, req.(*GetDataSourceRequest))
+		return srv.(DataSourceServer).Get(ctx, req.(*GetDataSourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataSourceService_Status_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DataSource_Status_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataSourceServiceServer).Status(ctx, in)
+		return srv.(DataSourceServer).Status(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.DataSourceService/Status",
+		FullMethod: "/stub.DataSource/Status",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataSourceServiceServer).Status(ctx, req.(*StatusRequest))
+		return srv.(DataSourceServer).Status(ctx, req.(*StatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataSourceService_ListEntities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DataSource_ListEntities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListEntitiesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataSourceServiceServer).ListEntities(ctx, in)
+		return srv.(DataSourceServer).ListEntities(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.DataSourceService/ListEntities",
+		FullMethod: "/stub.DataSource/ListEntities",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataSourceServiceServer).ListEntities(ctx, req.(*ListEntitiesRequest))
+		return srv.(DataSourceServer).ListEntities(ctx, req.(*ListEntitiesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataSourceService_PrepareResourceFromEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DataSource_PrepareResourceFromEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PrepareResourceFromEntityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataSourceServiceServer).PrepareResourceFromEntity(ctx, in)
+		return srv.(DataSourceServer).PrepareResourceFromEntity(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.DataSourceService/PrepareResourceFromEntity",
+		FullMethod: "/stub.DataSource/PrepareResourceFromEntity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataSourceServiceServer).PrepareResourceFromEntity(ctx, req.(*PrepareResourceFromEntityRequest))
+		return srv.(DataSourceServer).PrepareResourceFromEntity(ctx, req.(*PrepareResourceFromEntityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// DataSourceService_ServiceDesc is the grpc.ServiceDesc for DataSourceService service.
+// DataSource_ServiceDesc is the grpc.ServiceDesc for DataSource service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var DataSourceService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "stub.DataSourceService",
-	HandlerType: (*DataSourceServiceServer)(nil),
+var DataSource_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "stub.DataSource",
+	HandlerType: (*DataSourceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Create",
-			Handler:    _DataSourceService_Create_Handler,
+			Handler:    _DataSource_Create_Handler,
 		},
 		{
 			MethodName: "List",
-			Handler:    _DataSourceService_List_Handler,
+			Handler:    _DataSource_List_Handler,
 		},
 		{
 			MethodName: "Update",
-			Handler:    _DataSourceService_Update_Handler,
+			Handler:    _DataSource_Update_Handler,
 		},
 		{
 			MethodName: "Delete",
-			Handler:    _DataSourceService_Delete_Handler,
+			Handler:    _DataSource_Delete_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _DataSourceService_Get_Handler,
+			Handler:    _DataSource_Get_Handler,
 		},
 		{
 			MethodName: "Status",
-			Handler:    _DataSourceService_Status_Handler,
+			Handler:    _DataSource_Status_Handler,
 		},
 		{
 			MethodName: "ListEntities",
-			Handler:    _DataSourceService_ListEntities_Handler,
+			Handler:    _DataSource_ListEntities_Handler,
 		},
 		{
 			MethodName: "PrepareResourceFromEntity",
-			Handler:    _DataSourceService_PrepareResourceFromEntity_Handler,
+			Handler:    _DataSource_PrepareResourceFromEntity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

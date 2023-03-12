@@ -13,7 +13,7 @@ type repository[T Entity] struct {
 }
 
 func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
-	resp, err := r.client.GetRecordServiceClient().Create(ctx, &stub.CreateRecordRequest{
+	resp, err := r.client.GetRecordClient().Create(ctx, &stub.CreateRecordRequest{
 		Token:     r.client.GetToken(),
 		Namespace: entity.GetNamespace(),
 		Resource:  entity.GetResourceName(),
@@ -30,7 +30,7 @@ func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
 }
 
 func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
-	resp, err := r.client.GetRecordServiceClient().Update(ctx, &stub.UpdateRecordRequest{
+	resp, err := r.client.GetRecordClient().Update(ctx, &stub.UpdateRecordRequest{
 		Token:        r.client.GetToken(),
 		Namespace:    entity.GetNamespace(),
 		Resource:     entity.GetResourceName(),
@@ -56,7 +56,7 @@ func (r repository[T]) Save(ctx context.Context, entity T) (T, error) {
 }
 
 func (r repository[T]) Get(ctx context.Context, id string) (T, error) {
-	resp, err := r.client.GetRecordServiceClient().Get(ctx, &stub.GetRecordRequest{
+	resp, err := r.client.GetRecordClient().Get(ctx, &stub.GetRecordRequest{
 		Token:     r.client.GetToken(),
 		Namespace: r.params.Instance.GetNamespace(),
 		Resource:  r.params.Instance.GetResourceName(),
@@ -75,7 +75,7 @@ func (r repository[T]) Get(ctx context.Context, id string) (T, error) {
 }
 
 func (r repository[T]) List(ctx context.Context) ([]T, error) {
-	resp, err := r.client.GetRecordServiceClient().List(ctx, &stub.ListRecordRequest{
+	resp, err := r.client.GetRecordClient().List(ctx, &stub.ListRecordRequest{
 		Token:     r.client.GetToken(),
 		Namespace: r.params.Instance.GetNamespace(),
 		Resource:  r.params.Instance.GetResourceName(),

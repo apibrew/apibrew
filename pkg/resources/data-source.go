@@ -18,7 +18,7 @@ var DataSourceResource = &model.Resource{
 			Length:   64,
 			Primary:  false,
 			Unique:   true,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Required: true,
 		},
 		{
@@ -26,20 +26,20 @@ var DataSourceResource = &model.Resource{
 			Mapping:  "description",
 			Length:   64,
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Required: false,
 		},
 		{
 			Name:     "backend",
 			Mapping:  "backend",
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_INT32,
+			Type:     model.ResourceProperty_INT32,
 			Required: true,
 		},
 		{
 			Name:     "options_postgres_username",
 			Mapping:  "options_postgres_username",
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Length:   64,
 			Required: false,
 		},
@@ -47,7 +47,7 @@ var DataSourceResource = &model.Resource{
 			Name: "options_postgres_password",
 
 			Mapping:  "options_postgres_password",
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Length:   64,
 			Required: false,
 		},
@@ -55,7 +55,7 @@ var DataSourceResource = &model.Resource{
 			Name: "options_postgres_host",
 
 			Mapping:  "options_postgres_host",
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Length:   64,
 			Required: false,
 		},
@@ -63,14 +63,14 @@ var DataSourceResource = &model.Resource{
 			Name: "options_postgres_port",
 
 			Mapping:  "options_postgres_port",
-			Type:     model.ResourcePropertyType_TYPE_INT32,
+			Type:     model.ResourceProperty_INT32,
 			Required: false,
 		},
 		{
 			Name: "options_postgres_db_name",
 
 			Mapping:  "options_postgres_db_name",
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Length:   64,
 			Required: false,
 		},
@@ -78,7 +78,7 @@ var DataSourceResource = &model.Resource{
 			Name: "options_postgres_default_schema",
 
 			Mapping:  "options_postgres_default_schema",
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Length:   64,
 			Required: false,
 		},

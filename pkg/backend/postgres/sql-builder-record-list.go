@@ -27,7 +27,7 @@ type colDetails struct {
 	def          string
 	alias        string
 	property     *model.ResourceProperty
-	propertyType model.ResourcePropertyType
+	propertyType model.ResourceProperty_Type
 	required     bool
 	resource     *model.Resource
 }
@@ -183,7 +183,7 @@ func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
 
 func (r *recordLister) expandProps(path string, resource *model.Resource) {
 	isInner := path != "t"
-	gCol := func(name string, typ model.ResourcePropertyType) colDetails {
+	gCol := func(name string, typ model.ResourceProperty_Type) colDetails {
 		return colDetails{
 			resource:     resource,
 			colName:      name,
@@ -196,18 +196,18 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 	}
 
 	if !annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
-		r.colList = append(r.colList, gCol("id", model.ResourcePropertyType_TYPE_UUID))
+		r.colList = append(r.colList, gCol("id", model.ResourceProperty_UUID))
 	}
 
 	if !annotations.IsEnabled(r.resource, annotations.DisableAudit) {
-		r.colList = append(r.colList, gCol("created_on", model.ResourcePropertyType_TYPE_TIMESTAMP))
-		r.colList = append(r.colList, gCol("updated_on", model.ResourcePropertyType_TYPE_TIMESTAMP))
-		r.colList = append(r.colList, gCol("created_by", model.ResourcePropertyType_TYPE_STRING))
-		r.colList = append(r.colList, gCol("updated_by", model.ResourcePropertyType_TYPE_STRING))
+		r.colList = append(r.colList, gCol("created_on", model.ResourceProperty_TIMESTAMP))
+		r.colList = append(r.colList, gCol("updated_on", model.ResourceProperty_TIMESTAMP))
+		r.colList = append(r.colList, gCol("created_by", model.ResourceProperty_STRING))
+		r.colList = append(r.colList, gCol("updated_by", model.ResourceProperty_STRING))
 	}
 
 	if !annotations.IsEnabled(r.resource, annotations.DisableVersion) {
-		r.colList = append(r.colList, gCol("version", model.ResourcePropertyType_TYPE_INT32))
+		r.colList = append(r.colList, gCol("version", model.ResourceProperty_INT32))
 	}
 
 	for _, prop := range resource.Properties {
@@ -222,7 +222,7 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 			propertyType: prop.Type,
 		})
 
-		if prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if prop.Type == model.ResourceProperty_REFERENCE {
 			// check resource
 			found := false
 			for _, rr := range r.ResolveReferences {
@@ -257,7 +257,7 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 
 		val := propertyType.Pointer(cd.required)
 
-		if cd.propertyType == model.ResourcePropertyType_TYPE_REFERENCE {
+		if cd.propertyType == model.ResourceProperty_REFERENCE {
 			if cd.required {
 				val = new(string)
 			} else {
@@ -351,7 +351,7 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 		for _, prop := range resource.Properties {
 			if pathPrefix+prop.Mapping == cd.path {
 
-				if prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+				if prop.Type == model.ResourceProperty_REFERENCE {
 					resolveReference := false
 					for _, rr := range r.ResolveReferences {
 						if rr == "*" || rr == prop.Name || strings.HasPrefix(rr, prop.Name+"/") {
@@ -599,7 +599,7 @@ func recordList(ctx context.Context, runner QueryRunner, params abs.ListRecordPa
 }
 
 func DbDecode(property *model.ResourceProperty, val interface{}) (interface{}, errors.ServiceError) {
-	if property.Type == model.ResourcePropertyType_TYPE_OBJECT || property.Type == model.ResourcePropertyType_TYPE_ENUM || property.Type == model.ResourcePropertyType_TYPE_MAP || property.Type == model.ResourcePropertyType_TYPE_LIST {
+	if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
 		var data = new(interface{})
 		err2 := json.Unmarshal([]byte(val.(string)), data)
 
@@ -608,7 +608,7 @@ func DbDecode(property *model.ResourceProperty, val interface{}) (interface{}, e
 		}
 
 		val = *data
-	} else if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+	} else if property.Type == model.ResourceProperty_REFERENCE {
 		return types.ReferenceType{
 			"id": val,
 		}, nil
