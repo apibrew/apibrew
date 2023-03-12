@@ -10,7 +10,8 @@ import 'model/resource.proto';
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 
-service DataSourceService {
+// DataSource Service is for managing data sources
+service DataSource {
   rpc Create(CreateDataSourceRequest) returns (CreateDataSourceResponse) {
     option (google.api.http) = {
       post: "/system/data-sources",
@@ -46,8 +47,7 @@ service DataSourceService {
   }
   rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {
     option (google.api.http) = {
-      post: "/system/data-sources/{id}/_list_entities",
-      body: "*"
+      get: "/system/data-sources/{id}/entities",
     };
   }
   rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {
@@ -93,7 +93,6 @@ message ListDataSourceRequest {
 }
 
 message ListDataSourceResponse {
-  int32 total = 1;
   repeated model.DataSource content = 2;
 }
 

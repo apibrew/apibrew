@@ -11,7 +11,7 @@ import (
 func TestDhTestUserCannotCreateUser(t *testing.T) {
 	userDhTestCtx := withUserAuthenticationContext(ctx, "dh_test", "dh_test")
 
-	_, err := userServiceClient.Create(userDhTestCtx, &stub.CreateUserRequest{
+	_, err := userClient.Create(userDhTestCtx, &stub.CreateUserRequest{
 		Users: []*model.User{
 			{
 				Username: "test123",
@@ -33,7 +33,7 @@ func TestDhTestUserCannotCreateUser(t *testing.T) {
 func TestDhTestUserCanReadUser(t *testing.T) {
 	userDhTestCtx := withUserAuthenticationContext(ctx, "dh_test", "dh_test")
 
-	_, err := userServiceClient.List(userDhTestCtx, &stub.ListUserRequest{})
+	_, err := userClient.List(userDhTestCtx, &stub.ListUserRequest{})
 
 	if err != nil {
 		log.Print(err)

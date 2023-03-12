@@ -1,5 +1,5 @@
 # Generated with protoc-gen-openapi
-# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+# https://github.com/kollalabs/protoc-gen-openapi
 
 openapi: 3.0.3
 info:
@@ -17,8 +17,11 @@ paths:
     /authentication/token:
         put:
             tags:
-                - AuthenticationService
-            operationId: AuthenticationService_RenewToken
+                - Authentication
+                - Authentication
+            summary: Renew token
+            description: Renew token with existing token
+            operationId: authenticationRenewToken
             requestBody:
                 content:
                     application/json:
@@ -40,8 +43,11 @@ paths:
                                 $ref: '#/components/schemas/Status'
         post:
             tags:
-                - AuthenticationService
-            operationId: AuthenticationService_Authenticate
+                - Authentication
+                - Authentication
+            summary: Authentication with username/password
+            description: Authentication with username/password and create new token
+            operationId: authenticationAuthenticate
             requestBody:
                 content:
                     application/json:
@@ -64,8 +70,9 @@ paths:
     /records/_search_read_stream:
         post:
             tags:
-                - RecordService
-            operationId: RecordService_ReadStream
+                - Record
+            summary: ReadStream
+            operationId: Record_ReadStream
             requestBody:
                 content:
                     application/json:
@@ -88,8 +95,9 @@ paths:
     /records/_search_write_stream:
         post:
             tags:
-                - RecordService
-            operationId: RecordService_WriteStream
+                - Record
+            summary: WriteStream
+            operationId: Record_WriteStream
             requestBody:
                 content:
                     application/json:
@@ -112,8 +120,9 @@ paths:
     /records/{namespace}/{resource}:
         get:
             tags:
-                - RecordService
-            operationId: RecordService_List
+                - Record
+            summary: List
+            operationId: Record_List
             parameters:
                 - name: namespace
                   in: path
@@ -165,8 +174,9 @@ paths:
     /records/{namespace}/{resource}/_bulk:
         put:
             tags:
-                - RecordService
-            operationId: RecordService_Update
+                - Record
+            summary: Update
+            operationId: Record_Update
             parameters:
                 - name: namespace
                   in: path
@@ -192,30 +202,16 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: record.auditData.createdOn.seconds
+                - name: record.auditData.createdOn
                   in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
                   schema:
-                    type: integer
-                    format: int64
-                - name: record.auditData.createdOn.nanos
+                    type: string
+                    format: date-time
+                - name: record.auditData.updatedOn
                   in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
                   schema:
-                    type: integer
-                    format: int32
-                - name: record.auditData.updatedOn.seconds
-                  in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
-                  schema:
-                    type: integer
-                    format: int64
-                - name: record.auditData.updatedOn.nanos
-                  in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
-                  schema:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: date-time
                 - name: record.auditData.createdBy
                   in: query
                   schema:
@@ -248,8 +244,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         post:
             tags:
-                - RecordService
-            operationId: RecordService_Create
+                - Record
+            summary: Create
+            operationId: Record_Create
             parameters:
                 - name: namespace
                   in: path
@@ -275,30 +272,16 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: record.auditData.createdOn.seconds
+                - name: record.auditData.createdOn
                   in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
                   schema:
-                    type: integer
-                    format: int64
-                - name: record.auditData.createdOn.nanos
+                    type: string
+                    format: date-time
+                - name: record.auditData.updatedOn
                   in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
                   schema:
-                    type: integer
-                    format: int32
-                - name: record.auditData.updatedOn.seconds
-                  in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
-                  schema:
-                    type: integer
-                    format: int64
-                - name: record.auditData.updatedOn.nanos
-                  in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
-                  schema:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: date-time
                 - name: record.auditData.createdBy
                   in: query
                   schema:
@@ -331,8 +314,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         delete:
             tags:
-                - RecordService
-            operationId: RecordService_Delete
+                - Record
+            summary: Delete
+            operationId: Record_Delete
             parameters:
                 - name: namespace
                   in: path
@@ -376,8 +360,9 @@ paths:
     /records/{namespace}/{resource}/_multi:
         post:
             tags:
-                - RecordService
-            operationId: RecordService_UpdateMulti
+                - Record
+            summary: UpdateMulti
+            operationId: Record_UpdateMulti
             parameters:
                 - name: namespace
                   in: path
@@ -433,8 +418,9 @@ paths:
     /records/{namespace}/{resource}/_search:
         post:
             tags:
-                - RecordService
-            operationId: RecordService_Search
+                - Record
+            summary: Search
+            operationId: Record_Search
             parameters:
                 - name: namespace
                   in: path
@@ -468,8 +454,9 @@ paths:
     /records/{namespace}/{resource}/{id}:
         get:
             tags:
-                - RecordService
-            operationId: RecordService_Get
+                - Record
+            summary: Get
+            operationId: Record_Get
             parameters:
                 - name: namespace
                   in: path
@@ -506,8 +493,9 @@ paths:
     /system/data-sources:
         get:
             tags:
-                - DataSourceService
-            operationId: DataSourceService_List
+                - DataSource
+            summary: List
+            operationId: DataSource_List
             parameters:
                 - name: token
                   in: query
@@ -528,8 +516,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         put:
             tags:
-                - DataSourceService
-            operationId: DataSourceService_Update
+                - DataSource
+            summary: Update
+            operationId: DataSource_Update
             requestBody:
                 content:
                     application/json:
@@ -551,8 +540,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         post:
             tags:
-                - DataSourceService
-            operationId: DataSourceService_Create
+                - DataSource
+            summary: Create
+            operationId: DataSource_Create
             requestBody:
                 content:
                     application/json:
@@ -574,8 +564,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         delete:
             tags:
-                - DataSourceService
-            operationId: DataSourceService_Delete
+                - DataSource
+            summary: Delete
+            operationId: DataSource_Delete
             requestBody:
                 content:
                     application/json:
@@ -598,8 +589,9 @@ paths:
     /system/data-sources/{id}:
         get:
             tags:
-                - DataSourceService
-            operationId: DataSourceService_Get
+                - DataSource
+            summary: Get
+            operationId: DataSource_Get
             parameters:
                 - name: id
                   in: path
@@ -623,41 +615,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /system/data-sources/{id}/_list_entities:
-        post:
-            tags:
-                - DataSourceService
-            operationId: DataSourceService_ListEntities
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ListEntitiesRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListEntitiesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /system/data-sources/{id}/_prepare_entity:
         post:
             tags:
-                - DataSourceService
-            operationId: DataSourceService_PrepareResourceFromEntity
+                - DataSource
+            summary: PrepareResourceFromEntity
+            operationId: DataSource_PrepareResourceFromEntity
             parameters:
                 - name: id
                   in: path
@@ -686,8 +649,9 @@ paths:
     /system/data-sources/{id}/_status:
         get:
             tags:
-                - DataSourceService
-            operationId: DataSourceService_Status
+                - DataSource
+            summary: Status
+            operationId: DataSource_Status
             parameters:
                 - name: id
                   in: path
@@ -711,11 +675,41 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /system/data-sources/{id}/entities:
+        get:
+            tags:
+                - DataSource
+            summary: ListEntities
+            operationId: DataSource_ListEntities
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListEntitiesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /system/namespaces:
         get:
             tags:
-                - NamespaceService
-            operationId: NamespaceService_List
+                - Namespace
+            summary: List
+            operationId: Namespace_List
             parameters:
                 - name: token
                   in: query
@@ -736,8 +730,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         put:
             tags:
-                - NamespaceService
-            operationId: NamespaceService_Update
+                - Namespace
+            summary: Update
+            operationId: Namespace_Update
             requestBody:
                 content:
                     application/json:
@@ -759,8 +754,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         post:
             tags:
-                - NamespaceService
-            operationId: NamespaceService_Create
+                - Namespace
+            summary: Create
+            operationId: Namespace_Create
             requestBody:
                 content:
                     application/json:
@@ -782,8 +778,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         delete:
             tags:
-                - NamespaceService
-            operationId: NamespaceService_Delete
+                - Namespace
+            summary: Delete
+            operationId: Namespace_Delete
             requestBody:
                 content:
                     application/json:
@@ -806,8 +803,9 @@ paths:
     /system/namespaces/{id}:
         get:
             tags:
-                - NamespaceService
-            operationId: NamespaceService_Get
+                - Namespace
+            summary: Get
+            operationId: Namespace_Get
             parameters:
                 - name: id
                   in: path
@@ -834,8 +832,9 @@ paths:
     /system/resources:
         get:
             tags:
-                - ResourceService
-            operationId: ResourceService_List
+                - Resource
+            summary: List
+            operationId: Resource_List
             parameters:
                 - name: token
                   in: query
@@ -856,8 +855,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         put:
             tags:
-                - ResourceService
-            operationId: ResourceService_Update
+                - Resource
+            summary: Update
+            operationId: Resource_Update
             requestBody:
                 content:
                     application/json:
@@ -879,8 +879,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         post:
             tags:
-                - ResourceService
-            operationId: ResourceService_Create
+                - Resource
+            summary: Create
+            operationId: Resource_Create
             requestBody:
                 content:
                     application/json:
@@ -902,8 +903,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         delete:
             tags:
-                - ResourceService
-            operationId: ResourceService_Delete
+                - Resource
+            summary: Delete
+            operationId: Resource_Delete
             requestBody:
                 content:
                     application/json:
@@ -926,8 +928,9 @@ paths:
     /system/resources/_migrate:
         post:
             tags:
-                - ResourceService
-            operationId: ResourceService_PrepareResourceMigrationPlan
+                - Resource
+            summary: PrepareResourceMigrationPlan
+            operationId: Resource_PrepareResourceMigrationPlan
             requestBody:
                 content:
                     application/json:
@@ -950,8 +953,9 @@ paths:
     /system/resources/{id}:
         get:
             tags:
-                - ResourceService
-            operationId: ResourceService_Get
+                - Resource
+            summary: Get
+            operationId: Resource_Get
             parameters:
                 - name: id
                   in: path
@@ -978,8 +982,9 @@ paths:
     /system/resources/{namespace}/{name}:
         get:
             tags:
-                - ResourceService
-            operationId: ResourceService_GetByName
+                - Resource
+            summary: GetByName
+            operationId: Resource_GetByName
             parameters:
                 - name: namespace
                   in: path
@@ -1011,8 +1016,9 @@ paths:
     /system/users:
         get:
             tags:
-                - UserService
-            operationId: UserService_List
+                - User
+            summary: List
+            operationId: User_List
             parameters:
                 - name: token
                   in: query
@@ -1044,8 +1050,9 @@ paths:
     /system/users/_bulk:
         put:
             tags:
-                - UserService
-            operationId: UserService_Update
+                - User
+            summary: Update
+            operationId: User_Update
             parameters:
                 - name: token
                   in: query
@@ -1055,11 +1062,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.type
-                  in: query
-                  schema:
-                    type: integer
-                    format: enum
                 - name: user.username
                   in: query
                   schema:
@@ -1072,30 +1074,16 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.auditData.createdOn.seconds
+                - name: user.auditData.createdOn
                   in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
                   schema:
-                    type: integer
-                    format: int64
-                - name: user.auditData.createdOn.nanos
+                    type: string
+                    format: date-time
+                - name: user.auditData.updatedOn
                   in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
                   schema:
-                    type: integer
-                    format: int32
-                - name: user.auditData.updatedOn.seconds
-                  in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
-                  schema:
-                    type: integer
-                    format: int64
-                - name: user.auditData.updatedOn.nanos
-                  in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
-                  schema:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: date-time
                 - name: user.auditData.createdBy
                   in: query
                   schema:
@@ -1124,8 +1112,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         post:
             tags:
-                - UserService
-            operationId: UserService_Create
+                - User
+            summary: Create
+            operationId: User_Create
             parameters:
                 - name: token
                   in: query
@@ -1135,11 +1124,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.type
-                  in: query
-                  schema:
-                    type: integer
-                    format: enum
                 - name: user.username
                   in: query
                   schema:
@@ -1152,30 +1136,16 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.auditData.createdOn.seconds
+                - name: user.auditData.createdOn
                   in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
                   schema:
-                    type: integer
-                    format: int64
-                - name: user.auditData.createdOn.nanos
+                    type: string
+                    format: date-time
+                - name: user.auditData.updatedOn
                   in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
                   schema:
-                    type: integer
-                    format: int32
-                - name: user.auditData.updatedOn.seconds
-                  in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
-                  schema:
-                    type: integer
-                    format: int64
-                - name: user.auditData.updatedOn.nanos
-                  in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
-                  schema:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: date-time
                 - name: user.auditData.createdBy
                   in: query
                   schema:
@@ -1204,8 +1174,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         delete:
             tags:
-                - UserService
-            operationId: UserService_Delete
+                - User
+            summary: Delete
+            operationId: User_Delete
             parameters:
                 - name: token
                   in: query
@@ -1237,8 +1208,9 @@ paths:
     /system/users/{id}:
         get:
             tags:
-                - UserService
-            operationId: UserService_Get
+                - User
+            summary: Get
+            operationId: User_Get
             parameters:
                 - name: id
                   in: path
@@ -1265,9 +1237,10 @@ paths:
     /system/watch:
         post:
             tags:
-                - WatchService
+                - Watch
+            summary: Watch
             description: Sends a greeting
-            operationId: WatchService_Watch
+            operationId: Watch_Watch
             parameters:
                 - name: token
                   in: query
@@ -1310,7 +1283,13 @@ paths:
                   schema:
                     type: array
                     items:
-                        type: integer
+                        enum:
+                            - CREATE
+                            - UPDATE
+                            - DELETE
+                            - GET
+                            - LIST
+                        type: string
                         format: enum
             responses:
                 "200":
@@ -1355,7 +1334,12 @@ components:
                 password:
                     type: string
                 term:
-                    type: integer
+                    enum:
+                        - SHORT
+                        - MIDDLE
+                        - LONG
+                        - VERY_LONG
+                    type: string
                     format: enum
         AuthenticationResponse:
             type: object
@@ -1476,13 +1460,17 @@ components:
                 id:
                     type: string
                 backend:
-                    type: integer
+                    enum:
+                        - POSTGRESQL
+                        - VIRTUAL
+                        - MYSQL
+                        - ORACLE
+                        - MONGODB
+                        - CUSTOM
+                    type: string
                     format: enum
                 customBackendName:
                     type: string
-                type:
-                    type: integer
-                    format: enum
                 name:
                     type: string
                 description:
@@ -1616,20 +1604,10 @@ components:
         ListDataSourceResponse:
             type: object
             properties:
-                total:
-                    type: integer
-                    format: int32
                 content:
                     type: array
                     items:
                         $ref: '#/components/schemas/DataSource'
-        ListEntitiesRequest:
-            type: object
-            properties:
-                token:
-                    type: string
-                id:
-                    type: string
         ListEntitiesResponse:
             type: object
             properties:
@@ -1640,9 +1618,6 @@ components:
         ListNamespaceResponse:
             type: object
             properties:
-                total:
-                    type: integer
-                    format: int32
                 content:
                     type: array
                     items:
@@ -1687,9 +1662,6 @@ components:
                     type: string
                 name:
                     type: string
-                type:
-                    type: integer
-                    format: enum
                 description:
                     type: string
                 details:
@@ -1831,7 +1803,12 @@ components:
                 token:
                     type: string
                 term:
-                    type: integer
+                    enum:
+                        - SHORT
+                        - MIDDLE
+                        - LONG
+                        - VERY_LONG
+                    type: string
                     format: enum
         RenewTokenResponse:
             type: object
@@ -1886,7 +1863,10 @@ components:
                     items:
                         $ref: '#/components/schemas/ResourceIndexProperty'
                 indexType:
-                    type: integer
+                    enum:
+                        - BTREE
+                        - HASH
+                    type: string
                     format: enum
                 unique:
                     type: boolean
@@ -1900,7 +1880,11 @@ components:
                 name:
                     type: string
                 order:
-                    type: integer
+                    enum:
+                        - ORDER_UNKNOWN
+                        - ORDER_ASC
+                        - ORDER_DESC
+                    type: string
                     format: enum
         ResourceMigrationCreateIndex:
             type: object
@@ -1986,7 +1970,24 @@ components:
                 name:
                     type: string
                 type:
-                    type: integer
+                    enum:
+                        - BOOL
+                        - STRING
+                        - FLOAT32
+                        - FLOAT64
+                        - INT32
+                        - INT64
+                        - BYTES
+                        - UUID
+                        - DATE
+                        - TIME
+                        - TIMESTAMP
+                        - OBJECT
+                        - MAP
+                        - LIST
+                        - REFERENCE
+                        - ENUM
+                    type: string
                     format: enum
                 mapping:
                     type: string
@@ -2010,7 +2011,24 @@ components:
                 reference:
                     $ref: '#/components/schemas/Reference'
                 subType:
-                    type: integer
+                    enum:
+                        - BOOL
+                        - STRING
+                        - FLOAT32
+                        - FLOAT64
+                        - INT32
+                        - INT64
+                        - BYTES
+                        - UUID
+                        - DATE
+                        - TIME
+                        - TIMESTAMP
+                        - OBJECT
+                        - MAP
+                        - LIST
+                        - REFERENCE
+                        - ENUM
+                    type: string
                     format: enum
                 immutable:
                     type: boolean
@@ -2092,10 +2110,20 @@ components:
                     items:
                         type: string
                 operation:
-                    type: integer
+                    enum:
+                        - OPERATION_TYPE_READ
+                        - OPERATION_TYPE_CREATE
+                        - OPERATION_TYPE_UPDATE
+                        - OPERATION_TYPE_DELETE
+                        - FULL
+                    type: string
                     format: enum
                 permit:
-                    type: integer
+                    enum:
+                        - PERMIT_TYPE_ALLOW
+                        - PERMIT_TYPE_REJECT
+                        - PERMIT_TYPE_UNKNOWN
+                    type: string
                     format: enum
         SecurityContext:
             type: object
@@ -2131,7 +2159,12 @@ components:
             type: object
             properties:
                 term:
-                    type: integer
+                    enum:
+                        - SHORT
+                        - MIDDLE
+                        - LONG
+                        - VERY_LONG
+                    type: string
                     format: enum
                 content:
                     type: string
@@ -2224,9 +2257,6 @@ components:
             properties:
                 id:
                     type: string
-                type:
-                    type: integer
-                    format: enum
                 username:
                     type: string
                 password:
@@ -2246,7 +2276,10 @@ components:
             type: object
             properties:
                 mode:
-                    type: integer
+                    enum:
+                        - DISCARD
+                        - ERROR
+                    type: string
                     format: enum
         WatchMessage:
             type: object
@@ -2258,7 +2291,13 @@ components:
                     items:
                         type: string
                 event:
-                    type: integer
+                    enum:
+                        - CREATE
+                        - UPDATE
+                        - DELETE
+                        - GET
+                        - LIST
+                    type: string
                     format: enum
                 eventOn:
                     type: string
@@ -2286,10 +2325,17 @@ components:
 security:
     - bearerAuth: []
 tags:
-    - name: AuthenticationService
-    - name: DataSourceService
-    - name: NamespaceService
-    - name: RecordService
-    - name: ResourceService
-    - name: UserService
-    - name: WatchService
+    - name: Authentication
+      description: Authentication Service is for authentication related operations
+    - name: DataSource
+      description: DataSource Service is for managing data sources
+    - name: Namespace
+      description: Namespace Service is for managing namespaces
+    - name: Record
+      description: Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
+    - name: Resource
+      description: Resource service is for managing resources
+    - name: User
+      description: User service is for managing users
+    - name: Watch
+      description: Watch service watching operations on records

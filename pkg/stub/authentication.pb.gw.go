@@ -31,7 +31,7 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_AuthenticationService_Authenticate_0(ctx context.Context, marshaler runtime.Marshaler, client AuthenticationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Authentication_Authenticate_0(ctx context.Context, marshaler runtime.Marshaler, client AuthenticationClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq AuthenticationRequest
 	var metadata runtime.ServerMetadata
 
@@ -48,7 +48,7 @@ func request_AuthenticationService_Authenticate_0(ctx context.Context, marshaler
 
 }
 
-func local_request_AuthenticationService_Authenticate_0(ctx context.Context, marshaler runtime.Marshaler, server AuthenticationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Authentication_Authenticate_0(ctx context.Context, marshaler runtime.Marshaler, server AuthenticationServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq AuthenticationRequest
 	var metadata runtime.ServerMetadata
 
@@ -65,7 +65,7 @@ func local_request_AuthenticationService_Authenticate_0(ctx context.Context, mar
 
 }
 
-func request_AuthenticationService_RenewToken_0(ctx context.Context, marshaler runtime.Marshaler, client AuthenticationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Authentication_RenewToken_0(ctx context.Context, marshaler runtime.Marshaler, client AuthenticationClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq RenewTokenRequest
 	var metadata runtime.ServerMetadata
 
@@ -82,7 +82,7 @@ func request_AuthenticationService_RenewToken_0(ctx context.Context, marshaler r
 
 }
 
-func local_request_AuthenticationService_RenewToken_0(ctx context.Context, marshaler runtime.Marshaler, server AuthenticationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Authentication_RenewToken_0(ctx context.Context, marshaler runtime.Marshaler, server AuthenticationServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq RenewTokenRequest
 	var metadata runtime.ServerMetadata
 
@@ -99,13 +99,13 @@ func local_request_AuthenticationService_RenewToken_0(ctx context.Context, marsh
 
 }
 
-// RegisterAuthenticationServiceHandlerServer registers the http handlers for service AuthenticationService to "mux".
-// UnaryRPC     :call AuthenticationServiceServer directly.
+// RegisterAuthenticationHandlerServer registers the http handlers for service Authentication to "mux".
+// UnaryRPC     :call AuthenticationServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterAuthenticationServiceHandlerFromEndpoint instead.
-func RegisterAuthenticationServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server AuthenticationServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterAuthenticationHandlerFromEndpoint instead.
+func RegisterAuthenticationHandlerServer(ctx context.Context, mux *runtime.ServeMux, server AuthenticationServer) error {
 
-	mux.Handle("POST", pattern_AuthenticationService_Authenticate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Authentication_Authenticate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -113,12 +113,12 @@ func RegisterAuthenticationServiceHandlerServer(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.AuthenticationService/Authenticate", runtime.WithHTTPPathPattern("/authentication/token"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Authentication/Authenticate", runtime.WithHTTPPathPattern("/authentication/token"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AuthenticationService_Authenticate_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Authentication_Authenticate_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -126,11 +126,11 @@ func RegisterAuthenticationServiceHandlerServer(ctx context.Context, mux *runtim
 			return
 		}
 
-		forward_AuthenticationService_Authenticate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Authentication_Authenticate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_AuthenticationService_RenewToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_Authentication_RenewToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -138,12 +138,12 @@ func RegisterAuthenticationServiceHandlerServer(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.AuthenticationService/RenewToken", runtime.WithHTTPPathPattern("/authentication/token"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Authentication/RenewToken", runtime.WithHTTPPathPattern("/authentication/token"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AuthenticationService_RenewToken_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Authentication_RenewToken_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -151,16 +151,16 @@ func RegisterAuthenticationServiceHandlerServer(ctx context.Context, mux *runtim
 			return
 		}
 
-		forward_AuthenticationService_RenewToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Authentication_RenewToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterAuthenticationServiceHandlerFromEndpoint is same as RegisterAuthenticationServiceHandler but
+// RegisterAuthenticationHandlerFromEndpoint is same as RegisterAuthenticationHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterAuthenticationServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterAuthenticationHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -180,63 +180,63 @@ func RegisterAuthenticationServiceHandlerFromEndpoint(ctx context.Context, mux *
 		}()
 	}()
 
-	return RegisterAuthenticationServiceHandler(ctx, mux, conn)
+	return RegisterAuthenticationHandler(ctx, mux, conn)
 }
 
-// RegisterAuthenticationServiceHandler registers the http handlers for service AuthenticationService to "mux".
+// RegisterAuthenticationHandler registers the http handlers for service Authentication to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterAuthenticationServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterAuthenticationServiceHandlerClient(ctx, mux, NewAuthenticationServiceClient(conn))
+func RegisterAuthenticationHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterAuthenticationHandlerClient(ctx, mux, NewAuthenticationClient(conn))
 }
 
-// RegisterAuthenticationServiceHandlerClient registers the http handlers for service AuthenticationService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "AuthenticationServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "AuthenticationServiceClient"
+// RegisterAuthenticationHandlerClient registers the http handlers for service Authentication
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "AuthenticationClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "AuthenticationClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "AuthenticationServiceClient" to call the correct interceptors.
-func RegisterAuthenticationServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client AuthenticationServiceClient) error {
+// "AuthenticationClient" to call the correct interceptors.
+func RegisterAuthenticationHandlerClient(ctx context.Context, mux *runtime.ServeMux, client AuthenticationClient) error {
 
-	mux.Handle("POST", pattern_AuthenticationService_Authenticate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Authentication_Authenticate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.AuthenticationService/Authenticate", runtime.WithHTTPPathPattern("/authentication/token"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Authentication/Authenticate", runtime.WithHTTPPathPattern("/authentication/token"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AuthenticationService_Authenticate_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Authentication_Authenticate_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AuthenticationService_Authenticate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Authentication_Authenticate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_AuthenticationService_RenewToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_Authentication_RenewToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.AuthenticationService/RenewToken", runtime.WithHTTPPathPattern("/authentication/token"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Authentication/RenewToken", runtime.WithHTTPPathPattern("/authentication/token"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AuthenticationService_RenewToken_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Authentication_RenewToken_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AuthenticationService_RenewToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Authentication_RenewToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -244,13 +244,13 @@ func RegisterAuthenticationServiceHandlerClient(ctx context.Context, mux *runtim
 }
 
 var (
-	pattern_AuthenticationService_Authenticate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"authentication", "token"}, ""))
+	pattern_Authentication_Authenticate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"authentication", "token"}, ""))
 
-	pattern_AuthenticationService_RenewToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"authentication", "token"}, ""))
+	pattern_Authentication_RenewToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"authentication", "token"}, ""))
 )
 
 var (
-	forward_AuthenticationService_Authenticate_0 = runtime.ForwardResponseMessage
+	forward_Authentication_Authenticate_0 = runtime.ForwardResponseMessage
 
-	forward_AuthenticationService_RenewToken_0 = runtime.ForwardResponseMessage
+	forward_Authentication_RenewToken_0 = runtime.ForwardResponseMessage
 )

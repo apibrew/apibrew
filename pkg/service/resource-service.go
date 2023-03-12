@@ -527,7 +527,7 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 			})
 		}
 
-		if prop.Type == model.ResourcePropertyType_TYPE_STRING {
+		if prop.Type == model.ResourceProperty_STRING {
 			if prop.Length <= 0 {
 				errorFields = append(errorFields, &model.ErrorField{
 					RecordId: resource.Id,

@@ -14,20 +14,20 @@ type DhClientParams struct {
 }
 
 type dhClient struct {
-	conn                        *grpc.ClientConn
-	params                      DhClientParams
-	recordServiceClient         stub.RecordServiceClient
-	authenticationServiceClient stub.AuthenticationServiceClient
-	resourceServiceClient       stub.ResourceServiceClient
-	dataSourceServiceClient     stub.DataSourceServiceClient
-	userServiceClient           stub.UserServiceClient
-	extensionServiceClient      stub.ExtensionServiceClient
-	genericServiceClient        stub.GenericServiceClient
-	namespaceServiceClient      stub.NamespaceServiceClient
+	conn                 *grpc.ClientConn
+	params               DhClientParams
+	recordClient         stub.RecordClient
+	authenticationClient stub.AuthenticationClient
+	resourceClient       stub.ResourceClient
+	dataSourceClient     stub.DataSourceClient
+	userClient           stub.UserClient
+	extensionClient      stub.ExtensionClient
+	genericClient        stub.GenericClient
+	namespaceClient      stub.NamespaceClient
 }
 
 func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
-	authResp, err := d.authenticationServiceClient.Authenticate(context.TODO(), &stub.AuthenticationRequest{
+	authResp, err := d.authenticationClient.Authenticate(context.TODO(), &stub.AuthenticationRequest{
 		Username: username,
 		Password: password,
 		Term:     2,
@@ -46,40 +46,40 @@ func (d *dhClient) AuthenticateWithToken(token string) {
 	d.params.Token = token
 }
 
-func (d *dhClient) GetNamespaceServiceClient() stub.NamespaceServiceClient {
-	return d.namespaceServiceClient
+func (d *dhClient) GetNamespaceClient() stub.NamespaceClient {
+	return d.namespaceClient
 }
 
 func (d *dhClient) GetToken() string {
 	return d.params.Token
 }
 
-func (d *dhClient) GetAuthenticationServiceClient() stub.AuthenticationServiceClient {
-	return d.authenticationServiceClient
+func (d *dhClient) GetAuthenticationClient() stub.AuthenticationClient {
+	return d.authenticationClient
 }
 
-func (d *dhClient) GetDataSourceServiceClient() stub.DataSourceServiceClient {
-	return d.dataSourceServiceClient
+func (d *dhClient) GetDataSourceClient() stub.DataSourceClient {
+	return d.dataSourceClient
 }
 
-func (d *dhClient) GetResourceServiceClient() stub.ResourceServiceClient {
-	return d.resourceServiceClient
+func (d *dhClient) GetResourceClient() stub.ResourceClient {
+	return d.resourceClient
 }
 
-func (d *dhClient) GetRecordServiceClient() stub.RecordServiceClient {
-	return d.recordServiceClient
+func (d *dhClient) GetRecordClient() stub.RecordClient {
+	return d.recordClient
 }
 
-func (d *dhClient) GetGenericServiceClient() stub.GenericServiceClient {
-	return d.genericServiceClient
+func (d *dhClient) GetGenericClient() stub.GenericClient {
+	return d.genericClient
 }
 
-func (d *dhClient) GetExtensionServiceClient() stub.ExtensionServiceClient {
-	return d.extensionServiceClient
+func (d *dhClient) GetExtensionClient() stub.ExtensionClient {
+	return d.extensionClient
 }
 
-func (d *dhClient) GetUserServiceClient() stub.UserServiceClient {
-	return d.userServiceClient
+func (d *dhClient) GetUserClient() stub.UserClient {
+	return d.userClient
 }
 
 func NewDhClient(params DhClientParams) (DhClient, error) {
@@ -95,15 +95,15 @@ func NewDhClient(params DhClientParams) (DhClient, error) {
 	}
 
 	return &dhClient{
-		conn:                        conn,
-		params:                      params,
-		recordServiceClient:         stub.NewRecordServiceClient(conn),
-		authenticationServiceClient: stub.NewAuthenticationServiceClient(conn),
-		resourceServiceClient:       stub.NewResourceServiceClient(conn),
-		dataSourceServiceClient:     stub.NewDataSourceServiceClient(conn),
-		userServiceClient:           stub.NewUserServiceClient(conn),
-		extensionServiceClient:      stub.NewExtensionServiceClient(conn),
-		genericServiceClient:        stub.NewGenericServiceClient(conn),
-		namespaceServiceClient:      stub.NewNamespaceServiceClient(conn),
+		conn:                 conn,
+		params:               params,
+		recordClient:         stub.NewRecordClient(conn),
+		authenticationClient: stub.NewAuthenticationClient(conn),
+		resourceClient:       stub.NewResourceClient(conn),
+		dataSourceClient:     stub.NewDataSourceClient(conn),
+		userClient:           stub.NewUserClient(conn),
+		extensionClient:      stub.NewExtensionClient(conn),
+		genericClient:        stub.NewGenericClient(conn),
+		namespaceClient:      stub.NewNamespaceClient(conn),
 	}, nil
 }

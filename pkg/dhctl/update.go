@@ -75,7 +75,7 @@ var updateRecordCmd = &cobra.Command{
 
 		resourceName := args[0]
 
-		resource := check2(GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+		resource := check2(GetDhClient().GetResourceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 			Token:     GetDhClient().GetToken(),
 			Namespace: *updateRecordCmdNamespace,
 			Name:      resourceName,
@@ -93,7 +93,7 @@ var updateRecordCmd = &cobra.Command{
 
 		parseRootFlags(cmd)
 
-		record := check2(GetDhClient().GetRecordServiceClient().Get(cmd.Context(), &stub.GetRecordRequest{
+		record := check2(GetDhClient().GetRecordClient().Get(cmd.Context(), &stub.GetRecordRequest{
 			Token:     GetDhClient().GetToken(),
 			Namespace: *updateRecordCmdNamespace,
 			Resource:  resourceName,
@@ -102,7 +102,7 @@ var updateRecordCmd = &cobra.Command{
 
 		fp.Parse(record, cmd, args)
 
-		check2(GetDhClient().GetRecordServiceClient().Update(cmd.Context(), &stub.UpdateRecordRequest{
+		check2(GetDhClient().GetRecordClient().Update(cmd.Context(), &stub.UpdateRecordRequest{
 			Token:     GetDhClient().GetToken(),
 			Namespace: *updateRecordCmdNamespace,
 			Resource:  resourceName,
@@ -110,7 +110,7 @@ var updateRecordCmd = &cobra.Command{
 		}))
 
 		describeWriter.WriteRecords(resource.Resource, 0, util.ArrToChan([]*model.Record{
-			check2(GetDhClient().GetRecordServiceClient().Get(cmd.Context(), &stub.GetRecordRequest{
+			check2(GetDhClient().GetRecordClient().Get(cmd.Context(), &stub.GetRecordRequest{
 				Token:     GetDhClient().GetToken(),
 				Namespace: *updateRecordCmdNamespace,
 				Resource:  resourceName,
@@ -127,7 +127,7 @@ func initUpdateCmd() {
 	updateCmd.AddCommand(protoMessageUpdateCmd[*model.Resource](protoMessageUpdateCmdParams[*model.Resource]{
 		msg: &model.Resource{},
 		get: func(id string) *model.Resource {
-			return check2(GetDhClient().GetResourceServiceClient().Get(context.TODO(), &stub.GetResourceRequest{
+			return check2(GetDhClient().GetResourceClient().Get(context.TODO(), &stub.GetResourceRequest{
 				Token:       GetDhClient().GetToken(),
 				Id:          id,
 				Annotations: nil,
@@ -140,7 +140,7 @@ func initUpdateCmd() {
 		},
 		handle: func(resource *model.Resource) {
 			log.Println(*migrate, *force)
-			resp := check2(GetDhClient().GetResourceServiceClient().Update(context.TODO(), &stub.UpdateResourceRequest{
+			resp := check2(GetDhClient().GetResourceClient().Update(context.TODO(), &stub.UpdateResourceRequest{
 				Token:          GetDhClient().GetToken(),
 				Resources:      []*model.Resource{resource},
 				DoMigration:    *migrate,
@@ -148,7 +148,7 @@ func initUpdateCmd() {
 			}))
 
 			describeWriter.WriteResources([]*model.Resource{
-				check2(GetDhClient().GetResourceServiceClient().Get(context.TODO(), &stub.GetResourceRequest{
+				check2(GetDhClient().GetResourceClient().Get(context.TODO(), &stub.GetResourceRequest{
 					Token:       GetDhClient().GetToken(),
 					Id:          resp.Resources[0].Id,
 					Annotations: nil,
@@ -160,19 +160,19 @@ func initUpdateCmd() {
 		msg: &model.DataSource{},
 		use: "data-source",
 		get: func(id string) *model.DataSource {
-			return check2(GetDhClient().GetDataSourceServiceClient().Get(context.TODO(), &stub.GetDataSourceRequest{
+			return check2(GetDhClient().GetDataSourceClient().Get(context.TODO(), &stub.GetDataSourceRequest{
 				Token: GetDhClient().GetToken(),
 				Id:    id,
 			})).DataSource
 		},
 		handle: func(dataSource *model.DataSource) {
-			resp := check2(GetDhClient().GetDataSourceServiceClient().Update(context.TODO(), &stub.UpdateDataSourceRequest{
+			resp := check2(GetDhClient().GetDataSourceClient().Update(context.TODO(), &stub.UpdateDataSourceRequest{
 				Token:       GetDhClient().GetToken(),
 				DataSources: []*model.DataSource{dataSource},
 			}))
 
 			describeWriter.WriteRecords(resources.DataSourceResource, 0, util.ArrToChan([]*model.Record{
-				mapping.DataSourceToRecord(check2(GetDhClient().GetDataSourceServiceClient().Get(context.TODO(), &stub.GetDataSourceRequest{
+				mapping.DataSourceToRecord(check2(GetDhClient().GetDataSourceClient().Get(context.TODO(), &stub.GetDataSourceRequest{
 					Token: GetDhClient().GetToken(),
 					Id:    resp.DataSources[0].Id,
 				})).DataSource),
@@ -183,19 +183,19 @@ func initUpdateCmd() {
 		msg: &model.Namespace{},
 		use: "namespace",
 		get: func(id string) *model.Namespace {
-			return check2(GetDhClient().GetNamespaceServiceClient().Get(context.TODO(), &stub.GetNamespaceRequest{
+			return check2(GetDhClient().GetNamespaceClient().Get(context.TODO(), &stub.GetNamespaceRequest{
 				Token: GetDhClient().GetToken(),
 				Id:    id,
 			})).Namespace
 		},
 		handle: func(namespace *model.Namespace) {
-			resp := check2(GetDhClient().GetNamespaceServiceClient().Update(context.TODO(), &stub.UpdateNamespaceRequest{
+			resp := check2(GetDhClient().GetNamespaceClient().Update(context.TODO(), &stub.UpdateNamespaceRequest{
 				Token:      GetDhClient().GetToken(),
 				Namespaces: []*model.Namespace{namespace},
 			}))
 
 			describeWriter.WriteRecords(resources.NamespaceResource, 0, util.ArrToChan([]*model.Record{
-				mapping.NamespaceToRecord(check2(GetDhClient().GetNamespaceServiceClient().Get(context.TODO(), &stub.GetNamespaceRequest{
+				mapping.NamespaceToRecord(check2(GetDhClient().GetNamespaceClient().Get(context.TODO(), &stub.GetNamespaceRequest{
 					Token: GetDhClient().GetToken(),
 					Id:    resp.Namespaces[0].Id,
 				})).Namespace),
@@ -206,13 +206,13 @@ func initUpdateCmd() {
 		msg: &model.User{},
 		use: "user",
 		get: func(id string) *model.User {
-			return check2(GetDhClient().GetUserServiceClient().Get(context.TODO(), &stub.GetUserRequest{
+			return check2(GetDhClient().GetUserClient().Get(context.TODO(), &stub.GetUserRequest{
 				Token: GetDhClient().GetToken(),
 				Id:    id,
 			})).User
 		},
 		handle: func(user *model.User) {
-			resp := check2(GetDhClient().GetUserServiceClient().Update(context.TODO(), &stub.UpdateUserRequest{
+			resp := check2(GetDhClient().GetUserClient().Update(context.TODO(), &stub.UpdateUserRequest{
 				Token: GetDhClient().GetToken(),
 				Users: []*model.User{user},
 			}))
@@ -226,13 +226,13 @@ func initUpdateCmd() {
 		msg: &model.RemoteExtension{},
 		use: "extension",
 		get: func(id string) *model.RemoteExtension {
-			return check2(GetDhClient().GetExtensionServiceClient().Get(context.TODO(), &stub.GetExtensionRequest{
+			return check2(GetDhClient().GetExtensionClient().Get(context.TODO(), &stub.GetExtensionRequest{
 				Token: GetDhClient().GetToken(),
 				Id:    id,
 			})).Extension
 		},
 		handle: func(extension *model.RemoteExtension) {
-			resp := check2(GetDhClient().GetExtensionServiceClient().Update(context.TODO(), &stub.UpdateExtensionRequest{
+			resp := check2(GetDhClient().GetExtensionClient().Update(context.TODO(), &stub.UpdateExtensionRequest{
 				Token:      GetDhClient().GetToken(),
 				Extensions: []*model.RemoteExtension{extension},
 			}))

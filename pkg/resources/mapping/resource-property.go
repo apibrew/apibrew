@@ -72,7 +72,7 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	var resourceProperty = &model.ResourceProperty{
 		Id:              &record.Id,
 		Name:            record.Properties["name"].GetStringValue(),
-		Type:            model.ResourcePropertyType(record.Properties["type"].GetNumberValue()),
+		Type:            model.ResourceProperty_Type(record.Properties["type"].GetNumberValue()),
 		Mapping:         record.Properties["mapping"].GetStringValue(),
 		Primary:         record.Properties["sourcePrimary"].GetBoolValue(),
 		Required:        record.Properties["required"].GetBoolValue(),

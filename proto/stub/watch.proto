@@ -9,7 +9,8 @@ import 'model/query.proto';
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 
-service WatchService {
+// Watch service watching operations on records
+service Watch {
   // Sends a greeting
   rpc Watch (WatchRequest) returns (stream model.WatchMessage) {
     option (google.api.http) = {

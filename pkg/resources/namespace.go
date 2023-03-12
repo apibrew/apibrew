@@ -17,7 +17,7 @@ var NamespaceResource = &model.Resource{
 
 			Mapping:   "name",
 			Primary:   false,
-			Type:      model.ResourcePropertyType_TYPE_STRING,
+			Type:      model.ResourceProperty_STRING,
 			Length:    256,
 			Required:  true,
 			Unique:    true,
@@ -28,7 +28,7 @@ var NamespaceResource = &model.Resource{
 
 			Mapping:  "description",
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
 		},
@@ -37,7 +37,7 @@ var NamespaceResource = &model.Resource{
 
 			Mapping:  "details",
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_OBJECT,
+			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},
 		securityContextProperty,

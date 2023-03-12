@@ -7,14 +7,14 @@ option go_package = "github.com/tislib/data-handler/pkg/model";
 import 'model/record.proto';
 import 'model/resource.proto';
 import 'google/protobuf/struct.proto';
-
-enum BatchMode {
-  BATCH_CREATE = 0;
-  BATCH_UPDATE = 1;
-  BATCH_DELETE = 2;
-}
+import "openapiv3/annotations.proto";
 
 message BatchHeader {
+  enum BatchMode {
+    CREATE = 0;
+    UPDATE = 1;
+    DELETE = 2;
+  }
   BatchMode mode = 1;
 
   map<string, string> annotations = 103;

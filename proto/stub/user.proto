@@ -10,7 +10,8 @@ import 'model/query.proto';
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 
-service UserService {
+// User service is for managing users
+service User {
   rpc Create(CreateUserRequest) returns(CreateUserResponse) {
     option (google.api.http) = {
       post: "/system/users/_bulk"

@@ -279,6 +279,13 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 			},
 		},
 	}
+
+	for _, tag := range tags {
+		doc.Tags = append(doc.Tags, &openapi3.Tag{
+			Name:        tag,
+			Description: "",
+		})
+	}
 }
 
 func (s *swaggerApi) getResourceFQN(resource *model.Resource) string {

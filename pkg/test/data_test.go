@@ -7,7 +7,6 @@ import (
 var systemDataSource = &model.DataSource{
 	Id:          "system",
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
-	Type:        model.DataType_SYSTEM,
 	Name:        "system",
 	Description: "system",
 	Options: &model.DataSource_PostgresqlParams{
@@ -74,7 +73,6 @@ var dataSource1 = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1",
 	Description: "data-source-1",
-	Type:        model.DataType_USER,
 	Version:     1,
 	Options: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlOptions{
@@ -91,7 +89,6 @@ var dataSource1 = &model.DataSource{
 var richResource1 = &model.Resource{
 	Name:      "rich-test-3995",
 	Namespace: "default",
-	DataType:  2,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: dhTest.Name,
 		Entity:     "rich_test_3995",
@@ -99,14 +96,14 @@ var richResource1 = &model.Resource{
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "int32_o",
-			Type: model.ResourcePropertyType_TYPE_INT32,
+			Type: model.ResourceProperty_INT32,
 
 			Mapping:  "int32_o",
 			Required: false,
 		},
 		{
 			Name: "int32",
-			Type: model.ResourcePropertyType_TYPE_INT32,
+			Type: model.ResourceProperty_INT32,
 
 			Mapping:  "int32",
 			Required: true,
@@ -114,7 +111,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "int64",
-			Type: model.ResourcePropertyType_TYPE_INT64,
+			Type: model.ResourceProperty_INT64,
 
 			Mapping:  "int64",
 			Required: true,
@@ -122,7 +119,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "float",
-			Type: model.ResourcePropertyType_TYPE_FLOAT32,
+			Type: model.ResourceProperty_FLOAT32,
 
 			Mapping:  "float",
 			Required: true,
@@ -130,7 +127,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "double",
-			Type: model.ResourcePropertyType_TYPE_FLOAT64,
+			Type: model.ResourceProperty_FLOAT64,
 
 			Mapping:  "double",
 			Required: true,
@@ -138,7 +135,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "text",
-			Type: model.ResourcePropertyType_TYPE_STRING,
+			Type: model.ResourceProperty_STRING,
 
 			Mapping:  "text",
 			Length:   255,
@@ -147,7 +144,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "string",
-			Type: model.ResourcePropertyType_TYPE_STRING,
+			Type: model.ResourceProperty_STRING,
 
 			Mapping:  "string",
 			Required: true,
@@ -155,7 +152,7 @@ var richResource1 = &model.Resource{
 		},
 		{
 			Name: "uuid",
-			Type: model.ResourcePropertyType_TYPE_UUID,
+			Type: model.ResourceProperty_UUID,
 
 			Mapping:  "uuid",
 			Required: true,
@@ -163,7 +160,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "date",
-			Type: model.ResourcePropertyType_TYPE_DATE,
+			Type: model.ResourceProperty_DATE,
 
 			Mapping:  "date",
 			Required: true,
@@ -171,7 +168,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "time",
-			Type: model.ResourcePropertyType_TYPE_TIME,
+			Type: model.ResourceProperty_TIME,
 
 			Mapping:  "time",
 			Required: true,
@@ -179,7 +176,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "timestamp",
-			Type: model.ResourcePropertyType_TYPE_TIMESTAMP,
+			Type: model.ResourceProperty_TIMESTAMP,
 
 			Mapping:  "timestamp",
 			Required: true,
@@ -187,7 +184,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "bool",
-			Type: model.ResourcePropertyType_TYPE_BOOL,
+			Type: model.ResourceProperty_BOOL,
 
 			Mapping:  "bool",
 			Required: true,
@@ -195,7 +192,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "object",
-			Type: model.ResourcePropertyType_TYPE_OBJECT,
+			Type: model.ResourceProperty_OBJECT,
 
 			Mapping:  "object",
 			Required: true,
@@ -203,7 +200,7 @@ var richResource1 = &model.Resource{
 
 		{
 			Name: "bytes",
-			Type: model.ResourcePropertyType_TYPE_BYTES,
+			Type: model.ResourceProperty_BYTES,
 
 			Mapping:  "bytes",
 			Required: true,
@@ -214,12 +211,11 @@ var richResource1 = &model.Resource{
 var simpleVirtualResource1 = &model.Resource{
 	Name:      "virtualResource",
 	Namespace: "default",
-	DataType:  2,
 	Virtual:   true,
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "name",
-			Type: model.ResourcePropertyType_TYPE_STRING,
+			Type: model.ResourceProperty_STRING,
 
 			Mapping:  "name",
 			Length:   255,
@@ -227,7 +223,7 @@ var simpleVirtualResource1 = &model.Resource{
 		},
 		{
 			Name: "description",
-			Type: model.ResourcePropertyType_TYPE_STRING,
+			Type: model.ResourceProperty_STRING,
 
 			Mapping:  "description",
 			Length:   255,

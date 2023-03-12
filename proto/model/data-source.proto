@@ -37,7 +37,6 @@ message DataSource {
   string id = 1; // id; read only
   DataSourceBackendType backend = 2;
   string customBackendName = 3;
-  DataType type = 4; // read only
   string name = 5;
   string description = 6;
 

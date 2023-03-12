@@ -18,10 +18,10 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// ExtensionServiceClient is the client API for ExtensionService service.
+// ExtensionClient is the client API for Extension service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ExtensionServiceClient interface {
+type ExtensionClient interface {
 	List(ctx context.Context, in *ListExtensionRequest, opts ...grpc.CallOption) (*ListExtensionResponse, error)
 	Get(ctx context.Context, in *GetExtensionRequest, opts ...grpc.CallOption) (*GetExtensionResponse, error)
 	Create(ctx context.Context, in *CreateExtensionRequest, opts ...grpc.CallOption) (*CreateExtensionResponse, error)
@@ -29,219 +29,219 @@ type ExtensionServiceClient interface {
 	Delete(ctx context.Context, in *DeleteExtensionRequest, opts ...grpc.CallOption) (*DeleteExtensionResponse, error)
 }
 
-type extensionServiceClient struct {
+type extensionClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewExtensionServiceClient(cc grpc.ClientConnInterface) ExtensionServiceClient {
-	return &extensionServiceClient{cc}
+func NewExtensionClient(cc grpc.ClientConnInterface) ExtensionClient {
+	return &extensionClient{cc}
 }
 
-func (c *extensionServiceClient) List(ctx context.Context, in *ListExtensionRequest, opts ...grpc.CallOption) (*ListExtensionResponse, error) {
+func (c *extensionClient) List(ctx context.Context, in *ListExtensionRequest, opts ...grpc.CallOption) (*ListExtensionResponse, error) {
 	out := new(ListExtensionResponse)
-	err := c.cc.Invoke(ctx, "/stub.ExtensionService/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Extension/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *extensionServiceClient) Get(ctx context.Context, in *GetExtensionRequest, opts ...grpc.CallOption) (*GetExtensionResponse, error) {
+func (c *extensionClient) Get(ctx context.Context, in *GetExtensionRequest, opts ...grpc.CallOption) (*GetExtensionResponse, error) {
 	out := new(GetExtensionResponse)
-	err := c.cc.Invoke(ctx, "/stub.ExtensionService/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Extension/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *extensionServiceClient) Create(ctx context.Context, in *CreateExtensionRequest, opts ...grpc.CallOption) (*CreateExtensionResponse, error) {
+func (c *extensionClient) Create(ctx context.Context, in *CreateExtensionRequest, opts ...grpc.CallOption) (*CreateExtensionResponse, error) {
 	out := new(CreateExtensionResponse)
-	err := c.cc.Invoke(ctx, "/stub.ExtensionService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Extension/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *extensionServiceClient) Update(ctx context.Context, in *UpdateExtensionRequest, opts ...grpc.CallOption) (*UpdateExtensionResponse, error) {
+func (c *extensionClient) Update(ctx context.Context, in *UpdateExtensionRequest, opts ...grpc.CallOption) (*UpdateExtensionResponse, error) {
 	out := new(UpdateExtensionResponse)
-	err := c.cc.Invoke(ctx, "/stub.ExtensionService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Extension/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *extensionServiceClient) Delete(ctx context.Context, in *DeleteExtensionRequest, opts ...grpc.CallOption) (*DeleteExtensionResponse, error) {
+func (c *extensionClient) Delete(ctx context.Context, in *DeleteExtensionRequest, opts ...grpc.CallOption) (*DeleteExtensionResponse, error) {
 	out := new(DeleteExtensionResponse)
-	err := c.cc.Invoke(ctx, "/stub.ExtensionService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Extension/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ExtensionServiceServer is the server API for ExtensionService service.
-// All implementations must embed UnimplementedExtensionServiceServer
+// ExtensionServer is the server API for Extension service.
+// All implementations must embed UnimplementedExtensionServer
 // for forward compatibility
-type ExtensionServiceServer interface {
+type ExtensionServer interface {
 	List(context.Context, *ListExtensionRequest) (*ListExtensionResponse, error)
 	Get(context.Context, *GetExtensionRequest) (*GetExtensionResponse, error)
 	Create(context.Context, *CreateExtensionRequest) (*CreateExtensionResponse, error)
 	Update(context.Context, *UpdateExtensionRequest) (*UpdateExtensionResponse, error)
 	Delete(context.Context, *DeleteExtensionRequest) (*DeleteExtensionResponse, error)
-	mustEmbedUnimplementedExtensionServiceServer()
+	mustEmbedUnimplementedExtensionServer()
 }
 
-// UnimplementedExtensionServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedExtensionServiceServer struct {
+// UnimplementedExtensionServer must be embedded to have forward compatible implementations.
+type UnimplementedExtensionServer struct {
 }
 
-func (UnimplementedExtensionServiceServer) List(context.Context, *ListExtensionRequest) (*ListExtensionResponse, error) {
+func (UnimplementedExtensionServer) List(context.Context, *ListExtensionRequest) (*ListExtensionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedExtensionServiceServer) Get(context.Context, *GetExtensionRequest) (*GetExtensionResponse, error) {
+func (UnimplementedExtensionServer) Get(context.Context, *GetExtensionRequest) (*GetExtensionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedExtensionServiceServer) Create(context.Context, *CreateExtensionRequest) (*CreateExtensionResponse, error) {
+func (UnimplementedExtensionServer) Create(context.Context, *CreateExtensionRequest) (*CreateExtensionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedExtensionServiceServer) Update(context.Context, *UpdateExtensionRequest) (*UpdateExtensionResponse, error) {
+func (UnimplementedExtensionServer) Update(context.Context, *UpdateExtensionRequest) (*UpdateExtensionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedExtensionServiceServer) Delete(context.Context, *DeleteExtensionRequest) (*DeleteExtensionResponse, error) {
+func (UnimplementedExtensionServer) Delete(context.Context, *DeleteExtensionRequest) (*DeleteExtensionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedExtensionServiceServer) mustEmbedUnimplementedExtensionServiceServer() {}
+func (UnimplementedExtensionServer) mustEmbedUnimplementedExtensionServer() {}
 
-// UnsafeExtensionServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ExtensionServiceServer will
+// UnsafeExtensionServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ExtensionServer will
 // result in compilation errors.
-type UnsafeExtensionServiceServer interface {
-	mustEmbedUnimplementedExtensionServiceServer()
+type UnsafeExtensionServer interface {
+	mustEmbedUnimplementedExtensionServer()
 }
 
-func RegisterExtensionServiceServer(s grpc.ServiceRegistrar, srv ExtensionServiceServer) {
-	s.RegisterService(&ExtensionService_ServiceDesc, srv)
+func RegisterExtensionServer(s grpc.ServiceRegistrar, srv ExtensionServer) {
+	s.RegisterService(&Extension_ServiceDesc, srv)
 }
 
-func _ExtensionService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Extension_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListExtensionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExtensionServiceServer).List(ctx, in)
+		return srv.(ExtensionServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.ExtensionService/List",
+		FullMethod: "/stub.Extension/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExtensionServiceServer).List(ctx, req.(*ListExtensionRequest))
+		return srv.(ExtensionServer).List(ctx, req.(*ListExtensionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExtensionService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Extension_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetExtensionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExtensionServiceServer).Get(ctx, in)
+		return srv.(ExtensionServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.ExtensionService/Get",
+		FullMethod: "/stub.Extension/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExtensionServiceServer).Get(ctx, req.(*GetExtensionRequest))
+		return srv.(ExtensionServer).Get(ctx, req.(*GetExtensionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExtensionService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Extension_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateExtensionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExtensionServiceServer).Create(ctx, in)
+		return srv.(ExtensionServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.ExtensionService/Create",
+		FullMethod: "/stub.Extension/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExtensionServiceServer).Create(ctx, req.(*CreateExtensionRequest))
+		return srv.(ExtensionServer).Create(ctx, req.(*CreateExtensionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExtensionService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Extension_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateExtensionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExtensionServiceServer).Update(ctx, in)
+		return srv.(ExtensionServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.ExtensionService/Update",
+		FullMethod: "/stub.Extension/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExtensionServiceServer).Update(ctx, req.(*UpdateExtensionRequest))
+		return srv.(ExtensionServer).Update(ctx, req.(*UpdateExtensionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExtensionService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Extension_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteExtensionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExtensionServiceServer).Delete(ctx, in)
+		return srv.(ExtensionServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.ExtensionService/Delete",
+		FullMethod: "/stub.Extension/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExtensionServiceServer).Delete(ctx, req.(*DeleteExtensionRequest))
+		return srv.(ExtensionServer).Delete(ctx, req.(*DeleteExtensionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ExtensionService_ServiceDesc is the grpc.ServiceDesc for ExtensionService service.
+// Extension_ServiceDesc is the grpc.ServiceDesc for Extension service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ExtensionService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "stub.ExtensionService",
-	HandlerType: (*ExtensionServiceServer)(nil),
+var Extension_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "stub.Extension",
+	HandlerType: (*ExtensionServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "List",
-			Handler:    _ExtensionService_List_Handler,
+			Handler:    _Extension_List_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _ExtensionService_Get_Handler,
+			Handler:    _Extension_Get_Handler,
 		},
 		{
 			MethodName: "Create",
-			Handler:    _ExtensionService_Create_Handler,
+			Handler:    _Extension_Create_Handler,
 		},
 		{
 			MethodName: "Update",
-			Handler:    _ExtensionService_Update_Handler,
+			Handler:    _Extension_Update_Handler,
 		},
 		{
 			MethodName: "Delete",
-			Handler:    _ExtensionService_Delete_Handler,
+			Handler:    _Extension_Delete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

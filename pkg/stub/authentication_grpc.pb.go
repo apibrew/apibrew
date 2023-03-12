@@ -18,122 +18,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// AuthenticationServiceClient is the client API for AuthenticationService service.
+// AuthenticationClient is the client API for Authentication service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type AuthenticationServiceClient interface {
+type AuthenticationClient interface {
 	Authenticate(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error)
 	RenewToken(ctx context.Context, in *RenewTokenRequest, opts ...grpc.CallOption) (*RenewTokenResponse, error)
 }
 
-type authenticationServiceClient struct {
+type authenticationClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewAuthenticationServiceClient(cc grpc.ClientConnInterface) AuthenticationServiceClient {
-	return &authenticationServiceClient{cc}
+func NewAuthenticationClient(cc grpc.ClientConnInterface) AuthenticationClient {
+	return &authenticationClient{cc}
 }
 
-func (c *authenticationServiceClient) Authenticate(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error) {
+func (c *authenticationClient) Authenticate(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error) {
 	out := new(AuthenticationResponse)
-	err := c.cc.Invoke(ctx, "/stub.AuthenticationService/Authenticate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Authentication/Authenticate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authenticationServiceClient) RenewToken(ctx context.Context, in *RenewTokenRequest, opts ...grpc.CallOption) (*RenewTokenResponse, error) {
+func (c *authenticationClient) RenewToken(ctx context.Context, in *RenewTokenRequest, opts ...grpc.CallOption) (*RenewTokenResponse, error) {
 	out := new(RenewTokenResponse)
-	err := c.cc.Invoke(ctx, "/stub.AuthenticationService/RenewToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Authentication/RenewToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// AuthenticationServiceServer is the server API for AuthenticationService service.
-// All implementations must embed UnimplementedAuthenticationServiceServer
+// AuthenticationServer is the server API for Authentication service.
+// All implementations must embed UnimplementedAuthenticationServer
 // for forward compatibility
-type AuthenticationServiceServer interface {
+type AuthenticationServer interface {
 	Authenticate(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error)
 	RenewToken(context.Context, *RenewTokenRequest) (*RenewTokenResponse, error)
-	mustEmbedUnimplementedAuthenticationServiceServer()
+	mustEmbedUnimplementedAuthenticationServer()
 }
 
-// UnimplementedAuthenticationServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedAuthenticationServiceServer struct {
+// UnimplementedAuthenticationServer must be embedded to have forward compatible implementations.
+type UnimplementedAuthenticationServer struct {
 }
 
-func (UnimplementedAuthenticationServiceServer) Authenticate(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error) {
+func (UnimplementedAuthenticationServer) Authenticate(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
 }
-func (UnimplementedAuthenticationServiceServer) RenewToken(context.Context, *RenewTokenRequest) (*RenewTokenResponse, error) {
+func (UnimplementedAuthenticationServer) RenewToken(context.Context, *RenewTokenRequest) (*RenewTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RenewToken not implemented")
 }
-func (UnimplementedAuthenticationServiceServer) mustEmbedUnimplementedAuthenticationServiceServer() {}
+func (UnimplementedAuthenticationServer) mustEmbedUnimplementedAuthenticationServer() {}
 
-// UnsafeAuthenticationServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AuthenticationServiceServer will
+// UnsafeAuthenticationServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthenticationServer will
 // result in compilation errors.
-type UnsafeAuthenticationServiceServer interface {
-	mustEmbedUnimplementedAuthenticationServiceServer()
+type UnsafeAuthenticationServer interface {
+	mustEmbedUnimplementedAuthenticationServer()
 }
 
-func RegisterAuthenticationServiceServer(s grpc.ServiceRegistrar, srv AuthenticationServiceServer) {
-	s.RegisterService(&AuthenticationService_ServiceDesc, srv)
+func RegisterAuthenticationServer(s grpc.ServiceRegistrar, srv AuthenticationServer) {
+	s.RegisterService(&Authentication_ServiceDesc, srv)
 }
 
-func _AuthenticationService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Authentication_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AuthenticationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthenticationServiceServer).Authenticate(ctx, in)
+		return srv.(AuthenticationServer).Authenticate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.AuthenticationService/Authenticate",
+		FullMethod: "/stub.Authentication/Authenticate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthenticationServiceServer).Authenticate(ctx, req.(*AuthenticationRequest))
+		return srv.(AuthenticationServer).Authenticate(ctx, req.(*AuthenticationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthenticationService_RenewToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Authentication_RenewToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RenewTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthenticationServiceServer).RenewToken(ctx, in)
+		return srv.(AuthenticationServer).RenewToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.AuthenticationService/RenewToken",
+		FullMethod: "/stub.Authentication/RenewToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthenticationServiceServer).RenewToken(ctx, req.(*RenewTokenRequest))
+		return srv.(AuthenticationServer).RenewToken(ctx, req.(*RenewTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// AuthenticationService_ServiceDesc is the grpc.ServiceDesc for AuthenticationService service.
+// Authentication_ServiceDesc is the grpc.ServiceDesc for Authentication service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var AuthenticationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "stub.AuthenticationService",
-	HandlerType: (*AuthenticationServiceServer)(nil),
+var Authentication_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "stub.Authentication",
+	HandlerType: (*AuthenticationServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Authenticate",
-			Handler:    _AuthenticationService_Authenticate_Handler,
+			Handler:    _Authentication_Authenticate_Handler,
 		},
 		{
 			MethodName: "RenewToken",
-			Handler:    _AuthenticationService_RenewToken_Handler,
+			Handler:    _Authentication_RenewToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

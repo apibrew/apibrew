@@ -51,15 +51,15 @@ func (g *grpcServer) Init(initData *model.InitData) {
 
 	reflection.Register(g.grpcServer)
 
-	stub.RegisterResourceServiceServer(g.grpcServer, NewResourceServiceServer(g.resourceService))
-	stub.RegisterAuthenticationServiceServer(g.grpcServer, NewAuthenticationServiceServer(g.authenticationService))
-	stub.RegisterDataSourceServiceServer(g.grpcServer, NewDataSourceServiceServer(g.dataSourceService))
-	stub.RegisterRecordServiceServer(g.grpcServer, NewRecordServiceServer(g.recordService, g.authenticationService))
-	stub.RegisterUserServiceServer(g.grpcServer, NewUserServiceServer(g.userService))
-	stub.RegisterNamespaceServiceServer(g.grpcServer, NewNamespaceServiceServer(g.namespaceService))
-	stub.RegisterWatchServiceServer(g.grpcServer, NewWatchServiceServer(g.watchService))
-	stub.RegisterExtensionServiceServer(g.grpcServer, NewExtensionServiceServer(g.extensionService))
-	stub.RegisterGenericServiceServer(g.grpcServer, NewGenericService(g.recordService))
+	stub.RegisterResourceServer(g.grpcServer, NewResourceServer(g.resourceService))
+	stub.RegisterAuthenticationServer(g.grpcServer, NewAuthenticationServer(g.authenticationService))
+	stub.RegisterDataSourceServer(g.grpcServer, NewDataSourceServer(g.dataSourceService))
+	stub.RegisterRecordServer(g.grpcServer, NewRecordServer(g.recordService, g.authenticationService))
+	stub.RegisterUserServer(g.grpcServer, NewUserServer(g.userService))
+	stub.RegisterNamespaceServer(g.grpcServer, NewNamespaceServer(g.namespaceService))
+	stub.RegisterWatchServer(g.grpcServer, NewWatchServer(g.watchService))
+	stub.RegisterExtensionServer(g.grpcServer, NewExtensionServer(g.extensionService))
+	stub.RegisterGenericServer(g.grpcServer, NewGenericService(g.recordService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) {

@@ -13,7 +13,7 @@ import (
 
 type TestRecordCreationValidationSubCase struct {
 	resource   *model.Resource
-	recordType model.ResourcePropertyType
+	recordType model.ResourceProperty_Type
 }
 
 func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
@@ -24,7 +24,7 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 
 	defer func() {
 		if len(resourceIdsForRemoval) > 0 {
-			_, err := resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			_, err := resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 				Ids:            resourceIdsForRemoval,
 				DoMigration:    true,
 				ForceMigration: true,
@@ -42,7 +42,7 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 		newResources = append(newResources, subCase.resource)
 	}
 
-	resp, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	resp, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Token:          "",
 		Resources:      newResources,
 		DoMigration:    true,
@@ -93,7 +93,7 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 		records = append(records, validRecord)
 	}
 
-	resp, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: subCase.resource.Name,
 		Records:  records,
 	})
@@ -147,7 +147,7 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 		records = append(records, validRecord)
 	}
 
-	resp, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: subCase.resource.Name,
 		Records:  records,
 	})
@@ -171,7 +171,7 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 		record.Properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
 	}
 
-	updateResp, err := recordServiceClient.Update(ctx, &stub.UpdateRecordRequest{
+	updateResp, err := recordClient.Update(ctx, &stub.UpdateRecordRequest{
 		Resource: subCase.resource.Name,
 		Records:  records,
 	})
@@ -227,7 +227,7 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 		records = append(records, validRecord)
 	}
 
-	_, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: subCase.resource.Name,
 		Records:  records,
 	})
@@ -256,7 +256,7 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 	var cases []TestRecordCreationValidationSubCase
 
 	for _, typ := range typs {
-		if typ == model.ResourcePropertyType_TYPE_REFERENCE {
+		if typ == model.ResourceProperty_REFERENCE {
 			continue
 		}
 
@@ -293,7 +293,7 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 				Required: false,
 				Primary:  false,
 				Length:   length,
-				Unique:   typ != model.ResourcePropertyType_TYPE_BOOL,
+				Unique:   typ != model.ResourceProperty_BOOL,
 			},
 		)
 
