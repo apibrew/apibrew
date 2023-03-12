@@ -7,7 +7,6 @@ import (
 var ResourcePropertyResource = &model.Resource{
 	Name:      "resourceProperty",
 	Namespace: "system",
-	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "resource_property",

@@ -7,7 +7,6 @@ import (
 var ExtensionResource = &model.Resource{
 	Name:      "extension",
 	Namespace: "system",
-	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "extension",

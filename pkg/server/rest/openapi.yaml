@@ -186,11 +186,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: record.dataType
-                  in: query
-                  schema:
-                    type: integer
-                    format: enum
                 - name: record.propertiesPacked
                   in: query
                   schema:
@@ -274,11 +269,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: record.dataType
-                  in: query
-                  schema:
-                    type: integer
-                    format: enum
                 - name: record.propertiesPacked
                   in: query
                   schema:
@@ -1808,9 +1798,6 @@ components:
             properties:
                 id:
                     type: string
-                dataType:
-                    type: integer
-                    format: enum
                 properties:
                     type: object
                     additionalProperties:
@@ -1860,9 +1847,6 @@ components:
                     type: string
                 namespace:
                     type: string
-                dataType:
-                    type: integer
-                    format: enum
                 sourceConfig:
                     $ref: '#/components/schemas/ResourceSourceConfig'
                 properties:
@@ -2295,7 +2279,7 @@ components:
                     items:
                         type: boolean
     securitySchemes:
-        BearerAuth:
+        bearerAuth:
             type: http
             scheme: bearer
             bearerFormat: JWT

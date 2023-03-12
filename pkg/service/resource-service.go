@@ -141,8 +141,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return errors.ResourceNotFoundError
 	}
 
-	resource.DataType = model.DataType_USER
-
 	if resource.Namespace == "" {
 		resource.Namespace = "default"
 	}
@@ -325,8 +323,6 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 }
 
 func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
-	resource.DataType = model.DataType_USER
-
 	if resource.Namespace == "" {
 		resource.Namespace = "default"
 	}
@@ -721,13 +717,10 @@ func (r *resourceService) mustReloadResources(ctx context.Context) {
 }
 
 func (r *resourceService) mustModifyResource(resource *model.Resource) errors.ServiceError {
-	if resource.Namespace == "system" || resource.DataType == model.DataType_SYSTEM {
+	if resource.Namespace == "system" {
 		return errors.LogicalError.WithMessage("actions on system resource is not allowed")
 	}
 
-	if resource.DataType == model.DataType_STATIC {
-		return errors.LogicalError.WithMessage("actions on static resource is not allowed")
-	}
 	return nil
 }
 

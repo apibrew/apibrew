@@ -7,7 +7,6 @@ import (
 var UserResource = &model.Resource{
 	Name:      "user",
 	Namespace: "system",
-	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "user",

@@ -26,7 +26,6 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
 		properties["catalog"] = structpb.NewStringValue(resource.SourceConfig.Catalog)
 	}
-	properties["type"] = structpb.NewNumberValue(float64(resource.DataType.Number()))
 	properties["annotations"], _ = structpb.NewValue(convertMap(resource.Annotations, func(v string) interface{} {
 		return v
 	}))
@@ -45,7 +44,6 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 
 	return &model.Record{
 		Id:         resource.Id,
-		DataType:   resource.DataType,
 		Properties: properties,
 		AuditData:  resource.AuditData,
 		Version:    resource.Version,
@@ -69,7 +67,6 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 
 	var resource = &model.Resource{
 		Id:        record.Id,
-		DataType:  model.DataType(int32(record.Properties["type"].GetNumberValue())),
 		AuditData: record.AuditData,
 		Version:   record.Version,
 		Name:      record.Properties["name"].GetStringValue(),

@@ -28,7 +28,7 @@ option (openapi.v3.document) = {
     security_schemes: {
       additional_properties: [
         {
-          name: "BearerAuth";
+          name: "bearerAuth";
           value: {
             security_scheme: {
               type: "http";

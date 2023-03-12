@@ -43,7 +43,6 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 
 	return &model.Record{
 		Id:         *property.Id,
-		DataType:   model.DataType_SYSTEM,
 		Properties: properties,
 	}
 }
