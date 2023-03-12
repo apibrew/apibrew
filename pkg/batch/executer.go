@@ -55,7 +55,7 @@ func (e executor) Restore(ctx context.Context, in *os.File) error {
 }
 
 func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
-	if batch.Header.Mode == model.BatchMode_BATCH_CREATE {
+	if batch.Header.Mode == model.BatchHeader_CREATE {
 		if !e.params.DataOnly {
 			resp, err := e.params.ResourceClient.Create(ctx, &stub.CreateResourceRequest{
 				Token:          e.params.Token,

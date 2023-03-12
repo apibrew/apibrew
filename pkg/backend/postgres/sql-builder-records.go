@@ -272,7 +272,18 @@ func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Reso
 	if checkHasOwnId(resource) {
 		deleteBuilder.Where(deleteBuilder.In("t.id", util.ArrayMapToInterface(ids)...))
 	} else {
-		deleteBuilder.Where(deleteBuilder.In("t.id", util.ArrayMapToInterface(ids)...)) //fixme fix for lookup
+		var primaryFound = false
+		for _, prop := range resource.Properties {
+			if prop.Primary {
+				deleteBuilder.Where(deleteBuilder.In(prop.Mapping, util.ArrayMapToInterface(ids)...))
+				primaryFound = true
+				break
+			}
+		}
+
+		if !primaryFound {
+			return errors.LogicalError.WithDetails("Delete operation cannot be executed without id")
+		}
 	}
 
 	sqlQuery, args := deleteBuilder.Build()

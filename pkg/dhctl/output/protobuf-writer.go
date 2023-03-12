@@ -22,7 +22,7 @@ func (c *protobufWriter) nextBatch() {
 	}
 
 	if err := c.batchWriter.StartBatch(&model.BatchHeader{
-		Mode:        model.BatchMode_BATCH_CREATE,
+		Mode:        model.BatchHeader_CREATE,
 		Annotations: nil,
 	}); err != nil {
 		log.Fatal(err)
@@ -31,7 +31,7 @@ func (c *protobufWriter) nextBatch() {
 
 func (c *protobufWriter) WriteResources(resources []*model.Resource) {
 	if err := c.batchWriter.StartBatch(&model.BatchHeader{
-		Mode:        model.BatchMode_BATCH_CREATE,
+		Mode:        model.BatchHeader_CREATE,
 		Annotations: nil,
 	}); err != nil {
 		log.Fatal(err)
@@ -49,7 +49,7 @@ func (c *protobufWriter) WriteResources(resources []*model.Resource) {
 func (c *protobufWriter) WriteRecords(resource *model.Resource, total uint32, recordsChan chan *model.Record) {
 	log.Printf("Total records to be written: %d \n", total)
 	if err := c.batchWriter.StartBatch(&model.BatchHeader{
-		Mode:        model.BatchMode_BATCH_CREATE,
+		Mode:        model.BatchHeader_CREATE,
 		Annotations: nil,
 	}); err != nil {
 		log.Fatal(err)
