@@ -131,16 +131,6 @@ func checkHasOwnId(resource *model.Resource) bool {
 	return !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup)
 }
 
-func locatePrimaryKey(resource *model.Resource) (string, errors.ServiceError) {
-	for _, property := range resource.Properties {
-		if property.Primary {
-			return property.Mapping, nil
-		}
-	}
-
-	return "", errors.UnableToLocatePrimaryKey
-}
-
 func prepareResourceRecordCols(resource *model.Resource) []string {
 	var cols []string
 

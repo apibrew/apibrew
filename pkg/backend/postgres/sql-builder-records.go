@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
+	"github.com/tislib/data-handler/pkg/service/security"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
@@ -56,9 +57,7 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 		if !history {
 			record.AuditData = &model.AuditData{
 				CreatedOn: timestamppb.New(now),
-				UpdatedOn: timestamppb.New(now),
-				CreatedBy: "test-user",
-				UpdatedBy: "",
+				CreatedBy: security.GetUserPrincipalFromContext(ctx),
 			}
 			record.Version = 1
 		}
@@ -153,16 +152,29 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 
 	updateBuilder := sqlbuilder.Update(getFullTableName(resource.SourceConfig, false))
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
-	if checkVersion {
-		updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))
+
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
+		checkVersion = false
+	}
+
+	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
+		if checkVersion {
+			updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))
+		} else {
+			updateBuilder.Where(updateBuilder.Equal("id", record.Id))
+		}
 	} else {
-		updateBuilder.Where(updateBuilder.Equal("id", record.Id))
+		sqlPart, err := createRecordIdMatchQuery(ctx, resource, record, updateBuilder.Var)
+		if err != nil {
+			return err
+		}
+		updateBuilder.Where(sqlPart)
 	}
 
 	now := time.Now()
 
 	record.AuditData.UpdatedOn = timestamppb.New(now)
-	record.AuditData.UpdatedBy = "test-user"
+	record.AuditData.UpdatedBy = security.GetUserPrincipalFromContext(ctx)
 
 	record.Version++
 
@@ -186,9 +198,14 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 		}
 	}
 
-	updateBuilder.SetMore(updateBuilder.Equal("updated_on", record.AuditData.UpdatedOn.AsTime()))
-	updateBuilder.SetMore(updateBuilder.Equal("updated_by", record.AuditData.UpdatedBy))
-	updateBuilder.SetMore("version = version + 1")
+	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+		updateBuilder.SetMore(updateBuilder.Equal("updated_on", record.AuditData.UpdatedOn.AsTime()))
+		updateBuilder.SetMore(updateBuilder.Equal("updated_by", record.AuditData.UpdatedBy))
+	}
+
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
+		updateBuilder.SetMore("version = version + 1")
+	}
 
 	sqlQuery, args := updateBuilder.Build()
 
@@ -255,13 +272,7 @@ func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Reso
 	if checkHasOwnId(resource) {
 		deleteBuilder.Where(deleteBuilder.In("t.id", util.ArrayMapToInterface(ids)...))
 	} else {
-		idField, err := locatePrimaryKey(resource)
-
-		if err != nil {
-			return err
-		}
-
-		deleteBuilder.Where(deleteBuilder.In(idField, util.ArrayMapToInterface(ids)...))
+		deleteBuilder.Where(deleteBuilder.In("t.id", util.ArrayMapToInterface(ids)...)) //fixme fix for lookup
 	}
 
 	sqlQuery, args := deleteBuilder.Build()
@@ -294,4 +305,28 @@ func computeRecordFromProperties(ctx context.Context, resource *model.Resource, 
 	record.Id = strings.Join(idParts, "-")
 
 	return nil
+}
+
+func createRecordIdMatchQuery(ctx context.Context, resource *model.Resource, record *model.Record, varFn func(value interface{}) string) (string, errors.ServiceError) {
+	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
+		return fmt.Sprintf("id=%s", varFn(record.Id)), nil
+	}
+
+	for _, prop := range resource.Properties {
+		val := record.Properties[prop.Name]
+		if val != nil && prop.Primary {
+			typ := types.ByResourcePropertyType(prop.Type)
+			unpacked, err := typ.UnPack(val)
+			if err != nil {
+				return "", handleDbError(ctx, err)
+			}
+			if unpacked == nil {
+				continue
+			}
+
+			return fmt.Sprintf("\"%s\"=%s", prop.Mapping, varFn(unpacked)), nil
+		}
+	}
+
+	return "", errors.LogicalError.WithDetails("No Primary key exists")
 }

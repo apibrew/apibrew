@@ -27,6 +27,20 @@ func GetUserDetailsFromContext(ctx context.Context) *abs.UserDetails {
 	return res
 }
 
+func GetUserPrincipalFromContext(ctx context.Context) string {
+	userDetails := GetUserDetailsFromContext(ctx)
+
+	if userDetails == nil {
+		if IsSystemContext(ctx) {
+			return "system"
+		} else {
+			return "guest"
+		}
+	}
+
+	return userDetails.Username
+}
+
 func IsSystemContext(ctx context.Context) bool {
 	return ctx.Value(abs.SystemContextKey) != nil && ctx.Value(abs.SystemContextKey).(bool)
 }
