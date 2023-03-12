@@ -96,7 +96,6 @@ message Resource {
   string id = 1; // id; read only
   string name = 2; // uniq(per namespace) // name
   string namespace = 3; // create only?
-  DataType dataType = 4; // read only
   ResourceSourceConfig sourceConfig = 5;
   repeated ResourceProperty properties = 6;
   repeated ResourceIndex indexes = 7;

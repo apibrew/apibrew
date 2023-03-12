@@ -7,7 +7,6 @@ import (
 var NamespaceResource = &model.Resource{
 	Name:      "namespace",
 	Namespace: "system",
-	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "namespace",

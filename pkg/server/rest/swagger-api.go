@@ -10,6 +10,7 @@ import (
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"io"
@@ -117,6 +118,23 @@ func (s *swaggerApi) prepareDoc(ctx context.Context, openApiData []byte) (*opena
 		}
 	}
 
+	// post processing
+	var security = &openapi3.SecurityRequirements{
+		{
+			"bearerAuth": []string{},
+		},
+	}
+
+	for pathKey, path := range doc.Paths {
+		for operationKey, operation := range path.Operations() {
+			if pathKey == "/authentication/token" && operationKey == "POST" {
+				continue
+			}
+
+			operation.Security = security
+		}
+	}
+
 	return doc, nil
 }
 
@@ -130,11 +148,24 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 		tags = []string{resource.GetNamespace() + " / " + resource.GetName()}
 	}
 
+	title := resource.GetTitle()
+	description := resource.GetDescription()
+
+	if title == "" {
+		title = resource.GetName()
+	}
+
+	if description == "" {
+		description = "Api for " + resource.GetName()
+	}
+
 	doc.Paths["/"+s.getResourceFQN(resource)] = &openapi3.PathItem{
-		Summary:     resource.Name,
-		Description: "Api for " + resource.Name,
+		Summary:     title,
+		Description: description,
 		Get: &openapi3.Operation{
-			Tags: tags,
+			Tags:        tags,
+			Summary:     title,
+			Description: description + " - get list",
 			Responses: map[string]*openapi3.ResponseRef{
 				"200": {
 					Value: &openapi3.Response{
@@ -146,7 +177,9 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 			},
 		},
 		Post: &openapi3.Operation{
-			Tags: tags,
+			Tags:        tags,
+			Summary:     title,
+			Description: description + " - create item",
 			RequestBody: &openapi3.RequestBodyRef{
 				Value: &openapi3.RequestBody{
 					Required: true,
@@ -168,10 +201,12 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 	}
 
 	doc.Paths["/"+s.getResourceFQN(resource)+"/{id}"] = &openapi3.PathItem{
-		Summary:     resource.Name,
-		Description: "Api for " + resource.Name,
+		Summary:     title,
+		Description: description,
 		Get: &openapi3.Operation{
-			Tags: tags,
+			Tags:        tags,
+			Summary:     title,
+			Description: description + " - get item",
 			Responses: map[string]*openapi3.ResponseRef{
 				"200": {
 					Value: &openapi3.Response{
@@ -183,7 +218,9 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 			},
 		},
 		Delete: &openapi3.Operation{
-			Tags: tags,
+			Tags:        tags,
+			Summary:     title,
+			Description: description + " - delete item",
 			Responses: map[string]*openapi3.ResponseRef{
 				"200": {
 					Value: &openapi3.Response{
@@ -195,7 +232,9 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 			},
 		},
 		Put: &openapi3.Operation{
-			Tags: tags,
+			Tags:        tags,
+			Summary:     title,
+			Description: description + " - update item",
 			RequestBody: &openapi3.RequestBodyRef{
 				Value: &openapi3.RequestBody{
 					Required: true,
@@ -253,7 +292,7 @@ func (s *swaggerApi) getResourceFQN(resource *model.Resource) string {
 func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.Schema {
 	var requiredItems []string
 
-	schema := &openapi3.Schema{
+	propertiesSchema := &openapi3.Schema{
 		Properties: map[string]*openapi3.SchemaRef{},
 	}
 
@@ -270,7 +309,7 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 			propSchema.Default = property.DefaultValue.AsInterface()
 		}
 
-		schema.Properties[property.Name] = &openapi3.SchemaRef{
+		propertiesSchema.Properties[property.Name] = &openapi3.SchemaRef{
 			Value: propSchema,
 		}
 
@@ -279,9 +318,39 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 		}
 	}
 
-	schema.Required = requiredItems
+	propertiesSchema.Required = requiredItems
+	propertiesSchema.Title = resource.GetTitle()
+	propertiesSchema.Description = resource.GetDescription()
 
-	return schema
+	recordSchema := &openapi3.Schema{
+		Properties: map[string]*openapi3.SchemaRef{},
+	}
+
+	recordSchema.Properties["properties"] = &openapi3.SchemaRef{
+		Value: propertiesSchema,
+	}
+
+	recordSchema.Properties["id"] = &openapi3.SchemaRef{Value: &openapi3.Schema{Type: "string", Format: "uuid"}}
+
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
+		recordSchema.Properties["version"] = &openapi3.SchemaRef{Value: &openapi3.Schema{Type: "number", ReadOnly: true}}
+	}
+
+	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+		recordSchema.Properties["auditData"] = &openapi3.SchemaRef{
+			Value: &openapi3.Schema{
+				Properties: map[string]*openapi3.SchemaRef{
+					"createdOn": {Value: &openapi3.Schema{Type: "string", Format: "date"}},
+					"updatedOn": {Value: &openapi3.Schema{Type: "string", Format: "date"}},
+					"createdBy": {Value: &openapi3.Schema{Type: "string"}},
+					"updatedBy": {Value: &openapi3.Schema{Type: "string"}},
+				},
+				ReadOnly: true,
+			},
+		}
+	}
+
+	return recordSchema
 }
 
 func NewSwaggerApi(resourceService abs.ResourceService) SwaggerApi {

@@ -10,7 +10,6 @@ import 'model/common.proto';
 
 message Record {
   string id = 1; // id; read only
-  DataType data_type = 3; // read only
   map<string, google.protobuf.Value> properties = 4;
   repeated google.protobuf.Value propertiesPacked = 5;
 

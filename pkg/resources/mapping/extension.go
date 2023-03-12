@@ -35,7 +35,6 @@ func ExtensionToRecord(extension *model.RemoteExtension) *model.Record {
 
 	return &model.Record{
 		Id:         extension.Id,
-		DataType:   extension.Type,
 		Properties: properties,
 		AuditData:  extension.AuditData,
 		Version:    extension.Version,
@@ -50,7 +49,6 @@ func ExtensionFromRecord(record *model.Record) *model.RemoteExtension {
 	result := &model.RemoteExtension{
 		Id:   record.Id,
 		Name: record.Properties["name"].GetStringValue(),
-		Type: record.DataType,
 		Config: &model.ExtensionConfig{
 			Namespace: record.Properties["namespace"].GetStringValue(),
 			Resource:  record.Properties["resource"].GetStringValue(),

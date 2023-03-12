@@ -215,7 +215,6 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 	resource.Annotations = make(map[string]string)
 	annotations.Enable(resource, annotations.AutoCreated)
 	resource.AuditData = new(model.AuditData)
-	resource.DataType = model.DataType_USER
 	resource.Name = strings.Replace(entity, ".", "_", -1)
 
 	if catalog != "public" && catalog != "" {

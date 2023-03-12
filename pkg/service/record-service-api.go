@@ -81,10 +81,6 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
 	var result []*model.Record
 
-	for _, item := range params.Records {
-		item.DataType = model.DataType_USER
-	}
-
 	var insertedArray []bool
 	var err errors.ServiceError
 

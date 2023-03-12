@@ -7,7 +7,6 @@ import (
 var ResourceResource = &model.Resource{
 	Name:      "resource",
 	Namespace: "system",
-	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "resource",
@@ -88,12 +87,6 @@ var ResourceResource = &model.Resource{
 			Mapping:  "indexes",
 			Type:     model.ResourcePropertyType_TYPE_OBJECT,
 			Required: false,
-		},
-		{
-			Name:     "type",
-			Mapping:  "type",
-			Type:     model.ResourcePropertyType_TYPE_INT32,
-			Required: true,
 		},
 		securityContextProperty,
 		{

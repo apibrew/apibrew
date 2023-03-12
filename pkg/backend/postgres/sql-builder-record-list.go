@@ -137,7 +137,6 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 		}
 
 		record := new(model.Record)
-		record.DataType = model.DataType_USER
 
 		err = r.scanRecord(record, rows)
 		if err != nil {
