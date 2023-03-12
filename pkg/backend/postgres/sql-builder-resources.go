@@ -63,9 +63,8 @@ func definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.Create
 					} else {
 						typ = "BIGSERIAL"
 					}
-				} else {
-
 				}
+
 				builder.Define(prop.Mapping, typ, "NOT NULL", "PRIMARY KEY")
 				break
 			}
