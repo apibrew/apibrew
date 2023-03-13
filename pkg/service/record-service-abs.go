@@ -6,8 +6,6 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/handler"
 	"github.com/tislib/data-handler/pkg/types"
-	"github.com/tislib/data-handler/pkg/util"
-	"strings"
 )
 
 type recordService struct {
@@ -74,7 +72,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 
 			isEmpty := propertyType.IsEmpty(val)
 
-			if property.Required && isEmpty && (exists || !isUpdate) {
+			if !property.Primary && property.Required && isEmpty && (exists || !isUpdate) {
 				fieldErrors = append(fieldErrors, &model.ErrorField{
 					RecordId: record.Id,
 					Property: property.Name,
@@ -99,9 +97,7 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 		return nil
 	}
 
-	return errors.RecordValidationError.WithDetails("Validation failed on some fields:" + strings.Join(util.ArrayMap[*model.ErrorField, string](fieldErrors, func(fieldError *model.ErrorField) string {
-		return fieldError.Property + ":" + fieldError.Message
-	}), ";")).WithErrorFields(fieldErrors)
+	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
 func NewRecordService(resourceService abs.ResourceService, backendProviderService abs.BackendProviderService, genericHandler *handler.GenericHandler) abs.RecordService {

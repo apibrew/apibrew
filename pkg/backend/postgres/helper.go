@@ -89,7 +89,7 @@ func DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (inte
 	propertyType := types.ByResourcePropertyType(property.Type)
 	var val interface{}
 
-	if property.Type == model.ResourcePropertyType_TYPE_OBJECT || property.Type == model.ResourcePropertyType_TYPE_ENUM || property.Type == model.ResourcePropertyType_TYPE_MAP || property.Type == model.ResourcePropertyType_TYPE_LIST {
+	if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
 		var err error
 		val, err = json.Marshal(packedVal.AsInterface())
 
@@ -129,16 +129,6 @@ func getFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) st
 
 func checkHasOwnId(resource *model.Resource) bool {
 	return !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup)
-}
-
-func locatePrimaryKey(resource *model.Resource) (string, errors.ServiceError) {
-	for _, property := range resource.Properties {
-		if property.Primary {
-			return property.Mapping, nil
-		}
-	}
-
-	return "", errors.UnableToLocatePrimaryKey
 }
 
 func prepareResourceRecordCols(resource *model.Resource) []string {

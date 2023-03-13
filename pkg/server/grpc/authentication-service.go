@@ -9,8 +9,8 @@ import (
 	"github.com/tislib/data-handler/pkg/util"
 )
 
-type authenticationServiceServer struct {
-	stub.AuthenticationServiceServer
+type authenticationServer struct {
+	stub.AuthenticationServer
 	service abs.AuthenticationService
 }
 
@@ -18,7 +18,7 @@ type RequestWithToken interface {
 	GetToken() string
 }
 
-func (s *authenticationServiceServer) Authenticate(ctx context.Context, req *stub.AuthenticationRequest) (*stub.AuthenticationResponse, error) {
+func (s *authenticationServer) Authenticate(ctx context.Context, req *stub.AuthenticationRequest) (*stub.AuthenticationResponse, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Debug("Begin Authenticate")
@@ -33,7 +33,7 @@ func (s *authenticationServiceServer) Authenticate(ctx context.Context, req *stu
 	}, util.ToStatusError(err)
 }
 
-func (s *authenticationServiceServer) RenewToken(ctx context.Context, req *stub.RenewTokenRequest) (*stub.RenewTokenResponse, error) {
+func (s *authenticationServer) RenewToken(ctx context.Context, req *stub.RenewTokenRequest) (*stub.RenewTokenResponse, error) {
 	token, err := s.service.RenewToken(ctx, req.Token, req.Term)
 
 	return &stub.RenewTokenResponse{
@@ -41,6 +41,6 @@ func (s *authenticationServiceServer) RenewToken(ctx context.Context, req *stub.
 	}, util.ToStatusError(err)
 }
 
-func NewAuthenticationServiceServer(service abs.AuthenticationService) stub.AuthenticationServiceServer {
-	return &authenticationServiceServer{service: service}
+func NewAuthenticationServer(service abs.AuthenticationService) stub.AuthenticationServer {
+	return &authenticationServer{service: service}
 }

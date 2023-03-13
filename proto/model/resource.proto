@@ -16,29 +16,28 @@ enum AutoGenerationType {
   RANDOMIZED_UUID = 2;
 }
 
-enum ResourcePropertyType {
-  TYPE_BOOL = 0;
-  TYPE_STRING = 1;
-  TYPE_FLOAT32 = 2;
-  TYPE_FLOAT64 = 3;
-  TYPE_INT32 = 4;
-  TYPE_INT64 = 5;
-  TYPE_BYTES = 6;
-  TYPE_UUID = 8;
-  TYPE_DATE = 9;
-  TYPE_TIME = 10;
-  TYPE_TIMESTAMP = 11;
-  TYPE_OBJECT = 12;
-  TYPE_MAP = 13;
-  TYPE_LIST = 14;
-  TYPE_REFERENCE = 15;
-  TYPE_ENUM = 16;
-}
-
 message ResourceProperty {
+  enum Type {
+    BOOL = 0;
+    STRING = 1;
+    FLOAT32 = 2;
+    FLOAT64 = 3;
+    INT32 = 4;
+    INT64 = 5;
+    BYTES = 6;
+    UUID = 8;
+    DATE = 9;
+    TIME = 10;
+    TIMESTAMP = 11;
+    OBJECT = 12;
+    MAP = 13;
+    LIST = 14;
+    REFERENCE = 15;
+    ENUM = 16;
+  }
   optional string id = 1;
   string name = 2;
-  ResourcePropertyType type = 3;
+  Type type = 3;
   string mapping = 4;
   bool required = 5;
   bool primary = 6;
@@ -48,7 +47,7 @@ message ResourceProperty {
   optional google.protobuf.Value defaultValue = 10;
   repeated google.protobuf.Value enumValues = 11; // if type is enum
   optional Reference reference = 12; // if type is reference
-  optional ResourcePropertyType subType = 13; // if type is map or list
+  optional Type subType = 13; // if type is map or list
   bool immutable = 14; // if true, update will not be allowed on this columns
   optional string title = 15;
   optional string description = 16;
@@ -96,7 +95,6 @@ message Resource {
   string id = 1; // id; read only
   string name = 2; // uniq(per namespace) // name
   string namespace = 3; // create only?
-  DataType dataType = 4; // read only
   ResourceSourceConfig sourceConfig = 5;
   repeated ResourceProperty properties = 6;
   repeated ResourceIndex indexes = 7;

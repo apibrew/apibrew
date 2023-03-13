@@ -39,50 +39,50 @@ func dereferenceReflect(rfVal reflect.Value) interface{} {
 	}
 }
 
-func ByResourcePropertyType(resourcePropertyType model.ResourcePropertyType) PropertyType {
+func ByResourcePropertyType(resourcePropertyType model.ResourceProperty_Type) PropertyType {
 	switch resourcePropertyType {
-	case model.ResourcePropertyType_TYPE_INT32:
+	case model.ResourceProperty_INT32:
 		return Int32Type
-	case model.ResourcePropertyType_TYPE_INT64:
+	case model.ResourceProperty_INT64:
 		return Int64Type
-	case model.ResourcePropertyType_TYPE_FLOAT32:
+	case model.ResourceProperty_FLOAT32:
 		return Float32Type
-	case model.ResourcePropertyType_TYPE_FLOAT64:
+	case model.ResourceProperty_FLOAT64:
 		return float64Type{}
-	case model.ResourcePropertyType_TYPE_STRING:
+	case model.ResourceProperty_STRING:
 		return stringType{}
-	case model.ResourcePropertyType_TYPE_UUID:
+	case model.ResourceProperty_UUID:
 		return uuidType{}
-	case model.ResourcePropertyType_TYPE_DATE:
+	case model.ResourceProperty_DATE:
 		return dateType{}
-	case model.ResourcePropertyType_TYPE_TIME:
+	case model.ResourceProperty_TIME:
 		return timeType{}
-	case model.ResourcePropertyType_TYPE_TIMESTAMP:
+	case model.ResourceProperty_TIMESTAMP:
 		return TimestampType
-	case model.ResourcePropertyType_TYPE_BOOL:
+	case model.ResourceProperty_BOOL:
 		return boolType{}
-	case model.ResourcePropertyType_TYPE_OBJECT:
+	case model.ResourceProperty_OBJECT:
 		return objectType{}
-	case model.ResourcePropertyType_TYPE_REFERENCE:
+	case model.ResourceProperty_REFERENCE:
 		return referenceType{}
-	case model.ResourcePropertyType_TYPE_ENUM:
+	case model.ResourceProperty_ENUM:
 		return StringType
-	case model.ResourcePropertyType_TYPE_MAP:
+	case model.ResourceProperty_MAP:
 		return objectType{}
-	case model.ResourcePropertyType_TYPE_LIST:
+	case model.ResourceProperty_LIST:
 		return objectType{}
-	case model.ResourcePropertyType_TYPE_BYTES:
+	case model.ResourceProperty_BYTES:
 		return bytesType{}
 	default:
 		panic("unknown property type: " + resourcePropertyType.String())
 	}
 }
 
-func GetAllResourcePropertyTypes() []model.ResourcePropertyType {
-	var types []model.ResourcePropertyType
+func GetAllResourcePropertyTypes() []model.ResourceProperty_Type {
+	var types []model.ResourceProperty_Type
 
-	for key := range model.ResourcePropertyType_name {
-		types = append(types, model.ResourcePropertyType(key))
+	for key := range model.ResourceProperty_Type_name {
+		types = append(types, model.ResourceProperty_Type(key))
 	}
 
 	return types
@@ -131,37 +131,37 @@ func ValidateDateTime(value interface{}) error {
 	return err
 }
 
-func ResourcePropertyTypeToJsonSchemaType(resourcePropertyType model.ResourcePropertyType) string {
+func ResourcePropertyTypeToJsonSchemaType(resourcePropertyType model.ResourceProperty_Type) string {
 	switch resourcePropertyType {
-	case model.ResourcePropertyType_TYPE_STRING:
+	case model.ResourceProperty_STRING:
 		return "string"
-	case model.ResourcePropertyType_TYPE_INT64:
+	case model.ResourceProperty_INT64:
 		return "number"
-	case model.ResourcePropertyType_TYPE_INT32:
+	case model.ResourceProperty_INT32:
 		return "number"
-	case model.ResourcePropertyType_TYPE_FLOAT64:
+	case model.ResourceProperty_FLOAT64:
 		return "number"
-	case model.ResourcePropertyType_TYPE_FLOAT32:
+	case model.ResourceProperty_FLOAT32:
 		return "number"
-	case model.ResourcePropertyType_TYPE_TIMESTAMP:
+	case model.ResourceProperty_TIMESTAMP:
 		return "string"
-	case model.ResourcePropertyType_TYPE_TIME:
+	case model.ResourceProperty_TIME:
 		return "string"
-	case model.ResourcePropertyType_TYPE_DATE:
+	case model.ResourceProperty_DATE:
 		return "string"
-	case model.ResourcePropertyType_TYPE_UUID:
+	case model.ResourceProperty_UUID:
 		return "string"
-	case model.ResourcePropertyType_TYPE_ENUM:
+	case model.ResourceProperty_ENUM:
 		return "string"
-	case model.ResourcePropertyType_TYPE_BOOL:
+	case model.ResourceProperty_BOOL:
 		return "boolean"
-	case model.ResourcePropertyType_TYPE_REFERENCE:
+	case model.ResourceProperty_REFERENCE:
 		return "object"
-	case model.ResourcePropertyType_TYPE_OBJECT:
+	case model.ResourceProperty_OBJECT:
 		return "object"
-	case model.ResourcePropertyType_TYPE_MAP:
+	case model.ResourceProperty_MAP:
 		return "object"
-	case model.ResourcePropertyType_TYPE_LIST:
+	case model.ResourceProperty_LIST:
 		return "object"
 	default:
 		panic("unknown property type: " + resourcePropertyType.String())

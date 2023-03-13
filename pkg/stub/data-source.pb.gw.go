@@ -31,7 +31,7 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_DataSourceService_Create_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_DataSource_Create_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateDataSourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -48,7 +48,7 @@ func request_DataSourceService_Create_0(ctx context.Context, marshaler runtime.M
 
 }
 
-func local_request_DataSourceService_Create_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_DataSource_Create_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateDataSourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -66,17 +66,17 @@ func local_request_DataSourceService_Create_0(ctx context.Context, marshaler run
 }
 
 var (
-	filter_DataSourceService_List_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_DataSource_List_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_DataSourceService_List_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_DataSource_List_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListDataSourceRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSourceService_List_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSource_List_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -85,14 +85,14 @@ func request_DataSourceService_List_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-func local_request_DataSourceService_List_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_DataSource_List_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListDataSourceRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSourceService_List_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSource_List_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -101,7 +101,7 @@ func local_request_DataSourceService_List_0(ctx context.Context, marshaler runti
 
 }
 
-func request_DataSourceService_Update_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_DataSource_Update_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateDataSourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -118,7 +118,7 @@ func request_DataSourceService_Update_0(ctx context.Context, marshaler runtime.M
 
 }
 
-func local_request_DataSourceService_Update_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_DataSource_Update_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateDataSourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -135,7 +135,7 @@ func local_request_DataSourceService_Update_0(ctx context.Context, marshaler run
 
 }
 
-func request_DataSourceService_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_DataSource_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteDataSourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -152,7 +152,7 @@ func request_DataSourceService_Delete_0(ctx context.Context, marshaler runtime.M
 
 }
 
-func local_request_DataSourceService_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_DataSource_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteDataSourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -170,10 +170,10 @@ func local_request_DataSourceService_Delete_0(ctx context.Context, marshaler run
 }
 
 var (
-	filter_DataSourceService_Get_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+	filter_DataSource_Get_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
 )
 
-func request_DataSourceService_Get_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_DataSource_Get_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetDataSourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -197,7 +197,7 @@ func request_DataSourceService_Get_0(ctx context.Context, marshaler runtime.Mars
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSourceService_Get_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSource_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -206,7 +206,7 @@ func request_DataSourceService_Get_0(ctx context.Context, marshaler runtime.Mars
 
 }
 
-func local_request_DataSourceService_Get_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_DataSource_Get_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetDataSourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -230,7 +230,7 @@ func local_request_DataSourceService_Get_0(ctx context.Context, marshaler runtim
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSourceService_Get_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSource_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -240,10 +240,10 @@ func local_request_DataSourceService_Get_0(ctx context.Context, marshaler runtim
 }
 
 var (
-	filter_DataSourceService_Status_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+	filter_DataSource_Status_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
 )
 
-func request_DataSourceService_Status_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_DataSource_Status_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq StatusRequest
 	var metadata runtime.ServerMetadata
 
@@ -267,7 +267,7 @@ func request_DataSourceService_Status_0(ctx context.Context, marshaler runtime.M
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSourceService_Status_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSource_Status_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -276,7 +276,7 @@ func request_DataSourceService_Status_0(ctx context.Context, marshaler runtime.M
 
 }
 
-func local_request_DataSourceService_Status_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_DataSource_Status_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq StatusRequest
 	var metadata runtime.ServerMetadata
 
@@ -300,7 +300,7 @@ func local_request_DataSourceService_Status_0(ctx context.Context, marshaler run
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSourceService_Status_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSource_Status_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -309,17 +309,13 @@ func local_request_DataSourceService_Status_0(ctx context.Context, marshaler run
 
 }
 
-func request_DataSourceService_ListEntities_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+var (
+	filter_DataSource_ListEntities_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+)
+
+func request_DataSource_ListEntities_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListEntitiesRequest
 	var metadata runtime.ServerMetadata
-
-	newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 
 	var (
 		val string
@@ -336,6 +332,13 @@ func request_DataSourceService_ListEntities_0(ctx context.Context, marshaler run
 	protoReq.Id, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSource_ListEntities_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.ListEntities(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -343,17 +346,9 @@ func request_DataSourceService_ListEntities_0(ctx context.Context, marshaler run
 
 }
 
-func local_request_DataSourceService_ListEntities_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_DataSource_ListEntities_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListEntitiesRequest
 	var metadata runtime.ServerMetadata
-
-	newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 
 	var (
 		val string
@@ -372,12 +367,19 @@ func local_request_DataSourceService_ListEntities_0(ctx context.Context, marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataSource_ListEntities_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
 	msg, err := server.ListEntities(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_DataSourceService_PrepareResourceFromEntity_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_DataSource_PrepareResourceFromEntity_0(ctx context.Context, marshaler runtime.Marshaler, client DataSourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq PrepareResourceFromEntityRequest
 	var metadata runtime.ServerMetadata
 
@@ -411,7 +413,7 @@ func request_DataSourceService_PrepareResourceFromEntity_0(ctx context.Context, 
 
 }
 
-func local_request_DataSourceService_PrepareResourceFromEntity_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_DataSource_PrepareResourceFromEntity_0(ctx context.Context, marshaler runtime.Marshaler, server DataSourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq PrepareResourceFromEntityRequest
 	var metadata runtime.ServerMetadata
 
@@ -445,13 +447,13 @@ func local_request_DataSourceService_PrepareResourceFromEntity_0(ctx context.Con
 
 }
 
-// RegisterDataSourceServiceHandlerServer registers the http handlers for service DataSourceService to "mux".
-// UnaryRPC     :call DataSourceServiceServer directly.
+// RegisterDataSourceHandlerServer registers the http handlers for service DataSource to "mux".
+// UnaryRPC     :call DataSourceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterDataSourceServiceHandlerFromEndpoint instead.
-func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server DataSourceServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterDataSourceHandlerFromEndpoint instead.
+func RegisterDataSourceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server DataSourceServer) error {
 
-	mux.Handle("POST", pattern_DataSourceService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_DataSource_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -459,12 +461,12 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSourceService/Create", runtime.WithHTTPPathPattern("/system/data-sources"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSource/Create", runtime.WithHTTPPathPattern("/system/data-sources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataSourceService_Create_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataSource_Create_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -472,11 +474,11 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_DataSourceService_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_DataSourceService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataSource_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -484,12 +486,12 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSourceService/List", runtime.WithHTTPPathPattern("/system/data-sources"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSource/List", runtime.WithHTTPPathPattern("/system/data-sources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataSourceService_List_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataSource_List_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -497,11 +499,11 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_DataSourceService_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_DataSourceService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_DataSource_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -509,12 +511,12 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSourceService/Update", runtime.WithHTTPPathPattern("/system/data-sources"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSource/Update", runtime.WithHTTPPathPattern("/system/data-sources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataSourceService_Update_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataSource_Update_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -522,11 +524,11 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_DataSourceService_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_DataSourceService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_DataSource_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -534,12 +536,12 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSourceService/Delete", runtime.WithHTTPPathPattern("/system/data-sources"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSource/Delete", runtime.WithHTTPPathPattern("/system/data-sources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataSourceService_Delete_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataSource_Delete_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -547,11 +549,11 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_DataSourceService_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_DataSourceService_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataSource_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -559,12 +561,12 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSourceService/Get", runtime.WithHTTPPathPattern("/system/data-sources/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSource/Get", runtime.WithHTTPPathPattern("/system/data-sources/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataSourceService_Get_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataSource_Get_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -572,11 +574,11 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_DataSourceService_Get_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Get_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_DataSourceService_Status_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataSource_Status_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -584,12 +586,12 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSourceService/Status", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_status"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSource/Status", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataSourceService_Status_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataSource_Status_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -597,11 +599,11 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_DataSourceService_Status_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Status_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_DataSourceService_ListEntities_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataSource_ListEntities_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -609,12 +611,12 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSourceService/ListEntities", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_list_entities"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSource/ListEntities", runtime.WithHTTPPathPattern("/system/data-sources/{id}/entities"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataSourceService_ListEntities_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataSource_ListEntities_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -622,11 +624,11 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_DataSourceService_ListEntities_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_ListEntities_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_DataSourceService_PrepareResourceFromEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_DataSource_PrepareResourceFromEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -634,12 +636,12 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSourceService/PrepareResourceFromEntity", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_prepare_entity"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.DataSource/PrepareResourceFromEntity", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_prepare_entity"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataSourceService_PrepareResourceFromEntity_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataSource_PrepareResourceFromEntity_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -647,16 +649,16 @@ func RegisterDataSourceServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_DataSourceService_PrepareResourceFromEntity_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_PrepareResourceFromEntity_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterDataSourceServiceHandlerFromEndpoint is same as RegisterDataSourceServiceHandler but
+// RegisterDataSourceHandlerFromEndpoint is same as RegisterDataSourceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterDataSourceServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterDataSourceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -676,195 +678,195 @@ func RegisterDataSourceServiceHandlerFromEndpoint(ctx context.Context, mux *runt
 		}()
 	}()
 
-	return RegisterDataSourceServiceHandler(ctx, mux, conn)
+	return RegisterDataSourceHandler(ctx, mux, conn)
 }
 
-// RegisterDataSourceServiceHandler registers the http handlers for service DataSourceService to "mux".
+// RegisterDataSourceHandler registers the http handlers for service DataSource to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterDataSourceServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterDataSourceServiceHandlerClient(ctx, mux, NewDataSourceServiceClient(conn))
+func RegisterDataSourceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterDataSourceHandlerClient(ctx, mux, NewDataSourceClient(conn))
 }
 
-// RegisterDataSourceServiceHandlerClient registers the http handlers for service DataSourceService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "DataSourceServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "DataSourceServiceClient"
+// RegisterDataSourceHandlerClient registers the http handlers for service DataSource
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "DataSourceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "DataSourceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "DataSourceServiceClient" to call the correct interceptors.
-func RegisterDataSourceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client DataSourceServiceClient) error {
+// "DataSourceClient" to call the correct interceptors.
+func RegisterDataSourceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client DataSourceClient) error {
 
-	mux.Handle("POST", pattern_DataSourceService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_DataSource_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSourceService/Create", runtime.WithHTTPPathPattern("/system/data-sources"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSource/Create", runtime.WithHTTPPathPattern("/system/data-sources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataSourceService_Create_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataSource_Create_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataSourceService_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_DataSourceService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataSource_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSourceService/List", runtime.WithHTTPPathPattern("/system/data-sources"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSource/List", runtime.WithHTTPPathPattern("/system/data-sources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataSourceService_List_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataSource_List_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataSourceService_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_DataSourceService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_DataSource_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSourceService/Update", runtime.WithHTTPPathPattern("/system/data-sources"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSource/Update", runtime.WithHTTPPathPattern("/system/data-sources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataSourceService_Update_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataSource_Update_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataSourceService_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_DataSourceService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_DataSource_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSourceService/Delete", runtime.WithHTTPPathPattern("/system/data-sources"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSource/Delete", runtime.WithHTTPPathPattern("/system/data-sources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataSourceService_Delete_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataSource_Delete_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataSourceService_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_DataSourceService_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataSource_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSourceService/Get", runtime.WithHTTPPathPattern("/system/data-sources/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSource/Get", runtime.WithHTTPPathPattern("/system/data-sources/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataSourceService_Get_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataSource_Get_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataSourceService_Get_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Get_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_DataSourceService_Status_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataSource_Status_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSourceService/Status", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_status"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSource/Status", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataSourceService_Status_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataSource_Status_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataSourceService_Status_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_Status_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_DataSourceService_ListEntities_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataSource_ListEntities_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSourceService/ListEntities", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_list_entities"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSource/ListEntities", runtime.WithHTTPPathPattern("/system/data-sources/{id}/entities"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataSourceService_ListEntities_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataSource_ListEntities_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataSourceService_ListEntities_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_ListEntities_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_DataSourceService_PrepareResourceFromEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_DataSource_PrepareResourceFromEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSourceService/PrepareResourceFromEntity", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_prepare_entity"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.DataSource/PrepareResourceFromEntity", runtime.WithHTTPPathPattern("/system/data-sources/{id}/_prepare_entity"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataSourceService_PrepareResourceFromEntity_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataSource_PrepareResourceFromEntity_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataSourceService_PrepareResourceFromEntity_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataSource_PrepareResourceFromEntity_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -872,37 +874,37 @@ func RegisterDataSourceServiceHandlerClient(ctx context.Context, mux *runtime.Se
 }
 
 var (
-	pattern_DataSourceService_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "data-sources"}, ""))
+	pattern_DataSource_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "data-sources"}, ""))
 
-	pattern_DataSourceService_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "data-sources"}, ""))
+	pattern_DataSource_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "data-sources"}, ""))
 
-	pattern_DataSourceService_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "data-sources"}, ""))
+	pattern_DataSource_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "data-sources"}, ""))
 
-	pattern_DataSourceService_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "data-sources"}, ""))
+	pattern_DataSource_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "data-sources"}, ""))
 
-	pattern_DataSourceService_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"system", "data-sources", "id"}, ""))
+	pattern_DataSource_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"system", "data-sources", "id"}, ""))
 
-	pattern_DataSourceService_Status_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"system", "data-sources", "id", "_status"}, ""))
+	pattern_DataSource_Status_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"system", "data-sources", "id", "_status"}, ""))
 
-	pattern_DataSourceService_ListEntities_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"system", "data-sources", "id", "_list_entities"}, ""))
+	pattern_DataSource_ListEntities_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"system", "data-sources", "id", "entities"}, ""))
 
-	pattern_DataSourceService_PrepareResourceFromEntity_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"system", "data-sources", "id", "_prepare_entity"}, ""))
+	pattern_DataSource_PrepareResourceFromEntity_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"system", "data-sources", "id", "_prepare_entity"}, ""))
 )
 
 var (
-	forward_DataSourceService_Create_0 = runtime.ForwardResponseMessage
+	forward_DataSource_Create_0 = runtime.ForwardResponseMessage
 
-	forward_DataSourceService_List_0 = runtime.ForwardResponseMessage
+	forward_DataSource_List_0 = runtime.ForwardResponseMessage
 
-	forward_DataSourceService_Update_0 = runtime.ForwardResponseMessage
+	forward_DataSource_Update_0 = runtime.ForwardResponseMessage
 
-	forward_DataSourceService_Delete_0 = runtime.ForwardResponseMessage
+	forward_DataSource_Delete_0 = runtime.ForwardResponseMessage
 
-	forward_DataSourceService_Get_0 = runtime.ForwardResponseMessage
+	forward_DataSource_Get_0 = runtime.ForwardResponseMessage
 
-	forward_DataSourceService_Status_0 = runtime.ForwardResponseMessage
+	forward_DataSource_Status_0 = runtime.ForwardResponseMessage
 
-	forward_DataSourceService_ListEntities_0 = runtime.ForwardResponseMessage
+	forward_DataSource_ListEntities_0 = runtime.ForwardResponseMessage
 
-	forward_DataSourceService_PrepareResourceFromEntity_0 = runtime.ForwardResponseMessage
+	forward_DataSource_PrepareResourceFromEntity_0 = runtime.ForwardResponseMessage
 )

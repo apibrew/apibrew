@@ -108,7 +108,6 @@ func (d *namespaceService) Init(data *model.InitData) {
 		Resource:  resources.NamespaceResource.Name,
 		Records: []*model.Record{mapping2.NamespaceToRecord(&model.Namespace{
 			Name:        "default",
-			Type:        model.DataType_STATIC,
 			Description: "default namespace",
 		})},
 		IgnoreIfExists: true,

@@ -32,17 +32,17 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 var (
-	filter_UserService_Create_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_User_Create_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_UserService_Create_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_User_Create_0(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateUserRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Create_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Create_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -51,14 +51,14 @@ func request_UserService_Create_0(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-func local_request_UserService_Create_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_User_Create_0(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateUserRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Create_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Create_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -68,10 +68,10 @@ func local_request_UserService_Create_0(ctx context.Context, marshaler runtime.M
 }
 
 var (
-	filter_UserService_Create_1 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+	filter_User_Create_1 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
 )
 
-func request_UserService_Create_1(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_User_Create_1(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateUserRequest
 	var metadata runtime.ServerMetadata
 
@@ -86,7 +86,7 @@ func request_UserService_Create_1(ctx context.Context, marshaler runtime.Marshal
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Create_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Create_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -95,7 +95,7 @@ func request_UserService_Create_1(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-func local_request_UserService_Create_1(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_User_Create_1(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateUserRequest
 	var metadata runtime.ServerMetadata
 
@@ -110,7 +110,7 @@ func local_request_UserService_Create_1(ctx context.Context, marshaler runtime.M
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Create_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Create_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -120,17 +120,17 @@ func local_request_UserService_Create_1(ctx context.Context, marshaler runtime.M
 }
 
 var (
-	filter_UserService_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_User_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_UserService_Update_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_User_Update_0(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateUserRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Update_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Update_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -139,14 +139,14 @@ func request_UserService_Update_0(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-func local_request_UserService_Update_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_User_Update_0(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateUserRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Update_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Update_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -156,10 +156,10 @@ func local_request_UserService_Update_0(ctx context.Context, marshaler runtime.M
 }
 
 var (
-	filter_UserService_Update_1 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "id": 1}, Base: []int{1, 4, 5, 2, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 4, 2, 2, 3}}
+	filter_User_Update_1 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "id": 1}, Base: []int{1, 4, 5, 2, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 4, 2, 2, 3}}
 )
 
-func request_UserService_Update_1(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_User_Update_1(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateUserRequest
 	var metadata runtime.ServerMetadata
 
@@ -191,7 +191,7 @@ func request_UserService_Update_1(ctx context.Context, marshaler runtime.Marshal
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Update_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Update_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -200,7 +200,7 @@ func request_UserService_Update_1(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-func local_request_UserService_Update_1(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_User_Update_1(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateUserRequest
 	var metadata runtime.ServerMetadata
 
@@ -232,7 +232,7 @@ func local_request_UserService_Update_1(ctx context.Context, marshaler runtime.M
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Update_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Update_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -242,17 +242,17 @@ func local_request_UserService_Update_1(ctx context.Context, marshaler runtime.M
 }
 
 var (
-	filter_UserService_Delete_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_User_Delete_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_UserService_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_User_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteUserRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Delete_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Delete_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -261,14 +261,14 @@ func request_UserService_Delete_0(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-func local_request_UserService_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_User_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteUserRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Delete_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Delete_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -278,10 +278,10 @@ func local_request_UserService_Delete_0(ctx context.Context, marshaler runtime.M
 }
 
 var (
-	filter_UserService_Delete_1 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+	filter_User_Delete_1 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
 )
 
-func request_UserService_Delete_1(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_User_Delete_1(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteUserRequest
 	var metadata runtime.ServerMetadata
 
@@ -305,7 +305,7 @@ func request_UserService_Delete_1(ctx context.Context, marshaler runtime.Marshal
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Delete_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Delete_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -314,7 +314,7 @@ func request_UserService_Delete_1(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-func local_request_UserService_Delete_1(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_User_Delete_1(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteUserRequest
 	var metadata runtime.ServerMetadata
 
@@ -338,7 +338,7 @@ func local_request_UserService_Delete_1(ctx context.Context, marshaler runtime.M
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Delete_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Delete_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -348,17 +348,17 @@ func local_request_UserService_Delete_1(ctx context.Context, marshaler runtime.M
 }
 
 var (
-	filter_UserService_List_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_User_List_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_UserService_List_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_User_List_0(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListUserRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_List_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_List_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -367,14 +367,14 @@ func request_UserService_List_0(ctx context.Context, marshaler runtime.Marshaler
 
 }
 
-func local_request_UserService_List_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_User_List_0(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListUserRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_List_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_List_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -384,10 +384,10 @@ func local_request_UserService_List_0(ctx context.Context, marshaler runtime.Mar
 }
 
 var (
-	filter_UserService_Get_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+	filter_User_Get_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
 )
 
-func request_UserService_Get_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_User_Get_0(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetUserRequest
 	var metadata runtime.ServerMetadata
 
@@ -411,7 +411,7 @@ func request_UserService_Get_0(ctx context.Context, marshaler runtime.Marshaler,
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Get_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -420,7 +420,7 @@ func request_UserService_Get_0(ctx context.Context, marshaler runtime.Marshaler,
 
 }
 
-func local_request_UserService_Get_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_User_Get_0(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetUserRequest
 	var metadata runtime.ServerMetadata
 
@@ -444,7 +444,7 @@ func local_request_UserService_Get_0(ctx context.Context, marshaler runtime.Mars
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_Get_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_User_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -453,13 +453,13 @@ func local_request_UserService_Get_0(ctx context.Context, marshaler runtime.Mars
 
 }
 
-// RegisterUserServiceHandlerServer registers the http handlers for service UserService to "mux".
-// UnaryRPC     :call UserServiceServer directly.
+// RegisterUserHandlerServer registers the http handlers for service User to "mux".
+// UnaryRPC     :call UserServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterUserServiceHandlerFromEndpoint instead.
-func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server UserServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterUserHandlerFromEndpoint instead.
+func RegisterUserHandlerServer(ctx context.Context, mux *runtime.ServeMux, server UserServer) error {
 
-	mux.Handle("POST", pattern_UserService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_User_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -467,12 +467,12 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/system/users/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.User/Create", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_Create_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_User_Create_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -480,11 +480,11 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_UserService_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_UserService_Create_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_User_Create_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -492,12 +492,12 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/system/users"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.User/Create", runtime.WithHTTPPathPattern("/system/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_Create_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_User_Create_1(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -505,11 +505,11 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_UserService_Create_1(annotatedContext, mux, outboundMarshaler, w, req, response_UserService_Create_1{resp}, mux.GetForwardResponseOptions()...)
+		forward_User_Create_1(annotatedContext, mux, outboundMarshaler, w, req, response_User_Create_1{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_UserService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_User_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -517,12 +517,12 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Update", runtime.WithHTTPPathPattern("/system/users/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.User/Update", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_Update_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_User_Update_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -530,11 +530,11 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_UserService_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_UserService_Update_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_User_Update_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -542,12 +542,12 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Update", runtime.WithHTTPPathPattern("/users/{user.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.User/Update", runtime.WithHTTPPathPattern("/users/{user.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_Update_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_User_Update_1(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -555,11 +555,11 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_UserService_Update_1(annotatedContext, mux, outboundMarshaler, w, req, response_UserService_Update_1{resp}, mux.GetForwardResponseOptions()...)
+		forward_User_Update_1(annotatedContext, mux, outboundMarshaler, w, req, response_User_Update_1{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_UserService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_User_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -567,12 +567,12 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Delete", runtime.WithHTTPPathPattern("/system/users/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.User/Delete", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_Delete_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_User_Delete_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -580,11 +580,11 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_UserService_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_UserService_Delete_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_User_Delete_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -592,12 +592,12 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Delete", runtime.WithHTTPPathPattern("/users/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.User/Delete", runtime.WithHTTPPathPattern("/users/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_Delete_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_User_Delete_1(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -605,11 +605,11 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_UserService_Delete_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_Delete_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_UserService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_User_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -617,12 +617,12 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/List", runtime.WithHTTPPathPattern("/system/users"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.User/List", runtime.WithHTTPPathPattern("/system/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_List_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_User_List_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -630,11 +630,11 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_UserService_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_UserService_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_User_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -642,12 +642,12 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.UserService/Get", runtime.WithHTTPPathPattern("/system/users/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.User/Get", runtime.WithHTTPPathPattern("/system/users/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_Get_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_User_Get_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -655,16 +655,16 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_UserService_Get_0(annotatedContext, mux, outboundMarshaler, w, req, response_UserService_Get_0{resp}, mux.GetForwardResponseOptions()...)
+		forward_User_Get_0(annotatedContext, mux, outboundMarshaler, w, req, response_User_Get_0{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterUserServiceHandlerFromEndpoint is same as RegisterUserServiceHandler but
+// RegisterUserHandlerFromEndpoint is same as RegisterUserHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterUserServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterUserHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -684,260 +684,260 @@ func RegisterUserServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.Se
 		}()
 	}()
 
-	return RegisterUserServiceHandler(ctx, mux, conn)
+	return RegisterUserHandler(ctx, mux, conn)
 }
 
-// RegisterUserServiceHandler registers the http handlers for service UserService to "mux".
+// RegisterUserHandler registers the http handlers for service User to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterUserServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterUserServiceHandlerClient(ctx, mux, NewUserServiceClient(conn))
+func RegisterUserHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterUserHandlerClient(ctx, mux, NewUserClient(conn))
 }
 
-// RegisterUserServiceHandlerClient registers the http handlers for service UserService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "UserServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "UserServiceClient"
+// RegisterUserHandlerClient registers the http handlers for service User
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "UserClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "UserClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "UserServiceClient" to call the correct interceptors.
-func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client UserServiceClient) error {
+// "UserClient" to call the correct interceptors.
+func RegisterUserHandlerClient(ctx context.Context, mux *runtime.ServeMux, client UserClient) error {
 
-	mux.Handle("POST", pattern_UserService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_User_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/system/users/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.User/Create", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_Create_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_User_Create_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UserService_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_UserService_Create_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_User_Create_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Create", runtime.WithHTTPPathPattern("/system/users"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.User/Create", runtime.WithHTTPPathPattern("/system/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_Create_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_User_Create_1(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UserService_Create_1(annotatedContext, mux, outboundMarshaler, w, req, response_UserService_Create_1{resp}, mux.GetForwardResponseOptions()...)
+		forward_User_Create_1(annotatedContext, mux, outboundMarshaler, w, req, response_User_Create_1{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_UserService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_User_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Update", runtime.WithHTTPPathPattern("/system/users/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.User/Update", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_Update_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_User_Update_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UserService_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_UserService_Update_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_User_Update_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Update", runtime.WithHTTPPathPattern("/users/{user.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.User/Update", runtime.WithHTTPPathPattern("/users/{user.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_Update_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_User_Update_1(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UserService_Update_1(annotatedContext, mux, outboundMarshaler, w, req, response_UserService_Update_1{resp}, mux.GetForwardResponseOptions()...)
+		forward_User_Update_1(annotatedContext, mux, outboundMarshaler, w, req, response_User_Update_1{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_UserService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_User_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Delete", runtime.WithHTTPPathPattern("/system/users/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.User/Delete", runtime.WithHTTPPathPattern("/system/users/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_Delete_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_User_Delete_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UserService_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_UserService_Delete_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_User_Delete_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Delete", runtime.WithHTTPPathPattern("/users/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.User/Delete", runtime.WithHTTPPathPattern("/users/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_Delete_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_User_Delete_1(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UserService_Delete_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_Delete_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_UserService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_User_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/List", runtime.WithHTTPPathPattern("/system/users"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.User/List", runtime.WithHTTPPathPattern("/system/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_List_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_User_List_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UserService_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_User_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_UserService_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_User_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.UserService/Get", runtime.WithHTTPPathPattern("/system/users/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.User/Get", runtime.WithHTTPPathPattern("/system/users/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_Get_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_User_Get_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UserService_Get_0(annotatedContext, mux, outboundMarshaler, w, req, response_UserService_Get_0{resp}, mux.GetForwardResponseOptions()...)
+		forward_User_Get_0(annotatedContext, mux, outboundMarshaler, w, req, response_User_Get_0{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-type response_UserService_Create_1 struct {
+type response_User_Create_1 struct {
 	proto.Message
 }
 
-func (m response_UserService_Create_1) XXX_ResponseBody() interface{} {
+func (m response_User_Create_1) XXX_ResponseBody() interface{} {
 	response := m.Message.(*CreateUserResponse)
 	return response.User
 }
 
-type response_UserService_Update_1 struct {
+type response_User_Update_1 struct {
 	proto.Message
 }
 
-func (m response_UserService_Update_1) XXX_ResponseBody() interface{} {
+func (m response_User_Update_1) XXX_ResponseBody() interface{} {
 	response := m.Message.(*UpdateUserResponse)
 	return response.User
 }
 
-type response_UserService_Get_0 struct {
+type response_User_Get_0 struct {
 	proto.Message
 }
 
-func (m response_UserService_Get_0) XXX_ResponseBody() interface{} {
+func (m response_User_Get_0) XXX_ResponseBody() interface{} {
 	response := m.Message.(*GetUserResponse)
 	return response.User
 }
 
 var (
-	pattern_UserService_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
+	pattern_User_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
 
-	pattern_UserService_Create_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "users"}, ""))
+	pattern_User_Create_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "users"}, ""))
 
-	pattern_UserService_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
+	pattern_User_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
 
-	pattern_UserService_Update_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "user.id"}, ""))
+	pattern_User_Update_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "user.id"}, ""))
 
-	pattern_UserService_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
+	pattern_User_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "users", "_bulk"}, ""))
 
-	pattern_UserService_Delete_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "id"}, ""))
+	pattern_User_Delete_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "id"}, ""))
 
-	pattern_UserService_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "users"}, ""))
+	pattern_User_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "users"}, ""))
 
-	pattern_UserService_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"system", "users", "id"}, ""))
+	pattern_User_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"system", "users", "id"}, ""))
 )
 
 var (
-	forward_UserService_Create_0 = runtime.ForwardResponseMessage
+	forward_User_Create_0 = runtime.ForwardResponseMessage
 
-	forward_UserService_Create_1 = runtime.ForwardResponseMessage
+	forward_User_Create_1 = runtime.ForwardResponseMessage
 
-	forward_UserService_Update_0 = runtime.ForwardResponseMessage
+	forward_User_Update_0 = runtime.ForwardResponseMessage
 
-	forward_UserService_Update_1 = runtime.ForwardResponseMessage
+	forward_User_Update_1 = runtime.ForwardResponseMessage
 
-	forward_UserService_Delete_0 = runtime.ForwardResponseMessage
+	forward_User_Delete_0 = runtime.ForwardResponseMessage
 
-	forward_UserService_Delete_1 = runtime.ForwardResponseMessage
+	forward_User_Delete_1 = runtime.ForwardResponseMessage
 
-	forward_UserService_List_0 = runtime.ForwardResponseMessage
+	forward_User_List_0 = runtime.ForwardResponseMessage
 
-	forward_UserService_Get_0 = runtime.ForwardResponseMessage
+	forward_User_Get_0 = runtime.ForwardResponseMessage
 )

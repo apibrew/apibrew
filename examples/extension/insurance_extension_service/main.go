@@ -11,7 +11,7 @@ import (
 )
 
 type recordExtensionService struct {
-	ext.RecordExtensionServiceServer
+	ext.RecordExtensionServer
 }
 
 func (r *recordExtensionService) BeforeList(ctx context.Context, req *ext.BeforeListRecordRequest) (*ext.BeforeListRecordResponse, error) {
@@ -38,7 +38,7 @@ func main() {
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 
-	ext.RegisterRecordExtensionServiceServer(grpcServer, &recordExtensionService{})
+	ext.RegisterRecordExtensionServer(grpcServer, &recordExtensionService{})
 
 	l, err := net.Listen("tcp", "0.0.0.0:40234")
 	if err != nil {

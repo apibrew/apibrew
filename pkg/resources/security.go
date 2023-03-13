@@ -7,7 +7,7 @@ import (
 var securityContextProperty = &model.ResourceProperty{
 	Name:     "securityContext",
 	Mapping:  "security_context",
-	Type:     model.ResourcePropertyType_TYPE_OBJECT,
+	Type:     model.ResourceProperty_OBJECT,
 	Required: false,
 }
 

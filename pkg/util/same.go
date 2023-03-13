@@ -57,11 +57,11 @@ func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 		return false
 	}
 
-	if property1.Type == model.ResourcePropertyType_TYPE_STRING && property1.Length != property2.Length {
+	if property1.Type == model.ResourceProperty_STRING && property1.Length != property2.Length {
 		return false
 	}
 
-	if property1.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+	if property1.Type == model.ResourceProperty_REFERENCE {
 		if (property1.Reference == nil) != (property2.Reference == nil) {
 			return false
 		}

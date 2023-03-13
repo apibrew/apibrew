@@ -125,25 +125,25 @@ func (s *server) configureRoutes() {
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	if err := stub.RegisterAuthenticationServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterAuthenticationHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterUserServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterUserHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterRecordServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterRecordHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterResourceServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterResourceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterNamespaceServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterNamespaceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterDataSourceServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterDataSourceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterWatchServiceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterWatchHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
 		log.Fatal(err)
 	}
 

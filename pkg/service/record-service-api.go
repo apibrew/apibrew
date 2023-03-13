@@ -81,10 +81,6 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
 	var result []*model.Record
 
-	for _, item := range params.Records {
-		item.DataType = model.DataType_USER
-	}
-
 	var insertedArray []bool
 	var err errors.ServiceError
 
@@ -129,7 +125,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 	// prepare default values
 	var defaultValueMap = make(map[string]*structpb.Value)
 	for _, prop := range resource.Properties {
-		if prop.DefaultValue != nil {
+		if prop.DefaultValue != nil && prop.DefaultValue.AsInterface() != nil {
 			defaultValueMap[prop.Name] = prop.DefaultValue
 		}
 	}

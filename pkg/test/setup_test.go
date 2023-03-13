@@ -35,7 +35,7 @@ func setupDataSources(ctx context.Context) {
 		dataSource1,
 	}
 	// creating data sources
-	listDataSourceResp, err := dataSourceServiceClient.List(ctx, &stub.ListDataSourceRequest{})
+	listDataSourceResp, err := dataSourceClient.List(ctx, &stub.ListDataSourceRequest{})
 
 	if err != nil {
 		panic(err)
@@ -59,7 +59,7 @@ func setupDataSources(ctx context.Context) {
 		}
 	}
 
-	createRes, err := dataSourceServiceClient.Create(ctx, &stub.CreateDataSourceRequest{
+	createRes, err := dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
 		DataSources: dataSourcesForCreate,
 	})
 
@@ -94,7 +94,7 @@ func setupResources(ctx context.Context) {
 		simpleVirtualResource1,
 	}
 	// creating data sources
-	listResourceResp, err := resourceServiceClient.List(ctx, &stub.ListResourceRequest{})
+	listResourceResp, err := resourceClient.List(ctx, &stub.ListResourceRequest{})
 
 	if err != nil {
 		panic(err)
@@ -117,7 +117,7 @@ func setupResources(ctx context.Context) {
 		}
 	}
 
-	createRes, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	createRes, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:      resourcesForCreate,
 		DoMigration:    true,
 		ForceMigration: true,
@@ -161,7 +161,7 @@ func initTextContext() {
 }
 
 func withUserAuthenticationContext(ctx context.Context, username, password string) context.Context {
-	resp, err := authenticationServiceClient.Authenticate(ctx, &stub.AuthenticationRequest{
+	resp, err := authenticationClient.Authenticate(ctx, &stub.AuthenticationRequest{
 		Username: username,
 		Password: password,
 		Term:     model.TokenTerm_MIDDLE,

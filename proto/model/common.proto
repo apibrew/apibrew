@@ -3,9 +3,3 @@ syntax = "proto3";
 package model;
 
 option go_package = "github.com/tislib/data-handler/pkg/model";
-
-enum DataType {
-  USER = 0;
-  SYSTEM = 1;
-  STATIC = 2;
-}

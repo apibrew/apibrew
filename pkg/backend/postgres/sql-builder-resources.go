@@ -55,7 +55,17 @@ func definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.Create
 	} else {
 		for _, prop := range resource.Properties {
 			if prop.Primary {
-				builder.Define(prop.Mapping, getPsqlTypeFromProperty(prop.Type, prop.Length), "NOT NULL", "PRIMARY KEY")
+				var typ = getPsqlTypeFromProperty(prop.Type, prop.Length)
+
+				if annotations.IsEnabled(prop, annotations.Identity) {
+					if typ == "INT" {
+						typ = "SERIAL"
+					} else {
+						typ = "BIGSERIAL"
+					}
+				}
+
+				builder.Define(prop.Mapping, typ, "NOT NULL", "PRIMARY KEY")
 				break
 			}
 		}
@@ -76,7 +86,7 @@ func prepareResourceTableColumnDefinition(resource *model.Resource, property *mo
 
 	var def = []string{fmt.Sprintf("\"%s\"", property.Mapping), sqlType, nullModifier, uniqModifier}
 
-	if property.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+	if property.Type == model.ResourceProperty_REFERENCE {
 		if property.Reference != nil {
 			referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
 			var refClause = ""

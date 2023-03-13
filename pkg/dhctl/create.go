@@ -76,7 +76,7 @@ var createRecordCmd = &cobra.Command{
 
 		resourceName := args[0]
 
-		resource := check2(GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+		resource := check2(GetDhClient().GetResourceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 			Token:     GetDhClient().GetToken(),
 			Namespace: *createRecordNamespace,
 			Name:      resourceName,
@@ -95,7 +95,7 @@ var createRecordCmd = &cobra.Command{
 		var record = &model.Record{}
 		fp.Parse(record, cmd, args)
 
-		records := check2(GetDhClient().GetRecordServiceClient().Create(cmd.Context(), &stub.CreateRecordRequest{
+		records := check2(GetDhClient().GetRecordClient().Create(cmd.Context(), &stub.CreateRecordRequest{
 			Token:     GetDhClient().GetToken(),
 			Namespace: *createRecordNamespace,
 			Resource:  resourceName,
@@ -118,7 +118,7 @@ func initCreateCmd() {
 			force = cmd.PersistentFlags().BoolP("force", "f", false, "")
 		},
 		handle: func(resource *model.Resource) {
-			resp, err := GetDhClient().GetResourceServiceClient().Create(context.TODO(), &stub.CreateResourceRequest{
+			resp, err := GetDhClient().GetResourceClient().Create(context.TODO(), &stub.CreateResourceRequest{
 				Token:          GetDhClient().GetToken(),
 				Resources:      []*model.Resource{resource},
 				DoMigration:    *migrate,
@@ -136,7 +136,7 @@ func initCreateCmd() {
 		msg: &model.DataSource{},
 		use: "data-source",
 		handle: func(dataSource *model.DataSource) {
-			resp, err := GetDhClient().GetDataSourceServiceClient().Create(context.TODO(), &stub.CreateDataSourceRequest{
+			resp, err := GetDhClient().GetDataSourceClient().Create(context.TODO(), &stub.CreateDataSourceRequest{
 				Token:       GetDhClient().GetToken(),
 				DataSources: []*model.DataSource{dataSource},
 			})
@@ -154,7 +154,7 @@ func initCreateCmd() {
 		msg: &model.Namespace{},
 		use: "namespace",
 		handle: func(namespace *model.Namespace) {
-			resp, err := GetDhClient().GetNamespaceServiceClient().Create(context.TODO(), &stub.CreateNamespaceRequest{
+			resp, err := GetDhClient().GetNamespaceClient().Create(context.TODO(), &stub.CreateNamespaceRequest{
 				Token:      GetDhClient().GetToken(),
 				Namespaces: []*model.Namespace{namespace},
 			})
@@ -172,7 +172,7 @@ func initCreateCmd() {
 		msg: &model.User{},
 		use: "user",
 		handle: func(user *model.User) {
-			resp, err := GetDhClient().GetUserServiceClient().Create(context.TODO(), &stub.CreateUserRequest{
+			resp, err := GetDhClient().GetUserClient().Create(context.TODO(), &stub.CreateUserRequest{
 				Token: GetDhClient().GetToken(),
 				Users: []*model.User{user},
 			})
@@ -190,7 +190,7 @@ func initCreateCmd() {
 		msg: &model.RemoteExtension{},
 		use: "extension",
 		handle: func(extension *model.RemoteExtension) {
-			resp, err := GetDhClient().GetExtensionServiceClient().Create(context.TODO(), &stub.CreateExtensionRequest{
+			resp, err := GetDhClient().GetExtensionClient().Create(context.TODO(), &stub.CreateExtensionRequest{
 				Token:      GetDhClient().GetToken(),
 				Extensions: []*model.RemoteExtension{extension},
 			})

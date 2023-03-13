@@ -52,72 +52,72 @@ func fakeResource(properties ...*model.ResourceProperty) *model.Resource {
 	}
 }
 
-func fakeValidValues(propertyType model.ResourcePropertyType) []interface{} {
+func fakeValidValues(propertyType model.ResourceProperty_Type) []interface{} {
 	switch propertyType {
-	case model.ResourcePropertyType_TYPE_INT32:
+	case model.ResourceProperty_INT32:
 		return []interface{}{rand.Int31()}
-	case model.ResourcePropertyType_TYPE_INT64:
+	case model.ResourceProperty_INT64:
 		return []interface{}{rand.Int63()}
-	case model.ResourcePropertyType_TYPE_STRING:
+	case model.ResourceProperty_STRING:
 		return []interface{}{
 			RandStringRunes(16),
 		}
-	case model.ResourcePropertyType_TYPE_UUID:
+	case model.ResourceProperty_UUID:
 		randUUid, _ := uuid.NewUUID()
 		return []interface{}{
 			randUUid.String(),
 		}
-	case model.ResourcePropertyType_TYPE_BYTES:
+	case model.ResourceProperty_BYTES:
 		return []interface{}{
 			[]byte(RandStringRunes(16)),
 		}
-	case model.ResourcePropertyType_TYPE_BOOL:
+	case model.ResourceProperty_BOOL:
 		return []interface{}{
 			false, true,
 		}
-	case model.ResourcePropertyType_TYPE_DATE:
+	case model.ResourceProperty_DATE:
 		return []interface{}{
 			randDate().Format("2006-01-02"),
 		}
-	case model.ResourcePropertyType_TYPE_FLOAT32:
+	case model.ResourceProperty_FLOAT32:
 		return []interface{}{
 			rand.Float32(),
 		}
-	case model.ResourcePropertyType_TYPE_FLOAT64:
+	case model.ResourceProperty_FLOAT64:
 		return []interface{}{
 			rand.Float64(),
 		}
-	case model.ResourcePropertyType_TYPE_TIME:
+	case model.ResourceProperty_TIME:
 		return []interface{}{
 			randDate().Format("15:04:05"),
 		}
-	case model.ResourcePropertyType_TYPE_TIMESTAMP:
+	case model.ResourceProperty_TIMESTAMP:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
 		}
-	case model.ResourcePropertyType_TYPE_REFERENCE:
+	case model.ResourceProperty_REFERENCE:
 		randUUid, _ := uuid.NewUUID()
 		return []interface{}{
 			randUUid.String(),
 		}
-	case model.ResourcePropertyType_TYPE_ENUM:
+	case model.ResourceProperty_ENUM:
 		return []interface{}{
 			RandStringRunes(16),
 		}
-	case model.ResourcePropertyType_TYPE_MAP:
+	case model.ResourceProperty_MAP:
 		return []interface{}{
 			map[string]interface{}{
 				"val1": RandStringRunes(16),
 			},
 		}
-	case model.ResourcePropertyType_TYPE_LIST:
+	case model.ResourceProperty_LIST:
 		return []interface{}{
 			[]interface{}{
 				RandStringRunes(16),
 				RandStringRunes(16),
 			},
 		}
-	case model.ResourcePropertyType_TYPE_OBJECT:
+	case model.ResourceProperty_OBJECT:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
 			map[string]interface{}{
@@ -135,15 +135,15 @@ func fakeValidValues(propertyType model.ResourcePropertyType) []interface{} {
 	}
 }
 
-func fakeValidValue(propertyType model.ResourcePropertyType) interface{} {
+func fakeValidValue(propertyType model.ResourceProperty_Type) interface{} {
 	values := fakeValidValues(propertyType)
 
 	return values[rand.Intn(len(values))]
 }
 
-func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
+func fakeInvalidValues(propertyType model.ResourceProperty_Type) []interface{} {
 	switch propertyType {
-	case model.ResourcePropertyType_TYPE_INT32:
+	case model.ResourceProperty_INT32:
 		return []interface{}{
 			rand.Int63(),
 			"1234",
@@ -151,14 +151,14 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			true,
 			rand.Float64(),
 		}
-	case model.ResourcePropertyType_TYPE_INT64:
+	case model.ResourceProperty_INT64:
 		return []interface{}{
 			"1234",
 			false,
 			true,
 			rand.Float64(),
 		}
-	case model.ResourcePropertyType_TYPE_STRING:
+	case model.ResourceProperty_STRING:
 		return []interface{}{
 			rand.Int31(),
 			rand.Int63(),
@@ -166,7 +166,7 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			true,
 			rand.Float64(),
 		}
-	case model.ResourcePropertyType_TYPE_UUID:
+	case model.ResourceProperty_UUID:
 		return []interface{}{
 			rand.Int31(),
 			rand.Int63(),
@@ -175,7 +175,7 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			rand.Float64(),
 			RandStringRunes(12),
 		}
-	case model.ResourcePropertyType_TYPE_BYTES:
+	case model.ResourceProperty_BYTES:
 		return []interface{}{
 			rand.Int31(),
 			rand.Int63(),
@@ -186,7 +186,7 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			RandStringRunes(14),
 			RandStringRunes(15),
 		}
-	case model.ResourcePropertyType_TYPE_BOOL:
+	case model.ResourceProperty_BOOL:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
 			rand.Int63(),
@@ -195,7 +195,7 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			rand.Float64(),
 			RandStringRunes(32),
 		}
-	case model.ResourcePropertyType_TYPE_DATE:
+	case model.ResourceProperty_DATE:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
 			rand.Int63(),
@@ -204,17 +204,17 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			rand.Float64(),
 			RandStringRunes(32),
 		}
-	case model.ResourcePropertyType_TYPE_FLOAT32:
+	case model.ResourceProperty_FLOAT32:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
 			RandStringRunes(32),
 		}
-	case model.ResourcePropertyType_TYPE_FLOAT64:
+	case model.ResourceProperty_FLOAT64:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
 			RandStringRunes(32),
 		}
-	case model.ResourcePropertyType_TYPE_TIME:
+	case model.ResourceProperty_TIME:
 		return []interface{}{
 			randDate().Format(time.RFC3339),
 			rand.Int63(),
@@ -223,7 +223,7 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			rand.Float64(),
 			RandStringRunes(32),
 		}
-	case model.ResourcePropertyType_TYPE_TIMESTAMP:
+	case model.ResourceProperty_TIMESTAMP:
 		return []interface{}{
 			rand.Int63(),
 			rand.Int31(),
@@ -231,9 +231,9 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			rand.Float64(),
 			RandStringRunes(32),
 		}
-	case model.ResourcePropertyType_TYPE_OBJECT:
+	case model.ResourceProperty_OBJECT:
 		return []interface{}{}
-	case model.ResourcePropertyType_TYPE_REFERENCE:
+	case model.ResourceProperty_REFERENCE:
 		return []interface{}{
 			rand.Int31(),
 			rand.Int63(),
@@ -242,7 +242,7 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			rand.Float64(),
 			RandStringRunes(12),
 		}
-	case model.ResourcePropertyType_TYPE_ENUM:
+	case model.ResourceProperty_ENUM:
 		return []interface{}{
 			rand.Int31(),
 			rand.Int63(),
@@ -250,16 +250,16 @@ func fakeInvalidValues(propertyType model.ResourcePropertyType) []interface{} {
 			true,
 			rand.Float64(),
 		}
-	case model.ResourcePropertyType_TYPE_MAP:
+	case model.ResourceProperty_MAP:
 		return []interface{}{}
-	case model.ResourcePropertyType_TYPE_LIST:
+	case model.ResourceProperty_LIST:
 		return []interface{}{}
 	default:
 		panic("Unknown type: " + propertyType.String())
 	}
 }
 
-func fakeInvalidValue(propertyType model.ResourcePropertyType) interface{} {
+func fakeInvalidValue(propertyType model.ResourceProperty_Type) interface{} {
 	values := fakeInvalidValues(propertyType)
 
 	if len(values) == 0 {

@@ -3,7 +3,6 @@ package security
 import (
 	"context"
 	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/model"
 )
 
 var SystemContext = WithSystemContext(context.TODO())
@@ -28,10 +27,20 @@ func GetUserDetailsFromContext(ctx context.Context) *abs.UserDetails {
 	return res
 }
 
-func IsSystemContext(ctx context.Context) bool {
-	return ctx.Value(abs.SystemContextKey) != nil && ctx.Value(abs.SystemContextKey).(bool)
+func GetUserPrincipalFromContext(ctx context.Context) string {
+	userDetails := GetUserDetailsFromContext(ctx)
+
+	if userDetails == nil {
+		if IsSystemContext(ctx) {
+			return "system"
+		} else {
+			return "guest"
+		}
+	}
+
+	return userDetails.Username
 }
 
-type HasDataType interface {
-	GetDataType() model.DataType
+func IsSystemContext(ctx context.Context) bool {
+	return ctx.Value(abs.SystemContextKey) != nil && ctx.Value(abs.SystemContextKey).(bool)
 }

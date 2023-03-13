@@ -23,7 +23,7 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 	uuidNeeded := false
 
 	for _, prop := range resource.Properties {
-		if prop.Type == model.ResourcePropertyType_TYPE_UUID {
+		if prop.Type == model.ResourceProperty_UUID {
 			uuidNeeded = true
 		}
 	}
@@ -113,18 +113,18 @@ func writeResourceStructToPropertiesFunc(sb *strings.Builder, resource *model.Re
 	sb.WriteRune('\n')
 
 	for i, prop := range resource.Properties {
-		if !prop.Required || prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if !prop.Required || prop.Type == model.ResourceProperty_REFERENCE {
 			sb.WriteString(fmt.Sprintf("if s.%s != nil { \n", dashCaseToCamelCase(prop.Name)))
 		}
 
-		if prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if prop.Type == model.ResourceProperty_REFERENCE {
 			sb.WriteString(fmt.Sprintf("properties[\"%s\"] = structpb.NewStructValue(&structpb.Struct{Fields: s.%s.ToProperties(true)})\n", prop.Name, dashCaseToCamelCase(prop.Name)))
 		} else {
 			sb.WriteString(fmt.Sprintf("val%d, _ := types.ByResourcePropertyType(model.ResourcePropertyType_%s).Pack(s.%s) \n", i, prop.Type.String(), dashCaseToCamelCase(prop.Name)))
 			sb.WriteString(fmt.Sprintf("properties[\"%s\"] = val%d\n", prop.Name, i))
 		}
 
-		if !prop.Required || prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if !prop.Required || prop.Type == model.ResourceProperty_REFERENCE {
 			sb.WriteString("}\n")
 		}
 		sb.WriteString("\n")
@@ -150,7 +150,7 @@ func writeResourceStructFromPropertiesFunc(sb *strings.Builder, resource *model.
 	for i, prop := range resource.Properties {
 		sb.WriteString(fmt.Sprintf("if properties[\"%s\"] != nil { \n", prop.Name))
 
-		if prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if prop.Type == model.ResourceProperty_REFERENCE {
 			sb.WriteString(fmt.Sprintf("s.%s = new(%s)\n", dashCaseToCamelCase(prop.Name), dashCaseToCamelCase(prop.Reference.ReferencedResource)))
 			sb.WriteString(fmt.Sprintf("s.%s.FromProperties(properties[\"%s\"].GetStructValue().Fields)\n", dashCaseToCamelCase(prop.Reference.ReferencedResource), prop.Name))
 		} else {
@@ -182,7 +182,7 @@ func writeResourceStruct(sb *strings.Builder, resource *model.Resource, params G
 			typeDef = "*" + typeDef
 		}
 
-		if prop.Type == model.ResourcePropertyType_TYPE_REFERENCE {
+		if prop.Type == model.ResourceProperty_REFERENCE {
 			typeDef = "*" + dashCaseToCamelCase(prop.Reference.ReferencedResource)
 		}
 
@@ -230,7 +230,7 @@ func dashCaseToCamelCase(inputUnderScoreStr string) (camelCase string) {
 
 }
 
-func getGoType(propertyType model.ResourcePropertyType) string {
+func getGoType(propertyType model.ResourceProperty_Type) string {
 	typ := types.ByResourcePropertyType(propertyType)
 
 	return reflect.TypeOf(typ.Default()).String()

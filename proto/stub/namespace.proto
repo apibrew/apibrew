@@ -9,7 +9,8 @@ import 'model/error.proto';
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 
-service NamespaceService {
+// Namespace Service is for managing namespaces
+service Namespace {
   rpc Create(CreateNamespaceRequest) returns (CreateNamespaceResponse) {
     option (google.api.http) = {
       post: "/system/namespaces",
@@ -45,7 +46,6 @@ message ListNamespaceRequest {
 }
 
 message ListNamespaceResponse {
-  int32 total = 1;
   repeated model.Namespace content = 2;
 }
 

@@ -31,7 +31,7 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_ResourceService_Create_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Resource_Create_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -48,7 +48,7 @@ func request_ResourceService_Create_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-func local_request_ResourceService_Create_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Resource_Create_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -65,7 +65,7 @@ func local_request_ResourceService_Create_0(ctx context.Context, marshaler runti
 
 }
 
-func request_ResourceService_Update_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Resource_Update_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -82,7 +82,7 @@ func request_ResourceService_Update_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-func local_request_ResourceService_Update_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Resource_Update_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -99,7 +99,7 @@ func local_request_ResourceService_Update_0(ctx context.Context, marshaler runti
 
 }
 
-func request_ResourceService_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Resource_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -116,7 +116,7 @@ func request_ResourceService_Delete_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-func local_request_ResourceService_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Resource_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -134,17 +134,17 @@ func local_request_ResourceService_Delete_0(ctx context.Context, marshaler runti
 }
 
 var (
-	filter_ResourceService_List_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_Resource_List_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_ResourceService_List_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Resource_List_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListResourceRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_List_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Resource_List_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -153,14 +153,14 @@ func request_ResourceService_List_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func local_request_ResourceService_List_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Resource_List_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListResourceRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_List_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Resource_List_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -169,7 +169,7 @@ func local_request_ResourceService_List_0(ctx context.Context, marshaler runtime
 
 }
 
-func request_ResourceService_PrepareResourceMigrationPlan_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Resource_PrepareResourceMigrationPlan_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq PrepareResourceMigrationPlanRequest
 	var metadata runtime.ServerMetadata
 
@@ -186,7 +186,7 @@ func request_ResourceService_PrepareResourceMigrationPlan_0(ctx context.Context,
 
 }
 
-func local_request_ResourceService_PrepareResourceMigrationPlan_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Resource_PrepareResourceMigrationPlan_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq PrepareResourceMigrationPlanRequest
 	var metadata runtime.ServerMetadata
 
@@ -204,10 +204,10 @@ func local_request_ResourceService_PrepareResourceMigrationPlan_0(ctx context.Co
 }
 
 var (
-	filter_ResourceService_Get_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+	filter_Resource_Get_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
 )
 
-func request_ResourceService_Get_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Resource_Get_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -231,7 +231,7 @@ func request_ResourceService_Get_0(ctx context.Context, marshaler runtime.Marsha
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_Get_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Resource_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -240,7 +240,7 @@ func request_ResourceService_Get_0(ctx context.Context, marshaler runtime.Marsha
 
 }
 
-func local_request_ResourceService_Get_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Resource_Get_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -264,7 +264,7 @@ func local_request_ResourceService_Get_0(ctx context.Context, marshaler runtime.
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_Get_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Resource_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -274,10 +274,10 @@ func local_request_ResourceService_Get_0(ctx context.Context, marshaler runtime.
 }
 
 var (
-	filter_ResourceService_GetByName_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "name": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
+	filter_Resource_GetByName_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "name": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
 )
 
-func request_ResourceService_GetByName_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Resource_GetByName_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetResourceByNameRequest
 	var metadata runtime.ServerMetadata
 
@@ -311,7 +311,7 @@ func request_ResourceService_GetByName_0(ctx context.Context, marshaler runtime.
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_GetByName_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Resource_GetByName_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -320,7 +320,7 @@ func request_ResourceService_GetByName_0(ctx context.Context, marshaler runtime.
 
 }
 
-func local_request_ResourceService_GetByName_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Resource_GetByName_0(ctx context.Context, marshaler runtime.Marshaler, server ResourceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetResourceByNameRequest
 	var metadata runtime.ServerMetadata
 
@@ -354,7 +354,7 @@ func local_request_ResourceService_GetByName_0(ctx context.Context, marshaler ru
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_GetByName_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Resource_GetByName_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -363,13 +363,13 @@ func local_request_ResourceService_GetByName_0(ctx context.Context, marshaler ru
 
 }
 
-// RegisterResourceServiceHandlerServer registers the http handlers for service ResourceService to "mux".
-// UnaryRPC     :call ResourceServiceServer directly.
+// RegisterResourceHandlerServer registers the http handlers for service Resource to "mux".
+// UnaryRPC     :call ResourceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterResourceServiceHandlerFromEndpoint instead.
-func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ResourceServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterResourceHandlerFromEndpoint instead.
+func RegisterResourceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ResourceServer) error {
 
-	mux.Handle("POST", pattern_ResourceService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Resource_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -377,12 +377,12 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.ResourceService/Create", runtime.WithHTTPPathPattern("/system/resources"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Resource/Create", runtime.WithHTTPPathPattern("/system/resources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ResourceService_Create_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Resource_Create_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -390,11 +390,11 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 
-		forward_ResourceService_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_ResourceService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_Resource_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -402,12 +402,12 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.ResourceService/Update", runtime.WithHTTPPathPattern("/system/resources"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Resource/Update", runtime.WithHTTPPathPattern("/system/resources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ResourceService_Update_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Resource_Update_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -415,11 +415,11 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 
-		forward_ResourceService_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_ResourceService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_Resource_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -427,12 +427,12 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.ResourceService/Delete", runtime.WithHTTPPathPattern("/system/resources"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Resource/Delete", runtime.WithHTTPPathPattern("/system/resources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ResourceService_Delete_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Resource_Delete_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -440,11 +440,11 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 
-		forward_ResourceService_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ResourceService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Resource_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -452,12 +452,12 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.ResourceService/List", runtime.WithHTTPPathPattern("/system/resources"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Resource/List", runtime.WithHTTPPathPattern("/system/resources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ResourceService_List_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Resource_List_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -465,11 +465,11 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 
-		forward_ResourceService_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ResourceService_PrepareResourceMigrationPlan_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Resource_PrepareResourceMigrationPlan_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -477,12 +477,12 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.ResourceService/PrepareResourceMigrationPlan", runtime.WithHTTPPathPattern("/system/resources/_migrate"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Resource/PrepareResourceMigrationPlan", runtime.WithHTTPPathPattern("/system/resources/_migrate"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ResourceService_PrepareResourceMigrationPlan_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Resource_PrepareResourceMigrationPlan_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -490,11 +490,11 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 
-		forward_ResourceService_PrepareResourceMigrationPlan_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_PrepareResourceMigrationPlan_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ResourceService_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Resource_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -502,12 +502,12 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.ResourceService/Get", runtime.WithHTTPPathPattern("/system/resources/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Resource/Get", runtime.WithHTTPPathPattern("/system/resources/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ResourceService_Get_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Resource_Get_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -515,11 +515,11 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 
-		forward_ResourceService_Get_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_Get_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ResourceService_GetByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Resource_GetByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -527,12 +527,12 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.ResourceService/GetByName", runtime.WithHTTPPathPattern("/system/resources/{namespace}/{name}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Resource/GetByName", runtime.WithHTTPPathPattern("/system/resources/{namespace}/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ResourceService_GetByName_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Resource_GetByName_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -540,16 +540,16 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 
-		forward_ResourceService_GetByName_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_GetByName_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterResourceServiceHandlerFromEndpoint is same as RegisterResourceServiceHandler but
+// RegisterResourceHandlerFromEndpoint is same as RegisterResourceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterResourceServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterResourceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -569,173 +569,173 @@ func RegisterResourceServiceHandlerFromEndpoint(ctx context.Context, mux *runtim
 		}()
 	}()
 
-	return RegisterResourceServiceHandler(ctx, mux, conn)
+	return RegisterResourceHandler(ctx, mux, conn)
 }
 
-// RegisterResourceServiceHandler registers the http handlers for service ResourceService to "mux".
+// RegisterResourceHandler registers the http handlers for service Resource to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterResourceServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterResourceServiceHandlerClient(ctx, mux, NewResourceServiceClient(conn))
+func RegisterResourceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterResourceHandlerClient(ctx, mux, NewResourceClient(conn))
 }
 
-// RegisterResourceServiceHandlerClient registers the http handlers for service ResourceService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ResourceServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ResourceServiceClient"
+// RegisterResourceHandlerClient registers the http handlers for service Resource
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ResourceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ResourceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "ResourceServiceClient" to call the correct interceptors.
-func RegisterResourceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ResourceServiceClient) error {
+// "ResourceClient" to call the correct interceptors.
+func RegisterResourceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ResourceClient) error {
 
-	mux.Handle("POST", pattern_ResourceService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Resource_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.ResourceService/Create", runtime.WithHTTPPathPattern("/system/resources"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Resource/Create", runtime.WithHTTPPathPattern("/system/resources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ResourceService_Create_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Resource_Create_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ResourceService_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_ResourceService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_Resource_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.ResourceService/Update", runtime.WithHTTPPathPattern("/system/resources"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Resource/Update", runtime.WithHTTPPathPattern("/system/resources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ResourceService_Update_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Resource_Update_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ResourceService_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_ResourceService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_Resource_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.ResourceService/Delete", runtime.WithHTTPPathPattern("/system/resources"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Resource/Delete", runtime.WithHTTPPathPattern("/system/resources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ResourceService_Delete_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Resource_Delete_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ResourceService_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ResourceService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Resource_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.ResourceService/List", runtime.WithHTTPPathPattern("/system/resources"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Resource/List", runtime.WithHTTPPathPattern("/system/resources"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ResourceService_List_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Resource_List_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ResourceService_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ResourceService_PrepareResourceMigrationPlan_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Resource_PrepareResourceMigrationPlan_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.ResourceService/PrepareResourceMigrationPlan", runtime.WithHTTPPathPattern("/system/resources/_migrate"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Resource/PrepareResourceMigrationPlan", runtime.WithHTTPPathPattern("/system/resources/_migrate"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ResourceService_PrepareResourceMigrationPlan_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Resource_PrepareResourceMigrationPlan_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ResourceService_PrepareResourceMigrationPlan_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_PrepareResourceMigrationPlan_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ResourceService_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Resource_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.ResourceService/Get", runtime.WithHTTPPathPattern("/system/resources/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Resource/Get", runtime.WithHTTPPathPattern("/system/resources/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ResourceService_Get_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Resource_Get_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ResourceService_Get_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_Get_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ResourceService_GetByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Resource_GetByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.ResourceService/GetByName", runtime.WithHTTPPathPattern("/system/resources/{namespace}/{name}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Resource/GetByName", runtime.WithHTTPPathPattern("/system/resources/{namespace}/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ResourceService_GetByName_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Resource_GetByName_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ResourceService_GetByName_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Resource_GetByName_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -743,33 +743,33 @@ func RegisterResourceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 }
 
 var (
-	pattern_ResourceService_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "resources"}, ""))
+	pattern_Resource_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "resources"}, ""))
 
-	pattern_ResourceService_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "resources"}, ""))
+	pattern_Resource_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "resources"}, ""))
 
-	pattern_ResourceService_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "resources"}, ""))
+	pattern_Resource_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "resources"}, ""))
 
-	pattern_ResourceService_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "resources"}, ""))
+	pattern_Resource_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"system", "resources"}, ""))
 
-	pattern_ResourceService_PrepareResourceMigrationPlan_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "resources", "_migrate"}, ""))
+	pattern_Resource_PrepareResourceMigrationPlan_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"system", "resources", "_migrate"}, ""))
 
-	pattern_ResourceService_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"system", "resources", "id"}, ""))
+	pattern_Resource_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"system", "resources", "id"}, ""))
 
-	pattern_ResourceService_GetByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"system", "resources", "namespace", "name"}, ""))
+	pattern_Resource_GetByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"system", "resources", "namespace", "name"}, ""))
 )
 
 var (
-	forward_ResourceService_Create_0 = runtime.ForwardResponseMessage
+	forward_Resource_Create_0 = runtime.ForwardResponseMessage
 
-	forward_ResourceService_Update_0 = runtime.ForwardResponseMessage
+	forward_Resource_Update_0 = runtime.ForwardResponseMessage
 
-	forward_ResourceService_Delete_0 = runtime.ForwardResponseMessage
+	forward_Resource_Delete_0 = runtime.ForwardResponseMessage
 
-	forward_ResourceService_List_0 = runtime.ForwardResponseMessage
+	forward_Resource_List_0 = runtime.ForwardResponseMessage
 
-	forward_ResourceService_PrepareResourceMigrationPlan_0 = runtime.ForwardResponseMessage
+	forward_Resource_PrepareResourceMigrationPlan_0 = runtime.ForwardResponseMessage
 
-	forward_ResourceService_Get_0 = runtime.ForwardResponseMessage
+	forward_Resource_Get_0 = runtime.ForwardResponseMessage
 
-	forward_ResourceService_GetByName_0 = runtime.ForwardResponseMessage
+	forward_Resource_GetByName_0 = runtime.ForwardResponseMessage
 )

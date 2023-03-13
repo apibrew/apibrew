@@ -7,7 +7,6 @@ import (
 var ExtensionResource = &model.Resource{
 	Name:      "extension",
 	Namespace: "system",
-	DataType:  model.DataType_SYSTEM,
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "extension",
@@ -19,7 +18,7 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "name",
 			Length:   64,
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Unique:   true,
 			Required: true,
 		},
@@ -29,7 +28,7 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "description",
 			Length:   64,
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Required: false,
 		},
 		{
@@ -38,7 +37,7 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "namespace",
 			Length:   64,
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Required: true,
 		},
 		{
@@ -47,7 +46,7 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "resource",
 			Length:   64,
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Required: true,
 		},
 		{
@@ -56,7 +55,7 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "server_host",
 			Length:   64,
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_STRING,
+			Type:     model.ResourceProperty_STRING,
 			Required: true,
 		},
 		{
@@ -65,14 +64,14 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "server_port",
 			Length:   64,
 			Primary:  false,
-			Type:     model.ResourcePropertyType_TYPE_INT32,
+			Type:     model.ResourceProperty_INT32,
 			Required: true,
 		},
 		{
 			Name: "operations",
 
 			Mapping: "operations",
-			Type:    model.ResourcePropertyType_TYPE_OBJECT,
+			Type:    model.ResourceProperty_OBJECT,
 		},
 	},
 	SecurityContext: securityContextDisallowAll,

@@ -20,14 +20,14 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 			Properties: []*model.ResourceProperty{
 				{
 					Name:     "name",
-					Type:     model.ResourcePropertyType_TYPE_STRING,
+					Type:     model.ResourceProperty_STRING,
 					Mapping:  "name",
 					Required: true,
 					Length:   255,
 				},
 				{
 					Name:         "description",
-					Type:         model.ResourcePropertyType_TYPE_STRING,
+					Type:         model.ResourceProperty_STRING,
 					Mapping:      "description",
 					Required:     true,
 					Length:       255,
@@ -45,14 +45,14 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 			Properties: []*model.ResourceProperty{
 				{
 					Name:     "name",
-					Type:     model.ResourcePropertyType_TYPE_STRING,
+					Type:     model.ResourceProperty_STRING,
 					Mapping:  "name",
 					Required: true,
 					Length:   255,
 				},
 				{
 					Name:         "description",
-					Type:         model.ResourcePropertyType_TYPE_STRING,
+					Type:         model.ResourceProperty_STRING,
 					Mapping:      "description",
 					Required:     true,
 					Length:       255,
@@ -60,7 +60,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 				},
 				{
 					Name:     "author",
-					Type:     model.ResourcePropertyType_TYPE_REFERENCE,
+					Type:     model.ResourceProperty_REFERENCE,
 					Mapping:  "author",
 					Required: true,
 					Reference: &model.Reference{
@@ -76,7 +76,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 func TestResourceReferenceViolation(t *testing.T) {
 	resources := prepareTestResourceReferenceResources()
 
-	resp, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	resp, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:   resources,
 		DoMigration: true,
 	})
@@ -87,7 +87,7 @@ func TestResourceReferenceViolation(t *testing.T) {
 	}
 
 	defer func() {
-		_, err = resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+		_, err = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 			Ids:            util.ArrayMapToId(resp.Resources),
 			DoMigration:    true,
 			ForceMigration: true,
@@ -99,7 +99,7 @@ func TestResourceReferenceViolation(t *testing.T) {
 		}
 	}()
 
-	_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: "book",
 		Records: []*model.Record{
 			{
@@ -128,7 +128,7 @@ func TestResourceReferenceViolation(t *testing.T) {
 func TestResourceReferenceSuccess(t *testing.T) {
 	resources := prepareTestResourceReferenceResources()
 
-	resp, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	resp, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:   resources,
 		DoMigration: true,
 	})
@@ -139,7 +139,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 	}
 
 	defer func() {
-		_, err = resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+		_, err = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 			Ids:            util.ArrayMapToId(resp.Resources),
 			DoMigration:    true,
 			ForceMigration: true,
@@ -151,7 +151,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 		}
 	}()
 
-	_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: "author",
 		Records: []*model.Record{
 			{
@@ -168,7 +168,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 		return
 	}
 
-	_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: "book",
 		Records: []*model.Record{
 			{

@@ -19,89 +19,89 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// RecordServiceClient is the client API for RecordService service.
+// RecordClient is the client API for Record service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RecordServiceClient interface {
+type RecordClient interface {
 	Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error)
 	Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error)
 	UpdateMulti(ctx context.Context, in *UpdateMultiRecordRequest, opts ...grpc.CallOption) (*UpdateMultiRecordResponse, error)
 	Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error)
 	List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error)
 	Search(ctx context.Context, in *SearchRecordRequest, opts ...grpc.CallOption) (*SearchRecordResponse, error)
-	ReadStream(ctx context.Context, in *ReadStreamRequest, opts ...grpc.CallOption) (RecordService_ReadStreamClient, error)
-	WriteStream(ctx context.Context, opts ...grpc.CallOption) (RecordService_WriteStreamClient, error)
+	ReadStream(ctx context.Context, in *ReadStreamRequest, opts ...grpc.CallOption) (Record_ReadStreamClient, error)
+	WriteStream(ctx context.Context, opts ...grpc.CallOption) (Record_WriteStreamClient, error)
 	Get(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error)
 }
 
-type recordServiceClient struct {
+type recordClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRecordServiceClient(cc grpc.ClientConnInterface) RecordServiceClient {
-	return &recordServiceClient{cc}
+func NewRecordClient(cc grpc.ClientConnInterface) RecordClient {
+	return &recordClient{cc}
 }
 
-func (c *recordServiceClient) Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error) {
+func (c *recordClient) Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error) {
 	out := new(CreateRecordResponse)
-	err := c.cc.Invoke(ctx, "/stub.RecordService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Record/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *recordServiceClient) Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error) {
+func (c *recordClient) Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error) {
 	out := new(UpdateRecordResponse)
-	err := c.cc.Invoke(ctx, "/stub.RecordService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Record/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *recordServiceClient) UpdateMulti(ctx context.Context, in *UpdateMultiRecordRequest, opts ...grpc.CallOption) (*UpdateMultiRecordResponse, error) {
+func (c *recordClient) UpdateMulti(ctx context.Context, in *UpdateMultiRecordRequest, opts ...grpc.CallOption) (*UpdateMultiRecordResponse, error) {
 	out := new(UpdateMultiRecordResponse)
-	err := c.cc.Invoke(ctx, "/stub.RecordService/UpdateMulti", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Record/UpdateMulti", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *recordServiceClient) Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
+func (c *recordClient) Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
 	out := new(DeleteRecordResponse)
-	err := c.cc.Invoke(ctx, "/stub.RecordService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Record/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *recordServiceClient) List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error) {
+func (c *recordClient) List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error) {
 	out := new(ListRecordResponse)
-	err := c.cc.Invoke(ctx, "/stub.RecordService/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Record/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *recordServiceClient) Search(ctx context.Context, in *SearchRecordRequest, opts ...grpc.CallOption) (*SearchRecordResponse, error) {
+func (c *recordClient) Search(ctx context.Context, in *SearchRecordRequest, opts ...grpc.CallOption) (*SearchRecordResponse, error) {
 	out := new(SearchRecordResponse)
-	err := c.cc.Invoke(ctx, "/stub.RecordService/Search", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Record/Search", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *recordServiceClient) ReadStream(ctx context.Context, in *ReadStreamRequest, opts ...grpc.CallOption) (RecordService_ReadStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RecordService_ServiceDesc.Streams[0], "/stub.RecordService/ReadStream", opts...)
+func (c *recordClient) ReadStream(ctx context.Context, in *ReadStreamRequest, opts ...grpc.CallOption) (Record_ReadStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Record_ServiceDesc.Streams[0], "/stub.Record/ReadStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &recordServiceReadStreamClient{stream}
+	x := &recordReadStreamClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -111,16 +111,16 @@ func (c *recordServiceClient) ReadStream(ctx context.Context, in *ReadStreamRequ
 	return x, nil
 }
 
-type RecordService_ReadStreamClient interface {
+type Record_ReadStreamClient interface {
 	Recv() (*model.Record, error)
 	grpc.ClientStream
 }
 
-type recordServiceReadStreamClient struct {
+type recordReadStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *recordServiceReadStreamClient) Recv() (*model.Record, error) {
+func (x *recordReadStreamClient) Recv() (*model.Record, error) {
 	m := new(model.Record)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -128,30 +128,30 @@ func (x *recordServiceReadStreamClient) Recv() (*model.Record, error) {
 	return m, nil
 }
 
-func (c *recordServiceClient) WriteStream(ctx context.Context, opts ...grpc.CallOption) (RecordService_WriteStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RecordService_ServiceDesc.Streams[1], "/stub.RecordService/WriteStream", opts...)
+func (c *recordClient) WriteStream(ctx context.Context, opts ...grpc.CallOption) (Record_WriteStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Record_ServiceDesc.Streams[1], "/stub.Record/WriteStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &recordServiceWriteStreamClient{stream}
+	x := &recordWriteStreamClient{stream}
 	return x, nil
 }
 
-type RecordService_WriteStreamClient interface {
+type Record_WriteStreamClient interface {
 	Send(*model.Record) error
 	CloseAndRecv() (*WriteStreamResponse, error)
 	grpc.ClientStream
 }
 
-type recordServiceWriteStreamClient struct {
+type recordWriteStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *recordServiceWriteStreamClient) Send(m *model.Record) error {
+func (x *recordWriteStreamClient) Send(m *model.Record) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *recordServiceWriteStreamClient) CloseAndRecv() (*WriteStreamResponse, error) {
+func (x *recordWriteStreamClient) CloseAndRecv() (*WriteStreamResponse, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
@@ -162,223 +162,223 @@ func (x *recordServiceWriteStreamClient) CloseAndRecv() (*WriteStreamResponse, e
 	return m, nil
 }
 
-func (c *recordServiceClient) Get(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
+func (c *recordClient) Get(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
 	out := new(GetRecordResponse)
-	err := c.cc.Invoke(ctx, "/stub.RecordService/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Record/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RecordServiceServer is the server API for RecordService service.
-// All implementations must embed UnimplementedRecordServiceServer
+// RecordServer is the server API for Record service.
+// All implementations must embed UnimplementedRecordServer
 // for forward compatibility
-type RecordServiceServer interface {
+type RecordServer interface {
 	Create(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error)
 	Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error)
 	UpdateMulti(context.Context, *UpdateMultiRecordRequest) (*UpdateMultiRecordResponse, error)
 	Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error)
 	List(context.Context, *ListRecordRequest) (*ListRecordResponse, error)
 	Search(context.Context, *SearchRecordRequest) (*SearchRecordResponse, error)
-	ReadStream(*ReadStreamRequest, RecordService_ReadStreamServer) error
-	WriteStream(RecordService_WriteStreamServer) error
+	ReadStream(*ReadStreamRequest, Record_ReadStreamServer) error
+	WriteStream(Record_WriteStreamServer) error
 	Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error)
-	mustEmbedUnimplementedRecordServiceServer()
+	mustEmbedUnimplementedRecordServer()
 }
 
-// UnimplementedRecordServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedRecordServiceServer struct {
+// UnimplementedRecordServer must be embedded to have forward compatible implementations.
+type UnimplementedRecordServer struct {
 }
 
-func (UnimplementedRecordServiceServer) Create(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error) {
+func (UnimplementedRecordServer) Create(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedRecordServiceServer) Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error) {
+func (UnimplementedRecordServer) Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedRecordServiceServer) UpdateMulti(context.Context, *UpdateMultiRecordRequest) (*UpdateMultiRecordResponse, error) {
+func (UnimplementedRecordServer) UpdateMulti(context.Context, *UpdateMultiRecordRequest) (*UpdateMultiRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMulti not implemented")
 }
-func (UnimplementedRecordServiceServer) Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
+func (UnimplementedRecordServer) Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedRecordServiceServer) List(context.Context, *ListRecordRequest) (*ListRecordResponse, error) {
+func (UnimplementedRecordServer) List(context.Context, *ListRecordRequest) (*ListRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedRecordServiceServer) Search(context.Context, *SearchRecordRequest) (*SearchRecordResponse, error) {
+func (UnimplementedRecordServer) Search(context.Context, *SearchRecordRequest) (*SearchRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
-func (UnimplementedRecordServiceServer) ReadStream(*ReadStreamRequest, RecordService_ReadStreamServer) error {
+func (UnimplementedRecordServer) ReadStream(*ReadStreamRequest, Record_ReadStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadStream not implemented")
 }
-func (UnimplementedRecordServiceServer) WriteStream(RecordService_WriteStreamServer) error {
+func (UnimplementedRecordServer) WriteStream(Record_WriteStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method WriteStream not implemented")
 }
-func (UnimplementedRecordServiceServer) Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
+func (UnimplementedRecordServer) Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedRecordServiceServer) mustEmbedUnimplementedRecordServiceServer() {}
+func (UnimplementedRecordServer) mustEmbedUnimplementedRecordServer() {}
 
-// UnsafeRecordServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RecordServiceServer will
+// UnsafeRecordServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RecordServer will
 // result in compilation errors.
-type UnsafeRecordServiceServer interface {
-	mustEmbedUnimplementedRecordServiceServer()
+type UnsafeRecordServer interface {
+	mustEmbedUnimplementedRecordServer()
 }
 
-func RegisterRecordServiceServer(s grpc.ServiceRegistrar, srv RecordServiceServer) {
-	s.RegisterService(&RecordService_ServiceDesc, srv)
+func RegisterRecordServer(s grpc.ServiceRegistrar, srv RecordServer) {
+	s.RegisterService(&Record_ServiceDesc, srv)
 }
 
-func _RecordService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Record_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordServiceServer).Create(ctx, in)
+		return srv.(RecordServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.RecordService/Create",
+		FullMethod: "/stub.Record/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordServiceServer).Create(ctx, req.(*CreateRecordRequest))
+		return srv.(RecordServer).Create(ctx, req.(*CreateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Record_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordServiceServer).Update(ctx, in)
+		return srv.(RecordServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.RecordService/Update",
+		FullMethod: "/stub.Record/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordServiceServer).Update(ctx, req.(*UpdateRecordRequest))
+		return srv.(RecordServer).Update(ctx, req.(*UpdateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordService_UpdateMulti_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Record_UpdateMulti_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateMultiRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordServiceServer).UpdateMulti(ctx, in)
+		return srv.(RecordServer).UpdateMulti(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.RecordService/UpdateMulti",
+		FullMethod: "/stub.Record/UpdateMulti",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordServiceServer).UpdateMulti(ctx, req.(*UpdateMultiRecordRequest))
+		return srv.(RecordServer).UpdateMulti(ctx, req.(*UpdateMultiRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Record_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordServiceServer).Delete(ctx, in)
+		return srv.(RecordServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.RecordService/Delete",
+		FullMethod: "/stub.Record/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordServiceServer).Delete(ctx, req.(*DeleteRecordRequest))
+		return srv.(RecordServer).Delete(ctx, req.(*DeleteRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Record_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordServiceServer).List(ctx, in)
+		return srv.(RecordServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.RecordService/List",
+		FullMethod: "/stub.Record/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordServiceServer).List(ctx, req.(*ListRecordRequest))
+		return srv.(RecordServer).List(ctx, req.(*ListRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Record_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordServiceServer).Search(ctx, in)
+		return srv.(RecordServer).Search(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.RecordService/Search",
+		FullMethod: "/stub.Record/Search",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordServiceServer).Search(ctx, req.(*SearchRecordRequest))
+		return srv.(RecordServer).Search(ctx, req.(*SearchRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordService_ReadStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _Record_ReadStream_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ReadStreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(RecordServiceServer).ReadStream(m, &recordServiceReadStreamServer{stream})
+	return srv.(RecordServer).ReadStream(m, &recordReadStreamServer{stream})
 }
 
-type RecordService_ReadStreamServer interface {
+type Record_ReadStreamServer interface {
 	Send(*model.Record) error
 	grpc.ServerStream
 }
 
-type recordServiceReadStreamServer struct {
+type recordReadStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *recordServiceReadStreamServer) Send(m *model.Record) error {
+func (x *recordReadStreamServer) Send(m *model.Record) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _RecordService_WriteStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RecordServiceServer).WriteStream(&recordServiceWriteStreamServer{stream})
+func _Record_WriteStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(RecordServer).WriteStream(&recordWriteStreamServer{stream})
 }
 
-type RecordService_WriteStreamServer interface {
+type Record_WriteStreamServer interface {
 	SendAndClose(*WriteStreamResponse) error
 	Recv() (*model.Record, error)
 	grpc.ServerStream
 }
 
-type recordServiceWriteStreamServer struct {
+type recordWriteStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *recordServiceWriteStreamServer) SendAndClose(m *WriteStreamResponse) error {
+func (x *recordWriteStreamServer) SendAndClose(m *WriteStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *recordServiceWriteStreamServer) Recv() (*model.Record, error) {
+func (x *recordWriteStreamServer) Recv() (*model.Record, error) {
 	m := new(model.Record)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -386,69 +386,69 @@ func (x *recordServiceWriteStreamServer) Recv() (*model.Record, error) {
 	return m, nil
 }
 
-func _RecordService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Record_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordServiceServer).Get(ctx, in)
+		return srv.(RecordServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.RecordService/Get",
+		FullMethod: "/stub.Record/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordServiceServer).Get(ctx, req.(*GetRecordRequest))
+		return srv.(RecordServer).Get(ctx, req.(*GetRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RecordService_ServiceDesc is the grpc.ServiceDesc for RecordService service.
+// Record_ServiceDesc is the grpc.ServiceDesc for Record service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var RecordService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "stub.RecordService",
-	HandlerType: (*RecordServiceServer)(nil),
+var Record_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "stub.Record",
+	HandlerType: (*RecordServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Create",
-			Handler:    _RecordService_Create_Handler,
+			Handler:    _Record_Create_Handler,
 		},
 		{
 			MethodName: "Update",
-			Handler:    _RecordService_Update_Handler,
+			Handler:    _Record_Update_Handler,
 		},
 		{
 			MethodName: "UpdateMulti",
-			Handler:    _RecordService_UpdateMulti_Handler,
+			Handler:    _Record_UpdateMulti_Handler,
 		},
 		{
 			MethodName: "Delete",
-			Handler:    _RecordService_Delete_Handler,
+			Handler:    _Record_Delete_Handler,
 		},
 		{
 			MethodName: "List",
-			Handler:    _RecordService_List_Handler,
+			Handler:    _Record_List_Handler,
 		},
 		{
 			MethodName: "Search",
-			Handler:    _RecordService_Search_Handler,
+			Handler:    _Record_Search_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _RecordService_Get_Handler,
+			Handler:    _Record_Get_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "ReadStream",
-			Handler:       _RecordService_ReadStream_Handler,
+			Handler:       _Record_ReadStream_Handler,
 			ServerStreams: true,
 		},
 		{
 			StreamName:    "WriteStream",
-			Handler:       _RecordService_WriteStream_Handler,
+			Handler:       _Record_WriteStream_Handler,
 			ClientStreams: true,
 		},
 	},

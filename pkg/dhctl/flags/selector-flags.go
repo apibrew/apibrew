@@ -38,7 +38,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 	getType := args[0]
 
 	if getType == "all" || getType == "*" {
-		resp, err := s.client().GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
+		resp, err := s.client().GetResourceClient().List(cmd.Context(), &stub.ListResourceRequest{
 			Token: s.client().GetToken(),
 		})
 
@@ -67,7 +67,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 			}(resource)
 		}
 	} else if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
-		resp, err := s.client().GetResourceServiceClient().List(cmd.Context(), &stub.ListResourceRequest{
+		resp, err := s.client().GetResourceClient().List(cmd.Context(), &stub.ListResourceRequest{
 			Token: s.client().GetToken(),
 		})
 
@@ -95,7 +95,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 
 		result.Resources = filteredResources
 	} else {
-		resourceResp, err := s.client().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+		resourceResp, err := s.client().GetResourceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 			Token:     s.client().GetToken(),
 			Namespace: namespace,
 			Name:      getType,
@@ -131,7 +131,7 @@ type SelectedRecordsResult struct {
 func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, backup bool, limit int64, offset int64) SelectedRecordData {
 	log.Println("readSelectData3 1 " + resource.Name)
 
-	countRes, err := s.client().GetRecordServiceClient().List(ctx, &stub.ListRecordRequest{
+	countRes, err := s.client().GetRecordClient().List(ctx, &stub.ListRecordRequest{
 		Token:     s.client().GetToken(),
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
@@ -142,7 +142,7 @@ func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Reso
 	check(err)
 
 	log.Println("readSelectData3 2")
-	resp, err := s.client().GetRecordServiceClient().ReadStream(ctx, &stub.ReadStreamRequest{
+	resp, err := s.client().GetRecordClient().ReadStream(ctx, &stub.ReadStreamRequest{
 		Token:       s.client().GetToken(),
 		Namespace:   resource.Namespace,
 		Resource:    resource.Name,

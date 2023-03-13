@@ -27,7 +27,7 @@ func prepareResourcesFromDataSource(ctx context.Context, dataSource *model.DataS
 		defer func() {
 			close(ch)
 		}()
-		catalogs := check2(GetDhClient().GetDataSourceServiceClient().ListEntities(ctx, &stub.ListEntitiesRequest{
+		catalogs := check2(GetDhClient().GetDataSourceClient().ListEntities(ctx, &stub.ListEntitiesRequest{
 			Token: GetDhClient().GetToken(),
 			Id:    dataSource.Id,
 		})).Catalogs
@@ -69,7 +69,7 @@ func prepareResourcesFromDataSource(ctx context.Context, dataSource *model.DataS
 					}
 				}
 
-				res := check2(GetDhClient().GetDataSourceServiceClient().PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
+				res := check2(GetDhClient().GetDataSourceClient().PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
 					Token:   GetDhClient().GetToken(),
 					Id:      dataSource.Id,
 					Catalog: catalog.Name,
@@ -101,7 +101,7 @@ var dataSourceStatusCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		dataSource := loadDataSourceByNameOrId(cmd.Context(), *dataSourceId, *dataSourceName)
 
-		resp := check2(GetDhClient().GetDataSourceServiceClient().Status(cmd.Context(), &stub.StatusRequest{
+		resp := check2(GetDhClient().GetDataSourceClient().Status(cmd.Context(), &stub.StatusRequest{
 			Token: GetDhClient().GetToken(),
 			Id:    dataSource.Id,
 		}))
@@ -118,7 +118,7 @@ var dataSourceListEntitiesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		dataSource := loadDataSourceByNameOrId(cmd.Context(), *dataSourceId, *dataSourceName)
 
-		catalogs := check2(GetDhClient().GetDataSourceServiceClient().ListEntities(cmd.Context(), &stub.ListEntitiesRequest{
+		catalogs := check2(GetDhClient().GetDataSourceClient().ListEntities(cmd.Context(), &stub.ListEntitiesRequest{
 			Token: GetDhClient().GetToken(),
 			Id:    dataSource.Id,
 		})).Catalogs
@@ -205,7 +205,7 @@ var dataSourcePrepareApply = &cobra.Command{
 				item.SourceConfig.DataSource = overrideConfig.DataSource
 			}
 
-			resource, err := GetDhClient().GetResourceServiceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
+			resource, err := GetDhClient().GetResourceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
 				Token:     GetDhClient().GetToken(),
 				Namespace: item.Namespace,
 				Name:      item.Name,
@@ -213,7 +213,7 @@ var dataSourcePrepareApply = &cobra.Command{
 
 			if err == nil {
 				item.Id = resource.Resource.Id
-				check2(GetDhClient().GetResourceServiceClient().Update(cmd.Context(), &stub.UpdateResourceRequest{
+				check2(GetDhClient().GetResourceClient().Update(cmd.Context(), &stub.UpdateResourceRequest{
 					Token: GetDhClient().GetToken(),
 					Resources: []*model.Resource{
 						item,
@@ -222,7 +222,7 @@ var dataSourcePrepareApply = &cobra.Command{
 				}))
 				log.Printf("Resource Updated: %s/%s \n", item.Namespace, item.Name)
 			} else {
-				check2(GetDhClient().GetResourceServiceClient().Create(cmd.Context(), &stub.CreateResourceRequest{
+				check2(GetDhClient().GetResourceClient().Create(cmd.Context(), &stub.CreateResourceRequest{
 					Token: GetDhClient().GetToken(),
 					Resources: []*model.Resource{
 						item,
