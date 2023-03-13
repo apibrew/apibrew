@@ -23,7 +23,6 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 
 	return &model.Record{
 		Id:         dataSource.Id,
-		DataType:   dataSource.Type,
 		Properties: properties,
 		AuditData:  dataSource.AuditData,
 		Version:    dataSource.Version,
@@ -39,7 +38,6 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 
 	result := &model.DataSource{
 		Id:          record.Id,
-		Type:        record.DataType,
 		Backend:     model.DataSourceBackendType(backendNumber),
 		Name:        record.Properties["name"].GetStringValue(),
 		Description: record.Properties["description"].GetStringValue(),

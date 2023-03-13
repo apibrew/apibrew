@@ -77,7 +77,7 @@ func TestListResourceWithExtension(t *testing.T) {
 	container.GetExtensionService().RegisterExtension(te)
 	defer container.GetExtensionService().UnRegisterExtension(te)
 
-	resp, err := recordServiceClient.List(ctx, &stub.ListRecordRequest{
+	resp, err := recordClient.List(ctx, &stub.ListRecordRequest{
 		Namespace: simpleVirtualResource1.Namespace,
 		Resource:  simpleVirtualResource1.Name,
 	})

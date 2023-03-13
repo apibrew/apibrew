@@ -11,7 +11,7 @@ import (
 
 func loadDataSourceByNameOrId(ctx context.Context, id string, name string) *model.DataSource {
 	if id == "" {
-		resp := check2(GetDhClient().GetDataSourceServiceClient().List(ctx, &stub.ListDataSourceRequest{
+		resp := check2(GetDhClient().GetDataSourceClient().List(ctx, &stub.ListDataSourceRequest{
 			Token: GetDhClient().GetToken(),
 		}))
 
@@ -24,7 +24,7 @@ func loadDataSourceByNameOrId(ctx context.Context, id string, name string) *mode
 		log.Fatal("Datasource not found with name: " + name)
 	}
 
-	return check2(GetDhClient().GetDataSourceServiceClient().Get(ctx, &stub.GetDataSourceRequest{
+	return check2(GetDhClient().GetDataSourceClient().Get(ctx, &stub.GetDataSourceRequest{
 		Token: GetDhClient().GetToken(),
 		Id:    id,
 	})).DataSource

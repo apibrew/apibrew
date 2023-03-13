@@ -8,15 +8,15 @@ import (
 )
 
 type UserGrpcService interface {
-	stub.UserServiceServer
+	stub.UserServer
 }
 
-type userServiceServer struct {
-	stub.UserServiceServer
+type userServer struct {
+	stub.UserServer
 	service abs.UserService
 }
 
-func (u *userServiceServer) Create(ctx context.Context, request *stub.CreateUserRequest) (*stub.CreateUserResponse, error) {
+func (u *userServer) Create(ctx context.Context, request *stub.CreateUserRequest) (*stub.CreateUserResponse, error) {
 	users, err := u.service.Create(ctx, util.ArrayPrepend(request.Users, request.User))
 
 	return &stub.CreateUserResponse{
@@ -25,7 +25,7 @@ func (u *userServiceServer) Create(ctx context.Context, request *stub.CreateUser
 	}, util.ToStatusError(err)
 }
 
-func (u *userServiceServer) Update(ctx context.Context, request *stub.UpdateUserRequest) (*stub.UpdateUserResponse, error) {
+func (u *userServer) Update(ctx context.Context, request *stub.UpdateUserRequest) (*stub.UpdateUserResponse, error) {
 	users, err := u.service.Update(ctx, util.ArrayPrepend(request.Users, request.User))
 
 	return &stub.UpdateUserResponse{
@@ -34,13 +34,13 @@ func (u *userServiceServer) Update(ctx context.Context, request *stub.UpdateUser
 	}, util.ToStatusError(err)
 }
 
-func (u *userServiceServer) Delete(ctx context.Context, request *stub.DeleteUserRequest) (*stub.DeleteUserResponse, error) {
+func (u *userServer) Delete(ctx context.Context, request *stub.DeleteUserRequest) (*stub.DeleteUserResponse, error) {
 	err := u.service.Delete(ctx, request.Ids)
 
 	return &stub.DeleteUserResponse{}, util.ToStatusError(err)
 }
 
-func (u *userServiceServer) Get(ctx context.Context, request *stub.GetUserRequest) (*stub.GetUserResponse, error) {
+func (u *userServer) Get(ctx context.Context, request *stub.GetUserRequest) (*stub.GetUserResponse, error) {
 	user, err := u.service.Get(ctx, request.Id)
 
 	return &stub.GetUserResponse{
@@ -48,7 +48,7 @@ func (u *userServiceServer) Get(ctx context.Context, request *stub.GetUserReques
 	}, util.ToStatusError(err)
 }
 
-func (u *userServiceServer) List(ctx context.Context, request *stub.ListUserRequest) (*stub.ListUserResponse, error) {
+func (u *userServer) List(ctx context.Context, request *stub.ListUserRequest) (*stub.ListUserResponse, error) {
 	users, err := u.service.List(ctx, nil, request.Limit, request.Offset)
 
 	return &stub.ListUserResponse{
@@ -56,6 +56,6 @@ func (u *userServiceServer) List(ctx context.Context, request *stub.ListUserRequ
 	}, util.ToStatusError(err)
 }
 
-func NewUserServiceServer(service abs.UserService) stub.UserServiceServer {
-	return &userServiceServer{service: service}
+func NewUserServer(service abs.UserService) stub.UserServer {
+	return &userServer{service: service}
 }

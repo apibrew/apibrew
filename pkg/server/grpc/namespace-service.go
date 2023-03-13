@@ -8,15 +8,15 @@ import (
 )
 
 type NamespaceGrpcService interface {
-	stub.NamespaceServiceServer
+	stub.NamespaceServer
 }
 
-type NamespaceServiceServer struct {
-	stub.NamespaceServiceServer
+type NamespaceServer struct {
+	stub.NamespaceServer
 	service abs.NamespaceService
 }
 
-func (u *NamespaceServiceServer) Create(ctx context.Context, request *stub.CreateNamespaceRequest) (*stub.CreateNamespaceResponse, error) {
+func (u *NamespaceServer) Create(ctx context.Context, request *stub.CreateNamespaceRequest) (*stub.CreateNamespaceResponse, error) {
 	Namespaces, err := u.service.Create(ctx, request.Namespaces)
 
 	return &stub.CreateNamespaceResponse{
@@ -24,7 +24,7 @@ func (u *NamespaceServiceServer) Create(ctx context.Context, request *stub.Creat
 	}, util.ToStatusError(err)
 }
 
-func (u *NamespaceServiceServer) Update(ctx context.Context, request *stub.UpdateNamespaceRequest) (*stub.UpdateNamespaceResponse, error) {
+func (u *NamespaceServer) Update(ctx context.Context, request *stub.UpdateNamespaceRequest) (*stub.UpdateNamespaceResponse, error) {
 	Namespaces, err := u.service.Update(ctx, request.Namespaces)
 
 	return &stub.UpdateNamespaceResponse{
@@ -32,13 +32,13 @@ func (u *NamespaceServiceServer) Update(ctx context.Context, request *stub.Updat
 	}, util.ToStatusError(err)
 }
 
-func (u *NamespaceServiceServer) Delete(ctx context.Context, request *stub.DeleteNamespaceRequest) (*stub.DeleteNamespaceResponse, error) {
+func (u *NamespaceServer) Delete(ctx context.Context, request *stub.DeleteNamespaceRequest) (*stub.DeleteNamespaceResponse, error) {
 	err := u.service.Delete(ctx, request.Ids)
 
 	return &stub.DeleteNamespaceResponse{}, util.ToStatusError(err)
 }
 
-func (u *NamespaceServiceServer) Get(ctx context.Context, request *stub.GetNamespaceRequest) (*stub.GetNamespaceResponse, error) {
+func (u *NamespaceServer) Get(ctx context.Context, request *stub.GetNamespaceRequest) (*stub.GetNamespaceResponse, error) {
 	Namespace, err := u.service.Get(ctx, request.Id)
 
 	return &stub.GetNamespaceResponse{
@@ -46,7 +46,7 @@ func (u *NamespaceServiceServer) Get(ctx context.Context, request *stub.GetNames
 	}, util.ToStatusError(err)
 }
 
-func (u *NamespaceServiceServer) List(ctx context.Context, request *stub.ListNamespaceRequest) (*stub.ListNamespaceResponse, error) {
+func (u *NamespaceServer) List(ctx context.Context, request *stub.ListNamespaceRequest) (*stub.ListNamespaceResponse, error) {
 	Namespaces, err := u.service.List(ctx)
 
 	return &stub.ListNamespaceResponse{
@@ -54,6 +54,6 @@ func (u *NamespaceServiceServer) List(ctx context.Context, request *stub.ListNam
 	}, util.ToStatusError(err)
 }
 
-func NewNamespaceServiceServer(service abs.NamespaceService) stub.NamespaceServiceServer {
-	return &NamespaceServiceServer{service: service}
+func NewNamespaceServer(service abs.NamespaceService) stub.NamespaceServer {
+	return &NamespaceServer{service: service}
 }

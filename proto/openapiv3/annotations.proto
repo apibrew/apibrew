@@ -58,3 +58,7 @@ extend google.protobuf.MessageOptions {
 extend google.protobuf.FieldOptions {
   Schema property = 1143;
 }
+
+extend google.protobuf.EnumValueOptions {
+  Schema value = 1143;
+}

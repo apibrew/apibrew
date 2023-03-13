@@ -18,10 +18,10 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// GenericServiceClient is the client API for GenericService service.
+// GenericClient is the client API for Generic service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GenericServiceClient interface {
+type GenericClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	UpdateMulti(ctx context.Context, in *UpdateMultiRequest, opts ...grpc.CallOption) (*UpdateMultiResponse, error)
@@ -31,81 +31,81 @@ type GenericServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 }
 
-type genericServiceClient struct {
+type genericClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGenericServiceClient(cc grpc.ClientConnInterface) GenericServiceClient {
-	return &genericServiceClient{cc}
+func NewGenericClient(cc grpc.ClientConnInterface) GenericClient {
+	return &genericClient{cc}
 }
 
-func (c *genericServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+func (c *genericClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
 	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, "/stub.GenericService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Generic/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *genericServiceClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error) {
+func (c *genericClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error) {
 	out := new(UpdateResponse)
-	err := c.cc.Invoke(ctx, "/stub.GenericService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Generic/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *genericServiceClient) UpdateMulti(ctx context.Context, in *UpdateMultiRequest, opts ...grpc.CallOption) (*UpdateMultiResponse, error) {
+func (c *genericClient) UpdateMulti(ctx context.Context, in *UpdateMultiRequest, opts ...grpc.CallOption) (*UpdateMultiResponse, error) {
 	out := new(UpdateMultiResponse)
-	err := c.cc.Invoke(ctx, "/stub.GenericService/UpdateMulti", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Generic/UpdateMulti", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *genericServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+func (c *genericClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, "/stub.GenericService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Generic/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *genericServiceClient) List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
+func (c *genericClient) List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
 	out := new(ListResponse)
-	err := c.cc.Invoke(ctx, "/stub.GenericService/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Generic/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *genericServiceClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
+func (c *genericClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
 	out := new(SearchResponse)
-	err := c.cc.Invoke(ctx, "/stub.GenericService/Search", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Generic/Search", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *genericServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
+func (c *genericClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/stub.GenericService/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/stub.Generic/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GenericServiceServer is the server API for GenericService service.
-// All implementations must embed UnimplementedGenericServiceServer
+// GenericServer is the server API for Generic service.
+// All implementations must embed UnimplementedGenericServer
 // for forward compatibility
-type GenericServiceServer interface {
+type GenericServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	UpdateMulti(context.Context, *UpdateMultiRequest) (*UpdateMultiResponse, error)
@@ -113,207 +113,207 @@ type GenericServiceServer interface {
 	List(context.Context, *ListRequest) (*ListResponse, error)
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
 	Get(context.Context, *GetRequest) (*GetResponse, error)
-	mustEmbedUnimplementedGenericServiceServer()
+	mustEmbedUnimplementedGenericServer()
 }
 
-// UnimplementedGenericServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedGenericServiceServer struct {
+// UnimplementedGenericServer must be embedded to have forward compatible implementations.
+type UnimplementedGenericServer struct {
 }
 
-func (UnimplementedGenericServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
+func (UnimplementedGenericServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedGenericServiceServer) Update(context.Context, *UpdateRequest) (*UpdateResponse, error) {
+func (UnimplementedGenericServer) Update(context.Context, *UpdateRequest) (*UpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedGenericServiceServer) UpdateMulti(context.Context, *UpdateMultiRequest) (*UpdateMultiResponse, error) {
+func (UnimplementedGenericServer) UpdateMulti(context.Context, *UpdateMultiRequest) (*UpdateMultiResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMulti not implemented")
 }
-func (UnimplementedGenericServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
+func (UnimplementedGenericServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedGenericServiceServer) List(context.Context, *ListRequest) (*ListResponse, error) {
+func (UnimplementedGenericServer) List(context.Context, *ListRequest) (*ListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedGenericServiceServer) Search(context.Context, *SearchRequest) (*SearchResponse, error) {
+func (UnimplementedGenericServer) Search(context.Context, *SearchRequest) (*SearchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
-func (UnimplementedGenericServiceServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
+func (UnimplementedGenericServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedGenericServiceServer) mustEmbedUnimplementedGenericServiceServer() {}
+func (UnimplementedGenericServer) mustEmbedUnimplementedGenericServer() {}
 
-// UnsafeGenericServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GenericServiceServer will
+// UnsafeGenericServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GenericServer will
 // result in compilation errors.
-type UnsafeGenericServiceServer interface {
-	mustEmbedUnimplementedGenericServiceServer()
+type UnsafeGenericServer interface {
+	mustEmbedUnimplementedGenericServer()
 }
 
-func RegisterGenericServiceServer(s grpc.ServiceRegistrar, srv GenericServiceServer) {
-	s.RegisterService(&GenericService_ServiceDesc, srv)
+func RegisterGenericServer(s grpc.ServiceRegistrar, srv GenericServer) {
+	s.RegisterService(&Generic_ServiceDesc, srv)
 }
 
-func _GenericService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Generic_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GenericServiceServer).Create(ctx, in)
+		return srv.(GenericServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.GenericService/Create",
+		FullMethod: "/stub.Generic/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GenericServiceServer).Create(ctx, req.(*CreateRequest))
+		return srv.(GenericServer).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GenericService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Generic_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GenericServiceServer).Update(ctx, in)
+		return srv.(GenericServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.GenericService/Update",
+		FullMethod: "/stub.Generic/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GenericServiceServer).Update(ctx, req.(*UpdateRequest))
+		return srv.(GenericServer).Update(ctx, req.(*UpdateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GenericService_UpdateMulti_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Generic_UpdateMulti_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateMultiRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GenericServiceServer).UpdateMulti(ctx, in)
+		return srv.(GenericServer).UpdateMulti(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.GenericService/UpdateMulti",
+		FullMethod: "/stub.Generic/UpdateMulti",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GenericServiceServer).UpdateMulti(ctx, req.(*UpdateMultiRequest))
+		return srv.(GenericServer).UpdateMulti(ctx, req.(*UpdateMultiRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GenericService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Generic_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GenericServiceServer).Delete(ctx, in)
+		return srv.(GenericServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.GenericService/Delete",
+		FullMethod: "/stub.Generic/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GenericServiceServer).Delete(ctx, req.(*DeleteRequest))
+		return srv.(GenericServer).Delete(ctx, req.(*DeleteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GenericService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Generic_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GenericServiceServer).List(ctx, in)
+		return srv.(GenericServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.GenericService/List",
+		FullMethod: "/stub.Generic/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GenericServiceServer).List(ctx, req.(*ListRequest))
+		return srv.(GenericServer).List(ctx, req.(*ListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GenericService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Generic_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GenericServiceServer).Search(ctx, in)
+		return srv.(GenericServer).Search(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.GenericService/Search",
+		FullMethod: "/stub.Generic/Search",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GenericServiceServer).Search(ctx, req.(*SearchRequest))
+		return srv.(GenericServer).Search(ctx, req.(*SearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GenericService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Generic_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GenericServiceServer).Get(ctx, in)
+		return srv.(GenericServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/stub.GenericService/Get",
+		FullMethod: "/stub.Generic/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GenericServiceServer).Get(ctx, req.(*GetRequest))
+		return srv.(GenericServer).Get(ctx, req.(*GetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// GenericService_ServiceDesc is the grpc.ServiceDesc for GenericService service.
+// Generic_ServiceDesc is the grpc.ServiceDesc for Generic service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var GenericService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "stub.GenericService",
-	HandlerType: (*GenericServiceServer)(nil),
+var Generic_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "stub.Generic",
+	HandlerType: (*GenericServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Create",
-			Handler:    _GenericService_Create_Handler,
+			Handler:    _Generic_Create_Handler,
 		},
 		{
 			MethodName: "Update",
-			Handler:    _GenericService_Update_Handler,
+			Handler:    _Generic_Update_Handler,
 		},
 		{
 			MethodName: "UpdateMulti",
-			Handler:    _GenericService_UpdateMulti_Handler,
+			Handler:    _Generic_UpdateMulti_Handler,
 		},
 		{
 			MethodName: "Delete",
-			Handler:    _GenericService_Delete_Handler,
+			Handler:    _Generic_Delete_Handler,
 		},
 		{
 			MethodName: "List",
-			Handler:    _GenericService_List_Handler,
+			Handler:    _Generic_List_Handler,
 		},
 		{
 			MethodName: "Search",
-			Handler:    _GenericService_Search_Handler,
+			Handler:    _Generic_Search_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _GenericService_Get_Handler,
+			Handler:    _Generic_Get_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

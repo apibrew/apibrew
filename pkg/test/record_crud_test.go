@@ -13,7 +13,7 @@ func TestComplexPayload1Fail(t *testing.T) {
 
 	record1 := new(model.Record)
 
-	_, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Token:    "",
 		Resource: richResource1.Name,
 		Records:  []*model.Record{record1},
@@ -61,7 +61,7 @@ func TestComplexPayload1Success(t *testing.T) {
 		t.Error(err)
 	}
 
-	res, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+	res, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Token:    "",
 		Resource: richResource1.Name,
 		Records:  []*model.Record{record1},
@@ -72,7 +72,7 @@ func TestComplexPayload1Success(t *testing.T) {
 		return
 	}
 
-	getRes, err := recordServiceClient.Get(ctx, &stub.GetRecordRequest{
+	getRes, err := recordClient.Get(ctx, &stub.GetRecordRequest{
 		Token:    "",
 		Resource: richResource1.Name,
 		Id:       res.Records[0].Id,

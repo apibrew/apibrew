@@ -11,7 +11,7 @@ import (
 )
 
 type resourceGrpcService struct {
-	stub.ResourceServiceServer
+	stub.ResourceServer
 	resourceService abs.ResourceService
 }
 
@@ -112,6 +112,6 @@ func (r resourceGrpcService) PrepareResourceMigrationPlan(ctx context.Context, r
 	}, util.ToStatusError(err)
 }
 
-func NewResourceServiceServer(resourceService abs.ResourceService) stub.ResourceServiceServer {
+func NewResourceServer(resourceService abs.ResourceService) stub.ResourceServer {
 	return &resourceGrpcService{resourceService: resourceService}
 }

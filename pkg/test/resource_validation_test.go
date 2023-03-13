@@ -13,7 +13,7 @@ func TestCreateResourceValidationForResourceFields(t *testing.T) {
 
 	testResource := &model.Resource{}
 
-	_, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	_, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:      []*model.Resource{testResource},
 		DoMigration:    true,
 		ForceMigration: false,
@@ -44,17 +44,17 @@ func TestCreateResourceValidationForResourceFields(t *testing.T) {
 
 func TestCreateResourceValidationForProperties(t *testing.T) {
 
-	_, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	_, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources: []*model.Resource{{
 			Properties: []*model.ResourceProperty{
 				{
 					Name: "Type123",
-					Type: model.ResourcePropertyType_TYPE_STRING,
+					Type: model.ResourceProperty_STRING,
 				},
 				{},
 				{
 					Name: "Type321",
-					Type: model.ResourcePropertyType_TYPE_REFERENCE,
+					Type: model.ResourceProperty_REFERENCE,
 				},
 			},
 		}},
@@ -104,7 +104,7 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 }
 
 func TestCreateResourceWithSameName(t *testing.T) {
-	_, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	_, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources:      []*model.Resource{richResource1},
 		DoMigration:    true,
 		ForceMigration: false,
@@ -123,7 +123,7 @@ func TestCreateResourceWithSameName(t *testing.T) {
 func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
 	randUUid, _ := uuid.NewRandom()
 
-	resp, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{
+	resp, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
 		Resources: []*model.Resource{
 			{
 				Name: "non_existent_source",
@@ -140,7 +140,7 @@ func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
 
 	defer func() {
 		if resp != nil && len(resp.Resources) > 0 {
-			_, _ = resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			_, _ = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 				Ids:            []string{resp.Resources[0].Id},
 				DoMigration:    true,
 				ForceMigration: true,

@@ -19,19 +19,19 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 		Properties: []*model.ResourceProperty{
 			{
 				Name:     "prop-1",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-1",
 			}, {
 				Name:     "prop-2",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-2",
 			}, {
 				Name:     "prop-3",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-3",
@@ -39,7 +39,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 		},
 	}
 
-	resourceCreateRes, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	resourceCreateRes, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
 		t.Error(err)
@@ -48,7 +48,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 
 	defer func() {
 		if resourceCreateRes != nil {
-			_, _ = resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			_, _ = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 				Ids:            []string{resourceCreateRes.Resources[0].Id},
 				DoMigration:    true,
 				ForceMigration: true,
@@ -66,21 +66,21 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 		Properties: []*model.ResourceProperty{
 			{
 				Name:     "prop-1",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-1",
 			},
 			{
 				Name:     "prop-2a",
-				Type:     model.ResourcePropertyType_TYPE_FLOAT32,
+				Type:     model.ResourceProperty_FLOAT32,
 				Length:   128,
 				Required: false,
 				Mapping:  "prop-2",
 			},
 			{
 				Name:     "prop-5",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   127,
 				Required: false,
 				Mapping:  "prop-5",
@@ -90,7 +90,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 
 	resource1.Id = resourceCreateRes.Resources[0].Id
 
-	res, err := resourceServiceClient.PrepareResourceMigrationPlan(ctx, &stub.PrepareResourceMigrationPlanRequest{
+	res, err := resourceClient.PrepareResourceMigrationPlan(ctx, &stub.PrepareResourceMigrationPlanRequest{
 		Resources: []*model.Resource{resource1},
 	})
 
@@ -132,7 +132,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		Properties: []*model.ResourceProperty{
 			{
 				Name:     "prop-1",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-1",
@@ -140,7 +140,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
-	resourceCreateRes, err := resourceServiceClient.Create(ctx, &stub.CreateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	resourceCreateRes, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
 		t.Error(err)
@@ -149,7 +149,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 
 	defer func() {
 		if resourceCreateRes != nil {
-			_, _ = resourceServiceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			_, _ = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 				Ids:            []string{resourceCreateRes.Resources[0].Id},
 				DoMigration:    true,
 				ForceMigration: true,
@@ -157,7 +157,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		}
 	}()
 
-	recordCreateResult1, err := recordServiceClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	recordCreateResult1, err := recordClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),
@@ -181,14 +181,14 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		Properties: []*model.ResourceProperty{
 			{
 				Name:     "prop-1",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-1",
 			},
 			{
 				Name:     "prop-2",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: false,
 				Mapping:  "prop-2",
@@ -196,14 +196,14 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
-	_, err = resourceServiceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	_, err = resourceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),
@@ -228,14 +228,14 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		Properties: []*model.ResourceProperty{
 			{
 				Name:     "prop-1",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-1",
 			},
 			{
 				Name:     "prop-2",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-2",
@@ -243,14 +243,14 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
-	_, err = resourceServiceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	_, err = resourceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err == nil {
 		t.Error("marking property prop-2 should be failed, because it is containing null values")
 		return
 	}
 
-	_, err = recordServiceClient.Update(ctx, &stub.UpdateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Update(ctx, &stub.UpdateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
 			Id: recordCreateResult1.Records[0].Id,
 			Properties: map[string]*structpb.Value{
@@ -265,7 +265,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		return
 	}
 
-	_, err = resourceServiceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}})
+	_, err = resourceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}})
 
 	if err != nil {
 		t.Error(err)
@@ -283,7 +283,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		Properties: []*model.ResourceProperty{
 			{
 				Name:     "prop-1",
-				Type:     model.ResourcePropertyType_TYPE_STRING,
+				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
 				Mapping:  "prop-1",
@@ -291,14 +291,14 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
-	_, err = resourceServiceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	_, err = resourceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),

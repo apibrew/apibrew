@@ -18,7 +18,6 @@ func NamespaceToRecord(namespace *model.Namespace) *model.Record {
 
 	return &model.Record{
 		Id:         namespace.Id,
-		DataType:   namespace.Type,
 		Properties: properties,
 		AuditData:  namespace.AuditData,
 		Version:    namespace.Version,
@@ -32,7 +31,6 @@ func NamespaceFromRecord(record *model.Record) *model.Namespace {
 
 	result := &model.Namespace{
 		Id:        record.Id,
-		Type:      record.DataType,
 		AuditData: record.AuditData,
 		Version:   record.Version,
 	}

@@ -34,6 +34,13 @@ func (s serviceError) GetFullMessage() string {
 		message = fmt.Sprintf("%s: %s", s.message, s.details)
 	}
 
+	if len(s.errorFields) > 0 {
+		message = message + " -"
+		for _, ef := range s.errorFields {
+			message = fmt.Sprintf("%s (%s:%s)", message, ef.Property, ef.Message)
+		}
+	}
+
 	return message
 }
 

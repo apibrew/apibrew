@@ -33,10 +33,10 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 var (
-	filter_RecordService_Create_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
+	filter_Record_Create_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
 )
 
-func request_RecordService_Create_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_Create_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -70,7 +70,7 @@ func request_RecordService_Create_0(ctx context.Context, marshaler runtime.Marsh
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Create_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Create_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -79,7 +79,7 @@ func request_RecordService_Create_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func local_request_RecordService_Create_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_Create_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -113,7 +113,7 @@ func local_request_RecordService_Create_0(ctx context.Context, marshaler runtime
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Create_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Create_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -123,10 +123,10 @@ func local_request_RecordService_Create_0(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_Create_1 = &utilities.DoubleArray{Encoding: map[string]int{"record": 0, "namespace": 1, "resource": 2}, Base: []int{1, 2, 4, 6, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 3, 4, 4}}
+	filter_Record_Create_1 = &utilities.DoubleArray{Encoding: map[string]int{"record": 0, "namespace": 1, "resource": 2}, Base: []int{1, 2, 4, 6, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 3, 4, 4}}
 )
 
-func request_RecordService_Create_1(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_Create_1(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -168,7 +168,7 @@ func request_RecordService_Create_1(ctx context.Context, marshaler runtime.Marsh
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Create_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Create_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -177,7 +177,7 @@ func request_RecordService_Create_1(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func local_request_RecordService_Create_1(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_Create_1(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -219,7 +219,7 @@ func local_request_RecordService_Create_1(ctx context.Context, marshaler runtime
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Create_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Create_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -229,10 +229,10 @@ func local_request_RecordService_Create_1(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
+	filter_Record_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
 )
 
-func request_RecordService_Update_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_Update_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -266,7 +266,7 @@ func request_RecordService_Update_0(ctx context.Context, marshaler runtime.Marsh
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Update_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Update_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -275,7 +275,7 @@ func request_RecordService_Update_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func local_request_RecordService_Update_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_Update_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -309,7 +309,7 @@ func local_request_RecordService_Update_0(ctx context.Context, marshaler runtime
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Update_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Update_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -319,10 +319,10 @@ func local_request_RecordService_Update_0(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_Update_1 = &utilities.DoubleArray{Encoding: map[string]int{"record": 0, "namespace": 1, "resource": 2, "id": 3}, Base: []int{1, 4, 6, 8, 9, 2, 0, 0, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 1, 2, 6, 2, 2, 3, 3, 4, 4, 5}}
+	filter_Record_Update_1 = &utilities.DoubleArray{Encoding: map[string]int{"record": 0, "namespace": 1, "resource": 2, "id": 3}, Base: []int{1, 4, 6, 8, 9, 2, 0, 0, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 1, 2, 6, 2, 2, 3, 3, 4, 4, 5}}
 )
 
-func request_RecordService_Update_1(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_Update_1(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -374,7 +374,7 @@ func request_RecordService_Update_1(ctx context.Context, marshaler runtime.Marsh
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Update_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Update_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -383,7 +383,7 @@ func request_RecordService_Update_1(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func local_request_RecordService_Update_1(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_Update_1(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -435,7 +435,7 @@ func local_request_RecordService_Update_1(ctx context.Context, marshaler runtime
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Update_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Update_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -445,10 +445,10 @@ func local_request_RecordService_Update_1(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_UpdateMulti_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
+	filter_Record_UpdateMulti_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
 )
 
-func request_RecordService_UpdateMulti_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_UpdateMulti_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateMultiRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -482,7 +482,7 @@ func request_RecordService_UpdateMulti_0(ctx context.Context, marshaler runtime.
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_UpdateMulti_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_UpdateMulti_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -491,7 +491,7 @@ func request_RecordService_UpdateMulti_0(ctx context.Context, marshaler runtime.
 
 }
 
-func local_request_RecordService_UpdateMulti_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_UpdateMulti_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateMultiRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -525,7 +525,7 @@ func local_request_RecordService_UpdateMulti_0(ctx context.Context, marshaler ru
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_UpdateMulti_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_UpdateMulti_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -535,10 +535,10 @@ func local_request_RecordService_UpdateMulti_0(ctx context.Context, marshaler ru
 }
 
 var (
-	filter_RecordService_Delete_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
+	filter_Record_Delete_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
 )
 
-func request_RecordService_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -572,7 +572,7 @@ func request_RecordService_Delete_0(ctx context.Context, marshaler runtime.Marsh
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Delete_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Delete_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -581,7 +581,7 @@ func request_RecordService_Delete_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func local_request_RecordService_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -615,7 +615,7 @@ func local_request_RecordService_Delete_0(ctx context.Context, marshaler runtime
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Delete_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Delete_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -625,10 +625,10 @@ func local_request_RecordService_Delete_0(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_Delete_1 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1, "id": 2}, Base: []int{1, 2, 4, 6, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 3, 4, 4}}
+	filter_Record_Delete_1 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1, "id": 2}, Base: []int{1, 2, 4, 6, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 3, 4, 4}}
 )
 
-func request_RecordService_Delete_1(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_Delete_1(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -672,7 +672,7 @@ func request_RecordService_Delete_1(ctx context.Context, marshaler runtime.Marsh
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Delete_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Delete_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -681,7 +681,7 @@ func request_RecordService_Delete_1(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func local_request_RecordService_Delete_1(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_Delete_1(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -725,7 +725,7 @@ func local_request_RecordService_Delete_1(ctx context.Context, marshaler runtime
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Delete_1); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Delete_1); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -735,10 +735,10 @@ func local_request_RecordService_Delete_1(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_RecordService_List_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
+	filter_Record_List_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1}, Base: []int{1, 2, 4, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 2, 3, 3}}
 )
 
-func request_RecordService_List_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_List_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -772,7 +772,7 @@ func request_RecordService_List_0(ctx context.Context, marshaler runtime.Marshal
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_List_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_List_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -781,7 +781,7 @@ func request_RecordService_List_0(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-func local_request_RecordService_List_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_List_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -815,7 +815,7 @@ func local_request_RecordService_List_0(ctx context.Context, marshaler runtime.M
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_List_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_List_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -824,7 +824,7 @@ func local_request_RecordService_List_0(ctx context.Context, marshaler runtime.M
 
 }
 
-func request_RecordService_Search_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_Search_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq SearchRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -868,7 +868,7 @@ func request_RecordService_Search_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func local_request_RecordService_Search_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_Search_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq SearchRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -912,7 +912,7 @@ func local_request_RecordService_Search_0(ctx context.Context, marshaler runtime
 
 }
 
-func request_RecordService_ReadStream_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (RecordService_ReadStreamClient, runtime.ServerMetadata, error) {
+func request_Record_ReadStream_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (Record_ReadStreamClient, runtime.ServerMetadata, error) {
 	var protoReq ReadStreamRequest
 	var metadata runtime.ServerMetadata
 
@@ -937,7 +937,7 @@ func request_RecordService_ReadStream_0(ctx context.Context, marshaler runtime.M
 
 }
 
-func request_RecordService_WriteStream_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_WriteStream_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var metadata runtime.ServerMetadata
 	stream, err := client.WriteStream(ctx)
 	if err != nil {
@@ -982,10 +982,10 @@ func request_RecordService_WriteStream_0(ctx context.Context, marshaler runtime.
 }
 
 var (
-	filter_RecordService_Get_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1, "id": 2}, Base: []int{1, 2, 4, 6, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 3, 4, 4}}
+	filter_Record_Get_0 = &utilities.DoubleArray{Encoding: map[string]int{"namespace": 0, "resource": 1, "id": 2}, Base: []int{1, 2, 4, 6, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 3, 4, 4}}
 )
 
-func request_RecordService_Get_0(ctx context.Context, marshaler runtime.Marshaler, client RecordServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Record_Get_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -1029,7 +1029,7 @@ func request_RecordService_Get_0(ctx context.Context, marshaler runtime.Marshale
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Get_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -1038,7 +1038,7 @@ func request_RecordService_Get_0(ctx context.Context, marshaler runtime.Marshale
 
 }
 
-func local_request_RecordService_Get_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Record_Get_0(ctx context.Context, marshaler runtime.Marshaler, server RecordServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetRecordRequest
 	var metadata runtime.ServerMetadata
 
@@ -1082,7 +1082,7 @@ func local_request_RecordService_Get_0(ctx context.Context, marshaler runtime.Ma
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecordService_Get_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Record_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -1091,13 +1091,13 @@ func local_request_RecordService_Get_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-// RegisterRecordServiceHandlerServer registers the http handlers for service RecordService to "mux".
-// UnaryRPC     :call RecordServiceServer directly.
+// RegisterRecordHandlerServer registers the http handlers for service Record to "mux".
+// UnaryRPC     :call RecordServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterRecordServiceHandlerFromEndpoint instead.
-func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server RecordServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterRecordHandlerFromEndpoint instead.
+func RegisterRecordHandlerServer(ctx context.Context, mux *runtime.ServeMux, server RecordServer) error {
 
-	mux.Handle("POST", pattern_RecordService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1105,12 +1105,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_Create_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_Create_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1118,11 +1118,11 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_Create_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_Create_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1130,12 +1130,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_Create_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_Create_1(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1143,11 +1143,11 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_Create_1(annotatedContext, mux, outboundMarshaler, w, req, response_RecordService_Create_1{resp}, mux.GetForwardResponseOptions()...)
+		forward_Record_Create_1(annotatedContext, mux, outboundMarshaler, w, req, response_Record_Create_1{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_RecordService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_Record_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1155,12 +1155,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_Update_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_Update_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1168,11 +1168,11 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_RecordService_Update_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_Record_Update_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1180,12 +1180,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{record.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{record.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_Update_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_Update_1(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1193,11 +1193,11 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_Update_1(annotatedContext, mux, outboundMarshaler, w, req, response_RecordService_Update_1{resp}, mux.GetForwardResponseOptions()...)
+		forward_Record_Update_1(annotatedContext, mux, outboundMarshaler, w, req, response_Record_Update_1{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_UpdateMulti_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_UpdateMulti_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1205,12 +1205,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/UpdateMulti", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_multi"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/UpdateMulti", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_multi"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_UpdateMulti_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_UpdateMulti_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1218,11 +1218,11 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_UpdateMulti_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_UpdateMulti_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_RecordService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_Record_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1230,12 +1230,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_Delete_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_Delete_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1243,11 +1243,11 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_RecordService_Delete_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_Record_Delete_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1255,12 +1255,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_Delete_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_Delete_1(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1268,11 +1268,11 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_Delete_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Delete_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_RecordService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Record_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1280,12 +1280,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/List", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/List", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_List_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_List_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1293,11 +1293,11 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_Search_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_Search_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1305,12 +1305,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Search", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_search"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Search", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_search"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_Search_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_Search_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1318,25 +1318,25 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_Search_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Search_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_ReadStream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_ReadStream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 		return
 	})
 
-	mux.Handle("POST", pattern_RecordService_WriteStream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_WriteStream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 		return
 	})
 
-	mux.Handle("GET", pattern_RecordService_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Record_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1344,12 +1344,12 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.RecordService/Get", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Get", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecordService_Get_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Record_Get_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -1357,16 +1357,16 @@ func RegisterRecordServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_RecordService_Get_0(annotatedContext, mux, outboundMarshaler, w, req, response_RecordService_Get_0{resp}, mux.GetForwardResponseOptions()...)
+		forward_Record_Get_0(annotatedContext, mux, outboundMarshaler, w, req, response_Record_Get_0{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterRecordServiceHandlerFromEndpoint is same as RegisterRecordServiceHandler but
+// RegisterRecordHandlerFromEndpoint is same as RegisterRecordHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterRecordServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterRecordHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -1386,364 +1386,364 @@ func RegisterRecordServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.
 		}()
 	}()
 
-	return RegisterRecordServiceHandler(ctx, mux, conn)
+	return RegisterRecordHandler(ctx, mux, conn)
 }
 
-// RegisterRecordServiceHandler registers the http handlers for service RecordService to "mux".
+// RegisterRecordHandler registers the http handlers for service Record to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterRecordServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterRecordServiceHandlerClient(ctx, mux, NewRecordServiceClient(conn))
+func RegisterRecordHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterRecordHandlerClient(ctx, mux, NewRecordClient(conn))
 }
 
-// RegisterRecordServiceHandlerClient registers the http handlers for service RecordService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "RecordServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "RecordServiceClient"
+// RegisterRecordHandlerClient registers the http handlers for service Record
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "RecordClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "RecordClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "RecordServiceClient" to call the correct interceptors.
-func RegisterRecordServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client RecordServiceClient) error {
+// "RecordClient" to call the correct interceptors.
+func RegisterRecordHandlerClient(ctx context.Context, mux *runtime.ServeMux, client RecordClient) error {
 
-	mux.Handle("POST", pattern_RecordService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_Create_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_Create_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Create_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_Create_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_Create_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Create", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_Create_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_Create_1(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_Create_1(annotatedContext, mux, outboundMarshaler, w, req, response_RecordService_Create_1{resp}, mux.GetForwardResponseOptions()...)
+		forward_Record_Create_1(annotatedContext, mux, outboundMarshaler, w, req, response_Record_Create_1{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_RecordService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_Record_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_Update_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_Update_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Update_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_RecordService_Update_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_Record_Update_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{record.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{record.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_Update_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_Update_1(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_Update_1(annotatedContext, mux, outboundMarshaler, w, req, response_RecordService_Update_1{resp}, mux.GetForwardResponseOptions()...)
+		forward_Record_Update_1(annotatedContext, mux, outboundMarshaler, w, req, response_Record_Update_1{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_UpdateMulti_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_UpdateMulti_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/UpdateMulti", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_multi"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/UpdateMulti", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_multi"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_UpdateMulti_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_UpdateMulti_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_UpdateMulti_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_UpdateMulti_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_RecordService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_Record_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_Delete_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_Delete_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Delete_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_RecordService_Delete_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_Record_Delete_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_Delete_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_Delete_1(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_Delete_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Delete_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_RecordService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Record_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/List", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/List", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_List_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_List_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_List_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_Search_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_Search_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Search", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_search"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Search", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_search"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_Search_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_Search_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_Search_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_Search_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_ReadStream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_ReadStream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/ReadStream", runtime.WithHTTPPathPattern("/records/_search_read_stream"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/ReadStream", runtime.WithHTTPPathPattern("/records/_search_read_stream"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_ReadStream_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_ReadStream_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_ReadStream_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+		forward_Record_ReadStream_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_RecordService_WriteStream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Record_WriteStream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/WriteStream", runtime.WithHTTPPathPattern("/records/_search_write_stream"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/WriteStream", runtime.WithHTTPPathPattern("/records/_search_write_stream"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_WriteStream_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_WriteStream_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_WriteStream_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Record_WriteStream_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_RecordService_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Record_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.RecordService/Get", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Get", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecordService_Get_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Record_Get_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecordService_Get_0(annotatedContext, mux, outboundMarshaler, w, req, response_RecordService_Get_0{resp}, mux.GetForwardResponseOptions()...)
+		forward_Record_Get_0(annotatedContext, mux, outboundMarshaler, w, req, response_Record_Get_0{resp}, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-type response_RecordService_Create_1 struct {
+type response_Record_Create_1 struct {
 	proto.Message
 }
 
-func (m response_RecordService_Create_1) XXX_ResponseBody() interface{} {
+func (m response_Record_Create_1) XXX_ResponseBody() interface{} {
 	response := m.Message.(*CreateRecordResponse)
 	return response.Record
 }
 
-type response_RecordService_Update_1 struct {
+type response_Record_Update_1 struct {
 	proto.Message
 }
 
-func (m response_RecordService_Update_1) XXX_ResponseBody() interface{} {
+func (m response_Record_Update_1) XXX_ResponseBody() interface{} {
 	response := m.Message.(*UpdateRecordResponse)
 	return response.Record
 }
 
-type response_RecordService_Get_0 struct {
+type response_Record_Get_0 struct {
 	proto.Message
 }
 
-func (m response_RecordService_Get_0) XXX_ResponseBody() interface{} {
+func (m response_Record_Get_0) XXX_ResponseBody() interface{} {
 	response := m.Message.(*GetRecordResponse)
 	return response.Record
 }
 
 var (
-	pattern_RecordService_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_bulk"}, ""))
+	pattern_Record_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_bulk"}, ""))
 
-	pattern_RecordService_Create_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "resource"}, ""))
+	pattern_Record_Create_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "resource"}, ""))
 
-	pattern_RecordService_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_bulk"}, ""))
+	pattern_Record_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_bulk"}, ""))
 
-	pattern_RecordService_Update_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "resource", "record.id"}, ""))
+	pattern_Record_Update_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "resource", "record.id"}, ""))
 
-	pattern_RecordService_UpdateMulti_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_multi"}, ""))
+	pattern_Record_UpdateMulti_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_multi"}, ""))
 
-	pattern_RecordService_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_bulk"}, ""))
+	pattern_Record_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_bulk"}, ""))
 
-	pattern_RecordService_Delete_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "resource", "id"}, ""))
+	pattern_Record_Delete_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "resource", "id"}, ""))
 
-	pattern_RecordService_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "resource"}, ""))
+	pattern_Record_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "resource"}, ""))
 
-	pattern_RecordService_Search_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_search"}, ""))
+	pattern_Record_Search_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"records", "namespace", "resource", "_search"}, ""))
 
-	pattern_RecordService_ReadStream_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"records", "_search_read_stream"}, ""))
+	pattern_Record_ReadStream_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"records", "_search_read_stream"}, ""))
 
-	pattern_RecordService_WriteStream_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"records", "_search_write_stream"}, ""))
+	pattern_Record_WriteStream_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"records", "_search_write_stream"}, ""))
 
-	pattern_RecordService_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "resource", "id"}, ""))
+	pattern_Record_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "resource", "id"}, ""))
 )
 
 var (
-	forward_RecordService_Create_0 = runtime.ForwardResponseMessage
+	forward_Record_Create_0 = runtime.ForwardResponseMessage
 
-	forward_RecordService_Create_1 = runtime.ForwardResponseMessage
+	forward_Record_Create_1 = runtime.ForwardResponseMessage
 
-	forward_RecordService_Update_0 = runtime.ForwardResponseMessage
+	forward_Record_Update_0 = runtime.ForwardResponseMessage
 
-	forward_RecordService_Update_1 = runtime.ForwardResponseMessage
+	forward_Record_Update_1 = runtime.ForwardResponseMessage
 
-	forward_RecordService_UpdateMulti_0 = runtime.ForwardResponseMessage
+	forward_Record_UpdateMulti_0 = runtime.ForwardResponseMessage
 
-	forward_RecordService_Delete_0 = runtime.ForwardResponseMessage
+	forward_Record_Delete_0 = runtime.ForwardResponseMessage
 
-	forward_RecordService_Delete_1 = runtime.ForwardResponseMessage
+	forward_Record_Delete_1 = runtime.ForwardResponseMessage
 
-	forward_RecordService_List_0 = runtime.ForwardResponseMessage
+	forward_Record_List_0 = runtime.ForwardResponseMessage
 
-	forward_RecordService_Search_0 = runtime.ForwardResponseMessage
+	forward_Record_Search_0 = runtime.ForwardResponseMessage
 
-	forward_RecordService_ReadStream_0 = runtime.ForwardResponseStream
+	forward_Record_ReadStream_0 = runtime.ForwardResponseStream
 
-	forward_RecordService_WriteStream_0 = runtime.ForwardResponseMessage
+	forward_Record_WriteStream_0 = runtime.ForwardResponseMessage
 
-	forward_RecordService_Get_0 = runtime.ForwardResponseMessage
+	forward_Record_Get_0 = runtime.ForwardResponseMessage
 )

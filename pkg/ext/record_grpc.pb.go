@@ -18,10 +18,10 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// RecordExtensionServiceClient is the client API for RecordExtensionService service.
+// RecordExtensionClient is the client API for RecordExtensionService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RecordExtensionServiceClient interface {
+type RecordExtensionClient interface {
 	BeforeList(ctx context.Context, in *BeforeListRecordRequest, opts ...grpc.CallOption) (*BeforeListRecordResponse, error)
 	List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error)
 	AfterList(ctx context.Context, in *AfterListRecordRequest, opts ...grpc.CallOption) (*AfterListRecordResponse, error)
@@ -39,15 +39,15 @@ type RecordExtensionServiceClient interface {
 	AfterGet(ctx context.Context, in *AfterGetRecordRequest, opts ...grpc.CallOption) (*AfterGetRecordResponse, error)
 }
 
-type recordExtensionServiceClient struct {
+type recordExtensionClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRecordExtensionServiceClient(cc grpc.ClientConnInterface) RecordExtensionServiceClient {
-	return &recordExtensionServiceClient{cc}
+func NewRecordExtensionClient(cc grpc.ClientConnInterface) RecordExtensionClient {
+	return &recordExtensionClient{cc}
 }
 
-func (c *recordExtensionServiceClient) BeforeList(ctx context.Context, in *BeforeListRecordRequest, opts ...grpc.CallOption) (*BeforeListRecordResponse, error) {
+func (c *recordExtensionClient) BeforeList(ctx context.Context, in *BeforeListRecordRequest, opts ...grpc.CallOption) (*BeforeListRecordResponse, error) {
 	out := new(BeforeListRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeList", in, out, opts...)
 	if err != nil {
@@ -56,7 +56,7 @@ func (c *recordExtensionServiceClient) BeforeList(ctx context.Context, in *Befor
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error) {
+func (c *recordExtensionClient) List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error) {
 	out := new(ListRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/List", in, out, opts...)
 	if err != nil {
@@ -65,7 +65,7 @@ func (c *recordExtensionServiceClient) List(ctx context.Context, in *ListRecordR
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) AfterList(ctx context.Context, in *AfterListRecordRequest, opts ...grpc.CallOption) (*AfterListRecordResponse, error) {
+func (c *recordExtensionClient) AfterList(ctx context.Context, in *AfterListRecordRequest, opts ...grpc.CallOption) (*AfterListRecordResponse, error) {
 	out := new(AfterListRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterList", in, out, opts...)
 	if err != nil {
@@ -74,7 +74,7 @@ func (c *recordExtensionServiceClient) AfterList(ctx context.Context, in *AfterL
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) BeforeCreate(ctx context.Context, in *BeforeCreateRecordRequest, opts ...grpc.CallOption) (*BeforeCreateRecordResponse, error) {
+func (c *recordExtensionClient) BeforeCreate(ctx context.Context, in *BeforeCreateRecordRequest, opts ...grpc.CallOption) (*BeforeCreateRecordResponse, error) {
 	out := new(BeforeCreateRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeCreate", in, out, opts...)
 	if err != nil {
@@ -83,7 +83,7 @@ func (c *recordExtensionServiceClient) BeforeCreate(ctx context.Context, in *Bef
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error) {
+func (c *recordExtensionClient) Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error) {
 	out := new(CreateRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/Create", in, out, opts...)
 	if err != nil {
@@ -92,7 +92,7 @@ func (c *recordExtensionServiceClient) Create(ctx context.Context, in *CreateRec
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) AfterCreate(ctx context.Context, in *AfterCreateRecordRequest, opts ...grpc.CallOption) (*AfterCreateRecordResponse, error) {
+func (c *recordExtensionClient) AfterCreate(ctx context.Context, in *AfterCreateRecordRequest, opts ...grpc.CallOption) (*AfterCreateRecordResponse, error) {
 	out := new(AfterCreateRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterCreate", in, out, opts...)
 	if err != nil {
@@ -101,7 +101,7 @@ func (c *recordExtensionServiceClient) AfterCreate(ctx context.Context, in *Afte
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) BeforeUpdate(ctx context.Context, in *BeforeUpdateRecordRequest, opts ...grpc.CallOption) (*BeforeUpdateRecordResponse, error) {
+func (c *recordExtensionClient) BeforeUpdate(ctx context.Context, in *BeforeUpdateRecordRequest, opts ...grpc.CallOption) (*BeforeUpdateRecordResponse, error) {
 	out := new(BeforeUpdateRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeUpdate", in, out, opts...)
 	if err != nil {
@@ -110,7 +110,7 @@ func (c *recordExtensionServiceClient) BeforeUpdate(ctx context.Context, in *Bef
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error) {
+func (c *recordExtensionClient) Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error) {
 	out := new(UpdateRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/Update", in, out, opts...)
 	if err != nil {
@@ -119,7 +119,7 @@ func (c *recordExtensionServiceClient) Update(ctx context.Context, in *UpdateRec
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) AfterUpdate(ctx context.Context, in *AfterUpdateRecordRequest, opts ...grpc.CallOption) (*AfterUpdateRecordResponse, error) {
+func (c *recordExtensionClient) AfterUpdate(ctx context.Context, in *AfterUpdateRecordRequest, opts ...grpc.CallOption) (*AfterUpdateRecordResponse, error) {
 	out := new(AfterUpdateRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterUpdate", in, out, opts...)
 	if err != nil {
@@ -128,7 +128,7 @@ func (c *recordExtensionServiceClient) AfterUpdate(ctx context.Context, in *Afte
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) BeforeDelete(ctx context.Context, in *BeforeDeleteRecordRequest, opts ...grpc.CallOption) (*BeforeDeleteRecordResponse, error) {
+func (c *recordExtensionClient) BeforeDelete(ctx context.Context, in *BeforeDeleteRecordRequest, opts ...grpc.CallOption) (*BeforeDeleteRecordResponse, error) {
 	out := new(BeforeDeleteRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeDelete", in, out, opts...)
 	if err != nil {
@@ -137,7 +137,7 @@ func (c *recordExtensionServiceClient) BeforeDelete(ctx context.Context, in *Bef
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
+func (c *recordExtensionClient) Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
 	out := new(DeleteRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/Delete", in, out, opts...)
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *recordExtensionServiceClient) Delete(ctx context.Context, in *DeleteRec
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) AfterDelete(ctx context.Context, in *AfterDeleteRecordRequest, opts ...grpc.CallOption) (*AfterDeleteRecordResponse, error) {
+func (c *recordExtensionClient) AfterDelete(ctx context.Context, in *AfterDeleteRecordRequest, opts ...grpc.CallOption) (*AfterDeleteRecordResponse, error) {
 	out := new(AfterDeleteRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterDelete", in, out, opts...)
 	if err != nil {
@@ -155,7 +155,7 @@ func (c *recordExtensionServiceClient) AfterDelete(ctx context.Context, in *Afte
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) BeforeGet(ctx context.Context, in *BeforeGetRecordRequest, opts ...grpc.CallOption) (*BeforeGetRecordResponse, error) {
+func (c *recordExtensionClient) BeforeGet(ctx context.Context, in *BeforeGetRecordRequest, opts ...grpc.CallOption) (*BeforeGetRecordResponse, error) {
 	out := new(BeforeGetRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeGet", in, out, opts...)
 	if err != nil {
@@ -164,7 +164,7 @@ func (c *recordExtensionServiceClient) BeforeGet(ctx context.Context, in *Before
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) Get(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
+func (c *recordExtensionClient) Get(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
 	out := new(GetRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/Get", in, out, opts...)
 	if err != nil {
@@ -173,7 +173,7 @@ func (c *recordExtensionServiceClient) Get(ctx context.Context, in *GetRecordReq
 	return out, nil
 }
 
-func (c *recordExtensionServiceClient) AfterGet(ctx context.Context, in *AfterGetRecordRequest, opts ...grpc.CallOption) (*AfterGetRecordResponse, error) {
+func (c *recordExtensionClient) AfterGet(ctx context.Context, in *AfterGetRecordRequest, opts ...grpc.CallOption) (*AfterGetRecordResponse, error) {
 	out := new(AfterGetRecordResponse)
 	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterGet", in, out, opts...)
 	if err != nil {

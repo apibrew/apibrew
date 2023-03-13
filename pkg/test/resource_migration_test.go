@@ -11,7 +11,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 
 	withAutoLoadedResource(ctx, t, dataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
 		withAutoLoadedResource(ctx, t, dataSourceDhTest, "public", "organization_copy", func(resource2 *model.Resource) {
-			list, err := recordServiceClient.List(ctx, &stub.ListRecordRequest{
+			list, err := recordClient.List(ctx, &stub.ListRecordRequest{
 				Resource: resource1.Name,
 			})
 
@@ -25,7 +25,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 				return record
 			})
 
-			_, err = recordServiceClient.Create(ctx, &stub.CreateRecordRequest{
+			_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{
 				Resource: resource2.Name,
 				Records:  records,
 			})
@@ -34,7 +34,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 				t.Error(err)
 			}
 
-			_, err = recordServiceClient.Delete(ctx, &stub.DeleteRecordRequest{
+			_, err = recordClient.Delete(ctx, &stub.DeleteRecordRequest{
 				Resource: resource2.Name,
 				Ids: util.ArrayMap(list.Content, func(record *model.Record) string {
 					return record.Id
