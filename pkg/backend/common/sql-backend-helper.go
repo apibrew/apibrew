@@ -1,37 +1,22 @@
-package postgres
+package common
 
 import (
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/lib/pq"
-	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
-	_ "github.com/tislib/data-handler/pkg/backend/postgres/sql/statik"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
-	"io"
 	"net"
-	"net/http"
 	"runtime/debug"
 )
 
-func locatePropertyByName(resource *model.Resource, propertyName string) *model.ResourceProperty {
-	for _, property := range resource.Properties {
-		if property.Name == propertyName {
-			return property
-		}
-	}
-
-	return nil
-}
-
-func handleDbError(ctx context.Context, err error) errors.ServiceError {
+func (p *sqlBackend) handleDbError(ctx context.Context, err error) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	if err == nil {
@@ -54,8 +39,8 @@ func handleDbError(ctx context.Context, err error) errors.ServiceError {
 		logger.Panic("database error is expected: ", err)
 	}
 
-	if pqErr, ok := err.(*pq.Error); ok {
-		return handlePqErr(pqErr)
+	if serr, handled := p.options.HandleError(err); handled {
+		return serr
 	}
 
 	if netErr, ok := err.(*net.OpError); ok {
@@ -70,22 +55,7 @@ func handleDbError(ctx context.Context, err error) errors.ServiceError {
 	return errors.InternalError.WithDetails(err.Error())
 }
 
-func handlePqErr(err *pq.Error) errors.ServiceError {
-	switch err.Code {
-	case "28000":
-		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
-	case "28P01":
-		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
-	case "23505":
-		return errors.UniqueViolation.WithDetails(err.Message)
-	case "23503":
-		return errors.ReferenceViolation.WithDetails(err.Message)
-	default:
-		return errors.InternalError.WithMessage(err.Message)
-	}
-}
-
-func DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
+func (p *sqlBackend) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
 	propertyType := types.ByResourcePropertyType(property.Type)
 	var val interface{}
 
@@ -108,7 +78,7 @@ func DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (inte
 	return val, nil
 }
 
-func getFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
+func (p *sqlBackend) getFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
 	var tableName string
 
 	if history {
@@ -127,14 +97,14 @@ func getFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) st
 	return def
 }
 
-func checkHasOwnId(resource *model.Resource) bool {
+func (p *sqlBackend) checkHasOwnId(resource *model.Resource) bool {
 	return !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup)
 }
 
-func prepareResourceRecordCols(resource *model.Resource) []string {
+func (p *sqlBackend) prepareResourceRecordCols(resource *model.Resource) []string {
 	var cols []string
 
-	if checkHasOwnId(resource) {
+	if p.checkHasOwnId(resource) {
 		cols = append(cols, "id")
 	}
 
@@ -156,31 +126,4 @@ func prepareResourceRecordCols(resource *model.Resource) []string {
 		cols = append(cols, "version")
 	}
 	return cols
-}
-
-var statikFS http.FileSystem
-
-func init() {
-	var err error
-	statikFS, err = fs.New()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func getSql(name string) string {
-	entityExistsFile, err := statikFS.Open("/" + name + ".sql")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	data, err := io.ReadAll(entityExistsFile)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return string(data)
 }

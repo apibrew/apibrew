@@ -1,11 +1,11 @@
-package postgres
+package common
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
 	"strconv"
 )
 
-func getPsqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
+func (p *sqlBackend) getPsqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
 	switch propertyType {
 	case model.ResourceProperty_INT32:
 		return "INT"

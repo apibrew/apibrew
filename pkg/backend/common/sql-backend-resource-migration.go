@@ -1,4 +1,4 @@
-package postgres
+package common
 
 import (
 	"context"
@@ -14,27 +14,27 @@ import (
 	"strings"
 )
 
-func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
+func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
 	var currentPropertyMap = util.GetNamedMap(params.MigrationPlan.CurrentResource.Properties)
 	var existingPropertyMap = util.GetNamedMap(params.MigrationPlan.ExistingResource.Properties)
 
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	var tableName = getFullTableName(params.Resource.GetSourceConfig(), history)
+	var tableName = p.getFullTableName(params.Resource.GetSourceConfig(), history)
 
 	for _, step := range params.MigrationPlan.Steps {
 		switch sk := step.Kind.(type) {
 		case *model.ResourceMigrationStep_CreateResource:
-			if err := resourceCreateTable(ctx, runner, params.Resource); err != nil {
+			if err := p.resourceCreateTable(ctx, runner, params.Resource); err != nil {
 				return err
 			}
 		case *model.ResourceMigrationStep_DeleteResource:
 			if params.ForceMigration {
-				if err := resourceDropTable(ctx, runner, params.Resource, false, true); err != nil {
+				if err := p.resourceDropTable(ctx, runner, params.Resource, false, true); err != nil {
 					return err
 				}
 
-				if err := resourceDropTable(ctx, runner, params.Resource, true, true); err != nil {
+				if err := p.resourceDropTable(ctx, runner, params.Resource, true, true); err != nil {
 					return err
 				}
 			}
@@ -43,15 +43,15 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 			if property.Primary {
 				continue
 			}
-			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, prepareResourceTableColumnDefinition(params.Resource, property, *params.Schema))
+			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, p.prepareResourceTableColumnDefinition(params.Resource, property, *params.Schema))
 
 			_, sqlError := runner.ExecContext(ctx, sql)
 
 			if sqlError != nil {
-				return handleDbError(ctx, sqlError)
+				return p.handleDbError(ctx, sqlError)
 			}
 		case *model.ResourceMigrationStep_UpdateProperty:
-			err := migrateResourceColumn(existingPropertyMap[sk.UpdateProperty.ExistingProperty], currentPropertyMap[sk.UpdateProperty.Property], tableName, params.MigrationPlan.ExistingResource, logger, runner, ctx, *params.Schema)
+			err := p.migrateResourceColumn(existingPropertyMap[sk.UpdateProperty.ExistingProperty], currentPropertyMap[sk.UpdateProperty.Property], tableName, params.MigrationPlan.ExistingResource, logger, runner, ctx, *params.Schema)
 
 			if err != nil {
 				return err
@@ -63,7 +63,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 				_, sqlError := runner.ExecContext(ctx, sql)
 
 				if sqlError != nil {
-					return handleDbError(ctx, sqlError)
+					return p.handleDbError(ctx, sqlError)
 				}
 			}
 		}
@@ -78,19 +78,19 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 				if annotations.Get(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], annotations.SourceDef) != "" {
 					sql = annotations.Get(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], annotations.SourceDef)
 				} else {
-					sql, err = prepareIndexDef(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], params, params.Resource)
+					sql, err = p.prepareIndexDef(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], params, params.Resource)
 					if err != nil {
 						return err
 					}
 				}
 
 				_, sqlError := runner.ExecContext(ctx, sql)
-				return handleDbError(ctx, sqlError)
+				return p.handleDbError(ctx, sqlError)
 			case *model.ResourceMigrationStep_DeleteIndex:
 				sql := fmt.Sprintf("DROP INDEX %s", annotations.Get(params.MigrationPlan.ExistingResource.Indexes[sk.DeleteIndex.ExistingIndex], annotations.SourceIdentity))
 
 				_, sqlError := runner.ExecContext(ctx, sql)
-				return handleDbError(ctx, sqlError)
+				return p.handleDbError(ctx, sqlError)
 			}
 		}
 	}
@@ -98,7 +98,7 @@ func resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.Up
 	return nil
 }
 
-func prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource) (string, errors.ServiceError) {
+func (p *sqlBackend) prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource) (string, errors.ServiceError) {
 	var uniqueStr = ""
 
 	if index.Unique {
@@ -136,12 +136,12 @@ func prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParam
 	return sql, nil
 }
 
-func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model.ResourceProperty, tableName string, existingResource *model.Resource, logger *log.Entry, runner QueryRunner, ctx context.Context, schema abs.Schema) errors.ServiceError {
+func (p *sqlBackend) migrateResourceColumn(prevProperty *model.ResourceProperty, property *model.ResourceProperty, tableName string, existingResource *model.Resource, logger *log.Entry, runner QueryRunner, ctx context.Context, schema abs.Schema) errors.ServiceError {
 	var sqlPrefix = fmt.Sprintf("ALTER TABLE %s ", tableName)
 	var sqlParts []string
 	changes := 0
-	if getPsqlTypeFromProperty(prevProperty.Type, property.Length) != getPsqlTypeFromProperty(property.Type, property.Length) {
-		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" TYPE %s", property.Mapping, getPsqlTypeFromProperty(property.Type, property.Length)))
+	if p.getPsqlTypeFromProperty(prevProperty.Type, property.Length) != p.getPsqlTypeFromProperty(property.Type, property.Length) {
+		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" TYPE %s", property.Mapping, p.getPsqlTypeFromProperty(property.Type, property.Length)))
 		changes++
 	}
 
@@ -187,23 +187,23 @@ func migrateResourceColumn(prevProperty *model.ResourceProperty, property *model
 	sql := sqlPrefix + "\n" + strings.Join(sqlParts, ",\n")
 
 	_, sqlError := runner.ExecContext(ctx, sql)
-	return handleDbError(ctx, sqlError)
+	return p.handleDbError(ctx, sqlError)
 }
 
-func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {
+func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {
 	if catalog == "" {
 		catalog = "public"
 	}
 	// check if entity exists
-	row := runner.QueryRowContext(ctx, getSql("entity-exists"), catalog, entity)
+	row := runner.QueryRowContext(ctx, p.options.GetSql("entity-exists"), catalog, entity)
 
 	if row.Err() != nil {
-		return nil, handleDbError(ctx, row.Err())
+		return nil, p.handleDbError(ctx, row.Err())
 	}
 
 	var count = new(int)
 
-	err = handleDbError(ctx, row.Scan(&count))
+	err = p.handleDbError(ctx, row.Scan(&count))
 
 	if err != nil {
 		return
@@ -232,28 +232,28 @@ func resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, 
 
 	// properties
 
-	err = resourcePrepareProperties(ctx, runner, catalog, entity, resource)
+	err = p.resourcePrepareProperties(ctx, runner, catalog, entity, resource)
 	if err != nil {
 		return
 	}
 
 	// indexes
 
-	err = resourcePrepareIndexes(ctx, runner, catalog, entity, resource)
+	err = p.resourcePrepareIndexes(ctx, runner, catalog, entity, resource)
 	if err != nil {
 		return
 	}
 
 	// references
 
-	doResourceCleanup(resource)
+	p.doResourceCleanup(resource)
 
 	return
 }
 
-func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
-	rows, sqlErr := runner.QueryContext(ctx, getSql("prepare-properties"), catalog, entity)
-	err := handleDbError(ctx, sqlErr)
+func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
+	rows, sqlErr := runner.QueryContext(ctx, p.options.GetSql("prepare-properties"), catalog, entity)
+	err := p.handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return err
@@ -274,7 +274,7 @@ func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog 
 		var targetTable = new(*string)
 		var targetColumn = new(*string)
 
-		err = handleDbError(ctx, rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary, isUnique, isReferenced, targetSchema, targetTable, targetColumn))
+		err = p.handleDbError(ctx, rows.Scan(columnName, columnType, columnLength, isNullable, isPrimary, isUnique, isReferenced, targetSchema, targetTable, targetColumn))
 
 		if err != nil {
 			return err
@@ -355,9 +355,9 @@ func resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog 
 	return err
 }
 
-func resourcePrepareIndexes(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
-	rows, sqlErr := runner.QueryContext(ctx, getSql("prepare-indexes"), catalog, entity)
-	err := handleDbError(ctx, sqlErr)
+func (p *sqlBackend) resourcePrepareIndexes(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
+	rows, sqlErr := runner.QueryContext(ctx, p.options.GetSql("prepare-indexes"), catalog, entity)
+	err := p.handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return err
@@ -369,7 +369,7 @@ func resourcePrepareIndexes(ctx context.Context, runner QueryRunner, catalog str
 		var indexDef = new(string)
 		var colsStr = new(string)
 
-		err = handleDbError(ctx, rows.Scan(indexName, unique, indexDef, colsStr))
+		err = p.handleDbError(ctx, rows.Scan(indexName, unique, indexDef, colsStr))
 
 		var cols = strings.Split(*colsStr, ",")
 
@@ -426,7 +426,7 @@ func resourcePrepareIndexes(ctx context.Context, runner QueryRunner, catalog str
 	return err
 }
 
-func doResourceCleanup(resource *model.Resource) {
+func (p *sqlBackend) doResourceCleanup(resource *model.Resource) {
 	createdOnDetected := false
 	updatedOnDetected := false
 	createdByDetected := false
@@ -454,7 +454,7 @@ func doResourceCleanup(resource *model.Resource) {
 	var newColumns []*model.ResourceProperty
 
 	for _, property := range resource.Properties {
-		if enableAudit && isAuditColumn(property.Mapping) {
+		if enableAudit && p.isAuditColumn(property.Mapping) {
 			continue
 		}
 

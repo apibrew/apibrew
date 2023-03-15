@@ -3,6 +3,7 @@ package test
 import (
 	"github.com/google/uuid"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"math/rand"
 	"time"
 )
@@ -44,7 +45,7 @@ func fakeResource(properties ...*model.ResourceProperty) *model.Resource {
 		Name:      name,
 		Namespace: "default",
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: dhTest.Name,
+			DataSource: setup.DhTest.Name,
 			Catalog:    "public",
 			Entity:     name,
 		},

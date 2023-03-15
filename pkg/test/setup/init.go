@@ -1,4 +1,4 @@
-package test
+package setup
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
@@ -9,8 +9,6 @@ func prepareInitData() *model.InitData {
 		Config: &model.AppConfig{
 			Host:                  "localhost",
 			Port:                  17981,
-			JwtPrivateKey:         "data/jwt.key",
-			JwtPublicKey:          "data/jwt.key.pub",
 			DisableAuthentication: false,
 			DisableCache:          true,
 		},
@@ -87,5 +85,5 @@ func prepareSystemNamespace() *model.Namespace {
 }
 
 func prepareSystemDataSource() *model.DataSource {
-	return systemDataSource
+	return SystemDataSource
 }

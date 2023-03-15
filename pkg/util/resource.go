@@ -1,5 +1,7 @@
 package util
 
+import "github.com/tislib/data-handler/pkg/model"
+
 type Named interface {
 	GetName() string
 }
@@ -22,4 +24,14 @@ func GetArrayIndex[T comparable](items []T, item T, comparator func(a, b T) bool
 	}
 
 	return -1
+}
+
+func LocatePropertyByName(resource *model.Resource, propertyName string) *model.ResourceProperty {
+	for _, property := range resource.Properties {
+		if property.Name == propertyName {
+			return property
+		}
+	}
+
+	return nil
 }

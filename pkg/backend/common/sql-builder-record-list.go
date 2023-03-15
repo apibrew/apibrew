@@ -1,4 +1,4 @@
-package postgres
+package common
 
 import (
 	"context"
@@ -58,11 +58,12 @@ type recordLister struct {
 	builder           *sqlbuilder.SelectBuilder
 	resultChan        chan<- *model.Record
 	packRecords       bool
+	backend           *sqlBackend
 }
 
 func (r *recordLister) Prepare() errors.ServiceError {
 	r.logger = log.WithFields(logging.CtxFields(r.ctx))
-	r.tableName = getFullTableName(r.resource.SourceConfig, r.UseHistory)
+	r.tableName = r.backend.getFullTableName(r.resource.SourceConfig, r.UseHistory)
 	r.tableAlias = "t"
 
 	r.builder = sqlbuilder.Select()
@@ -115,7 +116,7 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 	sqlQuery, args := selectBuilder.Build()
 
 	rows, sqlErr := r.runner.Query(sqlQuery, args...)
-	err = handleDbError(r.ctx, sqlErr)
+	err = r.backend.handleDbError(r.ctx, sqlErr)
 
 	if err != nil {
 		return
@@ -150,10 +151,10 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 		}
 
 		if !r.packRecords && annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
-			err := computeRecordFromProperties(r.ctx, r.resource, record)
+			err := util.ComputeRecordIdFromProperties(r.resource, record)
 
 			if err != nil {
-				return nil, 0, err
+				return nil, 0, r.backend.handleDbError(r.ctx, err)
 			}
 		}
 
@@ -176,7 +177,7 @@ func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
 	r.logger.Tracef("countQuery: %s", countQuery)
 
 	countRow := r.runner.QueryRowContext(r.ctx, countQuery, args...)
-	err = handleDbError(r.ctx, countRow.Scan(&total))
+	err = r.backend.handleDbError(r.ctx, countRow.Scan(&total))
 
 	return
 }
@@ -277,7 +278,7 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 	}
 
 	if err != nil {
-		return handleDbError(r.ctx, err)
+		return r.backend.handleDbError(r.ctx, err)
 	}
 
 	if !annotations.IsEnabled(r.resource, annotations.DisableAudit) {
@@ -547,7 +548,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 				return fmt.Sprintf("t." + ap), nil
 			}
 		}
-		property := locatePropertyByName(resource, propEx.Property)
+		property := util.LocatePropertyByName(resource, propEx.Property)
 
 		if property == nil {
 			return "", errors.PropertyNotFoundError.WithDetails(propEx.Property)
@@ -582,7 +583,7 @@ func (r *recordLister) prepareCols() []string {
 	return cols
 }
 
-func recordList(ctx context.Context, runner QueryRunner, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
+func (p *sqlBackend) recordList(ctx context.Context, runner QueryRunner, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	return (&recordLister{
 		ctx:               ctx,
 		runner:            runner,
@@ -595,6 +596,7 @@ func recordList(ctx context.Context, runner QueryRunner, params abs.ListRecordPa
 		Schema:            *params.Schema,
 		resultChan:        params.ResultChan,
 		packRecords:       params.PackRecords,
+		backend:           p,
 	}).Exec()
 }
 

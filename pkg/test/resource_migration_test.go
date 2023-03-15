@@ -3,15 +3,16 @@ package test
 import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"github.com/tislib/data-handler/pkg/util"
 	"testing"
 )
 
 func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 
-	withAutoLoadedResource(ctx, t, dataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
-		withAutoLoadedResource(ctx, t, dataSourceDhTest, "public", "organization_copy", func(resource2 *model.Resource) {
-			list, err := recordClient.List(ctx, &stub.ListRecordRequest{
+	withAutoLoadedResource(setup.Ctx, t, setup.DataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
+		withAutoLoadedResource(setup.Ctx, t, setup.DataSourceDhTest, "public", "organization_copy", func(resource2 *model.Resource) {
+			list, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{
 				Resource: resource1.Name,
 			})
 
@@ -25,7 +26,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 				return record
 			})
 
-			_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{
+			_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 				Resource: resource2.Name,
 				Records:  records,
 			})
@@ -34,7 +35,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 				t.Error(err)
 			}
 
-			_, err = recordClient.Delete(ctx, &stub.DeleteRecordRequest{
+			_, err = recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
 				Resource: resource2.Name,
 				Ids: util.ArrayMap(list.Content, func(record *model.Record) string {
 					return record.Id

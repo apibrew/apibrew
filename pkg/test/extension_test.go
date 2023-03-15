@@ -6,6 +6,7 @@ import (
 	"github.com/tislib/data-handler/pkg/ext"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
 )
@@ -62,8 +63,8 @@ func (t *testExtension) GetExtensionConfig() *model.ExtensionConfig {
 func TestListResourceWithExtension(t *testing.T) {
 	var te abs.Extension = &testExtension{
 		extensionConfig: &model.ExtensionConfig{
-			Namespace: simpleVirtualResource1.Namespace,
-			Resource:  simpleVirtualResource1.Name,
+			Namespace: setup.SimpleVirtualResource1.Namespace,
+			Resource:  setup.SimpleVirtualResource1.Name,
 			Operations: []*model.ExtensionOperation{
 				{
 					OperationType: model.ExtensionOperationType_ExtensionOperationTypeList,
@@ -77,9 +78,9 @@ func TestListResourceWithExtension(t *testing.T) {
 	container.GetExtensionService().RegisterExtension(te)
 	defer container.GetExtensionService().UnRegisterExtension(te)
 
-	resp, err := recordClient.List(ctx, &stub.ListRecordRequest{
-		Namespace: simpleVirtualResource1.Namespace,
-		Resource:  simpleVirtualResource1.Name,
+	resp, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{
+		Namespace: setup.SimpleVirtualResource1.Namespace,
+		Resource:  setup.SimpleVirtualResource1.Name,
 	})
 
 	if err != nil {
