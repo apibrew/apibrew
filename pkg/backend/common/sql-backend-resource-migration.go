@@ -140,8 +140,8 @@ func (p *sqlBackend) migrateResourceColumn(prevProperty *model.ResourceProperty,
 	var sqlPrefix = fmt.Sprintf("ALTER TABLE %s ", tableName)
 	var sqlParts []string
 	changes := 0
-	if p.getPsqlTypeFromProperty(prevProperty.Type, property.Length) != p.getPsqlTypeFromProperty(property.Type, property.Length) {
-		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" TYPE %s", property.Mapping, p.getPsqlTypeFromProperty(property.Type, property.Length)))
+	if p.options.GetSqlTypeFromProperty(prevProperty.Type, property.Length) != p.options.GetSqlTypeFromProperty(property.Type, property.Length) {
+		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" TYPE %s", property.Mapping, p.options.GetSqlTypeFromProperty(property.Type, property.Length)))
 		changes++
 	}
 
@@ -313,7 +313,7 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner Query
 			primaryFound = true
 		}
 
-		typ := getPropertyTypeFromPsql(*columnType)
+		typ := p.options.GetPropertyTypeFromPsql(*columnType)
 
 		if typ == model.ResourceProperty_STRING && uint32(**columnLength) == 0 {
 			**columnLength = 256

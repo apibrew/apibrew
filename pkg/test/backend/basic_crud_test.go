@@ -12,7 +12,7 @@ import (
 
 var dataSources = []*model.DataSource{
 	setup.DhTest,
-	//dhTestMysql,
+	dhTestMysql,
 }
 
 var resources = make(map[*model.DataSource]*model.Resource)
@@ -23,10 +23,12 @@ func TestMain(t *testing.M) {
 	var pendingResources []*model.Resource
 
 	for _, dataSource := range dataSources {
-		resources[dataSource] = setup.PrepareRichResource1()
+		newRes := setup.PrepareRichResource1()
 
-		resources[dataSource].SourceConfig.DataSource = dataSource.Name
-		resources[dataSource].Name = dataSource.Name + "-" + resources[dataSource].Name
+		newRes.SourceConfig.DataSource = dataSource.Name
+		newRes.Name = dataSource.Name + "-" + newRes.Name
+
+		resources[dataSource] = newRes
 		pendingResources = append(pendingResources, resources[dataSource])
 	}
 
@@ -34,7 +36,7 @@ func TestMain(t *testing.M) {
 
 	t.Run()
 
-	setup.DestroyResources(setup.Ctx, pendingResources)
+	//setup.DestroyResources(setup.Ctx, pendingResources)
 }
 
 func TestCreateRecord(t *testing.T) {
@@ -67,7 +69,7 @@ func TestCreateRecord(t *testing.T) {
 
 			res, err := setup.GetTestDhClient().GetRecordClient().Create(setup.Ctx, &stub.CreateRecordRequest{
 				Token:    "",
-				Resource: setup.RichResource1.Name,
+				Resource: resources[dataSource].Name,
 				Records:  []*model.Record{record1},
 			})
 
@@ -78,7 +80,7 @@ func TestCreateRecord(t *testing.T) {
 
 			getRes, err := setup.GetTestDhClient().GetRecordClient().Get(setup.Ctx, &stub.GetRecordRequest{
 				Token:    "",
-				Resource: setup.RichResource1.Name,
+				Resource: resources[dataSource].Name,
 				Id:       res.Records[0].Id,
 			})
 
@@ -90,7 +92,7 @@ func TestCreateRecord(t *testing.T) {
 				return
 			}
 
-			for _, property := range setup.RichResource1.Properties {
+			for _, property := range resources[dataSource].Properties {
 				propertyType := types.ByResourcePropertyType(property.Type)
 				val1, _ := propertyType.UnPack(record1.Properties[property.Name])
 				val2, _ := propertyType.UnPack(getRes.Record.Properties[property.Name])

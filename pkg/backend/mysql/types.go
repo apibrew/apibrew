@@ -1,11 +1,11 @@
-package common
+package mysql
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
 	"strconv"
 )
 
-func (p *sqlBackend) getPsqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
+func (p mysqlBackendOptions) GetSqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
 	switch propertyType {
 	case model.ResourceProperty_INT32:
 		return "INT"
@@ -45,7 +45,7 @@ func (p *sqlBackend) getPsqlTypeFromProperty(propertyType model.ResourceProperty
 	}
 }
 
-func getPropertyTypeFromPsql(columnType string) model.ResourceProperty_Type {
+func (p mysqlBackendOptions) GetPropertyTypeFromPsql(columnType string) model.ResourceProperty_Type {
 	switch columnType {
 	case "bool":
 		return model.ResourceProperty_BOOL

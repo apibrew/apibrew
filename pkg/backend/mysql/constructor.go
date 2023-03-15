@@ -1,4 +1,4 @@
-package postgres
+package mysql
 
 import (
 	_ "github.com/lib/pq"
@@ -8,9 +8,9 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 )
 
-func NewPostgresResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
-	return common.NewSqlBackend(dataSource, &postgreSqlBackendOptions{
-		connectionDetails: dataSource.Options.(*model.DataSource_PostgresqlParams),
+func NewMysqlResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
+	return common.NewSqlBackend(dataSource, &mysqlBackendOptions{
+		connectionDetails: dataSource.Options.(*model.DataSource_MysqlParams),
 	})
 	//connectionDetails := dataSource.GetOptions()
 	//return &postgresResourceServiceBackend{
