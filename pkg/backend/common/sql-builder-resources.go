@@ -34,8 +34,8 @@ func (p *sqlBackend) resourceCreateTable(ctx context.Context, runner QueryRunner
 	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
 		builder.Define("created_on", "timestamp", "NOT NULL")
 		builder.Define("updated_on", "timestamp", "NULL")
-		builder.Define("created_by", DbNameType, "NOT NULL")
-		builder.Define("updated_by", DbNameType, "NULL")
+		builder.Define("created_by", p.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NOT NULL")
+		builder.Define("updated_by", p.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NULL")
 	}
 
 	// version
@@ -55,7 +55,7 @@ func (p *sqlBackend) definePrimaryKeyColumn(resource *model.Resource, builder *s
 	} else {
 		for _, prop := range resource.Properties {
 			if prop.Primary {
-				var typ = p.getPsqlTypeFromProperty(prop.Type, prop.Length)
+				var typ = p.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
 
 				if annotations.IsEnabled(prop, annotations.Identity) {
 					if typ == "INT" {
@@ -82,7 +82,7 @@ func (p *sqlBackend) prepareResourceTableColumnDefinition(resource *model.Resour
 	if property.Unique {
 		uniqModifier = "UNIQUE"
 	}
-	sqlType := p.getPsqlTypeFromProperty(property.Type, property.Length)
+	sqlType := p.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
 	var def = []string{fmt.Sprintf("\"%s\"", property.Mapping), sqlType, nullModifier, uniqModifier}
 
@@ -120,8 +120,8 @@ func (p *sqlBackend) resourceCreateHistoryTable(ctx context.Context, runner Quer
 
 	builder.Define("created_on", "timestamp", "NOT NULL")
 	builder.Define("updated_on", "timestamp", "NULL")
-	builder.Define("created_by", DbNameType, "NOT NULL")
-	builder.Define("updated_by", DbNameType, "NULL")
+	builder.Define("created_by", p.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NOT NULL")
+	builder.Define("updated_by", p.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NULL")
 	// version
 	builder.Define("version", "int2", "NOT NULL")
 

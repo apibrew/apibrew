@@ -19,6 +19,8 @@ type SqlBackendOptions interface {
 	GetSql(s string) string
 	GetDriverName() string
 	HandleError(err error) (errors.ServiceError, bool)
+	GetSqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string
+	GetPropertyTypeFromPsql(columnType string) model.ResourceProperty_Type
 }
 
 func NewSqlBackend(dataSource *model.DataSource, options SqlBackendOptions) abs.Backend {

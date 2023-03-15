@@ -8,8 +8,6 @@ import (
 	"github.com/tislib/data-handler/pkg/logging"
 )
 
-const DbNameType = "VARCHAR(64)"
-
 func (p *sqlBackend) acquireConnection(ctx context.Context) (*sql.DB, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 

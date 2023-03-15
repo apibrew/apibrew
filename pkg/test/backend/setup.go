@@ -11,7 +11,7 @@ var dhTestMysql = &model.DataSource{
 			Username:      "root",
 			Password:      "",
 			Host:          "127.0.0.1",
-			Port:          5432,
+			Port:          3306,
 			DbName:        "dh_test",
 			DefaultSchema: "public",
 		},

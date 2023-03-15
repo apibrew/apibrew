@@ -4,6 +4,7 @@ import (
 	"context"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/mysql"
 	"github.com/tislib/data-handler/pkg/backend/postgres"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
@@ -120,7 +121,7 @@ func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceB
 	case model.DataSourceBackendType_POSTGRESQL:
 		return postgres.NewPostgresResourceServiceBackend
 	case model.DataSourceBackendType_MYSQL:
-		return nil
+		return mysql.NewMysqlResourceServiceBackend
 	case model.DataSourceBackendType_MONGODB:
 		return nil
 	case model.DataSourceBackendType_CUSTOM:
