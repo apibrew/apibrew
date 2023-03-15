@@ -4,12 +4,13 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"github.com/tislib/data-handler/pkg/util"
 	"testing"
 )
 
 func TestDhTestUserCannotCreateUser(t *testing.T) {
-	userDhTestCtx := withUserAuthenticationContext(ctx, "dh_test", "dh_test")
+	userDhTestCtx := setup.WithUserAuthenticationContext(setup.Ctx, "dh_test", "dh_test")
 
 	_, err := userClient.Create(userDhTestCtx, &stub.CreateUserRequest{
 		Users: []*model.User{
@@ -31,7 +32,7 @@ func TestDhTestUserCannotCreateUser(t *testing.T) {
 }
 
 func TestDhTestUserCanReadUser(t *testing.T) {
-	userDhTestCtx := withUserAuthenticationContext(ctx, "dh_test", "dh_test")
+	userDhTestCtx := setup.WithUserAuthenticationContext(setup.Ctx, "dh_test", "dh_test")
 
 	_, err := userClient.List(userDhTestCtx, &stub.ListUserRequest{})
 

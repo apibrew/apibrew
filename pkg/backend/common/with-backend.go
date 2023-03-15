@@ -1,4 +1,4 @@
-package postgres
+package common
 
 import (
 	"context"
@@ -60,14 +60,14 @@ func (q queryLoggerStruct) QueryContext(ctx context.Context, query string, args 
 	return q.delegate.QueryContext(ctx, query, args...)
 }
 
-func queryLogger(transactionKey, dataSourceName string, runner QueryRunner) QueryRunner {
+func (p *sqlBackend) queryLogger(transactionKey, dataSourceName string, runner QueryRunner) QueryRunner {
 	if transactionKey == "" {
 		transactionKey = "default"
 	}
 	return queryLoggerStruct{transactionKey: transactionKey, dataSourceName: dataSourceName, delegate: runner}
 }
 
-func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx QueryRunner) errors.ServiceError) errors.ServiceError {
+func (p *sqlBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx QueryRunner) errors.ServiceError) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	transactionKey := ctx.Value(abs.TransactionContextKey)
@@ -79,7 +79,7 @@ func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOn
 			return errors.LogicalError.WithDetails("Transaction not found: " + transactionKey.(string))
 		}
 
-		return fn(queryLogger(transactionKey.(string), p.dataSourceName, txDataInstance.tx))
+		return fn(p.queryLogger(transactionKey.(string), p.dataSourceName, txDataInstance.tx))
 	}
 
 	logger.Tracef("begin transaction readonly=%v", readOnly)
@@ -95,21 +95,21 @@ func (p *postgresResourceServiceBackend) withBackend(ctx context.Context, readOn
 
 	if err != nil {
 		logger.Errorf("Unable to begin transaction: %s", err)
-		return handleDbError(ctx, err)
+		return p.handleDbError(ctx, err)
 	}
 
 	defer func(tx *sql.Tx) {
 		_ = tx.Rollback()
 	}(tx)
 
-	serviceErr = fn(queryLogger("", p.dataSourceName, tx))
+	serviceErr = fn(p.queryLogger("", p.dataSourceName, tx))
 
 	if serviceErr != nil {
 		logger.Errorf("Rollback: %s", serviceErr)
 		return serviceErr
 	}
 
-	serviceErr = handleDbError(ctx, tx.Commit())
+	serviceErr = p.handleDbError(ctx, tx.Commit())
 	logger.Tracef("end transaction readonly=%v", readOnly)
 
 	return serviceErr

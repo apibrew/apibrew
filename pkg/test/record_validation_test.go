@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -24,7 +25,7 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 
 	defer func() {
 		if len(resourceIdsForRemoval) > 0 {
-			_, err := resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			_, err := resourceClient.Delete(setup.Ctx, &stub.DeleteResourceRequest{
 				Ids:            resourceIdsForRemoval,
 				DoMigration:    true,
 				ForceMigration: true,
@@ -42,7 +43,7 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 		newResources = append(newResources, subCase.resource)
 	}
 
-	resp, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
+	resp, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{
 		Token:          "",
 		Resources:      newResources,
 		DoMigration:    true,
@@ -62,14 +63,14 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 	for _, subCase := range subCases {
 		// create
 		t.Run(subCase.recordType.String()+" - Create - Valid", func(t *testing.T) {
-			testRecordCreationValidationValidCase(ctx, t, subCase)
+			testRecordCreationValidationValidCase(setup.Ctx, t, subCase)
 		})
 		t.Run(subCase.recordType.String()+" - Create - Invalid", func(t *testing.T) {
-			testRecordCreationValidationInvalidCase(ctx, t, subCase)
+			testRecordCreationValidationInvalidCase(setup.Ctx, t, subCase)
 		})
 		// update
 		t.Run(subCase.recordType.String()+" - Update - Valid", func(t *testing.T) {
-			testRecordUpdateValidationValidCase(ctx, t, subCase)
+			testRecordUpdateValidationValidCase(setup.Ctx, t, subCase)
 		})
 		//t.Run(subCase.recordType.String()+" - Invalid", func(t *testing.T) {
 		//	testRecordUpdateValidationInvalidCase(ctx, t, subCase)

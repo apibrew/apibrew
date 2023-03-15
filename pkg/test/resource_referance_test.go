@@ -3,6 +3,7 @@ package test
 import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
@@ -13,7 +14,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 		{
 			Name: "author",
 			SourceConfig: &model.ResourceSourceConfig{
-				DataSource: dhTest.Name,
+				DataSource: setup.DhTest.Name,
 				Catalog:    "",
 				Entity:     "author",
 			},
@@ -38,7 +39,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 		{
 			Name: "book",
 			SourceConfig: &model.ResourceSourceConfig{
-				DataSource: dhTest.Name,
+				DataSource: setup.DhTest.Name,
 				Catalog:    "",
 				Entity:     "book",
 			},
@@ -76,7 +77,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 func TestResourceReferenceViolation(t *testing.T) {
 	resources := prepareTestResourceReferenceResources()
 
-	resp, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
+	resp, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{
 		Resources:   resources,
 		DoMigration: true,
 	})
@@ -87,7 +88,7 @@ func TestResourceReferenceViolation(t *testing.T) {
 	}
 
 	defer func() {
-		_, err = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
+		_, err = resourceClient.Delete(setup.Ctx, &stub.DeleteResourceRequest{
 			Ids:            util.ArrayMapToId(resp.Resources),
 			DoMigration:    true,
 			ForceMigration: true,
@@ -99,7 +100,7 @@ func TestResourceReferenceViolation(t *testing.T) {
 		}
 	}()
 
-	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "book",
 		Records: []*model.Record{
 			{
@@ -128,7 +129,7 @@ func TestResourceReferenceViolation(t *testing.T) {
 func TestResourceReferenceSuccess(t *testing.T) {
 	resources := prepareTestResourceReferenceResources()
 
-	resp, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
+	resp, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{
 		Resources:   resources,
 		DoMigration: true,
 	})
@@ -139,7 +140,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 	}
 
 	defer func() {
-		_, err = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
+		_, err = resourceClient.Delete(setup.Ctx, &stub.DeleteResourceRequest{
 			Ids:            util.ArrayMapToId(resp.Resources),
 			DoMigration:    true,
 			ForceMigration: true,
@@ -151,7 +152,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 		}
 	}()
 
-	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "author",
 		Records: []*model.Record{
 			{
@@ -168,7 +169,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 		return
 	}
 
-	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "book",
 		Records: []*model.Record{
 			{

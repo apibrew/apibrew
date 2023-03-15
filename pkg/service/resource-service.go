@@ -539,23 +539,20 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 		}
 
 		// check for additional fields
-		if prop.DefaultValue != nil {
+		if prop.DefaultValue != nil && prop.DefaultValue.AsInterface() != nil {
 			propertyType := types.ByResourcePropertyType(prop.Type)
+			err := propertyType.ValidatePackedValue(prop.DefaultValue)
 
-			if prop.DefaultValue != nil {
-				err := propertyType.ValidatePackedValue(prop.DefaultValue)
-
-				if err != nil {
-					errorFields = append(errorFields, &model.ErrorField{
-						RecordId: resource.Id,
-						Property: propertyPrefix + "DefaultValue",
-						Message:  err.Error(),
-						Value:    prop.DefaultValue,
-					})
-				}
+			if err != nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "DefaultValue",
+					Message:  err.Error(),
+					Value:    prop.DefaultValue,
+				})
 			}
 		}
-		if prop.ExampleValue != nil {
+		if prop.ExampleValue != nil && prop.ExampleValue.AsInterface() != nil {
 			propertyType := types.ByResourcePropertyType(prop.Type)
 
 			if prop.ExampleValue != nil {
@@ -564,7 +561,7 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 				if err != nil {
 					errorFields = append(errorFields, &model.ErrorField{
 						RecordId: resource.Id,
-						Property: propertyPrefix + "DefaultValue",
+						Property: propertyPrefix + "ExampleValue",
 						Message:  err.Error(),
 						Value:    prop.ExampleValue,
 					})

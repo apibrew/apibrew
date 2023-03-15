@@ -1,4 +1,4 @@
-package postgres
+package common
 
 import (
 	"context"
@@ -12,20 +12,20 @@ import (
 	"strings"
 )
 
-func resourceCreateTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
+func (p *sqlBackend) resourceCreateTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	if resource.SourceConfig.Catalog != "" {
 		_, err := runner.Exec(fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS \"%s\"", resource.SourceConfig.Catalog))
 
 		if err != nil {
-			return handleDbError(ctx, err)
+			return p.handleDbError(ctx, err)
 		}
 	}
 
-	builder := sqlbuilder.CreateTable(getFullTableName(resource.SourceConfig, false))
+	builder := sqlbuilder.CreateTable(p.getFullTableName(resource.SourceConfig, false))
 
 	builder.IfNotExists()
 
-	serviceError := definePrimaryKeyColumn(resource, builder)
+	serviceError := p.definePrimaryKeyColumn(resource, builder)
 	if serviceError != nil {
 		return serviceError
 	}
@@ -46,16 +46,16 @@ func resourceCreateTable(ctx context.Context, runner QueryRunner, resource *mode
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)
 
-	return handleDbError(ctx, err)
+	return p.handleDbError(ctx, err)
 }
 
-func definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) errors.ServiceError {
+func (p *sqlBackend) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) errors.ServiceError {
 	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 		builder.Define("id", "uuid", "NOT NULL", "PRIMARY KEY")
 	} else {
 		for _, prop := range resource.Properties {
 			if prop.Primary {
-				var typ = getPsqlTypeFromProperty(prop.Type, prop.Length)
+				var typ = p.getPsqlTypeFromProperty(prop.Type, prop.Length)
 
 				if annotations.IsEnabled(prop, annotations.Identity) {
 					if typ == "INT" {
@@ -73,7 +73,7 @@ func definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.Create
 	return nil
 }
 
-func prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) string {
+func (p *sqlBackend) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) string {
 	uniqModifier := ""
 	nullModifier := "NULL"
 	if property.Required {
@@ -82,7 +82,7 @@ func prepareResourceTableColumnDefinition(resource *model.Resource, property *mo
 	if property.Unique {
 		uniqModifier = "UNIQUE"
 	}
-	sqlType := getPsqlTypeFromProperty(property.Type, property.Length)
+	sqlType := p.getPsqlTypeFromProperty(property.Type, property.Length)
 
 	var def = []string{fmt.Sprintf("\"%s\"", property.Mapping), sqlType, nullModifier, uniqModifier}
 
@@ -98,7 +98,7 @@ func prepareResourceTableColumnDefinition(resource *model.Resource, property *mo
 		}
 	}
 
-	if property.DefaultValue != nil {
+	if property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
 		propertyType := types.ByResourcePropertyType(property.Type)
 		val, _ := propertyType.UnPack(property.DefaultValue)
 
@@ -108,12 +108,12 @@ func prepareResourceTableColumnDefinition(resource *model.Resource, property *mo
 	return strings.Join(def, " ")
 }
 
-func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
-	builder := sqlbuilder.CreateTable(getFullTableName(resource.SourceConfig, true))
+func (p *sqlBackend) resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
+	builder := sqlbuilder.CreateTable(p.getFullTableName(resource.SourceConfig, true))
 
 	builder.IfNotExists()
 
-	serviceError := definePrimaryKeyColumn(resource, builder)
+	serviceError := p.definePrimaryKeyColumn(resource, builder)
 	if serviceError != nil {
 		return serviceError
 	}
@@ -130,11 +130,11 @@ func resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resourc
 	sqlQuery, _ := builder.Build()
 	_, err := runner.Exec(sqlQuery)
 
-	return handleDbError(ctx, err)
+	return p.handleDbError(ctx, err)
 }
 
-func resourceDropTable(ctx context.Context, runner QueryRunner, resource *model.Resource, history bool, forceMigration bool) errors.ServiceError {
-	s := "DROP TABLE " + getFullTableName(resource.SourceConfig, history)
+func (p *sqlBackend) resourceDropTable(ctx context.Context, runner QueryRunner, resource *model.Resource, history bool, forceMigration bool) errors.ServiceError {
+	s := "DROP TABLE " + p.getFullTableName(resource.SourceConfig, history)
 
 	if forceMigration {
 		s += " CASCADE;"
@@ -142,10 +142,10 @@ func resourceDropTable(ctx context.Context, runner QueryRunner, resource *model.
 
 	_, err := runner.Exec(s)
 
-	return handleDbError(ctx, err)
+	return p.handleDbError(ctx, err)
 }
 
-func resourceListEntities(ctx context.Context, runner QueryRunner) (result []*model.DataSourceCatalog, err errors.ServiceError) {
+func (p *sqlBackend) resourceListEntities(ctx context.Context, runner QueryRunner) (result []*model.DataSourceCatalog, err errors.ServiceError) {
 	rows, sqlErr := runner.QueryContext(ctx, `
 select table_schema, table_name, false
 from information_schema.tables
@@ -156,7 +156,7 @@ from information_schema.views
 where table_schema not in ('information_schema', 'pg_catalog')
 order by table_schema
 `)
-	err = handleDbError(ctx, sqlErr)
+	err = p.handleDbError(ctx, sqlErr)
 
 	if err != nil {
 		return
@@ -169,7 +169,7 @@ order by table_schema
 		var entityName = new(string)
 		var readOnly = new(bool)
 
-		err = handleDbError(ctx, rows.Scan(catalogName, entityName, readOnly))
+		err = p.handleDbError(ctx, rows.Scan(catalogName, entityName, readOnly))
 
 		if err != nil {
 			return
@@ -191,6 +191,6 @@ order by table_schema
 	return
 }
 
-func isAuditColumn(column string) bool {
+func (p *sqlBackend) isAuditColumn(column string) bool {
 	return column == "created_on" || column == "updated_on" || column == "created_by" || column == "updated_by" || column == "version"
 }

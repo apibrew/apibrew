@@ -1,4 +1,4 @@
-package postgres
+package common
 
 import (
 	"context"
@@ -12,12 +12,12 @@ import (
 	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
-func (p *postgresResourceServiceBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
+func (p *sqlBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("Begin listing: %s/%s", params.Resource.Namespace, params.Resource.Name)
 	err = p.withBackend(ctx, true, func(tx QueryRunner) errors.ServiceError {
-		result, total, err = recordList(ctx, tx, params)
+		result, total, err = p.recordList(ctx, tx, params)
 
 		return err
 	})
@@ -26,7 +26,7 @@ func (p *postgresResourceServiceBackend) ListRecords(ctx context.Context, params
 	return
 }
 
-func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError) {
+func (p *sqlBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	var inserted bool
@@ -51,14 +51,14 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 
 			records := params.Records[bi:ei]
 
-			inserted, err = recordInsert(ctx, tx, params.Resource, records, params.IgnoreIfExists, params.Schema, false)
+			inserted, err = p.recordInsert(ctx, tx, params.Resource, records, params.IgnoreIfExists, params.Schema, false)
 
 			if err != nil {
 				return err
 			}
 
 			if inserted && annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
-				_, err = recordInsert(ctx, tx, params.Resource, records, false, params.Schema, true)
+				_, err = p.recordInsert(ctx, tx, params.Resource, records, false, params.Schema, true)
 
 				if err != nil {
 					return err
@@ -78,10 +78,10 @@ func (p *postgresResourceServiceBackend) AddRecords(ctx context.Context, params 
 	return params.Records, inserted, nil
 }
 
-func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
+func (p *sqlBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
 	err := p.withBackend(ctx, false, func(tx QueryRunner) errors.ServiceError {
 		for _, record := range params.Records {
-			err := recordUpdate(ctx, tx, params.Resource, record, params.CheckVersion, params.Schema)
+			err := p.recordUpdate(ctx, tx, params.Resource, record, params.CheckVersion, params.Schema)
 
 			if err != nil {
 				return err
@@ -89,7 +89,7 @@ func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, para
 		}
 
 		if annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
-			_, err := recordInsert(ctx, tx, params.Resource, params.Records, false, params.Schema, false)
+			_, err := p.recordInsert(ctx, tx, params.Resource, params.Records, false, params.Schema, false)
 
 			if err != nil {
 				return err
@@ -106,11 +106,11 @@ func (p *postgresResourceServiceBackend) UpdateRecords(ctx context.Context, para
 	return params.Records, nil
 }
 
-func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
+func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
 	var record *model.Record = nil
 	err := p.withBackend(ctx, true, func(tx QueryRunner) errors.ServiceError {
 		var err errors.ServiceError
-		record, err = readRecord(ctx, tx, resource, schema, id)
+		record, err = p.readRecord(ctx, tx, resource, schema, id)
 
 		if err == sql.ErrNoRows {
 			return errors.RecordNotFoundError.WithDetails(fmt.Sprintf("namespace %s; resource %s; id %v", resource.Namespace, resource.Name, id))
@@ -126,12 +126,12 @@ func (p *postgresResourceServiceBackend) GetRecord(ctx context.Context, resource
 	return record, err
 }
 
-func (p *postgresResourceServiceBackend) DeleteRecords(ctx context.Context, resource *model.Resource, ids []string) errors.ServiceError {
+func (p *sqlBackend) DeleteRecords(ctx context.Context, resource *model.Resource, ids []string) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("Begin deleting records: %v / %v / %v", resource.Namespace, resource.Name, ids)
 	err := p.withBackend(ctx, false, func(tx QueryRunner) errors.ServiceError {
-		return deleteRecords(ctx, tx, resource, ids)
+		return p.deleteRecords(ctx, tx, resource, ids)
 	})
 	if err != nil {
 		logger.Print(err)

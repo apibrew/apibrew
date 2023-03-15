@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/rsa"
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
@@ -150,26 +151,37 @@ func (s *authenticationService) Init(data *model.InitData) {
 		return
 	}
 
-	privateKeyContent, err := os.ReadFile(data.Config.JwtPrivateKey)
-	if err != nil {
-		panic(err)
-	}
-	publicKeyContent, err := os.ReadFile(data.Config.JwtPublicKey)
-	if err != nil {
-		panic(err)
-	}
+	if data.Config.JwtPrivateKey == "" {
+		priv, err := rsa.GenerateKey(rand.Reader, 2048)
 
-	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKeyContent)
-	if err != nil {
-		panic(err)
-	}
-	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKeyContent)
-	if err != nil {
-		panic(err)
-	}
+		if err != nil {
+			panic(err)
+		}
 
-	s.privateKey = privateKey
-	s.publicKey = publicKey
+		s.privateKey = priv
+		s.publicKey = &priv.PublicKey
+	} else {
+		privateKeyContent, err := os.ReadFile(data.Config.JwtPrivateKey)
+		if err != nil {
+			panic(err)
+		}
+		publicKeyContent, err := os.ReadFile(data.Config.JwtPublicKey)
+		if err != nil {
+			panic(err)
+		}
+
+		privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKeyContent)
+		if err != nil {
+			panic(err)
+		}
+		publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKeyContent)
+		if err != nil {
+			panic(err)
+		}
+
+		s.privateKey = privateKey
+		s.publicKey = publicKey
+	}
 }
 
 func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Time {

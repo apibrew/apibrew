@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
 )
@@ -13,7 +14,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 		Name:      "test-resource-for-update-1",
 		Namespace: "default",
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: dhTest.Name,
+			DataSource: setup.DhTest.Name,
 			Entity:     "test-resource-for-update-1",
 		},
 		Properties: []*model.ResourceProperty{
@@ -39,7 +40,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 		},
 	}
 
-	resourceCreateRes, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	resourceCreateRes, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
 		t.Error(err)
@@ -48,7 +49,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 
 	defer func() {
 		if resourceCreateRes != nil {
-			_, _ = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			_, _ = resourceClient.Delete(setup.Ctx, &stub.DeleteResourceRequest{
 				Ids:            []string{resourceCreateRes.Resources[0].Id},
 				DoMigration:    true,
 				ForceMigration: true,
@@ -60,7 +61,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 		Name:      "test-resource-for-update-1",
 		Namespace: "default",
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: dhTest.Name,
+			DataSource: setup.DhTest.Name,
 			Entity:     "test-resource-for-update-1",
 		},
 		Properties: []*model.ResourceProperty{
@@ -90,7 +91,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 
 	resource1.Id = resourceCreateRes.Resources[0].Id
 
-	res, err := resourceClient.PrepareResourceMigrationPlan(ctx, &stub.PrepareResourceMigrationPlanRequest{
+	res, err := resourceClient.PrepareResourceMigrationPlan(setup.Ctx, &stub.PrepareResourceMigrationPlanRequest{
 		Resources: []*model.Resource{resource1},
 	})
 
@@ -126,7 +127,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		Name:      "test-resource-for-update-1",
 		Namespace: "default",
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: dhTest.Name,
+			DataSource: setup.DhTest.Name,
 			Entity:     "test-resource-for-update-1",
 		},
 		Properties: []*model.ResourceProperty{
@@ -140,7 +141,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
-	resourceCreateRes, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	resourceCreateRes, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
 		t.Error(err)
@@ -149,7 +150,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 
 	defer func() {
 		if resourceCreateRes != nil {
-			_, _ = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			_, _ = resourceClient.Delete(setup.Ctx, &stub.DeleteResourceRequest{
 				Ids:            []string{resourceCreateRes.Resources[0].Id},
 				DoMigration:    true,
 				ForceMigration: true,
@@ -157,7 +158,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		}
 	}()
 
-	recordCreateResult1, err := recordClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	recordCreateResult1, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),
@@ -175,7 +176,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		Name:      "test-resource-for-update-1",
 		Namespace: "default",
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: dhTest.Name,
+			DataSource: setup.DhTest.Name,
 			Entity:     "test-resource-for-update-1",
 		},
 		Properties: []*model.ResourceProperty{
@@ -196,14 +197,14 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
-	_, err = resourceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	_, err = resourceClient.Update(setup.Ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),
@@ -222,7 +223,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		Name:      "test-resource-for-update-1",
 		Namespace: "default",
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: dhTest.Name,
+			DataSource: setup.DhTest.Name,
 			Entity:     "test-resource-for-update-1",
 		},
 		Properties: []*model.ResourceProperty{
@@ -243,14 +244,14 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
-	_, err = resourceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	_, err = resourceClient.Update(setup.Ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err == nil {
 		t.Error("marking property prop-2 should be failed, because it is containing null values")
 		return
 	}
 
-	_, err = recordClient.Update(ctx, &stub.UpdateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
 			Id: recordCreateResult1.Records[0].Id,
 			Properties: map[string]*structpb.Value{
@@ -265,7 +266,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		return
 	}
 
-	_, err = resourceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}})
+	_, err = resourceClient.Update(setup.Ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}})
 
 	if err != nil {
 		t.Error(err)
@@ -277,7 +278,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		Name:      "test-resource-for-update-1",
 		Namespace: "default",
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: dhTest.Name,
+			DataSource: setup.DhTest.Name,
 			Entity:     "test-resource-for-update-1",
 		},
 		Properties: []*model.ResourceProperty{
@@ -291,14 +292,14 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
-	_, err = resourceClient.Update(ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
+	_, err = resourceClient.Update(setup.Ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	_, err = recordClient.Create(ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),

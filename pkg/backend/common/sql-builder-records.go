@@ -1,4 +1,4 @@
-package postgres
+package common
 
 import (
 	"context"
@@ -21,12 +21,12 @@ import (
 	"time"
 )
 
-func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema, history bool) (bool, errors.ServiceError) {
+func (p *sqlBackend) recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema, history bool) (bool, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	query := fmt.Sprintf("INSERT INTO %s", getFullTableName(resource.SourceConfig, history))
+	query := fmt.Sprintf("INSERT INTO %s", p.getFullTableName(resource.SourceConfig, history))
 
-	cols := prepareResourceRecordCols(resource)
+	cols := p.prepareResourceRecordCols(resource)
 
 	query = query + fmt.Sprintf(" (%s)", strings.Join(cols, ","))
 	var args []interface{}
@@ -46,10 +46,10 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 		}
 
 		if annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-			err := computeRecordFromProperties(ctx, resource, record)
+			err := util.ComputeRecordIdFromProperties(resource, record)
 
 			if err != nil {
-				return false, err
+				return false, p.handleDbError(ctx, err)
 			}
 		}
 
@@ -64,7 +64,7 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 
 		var row []string
 
-		if checkHasOwnId(resource) {
+		if p.checkHasOwnId(resource) {
 			row = append(row, argPlaceHolder(record.Id))
 		}
 
@@ -77,13 +77,13 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 					continue
 				}
 
-				val, serviceError := DbEncode(property, packedVal)
+				val, serviceError := p.DbEncode(property, packedVal)
 				if serviceError != nil {
 					return false, serviceError
 				}
 
 				if property.Type == model.ResourceProperty_REFERENCE {
-					row = append(row, resolveReference(val, argPlaceHolder, schema, resource, property))
+					row = append(row, p.resolveReference(val, argPlaceHolder, schema, resource, property))
 
 					continue
 				}
@@ -120,10 +120,10 @@ func recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resou
 		logger.Error(err)
 	}
 
-	return true, handleDbError(ctx, err)
+	return true, p.handleDbError(ctx, err)
 }
 
-func resolveReference(val interface{}, argPlaceHolder func(val interface{}) string, schema *abs.Schema, resource *model.Resource, property *model.ResourceProperty) string {
+func (p *sqlBackend) resolveReference(val interface{}, argPlaceHolder func(val interface{}) string, schema *abs.Schema, resource *model.Resource, property *model.ResourceProperty) string {
 	refType := val.(types.ReferenceType)
 
 	if refType["id"] != nil {
@@ -145,12 +145,12 @@ func resolveReference(val interface{}, argPlaceHolder func(val interface{}) stri
 	}
 }
 
-func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) errors.ServiceError {
+func (p *sqlBackend) recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) errors.ServiceError {
 	if record.AuditData == nil {
 		record.AuditData = &model.AuditData{}
 	}
 
-	updateBuilder := sqlbuilder.Update(getFullTableName(resource.SourceConfig, false))
+	updateBuilder := sqlbuilder.Update(p.getFullTableName(resource.SourceConfig, false))
 	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
@@ -164,7 +164,7 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 			updateBuilder.Where(updateBuilder.Equal("id", record.Id))
 		}
 	} else {
-		sqlPart, err := createRecordIdMatchQuery(ctx, resource, record, updateBuilder.Var)
+		sqlPart, err := p.createRecordIdMatchQuery(ctx, resource, record, updateBuilder.Var)
 		if err != nil {
 			return err
 		}
@@ -185,14 +185,14 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 			continue
 		}
 
-		val, serviceError := DbEncode(property, packedVal)
+		val, serviceError := p.DbEncode(property, packedVal)
 
 		if serviceError != nil {
 			return serviceError
 		}
 
 		if property.Type == model.ResourceProperty_REFERENCE {
-			updateBuilder.SetMore(fmt.Sprintf("\"%s\"=%s", property.Mapping, resolveReference(val, updateBuilder.Var, schema, resource, property)))
+			updateBuilder.SetMore(fmt.Sprintf("\"%s\"=%s", property.Mapping, p.resolveReference(val, updateBuilder.Var, schema, resource, property)))
 		} else {
 			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("\"%s\"", property.Mapping), val))
 		}
@@ -212,20 +212,20 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 	result, err := runner.ExecContext(ctx, sqlQuery, args...)
 
 	if err != nil {
-		return handleDbError(ctx, err)
+		return p.handleDbError(ctx, err)
 	}
 
 	affected, err := result.RowsAffected()
 
 	if err != nil {
-		return handleDbError(ctx, err)
+		return p.handleDbError(ctx, err)
 	}
 
 	if annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-		err := computeRecordFromProperties(ctx, resource, record)
+		err := util.ComputeRecordIdFromProperties(resource, record)
 
 		if err != nil {
-			return err
+			return p.handleDbError(ctx, err)
 		}
 	}
 
@@ -236,8 +236,8 @@ func recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resou
 	return nil
 }
 
-func readRecord(ctx context.Context, runner QueryRunner, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
-	list, total, err := recordList(ctx, runner, abs.ListRecordParams{
+func (p *sqlBackend) readRecord(ctx context.Context, runner QueryRunner, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
+	list, total, err := p.recordList(ctx, runner, abs.ListRecordParams{
 		Resource: resource,
 		Query: &model.BooleanExpression{
 			Expression: &model.BooleanExpression_Equal{
@@ -265,11 +265,11 @@ func readRecord(ctx context.Context, runner QueryRunner, resource *model.Resourc
 	return list[0], nil
 }
 
-func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
-	deleteBuilder := sqlbuilder.DeleteFrom(getFullTableName(resource.SourceConfig, false) + " as t")
+func (p *sqlBackend) deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
+	deleteBuilder := sqlbuilder.DeleteFrom(p.getFullTableName(resource.SourceConfig, false) + " as t")
 	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
 
-	if checkHasOwnId(resource) {
+	if p.checkHasOwnId(resource) {
 		deleteBuilder.Where(deleteBuilder.In("t.id", util.ArrayMapToInterface(ids)...))
 	} else {
 		var primaryFound = false
@@ -291,34 +291,13 @@ func deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Reso
 	_, err := runner.Exec(sqlQuery, args...)
 
 	if err != nil {
-		return handleDbError(ctx, err)
+		return p.handleDbError(ctx, err)
 	}
 
 	return nil
 }
 
-func computeRecordFromProperties(ctx context.Context, resource *model.Resource, record *model.Record) errors.ServiceError {
-	var idParts []string
-	for _, prop := range resource.Properties {
-		val := record.Properties[prop.Name]
-		if val != nil && prop.Primary {
-			typ := types.ByResourcePropertyType(prop.Type)
-			unpacked, err := typ.UnPack(val)
-			if err != nil {
-				return handleDbError(ctx, err)
-			}
-			if unpacked == nil {
-				continue
-			}
-			idParts = append(idParts, typ.String(unpacked))
-		}
-	}
-	record.Id = strings.Join(idParts, "-")
-
-	return nil
-}
-
-func createRecordIdMatchQuery(ctx context.Context, resource *model.Resource, record *model.Record, varFn func(value interface{}) string) (string, errors.ServiceError) {
+func (p *sqlBackend) createRecordIdMatchQuery(ctx context.Context, resource *model.Resource, record *model.Record, varFn func(value interface{}) string) (string, errors.ServiceError) {
 	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 		return fmt.Sprintf("id=%s", varFn(record.Id)), nil
 	}
@@ -329,7 +308,7 @@ func createRecordIdMatchQuery(ctx context.Context, resource *model.Resource, rec
 			typ := types.ByResourcePropertyType(prop.Type)
 			unpacked, err := typ.UnPack(val)
 			if err != nil {
-				return "", handleDbError(ctx, err)
+				return "", p.handleDbError(ctx, err)
 			}
 			if unpacked == nil {
 				continue

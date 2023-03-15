@@ -1477,6 +1477,8 @@ components:
                     type: string
                 postgresqlParams:
                     $ref: '#/components/schemas/PostgresqlOptions'
+                mysqlParams:
+                    $ref: '#/components/schemas/MysqlOptions'
                 virtualParams:
                     $ref: '#/components/schemas/VirtualOptions'
                 auditData:
@@ -1646,6 +1648,22 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
+        MysqlOptions:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+                host:
+                    type: string
+                port:
+                    type: integer
+                    format: uint32
+                dbName:
+                    type: string
+                defaultSchema:
+                    type: string
         NamedAny:
             type: object
             properties:

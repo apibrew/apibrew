@@ -1,4 +1,4 @@
-package postgres
+package common
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/tislib/data-handler/pkg/logging"
 )
 
-func (p *postgresResourceServiceBackend) DestroyDataSource(ctx context.Context) {
+func (p *sqlBackend) DestroyDataSource(ctx context.Context) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	if p.connection != nil {
@@ -21,14 +21,14 @@ func (p *postgresResourceServiceBackend) DestroyDataSource(ctx context.Context) 
 	}
 }
 
-func (p *postgresResourceServiceBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
+func (p *sqlBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
 	conn, err := p.acquireConnection(ctx)
 
 	if err != nil {
 		return
 	}
 
-	err = handleDbError(ctx, conn.Ping())
+	err = p.handleDbError(ctx, conn.Ping())
 
 	testConnection = err == nil
 
