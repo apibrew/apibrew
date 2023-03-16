@@ -3,6 +3,7 @@ package postgres
 import (
 	"fmt"
 	"github.com/lib/pq"
+	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 )
@@ -17,6 +18,18 @@ func (p postgreSqlBackendOptions) HandleError(err error) (errors.ServiceError, b
 	}
 
 	return nil, false
+}
+
+func (p postgreSqlBackendOptions) Quote(str string) string {
+	return fmt.Sprintf("\"%s\"", str)
+}
+
+func (p postgreSqlBackendOptions) GetFlavor() sqlbuilder.Flavor {
+	return sqlbuilder.PostgreSQL
+}
+
+func (p postgreSqlBackendOptions) GetDefaultCatalog() string {
+	return "public"
 }
 
 func (p postgreSqlBackendOptions) handlePqErr(err *pq.Error) errors.ServiceError {

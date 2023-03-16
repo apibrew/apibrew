@@ -14,7 +14,7 @@ import (
 
 func (p *sqlBackend) resourceCreateTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
 	if resource.SourceConfig.Catalog != "" {
-		_, err := runner.Exec(fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS \"%s\"", resource.SourceConfig.Catalog))
+		_, err := runner.Exec(fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", p.options.Quote(resource.SourceConfig.Catalog)))
 
 		if err != nil {
 			return p.handleDbError(ctx, err)
@@ -51,7 +51,7 @@ func (p *sqlBackend) resourceCreateTable(ctx context.Context, runner QueryRunner
 
 func (p *sqlBackend) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) errors.ServiceError {
 	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-		builder.Define("id", "uuid", "NOT NULL", "PRIMARY KEY")
+		builder.Define("id", p.options.GetSqlTypeFromProperty(model.ResourceProperty_UUID, 0), "NOT NULL", "PRIMARY KEY")
 	} else {
 		for _, prop := range resource.Properties {
 			if prop.Primary {
@@ -84,7 +84,7 @@ func (p *sqlBackend) prepareResourceTableColumnDefinition(resource *model.Resour
 	}
 	sqlType := p.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
-	var def = []string{fmt.Sprintf("\"%s\"", property.Mapping), sqlType, nullModifier, uniqModifier}
+	var def = []string{fmt.Sprintf("%s", p.options.Quote(property.Mapping)), sqlType, nullModifier, uniqModifier}
 
 	if property.Type == model.ResourceProperty_REFERENCE {
 		if property.Reference != nil {
@@ -93,7 +93,7 @@ func (p *sqlBackend) prepareResourceTableColumnDefinition(resource *model.Resour
 			if property.Reference.Cascade {
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
-			def = append(def, fmt.Sprintf(" CONSTRAINT \"%s\" REFERENCES \"%s\" (\"%s\") %s", resource.SourceConfig.Entity+"_"+property.Mapping+"_fk", referencedResource.SourceConfig.Entity, "id", refClause))
+			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", p.options.Quote(resource.SourceConfig.Entity+"_"+property.Mapping+"_fk"), p.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
 
 		}
 	}

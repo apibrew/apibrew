@@ -10,7 +10,7 @@ func (p mysqlBackendOptions) GetSqlTypeFromProperty(propertyType model.ResourceP
 	case model.ResourceProperty_INT32:
 		return "INT"
 	case model.ResourceProperty_UUID:
-		return "UUID"
+		return "varchar(36)"
 	case model.ResourceProperty_STRING:
 		return "VARCHAR(" + strconv.Itoa(int(length)) + ")"
 	case model.ResourceProperty_DATE:
@@ -28,17 +28,17 @@ func (p mysqlBackendOptions) GetSqlTypeFromProperty(propertyType model.ResourceP
 	case model.ResourceProperty_BOOL:
 		return "BOOL"
 	case model.ResourceProperty_OBJECT:
-		return "JSONB"
+		return "TEXT"
 	case model.ResourceProperty_BYTES:
-		return "BYTEA"
+		return "BLOB"
 	case model.ResourceProperty_ENUM:
 		return "VARCHAR(64)"
 	case model.ResourceProperty_REFERENCE:
-		return "UUID"
+		return "varchar(36)"
 	case model.ResourceProperty_MAP:
-		return "JSONB"
+		return "TEXT"
 	case model.ResourceProperty_LIST:
-		return "JSONB"
+		return "TEXT"
 
 	default:
 		panic("unknown property type")
@@ -49,7 +49,7 @@ func (p mysqlBackendOptions) GetPropertyTypeFromPsql(columnType string) model.Re
 	switch columnType {
 	case "bool":
 		return model.ResourceProperty_BOOL
-	case "bytea":
+	case "blob":
 		return model.ResourceProperty_BYTES
 	case "char":
 		return model.ResourceProperty_STRING
@@ -61,11 +61,17 @@ func (p mysqlBackendOptions) GetPropertyTypeFromPsql(columnType string) model.Re
 		return model.ResourceProperty_TIMESTAMP
 	case "timestampz":
 		return model.ResourceProperty_TIMESTAMP
-	case "float4":
+	case "float":
 		return model.ResourceProperty_FLOAT32
-	case "float8":
+	case "double":
 		return model.ResourceProperty_FLOAT64
-	case "int2":
+	case "tinyint":
+		return model.ResourceProperty_INT32
+	case "smallint":
+		return model.ResourceProperty_INT32
+	case "bigint":
+		return model.ResourceProperty_INT32
+	case "int":
 		return model.ResourceProperty_INT32
 	case "int4":
 		return model.ResourceProperty_INT32
