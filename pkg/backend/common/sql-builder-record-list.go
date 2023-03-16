@@ -67,7 +67,7 @@ func (r *recordLister) Prepare() errors.ServiceError {
 	r.tableAlias = "t"
 
 	r.builder = sqlbuilder.Select()
-	r.builder.SetFlavor(sqlbuilder.PostgreSQL)
+	r.builder.SetFlavor(r.backend.options.GetFlavor())
 
 	r.builder.From(r.tableName + " as " + r.tableAlias)
 

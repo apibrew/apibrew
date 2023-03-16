@@ -89,9 +89,9 @@ func (p *sqlBackend) getFullTableName(sourceConfig *model.ResourceSourceConfig, 
 
 	def := ""
 	if sourceConfig.Catalog != "" {
-		def = fmt.Sprintf("\"%s\".\"%s\"", sourceConfig.Catalog, tableName)
+		def = fmt.Sprintf("%s.%s", p.options.Quote(sourceConfig.Catalog), p.options.Quote(tableName))
 	} else {
-		def = fmt.Sprintf("\"%s\"", sourceConfig.Entity)
+		def = p.options.Quote(sourceConfig.Entity)
 	}
 
 	return def
@@ -109,7 +109,7 @@ func (p *sqlBackend) prepareResourceRecordCols(resource *model.Resource) []strin
 	}
 
 	for _, property := range resource.Properties {
-		col := fmt.Sprintf("\"%s\"", property.Mapping)
+		col := p.options.Quote(property.Mapping)
 		cols = append(cols, col)
 	}
 

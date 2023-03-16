@@ -3,6 +3,7 @@ package common
 import (
 	"database/sql"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 )
@@ -21,6 +22,9 @@ type SqlBackendOptions interface {
 	HandleError(err error) (errors.ServiceError, bool)
 	GetSqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string
 	GetPropertyTypeFromPsql(columnType string) model.ResourceProperty_Type
+	Quote(str string) string
+	GetFlavor() sqlbuilder.Flavor
+	GetDefaultCatalog() string
 }
 
 func NewSqlBackend(dataSource *model.DataSource, options SqlBackendOptions) abs.Backend {

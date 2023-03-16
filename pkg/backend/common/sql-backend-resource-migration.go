@@ -121,7 +121,7 @@ func (p *sqlBackend) prepareIndexDef(index *model.ResourceIndex, params abs.Upgr
 		}
 
 		cols = append(cols, prop.Mapping)
-		colsEscaped = append(colsEscaped, fmt.Sprintf("\"%s\"", prop.Mapping))
+		colsEscaped = append(colsEscaped, p.options.Quote(prop.Mapping))
 	}
 
 	var indexName = resource.SourceConfig.Entity + "_" + strings.Join(cols, "_")
@@ -132,7 +132,7 @@ func (p *sqlBackend) prepareIndexDef(index *model.ResourceIndex, params abs.Upgr
 		indexName = indexName + "_idx"
 	}
 
-	sql := fmt.Sprintf("create %s index \"%s\" on %s(%s)", uniqueStr, indexName, resource.SourceConfig.Entity, strings.Join(colsEscaped, ","))
+	sql := fmt.Sprintf("create %s index %s on %s(%s)", uniqueStr, p.options.Quote(indexName), p.options.Quote(resource.SourceConfig.Entity), strings.Join(colsEscaped, ","))
 	return sql, nil
 }
 
@@ -141,27 +141,27 @@ func (p *sqlBackend) migrateResourceColumn(prevProperty *model.ResourceProperty,
 	var sqlParts []string
 	changes := 0
 	if p.options.GetSqlTypeFromProperty(prevProperty.Type, property.Length) != p.options.GetSqlTypeFromProperty(property.Type, property.Length) {
-		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" TYPE %s", property.Mapping, p.options.GetSqlTypeFromProperty(property.Type, property.Length)))
+		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", p.options.Quote(property.Mapping), p.options.GetSqlTypeFromProperty(property.Type, property.Length)))
 		changes++
 	}
 
 	if prevProperty.Required && !property.Required {
-		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" DROP NOT NULL", property.Mapping))
+		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", p.options.Quote(property.Mapping)))
 		changes++
 	}
 
 	if !prevProperty.Required && property.Required {
-		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN \"%s\" SET NOT NULL", property.Mapping))
+		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", p.options.Quote(property.Mapping)))
 		changes++
 	}
 
 	if prevProperty.Unique && !property.Unique {
-		sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT \"%s\"", property.Mapping+"_uniq"))
+		sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT %s", p.options.Quote(property.Mapping+"_uniq")))
 		changes++
 	}
 
 	if !prevProperty.Unique && property.Unique {
-		sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT \"%s\" UNIQUE (\"%s\")", existingResource.SourceConfig.Entity+"_"+property.Mapping+"_uniq", property.Mapping))
+		sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s UNIQUE (%s)", p.options.Quote(existingResource.SourceConfig.Entity+"_"+property.Mapping+"_uniq"), p.options.Quote(property.Mapping)))
 		changes++
 	}
 
@@ -175,7 +175,7 @@ func (p *sqlBackend) migrateResourceColumn(prevProperty *model.ResourceProperty,
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
 
-			sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT \"%s\" FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\") "+refClause, existingResource.SourceConfig.Entity+"_"+property.Mapping+"_fk", property.Mapping, referencedResource.SourceConfig.Entity, "id"))
+			sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, p.options.Quote(existingResource.SourceConfig.Entity+"_"+property.Mapping+"_fk"), p.options.Quote(property.Mapping), p.options.Quote(referencedResource.SourceConfig.Entity), p.options.Quote("id")))
 			changes++
 		}
 	}
@@ -187,12 +187,17 @@ func (p *sqlBackend) migrateResourceColumn(prevProperty *model.ResourceProperty,
 	sql := sqlPrefix + "\n" + strings.Join(sqlParts, ",\n")
 
 	_, sqlError := runner.ExecContext(ctx, sql)
-	return p.handleDbError(ctx, sqlError)
+
+	if sqlError != nil {
+		return p.handleDbError(ctx, sqlError)
+	}
+
+	return nil
 }
 
 func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {
 	if catalog == "" {
-		catalog = "public"
+		catalog = p.options.GetDefaultCatalog()
 	}
 	// check if entity exists
 	row := runner.QueryRowContext(ctx, p.options.GetSql("entity-exists"), catalog, entity)
@@ -220,7 +225,7 @@ func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runn
 	resource.AuditData = new(model.AuditData)
 	resource.Name = strings.Replace(entity, ".", "_", -1)
 
-	if catalog != "public" && catalog != "" {
+	if catalog != p.options.GetDefaultCatalog() && catalog != "" {
 		resource.Name = catalog + "_" + resource.Name
 	}
 

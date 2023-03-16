@@ -151,7 +151,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner QueryRunner, resou
 	}
 
 	updateBuilder := sqlbuilder.Update(p.getFullTableName(resource.SourceConfig, false))
-	updateBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+	updateBuilder.SetFlavor(p.options.GetFlavor())
 
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
 		checkVersion = false
@@ -192,9 +192,9 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner QueryRunner, resou
 		}
 
 		if property.Type == model.ResourceProperty_REFERENCE {
-			updateBuilder.SetMore(fmt.Sprintf("\"%s\"=%s", property.Mapping, p.resolveReference(val, updateBuilder.Var, schema, resource, property)))
+			updateBuilder.SetMore(fmt.Sprintf("%s=%s", p.options.Quote(property.Mapping), p.resolveReference(val, updateBuilder.Var, schema, resource, property)))
 		} else {
-			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("\"%s\"", property.Mapping), val))
+			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("%s", p.options.Quote(property.Mapping)), val))
 		}
 	}
 
@@ -267,7 +267,7 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner QueryRunner, resourc
 
 func (p *sqlBackend) deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
 	deleteBuilder := sqlbuilder.DeleteFrom(p.getFullTableName(resource.SourceConfig, false) + " as t")
-	deleteBuilder.SetFlavor(sqlbuilder.PostgreSQL)
+	deleteBuilder.SetFlavor(p.options.GetFlavor())
 
 	if p.checkHasOwnId(resource) {
 		deleteBuilder.Where(deleteBuilder.In("t.id", util.ArrayMapToInterface(ids)...))
@@ -314,7 +314,7 @@ func (p *sqlBackend) createRecordIdMatchQuery(ctx context.Context, resource *mod
 				continue
 			}
 
-			return fmt.Sprintf("\"%s\"=%s", prop.Mapping, varFn(unpacked)), nil
+			return fmt.Sprintf("%s=%s", p.options.Quote(prop.Mapping), varFn(unpacked)), nil
 		}
 	}
 

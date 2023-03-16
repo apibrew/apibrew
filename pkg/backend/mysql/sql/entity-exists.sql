@@ -1,8 +1,9 @@
-select sum(count)
-from (select count(*) as count
+select count(*)
+from (select table_schema, table_name
       from information_schema.tables
-      where table_type = 'BASE TABLE' and tables.table_schema = $1 and tables.table_name = $2
+      where table_type = 'BASE TABLE'
       union all
-      select count (*) as count
-      from information_schema.views
-      where views.table_schema = $1 and views.table_name = $2) _
+      select table_schema, table_name
+      from information_schema.views) _
+where table_schema = ?
+  and table_name = ?
