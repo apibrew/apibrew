@@ -180,27 +180,29 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	}
 
 	if !resource.Virtual && doMigration {
-		bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
+		var bck abs.Backend
+		bck, err = r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
 
 		if err != nil {
 			return err
 		}
 
-		// prepare local migration plan for backend
-		preparedResource, err := bck.PrepareResourceFromEntity(ctx, existingResource.SourceConfig.Catalog, existingResource.SourceConfig.Entity)
+		if forceMigration {
+			// prepare local migration plan for backend
+			existingResource, err = bck.PrepareResourceFromEntity(ctx, existingResource.SourceConfig.Catalog, existingResource.SourceConfig.Entity)
 
-		if !errors.RecordNotFoundError.Is(err) && err != nil {
-			return err
-		}
+			if !errors.RecordNotFoundError.Is(err) && err != nil {
+				return err
+			}
 
-		migrationPlan, err := r.resourceMigrationService.PreparePlan(ctx, preparedResource, resource)
-		if err != nil {
-			return err
+			plan, err = r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)
+			if err != nil {
+				return err
+			}
 		}
 
 		err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
-			Resource:       resource,
-			MigrationPlan:  migrationPlan,
+			MigrationPlan:  plan,
 			ForceMigration: forceMigration,
 			Schema:         &r.schema,
 		})
@@ -431,26 +433,37 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	if !resource.Virtual && doMigration {
-		bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
+		var bck abs.Backend
+		var plan *model.ResourceMigrationPlan
+		var existingResource *model.Resource
 
+		bck, err = r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
 		if err != nil {
 			return nil, err
 		}
 
-		preparedResource, err := bck.PrepareResourceFromEntity(ctx, resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
+		if forceMigration {
 
-		if !errors.RecordNotFoundError.Is(err) && err != nil {
-			return nil, err
-		}
+			existingResource, err = bck.PrepareResourceFromEntity(ctx, resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
 
-		migrationPlan, err := r.resourceMigrationService.PreparePlan(ctx, preparedResource, resource)
-		if err != nil {
-			return nil, err
+			if !errors.RecordNotFoundError.Is(err) && err != nil {
+				return nil, err
+			}
+
+			plan, err = r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			plan, err = r.resourceMigrationService.PreparePlan(ctx, nil, resource)
+
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
-			Resource:       resource,
-			MigrationPlan:  migrationPlan,
+			MigrationPlan:  plan,
 			ForceMigration: forceMigration,
 			Schema:         &r.schema,
 		})
@@ -653,7 +666,6 @@ func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.S
 	}
 
 	err = r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
-		Resource:       resource,
 		MigrationPlan:  migrationPlan,
 		ForceMigration: true,
 		Schema:         &schema,
@@ -691,10 +703,16 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 		if !resource.Virtual && doMigration {
 			bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
 
+			plan, err := r.resourceMigrationService.PreparePlan(ctx, resource, nil)
+
 			if err != nil {
 				return err
 			}
-			err = bck.DowngradeResource(ctx, resource, forceMigration)
+			err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
+				ForceMigration: forceMigration,
+				Schema:         r.GetSchema(),
+				MigrationPlan:  plan,
+			})
 
 			if err != nil {
 				return err

@@ -3,10 +3,9 @@ package common
 import (
 	"context"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/util"
@@ -14,188 +13,13 @@ import (
 	"strings"
 )
 
-func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
-	var currentPropertyMap = util.GetNamedMap(params.MigrationPlan.CurrentResource.Properties)
-	var existingPropertyMap = util.GetNamedMap(params.MigrationPlan.ExistingResource.Properties)
+func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
+	hp := p.options.GetResourceMigrationBuilderConstructor()(ctx, runner, params, history, params.ForceMigration)
 
-	logger := log.WithFields(logging.CtxFields(ctx))
-
-	var tableName = p.getFullTableName(params.Resource.GetSourceConfig(), history)
-
-	for _, step := range params.MigrationPlan.Steps {
-		switch sk := step.Kind.(type) {
-		case *model.ResourceMigrationStep_CreateResource:
-			if err := p.resourceCreateTable(ctx, runner, params.Resource); err != nil {
-				return err
-			}
-		case *model.ResourceMigrationStep_DeleteResource:
-			if params.ForceMigration {
-				if err := p.resourceDropTable(ctx, runner, params.Resource, false, true); err != nil {
-					return err
-				}
-
-				if err := p.resourceDropTable(ctx, runner, params.Resource, true, true); err != nil {
-					return err
-				}
-			}
-		case *model.ResourceMigrationStep_CreateProperty:
-			property := currentPropertyMap[sk.CreateProperty.Property]
-			if property.Primary {
-				continue
-			}
-			sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, p.prepareResourceTableColumnDefinition(params.Resource, property, *params.Schema))
-
-			_, sqlError := runner.ExecContext(ctx, sql)
-
-			if sqlError != nil {
-				return p.handleDbError(ctx, sqlError)
-			}
-		case *model.ResourceMigrationStep_UpdateProperty:
-			err := p.migrateResourceColumn(existingPropertyMap[sk.UpdateProperty.ExistingProperty], currentPropertyMap[sk.UpdateProperty.Property], tableName, params.MigrationPlan.ExistingResource, logger, runner, ctx, *params.Schema)
-
-			if err != nil {
-				return err
-			}
-		case *model.ResourceMigrationStep_DeleteProperty:
-			if params.ForceMigration {
-				sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, existingPropertyMap[sk.DeleteProperty.ExistingProperty].Mapping)
-
-				_, sqlError := runner.ExecContext(ctx, sql)
-
-				if sqlError != nil {
-					return p.handleDbError(ctx, sqlError)
-				}
-			}
-		}
-	}
-
-	if !history {
-		for _, step := range params.MigrationPlan.Steps {
-			switch sk := step.Kind.(type) {
-			case *model.ResourceMigrationStep_CreateIndex:
-				var err errors.ServiceError
-				var sql string
-				if annotations.Get(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], annotations.SourceDef) != "" {
-					sql = annotations.Get(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], annotations.SourceDef)
-				} else {
-					sql, err = p.prepareIndexDef(params.MigrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index], params, params.Resource)
-					if err != nil {
-						return err
-					}
-				}
-
-				_, sqlError := runner.ExecContext(ctx, sql)
-				return p.handleDbError(ctx, sqlError)
-			case *model.ResourceMigrationStep_DeleteIndex:
-				sql := fmt.Sprintf("DROP INDEX %s", annotations.Get(params.MigrationPlan.ExistingResource.Indexes[sk.DeleteIndex.ExistingIndex], annotations.SourceIdentity))
-
-				_, sqlError := runner.ExecContext(ctx, sql)
-				return p.handleDbError(ctx, sqlError)
-			}
-		}
-	}
-
-	return nil
+	return helper.ResourceMigrateTableViaResourceMigrationBuilder(hp, params.MigrationPlan, history, params.ForceMigration)
 }
 
-func (p *sqlBackend) prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource) (string, errors.ServiceError) {
-	var uniqueStr = ""
-
-	if index.Unique {
-		uniqueStr = "unique"
-	}
-
-	var cols []string
-	var colsEscaped []string
-
-	for _, indexProp := range index.Properties {
-		var prop *model.ResourceProperty
-		for _, prop = range params.Resource.Properties {
-			if prop.Name == indexProp.Name {
-				break
-			}
-		}
-
-		if prop == nil {
-			return "", errors.LogicalError.WithDetails("Property not found with name: " + prop.Name)
-		}
-
-		cols = append(cols, prop.Mapping)
-		colsEscaped = append(colsEscaped, p.options.Quote(prop.Mapping))
-	}
-
-	var indexName = resource.SourceConfig.Entity + "_" + strings.Join(cols, "_")
-
-	if index.Unique {
-		indexName = indexName + "_uniq_idx"
-	} else {
-		indexName = indexName + "_idx"
-	}
-
-	sql := fmt.Sprintf("create %s index %s on %s(%s)", uniqueStr, p.options.Quote(indexName), p.options.Quote(resource.SourceConfig.Entity), strings.Join(colsEscaped, ","))
-	return sql, nil
-}
-
-func (p *sqlBackend) migrateResourceColumn(prevProperty *model.ResourceProperty, property *model.ResourceProperty, tableName string, existingResource *model.Resource, logger *log.Entry, runner QueryRunner, ctx context.Context, schema abs.Schema) errors.ServiceError {
-	var sqlPrefix = fmt.Sprintf("ALTER TABLE %s ", tableName)
-	var sqlParts []string
-	changes := 0
-	if p.options.GetSqlTypeFromProperty(prevProperty.Type, property.Length) != p.options.GetSqlTypeFromProperty(property.Type, property.Length) {
-		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", p.options.Quote(property.Mapping), p.options.GetSqlTypeFromProperty(property.Type, property.Length)))
-		changes++
-	}
-
-	if prevProperty.Required && !property.Required {
-		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", p.options.Quote(property.Mapping)))
-		changes++
-	}
-
-	if !prevProperty.Required && property.Required {
-		sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", p.options.Quote(property.Mapping)))
-		changes++
-	}
-
-	if prevProperty.Unique && !property.Unique {
-		sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT %s", p.options.Quote(property.Mapping+"_uniq")))
-		changes++
-	}
-
-	if !prevProperty.Unique && property.Unique {
-		sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s UNIQUE (%s)", p.options.Quote(existingResource.SourceConfig.Entity+"_"+property.Mapping+"_uniq"), p.options.Quote(property.Mapping)))
-		changes++
-	}
-
-	// fixme Default Value Modification logic
-
-	if property.Type == model.ResourceProperty_REFERENCE {
-		if prevProperty.Reference == nil && property.Reference != nil {
-			referencedResource := schema.ResourceByNamespaceSlashName["default"+"/"+property.Reference.ReferencedResource]
-			var refClause = ""
-			if property.Reference.Cascade {
-				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
-			}
-
-			sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, p.options.Quote(existingResource.SourceConfig.Entity+"_"+property.Mapping+"_fk"), p.options.Quote(property.Mapping), p.options.Quote(referencedResource.SourceConfig.Entity), p.options.Quote("id")))
-			changes++
-		}
-	}
-
-	if changes == 0 {
-		return nil
-	}
-
-	sql := sqlPrefix + "\n" + strings.Join(sqlParts, ",\n")
-
-	_, sqlError := runner.ExecContext(ctx, sql)
-
-	if sqlError != nil {
-		return p.handleDbError(ctx, sqlError)
-	}
-
-	return nil
-}
-
-func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runner QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {
+func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runner helper.QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {
 	if catalog == "" {
 		catalog = p.options.GetDefaultCatalog()
 	}
@@ -256,7 +80,7 @@ func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runn
 	return
 }
 
-func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
+func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helper.QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
 	rows, sqlErr := runner.QueryContext(ctx, p.options.GetSql("prepare-properties"), catalog, entity)
 	err := p.handleDbError(ctx, sqlErr)
 
@@ -360,7 +184,7 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner Query
 	return err
 }
 
-func (p *sqlBackend) resourcePrepareIndexes(ctx context.Context, runner QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
+func (p *sqlBackend) resourcePrepareIndexes(ctx context.Context, runner helper.QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
 	rows, sqlErr := runner.QueryContext(ctx, p.options.GetSql("prepare-indexes"), catalog, entity)
 	err := p.handleDbError(ctx, sqlErr)
 

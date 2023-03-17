@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/service/security"
 
@@ -21,7 +22,7 @@ import (
 	"time"
 )
 
-func (p *sqlBackend) recordInsert(ctx context.Context, runner QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema, history bool) (bool, errors.ServiceError) {
+func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema, history bool) (bool, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	query := fmt.Sprintf("INSERT INTO %s", p.getFullTableName(resource.SourceConfig, history))
@@ -145,7 +146,7 @@ func (p *sqlBackend) resolveReference(val interface{}, argPlaceHolder func(val i
 	}
 }
 
-func (p *sqlBackend) recordUpdate(ctx context.Context, runner QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) errors.ServiceError {
+func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) errors.ServiceError {
 	if record.AuditData == nil {
 		record.AuditData = &model.AuditData{}
 	}
@@ -236,7 +237,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner QueryRunner, resou
 	return nil
 }
 
-func (p *sqlBackend) readRecord(ctx context.Context, runner QueryRunner, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
+func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
 	list, total, err := p.recordList(ctx, runner, abs.ListRecordParams{
 		Resource: resource,
 		Query: &model.BooleanExpression{
@@ -265,7 +266,7 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner QueryRunner, resourc
 	return list[0], nil
 }
 
-func (p *sqlBackend) deleteRecords(ctx context.Context, runner QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
+func (p *sqlBackend) deleteRecords(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
 	deleteBuilder := sqlbuilder.DeleteFrom(p.getFullTableName(resource.SourceConfig, false) + " as t")
 	deleteBuilder.SetFlavor(p.options.GetFlavor())
 

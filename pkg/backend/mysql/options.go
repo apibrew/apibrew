@@ -1,8 +1,10 @@
 package mysql
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
+	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
@@ -11,6 +13,21 @@ import (
 type mysqlBackendOptions struct {
 	connectionDetails *model.DataSource_MysqlParams
 	dataSource        *model.DataSource
+}
+
+func (p mysqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p mysqlBackendOptions) GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p mysqlBackendOptions) GetFullTableName(config *model.ResourceSourceConfig, history bool) string {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (p mysqlBackendOptions) HandleError(err error) (errors.ServiceError, bool) {

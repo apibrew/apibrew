@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
@@ -79,22 +78,7 @@ func (p *sqlBackend) DbEncode(property *model.ResourceProperty, packedVal *struc
 }
 
 func (p *sqlBackend) getFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
-	var tableName string
-
-	if history {
-		tableName = sourceConfig.Entity + "_h"
-	} else {
-		tableName = sourceConfig.Entity
-	}
-
-	def := ""
-	if sourceConfig.Catalog != "" {
-		def = fmt.Sprintf("%s.%s", p.options.Quote(sourceConfig.Catalog), p.options.Quote(tableName))
-	} else {
-		def = p.options.Quote(sourceConfig.Entity)
-	}
-
-	return def
+	return p.options.GetFullTableName(sourceConfig, history)
 }
 
 func (p *sqlBackend) checkHasOwnId(resource *model.Resource) bool {

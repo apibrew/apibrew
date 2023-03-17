@@ -1,8 +1,10 @@
 package common
 
 import (
+	"context"
 	"database/sql"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
@@ -16,6 +18,7 @@ type sqlBackend struct {
 }
 
 type SqlBackendOptions interface {
+	UseDbHandleError(func(ctx context.Context, err error) errors.ServiceError)
 	GetConnectionString() string
 	GetSql(s string) string
 	GetDriverName() string
@@ -25,12 +28,18 @@ type SqlBackendOptions interface {
 	Quote(str string) string
 	GetFlavor() sqlbuilder.Flavor
 	GetDefaultCatalog() string
+	GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor
+	GetFullTableName(config *model.ResourceSourceConfig, history bool) string
 }
 
 func NewSqlBackend(dataSource *model.DataSource, options SqlBackendOptions) abs.Backend {
-	return &sqlBackend{
+	backend := &sqlBackend{
 		options:        options,
 		dataSourceName: dataSource.Name,
 		transactionMap: make(map[string]*txData),
 	}
+
+	options.UseDbHandleError(backend.handleDbError)
+
+	return backend
 }

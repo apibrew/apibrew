@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
@@ -11,43 +12,6 @@ import (
 	"github.com/tislib/data-handler/pkg/types"
 	"strings"
 )
-
-func (p *sqlBackend) resourceCreateTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
-	if resource.SourceConfig.Catalog != "" {
-		_, err := runner.Exec(fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", p.options.Quote(resource.SourceConfig.Catalog)))
-
-		if err != nil {
-			return p.handleDbError(ctx, err)
-		}
-	}
-
-	builder := sqlbuilder.CreateTable(p.getFullTableName(resource.SourceConfig, false))
-
-	builder.IfNotExists()
-
-	serviceError := p.definePrimaryKeyColumn(resource, builder)
-	if serviceError != nil {
-		return serviceError
-	}
-
-	// audit
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		builder.Define("created_on", "timestamp", "NOT NULL")
-		builder.Define("updated_on", "timestamp", "NULL")
-		builder.Define("created_by", p.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NOT NULL")
-		builder.Define("updated_by", p.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NULL")
-	}
-
-	// version
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		builder.Define("version", "int2", "NOT NULL")
-	}
-
-	sqlQuery, _ := builder.Build()
-	_, err := runner.Exec(sqlQuery)
-
-	return p.handleDbError(ctx, err)
-}
 
 func (p *sqlBackend) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) errors.ServiceError {
 	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
@@ -108,44 +72,7 @@ func (p *sqlBackend) prepareResourceTableColumnDefinition(resource *model.Resour
 	return strings.Join(def, " ")
 }
 
-func (p *sqlBackend) resourceCreateHistoryTable(ctx context.Context, runner QueryRunner, resource *model.Resource) errors.ServiceError {
-	builder := sqlbuilder.CreateTable(p.getFullTableName(resource.SourceConfig, true))
-
-	builder.IfNotExists()
-
-	serviceError := p.definePrimaryKeyColumn(resource, builder)
-	if serviceError != nil {
-		return serviceError
-	}
-
-	builder.Define("created_on", "timestamp", "NOT NULL")
-	builder.Define("updated_on", "timestamp", "NULL")
-	builder.Define("created_by", p.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NOT NULL")
-	builder.Define("updated_by", p.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NULL")
-	// version
-	builder.Define("version", "int2", "NOT NULL")
-
-	builder.Define("PRIMARY KEY (id, version)")
-
-	sqlQuery, _ := builder.Build()
-	_, err := runner.Exec(sqlQuery)
-
-	return p.handleDbError(ctx, err)
-}
-
-func (p *sqlBackend) resourceDropTable(ctx context.Context, runner QueryRunner, resource *model.Resource, history bool, forceMigration bool) errors.ServiceError {
-	s := "DROP TABLE " + p.getFullTableName(resource.SourceConfig, history)
-
-	if forceMigration {
-		s += " CASCADE;"
-	}
-
-	_, err := runner.Exec(s)
-
-	return p.handleDbError(ctx, err)
-}
-
-func (p *sqlBackend) resourceListEntities(ctx context.Context, runner QueryRunner) (result []*model.DataSourceCatalog, err errors.ServiceError) {
+func (p *sqlBackend) resourceListEntities(ctx context.Context, runner helper.QueryRunner) (result []*model.DataSourceCatalog, err errors.ServiceError) {
 	rows, sqlErr := runner.QueryContext(ctx, `
 select table_schema, table_name, false
 from information_schema.tables

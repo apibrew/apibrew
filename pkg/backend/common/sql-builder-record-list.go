@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
@@ -43,7 +44,7 @@ type recordLister struct {
 	tableName  string
 	tableAlias string
 	ctx        context.Context
-	runner     QueryRunner
+	runner     helper.QueryRunner
 	colList    []colDetails
 	joins      []joinDetails
 
@@ -583,7 +584,7 @@ func (r *recordLister) prepareCols() []string {
 	return cols
 }
 
-func (p *sqlBackend) recordList(ctx context.Context, runner QueryRunner, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
+func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
 	return (&recordLister{
 		ctx:               ctx,
 		runner:            runner,
