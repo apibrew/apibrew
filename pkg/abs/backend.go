@@ -30,7 +30,6 @@ type BackendSchemaInterface interface {
 	ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError)
 	UpgradeResource(ctx context.Context, params UpgradeResourceParams) errors.ServiceError
-	DowngradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError
 }
 
 type BackendTransactionInterface interface {
@@ -61,11 +60,9 @@ type ListRecordParams struct {
 }
 
 type UpgradeResourceParams struct {
-	CurrentResource *model.Resource
-	Resource        *model.Resource
-	ForceMigration  bool
-	Schema          *Schema
-	MigrationPlan   *model.ResourceMigrationPlan
+	ForceMigration bool
+	Schema         *Schema
+	MigrationPlan  *model.ResourceMigrationPlan
 }
 
 type AddResourceParams struct {

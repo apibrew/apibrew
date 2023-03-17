@@ -5,21 +5,13 @@ import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 )
 
-type QueryRunner interface {
-	QueryRow(query string, args ...any) *sql.Row
-	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
-	Exec(query string, args ...any) (sql.Result, error)
-	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
-	Query(query string, args ...any) (*sql.Rows, error)
-	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
-}
-
 type queryLoggerStruct struct {
-	delegate       QueryRunner
+	delegate       helper.QueryRunner
 	dataSourceName string
 	transactionKey string
 }
@@ -60,14 +52,14 @@ func (q queryLoggerStruct) QueryContext(ctx context.Context, query string, args 
 	return q.delegate.QueryContext(ctx, query, args...)
 }
 
-func (p *sqlBackend) queryLogger(transactionKey, dataSourceName string, runner QueryRunner) QueryRunner {
+func (p *sqlBackend) queryLogger(transactionKey, dataSourceName string, runner helper.QueryRunner) helper.QueryRunner {
 	if transactionKey == "" {
 		transactionKey = "default"
 	}
 	return queryLoggerStruct{transactionKey: transactionKey, dataSourceName: dataSourceName, delegate: runner}
 }
 
-func (p *sqlBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx QueryRunner) errors.ServiceError) errors.ServiceError {
+func (p *sqlBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx helper.QueryRunner) errors.ServiceError) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	transactionKey := ctx.Value(abs.TransactionContextKey)

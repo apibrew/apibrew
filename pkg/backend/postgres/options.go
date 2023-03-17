@@ -1,8 +1,11 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
 	"github.com/lib/pq"
+	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
@@ -10,6 +13,17 @@ import (
 
 type postgreSqlBackendOptions struct {
 	connectionDetails *model.DataSource_PostgresqlParams
+	handleDbError     func(ctx context.Context, err error) errors.ServiceError
+}
+
+func (p *postgreSqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
+	p.handleDbError = f
+}
+
+func (p postgreSqlBackendOptions) GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor {
+	return func(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams, history, forceMigration bool) helper.ResourceMigrationBuilder {
+		return &resourceMigrationBuilder{handleDbError: p.handleDbError, options: p, ctx: ctx, runner: runner, params: params, history: history, forceMigration: forceMigration, tableName: p.GetFullTableName(params.MigrationPlan.CurrentResource.SourceConfig, history)}
+	}
 }
 
 func (p postgreSqlBackendOptions) HandleError(err error) (errors.ServiceError, bool) {
@@ -54,4 +68,23 @@ func (p postgreSqlBackendOptions) GetDriverName() string {
 func (p postgreSqlBackendOptions) GetConnectionString() string {
 	params := p.connectionDetails.PostgresqlParams
 	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", params.GetUsername(), params.GetPassword(), params.GetHost(), params.GetPort(), params.GetDbName())
+}
+
+func (p *postgreSqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
+	var tableName string
+
+	if history {
+		tableName = sourceConfig.Entity + "_h"
+	} else {
+		tableName = sourceConfig.Entity
+	}
+
+	def := ""
+	if sourceConfig.Catalog != "" {
+		def = fmt.Sprintf("%s.%s", p.Quote(sourceConfig.Catalog), p.Quote(tableName))
+	} else {
+		def = p.Quote(sourceConfig.Entity)
+	}
+
+	return def
 }
