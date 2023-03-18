@@ -2,6 +2,7 @@ package setup
 
 import (
 	"context"
+	"errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/helper"
@@ -10,6 +11,7 @@ import (
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/grpc/metadata"
+	"testing"
 )
 
 var Ctx context.Context
@@ -56,36 +58,44 @@ func SetupDataSources(ctx context.Context, dataSources []*model.DataSource) {
 		}
 	}
 
-	createRes, err := dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
-		DataSources: dataSourcesForCreate,
-	})
+	if len(dataSourcesForCreate) > 0 {
+		createRes, err := dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
+			DataSources: dataSourcesForCreate,
+		})
 
-	if err != nil {
-		panic(err)
-	}
-
-	for _, cd := range dataSources {
-		if cd.Id != "" {
-			continue
+		if err != nil {
+			panic(err)
 		}
 
-		found := false
-		for _, ds := range createRes.DataSources {
-
-			if cd.Name == ds.Name {
-				found = true
-				cd.Id = ds.Id
-				break
+		for _, cd := range dataSources {
+			if cd.Id != "" {
+				continue
 			}
-		}
 
-		if !found {
-			panic("Could not create data source: " + cd.Name)
+			found := false
+			for _, ds := range createRes.DataSources {
+
+				if cd.Name == ds.Name {
+					found = true
+					cd.Id = ds.Id
+					break
+				}
+			}
+
+			if !found {
+				panic("Could not create data source: " + cd.Name)
+			}
 		}
 	}
 }
 
-func SetupResources(ctx context.Context, resources []*model.Resource) {
+func PrepareResourcesForTest(t *testing.T, resources []*model.Resource) func() {
+	return ResourcesWithErrorHandler(Ctx, resources, func(err error) {
+		t.Error(err)
+	})
+}
+
+func ResourcesWithErrorHandler(ctx context.Context, resources []*model.Resource, eh func(err error)) func() {
 	// creating data sources
 	listResourceResp, err := resourceClient.List(ctx, &stub.ListResourceRequest{})
 
@@ -95,6 +105,25 @@ func SetupResources(ctx context.Context, resources []*model.Resource) {
 
 	var resourcesForCreate []*model.Resource
 	var resourcesForUpdate []*model.Resource
+	var exists = false
+
+	destroyHandler := func() {
+		if !exists {
+			return
+		}
+		_, err := resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			Token: GetTestDhClient().GetToken(),
+			Ids: util.ArrayMap[*model.Resource, string](resources, func(t *model.Resource) string {
+				return t.Id
+			}),
+			DoMigration:    true,
+			ForceMigration: true,
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	for _, cd := range resources {
 		found := false
@@ -102,6 +131,7 @@ func SetupResources(ctx context.Context, resources []*model.Resource) {
 			if cd.Name == ds.Name {
 				found = true
 				cd.Id = ds.Id
+				util.NormalizeResource(ds)
 				resourcesForUpdate = append(resourcesForUpdate, ds)
 				break
 			}
@@ -120,8 +150,11 @@ func SetupResources(ctx context.Context, resources []*model.Resource) {
 		})
 
 		if err != nil {
-			panic(err)
+			eh(err)
+			return destroyHandler
 		}
+
+		exists = true
 
 		for _, cd := range resourcesForUpdate {
 			if cd.Id != "" {
@@ -138,7 +171,8 @@ func SetupResources(ctx context.Context, resources []*model.Resource) {
 			}
 
 			if !found {
-				panic("Could not create data source: " + cd.Name)
+				eh(errors.New("Could not create resource: " + cd.Name))
+				return destroyHandler
 			}
 		}
 	}
@@ -151,8 +185,11 @@ func SetupResources(ctx context.Context, resources []*model.Resource) {
 		})
 
 		if err != nil {
-			panic(err)
+			eh(err)
+			return destroyHandler
 		}
+
+		exists = true
 
 		for _, cd := range resourcesForCreate {
 			if cd.Id != "" {
@@ -169,10 +206,19 @@ func SetupResources(ctx context.Context, resources []*model.Resource) {
 			}
 
 			if !found {
-				panic("Could not create data source: " + cd.Name)
+				eh(errors.New("Could not create resource: " + cd.Name))
+				return destroyHandler
 			}
 		}
 	}
+
+	return destroyHandler
+}
+
+func SetupResources(ctx context.Context, resources []*model.Resource) {
+	ResourcesWithErrorHandler(ctx, resources, func(err error) {
+		panic(err)
+	})
 }
 
 func DestroyResources(ctx context.Context, resources []*model.Resource) {

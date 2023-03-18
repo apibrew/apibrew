@@ -8,6 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/util"
 )
 
 func (p *sqlBackend) ListEntities(ctx context.Context) (result []*model.DataSourceCatalog, err errors.ServiceError) {
@@ -36,6 +37,8 @@ func (p *sqlBackend) PrepareResourceFromEntity(ctx context.Context, catalog stri
 		logger.Errorf("Unable to load resource for %s Err: %s", entity, err)
 		return nil, err
 	}
+
+	util.RemarkResource(resource)
 
 	return resource, nil
 }
