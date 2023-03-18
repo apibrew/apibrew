@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	util2 "github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
@@ -12,7 +13,7 @@ import (
 
 func TestListRecord1(t *testing.T) {
 
-	withAutoLoadedResource(ctx, t, dataSource1, "public", "organization", func(resource *model.Resource) {
+	withAutoLoadedResource(setup.Ctx, t, setup.DataSource1, "public", "organization", func(resource *model.Resource) {
 		val1, err := structpb.NewValue("month")
 
 		if err != nil {
@@ -27,7 +28,7 @@ func TestListRecord1(t *testing.T) {
 			return
 		}
 
-		res, err := recordClient.Search(ctx, &stub.SearchRecordRequest{
+		res, err := recordClient.Search(setup.Ctx, &stub.SearchRecordRequest{
 			Resource: resource.Name,
 			Query: &model.BooleanExpression{
 				Expression: &model.BooleanExpression_And{

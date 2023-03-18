@@ -12,6 +12,12 @@ var ResourceResource = &model.Resource{
 		Entity:     "resource",
 	},
 	Properties: []*model.ResourceProperty{
+		IdProperty,
+		VersionProperty,
+		AuditProperties[0],
+		AuditProperties[1],
+		AuditProperties[2],
+		AuditProperties[3],
 		{
 			Name:     "name",
 			Mapping:  "name",
@@ -64,7 +70,7 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name:     "entity",
-			Mapping:  "source_mapping",
+			Mapping:  "mapping",
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,

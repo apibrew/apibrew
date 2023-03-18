@@ -1,10 +1,10 @@
-package test
+package setup
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
 )
 
-var systemDataSource = &model.DataSource{
+var SystemDataSource = &model.DataSource{
 	Id:          "system",
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "system",
@@ -21,7 +21,7 @@ var systemDataSource = &model.DataSource{
 	},
 }
 
-var dhTest = &model.DataSource{
+var DhTest = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "dh-test",
 	Description: "dh-test",
@@ -37,7 +37,7 @@ var dhTest = &model.DataSource{
 	},
 }
 
-var dhTestWrongPassword = &model.DataSource{
+var DhTestWrongPassword = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1-wrong",
 	Description: "data-source-1-wrong",
@@ -53,7 +53,7 @@ var dhTestWrongPassword = &model.DataSource{
 	},
 }
 
-var dataSourceDhTest = &model.DataSource{
+var DataSourceDhTest = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-test",
 	Description: "data-source-test",
@@ -69,7 +69,7 @@ var dataSourceDhTest = &model.DataSource{
 	},
 }
 
-var dataSource1 = &model.DataSource{
+var DataSource1 = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1",
 	Description: "data-source-1",
@@ -86,129 +86,133 @@ var dataSource1 = &model.DataSource{
 	},
 }
 
-var richResource1 = &model.Resource{
-	Name:      "rich-test-3995",
-	Namespace: "default",
-	SourceConfig: &model.ResourceSourceConfig{
-		DataSource: dhTest.Name,
-		Entity:     "rich_test_3995",
-	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name: "int32_o",
-			Type: model.ResourceProperty_INT32,
+var RichResource1 = PrepareRichResource1()
 
-			Mapping:  "int32_o",
-			Required: false,
+func PrepareRichResource1() *model.Resource {
+	return &model.Resource{
+		Name:      "rich-test-3995",
+		Namespace: "default",
+		SourceConfig: &model.ResourceSourceConfig{
+			DataSource: DhTest.Name,
+			Entity:     "rich_test_3995",
 		},
-		{
-			Name: "int32",
-			Type: model.ResourceProperty_INT32,
+		Properties: []*model.ResourceProperty{
+			{
+				Name: "int32_o",
+				Type: model.ResourceProperty_INT32,
 
-			Mapping:  "int32",
-			Required: true,
+				Mapping:  "int32_o",
+				Required: false,
+			},
+			{
+				Name: "int32",
+				Type: model.ResourceProperty_INT32,
+
+				Mapping:  "int32",
+				Required: true,
+			},
+
+			{
+				Name: "int64",
+				Type: model.ResourceProperty_INT64,
+
+				Mapping:  "int64",
+				Required: true,
+			},
+
+			{
+				Name: "float",
+				Type: model.ResourceProperty_FLOAT32,
+
+				Mapping:  "float",
+				Required: true,
+			},
+
+			{
+				Name: "double",
+				Type: model.ResourceProperty_FLOAT64,
+
+				Mapping:  "double",
+				Required: true,
+			},
+
+			{
+				Name: "text",
+				Type: model.ResourceProperty_STRING,
+
+				Mapping:  "text",
+				Length:   255,
+				Required: true,
+			},
+
+			{
+				Name: "string",
+				Type: model.ResourceProperty_STRING,
+
+				Mapping:  "string",
+				Required: true,
+				Length:   255,
+			},
+			{
+				Name: "uuid",
+				Type: model.ResourceProperty_UUID,
+
+				Mapping:  "uuid",
+				Required: true,
+			},
+
+			{
+				Name: "date",
+				Type: model.ResourceProperty_DATE,
+
+				Mapping:  "date",
+				Required: true,
+			},
+
+			{
+				Name: "time",
+				Type: model.ResourceProperty_TIME,
+
+				Mapping:  "time",
+				Required: true,
+			},
+
+			{
+				Name: "timestamp",
+				Type: model.ResourceProperty_TIMESTAMP,
+
+				Mapping:  "timestamp",
+				Required: true,
+			},
+
+			{
+				Name: "bool",
+				Type: model.ResourceProperty_BOOL,
+
+				Mapping:  "bool",
+				Required: true,
+			},
+
+			{
+				Name: "object",
+				Type: model.ResourceProperty_OBJECT,
+
+				Mapping:  "object",
+				Required: true,
+			},
+
+			{
+				Name: "bytes",
+				Type: model.ResourceProperty_BYTES,
+
+				Mapping:  "bytes",
+				Required: true,
+			},
 		},
-
-		{
-			Name: "int64",
-			Type: model.ResourceProperty_INT64,
-
-			Mapping:  "int64",
-			Required: true,
-		},
-
-		{
-			Name: "float",
-			Type: model.ResourceProperty_FLOAT32,
-
-			Mapping:  "float",
-			Required: true,
-		},
-
-		{
-			Name: "double",
-			Type: model.ResourceProperty_FLOAT64,
-
-			Mapping:  "double",
-			Required: true,
-		},
-
-		{
-			Name: "text",
-			Type: model.ResourceProperty_STRING,
-
-			Mapping:  "text",
-			Length:   255,
-			Required: true,
-		},
-
-		{
-			Name: "string",
-			Type: model.ResourceProperty_STRING,
-
-			Mapping:  "string",
-			Required: true,
-			Length:   255,
-		},
-		{
-			Name: "uuid",
-			Type: model.ResourceProperty_UUID,
-
-			Mapping:  "uuid",
-			Required: true,
-		},
-
-		{
-			Name: "date",
-			Type: model.ResourceProperty_DATE,
-
-			Mapping:  "date",
-			Required: true,
-		},
-
-		{
-			Name: "time",
-			Type: model.ResourceProperty_TIME,
-
-			Mapping:  "time",
-			Required: true,
-		},
-
-		{
-			Name: "timestamp",
-			Type: model.ResourceProperty_TIMESTAMP,
-
-			Mapping:  "timestamp",
-			Required: true,
-		},
-
-		{
-			Name: "bool",
-			Type: model.ResourceProperty_BOOL,
-
-			Mapping:  "bool",
-			Required: true,
-		},
-
-		{
-			Name: "object",
-			Type: model.ResourceProperty_OBJECT,
-
-			Mapping:  "object",
-			Required: true,
-		},
-
-		{
-			Name: "bytes",
-			Type: model.ResourceProperty_BYTES,
-
-			Mapping:  "bytes",
-			Required: true,
-		},
-	},
+	}
 }
 
-var simpleVirtualResource1 = &model.Resource{
+var SimpleVirtualResource1 = &model.Resource{
 	Name:      "virtualResource",
 	Namespace: "default",
 	Virtual:   true,

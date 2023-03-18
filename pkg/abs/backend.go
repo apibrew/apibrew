@@ -19,7 +19,7 @@ type BackendGenericInterface interface {
 }
 
 type BackendRecordsInterface interface {
-	AddRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError)
+	AddRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, []bool, errors.ServiceError)
 	UpdateRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, errors.ServiceError)
 	GetRecord(ctx context.Context, resource *model.Resource, schema *Schema, id string) (*model.Record, errors.ServiceError)
 	DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError
@@ -30,7 +30,6 @@ type BackendSchemaInterface interface {
 	ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError)
 	UpgradeResource(ctx context.Context, params UpgradeResourceParams) errors.ServiceError
-	DowngradeResource(ctx context.Context, resource *model.Resource, forceMigration bool) errors.ServiceError
 }
 
 type BackendTransactionInterface interface {
@@ -53,7 +52,6 @@ type ListRecordParams struct {
 	Query             *model.BooleanExpression
 	Limit             uint32
 	Offset            uint64
-	UseHistory        bool
 	ResolveReferences []string
 	Schema            *Schema
 	ResultChan        chan<- *model.Record
@@ -61,11 +59,9 @@ type ListRecordParams struct {
 }
 
 type UpgradeResourceParams struct {
-	CurrentResource *model.Resource
-	Resource        *model.Resource
-	ForceMigration  bool
-	Schema          *Schema
-	MigrationPlan   *model.ResourceMigrationPlan
+	ForceMigration bool
+	Schema         *Schema
+	MigrationPlan  *model.ResourceMigrationPlan
 }
 
 type AddResourceParams struct {

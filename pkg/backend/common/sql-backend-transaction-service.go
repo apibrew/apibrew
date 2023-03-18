@@ -1,4 +1,4 @@
-package postgres
+package common
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type txData struct {
 	cancel context.CancelFunc
 }
 
-func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, readOnly bool) (string, errors.ServiceError) {
+func (p *sqlBackend) BeginTransaction(ctx context.Context, readOnly bool) (string, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("begin transaction readonly=%v", readOnly)
@@ -34,7 +34,7 @@ func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, r
 
 	if err != nil {
 		cancel()
-		return "", handleDbError(ctx, err)
+		return "", p.handleDbError(ctx, err)
 	}
 
 	txDataInstance := &txData{
@@ -68,7 +68,7 @@ func (p *postgresResourceServiceBackend) BeginTransaction(ctx context.Context, r
 	return transactionKey, nil
 }
 
-func (p *postgresResourceServiceBackend) CommitTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+func (p *sqlBackend) CommitTransaction(ctx context.Context) (serviceError errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("CommitTransaction")
@@ -90,10 +90,10 @@ func (p *postgresResourceServiceBackend) CommitTransaction(ctx context.Context) 
 	err := txDataInstance.tx.Commit()
 	txDataInstance.cancel()
 
-	return handleDbError(ctx, err)
+	return p.handleDbError(ctx, err)
 }
 
-func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+func (p *sqlBackend) RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("RollbackTransaction")
@@ -115,10 +115,10 @@ func (p *postgresResourceServiceBackend) RollbackTransaction(ctx context.Context
 	err := txDataInstance.tx.Rollback()
 	txDataInstance.cancel()
 
-	return handleDbError(ctx, err)
+	return p.handleDbError(ctx, err)
 }
 
-func (p *postgresResourceServiceBackend) IsTransactionAlive(_ context.Context) (isAlive bool, serviceError errors.ServiceError) {
+func (p *sqlBackend) IsTransactionAlive(_ context.Context) (isAlive bool, serviceError errors.ServiceError) {
 	//TODO implement me
 	panic("implement me")
 }
