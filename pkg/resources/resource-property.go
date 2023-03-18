@@ -28,14 +28,14 @@ var ResourcePropertyResource = &model.Resource{
 		},
 		{
 			Name:     "mapping",
-			Mapping:  "source_mapping",
+			Mapping:  "mapping",
 			Type:     model.ResourceProperty_STRING,
 			Length:   64,
 			Required: true,
 		},
 		{
-			Name:     "sourcePrimary",
-			Mapping:  "source_primary",
+			Name:     "primary",
+			Mapping:  "primary",
 			Type:     model.ResourceProperty_BOOL,
 			Required: true,
 		},

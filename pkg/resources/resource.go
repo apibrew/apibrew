@@ -64,7 +64,7 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name:     "entity",
-			Mapping:  "source_mapping",
+			Mapping:  "mapping",
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
