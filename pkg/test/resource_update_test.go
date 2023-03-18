@@ -5,6 +5,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/test/setup"
+	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
 )
@@ -88,6 +89,8 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 			},
 		},
 	}
+
+	util.NormalizeResource(resource1)
 
 	resource1.Id = resourceCreateRes.Resources[0].Id
 
@@ -197,6 +200,8 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
+	util.NormalizeResource(resource1)
+
 	_, err = resourceClient.Update(setup.Ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err != nil {
@@ -244,6 +249,8 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		},
 	}
 
+	util.NormalizeResource(resource1)
+
 	_, err = resourceClient.Update(setup.Ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
 	if err == nil {
@@ -265,6 +272,8 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		t.Error(err)
 		return
 	}
+
+	util.NormalizeResource(resource1)
 
 	_, err = resourceClient.Update(setup.Ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}})
 
@@ -291,6 +300,8 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 			},
 		},
 	}
+
+	util.NormalizeResource(resource1)
 
 	_, err = resourceClient.Update(setup.Ctx, &stub.UpdateResourceRequest{Resources: []*model.Resource{resource1}, DoMigration: true})
 
