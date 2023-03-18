@@ -17,3 +17,16 @@ var dhTestMysql = &model.DataSource{
 		},
 	},
 }
+
+var dhTestRedis = &model.DataSource{
+	Backend:     model.DataSourceBackendType_REDIS,
+	Name:        "dh-test-redis",
+	Description: "dh-test-redis",
+	Options: &model.DataSource_RedisOptions{
+		RedisOptions: &model.RedisOptions{
+			Addr:     "localhost:6379",
+			Password: "",
+			Db:       0,
+		},
+	},
+}

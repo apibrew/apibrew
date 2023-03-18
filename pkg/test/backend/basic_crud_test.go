@@ -13,6 +13,7 @@ import (
 var dataSources = []*model.DataSource{
 	setup.DhTest,
 	dhTestMysql,
+	dhTestRedis,
 }
 
 var resources = make(map[*model.DataSource]*model.Resource)

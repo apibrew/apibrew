@@ -92,6 +92,10 @@ func (s serviceError) Is(err error) bool {
 		return s.Code() == se.Code()
 	}
 
+	if se, ok := err.(*serviceError); ok {
+		return s.Code() == se.Code()
+	}
+
 	return false
 }
 

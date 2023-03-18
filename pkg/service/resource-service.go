@@ -491,11 +491,14 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 
 		if forceMigration {
-
 			existingResource, err = bck.PrepareResourceFromEntity(ctx, resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
 
-			if !errors.RecordNotFoundError.Is(err) && err != nil {
-				return nil, err
+			if errors.UnsupportedOperation.Is(err) {
+				existingResource = resource
+			} else {
+				if !errors.RecordNotFoundError.Is(err) && err != nil {
+					return nil, err
+				}
 			}
 
 			plan, err = r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)

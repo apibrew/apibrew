@@ -11,11 +11,9 @@ import (
 )
 
 func TestComplexPayload1Fail(t *testing.T) {
-
 	record1 := new(model.Record)
 
 	_, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
-		Token:    "",
 		Resource: setup.RichResource1.Name,
 		Records:  []*model.Record{record1},
 	})
