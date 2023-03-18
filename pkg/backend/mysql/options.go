@@ -25,7 +25,7 @@ func (p mysqlBackendOptions) GetResourceMigrationBuilderConstructor() helper.Res
 	panic("implement me")
 }
 
-func (p mysqlBackendOptions) GetFullTableName(config *model.ResourceSourceConfig, history bool) string {
+func (p mysqlBackendOptions) GetFullTableName(config *model.ResourceSourceConfig) string {
 	//TODO implement me
 	panic("implement me")
 }

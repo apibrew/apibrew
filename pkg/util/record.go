@@ -1,9 +1,14 @@
 package util
 
 import (
+	"context"
+	"github.com/google/uuid"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/security"
 	"github.com/tislib/data-handler/pkg/types"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
+	"time"
 )
 
 func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Record) error {
@@ -25,4 +30,26 @@ func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Recor
 	record.Id = strings.Join(idParts, "-")
 
 	return nil
+}
+
+func InitRecord(ctx context.Context, record *model.Record) {
+	now := time.Now()
+	recordNewId, _ := uuid.NewUUID()
+	record.Id = recordNewId.String()
+	record.AuditData = &model.AuditData{
+		CreatedOn: timestamppb.New(now),
+		CreatedBy: security.GetUserPrincipalFromContext(ctx),
+	}
+	record.Version = 1
+}
+
+func PrepareUpdateForRecord(ctx context.Context, record *model.Record) {
+	if record.AuditData == nil {
+		record.AuditData = &model.AuditData{}
+	}
+
+	now := time.Now()
+	record.AuditData.UpdatedOn = timestamppb.New(now)
+	record.AuditData.UpdatedBy = security.GetUserPrincipalFromContext(ctx)
+	record.Version++
 }

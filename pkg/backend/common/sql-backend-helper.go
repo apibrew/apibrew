@@ -77,8 +77,8 @@ func (p *sqlBackend) DbEncode(property *model.ResourceProperty, packedVal *struc
 	return val, nil
 }
 
-func (p *sqlBackend) getFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
-	return p.options.GetFullTableName(sourceConfig, history)
+func (p *sqlBackend) getFullTableName(sourceConfig *model.ResourceSourceConfig) string {
+	return p.options.GetFullTableName(sourceConfig)
 }
 
 func (p *sqlBackend) checkHasOwnId(resource *model.Resource) bool {

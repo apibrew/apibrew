@@ -20,9 +20,9 @@ type ResourceMigrationBuilder interface {
 	Exec() errors.ServiceError
 }
 
-type ResourceMigrationBuilderConstructor func(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, history, forceMigration bool) ResourceMigrationBuilder
+type ResourceMigrationBuilderConstructor func(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, forceMigration bool) ResourceMigrationBuilder
 
-func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder, migrationPlan *model.ResourceMigrationPlan, history, forceMigration bool) errors.ServiceError {
+func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder, migrationPlan *model.ResourceMigrationPlan, forceMigration bool) errors.ServiceError {
 	var currentPropertyMap = util.GetNamedMap(migrationPlan.CurrentResource.Properties)
 	var existingPropertyMap = util.GetNamedMap(migrationPlan.ExistingResource.Properties)
 
@@ -49,14 +49,12 @@ func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder
 		}
 	}
 
-	if !history {
-		for _, step := range migrationPlan.Steps {
-			switch sk := step.Kind.(type) {
-			case *model.ResourceMigrationStep_CreateIndex:
-				hp.AddIndex(migrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index])
-			case *model.ResourceMigrationStep_DeleteIndex:
-				hp.DeleteIndex(migrationPlan.CurrentResource.Indexes[sk.DeleteIndex.ExistingIndex])
-			}
+	for _, step := range migrationPlan.Steps {
+		switch sk := step.Kind.(type) {
+		case *model.ResourceMigrationStep_CreateIndex:
+			hp.AddIndex(migrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index])
+		case *model.ResourceMigrationStep_DeleteIndex:
+			hp.DeleteIndex(migrationPlan.CurrentResource.Indexes[sk.DeleteIndex.ExistingIndex])
 		}
 	}
 

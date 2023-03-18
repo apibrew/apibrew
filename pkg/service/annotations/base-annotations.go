@@ -2,6 +2,7 @@ package annotations
 
 // resource flags
 const KeepHistory = "KeepHistory"
+const HistoryResource = "HistoryResource"
 const AutoCreated = "AutoCreated"
 const DisableAudit = "DisableAudit"
 const DisableVersion = "DisableVersion"

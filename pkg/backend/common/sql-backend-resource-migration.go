@@ -13,10 +13,10 @@ import (
 	"strings"
 )
 
-func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams, history bool) errors.ServiceError {
-	hp := p.options.GetResourceMigrationBuilderConstructor()(ctx, runner, params, history, params.ForceMigration)
+func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams) errors.ServiceError {
+	hp := p.options.GetResourceMigrationBuilderConstructor()(ctx, runner, params, params.ForceMigration)
 
-	return helper.ResourceMigrateTableViaResourceMigrationBuilder(hp, params.MigrationPlan, history, params.ForceMigration)
+	return helper.ResourceMigrateTableViaResourceMigrationBuilder(hp, params.MigrationPlan, params.ForceMigration)
 }
 
 func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runner helper.QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {

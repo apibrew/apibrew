@@ -29,7 +29,7 @@ type SqlBackendOptions interface {
 	GetFlavor() sqlbuilder.Flavor
 	GetDefaultCatalog() string
 	GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor
-	GetFullTableName(config *model.ResourceSourceConfig, history bool) string
+	GetFullTableName(config *model.ResourceSourceConfig) string
 }
 
 func NewSqlBackend(dataSource *model.DataSource, options SqlBackendOptions) abs.Backend {

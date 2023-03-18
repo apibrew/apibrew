@@ -21,8 +21,8 @@ func (p *postgreSqlBackendOptions) UseDbHandleError(f func(ctx context.Context, 
 }
 
 func (p postgreSqlBackendOptions) GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor {
-	return func(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams, history, forceMigration bool) helper.ResourceMigrationBuilder {
-		return &resourceMigrationBuilder{handleDbError: p.handleDbError, options: p, ctx: ctx, runner: runner, params: params, history: history, forceMigration: forceMigration, tableName: p.GetFullTableName(params.MigrationPlan.CurrentResource.SourceConfig, history)}
+	return func(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams, forceMigration bool) helper.ResourceMigrationBuilder {
+		return &resourceMigrationBuilder{handleDbError: p.handleDbError, options: p, ctx: ctx, runner: runner, params: params, forceMigration: forceMigration, tableName: p.GetFullTableName(params.MigrationPlan.CurrentResource.SourceConfig)}
 	}
 }
 
@@ -70,15 +70,8 @@ func (p postgreSqlBackendOptions) GetConnectionString() string {
 	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", params.GetUsername(), params.GetPassword(), params.GetHost(), params.GetPort(), params.GetDbName())
 }
 
-func (p *postgreSqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourceConfig, history bool) string {
-	var tableName string
-
-	if history {
-		tableName = sourceConfig.Entity + "_h"
-	} else {
-		tableName = sourceConfig.Entity
-	}
-
+func (p *postgreSqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourceConfig) string {
+	var tableName = sourceConfig.Entity
 	def := ""
 	if sourceConfig.Catalog != "" {
 		def = fmt.Sprintf("%s.%s", p.Quote(sourceConfig.Catalog), p.Quote(tableName))
