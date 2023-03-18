@@ -3,13 +3,10 @@ package common
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/types"
-	"google.golang.org/protobuf/types/known/structpb"
 	"net"
 	"runtime/debug"
 )
@@ -51,29 +48,6 @@ func (p *sqlBackend) handleDbError(ctx context.Context, err error) errors.Servic
 
 	logger.Print("Unhandled Error: ", err)
 	return errors.InternalError.WithDetails(err.Error())
-}
-
-func (p *sqlBackend) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
-	propertyType := types.ByResourcePropertyType(property.Type)
-	var val interface{}
-
-	if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
-		var err error
-		val, err = json.Marshal(packedVal.AsInterface())
-
-		if err != nil {
-			return nil, errors.InternalError.WithDetails(err.Error())
-		}
-		val = string(val.([]byte))
-	} else {
-		var err error
-		val, err = propertyType.UnPack(packedVal)
-
-		if err != nil {
-			return nil, errors.InternalError.WithDetails(err.Error())
-		}
-	}
-	return val, nil
 }
 
 func (p *sqlBackend) getFullTableName(sourceConfig *model.ResourceSourceConfig) string {

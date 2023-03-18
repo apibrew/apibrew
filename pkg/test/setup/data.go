@@ -109,7 +109,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_INT32,
 
 				Mapping:  "int32",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -117,7 +117,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_INT64,
 
 				Mapping:  "int64",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -125,7 +125,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_FLOAT32,
 
 				Mapping:  "float",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -133,7 +133,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_FLOAT64,
 
 				Mapping:  "double",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -142,7 +142,7 @@ func PrepareRichResource1() *model.Resource {
 
 				Mapping:  "text",
 				Length:   255,
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -150,7 +150,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_STRING,
 
 				Mapping:  "string",
-				Required: true,
+				Required: false,
 				Length:   255,
 			},
 			{
@@ -158,7 +158,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_UUID,
 
 				Mapping:  "uuid",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -166,7 +166,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_DATE,
 
 				Mapping:  "date",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -174,7 +174,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_TIME,
 
 				Mapping:  "time",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -182,7 +182,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_TIMESTAMP,
 
 				Mapping:  "timestamp",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -190,7 +190,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_BOOL,
 
 				Mapping:  "bool",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -198,7 +198,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_OBJECT,
 
 				Mapping:  "object",
-				Required: true,
+				Required: false,
 			},
 
 			{
@@ -206,7 +206,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_BYTES,
 
 				Mapping:  "bytes",
-				Required: true,
+				Required: false,
 			},
 		},
 	}
@@ -223,7 +223,7 @@ var SimpleVirtualResource1 = &model.Resource{
 
 			Mapping:  "name",
 			Length:   255,
-			Required: true,
+			Required: false,
 		},
 		{
 			Name: "description",

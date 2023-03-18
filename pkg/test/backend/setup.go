@@ -8,8 +8,8 @@ var dhTestMysql = &model.DataSource{
 	Description: "dh-test-mysql",
 	Options: &model.DataSource_MysqlParams{
 		MysqlParams: &model.MysqlOptions{
-			Username:      "root",
-			Password:      "",
+			Username:      "dh_test",
+			Password:      "dh_test",
 			Host:          "127.0.0.1",
 			Port:          3306,
 			DbName:        "dh_test",

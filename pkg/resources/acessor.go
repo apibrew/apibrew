@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -48,6 +49,9 @@ func GetResourceSpecialProperties(resource *model.Resource) []PropertyAccessor {
 		specialProps = append(specialProps, PropertyAccessor{
 			Property: AuditPropertyUpdatedOn,
 			Get: func(record *model.Record) interface{} {
+				if record.AuditData.UpdatedOn == nil {
+					return nil
+				}
 				return record.AuditData.UpdatedOn.AsTime()
 			},
 			Set: func(record *model.Record, val interface{}) {
@@ -72,7 +76,13 @@ func GetResourceSpecialProperties(resource *model.Resource) []PropertyAccessor {
 		specialProps = append(specialProps, PropertyAccessor{
 			Property: IdProperty,
 			Get: func(record *model.Record) interface{} {
-				return uuid.MustParse(record.Id)
+				val, err := uuid.Parse(record.Id)
+
+				if err != nil {
+					log.Warn(err)
+				}
+
+				return val
 			},
 			Set: func(record *model.Record, val interface{}) {
 				record.Id = val.(uuid.UUID).String()

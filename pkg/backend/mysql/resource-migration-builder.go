@@ -1,4 +1,4 @@
-package postgres
+package mysql
 
 import (
 	"context"
@@ -18,7 +18,7 @@ type resourceMigrationBuilder struct {
 	params         abs.UpgradeResourceParams
 	runner         helper.QueryRunner
 	ctx            context.Context
-	options        postgreSqlBackendOptions
+	options        mysqlBackendOptions
 	handleDbError  func(ctx context.Context, err error) errors.ServiceError
 	execs          []func() errors.ServiceError
 	tableName      string

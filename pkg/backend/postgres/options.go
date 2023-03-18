@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/lib/pq"
 	"github.com/tislib/data-handler/pkg/abs"
@@ -9,6 +10,8 @@ import (
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/types"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type postgreSqlBackendOptions struct {
@@ -80,4 +83,27 @@ func (p *postgreSqlBackendOptions) GetFullTableName(sourceConfig *model.Resource
 	}
 
 	return def
+}
+
+func (p *postgreSqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
+	propertyType := types.ByResourcePropertyType(property.Type)
+	var val interface{}
+
+	if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
+		var err error
+		val, err = json.Marshal(packedVal.AsInterface())
+
+		if err != nil {
+			return nil, errors.InternalError.WithDetails(err.Error())
+		}
+		val = string(val.([]byte))
+	} else {
+		var err error
+		val, err = propertyType.UnPack(packedVal)
+
+		if err != nil {
+			return nil, errors.InternalError.WithDetails(err.Error())
+		}
+	}
+	return val, nil
 }
