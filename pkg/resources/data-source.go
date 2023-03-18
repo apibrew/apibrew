@@ -136,6 +136,29 @@ var DataSourceResource = &model.Resource{
 			Length:   64,
 			Required: false,
 		},
+		{
+			Name: "options_redis_addr",
+
+			Mapping:  "options_redis_addr",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: false,
+		},
+		{
+			Name: "options_redis_password",
+
+			Mapping:  "options_redis_password",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: false,
+		},
+		{
+			Name: "options_redis_db",
+
+			Mapping:  "options_redis_db",
+			Type:     model.ResourceProperty_INT32,
+			Required: false,
+		},
 	},
 	SecurityContext: securityContextDisallowAll,
 }
