@@ -763,6 +763,10 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 		if !resource.Virtual && doMigration {
 			bck, err := r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
 
+			if err != nil {
+				return err
+			}
+
 			plan, err := r.resourceMigrationService.PreparePlan(ctx, resource, nil)
 
 			if err != nil {

@@ -73,7 +73,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 	}
 	sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
-	var def = []string{fmt.Sprintf("%s", r.options.Quote(property.Mapping)), sqlType, nullModifier, uniqModifier}
+	var def = []string{r.options.Quote(property.Mapping), sqlType, nullModifier, uniqModifier}
 
 	if property.Type == model.ResourceProperty_REFERENCE {
 		if property.Reference != nil {

@@ -147,7 +147,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 		if property.Type == model.ResourceProperty_REFERENCE {
 			updateBuilder.SetMore(fmt.Sprintf("%s=%s", p.options.Quote(property.Mapping), p.resolveReference(val, updateBuilder.Var, schema, resource, property)))
 		} else {
-			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("%s", p.options.Quote(property.Mapping)), val))
+			updateBuilder.SetMore(updateBuilder.Equal(p.options.Quote(property.Mapping), val))
 		}
 	}
 
