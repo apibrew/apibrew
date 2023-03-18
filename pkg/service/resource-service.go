@@ -276,6 +276,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		case *model.ResourceMigrationStep_UpdateProperty:
 			propertyRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.UpdateProperty.Property], plan.CurrentResource)
 			propertyRecord.Id = *existingPropertyMap[sk.UpdateProperty.ExistingProperty].Id
+			util.PrepareUpdateForRecord(ctx, propertyRecord)
 
 			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
 				Resource:       resources.ResourcePropertyResource,
@@ -313,8 +314,9 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		propertyNameIdMap[prop.Properties["name"].GetStringValue()] = prop.Id
 	}
 
-	for _, prop := range propertyRecords {
-		prop.Id = propertyNameIdMap[prop.Properties["name"].GetStringValue()]
+	for _, propRecord := range propertyRecords {
+		propRecord.Id = propertyNameIdMap[propRecord.Properties["name"].GetStringValue()]
+		util.PrepareUpdateForRecord(ctx, propRecord)
 	}
 
 	_, err = r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
