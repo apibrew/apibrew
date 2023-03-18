@@ -25,13 +25,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 	cols := p.prepareResourceRecordCols(resource)
 
 	query = query + fmt.Sprintf(" (%s)", strings.Join(cols, ","))
-	var args []interface{}
-
-	argPlaceHolder := func(val interface{}) string {
-		idx := len(args) + 1
-		args = append(args, val)
-		return fmt.Sprintf("$%d", idx)
-	}
+	var args = sqlbuilder.Args{Flavor: p.options.GetFlavor()}
 
 	var values []string
 
@@ -43,22 +37,22 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 
 			if exists || !annotations.IsEnabled(property, annotations.Identity) {
 				if packedVal == nil {
-					row = append(row, argPlaceHolder(nil))
+					row = append(row, args.Add(nil))
 					continue
 				}
 
-				val, serviceError := p.DbEncode(property, packedVal)
+				val, serviceError := p.options.DbEncode(property, packedVal)
 				if serviceError != nil {
 					return false, serviceError
 				}
 
 				if property.Type == model.ResourceProperty_REFERENCE {
-					row = append(row, p.resolveReference(val, argPlaceHolder, schema, resource, property))
+					row = append(row, p.resolveReference(val, args.Add, schema, resource, property))
 
 					continue
 				}
 
-				row = append(row, argPlaceHolder(val))
+				row = append(row, args.Add(val))
 			} else {
 				row = append(row, "DEFAULT")
 			}
@@ -73,7 +67,8 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 		query = query + " ON CONFLICT DO NOTHING"
 	}
 
-	_, err := runner.ExecContext(ctx, query, args...)
+	q, a := args.Compile(query)
+	_, err := runner.ExecContext(ctx, q, a...)
 
 	if err != nil {
 		logger.Error(err)
@@ -138,7 +133,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			continue
 		}
 
-		val, serviceError := p.DbEncode(property, packedVal)
+		val, serviceError := p.options.DbEncode(property, packedVal)
 
 		if serviceError != nil {
 			return serviceError
@@ -236,7 +231,7 @@ func (p *sqlBackend) createRecordIdMatchQuery(ctx context.Context, resource *mod
 	for _, prop := range resource.Properties {
 		val := record.Properties[prop.Name]
 		if val != nil && prop.Primary {
-			typ := types.ByResourcePropertyType(prop.Type)
+			typ := p.options.TypeModifier(prop.Type)
 			unpacked, err := typ.UnPack(val)
 			if err != nil {
 				return "", p.handleDbError(ctx, err)

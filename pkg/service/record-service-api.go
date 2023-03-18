@@ -289,6 +289,11 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
 	}
 
+	for _, record := range params.Records {
+		util.PrepareUpdateForRecord(ctx, record)
+		util.NormalizeRecord(resource, record)
+	}
+
 	err = r.validateRecords(resource, params.Records, true)
 
 	if err != nil {
@@ -309,9 +314,6 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		for key := range immutableColsMap {
 			delete(record.Properties, key)
 		}
-
-		util.PrepareUpdateForRecord(ctx, record)
-		util.NormalizeRecord(resource, record)
 	}
 
 	if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {

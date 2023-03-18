@@ -52,7 +52,11 @@ func NormalizeRecord(resource *model.Resource, record *model.Record) {
 
 	for _, prop := range specialProps {
 		var err error
-		record.Properties[prop.Property.Name], err = types.ByResourcePropertyType(prop.Property.Type).Pack(prop.Get(record))
+		val := prop.Get(record)
+
+		if val != nil {
+			record.Properties[prop.Property.Name], err = types.ByResourcePropertyType(prop.Property.Type).Pack(val)
+		}
 
 		if err != nil {
 			panic(err)
@@ -93,7 +97,10 @@ func DeNormalizeRecord(resource *model.Resource, record *model.Record) {
 
 func PrepareUpdateForRecord(ctx context.Context, record *model.Record) {
 	if record.AuditData == nil {
-		record.AuditData = &model.AuditData{}
+		record.AuditData = &model.AuditData{
+			CreatedOn: timestamppb.New(time.Now()),
+			CreatedBy: "unknown",
+		}
 	}
 
 	now := time.Now()
