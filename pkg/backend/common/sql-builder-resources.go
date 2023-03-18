@@ -5,37 +5,11 @@ import (
 	"fmt"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/backend/helper"
-	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"strings"
 )
-
-func (p *sqlBackend) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) errors.ServiceError {
-	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-		builder.Define("id", p.options.GetSqlTypeFromProperty(model.ResourceProperty_UUID, 0), "NOT NULL", "PRIMARY KEY")
-	} else {
-		for _, prop := range resource.Properties {
-			if prop.Primary {
-				var typ = p.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
-
-				if annotations.IsEnabled(prop, annotations.Identity) {
-					if typ == "INT" {
-						typ = "SERIAL"
-					} else {
-						typ = "BIGSERIAL"
-					}
-				}
-
-				builder.Define(prop.Mapping, typ, "NOT NULL", "PRIMARY KEY")
-				break
-			}
-		}
-	}
-	return nil
-}
 
 func (p *sqlBackend) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) string {
 	uniqModifier := ""
@@ -116,8 +90,4 @@ order by table_schema
 	}
 
 	return
-}
-
-func (p *sqlBackend) isAuditColumn(column string) bool {
-	return column == "created_on" || column == "updated_on" || column == "created_by" || column == "updated_by" || column == "version"
 }

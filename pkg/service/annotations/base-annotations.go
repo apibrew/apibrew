@@ -3,6 +3,7 @@ package annotations
 // resource flags
 const KeepHistory = "KeepHistory"
 const HistoryResource = "HistoryResource"
+const NormalizedResource = "NormalizedResource"
 const AutoCreated = "AutoCreated"
 const DisableAudit = "DisableAudit"
 const DisableVersion = "DisableVersion"
@@ -14,3 +15,4 @@ const SourceDef = "SourceDef"
 const SourceIdentity = "SourceIdentity"
 const SourceMatchKey = "SourceMatchKey"
 const Identity = "Identity"
+const SpecialProperty = "SpecialProperty"

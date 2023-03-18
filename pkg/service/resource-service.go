@@ -9,6 +9,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -71,6 +72,10 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 		Schema: &r.schema,
 	})
 
+	for _, record := range records {
+		util.DeNormalizeRecord(resources.ResourceResource, record)
+	}
+
 	r.schema.Resources = mapping.MapFromRecord(records, mapping.ResourceFromRecord)
 
 	if err != nil {
@@ -98,6 +103,10 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 		Schema: &r.schema,
 		Limit:  1000000,
 	})
+
+	for _, record := range propertyRecordList {
+		util.DeNormalizeRecord(resources.ResourcePropertyResource, record)
+	}
 
 	if err != nil {
 		return err
@@ -210,6 +219,18 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		if err != nil {
 			return err
 		}
+
+		if annotations.IsEnabled(resource, annotations.KeepHistory) {
+			err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
+				MigrationPlan:  util.HistoryPlan(plan),
+				ForceMigration: forceMigration,
+				Schema:         &r.schema,
+			})
+
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	r.mustReloadResources(context.TODO())
@@ -228,6 +249,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 
 			for _, record := range resourceRecords {
 				util.PrepareUpdateForRecord(ctx, record)
+				util.NormalizeRecord(resources.ResourceResource, record)
 			}
 
 			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
@@ -247,6 +269,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 			propertyCreateRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.CreateProperty.Property], plan.CurrentResource)
 
 			util.InitRecord(ctx, propertyCreateRecord)
+			util.NormalizeRecord(resources.ResourcePropertyResource, propertyCreateRecord)
 
 			_, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, abs.BulkRecordsParams{
 				Resource:       resources.ResourcePropertyResource,
@@ -277,6 +300,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 			propertyRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.UpdateProperty.Property], plan.CurrentResource)
 			propertyRecord.Id = *existingPropertyMap[sk.UpdateProperty.ExistingProperty].Id
 			util.PrepareUpdateForRecord(ctx, propertyRecord)
+			util.NormalizeRecord(resources.ResourcePropertyResource, propertyRecord)
 
 			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
 				Resource:       resources.ResourcePropertyResource,
@@ -311,12 +335,13 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 
 	var propertyNameIdMap = make(map[string]string)
 	for _, prop := range propertyRecordList {
-		propertyNameIdMap[prop.Properties["name"].GetStringValue()] = prop.Id
+		propertyNameIdMap[prop.Properties["name"].GetStringValue()] = prop.Properties["id"].GetStringValue()
 	}
 
 	for _, propRecord := range propertyRecords {
 		propRecord.Id = propertyNameIdMap[propRecord.Properties["name"].GetStringValue()]
 		util.PrepareUpdateForRecord(ctx, propRecord)
+		util.NormalizeRecord(resources.ResourcePropertyResource, propRecord)
 	}
 
 	_, err = r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
@@ -354,6 +379,10 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
+	if !annotations.IsEnabled(resource, annotations.NormalizedResource) {
+		util.NormalizeResource(resource)
+	}
+
 	systemBackend := r.backendProviderService.GetSystemBackend(ctx)
 
 	txk, err := systemBackend.BeginTransaction(ctx, false)
@@ -386,6 +415,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	resourceRecord := mapping.ResourceToRecord(resource)
 	util.InitRecord(ctx, resourceRecord)
+	util.NormalizeRecord(resources.ResourceResource, resourceRecord)
 
 	result, _, err := systemBackend.AddRecords(txCtx, abs.BulkRecordsParams{
 		Resource:       resources.ResourceResource,
@@ -432,6 +462,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 			record := mapping.ResourcePropertyToRecord(property, resource)
 
 			util.InitRecord(ctx, record)
+			util.NormalizeRecord(resources.ResourcePropertyResource, record)
 
 			return record
 		})
@@ -487,6 +518,18 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 		if err != nil {
 			return nil, err
+		}
+
+		if annotations.IsEnabled(resource, annotations.KeepHistory) {
+			err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
+				MigrationPlan:  util.HistoryPlan(plan),
+				ForceMigration: forceMigration,
+				Schema:         &r.schema,
+			})
+
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
@@ -733,6 +776,18 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 
 			if err != nil {
 				return err
+			}
+
+			if annotations.IsEnabled(resource, annotations.KeepHistory) {
+				err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
+					MigrationPlan:  util.HistoryPlan(plan),
+					ForceMigration: forceMigration,
+					Schema:         &r.schema,
+				})
+
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}

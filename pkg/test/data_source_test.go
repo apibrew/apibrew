@@ -320,13 +320,12 @@ func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, t *tes
 }
 
 func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *model.DataSource, t *testing.T) {
-
-	_, err := dataSourceClient.Status(setup.Ctx, &stub.StatusRequest{
+	resp, err := dataSourceClient.Status(setup.Ctx, &stub.StatusRequest{
 		Id: createdDataSource.Id,
 	})
 
 	if err == nil {
-		t.Error("It should be unable to login to database")
+		t.Error("It should be unable to login to database", resp)
 		return
 	}
 }

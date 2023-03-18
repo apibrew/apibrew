@@ -10,7 +10,6 @@ import (
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/util"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -48,6 +47,13 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, err
 	}
 
+	if params.UseHistory {
+		if !annotations.IsEnabled(resource, annotations.KeepHistory) {
+			return nil, 0, errors.LogicalError.WithDetails("History is not enabled on resource")
+		}
+		resource = util.HistoryResource(resource)
+	}
+
 	records, total, err := bck.ListRecords(ctx, abs.ListRecordParams{
 		Resource:          resource,
 		Query:             params.Query,
@@ -61,6 +67,10 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 
 	if err != nil {
 		return nil, 0, err
+	}
+
+	for _, record := range records {
+		util.DeNormalizeRecord(resource, record)
 	}
 
 	if err := checkAccess(ctx, checkAccessParams{
@@ -113,6 +123,11 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 		return nil, nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
 
+	for _, record := range params.Records {
+		util.InitRecord(ctx, record)
+		util.NormalizeRecord(resource, record)
+	}
+
 	if err = r.validateRecords(resource, params.Records, false); err != nil {
 		return nil, nil, err
 	}
@@ -139,10 +154,6 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 				}
 			}
 		}
-	}
-
-	for _, record := range params.Records {
-		util.InitRecord(ctx, record)
 	}
 
 	var records []*model.Record
@@ -198,7 +209,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
 		var historyRecords []*model.Record
-		historyResource := r.historyResource(resource)
+		historyResource := util.HistoryResource(resource)
 
 		for index, rec := range inserted {
 			if rec {
@@ -231,16 +242,6 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 	result = append(result, records...)
 
 	return result, inserted, nil
-}
-
-func (r *recordService) historyResource(resource *model.Resource) *model.Resource {
-	var historyResource = proto.Clone(resource).(*model.Resource)
-	historyResource.SourceConfig.Entity += "_h"
-	historyResource.Indexes = nil
-
-	annotations.Enable(historyResource, annotations.HistoryResource)
-
-	return historyResource
 }
 
 func isResourceRelatedResource(resource *model.Resource) bool {
@@ -310,6 +311,7 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		}
 
 		util.PrepareUpdateForRecord(ctx, record)
+		util.NormalizeRecord(resource, record)
 	}
 
 	if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {
@@ -374,10 +376,8 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 	}
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
-		var historyResource = proto.Clone(resource).(*model.Resource)
-
 		_, _, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
-			Resource: historyResource,
+			Resource: util.HistoryResource(resource),
 			Records:  records,
 			Schema:   r.resourceService.GetSchema(),
 		})
@@ -443,6 +443,8 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	if err != nil {
 		return nil, err
 	}
+
+	util.DeNormalizeRecord(resource, res)
 
 	if err = r.genericHandler.AfterGet(ctx, resource, id, res); err != nil {
 		return nil, err
