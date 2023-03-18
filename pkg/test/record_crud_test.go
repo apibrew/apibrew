@@ -3,6 +3,7 @@ package test
 import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -13,9 +14,9 @@ func TestComplexPayload1Fail(t *testing.T) {
 
 	record1 := new(model.Record)
 
-	_, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
+	_, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Token:    "",
-		Resource: richResource1.Name,
+		Resource: setup.RichResource1.Name,
 		Records:  []*model.Record{record1},
 	})
 
@@ -61,9 +62,9 @@ func TestComplexPayload1Success(t *testing.T) {
 		t.Error(err)
 	}
 
-	res, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
+	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Token:    "",
-		Resource: richResource1.Name,
+		Resource: setup.RichResource1.Name,
 		Records:  []*model.Record{record1},
 	})
 
@@ -72,9 +73,9 @@ func TestComplexPayload1Success(t *testing.T) {
 		return
 	}
 
-	getRes, err := recordClient.Get(ctx, &stub.GetRecordRequest{
+	getRes, err := recordClient.Get(setup.Ctx, &stub.GetRecordRequest{
 		Token:    "",
-		Resource: richResource1.Name,
+		Resource: setup.RichResource1.Name,
 		Id:       res.Records[0].Id,
 	})
 
@@ -86,7 +87,7 @@ func TestComplexPayload1Success(t *testing.T) {
 		return
 	}
 
-	for _, property := range richResource1.Properties {
+	for _, property := range setup.RichResource1.Properties {
 		propertyType := types.ByResourcePropertyType(property.Type)
 		val1, _ := propertyType.UnPack(record1.Properties[property.Name])
 		val2, _ := propertyType.UnPack(getRes.Record.Properties[property.Name])

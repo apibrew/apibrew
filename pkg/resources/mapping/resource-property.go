@@ -20,7 +20,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["subType"] = structpb.NewNumberValue(float64(property.Type.Number()))
 	properties["resource"] = util.StructKv("id", resource.Id)
 	properties["required"] = structpb.NewBoolValue(property.Required)
-	properties["sourcePrimary"] = structpb.NewBoolValue(property.Primary)
+	properties["primary"] = structpb.NewBoolValue(property.Primary)
 	properties["length"] = structpb.NewNumberValue(float64(property.Length))
 	properties["unique"] = structpb.NewBoolValue(property.Unique)
 	properties["immutable"] = structpb.NewBoolValue(property.Immutable)
@@ -74,7 +74,7 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		Name:            record.Properties["name"].GetStringValue(),
 		Type:            model.ResourceProperty_Type(record.Properties["type"].GetNumberValue()),
 		Mapping:         record.Properties["mapping"].GetStringValue(),
-		Primary:         record.Properties["sourcePrimary"].GetBoolValue(),
+		Primary:         record.Properties["primary"].GetBoolValue(),
 		Required:        record.Properties["required"].GetBoolValue(),
 		Length:          uint32(record.Properties["length"].GetNumberValue()),
 		Unique:          record.Properties["unique"].GetBoolValue(),

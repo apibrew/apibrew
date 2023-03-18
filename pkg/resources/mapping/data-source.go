@@ -21,6 +21,15 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 		properties["options_postgres_default_schema"] = structpb.NewStringValue(options.PostgresqlParams.DefaultSchema)
 	}
 
+	if options, ok := dataSource.Options.(*model.DataSource_MysqlParams); ok {
+		properties["options_mysql_username"] = structpb.NewStringValue(options.MysqlParams.Username)
+		properties["options_mysql_password"] = structpb.NewStringValue(options.MysqlParams.Password)
+		properties["options_mysql_host"] = structpb.NewStringValue(options.MysqlParams.Host)
+		properties["options_mysql_port"] = structpb.NewNumberValue(float64(options.MysqlParams.Port))
+		properties["options_mysql_db_name"] = structpb.NewStringValue(options.MysqlParams.DbName)
+		properties["options_mysql_default_schema"] = structpb.NewStringValue(options.MysqlParams.DefaultSchema)
+	}
+
 	return &model.Record{
 		Id:         dataSource.Id,
 		Properties: properties,
@@ -55,6 +64,21 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 			Port:          uint32(record.Properties["options_postgres_port"].GetNumberValue()),
 			DbName:        record.Properties["options_postgres_db_name"].GetStringValue(),
 			DefaultSchema: record.Properties["options_postgres_default_schema"].GetStringValue(),
+		}
+
+		result.Options = options
+	}
+
+	if result.Backend == model.DataSourceBackendType_MYSQL {
+		options := new(model.DataSource_MysqlParams)
+
+		options.MysqlParams = &model.MysqlOptions{
+			Username:      record.Properties["options_mysql_username"].GetStringValue(),
+			Password:      record.Properties["options_mysql_password"].GetStringValue(),
+			Host:          record.Properties["options_mysql_host"].GetStringValue(),
+			Port:          uint32(record.Properties["options_mysql_port"].GetNumberValue()),
+			DbName:        record.Properties["options_mysql_db_name"].GetStringValue(),
+			DefaultSchema: record.Properties["options_mysql_default_schema"].GetStringValue(),
 		}
 
 		result.Options = options

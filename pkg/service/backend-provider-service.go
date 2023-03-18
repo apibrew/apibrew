@@ -4,6 +4,7 @@ import (
 	"context"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/mysql"
 	"github.com/tislib/data-handler/pkg/backend/postgres"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
@@ -11,6 +12,7 @@ import (
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/service/security"
+	"github.com/tislib/data-handler/pkg/util"
 )
 
 type backendProviderService struct {
@@ -37,15 +39,12 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 		return b.backendMap[dataSourceId], nil
 	}
 
-	logger := log.WithFields(logging.CtxFields(ctx))
-	logger.WithField("dataSourceId", dataSourceId).Debug("Begin data-source GetDataSourceBackendById")
-	defer logger.Debug("End data-source GetDataSourceBackendById")
-
 	if dataSourceId == b.systemDataSource.Id {
 		return b.GetSystemBackend(ctx), nil
 	} else {
 		systemCtx := security.WithSystemContext(context.TODO())
 		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, &abs.Schema{}, dataSourceId)
+		util.DeNormalizeRecord(resources.DataSourceResource, record)
 
 		if err != nil {
 			return nil, err
@@ -120,7 +119,7 @@ func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceB
 	case model.DataSourceBackendType_POSTGRESQL:
 		return postgres.NewPostgresResourceServiceBackend
 	case model.DataSourceBackendType_MYSQL:
-		return nil
+		return mysql.NewMysqlResourceServiceBackend
 	case model.DataSourceBackendType_MONGODB:
 		return nil
 	case model.DataSourceBackendType_CUSTOM:

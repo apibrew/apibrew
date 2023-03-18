@@ -37,6 +37,7 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 	// delete existing resource case
 	if resource == nil {
 		plan.Steps = r.preparePlanStepsForDeleteResource()
+		plan.CurrentResource = existingResource // for consistency
 
 		return plan, nil
 	}

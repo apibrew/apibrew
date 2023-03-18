@@ -47,12 +47,18 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, err
 	}
 
+	if params.UseHistory {
+		if !annotations.IsEnabled(resource, annotations.KeepHistory) {
+			return nil, 0, errors.LogicalError.WithDetails("History is not enabled on resource")
+		}
+		resource = util.HistoryResource(resource)
+	}
+
 	records, total, err := bck.ListRecords(ctx, abs.ListRecordParams{
 		Resource:          resource,
 		Query:             params.Query,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
-		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 		Schema:            r.resourceService.GetSchema(),
 		PackRecords:       params.PackRecords,
@@ -61,6 +67,10 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 
 	if err != nil {
 		return nil, 0, err
+	}
+
+	for _, record := range records {
+		util.DeNormalizeRecord(resource, record)
 	}
 
 	if err := checkAccess(ctx, checkAccessParams{
@@ -81,7 +91,6 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
 	var result []*model.Record
 
-	var insertedArray []bool
 	var err errors.ServiceError
 
 	var success = true
@@ -114,6 +123,11 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 		return nil, nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
 
+	for _, record := range params.Records {
+		util.InitRecord(ctx, record)
+		util.NormalizeRecord(resource, record)
+	}
+
 	if err = r.validateRecords(resource, params.Records, false); err != nil {
 		return nil, nil, err
 	}
@@ -143,7 +157,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 	}
 
 	var records []*model.Record
-	var inserted bool
+	var inserted []bool
 
 	if handled, records, inserted, err := r.genericHandler.Create(ctx, resource, params); handled {
 		return records, inserted, err
@@ -193,7 +207,27 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 		Schema:         r.resourceService.GetSchema(),
 	})
 
-	insertedArray = append(insertedArray, inserted)
+	if annotations.IsEnabled(resource, annotations.KeepHistory) {
+		var historyRecords []*model.Record
+		historyResource := util.HistoryResource(resource)
+
+		for index, rec := range inserted {
+			if rec {
+				historyRecords = append(historyRecords, records[index])
+			}
+		}
+
+		_, _, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
+			Resource: historyResource,
+			Records:  historyRecords,
+			Schema:   r.resourceService.GetSchema(),
+		})
+
+		if err != nil {
+			success = false
+			return nil, nil, err
+		}
+	}
 
 	if err != nil {
 		success = false
@@ -207,7 +241,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 
 	result = append(result, records...)
 
-	return result, insertedArray, nil
+	return result, inserted, nil
 }
 
 func isResourceRelatedResource(resource *model.Resource) bool {
@@ -275,6 +309,9 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		for key := range immutableColsMap {
 			delete(record.Properties, key)
 		}
+
+		util.PrepareUpdateForRecord(ctx, record)
+		util.NormalizeRecord(resource, record)
 	}
 
 	if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {
@@ -338,6 +375,19 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		return nil, err
 	}
 
+	if annotations.IsEnabled(resource, annotations.KeepHistory) {
+		_, _, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
+			Resource: util.HistoryResource(resource),
+			Records:  records,
+			Schema:   r.resourceService.GetSchema(),
+		})
+
+		if err != nil {
+			success = false
+			return nil, err
+		}
+	}
+
 	if err = r.genericHandler.AfterUpdate(ctx, resource, params, records); err != nil {
 		return nil, err
 	}
@@ -393,6 +443,8 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	if err != nil {
 		return nil, err
 	}
+
+	util.DeNormalizeRecord(resource, res)
 
 	if err = r.genericHandler.AfterGet(ctx, resource, id, res); err != nil {
 		return nil, err

@@ -3,12 +3,13 @@ package test
 import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"testing"
 )
 
 func TestCreateAndReadDataSource(t *testing.T) {
-	res2, err := dataSourceClient.Get(ctx, &stub.GetDataSourceRequest{
-		Id: dataSource1.Id,
+	res2, err := dataSourceClient.Get(setup.Ctx, &stub.GetDataSourceRequest{
+		Id: setup.DataSource1.Id,
 	})
 
 	if err != nil {
@@ -21,23 +22,22 @@ func TestCreateAndReadDataSource(t *testing.T) {
 		return
 	}
 
-	dataSource1.AuditData = res2.DataSource.AuditData
+	setup.DataSource1.AuditData = res2.DataSource.AuditData
 
-	DeepEqual(t, dataSource1, res2.DataSource, "")
+	DeepEqual(t, setup.DataSource1, res2.DataSource, "")
 }
 
 func TestCreateDataSourceStatusTest(t *testing.T) {
-
 	newDataSource := &model.DataSource{
-		Backend:     systemDataSource.Backend,
+		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Options:     systemDataSource.Options,
+		Options:     setup.SystemDataSource.Options,
 	}
 
 	defer func() {
 		if newDataSource.Id != "" {
-			_, err := dataSourceClient.Delete(ctx, &stub.DeleteDataSourceRequest{
+			_, err := dataSourceClient.Delete(setup.Ctx, &stub.DeleteDataSourceRequest{
 				Ids: []string{newDataSource.Id},
 			})
 
@@ -48,7 +48,7 @@ func TestCreateDataSourceStatusTest(t *testing.T) {
 		}
 	}()
 
-	resp, err := dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
+	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
 		DataSources: []*model.DataSource{newDataSource},
 	})
 
@@ -65,15 +65,15 @@ func TestCreateDataSourceStatusTest(t *testing.T) {
 func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 
 	newDataSource := &model.DataSource{
-		Backend:     systemDataSource.Backend,
+		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Options:     dhTestWrongPassword.Options,
+		Options:     setup.DhTestWrongPassword.Options,
 	}
 
 	defer func() {
 		if newDataSource.Id != "" {
-			_, err := dataSourceClient.Delete(ctx, &stub.DeleteDataSourceRequest{
+			_, err := dataSourceClient.Delete(setup.Ctx, &stub.DeleteDataSourceRequest{
 				Ids: []string{newDataSource.Id},
 			})
 
@@ -84,7 +84,7 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 		}
 	}()
 
-	resp, err := dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
+	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
 		DataSources: []*model.DataSource{newDataSource},
 	})
 
@@ -100,7 +100,7 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 
 func TestListCreatedDataSources(t *testing.T) {
 
-	res, err := dataSourceClient.List(ctx, &stub.ListDataSourceRequest{})
+	res, err := dataSourceClient.List(setup.Ctx, &stub.ListDataSourceRequest{})
 
 	if err != nil {
 		t.Error(err)
@@ -115,16 +115,16 @@ func TestListCreatedDataSources(t *testing.T) {
 func TestUpdateDataSource(t *testing.T) {
 
 	newDataSource := &model.DataSource{
-		Backend:     systemDataSource.Backend,
+		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Options:     dataSource1.Options,
+		Options:     setup.DataSource1.Options,
 		Version:     1,
 	}
 
 	defer func() {
 		if newDataSource.Id != "" {
-			_, err := dataSourceClient.Delete(ctx, &stub.DeleteDataSourceRequest{
+			_, err := dataSourceClient.Delete(setup.Ctx, &stub.DeleteDataSourceRequest{
 				Ids: []string{newDataSource.Id},
 			})
 
@@ -135,7 +135,7 @@ func TestUpdateDataSource(t *testing.T) {
 		}
 	}()
 
-	resp, err := dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
+	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
 		DataSources: []*model.DataSource{newDataSource},
 	})
 
@@ -159,12 +159,13 @@ func TestUpdateDataSource(t *testing.T) {
 		},
 	}
 
-	res, err := dataSourceClient.Update(ctx, &stub.UpdateDataSourceRequest{
+	res, err := dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
 		DataSources: []*model.DataSource{newDataSource},
 	})
 
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	if len(res.DataSources) != 1 {
@@ -185,7 +186,7 @@ func TestUpdateDataSource(t *testing.T) {
 		t.Error("Version is wrong")
 	}
 
-	getRes, err := dataSourceClient.Get(ctx, &stub.GetDataSourceRequest{
+	getRes, err := dataSourceClient.Get(setup.Ctx, &stub.GetDataSourceRequest{
 		Id: newDataSource.Id,
 	})
 
@@ -208,13 +209,12 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	checkNewCreatedDatasourceStatusPasswordWrong(getRes.DataSource, t)
-
 }
 
 func TestUpdateDataSourceStatus(t *testing.T) {
 
 	newDataSource := &model.DataSource{
-		Backend:     systemDataSource.Backend,
+		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
 		Options: &model.DataSource_PostgresqlParams{
@@ -232,7 +232,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 
 	defer func() {
 		if newDataSource.Id != "" {
-			_, err := dataSourceClient.Delete(ctx, &stub.DeleteDataSourceRequest{
+			_, err := dataSourceClient.Delete(setup.Ctx, &stub.DeleteDataSourceRequest{
 				Ids: []string{newDataSource.Id},
 			})
 
@@ -243,7 +243,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 		}
 	}()
 
-	resp, err := dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
+	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
 		DataSources: []*model.DataSource{newDataSource},
 	})
 
@@ -268,7 +268,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 		},
 	}
 
-	_, _ = dataSourceClient.Update(ctx, &stub.UpdateDataSourceRequest{
+	_, _ = dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
 		DataSources: []*model.DataSource{createdDataSource1},
 	})
 
@@ -286,7 +286,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	}
 	createdDataSource1.Version++
 
-	_, err = dataSourceClient.Update(ctx, &stub.UpdateDataSourceRequest{
+	_, err = dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
 		DataSources: []*model.DataSource{createdDataSource1},
 	})
 
@@ -300,7 +300,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 
 func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, t *testing.T) {
 
-	res, err := dataSourceClient.Status(ctx, &stub.StatusRequest{
+	res, err := dataSourceClient.Status(setup.Ctx, &stub.StatusRequest{
 		Id: createdDataSource.Id,
 	})
 
@@ -320,13 +320,12 @@ func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, t *tes
 }
 
 func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *model.DataSource, t *testing.T) {
-
-	_, err := dataSourceClient.Status(ctx, &stub.StatusRequest{
+	resp, err := dataSourceClient.Status(setup.Ctx, &stub.StatusRequest{
 		Id: createdDataSource.Id,
 	})
 
 	if err == nil {
-		t.Error("It should be unable to login to database")
+		t.Error("It should be unable to login to database", resp)
 		return
 	}
 }

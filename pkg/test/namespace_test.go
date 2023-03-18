@@ -3,6 +3,7 @@ package test
 import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"testing"
 )
 
@@ -11,7 +12,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 		Name: "test-namespace",
 	}
 
-	res, err := namespaceClient.Create(ctx, &stub.CreateNamespaceRequest{
+	res, err := namespaceClient.Create(setup.Ctx, &stub.CreateNamespaceRequest{
 		Namespaces: []*model.Namespace{
 			namespace1,
 		},
@@ -30,7 +31,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 	}
 
 	defer func() {
-		_, _ = namespaceClient.Delete(ctx, &stub.DeleteNamespaceRequest{
+		_, _ = namespaceClient.Delete(setup.Ctx, &stub.DeleteNamespaceRequest{
 			Ids: []string{
 				namespace1.Id,
 			},
@@ -41,7 +42,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 
 	namespace1.Name = "test-123321123"
 
-	_, err = namespaceClient.Update(ctx, &stub.UpdateNamespaceRequest{
+	_, err = namespaceClient.Update(setup.Ctx, &stub.UpdateNamespaceRequest{
 		Namespaces: []*model.Namespace{
 			namespace1,
 		},
@@ -52,7 +53,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 		return
 	}
 
-	res2, err := namespaceClient.Get(ctx, &stub.GetNamespaceRequest{Id: namespace1.Id})
+	res2, err := namespaceClient.Get(setup.Ctx, &stub.GetNamespaceRequest{Id: namespace1.Id})
 
 	if err != nil {
 		t.Error(err)

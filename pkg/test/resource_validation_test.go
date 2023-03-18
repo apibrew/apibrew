@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/test/setup"
 	"github.com/tislib/data-handler/pkg/util"
 	"strconv"
 	"testing"
@@ -13,7 +14,7 @@ func TestCreateResourceValidationForResourceFields(t *testing.T) {
 
 	testResource := &model.Resource{}
 
-	_, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
+	_, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{
 		Resources:      []*model.Resource{testResource},
 		DoMigration:    true,
 		ForceMigration: false,
@@ -44,7 +45,7 @@ func TestCreateResourceValidationForResourceFields(t *testing.T) {
 
 func TestCreateResourceValidationForProperties(t *testing.T) {
 
-	_, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
+	_, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{
 		Resources: []*model.Resource{{
 			Properties: []*model.ResourceProperty{
 				{
@@ -104,8 +105,8 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 }
 
 func TestCreateResourceWithSameName(t *testing.T) {
-	_, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
-		Resources:      []*model.Resource{richResource1},
+	_, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{
+		Resources:      []*model.Resource{setup.RichResource1},
 		DoMigration:    true,
 		ForceMigration: false,
 	})
@@ -123,7 +124,7 @@ func TestCreateResourceWithSameName(t *testing.T) {
 func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
 	randUUid, _ := uuid.NewRandom()
 
-	resp, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
+	resp, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{
 		Resources: []*model.Resource{
 			{
 				Name: "non_existent_source",
@@ -140,7 +141,7 @@ func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
 
 	defer func() {
 		if resp != nil && len(resp.Resources) > 0 {
-			_, _ = resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
+			_, _ = resourceClient.Delete(setup.Ctx, &stub.DeleteResourceRequest{
 				Ids:            []string{resp.Resources[0].Id},
 				DoMigration:    true,
 				ForceMigration: true,

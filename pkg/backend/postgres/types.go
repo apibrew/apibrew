@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func getPsqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
+func (p postgreSqlBackendOptions) GetSqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
 	switch propertyType {
 	case model.ResourceProperty_INT32:
 		return "INT"
@@ -45,7 +45,7 @@ func getPsqlTypeFromProperty(propertyType model.ResourceProperty_Type, length ui
 	}
 }
 
-func getPropertyTypeFromPsql(columnType string) model.ResourceProperty_Type {
+func (p postgreSqlBackendOptions) GetPropertyTypeFromPsql(columnType string) model.ResourceProperty_Type {
 	switch columnType {
 	case "bool":
 		return model.ResourceProperty_BOOL

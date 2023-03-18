@@ -12,6 +12,12 @@ var UserResource = &model.Resource{
 		Entity:     "user",
 	},
 	Properties: []*model.ResourceProperty{
+		IdProperty,
+		VersionProperty,
+		AuditProperties[0],
+		AuditProperties[1],
+		AuditProperties[2],
+		AuditProperties[3],
 		{
 			Name: "username",
 

@@ -18,7 +18,7 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// RecordExtensionClient is the client API for RecordExtensionService service.
+// RecordExtensionClient is the client API for RecordExtension service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RecordExtensionClient interface {
@@ -49,7 +49,7 @@ func NewRecordExtensionClient(cc grpc.ClientConnInterface) RecordExtensionClient
 
 func (c *recordExtensionClient) BeforeList(ctx context.Context, in *BeforeListRecordRequest, opts ...grpc.CallOption) (*BeforeListRecordResponse, error) {
 	out := new(BeforeListRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeList", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/BeforeList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (c *recordExtensionClient) BeforeList(ctx context.Context, in *BeforeListRe
 
 func (c *recordExtensionClient) List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error) {
 	out := new(ListRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (c *recordExtensionClient) List(ctx context.Context, in *ListRecordRequest,
 
 func (c *recordExtensionClient) AfterList(ctx context.Context, in *AfterListRecordRequest, opts ...grpc.CallOption) (*AfterListRecordResponse, error) {
 	out := new(AfterListRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterList", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/AfterList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (c *recordExtensionClient) AfterList(ctx context.Context, in *AfterListReco
 
 func (c *recordExtensionClient) BeforeCreate(ctx context.Context, in *BeforeCreateRecordRequest, opts ...grpc.CallOption) (*BeforeCreateRecordResponse, error) {
 	out := new(BeforeCreateRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeCreate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/BeforeCreate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (c *recordExtensionClient) BeforeCreate(ctx context.Context, in *BeforeCrea
 
 func (c *recordExtensionClient) Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error) {
 	out := new(CreateRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (c *recordExtensionClient) Create(ctx context.Context, in *CreateRecordRequ
 
 func (c *recordExtensionClient) AfterCreate(ctx context.Context, in *AfterCreateRecordRequest, opts ...grpc.CallOption) (*AfterCreateRecordResponse, error) {
 	out := new(AfterCreateRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterCreate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/AfterCreate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (c *recordExtensionClient) AfterCreate(ctx context.Context, in *AfterCreate
 
 func (c *recordExtensionClient) BeforeUpdate(ctx context.Context, in *BeforeUpdateRecordRequest, opts ...grpc.CallOption) (*BeforeUpdateRecordResponse, error) {
 	out := new(BeforeUpdateRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeUpdate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/BeforeUpdate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (c *recordExtensionClient) BeforeUpdate(ctx context.Context, in *BeforeUpda
 
 func (c *recordExtensionClient) Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error) {
 	out := new(UpdateRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func (c *recordExtensionClient) Update(ctx context.Context, in *UpdateRecordRequ
 
 func (c *recordExtensionClient) AfterUpdate(ctx context.Context, in *AfterUpdateRecordRequest, opts ...grpc.CallOption) (*AfterUpdateRecordResponse, error) {
 	out := new(AfterUpdateRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterUpdate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/AfterUpdate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func (c *recordExtensionClient) AfterUpdate(ctx context.Context, in *AfterUpdate
 
 func (c *recordExtensionClient) BeforeDelete(ctx context.Context, in *BeforeDeleteRecordRequest, opts ...grpc.CallOption) (*BeforeDeleteRecordResponse, error) {
 	out := new(BeforeDeleteRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeDelete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/BeforeDelete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func (c *recordExtensionClient) BeforeDelete(ctx context.Context, in *BeforeDele
 
 func (c *recordExtensionClient) Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
 	out := new(DeleteRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func (c *recordExtensionClient) Delete(ctx context.Context, in *DeleteRecordRequ
 
 func (c *recordExtensionClient) AfterDelete(ctx context.Context, in *AfterDeleteRecordRequest, opts ...grpc.CallOption) (*AfterDeleteRecordResponse, error) {
 	out := new(AfterDeleteRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterDelete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/AfterDelete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +157,7 @@ func (c *recordExtensionClient) AfterDelete(ctx context.Context, in *AfterDelete
 
 func (c *recordExtensionClient) BeforeGet(ctx context.Context, in *BeforeGetRecordRequest, opts ...grpc.CallOption) (*BeforeGetRecordResponse, error) {
 	out := new(BeforeGetRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/BeforeGet", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/BeforeGet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func (c *recordExtensionClient) BeforeGet(ctx context.Context, in *BeforeGetReco
 
 func (c *recordExtensionClient) Get(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
 	out := new(GetRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -175,17 +175,17 @@ func (c *recordExtensionClient) Get(ctx context.Context, in *GetRecordRequest, o
 
 func (c *recordExtensionClient) AfterGet(ctx context.Context, in *AfterGetRecordRequest, opts ...grpc.CallOption) (*AfterGetRecordResponse, error) {
 	out := new(AfterGetRecordResponse)
-	err := c.cc.Invoke(ctx, "/ext.RecordExtensionService/AfterGet", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ext.RecordExtension/AfterGet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RecordExtensionServiceServer is the server API for RecordExtensionService service.
-// All implementations must embed UnimplementedRecordExtensionServiceServer
+// RecordExtensionServer is the server API for RecordExtension service.
+// All implementations must embed UnimplementedRecordExtensionServer
 // for forward compatibility
-type RecordExtensionServiceServer interface {
+type RecordExtensionServer interface {
 	BeforeList(context.Context, *BeforeListRecordRequest) (*BeforeListRecordResponse, error)
 	List(context.Context, *ListRecordRequest) (*ListRecordResponse, error)
 	AfterList(context.Context, *AfterListRecordRequest) (*AfterListRecordResponse, error)
@@ -201,408 +201,407 @@ type RecordExtensionServiceServer interface {
 	BeforeGet(context.Context, *BeforeGetRecordRequest) (*BeforeGetRecordResponse, error)
 	Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error)
 	AfterGet(context.Context, *AfterGetRecordRequest) (*AfterGetRecordResponse, error)
-	mustEmbedUnimplementedRecordExtensionServiceServer()
+	mustEmbedUnimplementedRecordExtensionServer()
 }
 
-// UnimplementedRecordExtensionServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedRecordExtensionServiceServer struct {
+// UnimplementedRecordExtensionServer must be embedded to have forward compatible implementations.
+type UnimplementedRecordExtensionServer struct {
 }
 
-func (UnimplementedRecordExtensionServiceServer) BeforeList(context.Context, *BeforeListRecordRequest) (*BeforeListRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) BeforeList(context.Context, *BeforeListRecordRequest) (*BeforeListRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BeforeList not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) List(context.Context, *ListRecordRequest) (*ListRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) List(context.Context, *ListRecordRequest) (*ListRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) AfterList(context.Context, *AfterListRecordRequest) (*AfterListRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) AfterList(context.Context, *AfterListRecordRequest) (*AfterListRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AfterList not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) BeforeCreate(context.Context, *BeforeCreateRecordRequest) (*BeforeCreateRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) BeforeCreate(context.Context, *BeforeCreateRecordRequest) (*BeforeCreateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BeforeCreate not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) Create(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) Create(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) AfterCreate(context.Context, *AfterCreateRecordRequest) (*AfterCreateRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) AfterCreate(context.Context, *AfterCreateRecordRequest) (*AfterCreateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AfterCreate not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) BeforeUpdate(context.Context, *BeforeUpdateRecordRequest) (*BeforeUpdateRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) BeforeUpdate(context.Context, *BeforeUpdateRecordRequest) (*BeforeUpdateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BeforeUpdate not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) AfterUpdate(context.Context, *AfterUpdateRecordRequest) (*AfterUpdateRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) AfterUpdate(context.Context, *AfterUpdateRecordRequest) (*AfterUpdateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AfterUpdate not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) BeforeDelete(context.Context, *BeforeDeleteRecordRequest) (*BeforeDeleteRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) BeforeDelete(context.Context, *BeforeDeleteRecordRequest) (*BeforeDeleteRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BeforeDelete not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) AfterDelete(context.Context, *AfterDeleteRecordRequest) (*AfterDeleteRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) AfterDelete(context.Context, *AfterDeleteRecordRequest) (*AfterDeleteRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AfterDelete not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) BeforeGet(context.Context, *BeforeGetRecordRequest) (*BeforeGetRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) BeforeGet(context.Context, *BeforeGetRecordRequest) (*BeforeGetRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BeforeGet not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) AfterGet(context.Context, *AfterGetRecordRequest) (*AfterGetRecordResponse, error) {
+func (UnimplementedRecordExtensionServer) AfterGet(context.Context, *AfterGetRecordRequest) (*AfterGetRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AfterGet not implemented")
 }
-func (UnimplementedRecordExtensionServiceServer) mustEmbedUnimplementedRecordExtensionServiceServer() {
-}
+func (UnimplementedRecordExtensionServer) mustEmbedUnimplementedRecordExtensionServer() {}
 
-// UnsafeRecordExtensionServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RecordExtensionServiceServer will
+// UnsafeRecordExtensionServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RecordExtensionServer will
 // result in compilation errors.
-type UnsafeRecordExtensionServiceServer interface {
-	mustEmbedUnimplementedRecordExtensionServiceServer()
+type UnsafeRecordExtensionServer interface {
+	mustEmbedUnimplementedRecordExtensionServer()
 }
 
-func RegisterRecordExtensionServiceServer(s grpc.ServiceRegistrar, srv RecordExtensionServiceServer) {
-	s.RegisterService(&RecordExtensionService_ServiceDesc, srv)
+func RegisterRecordExtensionServer(s grpc.ServiceRegistrar, srv RecordExtensionServer) {
+	s.RegisterService(&RecordExtension_ServiceDesc, srv)
 }
 
-func _RecordExtensionService_BeforeList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_BeforeList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BeforeListRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).BeforeList(ctx, in)
+		return srv.(RecordExtensionServer).BeforeList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/BeforeList",
+		FullMethod: "/ext.RecordExtension/BeforeList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).BeforeList(ctx, req.(*BeforeListRecordRequest))
+		return srv.(RecordExtensionServer).BeforeList(ctx, req.(*BeforeListRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).List(ctx, in)
+		return srv.(RecordExtensionServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/List",
+		FullMethod: "/ext.RecordExtension/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).List(ctx, req.(*ListRecordRequest))
+		return srv.(RecordExtensionServer).List(ctx, req.(*ListRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_AfterList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_AfterList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AfterListRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).AfterList(ctx, in)
+		return srv.(RecordExtensionServer).AfterList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/AfterList",
+		FullMethod: "/ext.RecordExtension/AfterList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).AfterList(ctx, req.(*AfterListRecordRequest))
+		return srv.(RecordExtensionServer).AfterList(ctx, req.(*AfterListRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_BeforeCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_BeforeCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BeforeCreateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).BeforeCreate(ctx, in)
+		return srv.(RecordExtensionServer).BeforeCreate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/BeforeCreate",
+		FullMethod: "/ext.RecordExtension/BeforeCreate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).BeforeCreate(ctx, req.(*BeforeCreateRecordRequest))
+		return srv.(RecordExtensionServer).BeforeCreate(ctx, req.(*BeforeCreateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).Create(ctx, in)
+		return srv.(RecordExtensionServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/Create",
+		FullMethod: "/ext.RecordExtension/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).Create(ctx, req.(*CreateRecordRequest))
+		return srv.(RecordExtensionServer).Create(ctx, req.(*CreateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_AfterCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_AfterCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AfterCreateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).AfterCreate(ctx, in)
+		return srv.(RecordExtensionServer).AfterCreate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/AfterCreate",
+		FullMethod: "/ext.RecordExtension/AfterCreate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).AfterCreate(ctx, req.(*AfterCreateRecordRequest))
+		return srv.(RecordExtensionServer).AfterCreate(ctx, req.(*AfterCreateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_BeforeUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_BeforeUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BeforeUpdateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).BeforeUpdate(ctx, in)
+		return srv.(RecordExtensionServer).BeforeUpdate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/BeforeUpdate",
+		FullMethod: "/ext.RecordExtension/BeforeUpdate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).BeforeUpdate(ctx, req.(*BeforeUpdateRecordRequest))
+		return srv.(RecordExtensionServer).BeforeUpdate(ctx, req.(*BeforeUpdateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).Update(ctx, in)
+		return srv.(RecordExtensionServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/Update",
+		FullMethod: "/ext.RecordExtension/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).Update(ctx, req.(*UpdateRecordRequest))
+		return srv.(RecordExtensionServer).Update(ctx, req.(*UpdateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_AfterUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_AfterUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AfterUpdateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).AfterUpdate(ctx, in)
+		return srv.(RecordExtensionServer).AfterUpdate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/AfterUpdate",
+		FullMethod: "/ext.RecordExtension/AfterUpdate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).AfterUpdate(ctx, req.(*AfterUpdateRecordRequest))
+		return srv.(RecordExtensionServer).AfterUpdate(ctx, req.(*AfterUpdateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_BeforeDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_BeforeDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BeforeDeleteRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).BeforeDelete(ctx, in)
+		return srv.(RecordExtensionServer).BeforeDelete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/BeforeDelete",
+		FullMethod: "/ext.RecordExtension/BeforeDelete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).BeforeDelete(ctx, req.(*BeforeDeleteRecordRequest))
+		return srv.(RecordExtensionServer).BeforeDelete(ctx, req.(*BeforeDeleteRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).Delete(ctx, in)
+		return srv.(RecordExtensionServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/Delete",
+		FullMethod: "/ext.RecordExtension/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).Delete(ctx, req.(*DeleteRecordRequest))
+		return srv.(RecordExtensionServer).Delete(ctx, req.(*DeleteRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_AfterDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_AfterDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AfterDeleteRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).AfterDelete(ctx, in)
+		return srv.(RecordExtensionServer).AfterDelete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/AfterDelete",
+		FullMethod: "/ext.RecordExtension/AfterDelete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).AfterDelete(ctx, req.(*AfterDeleteRecordRequest))
+		return srv.(RecordExtensionServer).AfterDelete(ctx, req.(*AfterDeleteRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_BeforeGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_BeforeGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BeforeGetRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).BeforeGet(ctx, in)
+		return srv.(RecordExtensionServer).BeforeGet(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/BeforeGet",
+		FullMethod: "/ext.RecordExtension/BeforeGet",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).BeforeGet(ctx, req.(*BeforeGetRecordRequest))
+		return srv.(RecordExtensionServer).BeforeGet(ctx, req.(*BeforeGetRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).Get(ctx, in)
+		return srv.(RecordExtensionServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/Get",
+		FullMethod: "/ext.RecordExtension/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).Get(ctx, req.(*GetRecordRequest))
+		return srv.(RecordExtensionServer).Get(ctx, req.(*GetRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordExtensionService_AfterGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RecordExtension_AfterGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AfterGetRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordExtensionServiceServer).AfterGet(ctx, in)
+		return srv.(RecordExtensionServer).AfterGet(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ext.RecordExtensionService/AfterGet",
+		FullMethod: "/ext.RecordExtension/AfterGet",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordExtensionServiceServer).AfterGet(ctx, req.(*AfterGetRecordRequest))
+		return srv.(RecordExtensionServer).AfterGet(ctx, req.(*AfterGetRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RecordExtensionService_ServiceDesc is the grpc.ServiceDesc for RecordExtensionService service.
+// RecordExtension_ServiceDesc is the grpc.ServiceDesc for RecordExtension service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var RecordExtensionService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ext.RecordExtensionService",
-	HandlerType: (*RecordExtensionServiceServer)(nil),
+var RecordExtension_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "ext.RecordExtension",
+	HandlerType: (*RecordExtensionServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "BeforeList",
-			Handler:    _RecordExtensionService_BeforeList_Handler,
+			Handler:    _RecordExtension_BeforeList_Handler,
 		},
 		{
 			MethodName: "List",
-			Handler:    _RecordExtensionService_List_Handler,
+			Handler:    _RecordExtension_List_Handler,
 		},
 		{
 			MethodName: "AfterList",
-			Handler:    _RecordExtensionService_AfterList_Handler,
+			Handler:    _RecordExtension_AfterList_Handler,
 		},
 		{
 			MethodName: "BeforeCreate",
-			Handler:    _RecordExtensionService_BeforeCreate_Handler,
+			Handler:    _RecordExtension_BeforeCreate_Handler,
 		},
 		{
 			MethodName: "Create",
-			Handler:    _RecordExtensionService_Create_Handler,
+			Handler:    _RecordExtension_Create_Handler,
 		},
 		{
 			MethodName: "AfterCreate",
-			Handler:    _RecordExtensionService_AfterCreate_Handler,
+			Handler:    _RecordExtension_AfterCreate_Handler,
 		},
 		{
 			MethodName: "BeforeUpdate",
-			Handler:    _RecordExtensionService_BeforeUpdate_Handler,
+			Handler:    _RecordExtension_BeforeUpdate_Handler,
 		},
 		{
 			MethodName: "Update",
-			Handler:    _RecordExtensionService_Update_Handler,
+			Handler:    _RecordExtension_Update_Handler,
 		},
 		{
 			MethodName: "AfterUpdate",
-			Handler:    _RecordExtensionService_AfterUpdate_Handler,
+			Handler:    _RecordExtension_AfterUpdate_Handler,
 		},
 		{
 			MethodName: "BeforeDelete",
-			Handler:    _RecordExtensionService_BeforeDelete_Handler,
+			Handler:    _RecordExtension_BeforeDelete_Handler,
 		},
 		{
 			MethodName: "Delete",
-			Handler:    _RecordExtensionService_Delete_Handler,
+			Handler:    _RecordExtension_Delete_Handler,
 		},
 		{
 			MethodName: "AfterDelete",
-			Handler:    _RecordExtensionService_AfterDelete_Handler,
+			Handler:    _RecordExtension_AfterDelete_Handler,
 		},
 		{
 			MethodName: "BeforeGet",
-			Handler:    _RecordExtensionService_BeforeGet_Handler,
+			Handler:    _RecordExtension_BeforeGet_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _RecordExtensionService_Get_Handler,
+			Handler:    _RecordExtension_Get_Handler,
 		},
 		{
 			MethodName: "AfterGet",
-			Handler:    _RecordExtensionService_AfterGet_Handler,
+			Handler:    _RecordExtension_AfterGet_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -12,6 +12,12 @@ var DataSourceResource = &model.Resource{
 		Entity:     "data_source",
 	},
 	Properties: []*model.ResourceProperty{
+		IdProperty,
+		VersionProperty,
+		AuditProperties[0],
+		AuditProperties[1],
+		AuditProperties[2],
+		AuditProperties[3],
 		{
 			Name:     "name",
 			Mapping:  "name",
@@ -36,6 +42,7 @@ var DataSourceResource = &model.Resource{
 			Type:     model.ResourceProperty_INT32,
 			Required: true,
 		},
+
 		{
 			Name:     "options_postgres_username",
 			Mapping:  "options_postgres_username",
@@ -78,6 +85,53 @@ var DataSourceResource = &model.Resource{
 			Name: "options_postgres_default_schema",
 
 			Mapping:  "options_postgres_default_schema",
+			Type:     model.ResourceProperty_STRING,
+			Length:   64,
+			Required: false,
+		},
+
+		{
+			Name:     "options_mysql_username",
+			Mapping:  "options_mysql_username",
+			Type:     model.ResourceProperty_STRING,
+			Length:   64,
+			Required: false,
+		},
+		{
+			Name: "options_mysql_password",
+
+			Mapping:  "options_mysql_password",
+			Type:     model.ResourceProperty_STRING,
+			Length:   64,
+			Required: false,
+		},
+		{
+			Name: "options_mysql_host",
+
+			Mapping:  "options_mysql_host",
+			Type:     model.ResourceProperty_STRING,
+			Length:   64,
+			Required: false,
+		},
+		{
+			Name: "options_mysql_port",
+
+			Mapping:  "options_mysql_port",
+			Type:     model.ResourceProperty_INT32,
+			Required: false,
+		},
+		{
+			Name: "options_mysql_db_name",
+
+			Mapping:  "options_mysql_db_name",
+			Type:     model.ResourceProperty_STRING,
+			Length:   64,
+			Required: false,
+		},
+		{
+			Name: "options_mysql_default_schema",
+
+			Mapping:  "options_mysql_default_schema",
 			Type:     model.ResourceProperty_STRING,
 			Length:   64,
 			Required: false,
