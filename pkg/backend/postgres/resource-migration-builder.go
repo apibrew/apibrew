@@ -97,28 +97,28 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 	return strings.Join(def, " ")
 }
 
-func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) errors.ServiceError {
-	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-		builder.Define("id", r.options.GetSqlTypeFromProperty(model.ResourceProperty_UUID, 0), "NOT NULL", "PRIMARY KEY")
-	} else {
-		for _, prop := range resource.Properties {
-			if prop.Primary {
-				var typ = r.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
+func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
+	var pk []string
+	for _, prop := range resource.Properties {
+		if prop.Primary {
+			var typ = r.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
 
-				if annotations.IsEnabled(prop, annotations.Identity) {
-					if typ == "INT" {
-						typ = "SERIAL"
-					} else {
-						typ = "BIGSERIAL"
-					}
+			if annotations.IsEnabled(prop, annotations.Identity) {
+				if typ == "INT" {
+					typ = "SERIAL"
+				} else {
+					typ = "BIGSERIAL"
 				}
-
-				builder.Define(prop.Mapping, typ, "NOT NULL", "PRIMARY KEY")
-				break
 			}
+
+			builder.Define(r.options.Quote(prop.Mapping), typ, "NOT NULL")
+			pk = append(pk, r.options.Quote(prop.Mapping))
 		}
 	}
-	return nil
+
+	if len(pk) > 0 {
+		builder.Define("Primary Key(", strings.Join(pk, ","), ")")
+	}
 }
 
 func (r *resourceMigrationBuilder) resourceCreateTable(resource *model.Resource) errors.ServiceError {
@@ -134,57 +134,12 @@ func (r *resourceMigrationBuilder) resourceCreateTable(resource *model.Resource)
 
 	builder.IfNotExists()
 
-	serviceError := r.definePrimaryKeyColumn(resource, builder)
-	if serviceError != nil {
-		return r.handleDbError(r.ctx, serviceError)
-	}
-
-	// audit
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		builder.Define("created_on", "timestamp", "NOT NULL")
-		builder.Define("updated_on", "timestamp", "NULL")
-		builder.Define("created_by", r.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NOT NULL")
-		builder.Define("updated_by", r.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NULL")
-	}
-
-	// version
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		builder.Define("version", "int2", "NOT NULL")
-	}
+	r.definePrimaryKeyColumn(resource, builder)
 
 	sqlQuery, _ := builder.Build()
 	_, err := r.runner.Exec(sqlQuery)
 
-	serviceError = r.handleDbError(r.ctx, err)
-
-	return r.handleDbError(r.ctx, serviceError)
-}
-
-func (r *resourceMigrationBuilder) resourceCreateHistoryTable(resource *model.Resource) errors.ServiceError {
-	builder := sqlbuilder.CreateTable(r.tableName)
-
-	builder.IfNotExists()
-
-	serviceError := r.definePrimaryKeyColumn(resource, builder)
-	if serviceError != nil {
-		return r.handleDbError(r.ctx, serviceError)
-	}
-
-	builder.Define("created_on", "timestamp", "NOT NULL")
-	builder.Define("updated_on", "timestamp", "NULL")
-	builder.Define("created_by", r.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NOT NULL")
-	builder.Define("updated_by", r.options.GetSqlTypeFromProperty(model.ResourceProperty_STRING, 64), "NULL")
-	// version
-	builder.Define("version", "int2", "NOT NULL")
-
-	builder.Define("PRIMARY KEY (id, version)")
-
-	sqlQuery, _ := builder.Build()
-	_, err := r.runner.ExecContext(r.ctx, sqlQuery)
-
-	serviceError = r.handleDbError(r.ctx, err)
-
-	return r.handleDbError(r.ctx, serviceError)
+	return r.handleDbError(r.ctx, err)
 }
 
 func (r *resourceMigrationBuilder) AddResource(resource *model.Resource) helper.ResourceMigrationBuilder {

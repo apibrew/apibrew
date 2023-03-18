@@ -86,8 +86,14 @@ func RemarkResource(resource *model.Resource) {
 	}
 
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		if propertyNameMap[resources.IdProperty.Name] == nil || propertyNameMap[resources.IdProperty.Name].Type != resources.IdProperty.Type {
+		if propertyNameMap[resources.VersionProperty.Name] == nil || propertyNameMap[resources.VersionProperty.Name].Type != resources.VersionProperty.Type {
 			annotations.Enable(resource, annotations.DisableVersion)
+		}
+	}
+
+	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
+		if propertyNameMap[resources.IdProperty.Name] == nil || propertyNameMap[resources.IdProperty.Name].Type != resources.IdProperty.Type {
+			annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
 		}
 	}
 }

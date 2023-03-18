@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/backend/helper"
@@ -13,13 +12,10 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
-	"time"
 )
 
 type colDetails struct {
@@ -150,14 +146,6 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 			result = append(result, record)
 		}
 
-		if !r.packRecords && annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
-			err := util.ComputeRecordIdFromProperties(r.resource, record)
-
-			if err != nil {
-				return nil, 0, r.backend.handleDbError(r.ctx, err)
-			}
-		}
-
 		if r.packRecords {
 			for _, prop := range r.resource.Properties {
 				record.PropertiesPacked = append(record.PropertiesPacked, record.Properties[prop.Name])
@@ -184,32 +172,6 @@ func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
 
 func (r *recordLister) expandProps(path string, resource *model.Resource) {
 	isInner := path != "t"
-	gCol := func(name string, typ model.ResourceProperty_Type) colDetails {
-		return colDetails{
-			resource:     resource,
-			colName:      name,
-			path:         path + "_" + name,
-			def:          path + "." + name,
-			alias:        path + "_" + name,
-			propertyType: typ,
-			required:     false,
-		}
-	}
-
-	if !annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
-		r.colList = append(r.colList, gCol("id", model.ResourceProperty_UUID))
-	}
-
-	if !annotations.IsEnabled(r.resource, annotations.DisableAudit) {
-		r.colList = append(r.colList, gCol("created_on", model.ResourceProperty_TIMESTAMP))
-		r.colList = append(r.colList, gCol("updated_on", model.ResourceProperty_TIMESTAMP))
-		r.colList = append(r.colList, gCol("created_by", model.ResourceProperty_STRING))
-		r.colList = append(r.colList, gCol("updated_by", model.ResourceProperty_STRING))
-	}
-
-	if !annotations.IsEnabled(r.resource, annotations.DisableVersion) {
-		r.colList = append(r.colList, gCol("version", model.ResourceProperty_INT32))
-	}
 
 	for _, prop := range resource.Properties {
 		r.colList = append(r.colList, colDetails{
@@ -281,34 +243,6 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 		return r.backend.handleDbError(r.ctx, err)
 	}
 
-	if !annotations.IsEnabled(r.resource, annotations.DisableAudit) {
-		record.AuditData = &model.AuditData{}
-	}
-
-	if propertyPointers["t_id"] != nil && !annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
-		record.Id = (**(propertyPointers["t_id"].(**uuid.UUID))).String()
-	}
-
-	if propertyPointers["t_created_on"] != nil && *propertyPointers["t_created_on"].(**time.Time) != nil {
-		record.AuditData.CreatedOn = timestamppb.New(**propertyPointers["t_created_on"].(**time.Time))
-	}
-
-	if propertyPointers["t_updated_on"] != nil && *propertyPointers["t_updated_on"].(**time.Time) != nil {
-		record.AuditData.UpdatedOn = timestamppb.New(**propertyPointers["t_updated_on"].(**time.Time))
-	}
-
-	if propertyPointers["t_created_by"] != nil && *propertyPointers["t_created_by"].(**string) != nil {
-		record.AuditData.CreatedBy = **propertyPointers["t_created_by"].(**string)
-	}
-
-	if propertyPointers["t_updated_by"] != nil && *propertyPointers["t_updated_by"].(**string) != nil {
-		record.AuditData.CreatedBy = **propertyPointers["t_updated_by"].(**string)
-	}
-
-	if propertyPointers["t_version"] != nil && *propertyPointers["t_version"].(**int32) != nil {
-		record.Version = uint32(**propertyPointers["t_version"].(**int32))
-	}
-
 	var serviceErr errors.ServiceError
 
 	record.Properties, serviceErr = r.mapRecordProperties(record.Id, r.resource, "t_", propertyPointers)
@@ -316,20 +250,11 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 		return serviceErr
 	}
 
-	if !annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
-		delete(record.Properties, "id")
-	}
-
 	return nil
 }
 
 func (r *recordLister) mapRecordProperties(recordId string, resource *model.Resource, pathPrefix string, propertyPointers map[string]interface{}) (map[string]*structpb.Value, errors.ServiceError) {
 	properties := make(map[string]*structpb.Value)
-
-	if propertyPointers[pathPrefix+"id"] != nil && !annotations.IsEnabled(r.resource, annotations.DoPrimaryKeyLookup) {
-		id := (**(propertyPointers[pathPrefix+"id"].(**uuid.UUID))).String()
-		properties["id"] = structpb.NewStringValue(id)
-	}
 
 	for _, cd := range r.colList {
 		if cd.property == nil {
@@ -538,16 +463,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 		return "", errors.PropertyNotFoundError.WithDetails("expression is empty")
 	}
 
-	var additionalProperties = []string{
-		"id", "version",
-	}
-
 	if propEx, ok := query.Expression.(*model.Expression_Property); ok {
-		for _, ap := range additionalProperties {
-			if ap == propEx.Property {
-				return fmt.Sprintf("t." + ap), nil
-			}
-		}
 		property := util.LocatePropertyByName(resource, propEx.Property)
 
 		if property == nil {

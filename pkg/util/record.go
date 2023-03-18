@@ -4,14 +4,16 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/security"
 	"github.com/tislib/data-handler/pkg/types"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
 	"time"
 )
 
-func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Record) error {
+func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Record) {
 	var idParts []string
 	for _, prop := range resource.Properties {
 		val := record.Properties[prop.Name]
@@ -19,7 +21,7 @@ func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Recor
 			typ := types.ByResourcePropertyType(prop.Type)
 			unpacked, err := typ.UnPack(val)
 			if err != nil {
-				return err
+				panic(err)
 			}
 			if unpacked == nil {
 				continue
@@ -28,8 +30,6 @@ func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Recor
 		}
 	}
 	record.Id = strings.Join(idParts, "-")
-
-	return nil
 }
 
 func InitRecord(ctx context.Context, record *model.Record) {
@@ -41,6 +41,54 @@ func InitRecord(ctx context.Context, record *model.Record) {
 		CreatedBy: security.GetUserPrincipalFromContext(ctx),
 	}
 	record.Version = 1
+}
+
+func NormalizeRecord(resource *model.Resource, record *model.Record) {
+	if record.Properties == nil {
+		record.Properties = make(map[string]*structpb.Value)
+	}
+
+	specialProps := resources.GetResourceSpecialProperties(resource)
+
+	for _, prop := range specialProps {
+		var err error
+		record.Properties[prop.Property.Name], err = types.ByResourcePropertyType(prop.Property.Type).Pack(prop.Get(record))
+
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func DeNormalizeRecord(resource *model.Resource, record *model.Record) {
+	if record.Properties == nil {
+		return
+	}
+	if record.AuditData == nil {
+		record.AuditData = &model.AuditData{}
+	}
+
+	specialProps := resources.GetResourceSpecialProperties(resource)
+
+	for _, prop := range specialProps {
+		if record.Properties[prop.Property.Name] == nil {
+			continue
+		}
+
+		val, err := types.ByResourcePropertyType(prop.Property.Type).UnPack(record.Properties[prop.Property.Name])
+
+		if err != nil {
+			panic(err)
+		}
+
+		prop.Set(record, val)
+
+		delete(record.Properties, prop.Property.Name) //fixme decide if needed
+	}
+
+	if record.Id == "" {
+		ComputeRecordIdFromProperties(resource, record)
+	}
 }
 
 func PrepareUpdateForRecord(ctx context.Context, record *model.Record) {

@@ -36,24 +36,12 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 	var values []string
 
 	for _, record := range records {
-		if annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-			err := util.ComputeRecordIdFromProperties(resource, record)
-
-			if err != nil {
-				return false, p.handleDbError(ctx, err)
-			}
-		}
-
 		var row []string
-
-		if p.checkHasOwnId(resource) {
-			row = append(row, argPlaceHolder(record.Id))
-		}
 
 		for _, property := range resource.Properties {
 			packedVal, exists := record.Properties[property.Name]
 
-			if exists {
+			if exists || !annotations.IsEnabled(property, annotations.Identity) {
 				if packedVal == nil {
 					row = append(row, argPlaceHolder(nil))
 					continue
@@ -74,17 +62,6 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 			} else {
 				row = append(row, "DEFAULT")
 			}
-		}
-
-		if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-			row = append(row, argPlaceHolder(record.AuditData.CreatedOn.AsTime()))
-			row = append(row, argPlaceHolder(record.AuditData.UpdatedOn.AsTime()))
-			row = append(row, argPlaceHolder(record.AuditData.CreatedBy))
-			row = append(row, argPlaceHolder(record.AuditData.UpdatedBy))
-		}
-
-		if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-			row = append(row, argPlaceHolder(record.Version))
 		}
 
 		values = append(values, fmt.Sprintf("(%s)", strings.Join(row, ",")))
@@ -156,6 +133,11 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			continue
 		}
 
+		if property.Name == "version" && annotations.IsEnabled(property, annotations.SpecialProperty) && !annotations.IsEnabled(resource, annotations.DisableVersion) {
+			updateBuilder.SetMore("version = version + 1")
+			continue
+		}
+
 		val, serviceError := p.DbEncode(property, packedVal)
 
 		if serviceError != nil {
@@ -167,15 +149,6 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 		} else {
 			updateBuilder.SetMore(updateBuilder.Equal(fmt.Sprintf("%s", p.options.Quote(property.Mapping)), val))
 		}
-	}
-
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		updateBuilder.SetMore(updateBuilder.Equal("updated_on", record.AuditData.UpdatedOn.AsTime()))
-		updateBuilder.SetMore(updateBuilder.Equal("updated_by", record.AuditData.UpdatedBy))
-	}
-
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		updateBuilder.SetMore("version = version + 1")
 	}
 
 	sqlQuery, args := updateBuilder.Build()
@@ -190,14 +163,6 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 
 	if err != nil {
 		return p.handleDbError(ctx, err)
-	}
-
-	if annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-		err := util.ComputeRecordIdFromProperties(resource, record)
-
-		if err != nil {
-			return p.handleDbError(ctx, err)
-		}
 	}
 
 	if affected == 0 {
@@ -239,21 +204,17 @@ func (p *sqlBackend) deleteRecords(ctx context.Context, runner helper.QueryRunne
 	deleteBuilder := sqlbuilder.DeleteFrom(p.getFullTableName(resource.SourceConfig) + " as t")
 	deleteBuilder.SetFlavor(p.options.GetFlavor())
 
-	if p.checkHasOwnId(resource) {
-		deleteBuilder.Where(deleteBuilder.In("t.id", util.ArrayMapToInterface(ids)...))
-	} else {
-		var primaryFound = false
-		for _, prop := range resource.Properties {
-			if prop.Primary {
-				deleteBuilder.Where(deleteBuilder.In(prop.Mapping, util.ArrayMapToInterface(ids)...))
-				primaryFound = true
-				break
-			}
+	var primaryFound = false
+	for _, prop := range resource.Properties {
+		if prop.Primary {
+			deleteBuilder.Where(deleteBuilder.In(prop.Mapping, util.ArrayMapToInterface(ids)...))
+			primaryFound = true
+			break
 		}
+	}
 
-		if !primaryFound {
-			return errors.LogicalError.WithDetails("Delete operation cannot be executed without id")
-		}
+	if !primaryFound {
+		return errors.LogicalError.WithDetails("Delete operation cannot be executed without id")
 	}
 
 	sqlQuery, args := deleteBuilder.Build()

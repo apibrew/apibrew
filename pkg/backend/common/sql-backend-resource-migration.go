@@ -73,10 +73,6 @@ func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runn
 		return
 	}
 
-	// references
-
-	p.doResourceCleanup(resource)
-
 	return
 }
 
@@ -87,9 +83,6 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 	if err != nil {
 		return err
 	}
-
-	primaryCount := 0
-	primaryFound := false
 
 	for rows.Next() {
 		var columnName = new(string)
@@ -120,26 +113,10 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 
 		var isIdentity = false
 
-		if *isPrimary && !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-			primaryCount++
-
-			if primaryCount > 1 {
-				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
-			}
-
-			if *columnName != "id" {
-				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
-				isIdentity = true
-			}
-
-			if *columnType != "uuid" {
-				annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
-				isIdentity = true
-			}
-		}
-
 		if *isPrimary {
-			primaryFound = true
+			if *columnType != "uuid" {
+				isIdentity = true //fixme
+			}
 		}
 
 		typ := p.options.GetPropertyTypeFromPsql(*columnType)
@@ -175,10 +152,6 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 		annotations.Set(property, annotations.SourceDef, sourceDef)
 
 		resource.Properties = append(resource.Properties, property)
-	}
-
-	if !primaryFound {
-		annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
 	}
 
 	return err
@@ -253,55 +226,4 @@ func (p *sqlBackend) resourcePrepareIndexes(ctx context.Context, runner helper.Q
 		resource.Indexes = append(resource.Indexes, resourceIndex)
 	}
 	return err
-}
-
-func (p *sqlBackend) doResourceCleanup(resource *model.Resource) {
-	createdOnDetected := false
-	updatedOnDetected := false
-	createdByDetected := false
-	updatedByDetected := false
-	versionDetected := false
-	for _, property := range resource.Properties {
-		if property.Mapping == "created_on" && property.Type == model.ResourceProperty_TIMESTAMP {
-			createdOnDetected = true
-		}
-		if property.Mapping == "updated_on" && property.Type == model.ResourceProperty_TIMESTAMP {
-			updatedOnDetected = true
-		}
-		if property.Mapping == "created_by" && property.Type == model.ResourceProperty_STRING {
-			createdByDetected = true
-		}
-		if property.Mapping == "updated_by" && property.Type == model.ResourceProperty_STRING {
-			updatedByDetected = true
-		}
-		if property.Mapping == "version" && property.Type == model.ResourceProperty_INT32 {
-			versionDetected = true
-		}
-	}
-	enableAudit := createdOnDetected && updatedOnDetected && createdByDetected && updatedByDetected
-
-	var newColumns []*model.ResourceProperty
-
-	for _, property := range resource.Properties {
-		if enableAudit && p.isAuditColumn(property.Mapping) {
-			continue
-		}
-
-		if property.Primary && !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-			// ignore id column if it is same as standard id column
-			continue
-		}
-
-		newColumns = append(newColumns, property)
-	}
-
-	resource.Properties = newColumns
-
-	if !enableAudit {
-		annotations.Enable(resource, annotations.DisableAudit)
-	}
-
-	if !versionDetected {
-		annotations.Enable(resource, annotations.DisableVersion)
-	}
 }

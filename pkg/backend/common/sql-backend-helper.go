@@ -8,7 +8,6 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
 	"net"
@@ -81,33 +80,13 @@ func (p *sqlBackend) getFullTableName(sourceConfig *model.ResourceSourceConfig) 
 	return p.options.GetFullTableName(sourceConfig)
 }
 
-func (p *sqlBackend) checkHasOwnId(resource *model.Resource) bool {
-	return !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup)
-}
-
 func (p *sqlBackend) prepareResourceRecordCols(resource *model.Resource) []string {
 	var cols []string
-
-	if p.checkHasOwnId(resource) {
-		cols = append(cols, "id")
-	}
 
 	for _, property := range resource.Properties {
 		col := p.options.Quote(property.Mapping)
 		cols = append(cols, col)
 	}
 
-	// referenced columns
-
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		cols = append(cols, "created_on")
-		cols = append(cols, "updated_on")
-		cols = append(cols, "created_by")
-		cols = append(cols, "updated_by")
-	}
-
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		cols = append(cols, "version")
-	}
 	return cols
 }
