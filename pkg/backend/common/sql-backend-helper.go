@@ -37,8 +37,8 @@ func (p *sqlBackend) handleDbError(ctx context.Context, err error) errors.Servic
 		logger.Panic("database error is expected: ", err)
 	}
 
-	if serr, handled := p.options.HandleError(err); handled {
-		return serr
+	if handledErr, handled := p.options.HandleError(err); handled {
+		return handledErr
 	}
 
 	if netErr, ok := err.(*net.OpError); ok {

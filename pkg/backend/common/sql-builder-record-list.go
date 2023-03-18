@@ -321,13 +321,6 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 			}
 		}
 
-		//v1 := fmt.Sprintf("%v", val)
-		//v2 := fmt.Sprintf("%v", properties[cd.property.Name].AsInterface())
-		//if v1 != v2 {
-		//	fmt.Print("\n", val, "  <->  ", properties[cd.property.Name].AsInterface(), "\n")
-		//	log.Print("Diffferent vals")
-		//}
-
 		r.logger.Tracef("%s[%s]=%s [%s](%s)", recordId, cd.path, val, cd.property.Name, properties[cd.property.Name])
 	}
 
