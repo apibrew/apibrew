@@ -28,7 +28,6 @@ func TestCreateAndReadDataSource(t *testing.T) {
 }
 
 func TestCreateDataSourceStatusTest(t *testing.T) {
-
 	newDataSource := &model.DataSource{
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
@@ -166,6 +165,7 @@ func TestUpdateDataSource(t *testing.T) {
 
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	if len(res.DataSources) != 1 {
@@ -209,7 +209,6 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	checkNewCreatedDatasourceStatusPasswordWrong(getRes.DataSource, t)
-
 }
 
 func TestUpdateDataSourceStatus(t *testing.T) {

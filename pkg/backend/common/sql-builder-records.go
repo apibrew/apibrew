@@ -3,13 +3,10 @@ package common
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/tislib/data-handler/pkg/backend/helper"
-	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
-	"github.com/tislib/data-handler/pkg/service/security"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/helper"
+	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
@@ -17,15 +14,13 @@ import (
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
-	"time"
 )
 
-func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema, history bool) (bool, errors.ServiceError) {
+func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema) (bool, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	query := fmt.Sprintf("INSERT INTO %s", p.getFullTableName(resource.SourceConfig, history))
+	query := fmt.Sprintf("INSERT INTO %s", p.getFullTableName(resource.SourceConfig))
 
 	cols := p.prepareResourceRecordCols(resource)
 
@@ -41,26 +36,12 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 	var values []string
 
 	for _, record := range records {
-		if !history {
-			recordNewId, _ := uuid.NewUUID()
-			record.Id = recordNewId.String()
-		}
-
 		if annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 			err := util.ComputeRecordIdFromProperties(resource, record)
 
 			if err != nil {
 				return false, p.handleDbError(ctx, err)
 			}
-		}
-
-		now := time.Now()
-		if !history {
-			record.AuditData = &model.AuditData{
-				CreatedOn: timestamppb.New(now),
-				CreatedBy: security.GetUserPrincipalFromContext(ctx),
-			}
-			record.Version = 1
 		}
 
 		var row []string
@@ -147,11 +128,7 @@ func (p *sqlBackend) resolveReference(val interface{}, argPlaceHolder func(val i
 }
 
 func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) errors.ServiceError {
-	if record.AuditData == nil {
-		record.AuditData = &model.AuditData{}
-	}
-
-	updateBuilder := sqlbuilder.Update(p.getFullTableName(resource.SourceConfig, false))
+	updateBuilder := sqlbuilder.Update(p.getFullTableName(resource.SourceConfig))
 	updateBuilder.SetFlavor(p.options.GetFlavor())
 
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
@@ -171,13 +148,6 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 		}
 		updateBuilder.Where(sqlPart)
 	}
-
-	now := time.Now()
-
-	record.AuditData.UpdatedOn = timestamppb.New(now)
-	record.AuditData.UpdatedBy = security.GetUserPrincipalFromContext(ctx)
-
-	record.Version++
 
 	for _, property := range resource.Properties {
 		packedVal, exists := record.Properties[property.Name]
@@ -250,7 +220,6 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, 
 		},
 		Limit:             1,
 		Offset:            0,
-		UseHistory:        false,
 		ResolveReferences: []string{"*"},
 		Schema:            schema,
 	})
@@ -267,7 +236,7 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, 
 }
 
 func (p *sqlBackend) deleteRecords(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, ids []string) errors.ServiceError {
-	deleteBuilder := sqlbuilder.DeleteFrom(p.getFullTableName(resource.SourceConfig, false) + " as t")
+	deleteBuilder := sqlbuilder.DeleteFrom(p.getFullTableName(resource.SourceConfig) + " as t")
 	deleteBuilder.SetFlavor(p.options.GetFlavor())
 
 	if p.checkHasOwnId(resource) {

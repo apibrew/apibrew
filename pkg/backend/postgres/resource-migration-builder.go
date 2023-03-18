@@ -14,7 +14,6 @@ import (
 )
 
 type resourceMigrationBuilder struct {
-	history        bool
 	forceMigration bool
 	params         abs.UpgradeResourceParams
 	runner         helper.QueryRunner
@@ -131,7 +130,7 @@ func (r *resourceMigrationBuilder) resourceCreateTable(resource *model.Resource)
 		}
 	}
 
-	builder := sqlbuilder.CreateTable(r.options.GetFullTableName(resource.SourceConfig, false))
+	builder := sqlbuilder.CreateTable(r.options.GetFullTableName(resource.SourceConfig))
 
 	builder.IfNotExists()
 
@@ -189,15 +188,9 @@ func (r *resourceMigrationBuilder) resourceCreateHistoryTable(resource *model.Re
 }
 
 func (r *resourceMigrationBuilder) AddResource(resource *model.Resource) helper.ResourceMigrationBuilder {
-	if r.history {
-		r.execs = append(r.execs, func() errors.ServiceError {
-			return r.resourceCreateHistoryTable(resource)
-		})
-	} else {
-		r.execs = append(r.execs, func() errors.ServiceError {
-			return r.resourceCreateTable(resource)
-		})
-	}
+	r.execs = append(r.execs, func() errors.ServiceError {
+		return r.resourceCreateTable(resource)
+	})
 
 	return r
 }
@@ -208,7 +201,7 @@ func (r *resourceMigrationBuilder) UpdateResource(existing, updated *model.Resou
 
 func (r *resourceMigrationBuilder) DeleteResource(resource *model.Resource) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
-		s := "DROP TABLE " + r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig, r.history)
+		s := "DROP TABLE " + r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig)
 
 		if r.forceMigration {
 			s += " CASCADE;"
@@ -226,7 +219,7 @@ func (r *resourceMigrationBuilder) DeleteResource(resource *model.Resource) help
 
 func (r *resourceMigrationBuilder) AddProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
-		sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig, r.history), r.prepareResourceTableColumnDefinition(r.params.MigrationPlan.CurrentResource, prop, *r.params.Schema))
+		sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig), r.prepareResourceTableColumnDefinition(r.params.MigrationPlan.CurrentResource, prop, *r.params.Schema))
 
 		_, err := r.runner.ExecContext(r.ctx, sql)
 

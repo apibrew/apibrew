@@ -19,7 +19,7 @@ type BackendGenericInterface interface {
 }
 
 type BackendRecordsInterface interface {
-	AddRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError)
+	AddRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, []bool, errors.ServiceError)
 	UpdateRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, errors.ServiceError)
 	GetRecord(ctx context.Context, resource *model.Resource, schema *Schema, id string) (*model.Record, errors.ServiceError)
 	DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError
@@ -52,7 +52,6 @@ type ListRecordParams struct {
 	Query             *model.BooleanExpression
 	Limit             uint32
 	Offset            uint64
-	UseHistory        bool
 	ResolveReferences []string
 	Schema            *Schema
 	ResultChan        chan<- *model.Record

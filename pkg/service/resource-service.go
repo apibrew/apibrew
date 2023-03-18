@@ -226,6 +226,10 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		case *model.ResourceMigrationStep_UpdateResource:
 			resourceRecords := []*model.Record{mapping.ResourceToRecord(plan.CurrentResource)}
 
+			for _, record := range resourceRecords {
+				util.PrepareUpdateForRecord(ctx, record)
+			}
+
 			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
 				Resource:       resources.ResourceResource,
 				Records:        resourceRecords,
@@ -240,9 +244,13 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		case *model.ResourceMigrationStep_CreateResource:
 		case *model.ResourceMigrationStep_DeleteResource:
 		case *model.ResourceMigrationStep_CreateProperty:
+			propertyCreateRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.CreateProperty.Property], plan.CurrentResource)
+
+			util.InitRecord(ctx, propertyCreateRecord)
+
 			_, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, abs.BulkRecordsParams{
 				Resource:       resources.ResourcePropertyResource,
-				Records:        []*model.Record{mapping.ResourcePropertyToRecord(currentPropertyMap[sk.CreateProperty.Property], plan.CurrentResource)},
+				Records:        []*model.Record{propertyCreateRecord},
 				CheckVersion:   false,
 				IgnoreIfExists: false,
 				Schema:         r.GetSchema(),
@@ -374,9 +382,12 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 	}()
 
+	resourceRecord := mapping.ResourceToRecord(resource)
+	util.InitRecord(ctx, resourceRecord)
+
 	result, _, err := systemBackend.AddRecords(txCtx, abs.BulkRecordsParams{
 		Resource:       resources.ResourceResource,
-		Records:        []*model.Record{mapping.ResourceToRecord(resource)},
+		Records:        []*model.Record{resourceRecord},
 		CheckVersion:   false,
 		IgnoreIfExists: false,
 		Schema:         r.GetSchema(),
@@ -416,7 +427,11 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	if len(resource.Properties) > 0 {
 		propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
-			return mapping.ResourcePropertyToRecord(property, resource)
+			record := mapping.ResourcePropertyToRecord(property, resource)
+
+			util.InitRecord(ctx, record)
+
+			return record
 		})
 
 		_, _, err = systemBackend.AddRecords(txCtx, abs.BulkRecordsParams{

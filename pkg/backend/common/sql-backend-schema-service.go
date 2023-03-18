@@ -8,7 +8,6 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 func (p *sqlBackend) ListEntities(ctx context.Context) (result []*model.DataSourceCatalog, err errors.ServiceError) {
@@ -43,16 +42,6 @@ func (p *sqlBackend) PrepareResourceFromEntity(ctx context.Context, catalog stri
 
 func (p *sqlBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) errors.ServiceError {
 	return p.withBackend(ctx, false, func(tx helper.QueryRunner) errors.ServiceError {
-		if err := p.resourceMigrateTable(ctx, tx, params, false); err != nil {
-			return err
-		}
-
-		if annotations.IsEnabled(params.MigrationPlan.CurrentResource, annotations.KeepHistory) {
-			if err := p.resourceMigrateTable(ctx, tx, params, true); err != nil {
-				return err
-			}
-		}
-
-		return nil
+		return p.resourceMigrateTable(ctx, tx, params)
 	})
 }

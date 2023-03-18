@@ -52,7 +52,6 @@ type recordLister struct {
 	query             *model.BooleanExpression
 	Limit             uint32
 	Offset            uint64
-	UseHistory        bool
 	ResolveReferences []string
 	Schema            abs.Schema
 	logger            *log.Entry
@@ -64,7 +63,7 @@ type recordLister struct {
 
 func (r *recordLister) Prepare() errors.ServiceError {
 	r.logger = log.WithFields(logging.CtxFields(r.ctx))
-	r.tableName = r.backend.getFullTableName(r.resource.SourceConfig, r.UseHistory)
+	r.tableName = r.backend.getFullTableName(r.resource.SourceConfig)
 	r.tableAlias = "t"
 
 	r.builder = sqlbuilder.Select()
@@ -592,7 +591,6 @@ func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, 
 		query:             params.Query,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
-		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 		Schema:            *params.Schema,
 		resultChan:        params.ResultChan,

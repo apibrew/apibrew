@@ -10,7 +10,6 @@ import (
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 func (p *sqlBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
@@ -27,10 +26,10 @@ func (p *sqlBackend) ListRecords(ctx context.Context, params abs.ListRecordParam
 	return
 }
 
-func (p *sqlBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, bool, errors.ServiceError) {
+func (p *sqlBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, []bool, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	var inserted bool
+	var inserted []bool
 	var err errors.ServiceError
 
 	logger.Tracef("Begin creating: %s/%s", params.Resource.Namespace, params.Resource.Name)
@@ -52,18 +51,12 @@ func (p *sqlBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParam
 
 			records := params.Records[bi:ei]
 
-			inserted, err = p.recordInsert(ctx, tx, params.Resource, records, params.IgnoreIfExists, params.Schema, false)
+			id, err := p.recordInsert(ctx, tx, params.Resource, records, params.IgnoreIfExists, params.Schema)
+
+			inserted = append(inserted, id)
 
 			if err != nil {
 				return err
-			}
-
-			if inserted && annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
-				_, err = p.recordInsert(ctx, tx, params.Resource, records, false, params.Schema, true)
-
-				if err != nil {
-					return err
-				}
 			}
 		}
 
@@ -83,14 +76,6 @@ func (p *sqlBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsPa
 	err := p.withBackend(ctx, false, func(tx helper.QueryRunner) errors.ServiceError {
 		for _, record := range params.Records {
 			err := p.recordUpdate(ctx, tx, params.Resource, record, params.CheckVersion, params.Schema)
-
-			if err != nil {
-				return err
-			}
-		}
-
-		if annotations.IsEnabled(params.Resource, annotations.KeepHistory) {
-			_, err := p.recordInsert(ctx, tx, params.Resource, params.Records, false, params.Schema, false)
 
 			if err != nil {
 				return err
