@@ -216,7 +216,7 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 	var propertyPointers = make(map[string]interface{})
 
 	for _, cd := range r.colList {
-		propertyType := types.ByResourcePropertyType(cd.propertyType)
+		propertyType := r.backend.options.TypeModifier(cd.propertyType)
 
 		val := propertyType.Pointer(cd.required)
 
@@ -260,7 +260,7 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 		if cd.property == nil {
 			continue
 		}
-		propertyType := types.ByResourcePropertyType(cd.propertyType)
+		propertyType := r.backend.options.TypeModifier(cd.propertyType)
 		propPointer := propertyPointers[cd.path]
 
 		propV := types.Dereference(propPointer)

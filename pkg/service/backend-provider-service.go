@@ -67,7 +67,7 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 		return b.GetSystemBackend(ctx), nil
 	} else {
 		systemCtx := security.WithSystemContext(context.TODO())
-		query, err := PrepareQuery(resources.DataSourceResource, map[string]interface{}{
+		query, err := util.PrepareQuery(resources.DataSourceResource, map[string]interface{}{
 			"name": dataSourceName,
 		})
 
@@ -91,6 +91,7 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 		}
 
 		var record = records[0]
+		record.Id = records[0].Properties["id"].GetStringValue()
 
 		return b.GetBackend(mapping.DataSourceFromRecord(record)), nil
 	}

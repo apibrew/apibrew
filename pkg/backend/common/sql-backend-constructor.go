@@ -8,6 +8,8 @@ import (
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/types"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type sqlBackend struct {
@@ -30,6 +32,8 @@ type SqlBackendOptions interface {
 	GetDefaultCatalog() string
 	GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor
 	GetFullTableName(config *model.ResourceSourceConfig) string
+	DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError)
+	TypeModifier(propertyType model.ResourceProperty_Type) types.PropertyType
 }
 
 func NewSqlBackend(dataSource *model.DataSource, options SqlBackendOptions) abs.Backend {

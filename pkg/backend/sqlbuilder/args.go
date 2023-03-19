@@ -161,6 +161,10 @@ func (args *Args) CompileWithFlavor(format string, flavor Flavor, initialValue .
 	return
 }
 
+func (args *Args) GetArgs() []interface{} {
+	return args.args
+}
+
 func (args *Args) compileNamed(buf *bytes.Buffer, flavor Flavor, format string, values []interface{}) (string, []interface{}) {
 	i := 1
 

@@ -21,6 +21,7 @@ func (r *recordServer) List(ctx context.Context, request *stub.ListRecordRequest
 	records, total, err := r.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
+		Filters:           request.Filters,
 		Limit:             request.Limit,
 		Offset:            request.Offset,
 		UseHistory:        request.UseHistory,

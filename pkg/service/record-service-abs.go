@@ -6,6 +6,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/handler"
 	"github.com/tislib/data-handler/pkg/types"
+	"github.com/tislib/data-handler/pkg/util"
 )
 
 type recordService struct {
@@ -16,7 +17,7 @@ type recordService struct {
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
-	return PrepareQuery(resource, queryMap)
+	return util.PrepareQuery(resource, queryMap)
 }
 
 func (r *recordService) Init(data *model.InitData) {
@@ -34,9 +35,6 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 
 	for _, record := range list {
 		for _, property := range resource.Properties {
-			//if annotations.IsEnabled(property, annotations.SpecialProperty) {
-			//	continue // skip validation for special properties
-			//}
 
 			packedVal, exists := record.Properties[property.Name]
 			propertyType := types.ByResourcePropertyType(property.Type)
@@ -75,6 +73,15 @@ func (r *recordService) validateRecords(resource *model.Resource, list []*model.
 			}
 
 			isEmpty := propertyType.IsEmpty(val)
+
+			if property.Primary && isEmpty && isUpdate {
+				fieldErrors = append(fieldErrors, &model.ErrorField{
+					RecordId: record.Id,
+					Property: property.Name,
+					Message:  "required",
+					Value:    record.Properties[property.Name],
+				})
+			}
 
 			if !property.Primary && property.Required && isEmpty && (exists || !isUpdate) {
 				fieldErrors = append(fieldErrors, &model.ErrorField{

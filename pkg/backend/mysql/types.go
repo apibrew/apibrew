@@ -2,8 +2,32 @@ package mysql
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/types"
+	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )
+
+func (p mysqlBackendOptions) TypeModifier(propertyType model.ResourceProperty_Type) types.PropertyType {
+	if propertyType == model.ResourceProperty_TIME {
+		return types.CustomTypeFromType(types.ByResourcePropertyType(model.ResourceProperty_TIME), types.CustomType{
+			CustomPack: func(value interface{}) (*structpb.Value, error) {
+				return structpb.NewValue(string(value.([]uint8)))
+			},
+			CustomUnPack: func(value *structpb.Value) (interface{}, error) {
+				return []uint8(value.GetStringValue()), nil
+			},
+			CustomPointer: func(required bool) any {
+				if required {
+					return new([]uint8)
+				} else {
+					return new(*[]uint8)
+				}
+			},
+		})
+	} else {
+		return types.ByResourcePropertyType(propertyType)
+	}
+}
 
 func (p mysqlBackendOptions) GetSqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
 	switch propertyType {
