@@ -6,15 +6,24 @@ import (
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/util"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"google.golang.org/protobuf/proto"
-	"time"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type mongoBackend struct {
 	dataSource *model.DataSource
 	client     *mongo.Client
+	dbName     string
+}
+
+func (r mongoBackend) handleError(err error) errors.ServiceError {
+	if mongo.ErrNoDocuments == err {
+		return errors.RecordNotFoundError
+	}
+	return errors.InternalError.WithDetails(err.Error())
 }
 
 func (r mongoBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
@@ -23,7 +32,7 @@ func (r mongoBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated
 
 	if perr != nil {
 		log.Error(perr)
-		err = errors.InternalError.WithDetails(perr.Error())
+		err = r.handleError(err)
 	}
 
 	connectionAlreadyInitiated = true
@@ -42,29 +51,64 @@ func (r mongoBackend) DestroyDataSource(ctx context.Context) {
 
 func (r mongoBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, []bool, errors.ServiceError) {
 	var inserted []bool
+	var documents []interface{}
 	for _, record := range params.Records {
-		r.client.Database()
+		documents = append(documents, r.recordToDocument(params.Resource, record))
+	}
+	res, err := r.getCollection(params.Resource).InsertMany(ctx, documents)
+
+	if err != nil {
+		return nil, nil, r.handleError(err)
+	}
+
+	for range res.InsertedIDs {
+		inserted = append(inserted, true)
 	}
 
 	return params.Records, inserted, nil
 }
 
+func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.Record) bson.M {
+	var data = bson.M{}
+
+	for _, prop := range resource.Properties {
+		val, exists := record.Properties[prop.Name]
+
+		if exists {
+			data[prop.Mapping] = val.AsInterface()
+		}
+	}
+
+	return data
+}
+
 func (r mongoBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
 	for _, record := range params.Records {
-		data, err := proto.Marshal(record)
+		var filter = bson.M{}
+		var update = bson.M{}
+		var set = bson.M{}
+		update["$set"] = set
 
-		if err != nil {
-			log.Warn(err)
+		for _, prop := range params.Resource.Properties {
+			if prop.Primary {
+				if record.Properties[prop.Name] == nil {
+					filter[prop.Mapping] = nil
+				} else {
+					filter[prop.Mapping] = record.Properties[prop.Name].AsInterface()
+				}
+			}
 
-			return nil, errors.InternalError.WithDetails(err.Error())
+			val, exists := record.Properties[prop.Name]
+
+			if exists {
+				set[prop.Mapping] = val.AsInterface()
+			}
 		}
 
-		_, err = r.rdb.Set(ctx, r.getKey(params.Resource, record.Id), data, time.Hour*10000).Result()
+		_, err := r.getCollection(params.Resource).UpdateOne(ctx, filter, update)
 
 		if err != nil {
-			log.Warn(err)
-
-			return nil, errors.InternalError.WithDetails(err.Error())
+			return nil, r.handleError(err)
 		}
 	}
 
@@ -72,30 +116,121 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsP
 }
 
 func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
-	recData, err := r.rdb.Get(ctx, r.getKey(resource, id)).Bytes()
+	res := r.getCollection(resource).FindOne(ctx, bson.M{
+		"id": id,
+	})
 
-	if err != nil {
-		return nil, errors.InternalError.WithDetails(err.Error())
+	if res.Err() != nil {
+		return nil, r.handleError(res.Err())
 	}
 
-	var record = new(model.Record)
+	var data = new(map[string]interface{})
 
-	err = proto.Unmarshal(recData, record)
+	err := res.Decode(data)
 
 	if err != nil {
-		return nil, errors.InternalError.WithDetails(err.Error())
+		return nil, r.handleError(err)
+	}
+
+	record, err := r.documentToRecord(resource, *data)
+
+	if err != nil {
+		return nil, r.handleError(err)
 	}
 
 	return record, nil
 }
 
+func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string]interface{}) (*model.Record, errors.ServiceError) {
+	var record = new(model.Record)
+	record.Properties = make(map[string]*structpb.Value)
+
+	for _, prop := range resource.Properties {
+		val, exists := (data)[prop.Name]
+
+		if exists {
+			st, err := structpb.NewValue(val)
+
+			if err != nil {
+				return nil, r.handleError(err)
+			}
+
+			record.Properties[prop.Name] = st
+		}
+	}
+	return record, nil
+}
+
 func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError {
-	//TODO implement me
-	panic("implement me")
+	for _, item := range list {
+		var filter = bson.M{
+			"id": item,
+		}
+
+		_, err := r.getCollection(resource).DeleteOne(ctx, filter)
+
+		if err != nil {
+			return r.handleError(err)
+		}
+	}
+
+	return nil
 }
 
 func (r mongoBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) ([]*model.Record, uint32, errors.ServiceError) {
-	return nil, 0, errors.UnsupportedOperation
+	var filter bson.M = nil
+
+	if params.Query != nil {
+		filter = r.expressionToMongoFilter(params.Query)
+	}
+
+	cursor, err := r.getCollection(params.Resource).Find(ctx, filter)
+
+	if err != nil {
+		return nil, 0, r.handleError(err)
+	}
+
+	var records []*model.Record
+	for cursor.Next(ctx) {
+		var data = new(map[string]interface{})
+
+		err := cursor.Decode(data)
+
+		if err != nil {
+			return nil, 0, r.handleError(err)
+		}
+
+		record, err := r.documentToRecord(params.Resource, *data)
+
+		if err != nil {
+			return nil, 0, r.handleError(err)
+		}
+
+		records = append(records, record)
+	}
+
+	return records, uint32(len(records)), nil
+}
+
+func (r mongoBackend) expressionToMongoFilter(expression *model.BooleanExpression) bson.M {
+	var filter = bson.M{}
+
+	switch expr := expression.Expression.(type) {
+	case *model.BooleanExpression_And:
+		filter["$and"] = util.ArrayMap(expr.And.Expressions, r.expressionToMongoFilter)
+	case *model.BooleanExpression_Or:
+		filter["$or"] = util.ArrayMap(expr.Or.Expressions, r.expressionToMongoFilter)
+	case *model.BooleanExpression_Not:
+		filter["$not"] = r.expressionToMongoFilter(expr.Not)
+	case *model.BooleanExpression_Equal:
+		if propertyExpression, ok := expr.Equal.Left.Expression.(*model.Expression_Property); ok {
+			if valueExpression, ok := expr.Equal.Right.Expression.(*model.Expression_Value); ok {
+				filter[propertyExpression.Property] = valueExpression.Value.AsInterface()
+			}
+		}
+	}
+
+	return filter
 }
 
 func (r mongoBackend) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError) {
@@ -107,6 +242,17 @@ func (r mongoBackend) PrepareResourceFromEntity(ctx context.Context, catalog, en
 }
 
 func (r mongoBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) errors.ServiceError {
+	for _, step := range params.MigrationPlan.Steps {
+		switch step.Kind.(type) {
+		case *model.ResourceMigrationStep_CreateResource:
+		case *model.ResourceMigrationStep_DeleteResource:
+			err := r.getCollection(params.MigrationPlan.CurrentResource).Drop(ctx)
+
+			if err != nil {
+				return r.handleError(err)
+			}
+		}
+	}
 	return nil
 }
 
@@ -126,6 +272,6 @@ func (r mongoBackend) IsTransactionAlive(ctx context.Context) (isAlive bool, ser
 	return true, nil
 }
 
-func (r mongoBackend) getKey(resource *model.Resource, recordId string) string {
-	return resource.Namespace + "/" + resource.Name + "/" + recordId
+func (r mongoBackend) getCollection(resource *model.Resource) *mongo.Collection {
+	return r.client.Database(r.dbName).Collection(resource.SourceConfig.Entity)
 }

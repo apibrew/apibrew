@@ -111,7 +111,8 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 		options := new(model.DataSource_MongoParams)
 
 		options.MongoParams = &model.MongoParams{
-			Uri: record.Properties["options_mongo_uri"].GetStringValue(),
+			Uri:    record.Properties["options_mongo_uri"].GetStringValue(),
+			DbName: record.Properties["options_mongo_db_name"].GetStringValue(),
 		}
 
 		result.Params = options

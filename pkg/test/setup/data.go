@@ -9,8 +9,8 @@ var SystemDataSource = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "system",
 	Description: "system",
-	Options: &model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlOptions{
+	Params: &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "root",
 			Password:      "root",
 			Host:          "127.0.0.1",
@@ -25,8 +25,8 @@ var DhTest = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "dh-test",
 	Description: "dh-test",
-	Options: &model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlOptions{
+	Params: &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
 			Host:          "127.0.0.1",
@@ -41,8 +41,8 @@ var DhTestWrongPassword = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1-wrong",
 	Description: "data-source-1-wrong",
-	Options: &model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlOptions{
+	Params: &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test_wrong_pass",
 			Password:      "dh_test_wrong_pass",
 			Host:          "127.0.0.1",
@@ -57,8 +57,8 @@ var DataSourceDhTest = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-test",
 	Description: "data-source-test",
-	Options: &model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlOptions{
+	Params: &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
 			Host:          "127.0.0.1",
@@ -74,8 +74,8 @@ var DataSource1 = &model.DataSource{
 	Name:        "data-source-1",
 	Description: "data-source-1",
 	Version:     1,
-	Options: &model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlOptions{
+	Params: &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
 			Host:          "127.0.0.1",
