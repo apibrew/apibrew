@@ -159,6 +159,22 @@ var DataSourceResource = &model.Resource{
 			Type:     model.ResourceProperty_INT32,
 			Required: false,
 		},
+		{
+			Name: "options_mongo_uri",
+
+			Mapping:  "options_mongo_uri",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: false,
+		},
+		{
+			Name: "options_mongo_db_name",
+
+			Mapping:  "options_mongo_db_name",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: false,
+		},
 	},
 	SecurityContext: securityContextDisallowAll,
 }

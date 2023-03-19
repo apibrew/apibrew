@@ -10,6 +10,6 @@ import (
 func NewMysqlResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
 	return common.NewSqlBackend(dataSource, &mysqlBackendOptions{
 		dataSource:        dataSource,
-		connectionDetails: dataSource.Options.(*model.DataSource_MysqlParams),
+		connectionDetails: dataSource.Params.(*model.DataSource_MysqlParams),
 	})
 }
