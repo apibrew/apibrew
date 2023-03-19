@@ -6,8 +6,8 @@ var dhTestMysql = &model.DataSource{
 	Backend:     model.DataSourceBackendType_MYSQL,
 	Name:        "dh-test-mysql",
 	Description: "dh-test-mysql",
-	Options: &model.DataSource_MysqlParams{
-		MysqlParams: &model.MysqlOptions{
+	Params: &model.DataSource_MysqlParams{
+		MysqlParams: &model.MysqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
 			Host:          "127.0.0.1",
@@ -22,11 +22,23 @@ var dhTestRedis = &model.DataSource{
 	Backend:     model.DataSourceBackendType_REDIS,
 	Name:        "dh-test-redis",
 	Description: "dh-test-redis",
-	Options: &model.DataSource_RedisOptions{
-		RedisOptions: &model.RedisOptions{
+	Params: &model.DataSource_RedisParams{
+		RedisParams: &model.RedisParams{
 			Addr:     "localhost:6379",
 			Password: "",
 			Db:       0,
+		},
+	},
+}
+
+var dhTestMongo = &model.DataSource{
+	Backend:     model.DataSourceBackendType_MONGODB,
+	Name:        "dh-test-mongo",
+	Description: "dh-test-mongo",
+	Params: &model.DataSource_MongoParams{
+		MongoParams: &model.MongoParams{
+			Uri:    "mongodb://127.0.0.1:27017",
+			DbName: "dhTest",
 		},
 	},
 }
