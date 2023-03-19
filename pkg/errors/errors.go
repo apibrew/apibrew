@@ -17,6 +17,7 @@ var AccessDeniedError = newServiceError(model.ErrorCode_ACCESS_DENIED, "Access d
 var BackendConnectionAuthenticationError = newServiceError(model.ErrorCode_BACKEND_ERROR, "Backend error", codes.FailedPrecondition)
 var UniqueViolation = newServiceError(model.ErrorCode_UNIQUE_VIOLATION, "Unique violation", codes.FailedPrecondition)
 var ReferenceViolation = newServiceError(model.ErrorCode_REFERENCE_VIOLATION, "Reference violation", codes.FailedPrecondition)
+var UnsupportedOperation = newServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Record Validation failed", codes.FailedPrecondition)
 
 // RecordValidationError @fixme
 var AlreadyExistsError = newServiceError(model.ErrorCode_ALREADY_EXISTS, "Already Exists", codes.FailedPrecondition)

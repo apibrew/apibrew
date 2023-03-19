@@ -54,6 +54,20 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		resource = util.HistoryResource(resource)
 	}
 
+	if params.Query != nil && params.Filters != nil {
+		return nil, 0, errors.LogicalError.WithDetails("Both query and filters cannot be set at the same time")
+	}
+
+	if params.Query == nil && params.Filters != nil {
+		var err errors.ServiceError
+
+		params.Query, err = util.PrepareQueryFromFilters(resource, params.Filters)
+
+		if err != nil {
+			return nil, 0, err
+		}
+	}
+
 	records, total, err := bck.ListRecords(ctx, abs.ListRecordParams{
 		Resource:          resource,
 		Query:             params.Query,
@@ -301,21 +315,6 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		return nil, err
 	}
 
-	// prevent immutable properties to be updated
-
-	var immutableColsMap = make(map[string]bool)
-	for _, prop := range resource.Properties {
-		if prop.Immutable {
-			immutableColsMap[prop.Name] = true
-		}
-	}
-
-	for _, record := range params.Records {
-		for key := range immutableColsMap {
-			delete(record.Properties, key)
-		}
-	}
-
 	if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {
 		success = false
 		return nil, err
@@ -472,7 +471,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	queryMap[propertyName] = value
 
 	logger.Debug("Call PrepareQuery: ", queryMap)
-	query, err := PrepareQuery(resource, queryMap)
+	query, err := util.PrepareQuery(resource, queryMap)
 	logger.Debug("Result record-service: ", query)
 
 	if err != nil {

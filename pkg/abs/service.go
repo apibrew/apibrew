@@ -121,6 +121,7 @@ type RecordListParams struct {
 	ResolveReferences []string
 	ResultChan        chan<- *model.Record
 	PackRecords       bool
+	Filters           map[string]string
 }
 
 type RecordCreateParams struct {

@@ -6,6 +6,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/handler"
 	"github.com/tislib/data-handler/pkg/types"
+	"github.com/tislib/data-handler/pkg/util"
 )
 
 type recordService struct {
@@ -16,7 +17,7 @@ type recordService struct {
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
-	return PrepareQuery(resource, queryMap)
+	return util.PrepareQuery(resource, queryMap)
 }
 
 func (r *recordService) Init(data *model.InitData) {

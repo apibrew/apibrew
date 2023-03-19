@@ -2,6 +2,7 @@ package backend
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/test/setup"
@@ -186,6 +187,121 @@ func TestUpdateRecord(t *testing.T) {
 					return
 				}
 			}
+		})
+	}
+}
+
+func TestQueryRecord(t *testing.T) {
+	for _, dataSource := range dataSources {
+		t.Run(fmt.Sprintf("%s[%s]", dataSource.Backend.String(), dataSource.Name), func(t *testing.T) {
+			var list = []map[string]interface{}{
+				{
+					"bool":   true,
+					"bytes":  "YXNk",
+					"date":   "2001-01-02",
+					"double": 12.3,
+					"float":  31.200000762939453,
+					"int32":  12,
+					"int64":  34,
+					"object": map[string]interface{}{ //@todo fixme double packing problem
+						"test1": "test-123",
+					},
+					"string":    "param-1",
+					"text":      "test1233321",
+					"time":      "17:04:05",
+					"timestamp": "2006-01-02T15:04:05Z",
+					"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
+				},
+				{
+					"bool":   true,
+					"bytes":  "YXNk",
+					"date":   "2001-01-02",
+					"double": 12.3,
+					"float":  31.200000762939453,
+					"int32":  12,
+					"int64":  34,
+					"object": map[string]interface{}{ //@todo fixme double packing problem
+						"test1": "test-123",
+					},
+					"string":    "param-1",
+					"text":      "test1233321",
+					"time":      "17:04:05",
+					"timestamp": "2006-01-02T15:04:05Z",
+					"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
+				},
+				{
+					"bool":   true,
+					"bytes":  "YXNk",
+					"date":   "2001-01-02",
+					"double": 12.3,
+					"float":  31.200000762939453,
+					"int32":  12,
+					"int64":  34,
+					"object": map[string]interface{}{ //@todo fixme double packing problem
+						"test1": "test-123",
+					},
+					"string":    "param-2",
+					"text":      "test1233321",
+					"time":      "17:04:05",
+					"timestamp": "2006-01-02T15:04:05Z",
+					"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
+				},
+				{
+					"bool":   true,
+					"bytes":  "YXNk",
+					"date":   "2001-01-02",
+					"double": 12.3,
+					"float":  31.200000762939453,
+					"int32":  121,
+					"int64":  34,
+					"object": map[string]interface{}{ //@todo fixme double packing problem
+						"test1": "test-123",
+					},
+					"string":    "param-1",
+					"text":      "test1233321",
+					"time":      "17:04:05",
+					"timestamp": "2006-01-02T15:04:05Z",
+					"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
+				},
+			}
+			var records []*model.Record
+
+			for _, item := range list {
+				var st, err = structpb.NewStruct(item)
+
+				if err != nil {
+					t.Error(err)
+					return
+				}
+
+				records = append(records, &model.Record{
+					Properties: st.GetFields(),
+				})
+			}
+
+			_, err := setup.GetTestDhClient().GetRecordClient().Create(setup.Ctx, &stub.CreateRecordRequest{
+				Resource: resources[dataSource].Name,
+				Records:  records,
+			})
+
+			if err != nil {
+				t.Error(err)
+			}
+
+			res, err := setup.GetTestDhClient().GetRecordClient().List(setup.Ctx, &stub.ListRecordRequest{
+				Resource: resources[dataSource].Name,
+				Filters: map[string]string{
+					"string": "param-1",
+					"int32":  "12",
+				},
+			})
+
+			if err != nil {
+				t.Error(err)
+			}
+
+			assert.Equal(t, int(res.Total), 2)
+			assert.Len(t, res.Content, 2)
 		})
 	}
 }
