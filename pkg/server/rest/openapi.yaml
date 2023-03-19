@@ -1466,11 +1466,9 @@ components:
                         - MYSQL
                         - ORACLE
                         - MONGODB
-                        - CUSTOM
+                        - REDIS
                     type: string
                     format: enum
-                customBackendName:
-                    type: string
                 name:
                     type: string
                 description:
@@ -1481,6 +1479,8 @@ components:
                     $ref: '#/components/schemas/MysqlOptions'
                 virtualParams:
                     $ref: '#/components/schemas/VirtualOptions'
+                redisOptions:
+                    $ref: '#/components/schemas/RedisOptions'
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
@@ -1801,6 +1801,16 @@ components:
                 version:
                     type: integer
                     format: uint32
+        RedisOptions:
+            type: object
+            properties:
+                addr:
+                    type: string
+                password:
+                    type: string
+                db:
+                    type: integer
+                    format: int32
         Reference:
             type: object
             properties:
