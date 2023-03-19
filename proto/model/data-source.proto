@@ -16,7 +16,7 @@ enum DataSourceBackendType {
   REDIS = 5;
 }
 
-message PostgresqlOptions {
+message PostgresqlParams {
   string username = 1;
   string password = 2;
   string host = 3;
@@ -25,7 +25,7 @@ message PostgresqlOptions {
   string defaultSchema = 6;
 }
 
-message MysqlOptions {
+message MysqlParams {
   string username = 1;
   string password = 2;
   string host = 3;
@@ -34,13 +34,18 @@ message MysqlOptions {
   string defaultSchema = 6;
 }
 
-message RedisOptions {
+message RedisParams {
   string addr = 1;
   string password = 2;
   int32 db = 3;
 }
 
-message VirtualOptions {
+message MongoParams {
+  string uri = 1;
+  string dbName = 2;
+}
+
+message VirtualParams {
   enum Mode {
     DISCARD = 0;
     ERROR = 1;
@@ -54,11 +59,12 @@ message DataSource {
   string name = 5;
   string description = 6;
 
-  oneof options {
-    PostgresqlOptions postgresqlParams = 7;
-    MysqlOptions mysqlParams = 8;
-    VirtualOptions virtualParams = 9;
-    RedisOptions redisOptions = 10;
+  oneof params {
+    PostgresqlParams postgresqlParams = 7;
+    MysqlParams mysqlParams = 8;
+    VirtualParams virtualParams = 9;
+    RedisParams redisParams = 10;
+    MongoParams mongoParams = 11;
   }
   AuditData auditData = 101; // read only
   uint32 version = 102; // read only

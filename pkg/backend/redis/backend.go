@@ -7,6 +7,7 @@ import (
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
 	"time"
 )
@@ -36,7 +37,7 @@ func (r redisBackend) AddRecords(ctx context.Context, params abs.BulkRecordsPara
 		if err != nil {
 			log.Warn(err)
 
-			return nil, nil, errors.InternalError.WithDetails(err.Error())
+			return nil, nil, r.handleError(err)
 		}
 
 		_, err = r.rdb.Set(ctx, r.getKey(params.Resource, record.Id), data, time.Hour*10000).Result()
@@ -44,7 +45,7 @@ func (r redisBackend) AddRecords(ctx context.Context, params abs.BulkRecordsPara
 		if err != nil {
 			log.Warn(err)
 
-			return nil, nil, errors.InternalError.WithDetails(err.Error())
+			return nil, nil, r.handleError(err)
 		}
 		inserted = append(inserted, true)
 	}
@@ -59,7 +60,7 @@ func (r redisBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsP
 		if err != nil {
 			log.Warn(err)
 
-			return nil, errors.InternalError.WithDetails(err.Error())
+			return nil, r.handleError(err)
 		}
 
 		_, err = r.rdb.Set(ctx, r.getKey(params.Resource, record.Id), data, time.Hour*10000).Result()
@@ -67,7 +68,7 @@ func (r redisBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsP
 		if err != nil {
 			log.Warn(err)
 
-			return nil, errors.InternalError.WithDetails(err.Error())
+			return nil, r.handleError(err)
 		}
 	}
 
@@ -78,7 +79,7 @@ func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, s
 	recData, err := r.rdb.Get(ctx, r.getKey(resource, id)).Bytes()
 
 	if err != nil {
-		return nil, errors.InternalError.WithDetails(err.Error())
+		return nil, r.handleError(err)
 	}
 
 	var record = new(model.Record)
@@ -86,15 +87,24 @@ func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, s
 	err = proto.Unmarshal(recData, record)
 
 	if err != nil {
-		return nil, errors.InternalError.WithDetails(err.Error())
+		return nil, r.handleError(err)
 	}
 
 	return record, nil
 }
 
 func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError {
-	//TODO implement me
-	panic("implement me")
+	_, err := r.rdb.Del(ctx, util.ArrayMap(list, func(item string) string {
+		return r.getKey(resource, item)
+	})...).Result()
+
+	if err != nil {
+		log.Warn(err)
+
+		return errors.InternalError.WithDetails(err.Error())
+	}
+
+	return nil
 }
 
 func (r redisBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) ([]*model.Record, uint32, errors.ServiceError) {
@@ -130,5 +140,14 @@ func (r redisBackend) IsTransactionAlive(ctx context.Context) (isAlive bool, ser
 }
 
 func (r redisBackend) getKey(resource *model.Resource, recordId string) string {
-	return resource.Namespace + "/" + resource.Name + "/" + recordId
+	return resource.SourceConfig.Catalog + "/" + resource.SourceConfig.Entity + "/" + recordId
+}
+
+func (r redisBackend) handleError(err error) errors.ServiceError {
+	if redisErr, ok := err.(redis.Error); ok {
+		if redisErr.Error() == "redis: nil" {
+			return errors.RecordNotFoundError
+		}
+	}
+	return errors.InternalError.WithDetails(err.Error())
 }

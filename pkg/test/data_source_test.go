@@ -32,7 +32,7 @@ func TestCreateDataSourceStatusTest(t *testing.T) {
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Options:     setup.SystemDataSource.Options,
+		Params:      setup.SystemDataSource.Params,
 	}
 
 	defer func() {
@@ -68,7 +68,7 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Options:     setup.DhTestWrongPassword.Options,
+		Params:      setup.DhTestWrongPassword.Params,
 	}
 
 	defer func() {
@@ -118,7 +118,7 @@ func TestUpdateDataSource(t *testing.T) {
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Options:     setup.DataSource1.Options,
+		Params:      setup.DataSource1.Params,
 		Version:     1,
 	}
 
@@ -148,8 +148,8 @@ func TestUpdateDataSource(t *testing.T) {
 
 	checkNewCreatedDatasourceStatus(newDataSource, t)
 
-	newDataSource.Options = &model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlOptions{
+	newDataSource.Params = &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dhtest2",
 			Password:      "dhtest2",
 			Host:          "127.0.0.1",
@@ -172,13 +172,13 @@ func TestUpdateDataSource(t *testing.T) {
 		t.Error("Invalid datasource length on update response", len(res.DataSources))
 	}
 
-	updatedOptions := res.DataSources[0].Options.(*model.DataSource_PostgresqlParams)
+	updatedParams := res.DataSources[0].Params.(*model.DataSource_PostgresqlParams)
 
-	if updatedOptions.PostgresqlParams.Username != "dhtest2" {
+	if updatedParams.PostgresqlParams.Username != "dhtest2" {
 		t.Error("Username is not updated")
 	}
 
-	if updatedOptions.PostgresqlParams.Host != "127.0.0.1" {
+	if updatedParams.PostgresqlParams.Host != "127.0.0.1" {
 		t.Error("Host is corrupted")
 	}
 
@@ -194,13 +194,13 @@ func TestUpdateDataSource(t *testing.T) {
 		t.Error(err)
 	}
 
-	getOptions := getRes.DataSource.Options.(*model.DataSource_PostgresqlParams)
+	getParams := getRes.DataSource.Params.(*model.DataSource_PostgresqlParams)
 
-	if getOptions.PostgresqlParams.Username != "dhtest2" {
+	if getParams.PostgresqlParams.Username != "dhtest2" {
 		t.Error("Username is not updated")
 	}
 
-	if getOptions.PostgresqlParams.Host != "127.0.0.1" {
+	if getParams.PostgresqlParams.Host != "127.0.0.1" {
 		t.Error("Host is corrupted")
 	}
 
@@ -217,8 +217,8 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Options: &model.DataSource_PostgresqlParams{
-			PostgresqlParams: &model.PostgresqlOptions{
+		Params: &model.DataSource_PostgresqlParams{
+			PostgresqlParams: &model.PostgresqlParams{
 				Username:      "dh_test2",
 				Password:      "dh_test",
 				Host:          "127.0.0.1",
@@ -257,8 +257,8 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 
 	checkNewCreatedDatasourceStatusPasswordWrong(newDataSource, t)
 
-	createdDataSource1.Options = &model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlOptions{
+	createdDataSource1.Params = &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test2",
 			Password:      "dh_test",
 			Host:          "127.0.0.1",
@@ -274,8 +274,8 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 
 	checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource1, t)
 
-	createdDataSource1.Options = &model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlOptions{
+	createdDataSource1.Params = &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
 			Host:          "127.0.0.1",
