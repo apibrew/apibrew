@@ -21,6 +21,7 @@ func NewMongoResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
 	bck := mongoBackend{
 		dataSource: dataSource,
 		client:     client,
+		dbName:     mongoOptions.MongoParams.DbName,
 	}
 
 	return bck
