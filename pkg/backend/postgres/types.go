@@ -2,8 +2,13 @@ package postgres
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/types"
 	"strconv"
 )
+
+func (p postgreSqlBackendOptions) TypeModifier(propertyType model.ResourceProperty_Type) types.PropertyType {
+	return types.ByResourcePropertyType(propertyType)
+}
 
 func (p postgreSqlBackendOptions) GetSqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
 	switch propertyType {

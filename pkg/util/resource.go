@@ -99,19 +99,30 @@ func RemarkResource(resource *model.Resource) {
 }
 
 func NormalizeResource(resource *model.Resource) {
+	propertyNameMap := GetNamedMap(resource.Properties)
+
 	if resource.Annotations == nil {
 		resource.Annotations = make(map[string]string)
 	}
 
 	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		resource.Properties = append(resource.Properties, resources.AuditProperties...)
+		exists := false
+		for _, prop := range resources.AuditProperties {
+			if propertyNameMap[prop.Name] != nil {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			resource.Properties = append(resource.Properties, resources.AuditProperties...)
+		}
 	}
 
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) && propertyNameMap[resources.VersionProperty.Name] == nil {
 		resource.Properties = append(resource.Properties, resources.VersionProperty)
 	}
 
-	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
+	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) && propertyNameMap[resources.IdProperty.Name] == nil {
 		resource.Properties = append(resource.Properties, resources.IdProperty)
 	}
 
