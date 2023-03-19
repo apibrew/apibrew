@@ -21,6 +21,7 @@ enum ErrorCode {
   UNIQUE_VIOLATION = 10;
   REFERENCE_VIOLATION = 11;
   RESOURCE_NOT_FOUND = 12;
+  UNSUPPORTED_OPERATION = 14;
 }
 
 message ErrorField {

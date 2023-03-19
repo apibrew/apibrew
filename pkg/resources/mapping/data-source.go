@@ -30,6 +30,12 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 		properties["options_mysql_default_schema"] = structpb.NewStringValue(options.MysqlParams.DefaultSchema)
 	}
 
+	if options, ok := dataSource.Options.(*model.DataSource_RedisOptions); ok {
+		properties["options_redis_addr"] = structpb.NewStringValue(options.RedisOptions.Addr)
+		properties["options_redis_password"] = structpb.NewStringValue(options.RedisOptions.Password)
+		properties["options_redis_db"] = structpb.NewNumberValue(float64(options.RedisOptions.Db))
+	}
+
 	return &model.Record{
 		Id:         dataSource.Id,
 		Properties: properties,
@@ -79,6 +85,18 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 			Port:          uint32(record.Properties["options_mysql_port"].GetNumberValue()),
 			DbName:        record.Properties["options_mysql_db_name"].GetStringValue(),
 			DefaultSchema: record.Properties["options_mysql_default_schema"].GetStringValue(),
+		}
+
+		result.Options = options
+	}
+
+	if result.Backend == model.DataSourceBackendType_REDIS {
+		options := new(model.DataSource_RedisOptions)
+
+		options.RedisOptions = &model.RedisOptions{
+			Addr:     record.Properties["options_redis_addr"].GetStringValue(),
+			Password: record.Properties["options_redis_password"].GetStringValue(),
+			Db:       int32(record.Properties["options_redis_db"].GetNumberValue()),
 		}
 
 		result.Options = options

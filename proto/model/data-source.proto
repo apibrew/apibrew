@@ -13,7 +13,7 @@ enum DataSourceBackendType {
   MYSQL = 2;
   ORACLE = 3;
   MONGODB = 4;
-  CUSTOM = 5;
+  REDIS = 5;
 }
 
 message PostgresqlOptions {
@@ -34,6 +34,12 @@ message MysqlOptions {
   string defaultSchema = 6;
 }
 
+message RedisOptions {
+  string addr = 1;
+  string password = 2;
+  int32 db = 3;
+}
+
 message VirtualOptions {
   enum Mode {
     DISCARD = 0;
@@ -45,7 +51,6 @@ message VirtualOptions {
 message DataSource {
   string id = 1; // id; read only
   DataSourceBackendType backend = 2;
-  string customBackendName = 3;
   string name = 5;
   string description = 6;
 
@@ -53,6 +58,7 @@ message DataSource {
     PostgresqlOptions postgresqlParams = 7;
     MysqlOptions mysqlParams = 8;
     VirtualOptions virtualParams = 9;
+    RedisOptions redisOptions = 10;
   }
   AuditData auditData = 101; // read only
   uint32 version = 102; // read only
