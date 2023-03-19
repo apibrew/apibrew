@@ -20,6 +20,7 @@ func TestComplexPayload1Fail(t *testing.T) {
 
 	if err == nil {
 		t.Error("Save should fail")
+		return
 	}
 
 	if util.GetErrorCode(err) != model.ErrorCode_RECORD_VALIDATION_ERROR {

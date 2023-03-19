@@ -324,7 +324,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 
 	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, abs.ListRecordParams{
 		Resource: resources.ResourcePropertyResource,
-		Query:    newEqualExpression("resource", structpb.NewStringValue(resource.Id)),
+		Query:    util.NewEqualExpression("resource", structpb.NewStringValue(resource.Id)),
 		Schema:   &r.schema,
 		Limit:    1000000,
 	})

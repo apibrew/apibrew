@@ -128,6 +128,10 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			continue
 		}
 
+		if property.Immutable {
+			continue
+		}
+
 		if property.Name == "version" && annotations.IsEnabled(property, annotations.SpecialProperty) && !annotations.IsEnabled(resource, annotations.DisableVersion) {
 			updateBuilder.SetMore("version = version + 1")
 			continue
