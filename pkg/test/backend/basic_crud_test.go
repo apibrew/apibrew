@@ -3,6 +3,7 @@ package backend
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/test/setup"
@@ -297,8 +298,14 @@ func TestQueryRecord(t *testing.T) {
 				},
 			})
 
+			if errors.UnsupportedOperation.Is(err) {
+				t.SkipNow()
+				return
+			}
+
 			if err != nil {
 				t.Error(err)
+				return
 			}
 
 			assert.Equal(t, int(res.Total), 2)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/tislib/data-handler/pkg/model"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type ServiceError interface {
@@ -96,7 +97,23 @@ func (s serviceError) Is(err error) bool {
 		return s.Code() == se.Code()
 	}
 
+	if errorCode := getErrorCode(err); errorCode != model.ErrorCode_UNKNOWN_ERROR {
+		return s.Code() == errorCode
+	}
+
 	return false
+}
+
+func getErrorCode(err error) model.ErrorCode {
+	st, found := status.FromError(err)
+
+	if !found {
+		return model.ErrorCode_UNKNOWN_ERROR
+	}
+
+	a := st.Details()[0].(*model.Error)
+
+	return a.GetCode()
 }
 
 func newServiceError(code model.ErrorCode, message string, grpcErrorCode codes.Code) ServiceError {
