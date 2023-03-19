@@ -1474,13 +1474,15 @@ components:
                 description:
                     type: string
                 postgresqlParams:
-                    $ref: '#/components/schemas/PostgresqlOptions'
+                    $ref: '#/components/schemas/PostgresqlParams'
                 mysqlParams:
-                    $ref: '#/components/schemas/MysqlOptions'
+                    $ref: '#/components/schemas/MysqlParams'
                 virtualParams:
-                    $ref: '#/components/schemas/VirtualOptions'
-                redisOptions:
-                    $ref: '#/components/schemas/RedisOptions'
+                    $ref: '#/components/schemas/VirtualParams'
+                redisParams:
+                    $ref: '#/components/schemas/RedisParams'
+                mongoParams:
+                    $ref: '#/components/schemas/MongoParams'
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
@@ -1648,7 +1650,14 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
-        MysqlOptions:
+        MongoParams:
+            type: object
+            properties:
+                uri:
+                    type: string
+                dbName:
+                    type: string
+        MysqlParams:
             type: object
             properties:
                 username:
@@ -1698,7 +1707,7 @@ components:
                     $ref: '#/components/schemas/Expression'
                 right:
                     $ref: '#/components/schemas/Expression'
-        PostgresqlOptions:
+        PostgresqlParams:
             type: object
             properties:
                 username:
@@ -1801,7 +1810,7 @@ components:
                 version:
                     type: integer
                     format: uint32
-        RedisOptions:
+        RedisParams:
             type: object
             properties:
                 addr:
@@ -2300,7 +2309,7 @@ components:
                 version:
                     type: integer
                     format: uint32
-        VirtualOptions:
+        VirtualParams:
             type: object
             properties:
                 mode:

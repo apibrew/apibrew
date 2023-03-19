@@ -4,6 +4,7 @@ import (
 	"context"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/backend/mongo"
 	"github.com/tislib/data-handler/pkg/backend/mysql"
 	"github.com/tislib/data-handler/pkg/backend/postgres"
 	"github.com/tislib/data-handler/pkg/backend/redis"
@@ -123,7 +124,7 @@ func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceB
 	case model.DataSourceBackendType_MYSQL:
 		return mysql.NewMysqlResourceServiceBackend
 	case model.DataSourceBackendType_MONGODB:
-		return nil
+		return mongo.NewMongoResourceServiceBackend
 	case model.DataSourceBackendType_REDIS:
 		return redis.NewRedisResourceServiceBackend
 	}

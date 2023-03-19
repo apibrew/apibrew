@@ -12,7 +12,7 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 	properties["description"] = structpb.NewStringValue(dataSource.Description)
 	properties["backend"] = structpb.NewNumberValue(float64(dataSource.Backend))
 
-	if options, ok := dataSource.Options.(*model.DataSource_PostgresqlParams); ok {
+	if options, ok := dataSource.Params.(*model.DataSource_PostgresqlParams); ok {
 		properties["options_postgres_username"] = structpb.NewStringValue(options.PostgresqlParams.Username)
 		properties["options_postgres_password"] = structpb.NewStringValue(options.PostgresqlParams.Password)
 		properties["options_postgres_host"] = structpb.NewStringValue(options.PostgresqlParams.Host)
@@ -21,7 +21,7 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 		properties["options_postgres_default_schema"] = structpb.NewStringValue(options.PostgresqlParams.DefaultSchema)
 	}
 
-	if options, ok := dataSource.Options.(*model.DataSource_MysqlParams); ok {
+	if options, ok := dataSource.Params.(*model.DataSource_MysqlParams); ok {
 		properties["options_mysql_username"] = structpb.NewStringValue(options.MysqlParams.Username)
 		properties["options_mysql_password"] = structpb.NewStringValue(options.MysqlParams.Password)
 		properties["options_mysql_host"] = structpb.NewStringValue(options.MysqlParams.Host)
@@ -30,10 +30,15 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 		properties["options_mysql_default_schema"] = structpb.NewStringValue(options.MysqlParams.DefaultSchema)
 	}
 
-	if options, ok := dataSource.Options.(*model.DataSource_RedisOptions); ok {
-		properties["options_redis_addr"] = structpb.NewStringValue(options.RedisOptions.Addr)
-		properties["options_redis_password"] = structpb.NewStringValue(options.RedisOptions.Password)
-		properties["options_redis_db"] = structpb.NewNumberValue(float64(options.RedisOptions.Db))
+	if options, ok := dataSource.Params.(*model.DataSource_RedisParams); ok {
+		properties["options_redis_addr"] = structpb.NewStringValue(options.RedisParams.Addr)
+		properties["options_redis_password"] = structpb.NewStringValue(options.RedisParams.Password)
+		properties["options_redis_db"] = structpb.NewNumberValue(float64(options.RedisParams.Db))
+	}
+
+	if options, ok := dataSource.Params.(*model.DataSource_MongoParams); ok {
+		properties["options_mongo_uri"] = structpb.NewStringValue(options.MongoParams.Uri)
+		properties["options_mongo_db_name"] = structpb.NewStringValue(options.MongoParams.DbName)
 	}
 
 	return &model.Record{
@@ -63,7 +68,7 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 	if result.Backend == model.DataSourceBackendType_POSTGRESQL {
 		options := new(model.DataSource_PostgresqlParams)
 
-		options.PostgresqlParams = &model.PostgresqlOptions{
+		options.PostgresqlParams = &model.PostgresqlParams{
 			Username:      record.Properties["options_postgres_username"].GetStringValue(),
 			Password:      record.Properties["options_postgres_password"].GetStringValue(),
 			Host:          record.Properties["options_postgres_host"].GetStringValue(),
@@ -72,13 +77,13 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 			DefaultSchema: record.Properties["options_postgres_default_schema"].GetStringValue(),
 		}
 
-		result.Options = options
+		result.Params = options
 	}
 
 	if result.Backend == model.DataSourceBackendType_MYSQL {
 		options := new(model.DataSource_MysqlParams)
 
-		options.MysqlParams = &model.MysqlOptions{
+		options.MysqlParams = &model.MysqlParams{
 			Username:      record.Properties["options_mysql_username"].GetStringValue(),
 			Password:      record.Properties["options_mysql_password"].GetStringValue(),
 			Host:          record.Properties["options_mysql_host"].GetStringValue(),
@@ -87,19 +92,29 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 			DefaultSchema: record.Properties["options_mysql_default_schema"].GetStringValue(),
 		}
 
-		result.Options = options
+		result.Params = options
 	}
 
 	if result.Backend == model.DataSourceBackendType_REDIS {
-		options := new(model.DataSource_RedisOptions)
+		options := new(model.DataSource_RedisParams)
 
-		options.RedisOptions = &model.RedisOptions{
+		options.RedisParams = &model.RedisParams{
 			Addr:     record.Properties["options_redis_addr"].GetStringValue(),
 			Password: record.Properties["options_redis_password"].GetStringValue(),
 			Db:       int32(record.Properties["options_redis_db"].GetNumberValue()),
 		}
 
-		result.Options = options
+		result.Params = options
+	}
+
+	if result.Backend == model.DataSourceBackendType_MONGODB {
+		options := new(model.DataSource_MongoParams)
+
+		options.MongoParams = &model.MongoParams{
+			Uri: record.Properties["options_mongo_uri"].GetStringValue(),
+		}
+
+		result.Params = options
 	}
 
 	return result

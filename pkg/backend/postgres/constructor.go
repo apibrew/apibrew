@@ -9,6 +9,6 @@ import (
 
 func NewPostgresResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
 	return common.NewSqlBackend(dataSource, &postgreSqlBackendOptions{
-		connectionDetails: dataSource.Options.(*model.DataSource_PostgresqlParams),
+		connectionDetails: dataSource.Params.(*model.DataSource_PostgresqlParams),
 	})
 }

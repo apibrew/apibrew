@@ -8,14 +8,14 @@ import (
 )
 
 func NewRedisResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
-	redisOptions := dataSource.Options.(*model.DataSource_RedisOptions)
+	redisOptions := dataSource.Params.(*model.DataSource_RedisParams)
 
 	bck := redisBackend{
 		dataSource: dataSource,
 		rdb: redis.NewClient(&redis.Options{
-			Addr:     redisOptions.RedisOptions.Addr,
-			Password: redisOptions.RedisOptions.Password,
-			DB:       int(redisOptions.RedisOptions.Db),
+			Addr:     redisOptions.RedisParams.Addr,
+			Password: redisOptions.RedisParams.Password,
+			DB:       int(redisOptions.RedisParams.Db),
 		}),
 	}
 
