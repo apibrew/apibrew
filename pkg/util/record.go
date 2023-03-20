@@ -86,8 +86,6 @@ func DeNormalizeRecord(resource *model.Resource, record *model.Record) {
 		}
 
 		prop.Set(record, val)
-
-		delete(record.Properties, prop.Property.Name) //fixme decide if needed
 	}
 
 	if record.Id == "" {

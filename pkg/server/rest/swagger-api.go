@@ -10,7 +10,6 @@ import (
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"io"
@@ -299,14 +298,12 @@ func (s *swaggerApi) getResourceFQN(resource *model.Resource) string {
 func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.Schema {
 	var requiredItems []string
 
-	propertiesSchema := &openapi3.Schema{
+	recordSchema := &openapi3.Schema{
 		Properties: map[string]*openapi3.SchemaRef{},
 	}
 
 	for _, property := range resource.Properties {
-		propSchema := &openapi3.Schema{
-			Type: types.ResourcePropertyTypeToJsonSchemaType(property.Type),
-		}
+		propSchema := types.ResourcePropertyTypeToJsonSchemaType(property.Type)
 
 		if property.ExampleValue != nil {
 			propSchema.Example = property.ExampleValue.AsInterface()
@@ -316,7 +313,7 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 			propSchema.Default = property.DefaultValue.AsInterface()
 		}
 
-		propertiesSchema.Properties[property.Name] = &openapi3.SchemaRef{
+		recordSchema.Properties[property.Name] = &openapi3.SchemaRef{
 			Value: propSchema,
 		}
 
@@ -325,37 +322,9 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 		}
 	}
 
-	propertiesSchema.Required = requiredItems
-	propertiesSchema.Title = resource.GetTitle()
-	propertiesSchema.Description = resource.GetDescription()
-
-	recordSchema := &openapi3.Schema{
-		Properties: map[string]*openapi3.SchemaRef{},
-	}
-
-	recordSchema.Properties["properties"] = &openapi3.SchemaRef{
-		Value: propertiesSchema,
-	}
-
-	recordSchema.Properties["id"] = &openapi3.SchemaRef{Value: &openapi3.Schema{Type: "string", Format: "uuid"}}
-
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		recordSchema.Properties["version"] = &openapi3.SchemaRef{Value: &openapi3.Schema{Type: "number", ReadOnly: true}}
-	}
-
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		recordSchema.Properties["auditData"] = &openapi3.SchemaRef{
-			Value: &openapi3.Schema{
-				Properties: map[string]*openapi3.SchemaRef{
-					"createdOn": {Value: &openapi3.Schema{Type: "string", Format: "date"}},
-					"updatedOn": {Value: &openapi3.Schema{Type: "string", Format: "date"}},
-					"createdBy": {Value: &openapi3.Schema{Type: "string"}},
-					"updatedBy": {Value: &openapi3.Schema{Type: "string"}},
-				},
-				ReadOnly: true,
-			},
-		}
-	}
+	recordSchema.Required = requiredItems
+	recordSchema.Title = resource.GetTitle()
+	recordSchema.Description = resource.GetDescription()
 
 	return recordSchema
 }
