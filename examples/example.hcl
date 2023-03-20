@@ -14,7 +14,6 @@ resource "country" {
   properties  = [
     specialProperties(),
     {
-      (var1)  = ""
       name    = "name"
       type    = string
       length  = 124
