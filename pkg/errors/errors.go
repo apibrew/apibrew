@@ -18,6 +18,8 @@ var BackendConnectionAuthenticationError = newServiceError(model.ErrorCode_BACKE
 var UniqueViolation = newServiceError(model.ErrorCode_UNIQUE_VIOLATION, "Unique violation", codes.FailedPrecondition)
 var ReferenceViolation = newServiceError(model.ErrorCode_REFERENCE_VIOLATION, "Reference violation", codes.FailedPrecondition)
 var UnsupportedOperation = newServiceError(model.ErrorCode_UNSUPPORTED_OPERATION, "Unsupported Operation", codes.FailedPrecondition)
+var ExternalBackendCommunicationError = newServiceError(model.ErrorCode_EXTERNAL_BACKEND_COMMUNICATION_ERROR, "External Backend communication error", codes.Internal)
+var ExternalBackendError = newServiceError(model.ErrorCode_EXTERNAL_BACKEND_ERROR, "External Backend error", codes.Internal)
 
 // RecordValidationError @fixme
 var AlreadyExistsError = newServiceError(model.ErrorCode_ALREADY_EXISTS, "Already Exists", codes.FailedPrecondition)

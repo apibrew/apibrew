@@ -222,22 +222,22 @@ func initUpdateCmd() {
 			describeWriter.WriteRecords(resources.UserResource, 0, util.ArrToChan(result))
 		},
 	}))
-	updateCmd.AddCommand(protoMessageUpdateCmd[*model.RemoteExtension](protoMessageUpdateCmdParams[*model.RemoteExtension]{
-		msg: &model.RemoteExtension{},
+	updateCmd.AddCommand(protoMessageUpdateCmd[*model.Extension](protoMessageUpdateCmdParams[*model.Extension]{
+		msg: &model.Extension{},
 		use: "extension",
-		get: func(id string) *model.RemoteExtension {
+		get: func(id string) *model.Extension {
 			return check2(GetDhClient().GetExtensionClient().Get(context.TODO(), &stub.GetExtensionRequest{
 				Token: GetDhClient().GetToken(),
 				Id:    id,
 			})).Extension
 		},
-		handle: func(extension *model.RemoteExtension) {
+		handle: func(extension *model.Extension) {
 			resp := check2(GetDhClient().GetExtensionClient().Update(context.TODO(), &stub.UpdateExtensionRequest{
 				Token:      GetDhClient().GetToken(),
-				Extensions: []*model.RemoteExtension{extension},
+				Extensions: []*model.Extension{extension},
 			}))
 
-			result := util.ArrayMap[*model.RemoteExtension, *model.Record](resp.Extensions, mapping.ExtensionToRecord)
+			result := util.ArrayMap[*model.Extension, *model.Record](resp.Extensions, mapping.ExtensionToRecord)
 
 			describeWriter.WriteRecords(resources.UserResource, 0, util.ArrToChan(result))
 		},

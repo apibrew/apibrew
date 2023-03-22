@@ -186,20 +186,20 @@ func initCreateCmd() {
 			describeWriter.WriteRecords(resources.UserResource, 0, util.ArrToChan(result))
 		},
 	}))
-	createCmd.AddCommand(protoMessageCreateCmd[*model.RemoteExtension](protoMessageCreateCmdParams[*model.RemoteExtension]{
-		msg: &model.RemoteExtension{},
+	createCmd.AddCommand(protoMessageCreateCmd[*model.Extension](protoMessageCreateCmdParams[*model.Extension]{
+		msg: &model.Extension{},
 		use: "extension",
-		handle: func(extension *model.RemoteExtension) {
+		handle: func(extension *model.Extension) {
 			resp, err := GetDhClient().GetExtensionClient().Create(context.TODO(), &stub.CreateExtensionRequest{
 				Token:      GetDhClient().GetToken(),
-				Extensions: []*model.RemoteExtension{extension},
+				Extensions: []*model.Extension{extension},
 			})
 
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			result := util.ArrayMap[*model.RemoteExtension, *model.Record](resp.Extensions, mapping.ExtensionToRecord)
+			result := util.ArrayMap[*model.Extension, *model.Record](resp.Extensions, mapping.ExtensionToRecord)
 
 			describeWriter.WriteRecords(resources.UserResource, 0, util.ArrToChan(result))
 		},

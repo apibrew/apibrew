@@ -3,3 +3,9 @@ syntax = "proto3";
 package model;
 
 option go_package = "github.com/tislib/data-handler/pkg/model";
+
+import "google/protobuf/any.proto";
+
+message MapAnyWrap {
+  map<string, google.protobuf.Any> content = 2;
+}
