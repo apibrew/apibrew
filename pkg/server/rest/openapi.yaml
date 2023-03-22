@@ -335,9 +335,7 @@ paths:
                 - name: id
                   in: query
                   schema:
-                    type: array
-                    items:
-                        type: string
+                    type: string
                 - name: ids
                   in: query
                   schema:
@@ -1413,6 +1411,8 @@ components:
         CreateRecordResponse:
             type: object
             properties:
+                record:
+                    $ref: '#/components/schemas/Record'
                 records:
                     type: array
                     items:
@@ -1629,13 +1629,13 @@ components:
         ListRecordResponse:
             type: object
             properties:
-                records:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Record'
                 total:
                     type: integer
                     format: uint32
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
         ListResourceResponse:
             type: object
             properties:
@@ -2252,6 +2252,8 @@ components:
         UpdateRecordResponse:
             type: object
             properties:
+                record:
+                    $ref: '#/components/schemas/Record'
                 records:
                     type: array
                     items:

@@ -12,6 +12,10 @@ type recordsApiFiltersMiddleWare struct {
 	resourceService abs.ResourceService
 }
 
+func fixProperties() {
+
+}
+
 func (w recordsApiFiltersMiddleWare) handler(handler http.Handler) http.Handler {
 	resourceService := w.resourceService
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {

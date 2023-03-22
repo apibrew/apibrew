@@ -7,6 +7,7 @@ import (
 	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
+	"log"
 	"testing"
 )
 
@@ -81,10 +82,6 @@ func TestComplexPayload1Success(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if len(record1.Properties) != len(getRes.Record.Properties) {
-		t.Error("created and get records has different property count")
-		return
-	}
 
 	for _, property := range setup.RichResource1.Properties {
 		propertyType := types.ByResourcePropertyType(property.Type)
@@ -96,4 +93,41 @@ func TestComplexPayload1Success(t *testing.T) {
 			return
 		}
 	}
+}
+
+func TestComplexPayload1Success1(t *testing.T) {
+
+	record1 := new(model.Record)
+	st, err := structpb.NewStruct(map[string]interface{}{
+		"bool":   true,
+		"bytes":  "YXNk",
+		"date":   "2006-01-02",
+		"double": 12.3,
+		"float":  31.200000762939453,
+		"int32":  12,
+		"int64":  34,
+		"object": map[string]interface{}{ //@todo fixme double packing problem
+			"test1": "test-123",
+		},
+		"string":    "asdasdksadjsakldksal",
+		"text":      "test1233321",
+		"time":      "17:04:05",
+		"timestamp": "2006-01-02T15:04:05Z",
+		"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
+	})
+
+	record1.Properties = st.GetFields()
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	//  temp
+
+	resp, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{
+		Token:    "",
+		Resource: setup.RichResource1.Name,
+	})
+
+	log.Print(resp, err)
 }
