@@ -1,25 +1,23 @@
 package util
 
-func Coalesce[T interface{}](val *T, defaultVal T) T {
-	if val == nil {
-		return defaultVal
+import "github.com/tislib/data-handler/pkg/errors"
+
+func Coalesce[T interface{}](val ...*T) *T {
+	for _, item := range val {
+		if item != nil {
+			return item
+		}
 	}
 
-	return *val
+	return nil
 }
 
-//func CoalesceP[T interface{}](val *T, defaultVal T) T {
-//	if val == nil {
-//		return defaultVal
-//	}
-//
-//	return Coalesce(*val, defaultVal)
-//}
-//
-//func CoalescePP[T interface{}](val **T, defaultVal T) T {
-//	if val == nil {
-//		return defaultVal
-//	}
-//
-//	return CoalesceP(*val, defaultVal)
-//}
+func CoalesceThen[T interface{}](fn func(val *T) errors.ServiceError, val ...*T) errors.ServiceError {
+	for _, item := range val {
+		if item != nil {
+			return fn(item)
+		}
+	}
+
+	return nil
+}

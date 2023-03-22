@@ -151,6 +151,10 @@ func (r *recordServer) Get(ctx context.Context, request *stub.GetRecordRequest) 
 }
 
 func (r *recordServer) Delete(ctx context.Context, request *stub.DeleteRecordRequest) (*stub.DeleteRecordResponse, error) {
+	if request.Ids == nil && request.Id != "" {
+		request.Ids = []string{request.Id}
+	}
+
 	err := r.service.Delete(annotations.WithContext(ctx, request), abs.RecordDeleteParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,

@@ -153,7 +153,7 @@ message CreateRecordRequest {
 }
 
 message CreateRecordResponse {
-  model.Record record = 1;
+  model.Record record = 1;  // Rest Only
   repeated model.Record records = 2;
   repeated bool inserted = 4;
 }
@@ -162,7 +162,7 @@ message UpdateRecordRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  model.Record record = 4;
+  model.Record record = 4;  // Rest Only
   repeated model.Record records = 5;
   bool checkVersion = 6;
 
@@ -170,7 +170,7 @@ message UpdateRecordRequest {
 }
 
 message UpdateRecordResponse {
-  model.Record record = 1;
+  model.Record record = 1;  // Rest Only
   repeated model.Record records = 2;
 }
 
@@ -185,7 +185,7 @@ message UpdateMultiRecordRequest {
 }
 
 message UpdateMultiRecordResponse {
-  model.Record record = 1;
+  model.Record record = 1;  // Rest Only
   repeated model.Record records = 2;
 }
 
@@ -193,7 +193,7 @@ message DeleteRecordRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  repeated string id = 4;
+  string id = 4; // Rest Only
   repeated string ids = 5;
 
   map<string, string> annotations = 103;

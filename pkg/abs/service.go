@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/stub"
+	"google.golang.org/protobuf/proto"
 )
 
 type AuthenticationService interface {
@@ -95,13 +97,17 @@ type NamespaceService interface {
 
 type ExtensionService interface {
 	Init(*model.InitData)
-	List(ctx context.Context) ([]*model.RemoteExtension, errors.ServiceError)
-	Create(ctx context.Context, sources []*model.RemoteExtension) ([]*model.RemoteExtension, errors.ServiceError)
-	Update(ctx context.Context, sources []*model.RemoteExtension) ([]*model.RemoteExtension, errors.ServiceError)
-	Get(ctx context.Context, id string) (*model.RemoteExtension, errors.ServiceError)
+	List(ctx context.Context) ([]*model.Extension, errors.ServiceError)
+	Create(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)
+	Update(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)
+	Get(ctx context.Context, id string) (*model.Extension, errors.ServiceError)
 	Delete(ctx context.Context, ids []string) errors.ServiceError
-	RegisterExtension(extension Extension)
-	UnRegisterExtension(extension Extension)
+	RegisterExtension(extension *model.Extension)
+	UnRegisterExtension(extension *model.Extension)
+}
+
+type ExternalService interface {
+	Call(ctx context.Context, all *model.ExternalCall, in map[string]proto.Message, out map[string]proto.Message) errors.ServiceError
 }
 
 type WatchParams struct {
@@ -124,6 +130,18 @@ type RecordListParams struct {
 	Filters           map[string]string
 }
 
+func (p RecordListParams) ToRequest() proto.Message {
+	return &stub.ListRecordRequest{
+		Namespace:         p.Namespace,
+		Resource:          p.Resource,
+		Filters:           p.Filters,
+		Limit:             p.Limit,
+		Offset:            p.Offset,
+		UseHistory:        p.UseHistory,
+		ResolveReferences: p.ResolveReferences,
+	}
+}
+
 type RecordCreateParams struct {
 	Namespace      string
 	Resource       string
@@ -131,11 +149,29 @@ type RecordCreateParams struct {
 	IgnoreIfExists bool
 }
 
+func (p RecordCreateParams) ToRequest() *stub.CreateRecordRequest {
+	return &stub.CreateRecordRequest{
+		Namespace:      p.Namespace,
+		Resource:       p.Resource,
+		Records:        p.Records,
+		IgnoreIfExists: p.IgnoreIfExists,
+	}
+}
+
 type RecordUpdateParams struct {
 	Namespace    string
 	Resource     string
 	Records      []*model.Record
 	CheckVersion bool
+}
+
+func (p RecordUpdateParams) ToRequest() *stub.UpdateRecordRequest {
+	return &stub.UpdateRecordRequest{
+		Namespace:    p.Namespace,
+		Resource:     p.Resource,
+		Records:      p.Records,
+		CheckVersion: p.CheckVersion,
+	}
 }
 
 type RecordGetParams struct {
@@ -148,6 +184,14 @@ type RecordDeleteParams struct {
 	Namespace string
 	Resource  string
 	Ids       []string
+}
+
+func (p RecordDeleteParams) ToRequest() *stub.DeleteRecordRequest {
+	return &stub.DeleteRecordRequest{
+		Namespace: p.Namespace,
+		Resource:  p.Resource,
+		Ids:       p.Ids,
+	}
 }
 
 type UserDetails struct {

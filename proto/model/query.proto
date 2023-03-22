@@ -10,12 +10,6 @@ message CompoundBooleanExpression {
   repeated BooleanExpression expressions = 1;
 }
 
-message FunctionCall {
-  string package = 1;
-  string name = 2;
-  repeated Expression arguments = 3;
-}
-
 message Expression {
   oneof expression {
     string property = 1;

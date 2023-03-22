@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/tislib/data-handler/pkg/model"
 	"google.golang.org/protobuf/types/known/structpb"
 	"reflect"
@@ -131,38 +132,81 @@ func ValidateDateTime(value interface{}) error {
 	return err
 }
 
-func ResourcePropertyTypeToJsonSchemaType(resourcePropertyType model.ResourceProperty_Type) string {
+func ResourcePropertyTypeToJsonSchemaType(resourcePropertyType model.ResourceProperty_Type) *openapi3.Schema {
 	switch resourcePropertyType {
 	case model.ResourceProperty_STRING:
-		return "string"
+		return &openapi3.Schema{
+			Type: "string",
+		}
 	case model.ResourceProperty_INT64:
-		return "number"
+		return &openapi3.Schema{
+			Type:   "number",
+			Format: "int64",
+		}
 	case model.ResourceProperty_INT32:
-		return "number"
+		return &openapi3.Schema{
+			Type:   "number",
+			Format: "int32",
+		}
 	case model.ResourceProperty_FLOAT64:
-		return "number"
+		return &openapi3.Schema{
+			Type:   "number",
+			Format: "float",
+		}
 	case model.ResourceProperty_FLOAT32:
-		return "number"
+		return &openapi3.Schema{
+			Type:   "number",
+			Format: "double",
+		}
 	case model.ResourceProperty_TIMESTAMP:
-		return "string"
+		return &openapi3.Schema{
+			Type:   "string",
+			Format: "datetime",
+		}
 	case model.ResourceProperty_TIME:
-		return "string"
+		return &openapi3.Schema{
+			Type:   "string",
+			Format: "time",
+		}
 	case model.ResourceProperty_DATE:
-		return "string"
+		return &openapi3.Schema{
+			Type:   "string",
+			Format: "date",
+		}
 	case model.ResourceProperty_UUID:
-		return "string"
+		return &openapi3.Schema{
+			Type:   "string",
+			Format: "uuid",
+		}
 	case model.ResourceProperty_ENUM:
-		return "string"
+		return &openapi3.Schema{
+			Type: "string",
+		}
 	case model.ResourceProperty_BOOL:
-		return "boolean"
+		return &openapi3.Schema{
+			Type: "boolean",
+		}
 	case model.ResourceProperty_REFERENCE:
-		return "object"
+		return &openapi3.Schema{
+			Type: "object",
+		}
 	case model.ResourceProperty_OBJECT:
-		return "object"
+		return &openapi3.Schema{
+			Type: "object",
+		}
 	case model.ResourceProperty_MAP:
-		return "object"
+		return &openapi3.Schema{
+			Type: "object",
+		}
 	case model.ResourceProperty_LIST:
-		return "object"
+		return &openapi3.Schema{
+			Type: "array",
+		}
+	case model.ResourceProperty_BYTES:
+		return &openapi3.Schema{
+			Type:   "string",
+			Format: "base64",
+		}
 	default:
 		panic("unknown property type: " + resourcePropertyType.String())
 	}
