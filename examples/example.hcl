@@ -1,37 +1,27 @@
-var1 = "test"
-
-
-data-source "dhTest" {
-  backend : "mysql"
-  mysqlParams : {
+data-source "default" {
+  backend : "postgresql"
+  params : {
 
   }
 }
 
 resource "country" {
-  data_source = "dhTest ${var1}"
-  entity      = "country"
-  properties  = [
+  properties = [
     specialProperties(),
     {
-      name    = "name"
-      type    = string
-      length  = 124
-      primary = false
+      name   = "name"
+      type   = string
+      length = 124
     },
     {
-      name    = "description"
-      type    = string
-      length  = 124
-      primary = false
+      name   = "description"
+      type   = string
+      length = 124
     }
   ]
-  annotations = {
-    KeepHistory : true
-  }
 }
 
-country "Azerbaijan" {
+record "country" "Azerbaijan" {
   description = "Land of fire"
 }
 
@@ -40,8 +30,6 @@ country "Georgia" {
 }
 
 resource "news-letter" {
-  data_source = "dhTest"
-  entity      = "news-letter"
   virtual     = false
   abstract    = false
   properties  = [
@@ -53,12 +41,6 @@ resource "news-letter" {
       primary = false
     }
   ]
-  annotations = {
-    KeepHistory : true
-  }
-  securityContext = {
-    constraints = {}
-  }
 }
 
 extension "NewsLetterRegistration" {
@@ -70,7 +52,6 @@ extension "NewsLetterRegistration" {
         uri : "http://my-service-backend:1234/abcx"
         method : "POST"
         body : {
-
         }
       }
     }
