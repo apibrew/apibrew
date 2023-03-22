@@ -645,7 +645,7 @@ type CreateRecordResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Record   *model.Record   `protobuf:"bytes,1,opt,name=record,proto3" json:"record,omitempty"`
+	Record   *model.Record   `protobuf:"bytes,1,opt,name=record,proto3" json:"record,omitempty"` // Rest Only
 	Records  []*model.Record `protobuf:"bytes,2,rep,name=records,proto3" json:"records,omitempty"`
 	Inserted []bool          `protobuf:"varint,4,rep,packed,name=inserted,proto3" json:"inserted,omitempty"`
 }
@@ -711,7 +711,7 @@ type UpdateRecordRequest struct {
 	Token        string            `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	Namespace    string            `protobuf:"bytes,2,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	Resource     string            `protobuf:"bytes,3,opt,name=resource,proto3" json:"resource,omitempty"`
-	Record       *model.Record     `protobuf:"bytes,4,opt,name=record,proto3" json:"record,omitempty"`
+	Record       *model.Record     `protobuf:"bytes,4,opt,name=record,proto3" json:"record,omitempty"` // Rest Only
 	Records      []*model.Record   `protobuf:"bytes,5,rep,name=records,proto3" json:"records,omitempty"`
 	CheckVersion bool              `protobuf:"varint,6,opt,name=checkVersion,proto3" json:"checkVersion,omitempty"`
 	Annotations  map[string]string `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -803,7 +803,7 @@ type UpdateRecordResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Record  *model.Record   `protobuf:"bytes,1,opt,name=record,proto3" json:"record,omitempty"`
+	Record  *model.Record   `protobuf:"bytes,1,opt,name=record,proto3" json:"record,omitempty"` // Rest Only
 	Records []*model.Record `protobuf:"bytes,2,rep,name=records,proto3" json:"records,omitempty"`
 }
 
@@ -945,7 +945,7 @@ type UpdateMultiRecordResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Record  *model.Record   `protobuf:"bytes,1,opt,name=record,proto3" json:"record,omitempty"`
+	Record  *model.Record   `protobuf:"bytes,1,opt,name=record,proto3" json:"record,omitempty"` // Rest Only
 	Records []*model.Record `protobuf:"bytes,2,rep,name=records,proto3" json:"records,omitempty"`
 }
 
@@ -1003,7 +1003,7 @@ type DeleteRecordRequest struct {
 	Token       string            `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	Namespace   string            `protobuf:"bytes,2,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	Resource    string            `protobuf:"bytes,3,opt,name=resource,proto3" json:"resource,omitempty"`
-	Id          []string          `protobuf:"bytes,4,rep,name=id,proto3" json:"id,omitempty"`
+	Id          string            `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"` // Rest Only
 	Ids         []string          `protobuf:"bytes,5,rep,name=ids,proto3" json:"ids,omitempty"`
 	Annotations map[string]string `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -1061,11 +1061,11 @@ func (x *DeleteRecordRequest) GetResource() string {
 	return ""
 }
 
-func (x *DeleteRecordRequest) GetId() []string {
+func (x *DeleteRecordRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return nil
+	return ""
 }
 
 func (x *DeleteRecordRequest) GetIds() []string {
@@ -1465,7 +1465,7 @@ var file_stub_record_proto_rawDesc = []byte{
 	0x61, 0x6d, 0x65, 0x73, 0x70, 0x61, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09,
 	0x6e, 0x61, 0x6d, 0x65, 0x73, 0x70, 0x61, 0x63, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x72, 0x65, 0x73,
 	0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x72, 0x65, 0x73,
-	0x6f, 0x75, 0x72, 0x63, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x04, 0x20, 0x03, 0x28,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x64, 0x73, 0x18, 0x05, 0x20, 0x03,
 	0x28, 0x09, 0x52, 0x03, 0x69, 0x64, 0x73, 0x12, 0x4c, 0x0a, 0x0b, 0x61, 0x6e, 0x6e, 0x6f, 0x74,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x67, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x73,

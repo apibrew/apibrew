@@ -24,6 +24,7 @@ type App struct {
 	extensionService         abs.ExtensionService
 	pluginService            abs.PluginService
 	resourceMigrationService abs.ResourceMigrationService
+	externalService          abs.ExternalService
 }
 
 func (app *App) GetWatchService() abs.WatchService {
@@ -80,7 +81,8 @@ func (app *App) Init() {
 	app.userService = NewUserService(app.resourceService, app.recordService, app.backendProviderService)
 	app.stdHandler = handlers.NewStdHandler(app.genericHandler)
 	app.watchService = NewWatchService(app.genericHandler)
-	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.genericHandler)
+	app.externalService = NewExternalService()
+	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.genericHandler, app.externalService)
 	app.pluginService = NewPluginService()
 	app.authenticationService = NewAuthenticationService(app.recordService)
 

@@ -151,7 +151,19 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	}
 
 	if resource.Namespace == "" {
-		resource.Namespace = "default"
+		resource.Namespace = existingResource.Namespace
+	}
+
+	if resource.SourceConfig == nil {
+		resource.SourceConfig = existingResource.SourceConfig
+	}
+
+	if resource.SourceConfig.DataSource == "" {
+		resource.SourceConfig.DataSource = existingResource.SourceConfig.DataSource
+	}
+
+	if resource.SourceConfig.Entity == "" {
+		resource.SourceConfig.Entity = existingResource.SourceConfig.Entity
 	}
 
 	if err := validateResource(resource); err != nil {
@@ -365,10 +377,15 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	if resource.SourceConfig == nil {
-		resource.SourceConfig = &model.ResourceSourceConfig{
-			DataSource: "default",
-			Entity:     util.ToDashCase(resource.Name),
-		}
+		resource.SourceConfig = &model.ResourceSourceConfig{}
+	}
+
+	if resource.SourceConfig.DataSource == "" {
+		resource.SourceConfig.DataSource = "default"
+	}
+
+	if resource.SourceConfig.Entity == "" {
+		resource.SourceConfig.Entity = util.ToDashCase(resource.Name)
 	}
 
 	if err := validateResource(resource); err != nil {

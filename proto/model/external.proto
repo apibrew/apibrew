@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/tislib/data-handler/pkg/model";
+
+message FunctionCall {
+  string host = 1;
+  string functionName = 2;
+}
+
+message HttpCall {
+  string uri = 1;
+  string method = 2;
+}
+
+message ExternalCall {
+  oneof kind {
+    FunctionCall functionCall = 1;
+    HttpCall httpCall = 2;
+  }
+}
