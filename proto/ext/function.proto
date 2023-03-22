@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package ext;
+
+option go_package = "github.com/tislib/data-handler/pkg/ext";
+
+import 'model/record.proto';
+import 'model/resource.proto';
+import 'model/query.proto';
+import 'model/error.proto';
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+import 'google/protobuf/struct.proto';
+
+service Function {
+  rpc FunctionCall (FunctionCallRequest) returns (FunctionCallResponse) {}
+}
+
+message FunctionCallRequest {
+  string name = 1;
+  map<string, google.protobuf.Any> request = 2;
+}
+
+message FunctionCallResponse {
+  map<string, google.protobuf.Any> response = 1;
+}
