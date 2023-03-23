@@ -128,3 +128,7 @@ func NormalizeResource(resource *model.Resource) {
 
 	annotations.Enable(resource, annotations.NormalizedResource)
 }
+
+func GetResourceFQN(resource *model.Resource) string {
+	return resource.Namespace + "/" + resource.Name
+}
