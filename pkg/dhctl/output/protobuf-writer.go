@@ -2,7 +2,7 @@ package output
 
 import (
 	"context"
-	"github.com/tislib/data-handler/pkg/batch"
+	"github.com/tislib/data-handler/pkg/formats/batch"
 	"github.com/tislib/data-handler/pkg/model"
 	"log"
 	"time"

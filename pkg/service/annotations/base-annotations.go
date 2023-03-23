@@ -1,5 +1,9 @@
 package annotations
 
+// values:
+// true
+const Enabled = "true"
+
 // resource flags
 const KeepHistory = "KeepHistory"
 const HistoryResource = "HistoryResource"
@@ -16,3 +20,6 @@ const SourceIdentity = "SourceIdentity"
 const SourceMatchKey = "SourceMatchKey"
 const Identity = "Identity"
 const SpecialProperty = "SpecialProperty"
+
+// hcl
+const HclLabelProperty = "HclLabelProperty"

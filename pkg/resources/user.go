@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 var UserResource = &model.Resource{
@@ -19,14 +20,16 @@ var UserResource = &model.Resource{
 		AuditProperties[2],
 		AuditProperties[3],
 		{
-			Name: "username",
-
+			Name:     "username",
 			Mapping:  "username",
 			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: true,
 			Unique:   true,
+			Annotations: map[string]string{
+				annotations.HclLabelProperty: annotations.Enabled,
+			},
 		},
 		{
 			Name: "password",

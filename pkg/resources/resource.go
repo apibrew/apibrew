@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 var ResourceResource = &model.Resource{
@@ -26,6 +27,9 @@ var ResourceResource = &model.Resource{
 			Length:   256,
 			Required: true,
 			Unique:   false,
+			Annotations: map[string]string{
+				annotations.HclLabelProperty: annotations.Enabled,
+			},
 		},
 		{
 			Name:     "namespace",
