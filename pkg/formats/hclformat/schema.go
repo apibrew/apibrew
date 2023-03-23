@@ -5,6 +5,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -35,7 +36,7 @@ func prepareSystemResourceSchema(systemResource proto.Message) *hcl.BodySchema {
 
 	systemResource.ProtoReflect().Range(func(descriptor protoreflect.FieldDescriptor, value protoreflect.Value) bool {
 		attributes = append(attributes, hcl.AttributeSchema{
-			Name:     string(descriptor.Name()),
+			Name:     util.ToSnakeCase(string(descriptor.Name())),
 			Required: false,
 		})
 
@@ -48,7 +49,7 @@ func prepareSystemResourceSchema(systemResource proto.Message) *hcl.BodySchema {
 		field := descriptor.Fields().Get(index)
 
 		attributes = append(attributes, hcl.AttributeSchema{
-			Name:     string(field.Name()),
+			Name:     util.ToSnakeCase(string(field.Name())),
 			Required: false,
 		})
 	}

@@ -177,7 +177,14 @@ func (e *executor) getValue(value cty.Value, fieldDescriptor protoreflect.FieldD
 
 			return newValue, nil
 		} else if fieldDescriptor.IsMap() {
-			panic("Not implemented yet")
+			if !value.Type().IsMapType() {
+				for key, value := range value.AsValueMap() {
+					newValue.Map().Set(protoreflect.ValueOf(key).MapKey(), protoreflect.ValueOfString(value.AsString()))
+				}
+				return newValue, nil
+			} else {
+				return protoreflect.ValueOf(nil), errors.New(fmt.Sprintf("Object expected but %q found", value.Type().GoString()))
+			}
 		} else {
 			err := e.mapMessage(fieldDescriptor, value, newValue)
 
@@ -196,7 +203,7 @@ func (e *executor) mapMessage(fieldDescriptor protoreflect.FieldDescriptor, item
 	for i := 0; i < fieldDescriptor.Message().Fields().Len(); i++ {
 		field := fieldDescriptor.Message().Fields().Get(i)
 		if !item.Type().IsObjectType() {
-			return nil
+			return errors.New(fmt.Sprintf("Object expected but %q found", item.Type().GoString()))
 		}
 		valI, ok := item.AsValueMap()[util.SnakeCaseToCamelCase(string(field.Name()))]
 
