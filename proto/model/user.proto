@@ -8,12 +8,13 @@ import 'google/protobuf/struct.proto';
 import 'model/audit.proto';
 import 'model/common.proto';
 import 'model/security.proto';
+import 'model/annotations.proto';
 
 message User {
-  string id = 1;
-  string username = 3; // principal
+  string id = 1 [(model.hcl_ignore) = true];
+  string username = 3 [(model.hcl_label) = "name"]; // principal
   string password = 4;
-  SecurityContext securityContext = 5;
+  SecurityContext securityContext = 5 [(model.hcl_block) = "securityContext"];
   google.protobuf.Struct details = 6;
   string signKey = 7; // rsa pub key to create tokens
 

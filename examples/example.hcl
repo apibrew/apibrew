@@ -1,6 +1,7 @@
-data-source "default" {
-  backend          = "postgresql"
-  postgresql_params = {
+data_source "default" {
+  backend = "postgresql"
+
+  postgresql_params {
     username = "dh_test"
     password = "dh_test"
     host     = "127.0.0.1"
@@ -10,31 +11,40 @@ data-source "default" {
 }
 
 resource "country" {
-  id           = "sample-id"
-  name         = "country"
-  namespace    = "default"
-  source_config = {
+  id        = "sample-id"
+  name      = "country"
+  namespace = "default"
+
+  source_config {
     dataSource = "default"
     catalog    = "public"
     entity     = "country"
   }
-  annotations = {
+
+  annotations {
     test  = "test2"
     test2 = "test2"
   }
-  properties = [
-    specialProperties(),
-    {
-      name   = "name"
-      type   = "string"
-      length = 124
-    },
-    {
-      name   = "description"
-      type   = "string"
-      length = 124
+
+  property "name" {
+    type   = "string"
+    length = 124
+  }
+
+  property "description" {
+    type   = "string"
+    length = 124
+  }
+}
+
+user "admin2" {
+  password = "admin123"
+
+  securityContext {
+    constraint {
+      property = "idx"
     }
-  ]
+  }
 }
 
 record "country" {

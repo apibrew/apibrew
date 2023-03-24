@@ -8,7 +8,10 @@ import 'model/audit.proto';
 import 'model/query.proto';
 import 'model/common.proto';
 import 'model/security.proto';
+import 'model/annotations.proto';
 import 'google/protobuf/struct.proto';
+
+import "google/protobuf/descriptor.proto";
 
 enum AutoGenerationType {
   NONE = 0;
@@ -35,8 +38,8 @@ message ResourceProperty {
     REFERENCE = 15;
     ENUM = 16;
   }
-  optional string id = 1;
-  string name = 2;
+  optional string id = 1 [(model.hcl_ignore) = true];
+  string name = 2 [(model.hcl_label) = "name"];
   Type type = 3;
   string mapping = 4;
   bool required = 5;
@@ -92,12 +95,12 @@ message ResourceIndex {
 }
 
 message Resource {
-  string id = 1; // id; read only
-  string name = 2; // uniq(per namespace) // name
+  string id = 1 [(model.hcl_ignore) = true];  // id; read only
+  string name = 2 [(model.hcl_label) = "name"]; // uniq(per namespace) // name
   string namespace = 3; // create only?
   ResourceSourceConfig sourceConfig = 5;
-  repeated ResourceProperty properties = 6;
-  repeated ResourceIndex indexes = 7;
+  repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"];
+  repeated ResourceIndex indexes = 7 [(model.hcl_block) = "index"];
   SecurityContext securityContext = 10;
   bool virtual = 11;
   bool immutable = 12; // if true, delete and update will not be allowed on this resource

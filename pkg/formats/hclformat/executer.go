@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
@@ -73,40 +74,114 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 
 func (e *executor) ParseBlock(block *hcl.Block) (proto.Message, error) {
 	// check system resources
+	found := false
 	for _, resource := range resources.GetAllSystemResources() {
 		resourceMessage := resources.GetSystemResourceType(resource).ProtoReflect().New().Interface()
-		pr := resourceMessage.ProtoReflect()
-		if resource.Name == block.Type {
-			bodyContent, diagnostics := block.Body.Content(prepareSystemResourceSchema(resourceMessage))
+		blockType := util.ToSnakeCase(string(resources.GetSystemResourceType(resource).ProtoReflect().Descriptor().Name()))
 
-			if diagnostics != nil && diagnostics.HasErrors() {
-				e.reportHclErrors(diagnostics)
-				return nil, errors.New("invalid Hcl file")
-			}
+		if blockType == block.Type {
+			found = true
+			err := e.parseBlock(block, resourceMessage)
 
-			fields := pr.Descriptor().Fields()
-
-			for _, attr := range bodyContent.Attributes {
-				field := fields.ByName(protoreflect.Name(util.SnakeCaseToCamelCase(attr.Name)))
-
-				value, diags := attr.Expr.Value(e.evalContext)
-
-				if diags != nil {
-					e.reportHclErrors(diags)
-					return nil, errors.New("invalid Hcl file")
-				}
-
-				val, err := e.getValue(value, field, pr.NewField(field))
-				if err != nil {
-					return nil, err
-				}
-				pr.Set(field, val)
+			if err != nil {
+				return nil, err
 			}
 
 			return resourceMessage, nil
 		}
 	}
+
+	if !found {
+		log.Println(block.Type + " not found")
+	}
 	return nil, nil
+}
+
+func (e *executor) parseBlock(block *hcl.Block, resourceMessage protoreflect.ProtoMessage) error {
+	pr := resourceMessage.ProtoReflect()
+
+	resourceSchema := prepareSystemResourceSchema(resourceMessage.ProtoReflect().Descriptor())
+	bodyContent, diagnostics := block.Body.Content(resourceSchema)
+
+	if diagnostics != nil && diagnostics.HasErrors() {
+		e.reportHclErrors(diagnostics)
+		return errors.New("invalid Hcl file")
+	}
+
+	fields := pr.Descriptor().Fields()
+
+	for _, attr := range bodyContent.Attributes {
+		field := fields.ByName(protoreflect.Name(util.SnakeCaseToCamelCase(attr.Name)))
+
+		value, diags := attr.Expr.Value(e.evalContext)
+		attr.Expr.Variables()
+
+		if diags != nil {
+			e.reportHclErrors(diags)
+			return errors.New("invalid Hcl file")
+		}
+
+		val, err := e.getValue(value, field, pr.NewField(field))
+		if err != nil {
+			return err
+		}
+		pr.Set(field, val)
+	}
+
+	labelI := 0
+	for i := 0; i < fields.Len(); i++ {
+		field := fields.Get(i)
+
+		hclBlock := proto.GetExtension(field.Options(), model.E_HclBlock)
+		hclLabel := proto.GetExtension(field.Options(), model.E_HclLabel)
+
+		if hclLabel != nil && hclLabel != "" {
+			resourceMessage.ProtoReflect().Set(field, protoreflect.ValueOfString(block.Labels[labelI]))
+			labelI++
+		}
+
+		if hclBlock != nil && hclBlock != "" {
+			// locating block
+			for _, subBlock := range bodyContent.Blocks {
+				if subBlock.Type == hclBlock.(string) {
+					if field.IsList() {
+						l := pr.Get(field).List()
+
+						if !l.IsValid() {
+							l = pr.NewField(field).List()
+						}
+
+						subMessage := l.NewElement()
+
+						err := e.parseBlock(subBlock, subMessage.Message().Interface())
+
+						if err != nil {
+							return err
+						}
+
+						l.Append(subMessage)
+
+						pr.Set(field, protoreflect.ValueOfList(l))
+					} else if field.IsMap() {
+
+					} else {
+						subMessage := pr.NewField(field).Message().Interface()
+						err := e.parseBlock(subBlock, subMessage)
+
+						if err != nil {
+							return err
+						}
+
+						if subMessage != nil {
+							resourceMessage.ProtoReflect().Set(field, protoreflect.ValueOfMessage(subMessage.ProtoReflect()))
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func (e *executor) getValue(value cty.Value, fieldDescriptor protoreflect.FieldDescriptor, newValue protoreflect.Value) (protoreflect.Value, error) {
@@ -120,106 +195,78 @@ func (e *executor) getValue(value cty.Value, fieldDescriptor protoreflect.FieldD
 	// Decode the value based on the field type
 	switch fieldType {
 	case protoreflect.BoolKind:
+		if err := e.requireType(value, cty.Bool); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		return protoreflect.ValueOf(value.True()), nil
 	case protoreflect.StringKind:
+		if err := e.requireType(value, cty.String); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		return protoreflect.ValueOf(value.AsString()), nil
 	case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind:
+		if err := e.requireType(value, cty.Number); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		val, _ := value.AsBigFloat().Int64()
 		return protoreflect.ValueOf(int32(val)), nil
 	case protoreflect.Uint32Kind, protoreflect.Fixed32Kind:
+		if err := e.requireType(value, cty.Number); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		val, _ := value.AsBigFloat().Uint64()
 		return protoreflect.ValueOf(uint32(val)), nil
 	case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind:
+		if err := e.requireType(value, cty.Number); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		val, _ := value.AsBigFloat().Int64()
 		return protoreflect.ValueOf(val), nil
 	case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
+		if err := e.requireType(value, cty.Number); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		val, _ := value.AsBigFloat().Uint64()
 		return protoreflect.ValueOf(val), nil
 	case protoreflect.FloatKind:
+		if err := e.requireType(value, cty.Number); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		val, _ := value.AsBigFloat().Float64()
 		return protoreflect.ValueOf(float32(val)), nil
 	case protoreflect.DoubleKind:
+		if err := e.requireType(value, cty.Number); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		val, _ := value.AsBigFloat().Float64()
 		return protoreflect.ValueOf(val), nil
 	case protoreflect.BytesKind:
+		if err := e.requireType(value, cty.String); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		return protoreflect.ValueOfBytes([]byte(value.AsString())), nil
 	case protoreflect.EnumKind:
+		if err := e.requireType(value, cty.String); err != nil {
+			return protoreflect.ValueOf(nil), err
+		}
+
 		enumValueDescriptor := fieldDescriptor.Enum().Values().ByName(protoreflect.Name(strings.ToUpper(value.AsString())))
 		if enumValueDescriptor == nil {
 			return protoreflect.Value{}, fmt.Errorf("Invalid enum value: %q", value.AsString())
 		}
 		return protoreflect.ValueOfEnum(enumValueDescriptor.Number()), nil
-	case protoreflect.MessageKind, protoreflect.GroupKind:
-		if fieldDescriptor.IsList() {
-			var l = newValue.List()
-
-			for _, item := range value.AsValueSlice() {
-				if item.Type().IsListType() {
-					for _, subItem := range item.AsValueSlice() {
-						newElem := l.NewElement()
-						err := e.mapMessage(fieldDescriptor, subItem, newElem)
-						if err != nil {
-							return protoreflect.ValueOf(nil), err
-						}
-
-						l.Append(newElem)
-					}
-				} else {
-					newElem := l.NewElement()
-					err := e.mapMessage(fieldDescriptor, item, newElem)
-					if err != nil {
-						return protoreflect.ValueOf(nil), err
-					}
-
-					l.Append(newElem)
-				}
-			}
-
-			return newValue, nil
-		} else if fieldDescriptor.IsMap() {
-			if !value.Type().IsMapType() {
-				for key, value := range value.AsValueMap() {
-					newValue.Map().Set(protoreflect.ValueOf(key).MapKey(), protoreflect.ValueOfString(value.AsString()))
-				}
-				return newValue, nil
-			} else {
-				return protoreflect.ValueOf(nil), errors.New(fmt.Sprintf("Object expected but %q found", value.Type().GoString()))
-			}
-		} else {
-			err := e.mapMessage(fieldDescriptor, value, newValue)
-
-			if err != nil {
-				return protoreflect.ValueOf(nil), err
-			}
-
-			return newValue, nil
-		}
 	default:
 		return protoreflect.Value{}, fmt.Errorf("Unsupported field type: %v", fieldType)
 	}
-}
-
-func (e *executor) mapMessage(fieldDescriptor protoreflect.FieldDescriptor, item cty.Value, newElem protoreflect.Value) error {
-	for i := 0; i < fieldDescriptor.Message().Fields().Len(); i++ {
-		field := fieldDescriptor.Message().Fields().Get(i)
-		if !item.Type().IsObjectType() {
-			return errors.New(fmt.Sprintf("Object expected but %q found", item.Type().GoString()))
-		}
-		valI, ok := item.AsValueMap()[util.SnakeCaseToCamelCase(string(field.Name()))]
-
-		if !ok {
-			continue
-		}
-
-		valX, err := e.getValue(valI, field, newElem.Message().NewField(field))
-
-		if err != nil {
-			return err
-		}
-
-		newElem.Message().Set(field, valX)
-	}
-	return nil
 }
 
 func (e *executor) init() error {
@@ -260,6 +307,14 @@ func (e *executor) reportHclErrors(diagnostics hcl.Diagnostics) {
 		log.Error(item.Error(), item.Summary)
 	}
 
+}
+
+func (e *executor) requireType(value cty.Value, typ cty.Type) error {
+	if typ != value.Type() {
+		return errors.New(fmt.Sprintf("%s expected but %q found", typ.GoString(), value.Type().GoString()))
+	}
+
+	return nil
 }
 
 type OverrideConfig struct {
