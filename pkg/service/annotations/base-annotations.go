@@ -23,3 +23,4 @@ const SpecialProperty = "SpecialProperty"
 
 // hcl
 const HclLabelProperty = "HclLabelProperty"
+const HclBlockProperty = "HclBlock"

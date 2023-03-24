@@ -2,6 +2,7 @@ package setup
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 var SystemDataSource = &model.DataSource{
@@ -199,6 +200,9 @@ func PrepareRichResource1() *model.Resource {
 
 				Mapping:  "object",
 				Required: true,
+				Annotations: map[string]string{
+					annotations.HclBlockProperty: "object",
+				},
 			},
 
 			{

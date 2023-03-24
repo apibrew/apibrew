@@ -136,6 +136,12 @@ var ResourcePropertyResource = &model.Resource{
 			Length:   256,
 			Required: false,
 		},
+		{
+			Name:     "annotations",
+			Mapping:  "annotations",
+			Type:     model.ResourceProperty_OBJECT,
+			Required: false,
+		},
 	},
 	SecurityContext: securityContextDisallowAll,
 }
