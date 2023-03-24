@@ -5,6 +5,7 @@ package model;
 option go_package = "github.com/tislib/data-handler/pkg/model";
 
 import 'google/protobuf/timestamp.proto';
+import 'model/annotations.proto';
 
 enum OperationType {
   OPERATION_TYPE_READ = 0;
@@ -36,5 +37,5 @@ message SecurityConstraint {
 }
 
 message SecurityContext {
-  repeated SecurityConstraint constraints = 1;
+  repeated SecurityConstraint constraints = 1 [(model.hcl_block) = "constraint"];
 }
