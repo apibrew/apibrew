@@ -4,9 +4,10 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 func prepareSchema(list []*model.Resource) *hcl.BodySchema {
@@ -16,6 +17,7 @@ func prepareSchema(list []*model.Resource) *hcl.BodySchema {
 			{
 				Type: "record",
 				LabelNames: []string{
+					"namespace",
 					"resource",
 				},
 			},
@@ -45,6 +47,32 @@ func prepareSystemResourceSelfSchema(descriptor protoreflect.MessageDescriptor) 
 	}
 
 	return blockSchema
+}
+
+func prepareResourceRecordSchema(resource *model.Resource) *hcl.BodySchema {
+	var attributes []hcl.AttributeSchema
+	var blocks []hcl.BlockHeaderSchema
+
+	for _, prop := range resource.Properties {
+		isSpecial := annotations.IsEnabled(prop, annotations.SpecialProperty)
+		blockProperty := annotations.Get(prop, annotations.HclBlockProperty)
+
+		if blockProperty != "" {
+			blocks = append(blocks, hcl.BlockHeaderSchema{
+				Type: util.ToSnakeCase(blockProperty),
+			})
+		} else {
+			attributes = append(attributes, hcl.AttributeSchema{
+				Name:     util.ToSnakeCase(prop.Name),
+				Required: prop.Required && !isSpecial,
+			})
+		}
+	}
+
+	return &hcl.BodySchema{
+		Attributes: attributes,
+		Blocks:     blocks,
+	}
 }
 
 func prepareSystemResourceSchema(descriptor protoreflect.MessageDescriptor) *hcl.BodySchema {

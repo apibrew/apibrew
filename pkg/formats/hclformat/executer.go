@@ -9,6 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 	"github.com/zclconf/go-cty/cty"
@@ -16,6 +17,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/structpb"
 	"io"
 	"os"
 	"strings"
@@ -24,7 +26,7 @@ import (
 type executor struct {
 	params      ExecutorParams
 	schema      *hcl.BodySchema
-	resources   *stub.ListResourceResponse
+	resources   []*model.Resource
 	evalContext *hcl.EvalContext
 }
 
@@ -74,27 +76,129 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 
 func (e *executor) ParseBlock(block *hcl.Block) (proto.Message, error) {
 	// check system resources
-	found := false
 	for _, resource := range resources.GetAllSystemResources() {
 		resourceMessage := resources.GetSystemResourceType(resource).ProtoReflect().New().Interface()
 		blockType := util.ToSnakeCase(string(resources.GetSystemResourceType(resource).ProtoReflect().Descriptor().Name()))
 
 		if blockType == block.Type {
-			found = true
 			err := e.parseBlock(block, resourceMessage)
 
-			if err != nil {
-				return nil, err
-			}
-
-			return resourceMessage, nil
+			return resourceMessage, err
 		}
 	}
 
-	if !found {
-		log.Println(block.Type + " not found")
+	if block.Type == "record" {
+		namespace := block.Labels[0]
+		resourceName := block.Labels[1]
+		var resource *model.Resource
+
+		for _, item := range e.resources {
+			if item.Namespace == namespace && item.Name == resourceName {
+				resource = item
+			}
+		}
+
+		if resource == nil {
+			return nil, errors.New("Resource not found: " + resourceName)
+		}
+
+		return e.parseBlockToRecord(block, resource)
 	}
+
 	return nil, nil
+}
+
+func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource) (*model.Record, error) {
+	var record = &model.Record{
+		Properties: make(map[string]*structpb.Value),
+	}
+
+	bodyContent, diags := block.Body.Content(prepareResourceRecordSchema(resource))
+
+	if diags != nil {
+		e.reportHclErrors(diags)
+		return nil, diags
+	}
+
+	for _, attr := range bodyContent.Attributes {
+		var prop *model.ResourceProperty
+
+		for _, item := range resource.Properties {
+			if util.ToSnakeCase(item.Name) == attr.Name {
+				prop = item
+			}
+		}
+
+		val, diags := attr.Expr.Value(e.evalContext)
+
+		if diags != nil {
+			e.reportHclErrors(diags)
+			return nil, diags
+		}
+
+		propVal, err := e.parseProperty(prop.Type, val)
+
+		if err != nil {
+			return nil, err
+		}
+
+		record.Properties[prop.Name] = propVal
+	}
+
+	for _, blockItem := range bodyContent.Blocks {
+		var prop *model.ResourceProperty
+
+		for _, item := range resource.Properties {
+			if annotations.Get(item, annotations.HclBlockProperty) == blockItem.Type {
+				prop = item
+			}
+		}
+
+		propVal, err := e.parseBlockProperty(prop, blockItem)
+
+		if err != nil {
+			return nil, err
+		}
+
+		record.Properties[prop.Name] = propVal
+	}
+
+	return record, nil
+}
+
+func (e *executor) parseBlockProperty(prop *model.ResourceProperty, blockItem *hcl.Block) (*structpb.Value, error) {
+	switch prop.Type {
+	case model.ResourceProperty_OBJECT:
+		attributes, diags := blockItem.Body.JustAttributes()
+
+		if diags != nil {
+			e.reportHclErrors(diags)
+			return nil, diags
+		}
+
+		var objData = make(map[string]interface{})
+
+		for _, attr := range attributes {
+			val, diags := attr.Expr.Value(e.evalContext)
+
+			if diags != nil {
+				e.reportHclErrors(diags)
+				return nil, diags
+			}
+
+			objData[attr.Name] = val.GoString()
+		}
+
+		st, err := structpb.NewStruct(objData)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return structpb.NewStructValue(st), nil
+	default:
+		panic("unknown property type: " + prop.String())
+	}
 }
 
 func (e *executor) parseBlock(block *hcl.Block, resourceMessage protoreflect.ProtoMessage) error {
@@ -114,7 +218,6 @@ func (e *executor) parseBlock(block *hcl.Block, resourceMessage protoreflect.Pro
 		field := fields.ByName(protoreflect.Name(util.SnakeCaseToCamelCase(attr.Name)))
 
 		value, diags := attr.Expr.Value(e.evalContext)
-		attr.Expr.Variables()
 
 		if diags != nil {
 			e.reportHclErrors(diags)
@@ -182,6 +285,33 @@ func (e *executor) parseBlock(block *hcl.Block, resourceMessage protoreflect.Pro
 	}
 
 	return nil
+}
+
+func (e *executor) parseProperty(resourcePropertyType model.ResourceProperty_Type, value cty.Value) (*structpb.Value, error) {
+	switch resourcePropertyType {
+	case model.ResourceProperty_INT64, model.ResourceProperty_INT32, model.ResourceProperty_FLOAT32, model.ResourceProperty_FLOAT64:
+		if err := e.requireType(value, cty.Number); err != nil {
+			return nil, err
+		}
+
+		val, _ := value.AsBigFloat().Float64()
+
+		return structpb.NewNumberValue(val), nil
+	case model.ResourceProperty_STRING, model.ResourceProperty_UUID, model.ResourceProperty_DATE, model.ResourceProperty_TIME, model.ResourceProperty_TIMESTAMP, model.ResourceProperty_ENUM, model.ResourceProperty_BYTES:
+		if err := e.requireType(value, cty.String); err != nil {
+			return nil, err
+		}
+
+		return structpb.NewStringValue(value.AsString()), nil
+	case model.ResourceProperty_BOOL:
+		if err := e.requireType(value, cty.Bool); err != nil {
+			return nil, err
+		}
+
+		return structpb.NewBoolValue(value.True()), nil
+	default:
+		panic("unknown property type: " + resourcePropertyType.String())
+	}
 }
 
 func (e *executor) getValue(value cty.Value, fieldDescriptor protoreflect.FieldDescriptor, newValue protoreflect.Value) (protoreflect.Value, error) {
@@ -270,15 +400,15 @@ func (e *executor) getValue(value cty.Value, fieldDescriptor protoreflect.FieldD
 }
 
 func (e *executor) init() error {
-	list, err := e.params.ResourceClient.List(context.TODO(), &stub.ListResourceRequest{})
+	resp, err := e.params.ResourceClient.List(context.TODO(), &stub.ListResourceRequest{})
 
 	if err != nil {
 		return err
 	}
 
-	e.resources = list
+	e.resources = resp.Resources
 
-	e.schema = prepareSchema(list.Resources)
+	e.schema = prepareSchema(e.resources)
 
 	e.evalContext = &hcl.EvalContext{
 		Variables: nil,

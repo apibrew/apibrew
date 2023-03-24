@@ -47,8 +47,26 @@ user "admin2" {
   }
 }
 
-record "country" {
-  description = "Land of fire"
+record "default" "rich-test-3995" {
+  date      = "2022-01-03"
+  time      = "12:03"
+  timestamp = "2022-01-03 12:03"
+  bool      = false
+  bytes     = ""
+  int32     = 123
+  int64     = 123
+  float     = 231
+  double    = 123
+  string    = "asdasdsa"
+  text      = "asdasdsa"
+  uuid      = "1945d115-80d5-4cda-abd3-ac636ab60184"
+  object {
+    abc = 123
+    cde = {
+      asd = "asdasd"
+    }
+  }
+
 }
 
 #
