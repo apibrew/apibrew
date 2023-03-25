@@ -10,6 +10,16 @@ data_source "default" {
   }
 }
 
+user "admin2" {
+  password = "admin123"
+
+  securityContext {
+    constraint {
+      property = "idx"
+    }
+  }
+}
+
 resource "country" {
   id        = "sample-id"
   name      = "country"
@@ -29,6 +39,7 @@ resource "country" {
   property "name" {
     type   = "string"
     length = 124
+    unique = true
   }
 
   property "description" {
@@ -37,36 +48,14 @@ resource "country" {
   }
 }
 
-user "admin2" {
-  password = "admin123"
-
-  securityContext {
-    constraint {
-      property = "idx"
-    }
-  }
+record "default" "country" {
+  name        = "Azerbaijan"
+  description = "Land of fire"
 }
 
-record "default" "rich-test-3995" {
-  date      = "2022-01-03"
-  time      = "12:03"
-  timestamp = "2022-01-03 12:03"
-  bool      = false
-  bytes     = ""
-  int32     = 123
-  int64     = 123
-  float     = 231
-  double    = 123
-  string    = "asdasdsa"
-  text      = "asdasdsa"
-  uuid      = "1945d115-80d5-4cda-abd3-ac636ab60184"
-  object {
-    abc = 123
-    cde = {
-      asd = "asdasd"
-    }
-  }
-
+record "default" "country" {
+  name        = "Georgia"
+  description = "sample-description"
 }
 
 #

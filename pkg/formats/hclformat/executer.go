@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/client"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/annotations"
@@ -14,7 +15,6 @@ import (
 	"github.com/tislib/data-handler/pkg/util"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -37,36 +37,27 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 		return err
 	}
 
-	hclFile, diagnostics := hclsyntax.ParseConfig(data, file.Name(),
+	hclFile, diags := hclsyntax.ParseConfig(data, file.Name(),
 		hcl.Pos{Line: 1, Column: 1, Byte: 0})
-	if diagnostics != nil && diagnostics.HasErrors() {
-		e.reportHclErrors(diagnostics)
+	if diags != nil && diags.HasErrors() {
+		e.reportHclErrors(diags)
 		return errors.New("invalid Hcl file")
 	}
 
-	bodyContent, diagnostics := hclFile.Body.Content(e.schema)
+	bodyContent, diags := hclFile.Body.Content(e.schema)
 
-	if diagnostics != nil && diagnostics.HasErrors() {
-		e.reportHclErrors(diagnostics)
+	if diags != nil && diags.HasErrors() {
+		e.reportHclErrors(diags)
 
 		return errors.New("invalid Hcl file")
 	}
 
 	for _, blocks := range bodyContent.Blocks.ByType() {
 		for _, block := range blocks {
-			var msg proto.Message
-			msg, err = e.ParseBlock(block)
+			err = e.ApplyBlock(ctx, block)
 
 			if err != nil {
 				return err
-			}
-
-			data, err := protojson.Marshal(msg)
-
-			log.Println(string(data))
-
-			if err != nil {
-				log.Println(err)
 			}
 		}
 	}
@@ -74,7 +65,7 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 	return nil
 }
 
-func (e *executor) ParseBlock(block *hcl.Block) (proto.Message, error) {
+func (e *executor) ApplyBlock(ctx context.Context, block *hcl.Block) error {
 	// check system resources
 	for _, resource := range resources.GetAllSystemResources() {
 		resourceMessage := resources.GetSystemResourceType(resource).ProtoReflect().New().Interface()
@@ -83,7 +74,18 @@ func (e *executor) ParseBlock(block *hcl.Block) (proto.Message, error) {
 		if blockType == block.Type {
 			err := e.parseBlock(block, resourceMessage)
 
-			return resourceMessage, err
+			if err != nil {
+				return err
+			}
+
+			err = e.params.DhClient.Apply(ctx, resourceMessage)
+
+			if err != nil {
+				log.Errorf("Cannot Apply: %v (%s/%s)", resourceMessage, resource.Namespace, resource.Name)
+				return err
+			}
+
+			return nil
 		}
 	}
 
@@ -99,13 +101,26 @@ func (e *executor) ParseBlock(block *hcl.Block) (proto.Message, error) {
 		}
 
 		if resource == nil {
-			return nil, errors.New("Resource not found: " + resourceName)
+			return errors.New("Resource not found: " + resourceName)
 		}
 
-		return e.parseBlockToRecord(block, resource)
+		record, err := e.parseBlockToRecord(block, resource)
+
+		if err != nil {
+			return err
+		}
+
+		err = e.params.DhClient.ApplyRecord(ctx, resource, record)
+
+		if err != nil {
+			log.Errorf("Cannot Apply record: %v (%s/%s)", record, resource.Namespace, resource.Name)
+			return err
+		}
+
+		return nil
 	}
 
-	return nil, nil
+	return errors.New("Unknown block: " + block.Type)
 }
 
 func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource) (*model.Record, error) {
@@ -205,10 +220,10 @@ func (e *executor) parseBlock(block *hcl.Block, resourceMessage protoreflect.Pro
 	pr := resourceMessage.ProtoReflect()
 
 	resourceSchema := prepareSystemResourceSchema(resourceMessage.ProtoReflect().Descriptor())
-	bodyContent, diagnostics := block.Body.Content(resourceSchema)
+	bodyContent, diags := block.Body.Content(resourceSchema)
 
-	if diagnostics != nil && diagnostics.HasErrors() {
-		e.reportHclErrors(diagnostics)
+	if diags != nil && diags.HasErrors() {
+		e.reportHclErrors(diags)
 		return errors.New("invalid Hcl file")
 	}
 
@@ -400,7 +415,7 @@ func (e *executor) getValue(value cty.Value, fieldDescriptor protoreflect.FieldD
 }
 
 func (e *executor) init() error {
-	resp, err := e.params.ResourceClient.List(context.TODO(), &stub.ListResourceRequest{})
+	resp, err := e.params.DhClient.GetResourceClient().List(context.TODO(), &stub.ListResourceRequest{})
 
 	if err != nil {
 		return err
@@ -432,8 +447,8 @@ func (e *executor) init() error {
 	return nil
 }
 
-func (e *executor) reportHclErrors(diagnostics hcl.Diagnostics) {
-	for _, item := range diagnostics {
+func (e *executor) reportHclErrors(diags hcl.Diagnostics) {
+	for _, item := range diags {
 		log.Error(item.Error(), item.Summary)
 	}
 
@@ -454,8 +469,7 @@ type OverrideConfig struct {
 
 type ExecutorParams struct {
 	Input          io.Reader
-	ResourceClient stub.ResourceClient
-	RecordClient   stub.RecordClient
+	DhClient       client.DhClient
 	OverrideConfig OverrideConfig
 	Token          string
 	DoMigration    bool

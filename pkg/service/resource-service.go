@@ -166,6 +166,31 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		resource.SourceConfig.Entity = existingResource.SourceConfig.Entity
 	}
 
+	if !annotations.IsEnabled(resource, annotations.NormalizedResource) {
+		util.NormalizeResource(resource)
+	}
+
+	existingPropertiesNamedMap := util.GetNamedMap(existingResource.Properties)
+	for _, prop := range resource.Properties {
+
+		if prop.Mapping == "" {
+			if existingPropertiesNamedMap[prop.Name] != nil {
+				prop.Mapping = existingPropertiesNamedMap[prop.Name].Mapping
+			} else {
+				prop.Mapping = util.ToDashCase(prop.Name)
+			}
+		}
+
+		if prop.Id == nil || *prop.Id == "" {
+			if existingPropertiesNamedMap[prop.Name] != nil {
+				prop.Id = existingPropertiesNamedMap[prop.Name].Id
+			}
+		}
+	}
+
+	resource.Version = existingResource.Version
+	resource.AuditData = existingResource.AuditData
+
 	if err := validateResource(resource); err != nil {
 		return err
 	}
@@ -194,6 +219,10 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	plan, err := r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)
 	if err != nil {
 		return err
+	}
+
+	if plan.Steps == nil && !forceMigration {
+		return nil
 	}
 
 	if err := r.ApplyPlan(ctx, plan); err != nil {
@@ -386,6 +415,12 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	if resource.SourceConfig.Entity == "" {
 		resource.SourceConfig.Entity = util.ToDashCase(resource.Name)
+	}
+
+	for _, prop := range resource.Properties {
+		if prop.Mapping == "" {
+			prop.Mapping = util.ToDashCase(prop.Name)
+		}
 	}
 
 	if err := validateResource(resource); err != nil {
