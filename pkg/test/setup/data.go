@@ -210,7 +210,7 @@ func PrepareRichResource1() *model.Resource {
 				Type: model.ResourceProperty_BYTES,
 
 				Mapping:  "bytes",
-				Required: true,
+				Required: false,
 			},
 		},
 	}

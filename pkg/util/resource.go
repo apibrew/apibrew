@@ -123,7 +123,7 @@ func NormalizeResource(resource *model.Resource) {
 	}
 
 	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) && propertyNameMap[resources.IdProperty.Name] == nil {
-		resource.Properties = append(resource.Properties, resources.IdProperty)
+		resource.Properties = append([]*model.ResourceProperty{resources.IdProperty}, resource.Properties...)
 	}
 
 	annotations.Enable(resource, annotations.NormalizedResource)

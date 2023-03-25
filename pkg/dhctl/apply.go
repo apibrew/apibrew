@@ -54,11 +54,9 @@ var applyCmd = &cobra.Command{
 			check(err)
 
 			hclExecutor, err := hclformat.NewExecutor(hclformat.ExecutorParams{
-				Input:          in,
-				Token:          GetDhClient().GetToken(),
-				ResourceClient: GetDhClient().GetResourceClient(),
-				RecordClient:   GetDhClient().GetRecordClient(),
-				DataOnly:       dataOnly,
+				Input:    in,
+				Token:    GetDhClient().GetToken(),
+				DhClient: GetDhClient(),
 				OverrideConfig: hclformat.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,

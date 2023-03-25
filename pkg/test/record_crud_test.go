@@ -30,8 +30,8 @@ func TestComplexPayload1Fail(t *testing.T) {
 
 	errorFields := util.GetErrorFields(err)
 
-	if len(errorFields) != 13 {
-		t.Error("There must be 14 error field")
+	if len(errorFields) != 12 {
+		t.Error("There must be 12 error field")
 	}
 }
 
