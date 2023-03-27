@@ -22,15 +22,7 @@ schema {
   }
 
   resource "country" {
-    id        = "sample-id"
     name      = "country"
-    namespace = "default"
-
-    source_config {
-      dataSource = "default"
-      catalog    = "public"
-      entity     = "country"
-    }
 
     annotations {
       HclBlock = "country"
@@ -64,7 +56,8 @@ schema {
 data {
   record "default" "country" {
     name        = "Azerbaijan"
-    description = "Land of fire"
+    description = "Land of fire2"
+    population  = 10000000
   }
 
   record "default" "country" {
