@@ -547,7 +547,7 @@ func (e *executor) reportHclErrors(diags hcl.Diagnostics) {
 
 func (e *executor) requireType(value cty.Value, typ cty.Type) error {
 	if typ != value.Type() {
-		return errors.New(fmt.Sprintf("%s expected but %q found", typ.GoString(), value.Type().GoString()))
+		return fmt.Errorf("%s expected but %q found", typ.GoString(), value.Type().GoString())
 	}
 
 	return nil

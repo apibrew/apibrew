@@ -320,7 +320,7 @@ func (d *dhClient) ApplyRecord(ctx context.Context, resource *model.Resource, re
 	}
 
 	if !checked {
-		return errors.New(fmt.Sprintf("could not locate record: resource %s should have either unique prop or unique index and record should have provided data for that prop", resource.Name))
+		return fmt.Errorf("could not locate record: resource %s should have either unique prop or unique index and record should have provided data for that prop", resource.Name)
 	}
 
 	if existingRecord == nil {
