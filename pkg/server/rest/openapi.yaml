@@ -1467,6 +1467,7 @@ components:
                         - ORACLE
                         - MONGODB
                         - REDIS
+                        - SQLITE
                     type: string
                     format: enum
                 name:
@@ -1483,6 +1484,8 @@ components:
                     $ref: '#/components/schemas/RedisParams'
                 mongoParams:
                     $ref: '#/components/schemas/MongoParams'
+                sqliteParams:
+                    $ref: '#/components/schemas/SqliteParams'
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
@@ -2169,6 +2172,11 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/SecurityConstraint'
+        SqliteParams:
+            type: object
+            properties:
+                path:
+                    type: string
         Status:
             type: object
             properties:

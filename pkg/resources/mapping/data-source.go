@@ -41,6 +41,10 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 		properties["options_mongo_db_name"] = structpb.NewStringValue(options.MongoParams.DbName)
 	}
 
+	if options, ok := dataSource.Params.(*model.DataSource_SqliteParams); ok {
+		properties["options_sqlite_path"] = structpb.NewStringValue(options.SqliteParams.Path)
+	}
+
 	return &model.Record{
 		Id:         dataSource.Id,
 		Properties: properties,
@@ -113,6 +117,16 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 		options.MongoParams = &model.MongoParams{
 			Uri:    record.Properties["options_mongo_uri"].GetStringValue(),
 			DbName: record.Properties["options_mongo_db_name"].GetStringValue(),
+		}
+
+		result.Params = options
+	}
+
+	if result.Backend == model.DataSourceBackendType_SQLITE {
+		options := new(model.DataSource_SqliteParams)
+
+		options.SqliteParams = &model.SqliteParams{
+			Path: record.Properties["options_sqlite_path"].GetStringValue(),
 		}
 
 		result.Params = options

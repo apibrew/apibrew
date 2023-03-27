@@ -108,15 +108,15 @@ func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 }
 
 func (r redisBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) ([]*model.Record, uint32, errors.ServiceError) {
-	return nil, 0, errors.UnsupportedOperation
+	return nil, 0, errors.UnsupportedOperation.WithDetails("redis/ListEntities")
 }
 
 func (r redisBackend) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError) {
-	return nil, errors.UnsupportedOperation
+	return nil, errors.UnsupportedOperation.WithDetails("redis/ListEntities")
 }
 
 func (r redisBackend) PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError) {
-	return nil, errors.UnsupportedOperation
+	return nil, errors.UnsupportedOperation.WithDetails("redis/PrepareResourceFromEntity")
 }
 
 func (r redisBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) errors.ServiceError {

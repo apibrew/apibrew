@@ -179,6 +179,14 @@ var DataSourceResource = &model.Resource{
 			Length:   256,
 			Required: false,
 		},
+		{
+			Name: "options_sqlite_path",
+
+			Mapping:  "options_sqlite_path",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: false,
+		},
 	},
 	SecurityContext: securityContextDisallowAll,
 }

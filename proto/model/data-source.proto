@@ -15,6 +15,11 @@ enum DataSourceBackendType {
   ORACLE = 3;
   MONGODB = 4;
   REDIS = 5;
+  SQLITE = 6;
+}
+
+message SqliteParams {
+  string path = 1;
 }
 
 message PostgresqlParams {
@@ -66,6 +71,7 @@ message DataSource {
     VirtualParams virtualParams = 9 [(model.hcl_block) = "virtual_params"];
     RedisParams redisParams = 10 [(model.hcl_block) = "redis_params"];
     MongoParams mongoParams = 11 [(model.hcl_block) = "mongo_params"];
+    SqliteParams sqliteParams = 12 [(model.hcl_block) = "sqlite_params"];
   }
   AuditData auditData = 101; // read only
   uint32 version = 102; // read only

@@ -18,6 +18,7 @@ var dataSources = []*model.DataSource{
 	dhTestMysql,
 	dhTestRedis,
 	dhTestMongo,
+	dhTestSqlite,
 }
 
 var resources = make(map[*model.DataSource]*model.Resource)
@@ -32,6 +33,7 @@ func TestMain(t *testing.M) {
 
 		newRes.SourceConfig.DataSource = dataSource.Name
 		newRes.Name = dataSource.Name + "-" + newRes.Name
+		newRes.SourceConfig.Entity = newRes.Name
 
 		pendingResources = append(pendingResources, newRes)
 		resources[dataSource] = newRes
@@ -93,7 +95,8 @@ func TestCreateRecord(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			if len(record1.Properties) != len(getRes.Record.Properties) {
+
+			if !util.IsSameRecord(getRes.Record, record1) {
 				t.Error("created and get records has different property count")
 				return
 			}
@@ -237,7 +240,8 @@ func TestUpdateRecord(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			if len(record1.Properties) != len(getRes.Record.Properties) {
+
+			if !util.IsSameRecord(getRes.Record, record1) {
 				t.Error("created and get records has different property count")
 				return
 			}

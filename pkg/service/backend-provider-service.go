@@ -8,6 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/backend/mysql"
 	"github.com/tislib/data-handler/pkg/backend/postgres"
 	"github.com/tislib/data-handler/pkg/backend/redis"
+	"github.com/tislib/data-handler/pkg/backend/sqlite"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
@@ -127,6 +128,8 @@ func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceB
 		return mongo.NewMongoResourceServiceBackend
 	case model.DataSourceBackendType_REDIS:
 		return redis.NewRedisResourceServiceBackend
+	case model.DataSourceBackendType_SQLITE:
+		return sqlite.NewSqliteResourceServiceBackend
 	}
 
 	panic("Not implemented backend: " + backend.String())

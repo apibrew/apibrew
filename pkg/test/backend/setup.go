@@ -42,3 +42,14 @@ var dhTestMongo = &model.DataSource{
 		},
 	},
 }
+
+var dhTestSqlite = &model.DataSource{
+	Backend:     model.DataSourceBackendType_SQLITE,
+	Name:        "dh-test-sqlite",
+	Description: "dh-test-sqlite",
+	Params: &model.DataSource_SqliteParams{
+		SqliteParams: &model.SqliteParams{
+			Path: "./test.db",
+		},
+	},
+}

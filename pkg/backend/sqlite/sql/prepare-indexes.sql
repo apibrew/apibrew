@@ -1,0 +1,10 @@
+SELECT
+    INDEX_NAME,
+    false,
+    INDEX_NAME,
+    GROUP_CONCAT(STATISTICS.COLUMN_NAME separator ',')
+FROM
+    INFORMATION_SCHEMA.STATISTICS
+WHERE
+    INDEX_NAME != 'PRIMARY' and TABLE_SCHEMA = ? and table_name = ?
+group by INDEX_NAME

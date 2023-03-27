@@ -217,7 +217,7 @@ func ResourcesWithErrorHandler(ctx context.Context, resources []*model.Resource,
 
 func SetupResources(ctx context.Context, resources []*model.Resource) {
 	ResourcesWithErrorHandler(ctx, resources, func(err error) {
-		panic(err)
+		log.Error(err)
 	})
 }
 

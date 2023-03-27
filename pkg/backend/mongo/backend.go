@@ -234,11 +234,11 @@ func (r mongoBackend) expressionToMongoFilter(expression *model.BooleanExpressio
 }
 
 func (r mongoBackend) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError) {
-	return nil, errors.UnsupportedOperation
+	return nil, errors.UnsupportedOperation.WithDetails("mongo/ListEntities")
 }
 
 func (r mongoBackend) PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError) {
-	return nil, errors.UnsupportedOperation
+	return nil, errors.UnsupportedOperation.WithDetails("mongo/PrepareResourceFromEntity")
 }
 
 func (r mongoBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) errors.ServiceError {

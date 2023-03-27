@@ -1,11 +1,10 @@
-package mysql
+package sqlite
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
-	_ "github.com/go-sql-driver/mysql"
+	sqliteDdriver "github.com/mattn/go-sqlite3"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
@@ -15,67 +14,67 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type mysqlBackendOptions struct {
-	connectionDetails *model.DataSource_MysqlParams
+type sqliteBackendOptions struct {
+	connectionDetails *model.DataSource_SqliteParams
 	dataSource        *model.DataSource
 	handleDbError     func(ctx context.Context, err error) errors.ServiceError
 }
 
-func (p *mysqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
+func (p *sqliteBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
 	p.handleDbError = f
 }
 
-func (p mysqlBackendOptions) GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor {
+func (p sqliteBackendOptions) GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor {
 	return func(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams, forceMigration bool) helper.ResourceMigrationBuilder {
 		return &resourceMigrationBuilder{handleDbError: p.handleDbError, options: p, ctx: ctx, runner: runner, params: params, forceMigration: forceMigration, tableName: p.GetFullTableName(params.MigrationPlan.CurrentResource.SourceConfig)}
 	}
 }
 
-func (p mysqlBackendOptions) HandleError(err error) (errors.ServiceError, bool) {
-	if pqErr, ok := err.(*mysql.MySQLError); ok {
+func (p sqliteBackendOptions) HandleError(err error) (errors.ServiceError, bool) {
+	if pqErr, ok := err.(*sqliteDdriver.Error); ok {
 		return p.handlePqErr(pqErr), true
 	}
 
 	return nil, false
 }
 
-func (p mysqlBackendOptions) Quote(str string) string {
+func (p sqliteBackendOptions) Quote(str string) string {
 	return fmt.Sprintf("`%s`", str)
 }
 
-func (p mysqlBackendOptions) GetFlavor() sqlbuilder.Flavor {
+func (p sqliteBackendOptions) GetFlavor() sqlbuilder.Flavor {
 	return sqlbuilder.MySQL
 }
 
-func (p mysqlBackendOptions) GetDefaultCatalog() string {
-	return p.connectionDetails.MysqlParams.DbName
+func (p sqliteBackendOptions) GetDefaultCatalog() string {
+	return "public"
 }
 
-func (p mysqlBackendOptions) handlePqErr(err *mysql.MySQLError) errors.ServiceError {
+func (p sqliteBackendOptions) handlePqErr(err *sqliteDdriver.Error) errors.ServiceError {
 	switch err.Error() {
 	case "28000":
-		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
+		return errors.BackendConnectionAuthenticationError.WithMessage(err.Error())
 	case "28P01":
-		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
+		return errors.BackendConnectionAuthenticationError.WithMessage(err.Error())
 	case "23505":
-		return errors.UniqueViolation.WithDetails(err.Message)
+		return errors.UniqueViolation.WithDetails(err.Error())
 	case "23503":
-		return errors.ReferenceViolation.WithDetails(err.Message)
+		return errors.ReferenceViolation.WithDetails(err.Error())
 	default:
-		return errors.InternalError.WithMessage(err.Message)
+		return errors.InternalError.WithMessage(err.Error())
 	}
 }
 
-func (p mysqlBackendOptions) GetDriverName() string {
-	return "mysql"
+func (p sqliteBackendOptions) GetDriverName() string {
+	return "sqlite"
 }
 
-func (p mysqlBackendOptions) GetConnectionString() string {
-	params := p.connectionDetails.MysqlParams
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", params.GetUsername(), params.GetPassword(), params.GetHost(), params.GetPort(), params.GetDbName())
+func (p sqliteBackendOptions) GetConnectionString() string {
+	params := p.connectionDetails.SqliteParams
+	return params.Path
 }
 
-func (p *mysqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourceConfig) string {
+func (p *sqliteBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourceConfig) string {
 	var tableName = sourceConfig.Entity
 	def := ""
 	if sourceConfig.Catalog != "" {
@@ -87,7 +86,7 @@ func (p *mysqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourc
 	return def
 }
 
-func (p *mysqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
+func (p *sqliteBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
 	propertyType := types.ByResourcePropertyType(property.Type)
 	var val interface{}
 
