@@ -91,8 +91,8 @@ func (app *App) Init() {
 
 func (app *App) initServices() {
 	app.backendProviderService.Init(app.initData)
-	app.dataSourceService.Init(app.initData)
 	app.resourceService.Init(app.initData)
+	app.dataSourceService.Init(app.initData)
 	app.namespaceService.Init(app.initData)
 	app.recordService.Init(app.initData)
 	app.userService.Init(app.initData)
