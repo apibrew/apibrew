@@ -10,7 +10,36 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func prepareSchema(list []*model.Resource) *hcl.BodySchema {
+func prepareRootSchema() *hcl.BodySchema {
+	var schema = &hcl.BodySchema{
+		Attributes: []hcl.AttributeSchema{},
+		Blocks: []hcl.BlockHeaderSchema{
+			{
+				Type: "schema",
+			},
+			{
+				Type: "data",
+			},
+		},
+	}
+
+	return schema
+}
+
+func prepareSchemaSchema() *hcl.BodySchema {
+	var schema = &hcl.BodySchema{
+		Attributes: []hcl.AttributeSchema{},
+		Blocks:     []hcl.BlockHeaderSchema{},
+	}
+
+	for _, resource := range resources.GetAllSystemResources() {
+		schema.Blocks = append(schema.Blocks, prepareSystemResourceSelfSchema(resources.GetSystemResourceType(resource).ProtoReflect().Descriptor()))
+	}
+
+	return schema
+}
+
+func prepareDataSchema(list []*model.Resource) *hcl.BodySchema {
 	var schema = &hcl.BodySchema{
 		Attributes: []hcl.AttributeSchema{},
 		Blocks: []hcl.BlockHeaderSchema{
@@ -24,8 +53,14 @@ func prepareSchema(list []*model.Resource) *hcl.BodySchema {
 		},
 	}
 
-	for _, resource := range resources.GetAllSystemResources() {
-		schema.Blocks = append(schema.Blocks, prepareSystemResourceSelfSchema(resources.GetSystemResourceType(resource).ProtoReflect().Descriptor()))
+	for _, item := range list {
+		if item.Namespace == "system" {
+			continue
+		}
+
+		if annotations.Get(item, annotations.HclBlock) != "" {
+			schema.Blocks = append(schema.Blocks, prepareResourceRecordBlockHeaderSchema(item))
+		}
 	}
 
 	return schema
@@ -49,13 +84,29 @@ func prepareSystemResourceSelfSchema(descriptor protoreflect.MessageDescriptor) 
 	return blockSchema
 }
 
+func prepareResourceRecordBlockHeaderSchema(resource *model.Resource) hcl.BlockHeaderSchema {
+	var bhs = hcl.BlockHeaderSchema{
+		Type: annotations.Get(resource, annotations.HclBlock),
+	}
+
+	for _, prop := range resource.Properties {
+		hclLabel := annotations.IsEnabled(prop, annotations.IsHclLabel)
+
+		if hclLabel {
+			bhs.LabelNames = append(bhs.LabelNames, prop.Name)
+		}
+	}
+
+	return bhs
+}
+
 func prepareResourceRecordSchema(resource *model.Resource) *hcl.BodySchema {
 	var attributes []hcl.AttributeSchema
 	var blocks []hcl.BlockHeaderSchema
 
 	for _, prop := range resource.Properties {
 		isSpecial := annotations.IsEnabled(prop, annotations.SpecialProperty)
-		blockProperty := annotations.Get(prop, annotations.HclBlockProperty)
+		blockProperty := annotations.Get(prop, annotations.HclBlock)
 
 		if blockProperty != "" {
 			blocks = append(blocks, hcl.BlockHeaderSchema{

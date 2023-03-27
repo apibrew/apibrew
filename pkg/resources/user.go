@@ -28,7 +28,7 @@ var UserResource = &model.Resource{
 			Required: true,
 			Unique:   true,
 			Annotations: map[string]string{
-				annotations.HclLabelProperty: annotations.Enabled,
+				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
 		{

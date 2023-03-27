@@ -25,7 +25,6 @@ import (
 
 type executor struct {
 	params      ExecutorParams
-	schema      *hcl.BodySchema
 	resources   []*model.Resource
 	evalContext *hcl.EvalContext
 }
@@ -44,7 +43,7 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 		return errors.New("invalid Hcl file")
 	}
 
-	bodyContent, diags := hclFile.Body.Content(e.schema)
+	bodyContent, diags := hclFile.Body.Content(prepareRootSchema())
 
 	if diags != nil && diags.HasErrors() {
 		e.reportHclErrors(diags)
@@ -54,7 +53,51 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 
 	for _, blocks := range bodyContent.Blocks.ByType() {
 		for _, block := range blocks {
-			err = e.ApplyBlock(ctx, block)
+			err = e.ApplyRootBlock(ctx, block)
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (e *executor) ApplyRootBlock(ctx context.Context, block *hcl.Block) error {
+	var bodyContent *hcl.BodyContent
+	var diags hcl.Diagnostics
+
+	switch block.Type {
+	case "schema":
+		{
+			bodyContent, diags = block.Body.Content(prepareSchemaSchema())
+
+			if diags != nil && diags.HasErrors() {
+				e.reportHclErrors(diags)
+
+				return errors.New("invalid Hcl file")
+			}
+		}
+	case "data":
+		{
+			if err := e.prepareResources(); err != nil {
+				return err
+			}
+
+			bodyContent, diags = block.Body.Content(prepareDataSchema(e.resources))
+
+			if diags != nil && diags.HasErrors() {
+				e.reportHclErrors(diags)
+
+				return errors.New("invalid Hcl file")
+			}
+		}
+	}
+
+	for _, blocks := range bodyContent.Blocks.ByType() {
+		for _, item := range blocks {
+			err := e.ApplyBlock(ctx, item)
 
 			if err != nil {
 				return err
@@ -104,7 +147,7 @@ func (e *executor) ApplyBlock(ctx context.Context, block *hcl.Block) error {
 			return errors.New("Resource not found: " + resourceName)
 		}
 
-		record, err := e.parseBlockToRecord(block, resource)
+		record, err := e.parseBlockToRecord(block, resource, false)
 
 		if err != nil {
 			return err
@@ -118,12 +161,33 @@ func (e *executor) ApplyBlock(ctx context.Context, block *hcl.Block) error {
 		}
 
 		return nil
+	} else {
+		for _, resource := range e.resources {
+			hclBlock := annotations.Get(resource, annotations.HclBlock)
+
+			if hclBlock != "" && hclBlock == block.Type {
+				record, err := e.parseBlockToRecord(block, resource, true)
+
+				if err != nil {
+					return err
+				}
+
+				err = e.params.DhClient.ApplyRecord(ctx, resource, record)
+
+				if err != nil {
+					log.Errorf("Cannot Apply record: %v (%s/%s)", record, resource.Namespace, resource.Name)
+					return err
+				}
+
+				return nil
+			}
+		}
 	}
 
 	return errors.New("Unknown block: " + block.Type)
 }
 
-func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource) (*model.Record, error) {
+func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource, parseLabels bool) (*model.Record, error) {
 	var record = &model.Record{
 		Properties: make(map[string]*structpb.Value),
 	}
@@ -164,7 +228,7 @@ func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource
 		var prop *model.ResourceProperty
 
 		for _, item := range resource.Properties {
-			if annotations.Get(item, annotations.HclBlockProperty) == blockItem.Type {
+			if annotations.Get(item, annotations.HclBlock) == blockItem.Type {
 				prop = item
 			}
 		}
@@ -176,6 +240,17 @@ func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource
 		}
 
 		record.Properties[prop.Name] = propVal
+	}
+
+	if parseLabels && len(block.Labels) > 0 {
+		li := 0
+		for _, item := range resource.Properties {
+			hclLabel := annotations.IsEnabled(item, annotations.IsHclLabel)
+			if hclLabel {
+				record.Properties[item.Name] = structpb.NewStringValue(block.Labels[li])
+				li++
+			}
+		}
 	}
 
 	return record, nil
@@ -253,12 +328,12 @@ func (e *executor) parseBlock(block *hcl.Block, resourceMessage protoreflect.Pro
 		hclBlock := proto.GetExtension(field.Options(), model.E_HclBlock)
 		hclLabel := proto.GetExtension(field.Options(), model.E_HclLabel)
 
-		if hclLabel != nil && hclLabel != "" {
+		if hclLabel != "" {
 			resourceMessage.ProtoReflect().Set(field, protoreflect.ValueOfString(block.Labels[labelI]))
 			labelI++
 		}
 
-		if hclBlock != nil && hclBlock != "" {
+		if hclBlock != "" {
 			// locating block
 			for _, subBlock := range bodyContent.Blocks {
 				if subBlock.Type == hclBlock.(string) {
@@ -281,7 +356,22 @@ func (e *executor) parseBlock(block *hcl.Block, resourceMessage protoreflect.Pro
 
 						pr.Set(field, protoreflect.ValueOfList(l))
 					} else if field.IsMap() {
+						attrs, diags := subBlock.Body.JustAttributes()
 
+						if diags != nil && diags.HasErrors() {
+							e.reportHclErrors(diags)
+							return diags
+						}
+						newElem := pr.NewField(field)
+						for key, value := range attrs {
+							val, err := value.Expr.Value(e.evalContext)
+
+							if err != nil {
+								return err
+							}
+							newElem.Map().Set(protoreflect.ValueOf(key).MapKey(), protoreflect.ValueOf(val.AsString()))
+						}
+						pr.Set(field, newElem)
 					} else {
 						subMessage := pr.NewField(field).Message().Interface()
 						err := e.parseBlock(subBlock, subMessage)
@@ -415,16 +505,6 @@ func (e *executor) getValue(value cty.Value, fieldDescriptor protoreflect.FieldD
 }
 
 func (e *executor) init() error {
-	resp, err := e.params.DhClient.GetResourceClient().List(context.TODO(), &stub.ListResourceRequest{})
-
-	if err != nil {
-		return err
-	}
-
-	e.resources = resp.Resources
-
-	e.schema = prepareSchema(e.resources)
-
 	e.evalContext = &hcl.EvalContext{
 		Variables: nil,
 		Functions: map[string]function.Function{
@@ -444,6 +524,17 @@ func (e *executor) init() error {
 		},
 	}
 
+	return nil
+}
+
+func (e *executor) prepareResources() error {
+	resp, err := e.params.DhClient.GetResourceClient().List(context.TODO(), &stub.ListResourceRequest{})
+
+	if err != nil {
+		return err
+	}
+
+	e.resources = resp.Resources
 	return nil
 }
 

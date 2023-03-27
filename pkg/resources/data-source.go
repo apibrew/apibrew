@@ -28,7 +28,7 @@ var DataSourceResource = &model.Resource{
 			Type:     model.ResourceProperty_STRING,
 			Required: true,
 			Annotations: map[string]string{
-				annotations.HclLabelProperty: annotations.Enabled,
+				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
 		{

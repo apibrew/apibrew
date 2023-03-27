@@ -22,5 +22,5 @@ const Identity = "Identity"
 const SpecialProperty = "SpecialProperty"
 
 // hcl
-const HclLabelProperty = "HclLabelProperty"
-const HclBlockProperty = "HclBlock"
+const IsHclLabel = "IsHclLabel"
+const HclBlock = "HclBlock"
