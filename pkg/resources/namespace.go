@@ -29,7 +29,7 @@ var NamespaceResource = &model.Resource{
 			Unique:    true,
 			Immutable: true,
 			Annotations: map[string]string{
-				annotations.HclLabelProperty: annotations.Enabled,
+				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
 		{

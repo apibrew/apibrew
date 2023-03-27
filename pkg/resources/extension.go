@@ -28,7 +28,7 @@ var ExtensionResource = &model.Resource{
 			Unique:   true,
 			Required: true,
 			Annotations: map[string]string{
-				annotations.HclLabelProperty: annotations.Enabled,
+				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
 		{

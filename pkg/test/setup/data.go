@@ -201,7 +201,7 @@ func PrepareRichResource1() *model.Resource {
 				Mapping:  "object",
 				Required: true,
 				Annotations: map[string]string{
-					annotations.HclBlockProperty: "object",
+					annotations.HclBlock: "object",
 				},
 			},
 

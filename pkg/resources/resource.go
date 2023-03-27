@@ -28,7 +28,7 @@ var ResourceResource = &model.Resource{
 			Required: true,
 			Unique:   false,
 			Annotations: map[string]string{
-				annotations.HclLabelProperty: annotations.Enabled,
+				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
 		{
