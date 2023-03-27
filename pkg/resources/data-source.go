@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 var DataSourceResource = &model.Resource{
@@ -26,6 +27,9 @@ var DataSourceResource = &model.Resource{
 			Unique:   true,
 			Type:     model.ResourceProperty_STRING,
 			Required: true,
+			Annotations: map[string]string{
+				annotations.IsHclLabel: annotations.Enabled,
+			},
 		},
 		{
 			Name:     "description",

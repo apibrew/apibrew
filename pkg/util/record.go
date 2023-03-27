@@ -7,6 +7,7 @@ import (
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/security"
 	"github.com/tislib/data-handler/pkg/types"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
@@ -105,4 +106,14 @@ func PrepareUpdateForRecord(ctx context.Context, record *model.Record) {
 	record.AuditData.UpdatedOn = timestamppb.New(now)
 	record.AuditData.UpdatedBy = security.GetUserPrincipalFromContext(ctx)
 	record.Version++
+}
+
+func IsSameRecord(existing, updated *model.Record) bool {
+	for key := range updated.Properties {
+		if !proto.Equal(updated.Properties[key], existing.Properties[key]) {
+			return false
+		}
+	}
+
+	return true
 }

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 var ExtensionResource = &model.Resource{
@@ -19,14 +20,16 @@ var ExtensionResource = &model.Resource{
 		AuditProperties[2],
 		AuditProperties[3],
 		{
-			Name: "name",
-
+			Name:     "name",
 			Mapping:  "name",
 			Length:   64,
 			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Unique:   true,
 			Required: true,
+			Annotations: map[string]string{
+				annotations.IsHclLabel: annotations.Enabled,
+			},
 		},
 		{
 			Name: "description",

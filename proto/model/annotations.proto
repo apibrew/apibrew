@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-package openapi.v3;
+package model;
 
 option go_package = "github.com/tislib/data-handler/pkg/model";
 
@@ -42,22 +42,9 @@ option java_package = "org.openapi_v3";
 // the future. 'GPB' is reserved for the protocol buffer implementation itself.
 option objc_class_prefix = "OAS";
 
-extend google.protobuf.FileOptions {
-  openapi.v3.Document document = 1143;
-}
-
-extend google.protobuf.MethodOptions {
-  openapi.v3.Operation operation = 1143;
-}
-
-extend google.protobuf.MessageOptions {
-  openapi.v3.Schema schema = 1143;
-}
 
 extend google.protobuf.FieldOptions {
-  openapi.v3.Schema property = 1143;
-}
-
-extend google.protobuf.EnumValueOptions {
-  openapi.v3.Schema value = 1143;
+  string hcl_block = 1144;
+  string hcl_label = 1145;
+  bool hcl_ignore = 1146;
 }

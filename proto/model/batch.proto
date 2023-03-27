@@ -7,7 +7,6 @@ option go_package = "github.com/tislib/data-handler/pkg/model";
 import 'model/record.proto';
 import 'model/resource.proto';
 import 'google/protobuf/struct.proto';
-import "openapiv3/annotations.proto";
 
 message BatchHeader {
   enum BatchMode {

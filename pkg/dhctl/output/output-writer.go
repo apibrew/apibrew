@@ -1,7 +1,7 @@
 package output
 
 import (
-	"github.com/tislib/data-handler/pkg/batch"
+	"github.com/tislib/data-handler/pkg/formats/batch"
 	"github.com/tislib/data-handler/pkg/model"
 	"io"
 	"log"
