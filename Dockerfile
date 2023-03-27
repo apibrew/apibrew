@@ -25,6 +25,25 @@ FROM buildenv as builder
 
 RUN go build -o data-handler cmd/server/main.go
 
+FROM golang:1.19-alpine as app-full
+WORKDIR /
+
+RUN apk add postgresql
+RUN mkdir /run/postgresql
+RUN chown postgres:postgres /run/postgresql/
+VOLUME /var/lib/postgresql/data
+
+COPY --from=builder /app/data-handler /bin/data-handler
+COPY run/run-standalone-postgres.sh /app/run.sh
+COPY run/init.sql /app/init.sql
+COPY run/config.json /app/config.json
+
+EXPOSE 9009
+
+RUN ls -alsh /app
+
+CMD ["/bin/sh", "/app/run.sh"]
+
 FROM golang:1.19-alpine as app
 WORKDIR /
 

@@ -42,8 +42,6 @@ type server struct {
 
 func (s *server) Init(*model.InitData) {
 	s.configureRoutes()
-	s.keyFile = "/Users/taleh/Projects/data-handler/dev/server.key"
-	s.certFile = "/Users/taleh/Projects/data-handler/dev/server.crt"
 }
 
 func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
@@ -97,6 +95,11 @@ func (s *server) ServeHttp(lis net.Listener) {
 func (s *server) ServeHttp2Tls(tls net.Listener) {
 	srv := &http.Server{
 		Handler: s.handler,
+	}
+
+	if s.certFile == "" || s.keyFile == "" {
+		log.Warn("Cert and Key is not provided: TLS will be disabled")
+		return
 	}
 
 	if err := srv.ServeTLS(tls, s.certFile, s.keyFile); err != nil {
