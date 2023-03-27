@@ -82,6 +82,11 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 			if property.Reference.Cascade {
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
+
+			if referencedResource == nil {
+				return "" // fixme report or catch error
+			}
+
 			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Mapping+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
 
 		}

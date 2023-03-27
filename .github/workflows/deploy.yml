@@ -31,5 +31,3 @@ jobs:
           docker push tislib/data-handler:full-${GITHUB_REF##*/}
           docker push tislib/data-handler:latest
           docker push tislib/data-handler:full-latest
-
-

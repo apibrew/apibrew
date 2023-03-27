@@ -49,7 +49,7 @@ message ResourceProperty {
   optional SecurityContext securityContext = 9;
   optional google.protobuf.Value defaultValue = 10;
   repeated google.protobuf.Value enumValues = 11; // if type is enum
-  optional Reference reference = 12; // if type is reference
+  optional Reference reference = 12 [(model.hcl_block) = "reference"]; // if type is reference
   optional Type subType = 13; // if type is map or list
   bool immutable = 14; // if true, update will not be allowed on this columns
   optional string title = 15;
@@ -91,14 +91,14 @@ message ResourceIndex {
   ResourceIndexType indexType = 2;
   bool unique = 3;
 
-  map<string, string> annotations = 103;
+  map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
 
 message Resource {
   string id = 1 [(model.hcl_ignore) = true];  // id; read only
   string name = 2 [(model.hcl_label) = "name"]; // uniq(per namespace) // name
   string namespace = 3; // create only?
-  ResourceSourceConfig sourceConfig = 5;
+  ResourceSourceConfig sourceConfig = 5 [(model.hcl_block) = "sourceConfig"];
   repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"];
   repeated ResourceIndex indexes = 7 [(model.hcl_block) = "index"];
   SecurityContext securityContext = 10;

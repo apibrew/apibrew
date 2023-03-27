@@ -64,3 +64,17 @@ func ToString(resource Annotated) string {
 
 	return strings.Join(parts, ";")
 }
+
+func IsSame(a, b map[string]string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for key := range a {
+		if a[key] != b[key] {
+			return false
+		}
+	}
+
+	return true
+}
