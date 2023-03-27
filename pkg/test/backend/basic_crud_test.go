@@ -31,8 +31,9 @@ func TestMain(t *testing.M) {
 	for _, dataSource := range dataSources {
 		newRes := setup.PrepareRichResource1()
 
-		newRes.SourceConfig.DataSource = dataSource.Name
 		newRes.Name = dataSource.Name + "-" + newRes.Name
+
+		newRes.SourceConfig.DataSource = dataSource.Name
 		newRes.SourceConfig.Entity = newRes.Name
 
 		pendingResources = append(pendingResources, newRes)
