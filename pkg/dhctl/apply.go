@@ -5,8 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/spf13/cobra"
-	"github.com/tislib/data-handler/pkg/batch"
 	"github.com/tislib/data-handler/pkg/dhctl/flags"
+	"github.com/tislib/data-handler/pkg/formats/batch"
+	"github.com/tislib/data-handler/pkg/formats/hclformat"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
@@ -47,7 +48,29 @@ var applyCmd = &cobra.Command{
 			log.Fatal("file should provided")
 		}
 
-		if strings.HasSuffix(file, ".pbe") {
+		if strings.HasSuffix(file, ".hcl") {
+			in, err := os.Open(file)
+
+			check(err)
+
+			hclExecutor, err := hclformat.NewExecutor(hclformat.ExecutorParams{
+				Input:    in,
+				Token:    GetDhClient().GetToken(),
+				DhClient: GetDhClient(),
+				OverrideConfig: hclformat.OverrideConfig{
+					Namespace:  overrideConfig.Namespace,
+					DataSource: overrideConfig.DataSource,
+				},
+			})
+
+			check(err)
+
+			err = hclExecutor.Restore(context.TODO(), in)
+
+			check(err)
+
+			return
+		} else if strings.HasSuffix(file, ".pbe") {
 			in, err := os.Open(file)
 
 			check(err)

@@ -112,9 +112,9 @@ func (d *extensionService) Delete(ctx context.Context, ids []string) errors.Serv
 }
 
 func (d *extensionService) Init(data *model.InitData) {
-	//d.runConfigureExtensions()
+	d.runConfigureExtensions()
 
-	//go d.keepExtensionsRunning()
+	go d.keepExtensionsRunning()
 }
 
 func (d *extensionService) keepExtensionsRunning() {

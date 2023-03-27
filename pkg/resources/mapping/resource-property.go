@@ -37,6 +37,10 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["exampleValue"] = property.ExampleValue
 	properties["enumValues"] = structpb.NewListValue(&structpb.ListValue{Values: property.EnumValues})
 
+	properties["annotations"], _ = structpb.NewValue(convertMap(property.Annotations, func(v string) interface{} {
+		return v
+	}))
+
 	if property.Id == nil {
 		property.Id = new(string)
 	}
@@ -83,6 +87,9 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		DefaultValue:    record.Properties["defaultValue"],
 		ExampleValue:    record.Properties["exampleValue"],
 		Reference:       reference,
+		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
+			return v.(string)
+		}),
 	}
 
 	if record.Properties["title"] != nil {

@@ -6,6 +6,7 @@ option go_package = "github.com/tislib/data-handler/pkg/model";
 
 import 'model/audit.proto';
 import 'model/common.proto';
+import 'model/annotations.proto';
 
 enum DataSourceBackendType {
   POSTGRESQL = 0;
@@ -54,17 +55,17 @@ message VirtualParams {
 }
 
 message DataSource {
-  string id = 1; // id; read only
+  string id = 1 [(model.hcl_ignore) = true]; // id; read only
   DataSourceBackendType backend = 2;
-  string name = 5;
+  string name = 5 [(model.hcl_label) = "name"];
   string description = 6;
 
   oneof params {
-    PostgresqlParams postgresqlParams = 7;
-    MysqlParams mysqlParams = 8;
-    VirtualParams virtualParams = 9;
-    RedisParams redisParams = 10;
-    MongoParams mongoParams = 11;
+    PostgresqlParams postgresqlParams = 7 [(model.hcl_block) = "postgresql_params"];
+    MysqlParams mysqlParams = 8 [(model.hcl_block) = "mysql_params"];
+    VirtualParams virtualParams = 9 [(model.hcl_block) = "virtual_params"];
+    RedisParams redisParams = 10 [(model.hcl_block) = "redis_params"];
+    MongoParams mongoParams = 11 [(model.hcl_block) = "mongo_params"];
   }
   AuditData auditData = 101; // read only
   uint32 version = 102; // read only
