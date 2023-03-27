@@ -7,46 +7,47 @@ option go_package = "github.com/tislib/data-handler/pkg/model";
 import 'model/audit.proto';
 import 'model/common.proto';
 import 'model/external.proto';
+import 'model/annotations.proto';
 
 message Extension {
   string id = 1;
-  string name = 2;
+  string name = 2 [(model.hcl_label) = "name"];
   string description = 3;
   string namespace = 5;
   string resource = 6;
 
   message After {
-    ExternalCall all = 1;
-    ExternalCall create = 2;
-    ExternalCall update = 3;
-    ExternalCall delete = 4;
-    ExternalCall get = 5;
-    ExternalCall list = 6;
+    ExternalCall all = 1 [(model.hcl_block) = "all"];
+    ExternalCall create = 2 [(model.hcl_block) = "create"];
+    ExternalCall update = 3 [(model.hcl_block) = "update"];
+    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
+    ExternalCall get = 5 [(model.hcl_block) = "get"];
+    ExternalCall list = 6 [(model.hcl_block) = "list"];
     bool sync = 7; // if true, it will wait
   }
 
   message Before {
-    ExternalCall all = 1;
-    ExternalCall create = 2;
-    ExternalCall update = 3;
-    ExternalCall delete = 4;
-    ExternalCall get = 5;
-    ExternalCall list = 6;
+    ExternalCall all = 1 [(model.hcl_block) = "all"];
+    ExternalCall create = 2 [(model.hcl_block) = "create"];
+    ExternalCall update = 3 [(model.hcl_block) = "update"];
+    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
+    ExternalCall get = 5 [(model.hcl_block) = "get"];
+    ExternalCall list = 6 [(model.hcl_block) = "list"];
     bool sync = 7; // if true, it will wait
   }
 
   message Instead {
-    ExternalCall all = 1;
-    ExternalCall create = 2;
-    ExternalCall update = 3;
-    ExternalCall delete = 4;
-    ExternalCall get = 5;
-    ExternalCall list = 6;
+    ExternalCall all = 1 [(model.hcl_block) = "all"];
+    ExternalCall create = 2 [(model.hcl_block) = "create"];
+    ExternalCall update = 3 [(model.hcl_block) = "update"];
+    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
+    ExternalCall get = 5 [(model.hcl_block) = "get"];
+    ExternalCall list = 6 [(model.hcl_block) = "list"];
   }
 
-  Before before = 7;
-  Instead instead = 8;
-  After after = 9;
+  Before before = 7 [(model.hcl_block) = "before"];
+  Instead instead = 8 [(model.hcl_block) = "instead"];
+  After after = 9 [(model.hcl_block) = "after"];
 
   AuditData auditData = 101;
   uint32 version = 102;
