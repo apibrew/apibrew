@@ -31,6 +31,7 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 	sb.WriteString(fmt.Sprintf("package %s\n", params.Package))
 	sb.WriteRune('\n')
 	sb.WriteString("import \"time\" \n")
+	sb.WriteString("import \"reflect\" \n")
 	sb.WriteString("import \"github.com/tislib/data-handler/pkg/model\" \n")
 	sb.WriteString("import \"github.com/tislib/data-handler/pkg/client\" \n")
 	if uuidNeeded {
@@ -61,6 +62,12 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 	sb.WriteRune('\n')
 	writeResourceGetNamespaceNameFunc(&sb, resource, params)
 	sb.WriteRune('\n')
+	writeResourceCloneFunc(&sb, resource, params)
+	sb.WriteRune('\n')
+	writeResourceEqualsFunc(&sb, resource, params)
+	sb.WriteRune('\n')
+	writeResourceSameFunc(&sb, resource, params)
+	sb.WriteRune('\n')
 	writeResourceNewRepository(&sb, resource, params)
 	sb.WriteRune('\n')
 
@@ -90,6 +97,60 @@ func writeResourceGetResourceNameFunc(sb *strings.Builder, resource *model.Resou
 func writeResourceGetNamespaceNameFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
 	sb.WriteString(fmt.Sprintf("func (s*%s) GetNamespace() string {\n", dashCaseToCamelCase(resource.Name)))
 	sb.WriteString(fmt.Sprintf("return \"%s\"\n", resource.Namespace))
+	sb.WriteString("}\n")
+}
+
+func writeResourceCloneFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
+	structName := dashCaseToCamelCase(resource.Name)
+	sb.WriteString(fmt.Sprintf("func (s*%s) Clone() *%s {\n", structName, structName))
+	sb.WriteString(fmt.Sprintf("var newInstance = new(%s)\n", structName))
+
+	for _, prop := range resource.Properties {
+		if prop.Required && prop.Type != model.ResourceProperty_REFERENCE {
+			key := dashCaseToCamelCase(prop.Name)
+			sb.WriteString(fmt.Sprintf("newInstance.%s = s.%s\n", key, key))
+		} else {
+			key := dashCaseToCamelCase(prop.Name)
+			sb.WriteString(fmt.Sprintf("if s.%s != nil { \n", key))
+			//if prop.Type == model.ResourceProperty_REFERENCE {
+			//	sb.WriteString(fmt.Sprintf("newInstance.%s = new(%s)\n", key, dashCaseToCamelCase(prop.Reference.ReferencedResource)))
+			//} else {
+			//	sb.WriteString(fmt.Sprintf("newInstance.%s = new()\n", key, key))
+			//}
+			sb.WriteString(fmt.Sprintf("newInstance.%s = s.%s\n", key, key))
+			sb.WriteString(" } \n")
+			sb.WriteString("\n")
+		}
+	}
+
+	sb.WriteString("return newInstance\n")
+	sb.WriteString("}\n")
+}
+
+func writeResourceEqualsFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
+	sb.WriteString(fmt.Sprintf("func (s*%s) Equals(other *%s) bool {\n", dashCaseToCamelCase(resource.Name), dashCaseToCamelCase(resource.Name)))
+
+	//for _, prop := range resource.Properties {
+	//	if prop.Required && prop.Type != model.ResourceProperty_REFERENCE {
+	//		key := dashCaseToCamelCase(prop.Name)
+	//		sb.WriteString(fmt.Sprintf("if other.%s != s.%s { \n return false \n} \n", key, key))
+	//	} else {
+	//		key := dashCaseToCamelCase(prop.Name)
+	//		sb.WriteString(fmt.Sprintf("if *other.%s != *s.%s { \n return false \n} \n", key, key))
+	//		sb.WriteString("\n")
+	//	}
+	//}
+
+	sb.WriteString("return reflect.DeepEqual(s, other)")
+
+	sb.WriteString("}\n")
+}
+
+func writeResourceSameFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
+	structName := dashCaseToCamelCase(resource.Name)
+	sb.WriteString(fmt.Sprintf("func (s*%s) Same(other *%s) bool {\n", structName, structName))
+
+	sb.WriteString("return s.Equals(other)\n")
 	sb.WriteString("}\n")
 }
 

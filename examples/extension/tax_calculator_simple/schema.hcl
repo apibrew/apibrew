@@ -89,6 +89,34 @@ schema {
   resource "income" {
     virtual = true
 
+    property "country" {
+      type     = "reference"
+      required = true
+
+      reference {
+        referenced_resource = "country"
+        cascade             = true
+      }
+
+      annotations {
+        HclBlock = "country"
+      }
+    }
+
+    property "city" {
+      type     = "reference"
+      required = true
+
+      reference {
+        referenced_resource = "city"
+        cascade             = true
+      }
+
+      annotations {
+        HclBlock = "city"
+      }
+    }
+
     property "gross_income" {
       type = "int32"
       required = true

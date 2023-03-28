@@ -7,7 +7,7 @@ import (
 	"github.com/tislib/data-handler/pkg/util"
 )
 
-type repository[T Entity] struct {
+type repository[T Entity[T]] struct {
 	client DhClient
 	params RepositoryParams[T]
 }
@@ -67,7 +67,7 @@ func (r repository[T]) Get(ctx context.Context, id string) (T, error) {
 		return r.params.Instance, err
 	}
 
-	var newInstance = r.params.Instance
+	var newInstance = r.params.Instance.Clone()
 
 	newInstance.FromRecord(resp.Record)
 
@@ -76,9 +76,10 @@ func (r repository[T]) Get(ctx context.Context, id string) (T, error) {
 
 func (r repository[T]) List(ctx context.Context) ([]T, error) {
 	resp, err := r.client.GetRecordClient().List(ctx, &stub.ListRecordRequest{
-		Token:     r.client.GetToken(),
-		Namespace: r.params.Instance.GetNamespace(),
-		Resource:  r.params.Instance.GetResourceName(),
+		Token:             r.client.GetToken(),
+		Namespace:         r.params.Instance.GetNamespace(),
+		Resource:          r.params.Instance.GetResourceName(),
+		ResolveReferences: []string{"*"},
 	})
 
 	if err != nil {
@@ -86,7 +87,7 @@ func (r repository[T]) List(ctx context.Context) ([]T, error) {
 	}
 
 	return util.ArrayMap(resp.Content, func(record *model.Record) T {
-		var newInstance = r.params.Instance
+		var newInstance = r.params.Instance.Clone()
 
 		newInstance.FromRecord(record)
 
@@ -94,11 +95,11 @@ func (r repository[T]) List(ctx context.Context) ([]T, error) {
 	}), nil
 }
 
-type RepositoryParams[T Entity] struct {
+type RepositoryParams[T Entity[T]] struct {
 	UpdateCheckVersion bool
 	Instance           T
 }
 
-func NewRepository[T Entity](client DhClient, params RepositoryParams[T]) Repository[T] {
+func NewRepository[T Entity[T]](client DhClient, params RepositoryParams[T]) Repository[T] {
 	return repository[T]{client: client, params: params}
 }
