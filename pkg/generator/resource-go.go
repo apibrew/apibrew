@@ -4,8 +4,8 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
+	"github.com/tislib/data-handler/pkg/util"
 	"go/format"
 	"reflect"
 	"strings"
@@ -42,7 +42,12 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 
 	writeResourceStruct(&sb, resource, params)
 	sb.WriteRune('\n')
-	writeResourceStructGetIdFunc(&sb, resource, params)
+	// locate id property
+	namedProps := util.GetNamedMap(resource.Properties)
+	idProp := namedProps["id"]
+	if idProp != nil {
+		writeResourceStructGetIdFunc(&sb, resource, params, idProp)
+	}
 	sb.WriteRune('\n')
 	writeResourceStructToRecordFunc(&sb, resource, params)
 	sb.WriteRune('\n')
@@ -88,28 +93,25 @@ func writeResourceGetNamespaceNameFunc(sb *strings.Builder, resource *model.Reso
 	sb.WriteString("}\n")
 }
 
-func writeResourceStructGetIdFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
+func writeResourceStructGetIdFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams, idProp *model.ResourceProperty) {
 	sb.WriteString(fmt.Sprintf("func (s*%s) GetId() string {\n", dashCaseToCamelCase(resource.Name)))
-	sb.WriteString("return s.Id\n")
+	sb.WriteString(fmt.Sprintf("valStr:= types.ByResourcePropertyType(model.ResourceProperty_%s).String(s.%s) \n", idProp.Type.String(), dashCaseToCamelCase(idProp.Name)))
+	sb.WriteString("return valStr\n")
 	sb.WriteString("}\n")
 }
 
 func writeResourceStructToRecordFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
 	sb.WriteString(fmt.Sprintf("func (s*%s) ToRecord() *model.Record {\n", dashCaseToCamelCase(resource.Name)))
 	sb.WriteString(" var rec = &model.Record{} \n")
-	sb.WriteString(" rec.Id = s.Id \n")
-	sb.WriteString(" rec.Properties = s.ToProperties(false) \n")
+	sb.WriteString(" rec.Properties = s.ToProperties() \n")
 	sb.WriteRune('\n')
 	sb.WriteString("return rec\n")
 	sb.WriteString("}\n")
 }
 
 func writeResourceStructToPropertiesFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
-	sb.WriteString(fmt.Sprintf("func (s*%s) ToProperties(includeTopProperties bool) map[string]*structpb.Value {\n", dashCaseToCamelCase(resource.Name)))
+	sb.WriteString(fmt.Sprintf("func (s*%s) ToProperties() map[string]*structpb.Value {\n", dashCaseToCamelCase(resource.Name)))
 	sb.WriteString(" var properties = make(map[string]*structpb.Value)\n")
-	sb.WriteString(" if includeTopProperties {\n")
-	sb.WriteString(" properties[\"id\"] = structpb.NewStringValue(s.Id) \n")
-	sb.WriteString(" }\n")
 	sb.WriteRune('\n')
 
 	for i, prop := range resource.Properties {
@@ -118,9 +120,14 @@ func writeResourceStructToPropertiesFunc(sb *strings.Builder, resource *model.Re
 		}
 
 		if prop.Type == model.ResourceProperty_REFERENCE {
-			sb.WriteString(fmt.Sprintf("properties[\"%s\"] = structpb.NewStructValue(&structpb.Struct{Fields: s.%s.ToProperties(true)})\n", prop.Name, dashCaseToCamelCase(prop.Name)))
+			sb.WriteString(fmt.Sprintf("properties[\"%s\"] = structpb.NewStructValue(&structpb.Struct{Fields: s.%s.ToProperties()})\n", prop.Name, dashCaseToCamelCase(prop.Name)))
 		} else {
-			sb.WriteString(fmt.Sprintf("val%d, _ := types.ByResourcePropertyType(model.ResourcePropertyType_%s).Pack(s.%s) \n", i, prop.Type.String(), dashCaseToCamelCase(prop.Name)))
+			propVarName := "s." + dashCaseToCamelCase(prop.Name)
+			if !prop.Required {
+				propVarName = "*" + propVarName
+			}
+			sb.WriteString(fmt.Sprintf("val%d, err := types.ByResourcePropertyType(model.ResourceProperty_%s).Pack(%s) \n", i, prop.Type.String(), propVarName))
+			sb.WriteString("if err != nil {\n panic(err)\n}\n")
 			sb.WriteString(fmt.Sprintf("properties[\"%s\"] = val%d\n", prop.Name, i))
 		}
 
@@ -135,8 +142,6 @@ func writeResourceStructToPropertiesFunc(sb *strings.Builder, resource *model.Re
 
 func writeResourceStructFromRecordFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
 	sb.WriteString(fmt.Sprintf("func (s*%s) FromRecord(record *model.Record) {\n", dashCaseToCamelCase(resource.Name)))
-	sb.WriteString(" s.Id = record.Id \n")
-	sb.WriteRune('\n')
 	sb.WriteString("s.FromProperties(record.Properties)")
 
 	sb.WriteString("}\n")
@@ -144,8 +149,6 @@ func writeResourceStructFromRecordFunc(sb *strings.Builder, resource *model.Reso
 
 func writeResourceStructFromPropertiesFunc(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
 	sb.WriteString(fmt.Sprintf("func (s*%s) FromProperties(properties map[string]*structpb.Value) {\n", dashCaseToCamelCase(resource.Name)))
-	sb.WriteString(" if properties[\"id\"] != nil { \n s.Id = properties[\"id\"].GetStringValue() \n } \n")
-	sb.WriteRune('\n')
 
 	for i, prop := range resource.Properties {
 		sb.WriteString(fmt.Sprintf("if properties[\"%s\"] != nil { \n", prop.Name))
@@ -154,7 +157,7 @@ func writeResourceStructFromPropertiesFunc(sb *strings.Builder, resource *model.
 			sb.WriteString(fmt.Sprintf("s.%s = new(%s)\n", dashCaseToCamelCase(prop.Name), dashCaseToCamelCase(prop.Reference.ReferencedResource)))
 			sb.WriteString(fmt.Sprintf("s.%s.FromProperties(properties[\"%s\"].GetStructValue().Fields)\n", dashCaseToCamelCase(prop.Reference.ReferencedResource), prop.Name))
 		} else {
-			sb.WriteString(fmt.Sprintf("val%d, _ := types.ByResourcePropertyType(model.ResourcePropertyType_%s).UnPack(properties[\"%s\"]) \n", i, prop.Type.String(), prop.Name))
+			sb.WriteString(fmt.Sprintf("val%d, _ := types.ByResourcePropertyType(model.ResourceProperty_%s).UnPack(properties[\"%s\"]) \n", i, prop.Type.String(), prop.Name))
 			if prop.Required {
 				sb.WriteString(fmt.Sprintf("s.%s = val%d.(%s)\n", dashCaseToCamelCase(prop.Name), i, getGoType(prop.Type)))
 			} else {
@@ -172,10 +175,6 @@ func writeResourceStructFromPropertiesFunc(sb *strings.Builder, resource *model.
 func writeResourceStruct(sb *strings.Builder, resource *model.Resource, params GenerateResourceCodeParams) {
 	sb.WriteString(fmt.Sprintf("type %s struct {\n", dashCaseToCamelCase(resource.Name)))
 
-	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-		sb.WriteString("    Id string\n")
-	}
-
 	for _, prop := range resource.Properties {
 		typeDef := getGoType(prop.Type)
 		if !prop.Required {
@@ -187,17 +186,6 @@ func writeResourceStruct(sb *strings.Builder, resource *model.Resource, params G
 		}
 
 		sb.WriteString(fmt.Sprintf("    %s %s\n", dashCaseToCamelCase(prop.Name), typeDef))
-	}
-
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
-		sb.WriteString("    CreatedBy string\n")
-		sb.WriteString("    UpdatedBy *string\n")
-		sb.WriteString("    CreatedOn time.Time\n")
-		sb.WriteString("    UpdatedOn *time.Time\n")
-	}
-
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		sb.WriteString("    Version uint64\n")
 	}
 
 	sb.WriteString("}\n")

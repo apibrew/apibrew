@@ -27,13 +27,14 @@ type DhClient interface {
 	ApplyUser(ctx context.Context, user *model.User) error
 	ApplyDataSource(ctx context.Context, dataSource *model.DataSource) error
 	ApplyResource(ctx context.Context, resource *model.Resource) error
+	NewExtension(host string) Extension
 }
 
 type Entity interface {
 	ToRecord() *model.Record
 	FromRecord(record *model.Record)
 	FromProperties(properties map[string]*structpb.Value)
-	ToProperties(includeTopProperties bool) map[string]*structpb.Value
+	ToProperties() map[string]*structpb.Value
 	GetResourceName() string
 	GetNamespace() string
 	GetId() string
