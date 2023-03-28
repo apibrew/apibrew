@@ -42,11 +42,11 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		properties["indexes"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
 	}
 
+	mapSpecialColumnsToRecord(resource, &properties)
+
 	return &model.Record{
 		Id:         resource.Id,
 		Properties: properties,
-		AuditData:  resource.AuditData,
-		Version:    resource.Version,
 	}
 }
 
@@ -57,8 +57,6 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 
 	var resource = &model.Resource{
 		Id:        record.Id,
-		AuditData: record.AuditData,
-		Version:   record.Version,
 		Name:      record.Properties["name"].GetStringValue(),
 		Namespace: record.Properties["namespace"].GetStructValue().GetFields()["name"].GetStringValue(),
 		Virtual:   record.Properties["virtual"].GetBoolValue(),
@@ -92,6 +90,8 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		resource.Description = new(string)
 		*resource.Description = record.Properties["description"].GetStringValue()
 	}
+
+	mapSpecialColumnsFromRecord(resource, &record.Properties)
 
 	return resource
 }

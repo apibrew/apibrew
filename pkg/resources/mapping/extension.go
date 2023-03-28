@@ -48,11 +48,11 @@ func ExtensionToRecord(extension *model.Extension) *model.Record {
 		}})
 	}
 
+	mapSpecialColumnsToRecord(extension, &properties)
+
 	return &model.Record{
 		Id:         extension.Id,
 		Properties: properties,
-		AuditData:  extension.AuditData,
-		Version:    extension.Version,
 	}
 }
 
@@ -110,8 +110,6 @@ func ExtensionFromRecord(record *model.Record) *model.Extension {
 		Name:      record.Properties["name"].GetStringValue(),
 		Namespace: record.Properties["namespace"].GetStringValue(),
 		Resource:  record.Properties["resource"].GetStringValue(),
-		AuditData: record.AuditData,
-		Version:   record.Version,
 	}
 
 	if record.Properties["description"] != nil {
@@ -155,6 +153,8 @@ func ExtensionFromRecord(record *model.Record) *model.Extension {
 			List:   ExternalCallFromStruct(val.Fields["list"]),
 		}
 	}
+
+	mapSpecialColumnsFromRecord(result, &record.Properties)
 
 	return result
 }
