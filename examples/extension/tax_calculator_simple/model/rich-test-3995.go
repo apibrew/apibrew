@@ -1,6 +1,7 @@
 package model
 
 import "time"
+import "reflect"
 import "github.com/tislib/data-handler/pkg/model"
 import "github.com/tislib/data-handler/pkg/client"
 import "github.com/google/uuid"
@@ -293,6 +294,51 @@ func (s *RichTest3995) GetResourceName() string {
 
 func (s *RichTest3995) GetNamespace() string {
 	return "default"
+}
+
+func (s *RichTest3995) Clone() *RichTest3995 {
+	var newInstance = new(RichTest3995)
+	newInstance.Double = s.Double
+	newInstance.Text = s.Text
+	newInstance.Id = s.Id
+	newInstance.Timestamp = s.Timestamp
+	newInstance.Bool = s.Bool
+	newInstance.Int64 = s.Int64
+	newInstance.Float = s.Float
+	newInstance.String = s.String
+	newInstance.Uuid = s.Uuid
+	newInstance.Date = s.Date
+	if s.Int32O != nil {
+		newInstance.Int32O = s.Int32O
+	}
+
+	newInstance.Int32 = s.Int32
+	newInstance.Object = s.Object
+	if s.UpdatedOn != nil {
+		newInstance.UpdatedOn = s.UpdatedOn
+	}
+
+	newInstance.Version = s.Version
+	newInstance.Time = s.Time
+	if s.Bytes != nil {
+		newInstance.Bytes = s.Bytes
+	}
+
+	newInstance.CreatedBy = s.CreatedBy
+	if s.UpdatedBy != nil {
+		newInstance.UpdatedBy = s.UpdatedBy
+	}
+
+	newInstance.CreatedOn = s.CreatedOn
+	return newInstance
+}
+
+func (s *RichTest3995) Equals(other *RichTest3995) bool {
+	return reflect.DeepEqual(s, other)
+}
+
+func (s *RichTest3995) Same(other *RichTest3995) bool {
+	return s.Equals(other)
 }
 
 func NewRichTest3995Repository(dhClient client.DhClient) client.Repository[*RichTest3995] {

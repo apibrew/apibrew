@@ -30,7 +30,7 @@ type DhClient interface {
 	NewExtension(host string) Extension
 }
 
-type Entity interface {
+type Entity[T any] interface {
 	ToRecord() *model.Record
 	FromRecord(record *model.Record)
 	FromProperties(properties map[string]*structpb.Value)
@@ -38,9 +38,12 @@ type Entity interface {
 	GetResourceName() string
 	GetNamespace() string
 	GetId() string
+	Clone() T
+	Equals(other T) bool
+	Same(other T) bool
 }
 
-type Repository[T Entity] interface {
+type Repository[T Entity[T]] interface {
 	Create(ctx context.Context, entity T) (T, error)
 	Update(ctx context.Context, entity T) (T, error)
 	Save(ctx context.Context, entity T) (T, error)

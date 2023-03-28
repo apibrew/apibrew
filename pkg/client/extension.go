@@ -41,15 +41,20 @@ func (d ExternalFunctionData) GetString(key string) string {
 
 type ExternalFunction func(ctx context.Context, req ExternalFunctionData) (ExternalFunctionData, error)
 
-func CreateRecordTypedFunction[T Entity](instance T, fn func(entity T) T) ExternalFunction {
-	return CreateRecordFunction(func(record *model.Record) *model.Record {
+func CreateRecordTypedFunction[T Entity[T]](instance T, fn func(entity T) (T, error)) ExternalFunction {
+	return CreateRecordFunction(func(record *model.Record) (*model.Record, error) {
 		instance.FromRecord(record)
-		instance = fn(instance)
-		return instance.ToRecord()
+		instance, err := fn(instance)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return instance.ToRecord(), nil
 	})
 }
 
-func CreateRecordFunction(fn func(record *model.Record) *model.Record) ExternalFunction {
+func CreateRecordFunction(fn func(record *model.Record) (*model.Record, error)) ExternalFunction {
 	return func(ctx context.Context, req ExternalFunctionData) (ExternalFunctionData, error) {
 		if req.GetAction() != "Create" {
 			return nil, errors.New("create action is expected")
@@ -66,7 +71,11 @@ func CreateRecordFunction(fn func(record *model.Record) *model.Record) ExternalF
 		var responseRecords []*model.Record
 
 		for _, record := range request.Records {
-			responseRecords = append(responseRecords, fn(record))
+			processedRecord, err := fn(record)
+			if err != nil {
+				return nil, err
+			}
+			responseRecords = append(responseRecords, processedRecord)
 		}
 
 		var response = &stub.CreateRecordResponse{

@@ -1,6 +1,7 @@
 package model
 
 import "time"
+import "reflect"
 import "github.com/tislib/data-handler/pkg/model"
 import "github.com/tislib/data-handler/pkg/client"
 import "github.com/google/uuid"
@@ -179,6 +180,47 @@ func (s *Country) GetResourceName() string {
 
 func (s *Country) GetNamespace() string {
 	return "default"
+}
+
+func (s *Country) Clone() *Country {
+	var newInstance = new(Country)
+	newInstance.Id = s.Id
+	if s.Name != nil {
+		newInstance.Name = s.Name
+	}
+
+	if s.Description != nil {
+		newInstance.Description = s.Description
+	}
+
+	if s.Population != nil {
+		newInstance.Population = s.Population
+	}
+
+	if s.Area != nil {
+		newInstance.Area = s.Area
+	}
+
+	newInstance.CreatedBy = s.CreatedBy
+	if s.UpdatedBy != nil {
+		newInstance.UpdatedBy = s.UpdatedBy
+	}
+
+	newInstance.CreatedOn = s.CreatedOn
+	if s.UpdatedOn != nil {
+		newInstance.UpdatedOn = s.UpdatedOn
+	}
+
+	newInstance.Version = s.Version
+	return newInstance
+}
+
+func (s *Country) Equals(other *Country) bool {
+	return reflect.DeepEqual(s, other)
+}
+
+func (s *Country) Same(other *Country) bool {
+	return s.Equals(other)
 }
 
 func NewCountryRepository(dhClient client.DhClient) client.Repository[*Country] {

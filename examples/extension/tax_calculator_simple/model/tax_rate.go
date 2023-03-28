@@ -1,6 +1,7 @@
 package model
 
 import "time"
+import "reflect"
 import "github.com/tislib/data-handler/pkg/model"
 import "github.com/tislib/data-handler/pkg/client"
 import "github.com/google/uuid"
@@ -187,6 +188,43 @@ func (s *TaxRate) GetResourceName() string {
 
 func (s *TaxRate) GetNamespace() string {
 	return "default"
+}
+
+func (s *TaxRate) Clone() *TaxRate {
+	var newInstance = new(TaxRate)
+	newInstance.Rate = s.Rate
+	newInstance.CreatedBy = s.CreatedBy
+	if s.UpdatedBy != nil {
+		newInstance.UpdatedBy = s.UpdatedBy
+	}
+
+	newInstance.CreatedOn = s.CreatedOn
+	newInstance.Id = s.Id
+	newInstance.Name = s.Name
+	if s.Country != nil {
+		newInstance.Country = s.Country
+	}
+
+	if s.City != nil {
+		newInstance.City = s.City
+	}
+
+	newInstance.Order = s.Order
+	if s.UpdatedOn != nil {
+		newInstance.UpdatedOn = s.UpdatedOn
+	}
+
+	newInstance.Until = s.Until
+	newInstance.Version = s.Version
+	return newInstance
+}
+
+func (s *TaxRate) Equals(other *TaxRate) bool {
+	return reflect.DeepEqual(s, other)
+}
+
+func (s *TaxRate) Same(other *TaxRate) bool {
+	return s.Equals(other)
 }
 
 func NewTaxRateRepository(dhClient client.DhClient) client.Repository[*TaxRate] {

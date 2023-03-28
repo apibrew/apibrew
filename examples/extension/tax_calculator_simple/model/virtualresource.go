@@ -1,6 +1,7 @@
 package model
 
 import "time"
+import "reflect"
 import "github.com/tislib/data-handler/pkg/model"
 import "github.com/tislib/data-handler/pkg/client"
 import "github.com/google/uuid"
@@ -146,6 +147,36 @@ func (s *VirtualResource) GetResourceName() string {
 
 func (s *VirtualResource) GetNamespace() string {
 	return "default"
+}
+
+func (s *VirtualResource) Clone() *VirtualResource {
+	var newInstance = new(VirtualResource)
+	newInstance.Version = s.Version
+	newInstance.Id = s.Id
+	newInstance.Name = s.Name
+	if s.Description != nil {
+		newInstance.Description = s.Description
+	}
+
+	newInstance.CreatedBy = s.CreatedBy
+	if s.UpdatedBy != nil {
+		newInstance.UpdatedBy = s.UpdatedBy
+	}
+
+	newInstance.CreatedOn = s.CreatedOn
+	if s.UpdatedOn != nil {
+		newInstance.UpdatedOn = s.UpdatedOn
+	}
+
+	return newInstance
+}
+
+func (s *VirtualResource) Equals(other *VirtualResource) bool {
+	return reflect.DeepEqual(s, other)
+}
+
+func (s *VirtualResource) Same(other *VirtualResource) bool {
+	return s.Equals(other)
 }
 
 func NewVirtualResourceRepository(dhClient client.DhClient) client.Repository[*VirtualResource] {
