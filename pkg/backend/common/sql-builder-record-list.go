@@ -197,7 +197,6 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 				// locating referenced resource
 				referencedResource := r.Schema.ResourceByNamespaceSlashName[r.resource.Namespace+"/"+prop.Reference.ReferencedResource]
 				newPath := path + "__" + prop.Mapping
-				r.expandProps(newPath, referencedResource)
 
 				// add to joins
 				r.joins = append(r.joins, joinDetails{
@@ -206,6 +205,8 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 					targetColumn:     "id",
 					sourcePath:       path + "." + prop.Mapping,
 				})
+
+				r.expandProps(newPath, referencedResource)
 			}
 		}
 	}
