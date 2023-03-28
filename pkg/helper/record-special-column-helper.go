@@ -15,23 +15,11 @@ type RecordSpecialColumnHelper struct {
 }
 
 func (h RecordSpecialColumnHelper) IsAuditEnabled() bool {
-	if annotations.IsEnabled(h.Resource, annotations.DisableAudit) {
-		return false
-	}
-
-	//fixme check props
-
-	return true
+	return !annotations.IsEnabled(h.Resource, annotations.DisableAudit)
 }
 
 func (h RecordSpecialColumnHelper) IsVersionEnabled() bool {
-	if annotations.IsEnabled(h.Resource, annotations.DisableVersion) {
-		return false
-	}
-
-	//fixme check props
-
-	return true
+	return !annotations.IsEnabled(h.Resource, annotations.DisableVersion)
 }
 
 func (h RecordSpecialColumnHelper) IncreaseVersion() {
