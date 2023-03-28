@@ -91,6 +91,7 @@ schema {
 
     property "gross_income" {
       type = "int32"
+      required = true
     }
 
     property "tax" {
@@ -112,6 +113,7 @@ schema {
       type   = "string"
       length = 124
       unique = true
+      required = true
 
       annotations {
         IsHclLabel = "true"
@@ -148,6 +150,7 @@ schema {
 
     property "order" {
       type = "int32"
+      required = true
     }
 
     property "until" {
