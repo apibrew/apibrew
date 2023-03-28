@@ -41,11 +41,11 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 		properties["options_mongo_db_name"] = structpb.NewStringValue(options.MongoParams.DbName)
 	}
 
+	mapSpecialColumnsToRecord(dataSource, &properties)
+
 	return &model.Record{
 		Id:         dataSource.Id,
 		Properties: properties,
-		AuditData:  dataSource.AuditData,
-		Version:    dataSource.Version,
 	}
 }
 
@@ -61,8 +61,6 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 		Backend:     model.DataSourceBackendType(backendNumber),
 		Name:        record.Properties["name"].GetStringValue(),
 		Description: record.Properties["description"].GetStringValue(),
-		AuditData:   record.AuditData,
-		Version:     record.Version,
 	}
 
 	if result.Backend == model.DataSourceBackendType_POSTGRESQL {
@@ -117,6 +115,8 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 
 		result.Params = options
 	}
+
+	mapSpecialColumnsFromRecord(result, &record.Properties)
 
 	return result
 }

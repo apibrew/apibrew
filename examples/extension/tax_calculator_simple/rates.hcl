@@ -13,6 +13,12 @@ data {
     }
   }
 
+  city "Ordubad" {
+    country {
+      name = "Azerbaijan"
+    }
+  }
+
   tax_rate "simple_rate" {
     country {
       name = "Azerbaijan"

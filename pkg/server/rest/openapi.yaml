@@ -202,29 +202,6 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: record.auditData.createdOn
-                  in: query
-                  schema:
-                    type: string
-                    format: date-time
-                - name: record.auditData.updatedOn
-                  in: query
-                  schema:
-                    type: string
-                    format: date-time
-                - name: record.auditData.createdBy
-                  in: query
-                  schema:
-                    type: string
-                - name: record.auditData.updatedBy
-                  in: query
-                  schema:
-                    type: string
-                - name: record.version
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint32
                 - name: checkVersion
                   in: query
                   schema:
@@ -272,29 +249,6 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: record.auditData.createdOn
-                  in: query
-                  schema:
-                    type: string
-                    format: date-time
-                - name: record.auditData.updatedOn
-                  in: query
-                  schema:
-                    type: string
-                    format: date-time
-                - name: record.auditData.createdBy
-                  in: query
-                  schema:
-                    type: string
-                - name: record.auditData.updatedBy
-                  in: query
-                  schema:
-                    type: string
-                - name: record.version
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint32
                 - name: ignoreIfExists
                   in: query
                   schema:
@@ -1805,11 +1759,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                auditData:
-                    $ref: '#/components/schemas/AuditData'
-                version:
-                    type: integer
-                    format: uint32
         RedisParams:
             type: object
             properties:
