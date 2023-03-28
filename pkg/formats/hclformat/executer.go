@@ -192,7 +192,7 @@ func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource
 		Properties: make(map[string]*structpb.Value),
 	}
 
-	bodyContent, diags := block.Body.Content(prepareResourceRecordSchema(resource))
+	bodyContent, diags := block.Body.Content(prepareResourceRecordSchema(resource, parseLabels))
 
 	if diags != nil {
 		e.reportHclErrors(diags)

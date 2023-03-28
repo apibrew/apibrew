@@ -16,11 +16,11 @@ func UserToRecord(user *model.User) *model.Record {
 
 	properties["securityContext"] = SecurityContextToValue(user.SecurityContext)
 
+	mapSpecialColumnsToRecord(user, &properties)
+
 	return &model.Record{
 		Id:         user.Id,
 		Properties: properties,
-		AuditData:  user.AuditData,
-		Version:    user.Version,
 	}
 }
 
@@ -30,9 +30,7 @@ func UserFromRecord(record *model.Record) *model.User {
 	}
 
 	var user = &model.User{
-		Id:        record.Id,
-		AuditData: record.AuditData,
-		Version:   record.Version,
+		Id: record.Id,
 	}
 
 	if record.Properties["username"] != nil {
@@ -48,6 +46,8 @@ func UserFromRecord(record *model.Record) *model.User {
 	if record.Properties["details"] != nil {
 		user.Details = record.Properties["details"].GetStructValue()
 	}
+
+	mapSpecialColumnsFromRecord(user, &record.Properties)
 
 	return user
 }

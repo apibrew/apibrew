@@ -8,6 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/backend/helper"
 	"github.com/tislib/data-handler/pkg/backend/sqlbuilder"
 	"github.com/tislib/data-handler/pkg/errors"
+	helper2 "github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
@@ -109,7 +110,11 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 
 	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
 		if checkVersion {
-			updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", record.Version))
+			ah := helper2.RecordSpecialColumnHelper{
+				Resource: resource,
+				Record:   record,
+			}
+			updateBuilder.Where(updateBuilder.Equal("id", record.Id), updateBuilder.Equal("version", ah.GetVersion()))
 		} else {
 			updateBuilder.Where(updateBuilder.Equal("id", record.Id))
 		}

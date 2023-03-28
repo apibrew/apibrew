@@ -189,10 +189,6 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, reco
 			item.Id,
 		}
 
-		if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-			row = append(row, strconv.Itoa(int(item.Version)))
-		}
-
 		for _, prop := range resource.Properties {
 			typeHandler := types.ByResourcePropertyType(prop.Type)
 			packedVal := item.Properties[prop.Name]

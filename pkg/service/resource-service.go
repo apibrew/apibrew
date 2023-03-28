@@ -289,7 +289,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 			resourceRecords := []*model.Record{mapping.ResourceToRecord(plan.CurrentResource)}
 
 			for _, record := range resourceRecords {
-				util.PrepareUpdateForRecord(ctx, record)
+				util.PrepareUpdateForRecord(ctx, resources.ResourceResource, record)
 				util.NormalizeRecord(resources.ResourceResource, record)
 			}
 
@@ -309,7 +309,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		case *model.ResourceMigrationStep_CreateProperty:
 			propertyCreateRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.CreateProperty.Property], plan.CurrentResource)
 
-			util.InitRecord(ctx, propertyCreateRecord)
+			util.InitRecord(ctx, plan.CurrentResource, propertyCreateRecord)
 			util.NormalizeRecord(resources.ResourcePropertyResource, propertyCreateRecord)
 
 			_, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, abs.BulkRecordsParams{
@@ -340,7 +340,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		case *model.ResourceMigrationStep_UpdateProperty:
 			propertyRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.UpdateProperty.Property], plan.CurrentResource)
 			propertyRecord.Id = *existingPropertyMap[sk.UpdateProperty.ExistingProperty].Id
-			util.PrepareUpdateForRecord(ctx, propertyRecord)
+			util.PrepareUpdateForRecord(ctx, resources.ResourcePropertyResource, propertyRecord)
 			util.NormalizeRecord(resources.ResourcePropertyResource, propertyRecord)
 
 			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
@@ -381,7 +381,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 
 	for _, propRecord := range propertyRecords {
 		propRecord.Id = propertyNameIdMap[propRecord.Properties["name"].GetStringValue()]
-		util.PrepareUpdateForRecord(ctx, propRecord)
+		util.PrepareUpdateForRecord(ctx, resources.ResourcePropertyResource, propRecord)
 		util.NormalizeRecord(resources.ResourcePropertyResource, propRecord)
 	}
 
@@ -466,7 +466,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}()
 
 	resourceRecord := mapping.ResourceToRecord(resource)
-	util.InitRecord(ctx, resourceRecord)
+	util.InitRecord(ctx, resources.ResourceResource, resourceRecord)
 	util.NormalizeRecord(resources.ResourceResource, resourceRecord)
 
 	result, _, err := systemBackend.AddRecords(txCtx, abs.BulkRecordsParams{
@@ -513,7 +513,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
 			record := mapping.ResourcePropertyToRecord(property, resource)
 
-			util.InitRecord(ctx, record)
+			util.InitRecord(ctx, resources.ResourcePropertyResource, record)
 			util.NormalizeRecord(resources.ResourcePropertyResource, record)
 
 			return record
@@ -758,6 +758,10 @@ func (r *resourceService) Init(_ *model.InitData) {
 func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.Schema) {
 	if resource.Annotations == nil {
 		resource.Annotations = make(map[string]string)
+	}
+
+	if resource.AuditData == nil {
+		resource.AuditData = &model.AuditData{}
 	}
 
 	preparedResource, err := r.backendProviderService.GetSystemBackend(context.TODO()).PrepareResourceFromEntity(context.TODO(), resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
