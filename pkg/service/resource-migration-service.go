@@ -20,6 +20,11 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 		return nil, errors.LogicalError.WithDetails("Both existing resource and resource cannot be nil at the same time")
 	}
 
+	if resource != nil && existingResource != nil {
+		resource.AuditData = existingResource.AuditData
+		resource.Version = existingResource.Version
+	}
+
 	var plan = &model.ResourceMigrationPlan{
 		ExistingResource: existingResource,
 		CurrentResource:  resource,

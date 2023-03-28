@@ -138,7 +138,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 	}
 
 	for _, record := range params.Records {
-		util.InitRecord(ctx, record)
+		util.InitRecord(ctx, resource, record)
 		util.NormalizeRecord(resource, record)
 	}
 
@@ -304,7 +304,7 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 	}
 
 	for _, record := range params.Records {
-		util.PrepareUpdateForRecord(ctx, record)
+		util.PrepareUpdateForRecord(ctx, resource, record)
 		util.NormalizeRecord(resource, record)
 	}
 

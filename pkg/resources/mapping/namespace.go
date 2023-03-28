@@ -16,11 +16,11 @@ func NamespaceToRecord(namespace *model.Namespace) *model.Record {
 
 	properties["securityContext"] = SecurityContextToValue(namespace.SecurityContext)
 
+	mapSpecialColumnsToRecord(namespace, &properties)
+
 	return &model.Record{
 		Id:         namespace.Id,
 		Properties: properties,
-		AuditData:  namespace.AuditData,
-		Version:    namespace.Version,
 	}
 }
 
@@ -30,9 +30,7 @@ func NamespaceFromRecord(record *model.Record) *model.Namespace {
 	}
 
 	result := &model.Namespace{
-		Id:        record.Id,
-		AuditData: record.AuditData,
-		Version:   record.Version,
+		Id: record.Id,
 	}
 
 	if record.Properties["name"] != nil {
@@ -48,6 +46,8 @@ func NamespaceFromRecord(record *model.Record) *model.Namespace {
 	}
 
 	result.SecurityContext = SecurityContextFromValue(record.Properties["securityContext"])
+
+	mapSpecialColumnsFromRecord(result, &record.Properties)
 
 	return result
 }

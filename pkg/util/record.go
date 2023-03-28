@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"github.com/google/uuid"
+	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/security"
@@ -33,15 +34,27 @@ func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Recor
 	record.Id = strings.Join(idParts, "-")
 }
 
-func InitRecord(ctx context.Context, record *model.Record) {
+func InitRecord(ctx context.Context, resource *model.Resource, record *model.Record) {
 	now := time.Now()
 	recordNewId, _ := uuid.NewUUID()
 	record.Id = recordNewId.String()
-	record.AuditData = &model.AuditData{
-		CreatedOn: timestamppb.New(now),
-		CreatedBy: security.GetUserPrincipalFromContext(ctx),
+	if record.Properties == nil {
+		record.Properties = make(map[string]*structpb.Value)
 	}
-	record.Version = 1
+
+	ah := helper.RecordSpecialColumnHelper{
+		Resource: resource,
+		Record:   record,
+	}
+
+	if ah.IsAuditEnabled() {
+		ah.SetCreatedOn(timestamppb.New(now))
+		ah.SetCreatedBy(security.GetUserPrincipalFromContext(ctx))
+	}
+
+	if ah.IsVersionEnabled() {
+		ah.InitVersion()
+	}
 }
 
 func NormalizeRecord(resource *model.Resource, record *model.Record) {
@@ -69,9 +82,6 @@ func DeNormalizeRecord(resource *model.Resource, record *model.Record) {
 	if record.Properties == nil {
 		return
 	}
-	if record.AuditData == nil {
-		record.AuditData = &model.AuditData{}
-	}
 
 	specialProps := resources.GetResourceSpecialProperties(resource)
 
@@ -94,18 +104,28 @@ func DeNormalizeRecord(resource *model.Resource, record *model.Record) {
 	}
 }
 
-func PrepareUpdateForRecord(ctx context.Context, record *model.Record) {
-	if record.AuditData == nil {
-		record.AuditData = &model.AuditData{
-			CreatedOn: timestamppb.New(time.Now()),
-			CreatedBy: "unknown",
-		}
+func PrepareUpdateForRecord(ctx context.Context, resource *model.Resource, record *model.Record) {
+	ah := &helper.RecordSpecialColumnHelper{
+		Resource: resource,
+		Record:   record,
 	}
 
-	now := time.Now()
-	record.AuditData.UpdatedOn = timestamppb.New(now)
-	record.AuditData.UpdatedBy = security.GetUserPrincipalFromContext(ctx)
-	record.Version++
+	if ah.IsAuditEnabled() {
+		if ah.GetCreatedOn() == nil {
+			ah.SetCreatedOn(timestamppb.New(time.Now()))
+		}
+
+		if ah.GetCreatedBy() == nil {
+			ah.SetCreatedBy(security.GetUserPrincipalFromContext(ctx))
+		}
+
+		ah.SetUpdatedOn(timestamppb.New(time.Now()))
+		ah.SetUpdatedBy(security.GetUserPrincipalFromContext(ctx))
+	}
+
+	if ah.IsVersionEnabled() {
+		ah.IncreaseVersion()
+	}
 }
 
 func IsSameRecord(existing, updated *model.Record) bool {

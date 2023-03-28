@@ -100,13 +100,18 @@ func prepareResourceRecordBlockHeaderSchema(resource *model.Resource) hcl.BlockH
 	return bhs
 }
 
-func prepareResourceRecordSchema(resource *model.Resource) *hcl.BodySchema {
+func prepareResourceRecordSchema(resource *model.Resource, parseLabels bool) *hcl.BodySchema {
 	var attributes []hcl.AttributeSchema
 	var blocks []hcl.BlockHeaderSchema
 
 	for _, prop := range resource.Properties {
 		isSpecial := annotations.IsEnabled(prop, annotations.SpecialProperty)
 		blockProperty := annotations.Get(prop, annotations.HclBlock)
+		isLabel := annotations.IsEnabled(prop, annotations.IsHclLabel)
+
+		if parseLabels && isLabel {
+			continue
+		}
 
 		if blockProperty != "" {
 			blocks = append(blocks, hcl.BlockHeaderSchema{
