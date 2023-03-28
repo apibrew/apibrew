@@ -32,8 +32,7 @@ var ExtensionResource = &model.Resource{
 			},
 		},
 		{
-			Name: "description",
-
+			Name:     "description",
 			Mapping:  "description",
 			Length:   64,
 			Primary:  false,
@@ -41,8 +40,7 @@ var ExtensionResource = &model.Resource{
 			Required: false,
 		},
 		{
-			Name: "namespace",
-
+			Name:     "namespace",
 			Mapping:  "namespace",
 			Length:   64,
 			Primary:  false,
@@ -50,8 +48,7 @@ var ExtensionResource = &model.Resource{
 			Required: true,
 		},
 		{
-			Name: "resource",
-
+			Name:     "resource",
 			Mapping:  "resource",
 			Length:   64,
 			Primary:  false,
@@ -59,27 +56,18 @@ var ExtensionResource = &model.Resource{
 			Required: true,
 		},
 		{
-			Name: "serverHost",
-
-			Mapping:  "server_host",
-			Length:   64,
-			Primary:  false,
-			Type:     model.ResourceProperty_STRING,
-			Required: true,
+			Name:    "before",
+			Mapping: "before",
+			Type:    model.ResourceProperty_OBJECT,
 		},
 		{
-			Name: "serverPort",
-
-			Mapping:  "server_port",
-			Length:   64,
-			Primary:  false,
-			Type:     model.ResourceProperty_INT32,
-			Required: true,
+			Name:    "after",
+			Mapping: "after",
+			Type:    model.ResourceProperty_OBJECT,
 		},
 		{
-			Name: "operations",
-
-			Mapping: "operations",
+			Name:    "instead",
+			Mapping: "instead",
 			Type:    model.ResourceProperty_OBJECT,
 		},
 	},

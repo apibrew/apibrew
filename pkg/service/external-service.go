@@ -10,6 +10,7 @@ import (
 	"github.com/tislib/data-handler/pkg/model"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -69,7 +70,12 @@ func (e *externalService) CallFunction(ctx context.Context, call *model.Function
 
 	if err != nil {
 		log.Warn(err.Error())
-		return errors.ExternalBackendError.WithDetails(err.Error())
+
+		if sterr, ok := status.FromError(err); ok {
+			return errors.ExternalBackendError.WithDetails(sterr.Message())
+		} else {
+			return errors.ExternalBackendError.WithDetails(err.Error())
+		}
 	}
 
 	for key, item := range result.Response {

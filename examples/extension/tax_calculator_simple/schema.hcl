@@ -1,18 +1,6 @@
 schema {
-  data_source "default" {
-    backend = "postgresql"
-
-    postgresql_params {
-      username = "dh_data"
-      password = "dh_data"
-      host     = "127.0.0.1"
-      port     = 5432
-      db_name  = "dh_data"
-    }
-  }
-
-  user "admin2" {
-    password = "admin123"
+  user "tax_calculator_extension_simple" {
+    password = "tax_calculator_extension_simple"
 
     securityContext {
       constraint {
@@ -49,39 +37,6 @@ schema {
 
     property "area" {
       type = "int64"
-    }
-  }
-
-  resource "state" {
-    name = "state"
-
-    annotations {
-      HclBlock = "state"
-    }
-
-    property "name" {
-      type   = "string"
-      length = 124
-      unique = true
-
-      annotations {
-        IsHclLabel = "true"
-      }
-    }
-
-    property "country" {
-      type     = "reference"
-      required = true
-
-      reference {
-        referenced_resource = "country"
-        cascade             = true
-      }
-    }
-
-    property "description" {
-      type   = "string"
-      length = 124
     }
   }
 
@@ -131,9 +86,115 @@ schema {
     }
   }
 
+  resource "income" {
+    virtual = true
+
+    property "country" {
+      type     = "reference"
+      required = true
+
+      reference {
+        referenced_resource = "country"
+        cascade             = true
+      }
+
+      annotations {
+        HclBlock = "country"
+      }
+    }
+
+    property "city" {
+      type     = "reference"
+      required = true
+
+      reference {
+        referenced_resource = "city"
+        cascade             = true
+      }
+
+      annotations {
+        HclBlock = "city"
+      }
+    }
+
+    property "gross_income" {
+      type = "int32"
+      required = true
+    }
+
+    property "tax" {
+      type = "int32"
+    }
+
+    property "net_income" {
+      type = "int32"
+    }
+
+  }
+
+  resource "tax_rate" {
+    annotations {
+      HclBlock = "tax_rate"
+    }
+
+    property "name" {
+      type   = "string"
+      length = 124
+      unique = true
+      required = true
+
+      annotations {
+        IsHclLabel = "true"
+      }
+    }
+
+    property "country" {
+      type     = "reference"
+      required = true
+
+      reference {
+        referenced_resource = "country"
+        cascade             = true
+      }
+
+      annotations {
+        HclBlock = "country"
+      }
+    }
+
+    property "city" {
+      type     = "reference"
+      required = false
+
+      reference {
+        referenced_resource = "city"
+        cascade             = true
+      }
+
+      annotations {
+        HclBlock = "city"
+      }
+    }
+
+    property "order" {
+      type = "int32"
+      required = true
+    }
+
+    property "until" {
+      type     = "int32"
+      required = true
+    }
+
+    property "rate" {
+      type     = "float32"
+      required = true
+    }
+  }
+
   extension "income_calculator" {
     namespace = "default"
-    resource  = "tax_rate"
+    resource  = "income"
 
     instead {
       create {
@@ -143,48 +204,5 @@ schema {
         }
       }
     }
-  }
-}
-
-data {
-  record "default" "country" {
-    name        = "Azerbaijan"
-    description = "Land of fire2"
-    population  = 10000000
-  }
-
-  record "default" "country" {
-    name        = "Georgia"
-    description = "sample-description"
-  }
-
-
-  country "Spain" {
-    description = "Country Spain"
-    population  = 40000002
-  }
-
-  country "USA" {
-    description = "Country USA"
-    population  = 400000001
-    area        = 12332123
-  }
-
-  city "Baku" {
-    country {
-      name = "Azerbaijan"
-    }
-
-    description = "City of Wind"
-  }
-
-  tax_rate "vat_rate" {
-    country {
-      name = "Azerbaijan"
-    }
-
-    order = 2
-    until = 1000000000
-    rate  = 0.18
   }
 }

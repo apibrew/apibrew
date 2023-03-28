@@ -2,6 +2,7 @@ package dhctl
 
 import (
 	"github.com/gosimple/slug"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/generator"
 	"github.com/tislib/data-handler/pkg/model"
@@ -57,6 +58,14 @@ var generatorCmd = &cobra.Command{
 			})
 
 			resourceFileName := slug.Make(resource.Namespace) + "-" + slug.Make(resource.Name) + ".go"
+
+			if resource.Namespace == "default" {
+				resourceFileName = slug.Make(resource.Name) + ".go"
+			}
+
+			if err := os.MkdirAll(path, 0777); err != nil {
+				log.Fatal(err)
+			}
 
 			err = os.WriteFile(path+"/"+resourceFileName, []byte(code), 0777)
 

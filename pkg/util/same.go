@@ -75,6 +75,10 @@ func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 		}
 	}
 
+	if !annotations.IsSame(property1.Annotations, property2.Annotations) {
+		return false
+	}
+
 	return true
 }
 

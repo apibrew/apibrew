@@ -258,7 +258,7 @@ func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource
 
 func (e *executor) parseBlockProperty(prop *model.ResourceProperty, blockItem *hcl.Block) (*structpb.Value, error) {
 	switch prop.Type {
-	case model.ResourceProperty_OBJECT:
+	case model.ResourceProperty_OBJECT, model.ResourceProperty_REFERENCE:
 		attributes, diags := blockItem.Body.JustAttributes()
 
 		if diags != nil {
@@ -276,7 +276,7 @@ func (e *executor) parseBlockProperty(prop *model.ResourceProperty, blockItem *h
 				return nil, diags
 			}
 
-			objData[attr.Name] = val.GoString()
+			objData[attr.Name] = val.AsString()
 		}
 
 		st, err := structpb.NewStruct(objData)
@@ -287,7 +287,7 @@ func (e *executor) parseBlockProperty(prop *model.ResourceProperty, blockItem *h
 
 		return structpb.NewStructValue(st), nil
 	default:
-		panic("unknown property type: " + prop.String())
+		panic("unknown property type: " + prop.Type.String())
 	}
 }
 

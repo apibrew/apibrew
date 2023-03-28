@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package model;
 
+import "model/annotations.proto";
+
 option go_package = "github.com/tislib/data-handler/pkg/model";
 
 message FunctionCall {
@@ -16,7 +18,7 @@ message HttpCall {
 
 message ExternalCall {
   oneof kind {
-    FunctionCall functionCall = 1;
-    HttpCall httpCall = 2;
+    FunctionCall functionCall = 1 [(model.hcl_block) = "function_call"];
+    HttpCall httpCall = 2 [(model.hcl_block) = "http_call"];
   }
 }
