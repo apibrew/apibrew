@@ -98,25 +98,25 @@ message ListDataSourceResponse {
 
 message CreateDataSourceRequest {
   string token = 1;
-  repeated model.DataSource dataSources = 2;
+  model.DataSource dataSource = 2;
 }
 
 message CreateDataSourceResponse {
-  repeated model.DataSource dataSources = 1;
+  model.DataSource dataSource = 1;
 }
 
 message UpdateDataSourceRequest {
   string token = 1;
-  repeated model.DataSource dataSources = 2;
+  model.DataSource dataSource = 2;
 }
 
 message UpdateDataSourceResponse {
-  repeated model.DataSource dataSources = 1;
+  model.DataSource dataSource = 1;
 }
 
 message DeleteDataSourceRequest {
   string token = 1;
-  repeated string ids = 2;
+  string id = 2;
 }
 
 message DeleteDataSourceResponse {

@@ -290,12 +290,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: ids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: string
             responses:
                 "200":
                     description: OK
@@ -1138,12 +1132,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: ids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: string
             responses:
                 "200":
                     description: OK
@@ -1335,55 +1323,39 @@ components:
             properties:
                 token:
                     type: string
-                dataSources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
+                dataSource:
+                    $ref: '#/components/schemas/DataSource'
         CreateDataSourceResponse:
             type: object
             properties:
-                dataSources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
+                dataSource:
+                    $ref: '#/components/schemas/DataSource'
         CreateNamespaceRequest:
             type: object
             properties:
                 token:
                     type: string
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
+                namespace:
+                    $ref: '#/components/schemas/Namespace'
         CreateNamespaceResponse:
             type: object
             properties:
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
+                namespace:
+                    $ref: '#/components/schemas/Namespace'
         CreateRecordResponse:
             type: object
             properties:
                 record:
                     $ref: '#/components/schemas/Record'
-                records:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Record'
                 inserted:
-                    type: array
-                    items:
-                        type: boolean
+                    type: boolean
         CreateResourceRequest:
             type: object
             properties:
                 token:
                     type: string
-                resources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Resource'
+                resource:
+                    $ref: '#/components/schemas/Resource'
                 doMigration:
                     type: boolean
                 forceMigration:
@@ -1395,19 +1367,13 @@ components:
         CreateResourceResponse:
             type: object
             properties:
-                resources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Resource'
+                resource:
+                    $ref: '#/components/schemas/Resource'
         CreateUserResponse:
             type: object
             properties:
                 user:
                     $ref: '#/components/schemas/User'
-                users:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/User'
         DataSource:
             type: object
             properties:
@@ -1463,10 +1429,8 @@ components:
             properties:
                 token:
                     type: string
-                ids:
-                    type: array
-                    items:
-                        type: string
+                id:
+                    type: string
         DeleteDataSourceResponse:
             type: object
             properties: {}
@@ -1475,17 +1439,13 @@ components:
             properties:
                 token:
                     type: string
-                ids:
-                    type: array
-                    items:
-                        type: string
+                id:
+                    type: string
         DeleteNamespaceResponse:
             type: object
             properties:
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
+                namespace:
+                    $ref: '#/components/schemas/Namespace'
         DeleteRecordResponse:
             type: object
             properties: {}
@@ -1494,10 +1454,8 @@ components:
             properties:
                 token:
                     type: string
-                ids:
-                    type: array
-                    items:
-                        type: string
+                id:
+                    type: string
                 doMigration:
                     type: boolean
                 forceMigration:
@@ -1527,7 +1485,7 @@ components:
         GetNamespaceResponse:
             type: object
             properties:
-                Namespace:
+                namespace:
                     $ref: '#/components/schemas/Namespace'
         GetRecordResponse:
             type: object
@@ -1593,7 +1551,7 @@ components:
         ListResourceResponse:
             type: object
             properties:
-                resources:
+                content:
                     type: array
                     items:
                         $ref: '#/components/schemas/Resource'
@@ -1601,9 +1559,7 @@ components:
             type: object
             properties:
                 content:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/User'
         MongoParams:
             type: object
             properties:
@@ -2162,60 +2118,42 @@ components:
             properties:
                 token:
                     type: string
-                dataSources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
+                dataSource:
+                    $ref: '#/components/schemas/DataSource'
         UpdateDataSourceResponse:
             type: object
             properties:
-                dataSources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
+                dataSource:
+                    $ref: '#/components/schemas/DataSource'
         UpdateMultiRecordResponse:
             type: object
             properties:
                 record:
                     $ref: '#/components/schemas/Record'
-                records:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Record'
         UpdateNamespaceRequest:
             type: object
             properties:
                 token:
                     type: string
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
+                namespaces:
+                    $ref: '#/components/schemas/Namespace'
         UpdateNamespaceResponse:
             type: object
             properties:
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
+                namespace:
+                    $ref: '#/components/schemas/Namespace'
         UpdateRecordResponse:
             type: object
             properties:
                 record:
                     $ref: '#/components/schemas/Record'
-                records:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Record'
         UpdateResourceRequest:
             type: object
             properties:
                 token:
                     type: string
-                resources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Resource'
+                resource:
+                    $ref: '#/components/schemas/Resource'
                 doMigration:
                     type: boolean
                 forceMigration:
@@ -2227,19 +2165,13 @@ components:
         UpdateResourceResponse:
             type: object
             properties:
-                resources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Resource'
+                resource:
+                    $ref: '#/components/schemas/Resource'
         UpdateUserResponse:
             type: object
             properties:
                 user:
                     $ref: '#/components/schemas/User'
-                users:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/User'
         User:
             type: object
             properties:

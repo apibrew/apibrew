@@ -56,30 +56,25 @@ service User {
 message CreateUserRequest {
   string token = 1;
   model.User user = 2;
-  repeated model.User users = 3;
 }
 
 message CreateUserResponse {
   model.User user = 1;
-  repeated model.User users = 2;
 }
 
 message UpdateUserRequest {
   string token = 1;
   model.User user = 2;
-  repeated model.User users = 3;
 }
 
 message UpdateUserResponse {
   model.User user = 1;
-  repeated model.User users = 2;
 }
 
 
 message DeleteUserRequest {
   string token = 1;
   string id = 2;
-  repeated string ids = 3;
 }
 
 message DeleteUserResponse {
@@ -93,7 +88,7 @@ message ListUserRequest {
 }
 
 message ListUserResponse {
-  repeated model.User content = 1;
+  model.User content = 1;
 }
 
 message GetUserRequest {

@@ -51,29 +51,29 @@ message ListNamespaceResponse {
 
 message CreateNamespaceRequest {
   string token = 1;
-  repeated model.Namespace Namespaces = 2;
+  model.Namespace namespace = 2;
 }
 
 message CreateNamespaceResponse {
-  repeated model.Namespace Namespaces = 1;
+  model.Namespace namespace = 1;
 }
 
 message UpdateNamespaceRequest {
   string token = 1;
-  repeated model.Namespace Namespaces = 2;
+  model.Namespace namespaces = 2;
 }
 
 message UpdateNamespaceResponse {
-  repeated model.Namespace Namespaces = 1;
+  model.Namespace namespace = 1;
 }
 
 message DeleteNamespaceRequest {
   string token = 1;
-  repeated string ids = 2;
+  string id = 2;
 }
 
 message DeleteNamespaceResponse {
-  repeated model.Namespace Namespaces = 1;
+  model.Namespace namespace = 1;
 }
 
 message GetNamespaceRequest {
@@ -82,5 +82,5 @@ message GetNamespaceRequest {
 }
 
 message GetNamespaceResponse {
-  model.Namespace Namespace = 1;
+  model.Namespace namespace = 1;
 }

@@ -59,29 +59,29 @@ message CreateRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  repeated google.protobuf.Any items = 4;
+  google.protobuf.Any item = 4;
   bool ignoreIfExists = 5;
 
   map<string, string> annotations = 103;
 }
 
 message CreateResponse {
-  repeated google.protobuf.Any items = 2;
-  repeated bool inserted = 4;
+  google.protobuf.Any item = 2;
+  bool inserted = 4;
 }
 
 message UpdateRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  repeated google.protobuf.Any items = 4;
+  google.protobuf.Any item = 4;
   bool checkVersion = 5;
 
   map<string, string> annotations = 103;
 }
 
 message UpdateResponse {
-  repeated google.protobuf.Any items = 2;
+  google.protobuf.Any item = 2;
 }
 
 message UpdateMultiRequest {
@@ -102,8 +102,7 @@ message DeleteRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  repeated string id = 4;
-  repeated string ids = 5;
+  string id = 4;
 
   map<string, string> annotations = 103;
 }

@@ -67,7 +67,7 @@ message PrepareResourceMigrationPlanResponse {
 
 message CreateResourceRequest {
   string token = 1;
-  repeated model.Resource resources = 2;
+  model.Resource resource = 2;
 
   bool doMigration = 3;
   bool forceMigration = 4;
@@ -76,12 +76,12 @@ message CreateResourceRequest {
 }
 
 message CreateResourceResponse {
-  repeated model.Resource resources = 1;
+  model.Resource resource = 1;
 }
 
 message UpdateResourceRequest {
   string token = 1;
-  repeated model.Resource resources = 2;
+  model.Resource resource = 2;
 
   bool doMigration = 3;
   bool forceMigration = 4;
@@ -90,13 +90,13 @@ message UpdateResourceRequest {
 }
 
 message UpdateResourceResponse {
-  repeated model.Resource resources = 1;
+  model.Resource resource = 1;
 }
 
 
 message DeleteResourceRequest {
   string token = 1;
-  repeated string ids = 3;
+  string id = 3;
 
   bool doMigration = 4;
   bool forceMigration = 5;
@@ -114,7 +114,7 @@ message ListResourceRequest {
 }
 
 message ListResourceResponse {
-  repeated model.Resource resources = 1;
+  repeated model.Resource content = 1;
 }
 
 message GetResourceRequest {
