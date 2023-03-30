@@ -14,23 +14,13 @@ import 'google/protobuf/struct.proto';
 service Record {
   rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {
     option (google.api.http) = {
-      post: "/records/{namespace}/{resource}/_bulk",
-      additional_bindings {
-        post: "/records/{namespace}/{resource}",
-        body: "record",
-        response_body: "record"
-      }
+      post: "/records/{namespace}/{resource}/_bulk"
     };
   }
 
   rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {
     option (google.api.http) = {
-      put: "/records/{namespace}/{resource}/_bulk",
-      additional_bindings {
-        put: "/records/{namespace}/{resource}/{record.id}",
-        body: "record",
-        response_body: "record"
-      }
+      put: "/records/{namespace}/{resource}/_bulk"
     };
   }
 
@@ -42,10 +32,7 @@ service Record {
 
   rpc Delete (DeleteRecordRequest)   returns (DeleteRecordResponse) {
     option (google.api.http) = {
-      delete: "/records/{namespace}/{resource}/_bulk",
-      additional_bindings {
-        delete: "/records/{namespace}/{resource}/{id}",
-      }
+      delete: "/records/{namespace}/{resource}/_bulk"
     };
   }
 
@@ -64,17 +51,12 @@ service Record {
 
   rpc ReadStream (ReadStreamRequest) returns (stream model.Record) {
     option (google.api.http) = {
-      post: "/records/_search_read_stream",
+      post: "/records/read_stream",
       body: "*"
     };
   }
 
-  rpc WriteStream (stream model.Record) returns (WriteStreamResponse) {
-    option (google.api.http) = {
-      post: "/records/_search_write_stream",
-      body: "*"
-    };
-  }
+  rpc WriteStream (stream model.Record) returns (WriteStreamResponse) {}
 
   rpc Get (GetRecordRequest) returns (GetRecordResponse) {
     option (google.api.http) = {
