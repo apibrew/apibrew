@@ -14,6 +14,7 @@ import (
 	"github.com/tislib/data-handler/pkg/util"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type SwaggerApi interface {
@@ -131,6 +132,10 @@ func (s *swaggerApi) prepareDoc(ctx context.Context, openApiData []byte) (*opena
 			}
 
 			operation.Security = security
+		}
+
+		if strings.HasPrefix(pathKey, "/records/") {
+			delete(doc.Paths, pathKey)
 		}
 	}
 

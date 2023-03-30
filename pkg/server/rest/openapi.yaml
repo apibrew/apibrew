@@ -67,7 +67,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /records/_search_read_stream:
+    /records/read_stream:
         post:
             tags:
                 - Record
@@ -86,31 +86,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Record'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /records/_search_write_stream:
-        post:
-            tags:
-                - Record
-            summary: WriteStream
-            operationId: Record_WriteStream
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Record'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/WriteStreamResponse'
                 default:
                     description: Default error response
                     content:
@@ -165,6 +140,92 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Record
+            summary: Update
+            operationId: Record_Update
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+                - name: checkVersion
+                  in: query
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateRecordRequest_PropertiesEntry'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Record
+            summary: Create
+            operationId: Record_Create
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateRecordRequest_PropertiesEntry'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateRecordResponse'
                 default:
                     description: Default error response
                     content:
@@ -436,6 +497,44 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Record
+            summary: Delete
+            operationId: Record_Delete
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteRecordResponse'
                 default:
                     description: Default error response
                     content:
@@ -1362,6 +1461,13 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Namespace'
+        CreateRecordRequest_PropertiesEntry:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
         CreateRecordResponse:
             type: object
             properties:
@@ -2198,6 +2304,13 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Namespace'
+        UpdateRecordRequest_PropertiesEntry:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
         UpdateRecordResponse:
             type: object
             properties:
@@ -2290,21 +2403,6 @@ components:
                 eventOn:
                     type: string
                     format: date-time
-        WriteStreamResponse:
-            type: object
-            properties:
-                success:
-                    type: array
-                    items:
-                        type: boolean
-                created:
-                    type: array
-                    items:
-                        type: boolean
-                updated:
-                    type: array
-                    items:
-                        type: boolean
     securitySchemes:
         bearerAuth:
             type: http
@@ -2319,6 +2417,8 @@ tags:
       description: DataSource Service is for managing data sources
     - name: Namespace
       description: Namespace Service is for managing namespaces
+    - name: Record
+      description: Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
     - name: Record
       description: Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
     - name: Resource
