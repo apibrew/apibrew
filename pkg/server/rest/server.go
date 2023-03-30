@@ -7,15 +7,17 @@ import (
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/server/grpc"
 	_ "github.com/tislib/data-handler/pkg/server/rest/statik"
+	"github.com/tislib/data-handler/pkg/service/security"
 	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/data-handler/pkg/stub/rest"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"net/http"
 	"strings"
@@ -38,6 +40,7 @@ type server struct {
 	certFile                    string
 	keyFile                     string
 	recordsApiFiltersMiddleWare *recordsApiFiltersMiddleWare
+	container                   abs.Container
 }
 
 func (s *server) Init(*model.InitData) {
@@ -64,6 +67,19 @@ func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 			token := tokenParts[1]
 
 			req.Header.Set("Grpc-Metadata-token", token)
+
+			userDetails, err := s.container.GetAuthenticationService().ParseAndVerifyToken(token)
+
+			if err == nil {
+				ctx := security.WithUserDetails(req.Context(), *userDetails)
+
+				ctx = logging.WithLogField(ctx, "User", userDetails.Username)
+
+				req = req.WithContext(ctx)
+			} else {
+				http.Error(w, errors.AuthenticationFailedError.Error(), 401)
+				return
+			}
 		}
 
 		next.ServeHTTP(w, req)
@@ -126,27 +142,28 @@ func (s *server) configureRoutes() {
 	r.PathPrefix("/authentication").Handler(m)
 	r.PathPrefix("/system").Handler(m)
 
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-
-	if err := stub.RegisterAuthenticationHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterAuthenticationHandlerServer(context.TODO(), m, grpc.NewAuthenticationServer(s.container.GetAuthenticationService())); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterUserHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := rest.RegisterRecordHandlerServer(context.TODO(), m, newRecordService(s.container.GetRecordService())); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterRecordHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterUserHandlerServer(context.TODO(), m, grpc.NewUserServer(s.container.GetUserService())); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterResourceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterRecordHandlerServer(context.TODO(), m, grpc.NewRecordServer(s.container.GetRecordService(), s.container.GetAuthenticationService())); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterNamespaceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterResourceHandlerServer(context.TODO(), m, grpc.NewResourceServer(s.container.GetResourceService())); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterDataSourceHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterNamespaceHandlerServer(context.TODO(), m, grpc.NewNamespaceServer(s.container.GetNamespaceService())); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterWatchHandlerFromEndpoint(context.TODO(), m, "localhost:9009", opts); err != nil {
+	if err := stub.RegisterDataSourceHandlerServer(context.TODO(), m, grpc.NewDataSourceServer(s.container.GetDataSourceService())); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterWatchHandlerServer(context.TODO(), m, grpc.NewWatchServer(s.container.GetWatchService())); err != nil {
 		log.Fatal(err)
 	}
 
@@ -172,6 +189,7 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 
 func NewServer(container abs.Container) Server {
 	return &server{
+		container:                   container,
 		swaggerApi:                  NewSwaggerApi(container.GetResourceService()),
 		recordsApiFiltersMiddleWare: newRecordsApiFiltersMiddleWare(container.GetResourceService()),
 	}
