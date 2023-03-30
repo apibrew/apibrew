@@ -1,5 +1,7 @@
 Data Handler [![Build Status](https://app.travis-ci.com/tislib/data-handler.svg?branch=master)](https://app.travis-ci.com/tislib/data-handler) 
 ======================
+[![Build Status](docs/static/Overview.png)](https://app.travis-ci.com/tislib/data-handler)
+
 **Website: [https://datahandler.talehibrahimli.com/](https://datahandler.talehibrahimli.com/)**
 
 Data Handler is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
