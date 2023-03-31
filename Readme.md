@@ -10,7 +10,11 @@ There are two main things in data-handler:
 * Resource - This is your schema entry
 * Record - This is your data
 
+Data Handler by default uses postgresql as a database for your data but it also supports various databases (mysql, mongo, etc.)
+
 You can define your schema, and it will prepare you CRUD APIs (Rest, Grpc) and Swagger docs
+
+**Data Handler can either use your existing database schema or create new schema for you**
 
 country.hcl
 ```
@@ -28,8 +32,23 @@ schema {
    }
 }
 ```
+```
+dhctl apply -f country.hcl
+```
 
-You swagger: http://tisserv.net:9009/docs/index.html
+Swagger: http://localhost:9009/docs/index.html
+```
+# Create Country
+curl -X POST --location "http://localhost:9009/country" \
+    -H "Authorization: <token>" \
+    -d "{
+   \"name\": \"Country1\",
+   \"description\": \"Sample Country 1\"
+}"
+
+# List Countries
+curl "http://localhost:9009/country" -H "Authorization: <token>"
+```
 
 
 # Quick Start
