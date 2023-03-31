@@ -72,7 +72,7 @@ func HistoryPlan(plan *model.ResourceMigrationPlan) *model.ResourceMigrationPlan
 func RemarkResource(resource *model.Resource) {
 	propertyNameMap := GetNamedMap(resource.Properties)
 
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+	if !annotations.IsEnabled(resource, annotations.EnableAudit) {
 		auditPropertyCount := 0
 		for _, prop := range resources.AuditProperties {
 			if propertyNameMap[prop.Name] != nil && propertyNameMap[prop.Name].Type == prop.Type {
@@ -80,8 +80,8 @@ func RemarkResource(resource *model.Resource) {
 			}
 		}
 
-		if auditPropertyCount < 4 {
-			annotations.Enable(resource, annotations.DisableAudit)
+		if auditPropertyCount == 4 {
+			annotations.Enable(resource, annotations.EnableAudit)
 		}
 	}
 
@@ -105,7 +105,7 @@ func NormalizeResource(resource *model.Resource) {
 		resource.Annotations = make(map[string]string)
 	}
 
-	if !annotations.IsEnabled(resource, annotations.DisableAudit) {
+	if annotations.IsEnabled(resource, annotations.EnableAudit) {
 		exists := false
 		for _, prop := range resources.AuditProperties {
 			if propertyNameMap[prop.Name] != nil {
@@ -127,8 +127,4 @@ func NormalizeResource(resource *model.Resource) {
 	}
 
 	annotations.Enable(resource, annotations.NormalizedResource)
-}
-
-func GetResourceFQN(resource *model.Resource) string {
-	return resource.Namespace + "/" + resource.Name
 }
