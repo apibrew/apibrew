@@ -46,15 +46,15 @@ message ResourceProperty {
   bool primary = 6;
   uint32 length = 7;
   bool unique = 8;
+  bool immutable = 14; // if true, update will not be allowed on this columns
   optional SecurityContext securityContext = 9;
   optional google.protobuf.Value defaultValue = 10;
+  optional google.protobuf.Value exampleValue = 17;
   repeated google.protobuf.Value enumValues = 11; // if type is enum
   optional Reference reference = 12 [(model.hcl_block) = "reference"]; // if type is reference
   optional Type subType = 13; // if type is map or list
-  bool immutable = 14; // if true, update will not be allowed on this columns
   optional string title = 15;
   optional string description = 16;
-  optional google.protobuf.Value exampleValue = 17;
 
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }

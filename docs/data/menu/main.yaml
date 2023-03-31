@@ -1,15 +1,8 @@
 ---
 main:
-  - name: Usage
-    ref: "/usage"
-    icon: "gdoc_notification"
+  - name: Explore
+    ref: "/explore"
+    icon: "gdoc_path"
   - name: Installation
     ref: "/installation"
     icon: "gdoc_path"
-    sub:
-      - name: Docker
-        ref: "/installation/docker"
-      - name: Kubernetes
-        ref: "/installation/kubernetes"
-      - name: Source
-        ref: "/installation/source"
