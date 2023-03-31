@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/data-handler/pkg/service/annotations"
 )
 
 var ResourcePropertyResource = &model.Resource{
@@ -144,4 +145,7 @@ var ResourcePropertyResource = &model.Resource{
 		},
 	},
 	SecurityContext: securityContextDisallowAll,
+	Annotations: map[string]string{
+		annotations.EnableAudit: "true",
+	},
 }

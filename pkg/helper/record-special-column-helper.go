@@ -15,7 +15,7 @@ type RecordSpecialColumnHelper struct {
 }
 
 func (h RecordSpecialColumnHelper) IsAuditEnabled() bool {
-	return !annotations.IsEnabled(h.Resource, annotations.DisableAudit)
+	return annotations.IsEnabled(h.Resource, annotations.EnableAudit)
 }
 
 func (h RecordSpecialColumnHelper) IsVersionEnabled() bool {

@@ -213,6 +213,9 @@ func PrepareRichResource1() *model.Resource {
 				Required: false,
 			},
 		},
+		Annotations: map[string]string{
+			annotations.EnableAudit: "true",
+		},
 	}
 }
 

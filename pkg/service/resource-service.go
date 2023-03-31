@@ -309,7 +309,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		case *model.ResourceMigrationStep_CreateProperty:
 			propertyCreateRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.CreateProperty.Property], plan.CurrentResource)
 
-			util.InitRecord(ctx, plan.CurrentResource, propertyCreateRecord)
+			util.InitRecord(ctx, resources.ResourcePropertyResource, propertyCreateRecord)
 			util.NormalizeRecord(resources.ResourcePropertyResource, propertyCreateRecord)
 
 			_, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, abs.BulkRecordsParams{

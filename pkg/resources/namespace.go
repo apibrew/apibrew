@@ -52,4 +52,7 @@ var NamespaceResource = &model.Resource{
 		securityContextProperty,
 	},
 	SecurityContext: securityContextDisallowAll,
+	Annotations: map[string]string{
+		annotations.EnableAudit: "true",
+	},
 }
