@@ -16,11 +16,13 @@ You can define your schema, and it will prepare you CRUD APIs (Rest, Grpc) and S
 
 **Data Handler can either use your existing database schema or create new schema for you**
 
+Quick Example:
+![](http://static.tisserv.net/dh_overview.gif)
+
 country.hcl
 ```
 schema {
    resource "country" {
-    name = "country"
     property "name" {
       type   = "string"
       length = 124
