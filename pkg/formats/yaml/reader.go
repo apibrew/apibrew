@@ -1,4 +1,4 @@
-package hclformat
+package yamlformat
 
 import (
 	"github.com/tislib/data-handler/pkg/formats"

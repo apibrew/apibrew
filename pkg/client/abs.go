@@ -8,7 +8,18 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+type ApplyInterface interface {
+	Apply(ctx context.Context, msg proto.Message) error
+	ApplyRecord(ctx context.Context, resource *model.Resource, namespace *model.Record) error
+	ApplyNamespace(ctx context.Context, namespace *model.Namespace) error
+	ApplyExtension(ctx context.Context, extension *model.Extension) error
+	ApplyUser(ctx context.Context, user *model.User) error
+	ApplyDataSource(ctx context.Context, dataSource *model.DataSource) error
+	ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error
+}
+
 type DhClient interface {
+	ApplyInterface
 	GetAuthenticationClient() stub.AuthenticationClient
 	GetDataSourceClient() stub.DataSourceClient
 	GetResourceClient() stub.ResourceClient
@@ -20,13 +31,6 @@ type DhClient interface {
 	GetToken() string
 	AuthenticateWithToken(token string)
 	AuthenticateWithUsernameAndPassword(username string, password string) error
-	Apply(ctx context.Context, msg proto.Message) error
-	ApplyRecord(ctx context.Context, resource *model.Resource, namespace *model.Record) error
-	ApplyNamespace(ctx context.Context, namespace *model.Namespace) error
-	ApplyExtension(ctx context.Context, extension *model.Extension) error
-	ApplyUser(ctx context.Context, user *model.User) error
-	ApplyDataSource(ctx context.Context, dataSource *model.DataSource) error
-	ApplyResource(ctx context.Context, resource *model.Resource) error
 	NewExtension(host string) Extension
 }
 

@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/client"
+	"github.com/tislib/data-handler/pkg/formats"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/service/annotations"
@@ -16,7 +17,7 @@ import (
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
 	"google.golang.org/protobuf/proto"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/structpb"
 	"io"
 	"os"
@@ -121,7 +122,11 @@ func (e *executor) ApplyBlock(ctx context.Context, block *hcl.Block) error {
 				return err
 			}
 
-			err = e.params.DhClient.Apply(ctx, resourceMessage)
+			if resourceItem, ok := resourceMessage.(*model.Resource); ok {
+				err = e.params.DhClient.ApplyResource(ctx, resourceItem, e.params.DoMigration, e.params.ForceMigration)
+			} else {
+				err = e.params.DhClient.Apply(ctx, resourceMessage)
+			}
 
 			if err != nil {
 				log.Errorf("Cannot Apply: %v (%s/%s)", resourceMessage, resource.Namespace, resource.Name)
@@ -568,7 +573,7 @@ type ExecutorParams struct {
 	DataOnly       bool
 }
 
-func NewExecutor(params ExecutorParams) (Executor, error) {
+func NewExecutor(params ExecutorParams) (formats.Executor, error) {
 	exec := &executor{
 		params: params,
 	}

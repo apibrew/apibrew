@@ -11,6 +11,7 @@
 * [Annotations](#annotations)
 
 # Elements
+
 ![](/dh_elements.png)
 
 ## Resource
@@ -86,8 +87,44 @@ Resource has the following properties:
 * **immutable** - If immutable is true. Update and Delete operation will not be allowed on records of that resource
 * **annotations** - resource annotations - see [annotations](#annotations)
 
+### Special properties
+
+When new resource is created or updated, *data-handler* appends some special properties to the resource.
+These are:
+
+* id - id field is primary key and record identifier. id special property will be added if resource does not any primary
+  key. You can also prevent this happening by annotating resource with `DoPrimaryKeyLookup` annotation
+* audit - audit special properties are for audit purposes and consist of 4 properties. By default, audit special
+  properties will not be enabled. And it can be enabled by annotating resource with `EnableAudit` annotation.
+    * created_on - if audit is enabled, this property will hold information about username who created record
+    * created_by - if audit is enabled, this property will hold information when record created
+    * updated_on - if audit is enabled, this property will hold information about username who updated record last time
+    * updated_by - if audit is enabled, this property will hold information when record updated last time
+* version - version property is added if you don't have such property and resource *is not* annotated with DisableVersion annotation 
+
 ### Examples
+
 #### City, Country
+
+country.yml
+
+```yaml
+type: resource
+name: country
+sourceConfig:
+  dataSource: default
+  entity: country
+version: 1
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255
+```
 
 ## Record
 

@@ -16,7 +16,7 @@ import (
 func (d *dhClient) Apply(ctx context.Context, msg proto.Message) error {
 	switch msgTyped := msg.(type) {
 	case *model.Resource:
-		return d.ApplyResource(ctx, msgTyped)
+		return d.ApplyResource(ctx, msgTyped, true, false)
 	case *model.DataSource:
 		return d.ApplyDataSource(ctx, msgTyped)
 	case *model.User:
@@ -30,7 +30,7 @@ func (d *dhClient) Apply(ctx context.Context, msg proto.Message) error {
 	}
 }
 
-func (d *dhClient) ApplyResource(ctx context.Context, resource *model.Resource) error {
+func (d *dhClient) ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error {
 	resp, err := d.resourceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
 		Token:     d.GetToken(),
 		Namespace: resource.Namespace,
@@ -45,8 +45,8 @@ func (d *dhClient) ApplyResource(ctx context.Context, resource *model.Resource) 
 		_, err = d.resourceClient.Create(ctx, &stub.CreateResourceRequest{
 			Token:          d.GetToken(),
 			Resources:      []*model.Resource{resource},
-			DoMigration:    true,
-			ForceMigration: false,
+			DoMigration:    doMigration,
+			ForceMigration: forceMigration,
 		})
 
 		if err != nil {
@@ -61,8 +61,8 @@ func (d *dhClient) ApplyResource(ctx context.Context, resource *model.Resource) 
 		_, err = d.resourceClient.Update(ctx, &stub.UpdateResourceRequest{
 			Token:          d.GetToken(),
 			Resources:      []*model.Resource{resource},
-			DoMigration:    true,
-			ForceMigration: false,
+			DoMigration:    doMigration,
+			ForceMigration: forceMigration,
 		})
 
 		if err != nil {

@@ -1,4 +1,4 @@
-package hclformat
+package yamlformat
 
 import (
 	"encoding/binary"
