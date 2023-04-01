@@ -107,14 +107,12 @@ These are:
 #### City, Country
 
 country.yml
-
 ```yaml
 type: resource
 name: country
 sourceConfig:
   dataSource: default
   entity: country
-version: 1
 properties:
   - name: name
     type: STRING
@@ -125,6 +123,39 @@ properties:
     type: STRING
     length: 255
 ```
+Now let's create country resource
+```
+dhctl apply -f country.yml
+```
+
+city.yml
+```
+type: resource
+name: city
+sourceConfig:
+  dataSource: default
+  entity: city
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255
+  - name: country
+    type: REFERENCE
+    length: 255
+    reference:
+        referencedResource: country
+        cascade: true
+```
+Now let's create city resource
+```
+dhctl apply -f city.yml
+```
+So, by this way, you will create both country and city resources
 
 ## Record
 

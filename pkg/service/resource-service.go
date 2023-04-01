@@ -225,7 +225,39 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return nil
 	}
 
-	if err := r.ApplyPlan(ctx, plan); err != nil {
+	systemBackend := r.backendProviderService.GetSystemBackend(ctx)
+
+	txk, err := systemBackend.BeginTransaction(ctx, false)
+
+	if err != nil {
+		return err
+	}
+
+	txCtx := context.WithValue(ctx, abs.TransactionContextKey, txk)
+
+	var success = false
+
+	defer func() {
+		if success {
+			err = systemBackend.CommitTransaction(txCtx)
+
+			if err != nil {
+				log.Print(err)
+			}
+
+			r.mustReloadResources(context.TODO())
+		} else {
+			err = systemBackend.RollbackTransaction(txCtx)
+
+			if err != nil {
+				log.Print(err)
+			}
+		}
+
+		r.mustReloadResources(context.TODO())
+	}()
+
+	if err := r.ApplyPlan(txCtx, plan); err != nil {
 		return err
 	}
 
@@ -274,7 +306,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		}
 	}
 
-	r.mustReloadResources(context.TODO())
+	success = true
 
 	return nil
 }

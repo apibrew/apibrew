@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/hashicorp/hcl/v2"
 	"github.com/tislib/data-handler/pkg/client"
 	"github.com/tislib/data-handler/pkg/formats"
 	"github.com/tislib/data-handler/pkg/model"
@@ -19,7 +18,6 @@ type executor struct {
 	params          ExecutorParams
 	resources       []*model.Resource
 	resourceNameMap map[string]*model.Resource
-	evalContext     *hcl.EvalContext
 }
 
 func (e *executor) Restore(ctx context.Context, file *os.File) error {
@@ -59,6 +57,10 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 			var resource = new(model.Resource)
 			err = jsonUMo.Unmarshal(jsonData, resource)
 
+			if err != nil {
+				return err
+			}
+
 			err = e.params.DhClient.ApplyResource(ctx, resource, e.params.DoMigration, e.params.ForceMigration)
 
 			if err != nil {
@@ -97,6 +99,10 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 
 			var record = new(model.Record)
 			err = jsonUMo.Unmarshal(jsonData, record)
+
+			if err != nil {
+				return err
+			}
 
 			err = e.params.DhClient.ApplyRecord(ctx, resource, record)
 

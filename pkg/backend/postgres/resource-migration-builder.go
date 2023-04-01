@@ -62,7 +62,7 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 	return sql, nil
 }
 
-func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) string {
+func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) (string, errors.ServiceError) {
 	uniqModifier := ""
 	nullModifier := "NULL"
 	if property.Required {
@@ -84,7 +84,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 			}
 
 			if referencedResource == nil {
-				return "" // fixme report or catch error
+				return "", errors.LogicalError.WithDetails("Referenced resource not exists with name: " + resource.Namespace + "/" + property.Reference.ReferencedResource)
 			}
 
 			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Mapping+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
@@ -99,7 +99,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 		def = append(def, fmt.Sprintf("DEFAULT '%s'", val))
 	}
 
-	return strings.Join(def, " ")
+	return strings.Join(def, " "), nil
 }
 
 func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
@@ -177,7 +177,13 @@ func (r *resourceMigrationBuilder) DeleteResource(resource *model.Resource) help
 
 func (r *resourceMigrationBuilder) AddProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
-		sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig), r.prepareResourceTableColumnDefinition(r.params.MigrationPlan.CurrentResource, prop, *r.params.Schema))
+		refPart, serviceErr := r.prepareResourceTableColumnDefinition(r.params.MigrationPlan.CurrentResource, prop, *r.params.Schema)
+
+		if serviceErr != nil {
+			return serviceErr
+		}
+
+		sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig), refPart)
 
 		_, err := r.runner.ExecContext(r.ctx, sql)
 
