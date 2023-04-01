@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/tislib/data-handler/pkg/model";
+
+import 'model/annotations.proto';
+import 'model/resource.proto';
+import 'google/protobuf/struct.proto';
+
+import "google/protobuf/descriptor.proto";
+
+message ResourceMigrationCreateResource {
+
+}
+
+message ResourceMigrationDeleteResource {
+
+}
+
+message ResourceMigrationUpdateResource {
+  repeated string changedFields = 1;
+}
+
+message ResourceMigrationCreateProperty {
+  string property = 1;
+}
+
+message ResourceMigrationDeleteProperty {
+  string existingProperty = 1;
+}
+
+message ResourceMigrationUpdateProperty {
+  string existingProperty = 1;
+  string property = 2;
+  repeated string changedFields = 3;
+}
+
+message ResourceMigrationCreateIndex {
+  uint32 index = 1;
+}
+
+message ResourceMigrationDeleteIndex {
+  uint32 existingIndex = 1;
+}
+
+message ResourceMigrationStep {
+  oneof kind {
+    ResourceMigrationCreateResource createResource = 1;
+    ResourceMigrationDeleteResource deleteResource = 2;
+    ResourceMigrationUpdateResource updateResource = 3;
+    ResourceMigrationCreateProperty createProperty = 4;
+    ResourceMigrationDeleteProperty deleteProperty = 5;
+    ResourceMigrationUpdateProperty updateProperty = 6;
+    ResourceMigrationCreateIndex createIndex = 7;
+    ResourceMigrationDeleteIndex deleteIndex = 8;
+  }
+}
+
+message ResourceMigrationPlan {
+  model.Resource existingResource = 1;
+  model.Resource currentResource = 2;
+  repeated ResourceMigrationStep steps = 3;
+}

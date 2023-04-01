@@ -6,6 +6,7 @@ option go_package = "github.com/tislib/data-handler/pkg/stub";
 
 import 'model/error.proto';
 import 'model/resource.proto';
+import 'model/resource-migration.proto';
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 

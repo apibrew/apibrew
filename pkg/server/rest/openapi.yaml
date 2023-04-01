@@ -2092,9 +2092,13 @@ components:
                     format: uint32
                 unique:
                     type: boolean
+                immutable:
+                    type: boolean
                 securityContext:
                     $ref: '#/components/schemas/SecurityContext'
                 defaultValue:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                exampleValue:
                     $ref: '#/components/schemas/GoogleProtobufValue'
                 enumValues:
                     type: array
@@ -2122,14 +2126,10 @@ components:
                         - ENUM
                     type: string
                     format: enum
-                immutable:
-                    type: boolean
                 title:
                     type: string
                 description:
                     type: string
-                exampleValue:
-                    $ref: '#/components/schemas/GoogleProtobufValue'
                 annotations:
                     type: object
                     additionalProperties:

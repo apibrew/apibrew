@@ -1,4 +1,4 @@
-package hclformat
+package formats
 
 import (
 	"context"

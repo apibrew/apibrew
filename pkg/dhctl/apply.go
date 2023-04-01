@@ -1,22 +1,14 @@
 package dhctl
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/dhctl/flags"
 	"github.com/tislib/data-handler/pkg/formats/batch"
 	"github.com/tislib/data-handler/pkg/formats/hclformat"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/stub"
-	"github.com/tislib/data-handler/pkg/util"
-	"google.golang.org/protobuf/encoding/protojson"
-	"gopkg.in/yaml.v2"
-	"io"
+	yamlformat "github.com/tislib/data-handler/pkg/formats/yaml"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -30,9 +22,6 @@ var applyCmd = &cobra.Command{
 		check(err)
 
 		migrate, err := cmd.Flags().GetBool("migrate")
-		check(err)
-
-		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)
 
 		dataOnly, err := cmd.Flags().GetBool("data-only")
@@ -54,9 +43,11 @@ var applyCmd = &cobra.Command{
 			check(err)
 
 			hclExecutor, err := hclformat.NewExecutor(hclformat.ExecutorParams{
-				Input:    in,
-				Token:    GetDhClient().GetToken(),
-				DhClient: GetDhClient(),
+				Input:          in,
+				Token:          GetDhClient().GetToken(),
+				DhClient:       GetDhClient(),
+				DoMigration:    migrate,
+				ForceMigration: force,
 				OverrideConfig: hclformat.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,
@@ -93,167 +84,37 @@ var applyCmd = &cobra.Command{
 
 			return
 		} else if strings.HasSuffix(file, "yml") || strings.HasSuffix(file, "yaml") {
-			fileData, err := os.ReadFile(file)
+			in, err := os.Open(file)
 
 			check(err)
-			applyYaml(fileData, migrate, namespace, force, overrideConfig)
+
+			yamlExecutor, err := yamlformat.NewExecutor(yamlformat.ExecutorParams{
+				Input:          in,
+				Token:          GetDhClient().GetToken(),
+				DhClient:       GetDhClient(),
+				DoMigration:    migrate,
+				ForceMigration: force,
+				OverrideConfig: yamlformat.OverrideConfig{
+					Namespace:  overrideConfig.Namespace,
+					DataSource: overrideConfig.DataSource,
+				},
+			})
+
+			check(err)
+
+			err = yamlExecutor.Restore(context.TODO(), in)
+
+			check(err)
+
+			return
 		}
-
-		log.Println(migrate)
-
 	},
-}
-
-func applyYaml(fileData []byte, migrate bool, namespace string, force bool, overrideConfig *flags.OverrideConfig) {
-	var jsonUMo = protojson.UnmarshalOptions{
-		AllowPartial:   false,
-		DiscardUnknown: false,
-		Resolver:       nil,
-	}
-
-	var createRecords []*model.Record
-	var updateRecords []*model.Record
-	decoder := yaml.NewDecoder(bytes.NewReader(fileData))
-
-	for {
-		var body map[string]interface{}
-		var err = decoder.Decode(&body)
-
-		if err == io.EOF {
-			break
-		}
-
-		check(err)
-
-		body = convert(body).(map[string]interface{})
-
-		switch body["type"].(string) {
-		case "resource":
-			delete(body, "type")
-
-			jsonData, err := json.Marshal(body)
-
-			check(err)
-
-			var resource = new(model.Resource)
-			err = jsonUMo.Unmarshal(jsonData, resource)
-
-			check(err)
-
-			// locating resource
-			if resource.Id == "" {
-				resp, err := GetDhClient().GetResourceClient().GetByName(context.TODO(), &stub.GetResourceByNameRequest{
-					Token:     GetDhClient().GetToken(),
-					Namespace: resource.Namespace,
-					Name:      resource.Name,
-				})
-
-				if err != nil && util.GetErrorCode(err) != model.ErrorCode_RESOURCE_NOT_FOUND {
-					panic(err)
-				}
-
-				if resp != nil && resp.Resource != nil {
-					resource.Id = resp.Resource.Id
-				}
-			}
-
-			if resource.Id != "" {
-				_, err := GetDhClient().GetResourceClient().Update(context.TODO(), &stub.UpdateResourceRequest{
-					Token:          GetDhClient().GetToken(),
-					Resources:      []*model.Resource{resource},
-					DoMigration:    migrate,
-					ForceMigration: force,
-				})
-
-				check(err)
-
-				log.Println("resource updated: " + resource.Name)
-			} else {
-				_, err := GetDhClient().GetResourceClient().Create(context.TODO(), &stub.CreateResourceRequest{
-					Token:          GetDhClient().GetToken(),
-					Resources:      []*model.Resource{resource},
-					DoMigration:    migrate,
-					ForceMigration: force,
-				})
-
-				check(err)
-
-				log.Println("resource created: " + resource.Name)
-			}
-		case "record":
-			delete(body, "type")
-
-			jsonData, err := json.Marshal(body)
-
-			check(err)
-
-			var record = new(model.Record)
-			err = jsonUMo.Unmarshal(jsonData, record)
-
-			check(err)
-
-			if record.Id != "" {
-				updateRecords = append(updateRecords, record)
-			} else {
-				createRecords = append(createRecords, record)
-			}
-
-		}
-	}
-
-	if len(updateRecords) > 0 {
-		_, err := GetDhClient().GetRecordClient().Update(context.TODO(), &stub.UpdateRecordRequest{
-			Token:        GetDhClient().GetToken(),
-			Namespace:    namespace,
-			Records:      updateRecords,
-			CheckVersion: false,
-		})
-
-		check(err)
-
-		log.Println("Record updated: " + strconv.Itoa(len(updateRecords)))
-	}
-
-	if len(createRecords) > 0 {
-		_, err := GetDhClient().GetRecordClient().Create(context.TODO(), &stub.CreateRecordRequest{
-			Token:          GetDhClient().GetToken(),
-			Namespace:      namespace,
-			Records:        createRecords,
-			IgnoreIfExists: true,
-		})
-
-		check(err)
-
-		log.Println("Record created: " + strconv.Itoa(len(createRecords)))
-	}
-}
-
-func convert(i interface{}) interface{} {
-	switch x := i.(type) {
-	case map[interface{}]interface{}:
-		m2 := map[string]interface{}{}
-		for k, v := range x {
-			m2[k.(string)] = convert(v)
-		}
-		return m2
-	case map[string]interface{}:
-		m2 := map[string]interface{}{}
-		for k, v := range x {
-			m2[k] = convert(v)
-		}
-		return m2
-	case []interface{}:
-		for i, v := range x {
-			x[i] = convert(v)
-		}
-	}
-	return i
 }
 
 func init() {
 	applyCmd.PersistentFlags().StringP("file", "f", "", "Output file")
 	applyCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
-	applyCmd.PersistentFlags().BoolP("migrate", "m", false, "Migrate")
+	applyCmd.PersistentFlags().BoolP("migrate", "m", true, "Migrate")
 	applyCmd.PersistentFlags().Bool("force", false, "Force")
 	applyCmd.PersistentFlags().Bool("data-only", false, "Data Only")
 
