@@ -19,3 +19,23 @@ resource: country2
 properties:
   name: Azerbaijan
   description: Land of fire
+---
+type: resource
+name: city
+sourceConfig:
+  dataSource: default
+  entity: city
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255
+  - name: country
+    type: REFERENCE
+    reference:
+      referencedResource: country2
+      cascade: true
