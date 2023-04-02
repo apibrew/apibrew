@@ -39,3 +39,16 @@ properties:
     reference:
       referencedResource: country2
       cascade: true
+---
+type: record
+resource: country2
+properties:
+  name: Azerbaijan
+  description: Land of fire
+---
+type: record
+resource: city
+properties:
+  name: Baku
+  country:
+    name: Azerbaijan

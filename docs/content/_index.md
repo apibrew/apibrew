@@ -104,7 +104,7 @@ You can use **Data Handler** for following purposes:
 ### Running with docker
 
 You need to copy and adjust init config for data-handler
-[init.json](examples/data/init.example.json)
+[init.json](../old/examples/data/init.example.json)
 
 ```
  docker run -v <path-to-init.json>:/app/config.json  tislib/data-handler:latest
@@ -119,7 +119,7 @@ go install github.com/tislib/data-handler/cmd/dhctl@latest
 ```
 
 You need to configure client pointing to right server:
-[config](examples/data/dhctl.example.config) and move this file to ~/.dhctl/config
+[config](../old/examples/data/dhctl.example.config) and move this file to ~/.dhctl/config
 
 Sample commands
 

@@ -1,4 +1,5 @@
-* Elements - Inside Data Handler there are 6 main elements
+# Table of contents
+* Core elements - Inside Data Handler there are 6 main elements
     * [Resource](#resource)
     * [Record](#record)
     * [Data Source](#data-source)
@@ -10,7 +11,7 @@
 * [Resource Reference](#resource-reference)
 * [Annotations](#annotations)
 
-# Elements
+# Core elements
 
 ![](/dh_elements.png)
 
@@ -129,7 +130,7 @@ dhctl apply -f country.yml
 ```
 
 city.yml
-```
+```yaml
 type: resource
 name: city
 sourceConfig:
@@ -177,6 +178,29 @@ Record has the following properties:
 * propertiesPacked - This property is only available to GRPC and will be used instead of properties if pack mode is
   enabled. If pack mode enabled, properties will not be sent, instead propertiesPacked will be sent. It is for saving
   space and cpu for transferring many accounts.
+
+### Examples
+#### City, Country
+
+data.yml
+```yaml
+type: record
+resource: country
+properties:
+  name: Azerbaijan
+  description: Land of fire
+---
+type: record
+resource: city
+properties:
+  name: Baku
+  country: 
+    name: Azerbaijan # This is for matching country by name
+```
+Now let's create country resource
+```
+dhctl apply -f country.yml
+```
 
 ## Data Source
 

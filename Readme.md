@@ -128,4 +128,4 @@ dhctl get resources
 dhctl get user -n system
 ```
 
-For detailed documentation: [link](docs/content/old/dhctl.md)
+For detailed documentation: [link](docs/old/dhctl.md)
