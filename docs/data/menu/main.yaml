@@ -1,8 +1,5 @@
 ---
 main:
-  - name: Explore
-    ref: "/explore"
-    icon: "gdoc_path"
-  - name: Installation
-    ref: "/installation"
+  - name: General
+    ref: "/general"
     icon: "gdoc_path"
