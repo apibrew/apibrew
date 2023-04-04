@@ -4,7 +4,7 @@ import (
 	"github.com/gosimple/slug"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tislib/data-handler/pkg/generator"
+	"github.com/tislib/data-handler/pkg/generator/golang"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"os"
@@ -52,10 +52,14 @@ var generatorCmd = &cobra.Command{
 				continue
 			}
 
-			code := generator.GenerateGoResourceCode(resource, generator.GenerateResourceCodeParams{
+			code, err := golang.GenerateGoResourceCode(resource, golang.GenerateResourceCodeParams{
 				Package:   pkg,
 				Resources: resp.Resources,
 			})
+
+			if err != nil {
+				log.Fatal(err)
+			}
 
 			resourceFileName := slug.Make(resource.Namespace) + "-" + slug.Make(resource.Name) + ".go"
 

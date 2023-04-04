@@ -79,12 +79,12 @@ func ByResourcePropertyType(resourcePropertyType model.ResourceProperty_Type) Pr
 	}
 }
 
-func IsComplex(resourcePropertyType model.ResourceProperty_Type) bool {
+func IsPrimitive(resourcePropertyType model.ResourceProperty_Type) bool {
 	switch resourcePropertyType {
 	case model.ResourceProperty_OBJECT, model.ResourceProperty_REFERENCE, model.ResourceProperty_MAP, model.ResourceProperty_LIST:
-		return true
-	default:
 		return false
+	default:
+		return true
 	}
 }
 

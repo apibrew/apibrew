@@ -71,15 +71,6 @@ schema {
       }
     }
 
-    property "state" {
-      type = "reference"
-
-      reference {
-        referenced_resource = "state"
-        cascade             = true
-      }
-    }
-
     property "description" {
       type   = "string"
       length = 124

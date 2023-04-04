@@ -10,7 +10,7 @@ import (
 
 type ApplyInterface interface {
 	Apply(ctx context.Context, msg proto.Message) error
-	ApplyRecord(ctx context.Context, resource *model.Resource, namespace *model.Record) error
+	ApplyRecord(ctx context.Context, resource *model.Resource, record *model.Record) error
 	ApplyNamespace(ctx context.Context, namespace *model.Namespace) error
 	ApplyExtension(ctx context.Context, extension *model.Extension) error
 	ApplyUser(ctx context.Context, user *model.User) error
@@ -41,8 +41,6 @@ type Entity[T any] interface {
 	ToProperties() map[string]*structpb.Value
 	GetResourceName() string
 	GetNamespace() string
-	GetId() string
-	Clone() T
 	Equals(other T) bool
 	Same(other T) bool
 }
@@ -52,5 +50,15 @@ type Repository[T Entity[T]] interface {
 	Update(ctx context.Context, entity T) (T, error)
 	Save(ctx context.Context, entity T) (T, error)
 	Get(ctx context.Context, id string) (T, error)
-	List(ctx context.Context) ([]T, error)
+	Find(ctx context.Context, params FindParams) ([]T, error)
+	Extend(extension Extension) RepositoryExtension[T]
+}
+
+type FindParams struct {
+	Limit             uint32
+	Offset            uint64
+	UseHistory        bool
+	Annotations       map[string]string
+	ResolveReferences []string // default []string{"*"}
+	Query             *model.BooleanExpression
 }
