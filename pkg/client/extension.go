@@ -41,10 +41,12 @@ func (d ExternalFunctionData) GetString(key string) string {
 
 type ExternalFunction func(ctx context.Context, req ExternalFunctionData) (ExternalFunctionData, error)
 
-func CreateRecordTypedFunction[T Entity[T]](instance T, fn func(entity T) (T, error)) ExternalFunction {
-	return CreateRecordFunction(func(record *model.Record) (*model.Record, error) {
+func CreateRecordTypedFunction[T Entity[T]](instanceProvider func() T, fn func(ctx context.Context, entity T) (T, error)) ExternalFunction {
+	return CreateRecordFunction(func(ctx context.Context, record *model.Record) (*model.Record, error) {
+		instance := instanceProvider()
+
 		instance.FromRecord(record)
-		instance, err := fn(instance)
+		instance, err := fn(ctx, instance)
 
 		if err != nil {
 			return nil, err
@@ -54,7 +56,7 @@ func CreateRecordTypedFunction[T Entity[T]](instance T, fn func(entity T) (T, er
 	})
 }
 
-func CreateRecordFunction(fn func(record *model.Record) (*model.Record, error)) ExternalFunction {
+func CreateRecordFunction(fn func(ctx context.Context, record *model.Record) (*model.Record, error)) ExternalFunction {
 	return func(ctx context.Context, req ExternalFunctionData) (ExternalFunctionData, error) {
 		if req.GetAction() != "Create" {
 			return nil, errors.New("create action is expected")
@@ -71,7 +73,7 @@ func CreateRecordFunction(fn func(record *model.Record) (*model.Record, error)) 
 		var responseRecords []*model.Record
 
 		for _, record := range request.Records {
-			processedRecord, err := fn(record)
+			processedRecord, err := fn(ctx, record)
 			if err != nil {
 				return nil, err
 			}
@@ -91,13 +93,19 @@ func CreateRecordFunction(fn func(record *model.Record) (*model.Record, error)) 
 type Extension interface {
 	Run(ctx context.Context) error
 	RegisterFunction(s string, f ExternalFunction)
+	GetRemoteHost() string
 }
 
 type extension struct {
-	host   string
-	client *dhClient
+	host       string
+	remoteHost string
+	client     *dhClient
 	ext.FunctionServer
 	functions map[string]ExternalFunction
+}
+
+func (e *extension) GetRemoteHost() string {
+	return e.remoteHost
 }
 
 func (e *extension) RegisterFunction(name string, handler ExternalFunction) {
@@ -139,8 +147,9 @@ func (e *extension) Run(ctx context.Context) error {
 
 func (d *dhClient) NewExtension(host string) Extension {
 	return &extension{
-		client:    d,
-		host:      host,
-		functions: make(map[string]ExternalFunction),
+		client:     d,
+		host:       host,
+		remoteHost: host,
+		functions:  make(map[string]ExternalFunction),
 	}
 }

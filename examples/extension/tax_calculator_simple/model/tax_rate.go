@@ -1,7 +1,7 @@
 package model
 
-import "time"
 import "reflect"
+import "github.com/tislib/data-handler/pkg/helper"
 import "github.com/tislib/data-handler/pkg/model"
 import "github.com/tislib/data-handler/pkg/client"
 import "github.com/google/uuid"
@@ -9,23 +9,53 @@ import "github.com/tislib/data-handler/pkg/types"
 import "google.golang.org/protobuf/types/known/structpb"
 
 type TaxRate struct {
-	Rate      float32
-	CreatedBy string
-	UpdatedBy *string
-	CreatedOn time.Time
-	Id        uuid.UUID
-	Name      string
-	Country   *Country
-	City      *City
-	Order     int32
-	UpdatedOn *time.Time
-	Until     int32
-	Version   int32
+	Id uuid.UUID
+
+	Name string
+
+	Country *Country
+
+	City *City
+
+	Order int32
+
+	Until int32
+
+	Rate float32
+
+	Version int32
 }
 
-func (s *TaxRate) GetId() string {
-	valStr := types.ByResourcePropertyType(model.ResourceProperty_UUID).String(s.Id)
-	return valStr
+func (s *TaxRate) GetId() uuid.UUID {
+	return s.Id
+}
+
+func (s *TaxRate) GetName() string {
+	return s.Name
+}
+
+func (s *TaxRate) GetCountry() *Country {
+	return s.Country
+}
+
+func (s *TaxRate) GetCity() *City {
+	return s.City
+}
+
+func (s *TaxRate) GetOrder() int32 {
+	return s.Order
+}
+
+func (s *TaxRate) GetUntil() int32 {
+	return s.Until
+}
+
+func (s *TaxRate) GetRate() float32 {
+	return s.Rate
+}
+
+func (s *TaxRate) GetVersion() int32 {
+	return s.Version
 }
 
 func (s *TaxRate) ToRecord() *model.Record {
@@ -40,66 +70,91 @@ func (s *TaxRate) FromRecord(record *model.Record) {
 }
 
 func (s *TaxRate) FromProperties(properties map[string]*structpb.Value) {
-	if properties["rate"] != nil {
-		val0, _ := types.ByResourcePropertyType(model.ResourceProperty_FLOAT32).UnPack(properties["rate"])
-		s.Rate = val0.(float32)
-	}
-
-	if properties["createdBy"] != nil {
-		val1, _ := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(properties["createdBy"])
-		s.CreatedBy = val1.(string)
-	}
-
-	if properties["updatedBy"] != nil {
-		val2, _ := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(properties["updatedBy"])
-		s.UpdatedBy = new(string)
-		*s.UpdatedBy = val2.(string)
-	}
-
-	if properties["createdOn"] != nil {
-		val3, _ := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(properties["createdOn"])
-		s.CreatedOn = val3.(time.Time)
-	}
 
 	if properties["id"] != nil {
-		val4, _ := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(properties["id"])
-		s.Id = val4.(uuid.UUID)
+
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(properties["id"])
+
+		if err != nil {
+			panic(err)
+		}
+
+		s.Id = val.(uuid.UUID)
+
 	}
 
 	if properties["name"] != nil {
-		val5, _ := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(properties["name"])
-		s.Name = val5.(string)
+
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(properties["name"])
+
+		if err != nil {
+			panic(err)
+		}
+
+		s.Name = val.(string)
+
 	}
 
 	if properties["country"] != nil {
+
 		s.Country = new(Country)
 		s.Country.FromProperties(properties["country"].GetStructValue().Fields)
+
 	}
 
 	if properties["city"] != nil {
+
 		s.City = new(City)
 		s.City.FromProperties(properties["city"].GetStructValue().Fields)
+
 	}
 
 	if properties["order"] != nil {
-		val8, _ := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(properties["order"])
-		s.Order = val8.(int32)
-	}
 
-	if properties["updatedOn"] != nil {
-		val9, _ := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(properties["updatedOn"])
-		s.UpdatedOn = new(time.Time)
-		*s.UpdatedOn = val9.(time.Time)
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(properties["order"])
+
+		if err != nil {
+			panic(err)
+		}
+
+		s.Order = val.(int32)
+
 	}
 
 	if properties["until"] != nil {
-		val10, _ := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(properties["until"])
-		s.Until = val10.(int32)
+
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(properties["until"])
+
+		if err != nil {
+			panic(err)
+		}
+
+		s.Until = val.(int32)
+
+	}
+
+	if properties["rate"] != nil {
+
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_FLOAT32).UnPack(properties["rate"])
+
+		if err != nil {
+			panic(err)
+		}
+
+		s.Rate = val.(float32)
+
 	}
 
 	if properties["version"] != nil {
-		val11, _ := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(properties["version"])
-		s.Version = val11.(int32)
+
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(properties["version"])
+
+		if err != nil {
+			panic(err)
+		}
+
+		s.Version = val.(int32)
+
 	}
 
 }
@@ -107,77 +162,53 @@ func (s *TaxRate) FromProperties(properties map[string]*structpb.Value) {
 func (s *TaxRate) ToProperties() map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	val0, err := types.ByResourcePropertyType(model.ResourceProperty_FLOAT32).Pack(s.Rate)
+	Id, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(s.Id)
 	if err != nil {
 		panic(err)
 	}
-	properties["rate"] = val0
+	properties["id"] = Id
 
-	val1, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(s.CreatedBy)
+	Name, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(s.Name)
 	if err != nil {
 		panic(err)
 	}
-	properties["createdBy"] = val1
-
-	if s.UpdatedBy != nil {
-		val2, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*s.UpdatedBy)
-		if err != nil {
-			panic(err)
-		}
-		properties["updatedBy"] = val2
-	}
-
-	val3, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(s.CreatedOn)
-	if err != nil {
-		panic(err)
-	}
-	properties["createdOn"] = val3
-
-	val4, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(s.Id)
-	if err != nil {
-		panic(err)
-	}
-	properties["id"] = val4
-
-	val5, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(s.Name)
-	if err != nil {
-		panic(err)
-	}
-	properties["name"] = val5
+	properties["name"] = Name
 
 	if s.Country != nil {
+
 		properties["country"] = structpb.NewStructValue(&structpb.Struct{Fields: s.Country.ToProperties()})
+
 	}
 
 	if s.City != nil {
+
 		properties["city"] = structpb.NewStructValue(&structpb.Struct{Fields: s.City.ToProperties()})
+
 	}
 
-	val8, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(s.Order)
+	Order, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(s.Order)
 	if err != nil {
 		panic(err)
 	}
-	properties["order"] = val8
+	properties["order"] = Order
 
-	if s.UpdatedOn != nil {
-		val9, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*s.UpdatedOn)
-		if err != nil {
-			panic(err)
-		}
-		properties["updatedOn"] = val9
-	}
-
-	val10, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(s.Until)
+	Until, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(s.Until)
 	if err != nil {
 		panic(err)
 	}
-	properties["until"] = val10
+	properties["until"] = Until
 
-	val11, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(s.Version)
+	Rate, err := types.ByResourcePropertyType(model.ResourceProperty_FLOAT32).Pack(s.Rate)
 	if err != nil {
 		panic(err)
 	}
-	properties["version"] = val11
+	properties["rate"] = Rate
+
+	Version, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(s.Version)
+	if err != nil {
+		panic(err)
+	}
+	properties["version"] = Version
 
 	return properties
 }
@@ -190,35 +221,6 @@ func (s *TaxRate) GetNamespace() string {
 	return "default"
 }
 
-func (s *TaxRate) Clone() *TaxRate {
-	var newInstance = new(TaxRate)
-	newInstance.Rate = s.Rate
-	newInstance.CreatedBy = s.CreatedBy
-	if s.UpdatedBy != nil {
-		newInstance.UpdatedBy = s.UpdatedBy
-	}
-
-	newInstance.CreatedOn = s.CreatedOn
-	newInstance.Id = s.Id
-	newInstance.Name = s.Name
-	if s.Country != nil {
-		newInstance.Country = s.Country
-	}
-
-	if s.City != nil {
-		newInstance.City = s.City
-	}
-
-	newInstance.Order = s.Order
-	if s.UpdatedOn != nil {
-		newInstance.UpdatedOn = s.UpdatedOn
-	}
-
-	newInstance.Until = s.Until
-	newInstance.Version = s.Version
-	return newInstance
-}
-
 func (s *TaxRate) Equals(other *TaxRate) bool {
 	return reflect.DeepEqual(s, other)
 }
@@ -228,5 +230,23 @@ func (s *TaxRate) Same(other *TaxRate) bool {
 }
 
 func NewTaxRateRepository(dhClient client.DhClient) client.Repository[*TaxRate] {
-	return client.NewRepository[*TaxRate](dhClient, client.RepositoryParams[*TaxRate]{Instance: new(TaxRate)})
+	return client.NewRepository[*TaxRate](dhClient, client.RepositoryParams[*TaxRate]{InstanceProvider: func() *TaxRate {
+		return new(TaxRate)
+	}})
 }
+
+var TaxRateId = client.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
+
+var TaxRateName = client.DefineProperty[string, helper.StringQueryBuilder]("name", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "name"})
+
+var TaxRateCountry = client.DefineProperty[*Country, helper.ReferenceQueryBuilder[*Country]]("country", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*Country]{PropName: "country"})
+
+var TaxRateCity = client.DefineProperty[*City, helper.ReferenceQueryBuilder[*City]]("city", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*City]{PropName: "city"})
+
+var TaxRateOrder = client.DefineProperty[int32, helper.Int32QueryBuilder]("order", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "order"})
+
+var TaxRateUntil = client.DefineProperty[int32, helper.Int32QueryBuilder]("until", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "until"})
+
+var TaxRateRate = client.DefineProperty[float32, helper.Float32QueryBuilder]("rate", model.ResourceProperty_FLOAT32, helper.Float32QueryBuilder{PropName: "rate"})
+
+var TaxRateVersion = client.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})
