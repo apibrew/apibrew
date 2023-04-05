@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/ext"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
@@ -41,7 +42,7 @@ func (d ExternalFunctionData) GetString(key string) string {
 
 type ExternalFunction func(ctx context.Context, req ExternalFunctionData) (ExternalFunctionData, error)
 
-func CreateRecordTypedFunction[T Entity[T]](instanceProvider func() T, fn func(ctx context.Context, entity T) (T, error)) ExternalFunction {
+func CreateRecordTypedFunction[T abs.Entity[T]](instanceProvider func() T, fn func(ctx context.Context, entity T) (T, error)) ExternalFunction {
 	return CreateRecordFunction(func(ctx context.Context, record *model.Record) (*model.Record, error) {
 		instance := instanceProvider()
 

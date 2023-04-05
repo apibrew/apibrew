@@ -2,10 +2,11 @@ package client
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 )
 
-type repositoryExtension[T Entity[T]] struct {
+type repositoryExtension[T abs.Entity[T]] struct {
 	repository       Repository[T]
 	extension        Extension
 	resourceName     string
@@ -62,7 +63,7 @@ func (r repositoryExtension[T]) OnList(handler func(ctx context.Context) (T, err
 	panic("implement me")
 }
 
-type RepositoryExtension[T Entity[T]] interface {
+type RepositoryExtension[T abs.Entity[T]] interface {
 	OnCreate(handler func(ctx context.Context, elem T) (T, error)) error
 	OnUpdate(handler func(ctx context.Context, elem T) (T, error))
 	OnDelete(handler func(ctx context.Context, elem T) (T, error))

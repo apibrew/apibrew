@@ -2,18 +2,54 @@ package helper
 
 import (
 	"github.com/google/uuid"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
+	"google.golang.org/protobuf/types/known/structpb"
 	"time"
 )
 
-type queryBuilder struct {
+type QueryBuilder struct {
 }
 
-type QueryBuilder interface {
+func (q QueryBuilder) And(list ...*model.BooleanExpression) *model.BooleanExpression {
+	return &model.BooleanExpression{Expression: &model.BooleanExpression_And{
+		And: &model.CompoundBooleanExpression{
+			Expressions: list,
+		},
+	}}
+}
+
+func (q QueryBuilder) Or(list ...*model.BooleanExpression) *model.BooleanExpression {
+	return &model.BooleanExpression{Expression: &model.BooleanExpression_Or{
+		Or: &model.CompoundBooleanExpression{
+			Expressions: list,
+		},
+	}}
+}
+
+func (q QueryBuilder) Not(condition *model.BooleanExpression) *model.BooleanExpression {
+	return &model.BooleanExpression{Expression: &model.BooleanExpression_Not{
+		Not: condition,
+	}}
+}
+
+func (q QueryBuilder) Equal(property string, value *structpb.Value) *model.BooleanExpression {
+	return &model.BooleanExpression{
+		Expression: &model.BooleanExpression_Equal{
+			Equal: &model.PairExpression{
+				Left: &model.Expression{
+					Expression: &model.Expression_Property{Property: property},
+				},
+				Right: &model.Expression{
+					Expression: &model.Expression_Value{Value: value},
+				},
+			},
+		},
+	}
 }
 
 func NewQueryBuilder() QueryBuilder {
-	return &queryBuilder{}
+	return QueryBuilder{}
 }
 
 type PropertyTypeSpecificQueryBuilder[GoType any] interface {
@@ -32,13 +68,13 @@ func (sq StringQueryBuilder) Contains(val string) *model.BooleanExpression {
 	return nil
 }
 
-type ReferenceQueryBuilder[RefType any] struct {
+type ReferenceQueryBuilder[RefType abs.Entity[RefType]] struct {
 	PropName string
 }
 
 func (r ReferenceQueryBuilder[RefType]) Equals(val RefType) *model.BooleanExpression {
-	//TODO implement me
-	panic("implement me")
+	qb := NewQueryBuilder()
+	return qb.Equal(r.PropName, structpb.NewStructValue(&structpb.Struct{Fields: val.ToProperties()}))
 }
 
 type UuidQueryBuilder struct {

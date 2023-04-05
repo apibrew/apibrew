@@ -2,10 +2,10 @@ package client
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type ApplyInterface interface {
@@ -34,18 +34,7 @@ type DhClient interface {
 	NewExtension(host string) Extension
 }
 
-type Entity[T any] interface {
-	ToRecord() *model.Record
-	FromRecord(record *model.Record)
-	FromProperties(properties map[string]*structpb.Value)
-	ToProperties() map[string]*structpb.Value
-	GetResourceName() string
-	GetNamespace() string
-	Equals(other T) bool
-	Same(other T) bool
-}
-
-type Repository[T Entity[T]] interface {
+type Repository[T abs.Entity[T]] interface {
 	Create(ctx context.Context, entity T) (T, error)
 	Update(ctx context.Context, entity T) (T, error)
 	Save(ctx context.Context, entity T) (T, error)
