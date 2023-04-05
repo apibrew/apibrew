@@ -2,12 +2,13 @@ package client
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 )
 
-type repository[T Entity[T]] struct {
+type repository[T abs.Entity[T]] struct {
 	client DhClient
 	params RepositoryParams[T]
 }
@@ -129,11 +130,11 @@ func (r repository[T]) loadResource(ctx context.Context) (*model.Resource, error
 	return resp.Resource, nil
 }
 
-type RepositoryParams[T Entity[T]] struct {
+type RepositoryParams[T abs.Entity[T]] struct {
 	UpdateCheckVersion bool
 	InstanceProvider   func() T
 }
 
-func NewRepository[T Entity[T]](client DhClient, params RepositoryParams[T]) Repository[T] {
+func NewRepository[T abs.Entity[T]](client DhClient, params RepositoryParams[T]) Repository[T] {
 	return repository[T]{client: client, params: params}
 }

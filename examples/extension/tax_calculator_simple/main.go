@@ -31,7 +31,9 @@ func main() {
 	incomeExtend := incomeRepository.Extend(extension)
 
 	incomeExtend.OnCreate(func(ctx context.Context, entity *model.Income) (*model.Income, error) {
-		rates, err := taxRateRepository.Find(context.TODO(), client.FindParams{})
+		rates, err := taxRateRepository.Find(context.TODO(), client.FindParams{
+			Query: model.TaxRateCountry.Query().Equals(entity.Country),
+		})
 
 		if err != nil {
 			return nil, err
@@ -41,20 +43,11 @@ func main() {
 			return rates[i].Order < rates[j].Order
 		})
 
-		var matchedRates []*model.TaxRate
-
-		for _, rate := range rates {
-			//if entity.
-			if *rate.Country.Name == *entity.Country.Name {
-				matchedRates = append(matchedRates, rate)
-			}
-		}
-
 		var prevRate *model.TaxRate = nil
 		entity.Tax = new(int32)
 		entity.NetIncome = new(int32)
 
-		for _, rate := range matchedRates {
+		for _, rate := range rates {
 			if prevRate == nil {
 				*entity.Tax += int32(math.Min(float64(rate.Until), float64(entity.GrossIncome)) * float64(rate.Rate))
 			} else {
