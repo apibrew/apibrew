@@ -28,7 +28,6 @@ jobs:
           DOCKER_BUILDKIT=1 docker build --target=build-binaries-export --build-arg OS=linux --build-arg ARCH=amd64 --build-arg APP=dhctl --build-arg SUFFIX=.exe --output out -f binaries.Dockerfile .
           DOCKER_BUILDKIT=1 docker build --target=build-binaries-export --build-arg OS=linux --build-arg ARCH=386 --build-arg APP=dhctl --build-arg SUFFIX=.exe --output out -f binaries.Dockerfile .
           DOCKER_BUILDKIT=1 docker build --target=build-binaries-export --build-arg OS=darwin --build-arg ARCH=amd64 --build-arg APP=dhctl --build-arg SUFFIX=.exe --output out -f binaries.Dockerfile .
-          DOCKER_BUILDKIT=1 docker build --target=build-binaries-export --build-arg OS=darwin --build-arg ARCH=386 --build-arg APP=dhctl --build-arg SUFFIX=.exe --output out -f binaries.Dockerfile .
           DOCKER_BUILDKIT=1 docker build --target=build-binaries-export --build-arg OS=darwin --build-arg ARCH=arm64 --build-arg APP=dhctl --build-arg SUFFIX=.exe --output out -f binaries.Dockerfile .
       - uses: actions/upload-artifact@v3
         with:
