@@ -89,6 +89,11 @@ func init() {
 	}
 
 	data, err := io.ReadAll(entityExistsFile)
+
+	if err != nil {
+		panic(err)
+	}
+
 	tmplData := string(data)
 
 	tmpl = template.Must(template.New("resource").
@@ -104,6 +109,4 @@ func init() {
 			"IsPrimitive":    types.IsPrimitive,
 		}).
 		Parse(tmplData))
-
-	return
 }
