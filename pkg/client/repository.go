@@ -2,12 +2,13 @@ package client
 
 import (
 	"context"
+	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/util"
 )
 
-type repository[T Entity[T]] struct {
+type repository[T abs.Entity[T]] struct {
 	client DhClient
 	params RepositoryParams[T]
 }
@@ -48,38 +49,51 @@ func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
 }
 
 func (r repository[T]) Save(ctx context.Context, entity T) (T, error) {
-	if entity.GetId() != "" {
-		return r.Update(ctx, entity)
-	} else {
-		return r.Create(ctx, entity)
+	resource, err := r.loadResource(ctx)
+
+	if err != nil {
+		return entity, err
 	}
+
+	return entity, r.client.ApplyRecord(ctx, resource, entity.ToRecord())
 }
 
 func (r repository[T]) Get(ctx context.Context, id string) (T, error) {
+	instance := r.params.InstanceProvider()
+
 	resp, err := r.client.GetRecordClient().Get(ctx, &stub.GetRecordRequest{
 		Token:     r.client.GetToken(),
-		Namespace: r.params.Instance.GetNamespace(),
-		Resource:  r.params.Instance.GetResourceName(),
+		Namespace: instance.GetNamespace(),
+		Resource:  instance.GetResourceName(),
 		Id:        id,
 	})
 
 	if err != nil {
-		return r.params.Instance, err
+		return instance, err
 	}
 
-	var newInstance = r.params.Instance.Clone()
+	instance.FromRecord(resp.Record)
 
-	newInstance.FromRecord(resp.Record)
-
-	return newInstance, nil
+	return instance, nil
 }
 
-func (r repository[T]) List(ctx context.Context) ([]T, error) {
-	resp, err := r.client.GetRecordClient().List(ctx, &stub.ListRecordRequest{
+func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, error) {
+	instance := r.params.InstanceProvider()
+
+	if params.ResolveReferences == nil {
+		params.ResolveReferences = []string{"*"}
+	}
+
+	resp, err := r.client.GetRecordClient().Search(ctx, &stub.SearchRecordRequest{
 		Token:             r.client.GetToken(),
-		Namespace:         r.params.Instance.GetNamespace(),
-		Resource:          r.params.Instance.GetResourceName(),
-		ResolveReferences: []string{"*"},
+		Namespace:         instance.GetNamespace(),
+		Resource:          instance.GetResourceName(),
+		Query:             params.Query,
+		Limit:             params.Limit,
+		Offset:            params.Offset,
+		UseHistory:        params.UseHistory,
+		ResolveReferences: params.ResolveReferences,
+		Annotations:       params.Annotations,
 	})
 
 	if err != nil {
@@ -87,7 +101,7 @@ func (r repository[T]) List(ctx context.Context) ([]T, error) {
 	}
 
 	return util.ArrayMap(resp.Content, func(record *model.Record) T {
-		var newInstance = r.params.Instance.Clone()
+		var newInstance = r.params.InstanceProvider()
 
 		newInstance.FromRecord(record)
 
@@ -95,11 +109,32 @@ func (r repository[T]) List(ctx context.Context) ([]T, error) {
 	}), nil
 }
 
-type RepositoryParams[T Entity[T]] struct {
-	UpdateCheckVersion bool
-	Instance           T
+func (r repository[T]) Extend(extension Extension) RepositoryExtension[T] {
+	instance := r.params.InstanceProvider()
+	return &repositoryExtension[T]{client: r.client, instanceProvider: r.params.InstanceProvider, repository: r, extension: extension, resourceName: instance.GetResourceName(), namespace: instance.GetNamespace()}
 }
 
-func NewRepository[T Entity[T]](client DhClient, params RepositoryParams[T]) Repository[T] {
+func (r repository[T]) loadResource(ctx context.Context) (*model.Resource, error) {
+	instance := r.params.InstanceProvider()
+
+	resp, err := r.client.GetResourceClient().GetByName(ctx, &stub.GetResourceByNameRequest{
+		Token:     r.client.GetToken(),
+		Namespace: instance.GetNamespace(),
+		Name:      instance.GetResourceName(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Resource, nil
+}
+
+type RepositoryParams[T abs.Entity[T]] struct {
+	UpdateCheckVersion bool
+	InstanceProvider   func() T
+}
+
+func NewRepository[T abs.Entity[T]](client DhClient, params RepositoryParams[T]) Repository[T] {
 	return repository[T]{client: client, params: params}
 }

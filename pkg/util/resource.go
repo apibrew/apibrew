@@ -128,3 +128,25 @@ func NormalizeResource(resource *model.Resource) {
 
 	annotations.Enable(resource, annotations.NormalizedResource)
 }
+
+func HasResourceSinglePrimaryProp(resource *model.Resource) bool {
+	primaryPropCount := 0
+
+	for _, item := range resource.Properties {
+		if item.Primary {
+			primaryPropCount++
+		}
+	}
+
+	return primaryPropCount == 1
+}
+
+func GetResourceSinglePrimaryProp(resource *model.Resource) *model.ResourceProperty {
+	for _, item := range resource.Properties {
+		if item.Primary {
+			return item
+		}
+	}
+
+	return nil
+}

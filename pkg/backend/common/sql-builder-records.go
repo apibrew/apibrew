@@ -48,7 +48,14 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 				}
 
 				if property.Type == model.ResourceProperty_REFERENCE {
-					row = append(row, p.resolveReference(val, args.Add, schema, resource, property))
+					referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+					item, err := p.resolveReference(packedVal.GetStructValue().Fields, args.Add, referencedResource)
+
+					if err != nil {
+						return false, errors.LogicalError.WithDetails(err.Error())
+					}
+
+					row = append(row, item)
 
 					continue
 				}
@@ -78,25 +85,48 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 	return true, p.handleDbError(ctx, err)
 }
 
-func (p *sqlBackend) resolveReference(val interface{}, argPlaceHolder func(val interface{}) string, schema *abs.Schema, resource *model.Resource, property *model.ResourceProperty) string {
-	refType := val.(types.ReferenceType)
+func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, argPlaceHolder func(val interface{}) string, referencedResource *model.Resource) (string, error) {
+	identifierProps, err := util.RecordIdentifierProperties(referencedResource, properties)
+	namedProps := util.GetNamedMap(referencedResource.Properties)
+	if util.HasResourceSinglePrimaryProp(referencedResource) {
+		idProp := util.GetResourceSinglePrimaryProp(referencedResource)
 
-	if refType["id"] != nil {
-		return argPlaceHolder(refType["id"])
+		if val, ok := identifierProps[idProp.Name]; ok {
+			typ := types.ByResourcePropertyType(idProp.Type)
+			unpacked, err := typ.UnPack(val)
+			if err != nil {
+				return "", err
+			}
+
+			return argPlaceHolder(unpacked), nil
+		}
+	}
+
+	if err != nil {
+		return "", err
+	}
+
+	var where []string
+	for k, v := range identifierProps {
+		typ := types.ByResourcePropertyType(namedProps[k].Type)
+
+		if typ == types.ReferenceType { // skip reference checking for now, it is not implemented yet
+			continue
+		}
+
+		unpacked, err := typ.UnPack(v)
+		if err != nil {
+			return "", err
+		}
+		where = append(where, fmt.Sprintf("%s=%s", k, argPlaceHolder(unpacked)))
+	}
+
+	if len(where) == 0 {
+		return argPlaceHolder(nil), nil
 	} else {
-		var where []string
-		for k, v := range refType {
-			where = append(where, fmt.Sprintf("%s=%s", k, argPlaceHolder(v)))
-		}
+		innerSql := fmt.Sprintf("select id from %s where %s", referencedResource.SourceConfig.Entity, strings.Join(where, " AND "))
 
-		if len(where) == 0 {
-			return argPlaceHolder(nil)
-		} else {
-			referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
-			innerSql := fmt.Sprintf("select id from %s where %s", referencedResource.SourceConfig.Entity, strings.Join(where, " AND "))
-
-			return fmt.Sprintf("(%s)", innerSql)
-		}
+		return fmt.Sprintf("(%s)", innerSql), nil
 	}
 }
 
@@ -149,7 +179,13 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 		}
 
 		if property.Type == model.ResourceProperty_REFERENCE {
-			updateBuilder.SetMore(fmt.Sprintf("%s=%s", p.options.Quote(property.Mapping), p.resolveReference(val, updateBuilder.Var, schema, resource, property)))
+			referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+			item, err := p.resolveReference(packedVal.GetStructValue().Fields, updateBuilder.Var, referencedResource)
+
+			if err != nil {
+				return errors.LogicalError.WithDetails(err.Error())
+			}
+			updateBuilder.SetMore(fmt.Sprintf("%s=%s", p.options.Quote(property.Mapping), item))
 		} else {
 			updateBuilder.SetMore(updateBuilder.Equal(p.options.Quote(property.Mapping), val))
 		}

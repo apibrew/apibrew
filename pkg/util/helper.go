@@ -10,6 +10,13 @@ func StructKv(key string, value interface{}) *structpb.Value {
 	})
 }
 
+func StructKv2(key1 string, value1 interface{}, key2 string, value2 interface{}) *structpb.Value {
+	return MapStructValue(map[string]interface{}{
+		key1: value1,
+		key2: value2,
+	})
+}
+
 func MapStructValue(v map[string]interface{}) *structpb.Value {
 	st, err := structpb.NewStruct(v)
 
