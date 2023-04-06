@@ -31,5 +31,25 @@ jobs:
           DOCKER_BUILDKIT=1 docker build --target=build-binaries-export --build-arg OS=darwin --build-arg ARCH=arm64 --build-arg APP=dhctl --build-arg SUFFIX=.exe --output out -f binaries.Dockerfile .
       - uses: actions/upload-artifact@v3
         with:
-          name: dhctl
-          path: out/app/output/dhctl-*
+          name: dhctl-windows-amd64.exe
+          path: out/app/output/dhctl-windows-amd64.exe
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dhctl-windows-386.exe
+          path: out/app/output/dhctl-windows-386.exe
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dhctl-linux-amd64
+          path: out/app/output/dhctl-linux-amd64
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dhctl-linux-386
+          path: out/app/output/dhctl-linux-386
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dhctl-mac-amd64
+          path: out/app/output/dhctl-darwin-amd64
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dhctl-mac-arm64
+          path: out/app/output/dhctl-darwin-arm64
