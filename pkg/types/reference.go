@@ -5,18 +5,18 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type ReferenceType = map[string]interface{}
+var ReferenceType = referenceType{}
 
 // string
 type referenceType struct {
 }
 
 func (u referenceType) Equals(a, b interface{}) bool {
-	return a == b
+	return u.String(a) == u.String(b) //fixme
 }
 
 func (u referenceType) Pack(value interface{}) (*structpb.Value, error) {
-	st, err := structpb.NewStruct(value.(ReferenceType))
+	st, err := structpb.NewStruct(value.(map[string]interface{}))
 
 	if err != nil {
 		return nil, err
@@ -34,19 +34,19 @@ func (u referenceType) UnPack(val *structpb.Value) (interface{}, error) {
 }
 
 func (u referenceType) Default() any {
-	return ReferenceType{}
+	return make(map[string]interface{})
 }
 
 func (u referenceType) Pointer(required bool) any {
 	if required {
-		return new(ReferenceType)
+		return new(map[string]interface{})
 	} else {
-		return new(*ReferenceType)
+		return new(*map[string]interface{})
 	}
 }
 
 func (u referenceType) String(val any) string {
-	return fmt.Sprintf("%v", val.(ReferenceType))
+	return fmt.Sprintf("%v", val.(map[string]interface{}))
 }
 
 func (u referenceType) IsEmpty(value any) bool {
@@ -54,5 +54,5 @@ func (u referenceType) IsEmpty(value any) bool {
 }
 
 func (u referenceType) ValidatePackedValue(value *structpb.Value) error {
-	return canCast[ReferenceType]("ReferenceType", value.AsInterface())
+	return canCast[map[string]interface{}]("ReferenceType", value.AsInterface())
 }

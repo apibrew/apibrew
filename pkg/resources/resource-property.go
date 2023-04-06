@@ -144,6 +144,18 @@ var ResourcePropertyResource = &model.Resource{
 			Required: false,
 		},
 	},
+	Indexes: []*model.ResourceIndex{
+		{
+			Properties: []*model.ResourceIndexProperty{
+				{
+					Name: "resource",
+				}, {
+					Name: "name",
+				},
+			},
+			Unique: true,
+		},
+	},
 	SecurityContext: securityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",

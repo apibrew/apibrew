@@ -2,7 +2,9 @@ package util
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
@@ -136,4 +138,126 @@ func IsSameRecord(existing, updated *model.Record) bool {
 	}
 
 	return true
+}
+
+func RecordIdentifierProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, error) {
+	if props, ok := RecordIdentifierPrimaryProperties(resource, properties); ok {
+		return props, nil
+	}
+
+	if props, ok := RecordIdentifierUniqueProperties(resource, properties); ok {
+		return props, nil
+	}
+
+	return nil, fmt.Errorf("could not find identifiable properties of %s", resource.Name)
+}
+
+func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {
+	identifierProps := make(map[string]*structpb.Value)
+
+	for _, prop := range resource.Properties {
+		if !prop.Primary {
+			continue
+		}
+
+		val, ok := properties[prop.Name]
+
+		if !ok {
+			return nil, false
+		}
+
+		typ := types.ByResourcePropertyType(prop.Type)
+
+		unpacked, err := typ.UnPack(val)
+
+		if err != nil {
+			log.Error(err)
+			return nil, false
+		}
+
+		if typ.Equals(unpacked, typ.Default()) {
+			return nil, false
+		}
+
+		identifierProps[prop.Name] = val
+	}
+
+	return identifierProps, true
+}
+
+func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {
+	for _, prop := range resource.Properties {
+		identifierProps := make(map[string]*structpb.Value)
+		if !prop.Unique {
+			continue
+		}
+
+		val, ok := properties[prop.Name]
+
+		if !ok {
+			continue
+		}
+
+		typ := types.ByResourcePropertyType(prop.Type)
+
+		unpacked, err := typ.UnPack(val)
+
+		if err != nil {
+			log.Error(err)
+			return nil, false
+		}
+
+		if typ.Equals(unpacked, typ.Default()) {
+			continue
+		}
+
+		identifierProps[prop.Name] = val
+
+		return identifierProps, true
+	}
+
+	propMap := GetNamedMap(resource.Properties)
+
+	for _, index := range resource.Indexes {
+		if index.Unique {
+			var valid = true
+
+			identifierProps := make(map[string]*structpb.Value)
+
+			for _, indexProp := range index.Properties {
+				prop := propMap[indexProp.Name]
+
+				val, ok := properties[prop.Name]
+
+				if !ok {
+					valid = false
+					break
+				}
+
+				typ := types.ByResourcePropertyType(prop.Type)
+
+				unpacked, err := typ.UnPack(val)
+
+				if err != nil {
+					log.Error(err)
+
+					valid = false
+					break
+				}
+
+				if typ.Equals(unpacked, typ.Default()) {
+					valid = false
+					break
+				}
+
+				identifierProps[prop.Name] = val
+			}
+
+			if valid {
+				return identifierProps, true
+			}
+		}
+	}
+
+	return nil, false
 }
