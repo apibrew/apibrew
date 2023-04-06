@@ -1,11 +1,11 @@
-name: deploy
+name: binaries
 
 on:
   push:
     tags:
       - v*
 jobs:
-  docker-deploy:
+  binaries:
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
