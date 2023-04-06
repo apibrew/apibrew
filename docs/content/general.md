@@ -1,4 +1,5 @@
 # Table of contents
+
 * Core elements - Inside Data Handler there are 6 main elements
     * [Resource](#resource)
     * [Record](#record)
@@ -101,13 +102,15 @@ These are:
     * created_by - if audit is enabled, this property will hold information when record created
     * updated_on - if audit is enabled, this property will hold information about username who updated record last time
     * updated_by - if audit is enabled, this property will hold information when record updated last time
-* version - version property is added if you don't have such property and resource *is not* annotated with DisableVersion annotation 
+* version - version property is added if you don't have such property and resource *is not* annotated with
+  DisableVersion annotation
 
 ### Examples
 
 #### City, Country
 
 country.yml
+
 ```yaml
 type: resource
 name: country
@@ -124,12 +127,15 @@ properties:
     type: STRING
     length: 255
 ```
+
 Now let's create country resource
+
 ```
 dhctl apply -f country.yml
 ```
 
 city.yml
+
 ```yaml
 type: resource
 name: city
@@ -149,13 +155,16 @@ properties:
     type: REFERENCE
     length: 255
     reference:
-        referencedResource: country
-        cascade: true
+      referencedResource: country
+      cascade: true
 ```
+
 Now let's create city resource
+
 ```
 dhctl apply -f city.yml
 ```
+
 So, by this way, you will create both country and city resources
 
 ## Record
@@ -173,16 +182,18 @@ Record has the following properties:
 
 * **id** - unique record id, it is for identifying record. Record id comes from its resource property which is primary.
   If Resource has multiple primary properties, system will join them with dash. If no primary, id will be empty string
-* properties - Properties is a map. Where key is property name and value is its value according to record. Mostly
+* **properties** - Properties is a map. Where key is property name and value is its value according to record. Mostly
   Properties is like a record body. It can be even considered record itself.
-* propertiesPacked - This property is only available to GRPC and will be used instead of properties if pack mode is
+* **propertiesPacked** - This property is only available to GRPC and will be used instead of properties if pack mode is
   enabled. If pack mode enabled, properties will not be sent, instead propertiesPacked will be sent. It is for saving
   space and cpu for transferring many accounts.
 
 ### Examples
+
 #### City, Country
 
 data.yml
+
 ```yaml
 type: record
 resource: country
@@ -194,20 +205,97 @@ type: record
 resource: city
 properties:
   name: Baku
-  country: 
+  country:
     name: Azerbaijan # This is for matching country by name
 ```
+
 Now let's create country resource
+
 ```
 dhctl apply -f country.yml
 ```
 
-## Data Source
+## Data source
+
+### Overview
+
+Data source is for connecting our Resources to Databases/Data stores. Data source is main part of resource. And without
+Datasource, Resource cannot physically store any data without datasource.
+
+Data source is also an abstraction point for various databases.
+
+### Data source definition
+
+Proto file: [resource.proto](https://github.com/tislib/data-handler/blob/master/proto/model/data-source.proto)
+
+Data source has the following properties:
+
+* **id** - unique data source id
+* **name** - unique data source name
+* **description** - Datasource description
+* **backend** - Data source backend is an enum. And you define which database you will use by setting backend. Backend
+  has following values
+    * POSTGRESQL - postgresql database
+    * VIRTUAL - virtual backend is not a real backend. It is not storing any data inside it. It is just for extension purposes. Which resource will be extended, they can be configured to virtual backend.
+    * MYSQL
+    * ORACLE
+    * MONGODB
+    * REDIS
+* **params** - params is to configure database backend connection configuration params. For each backend type we have
+  different available params.
+    * **postgresqlParams** - Postgresql connection params
+        * **username** - username
+        * **password** - password
+        * **host** - host
+        * **port** - port
+        * **dbName** - Database name
+        * **defaultSchema** - defaultSchema
+  * **mysqlParams** - Mysql connection params
+      * **username** - username
+      * **password** - password
+      * **host** - host
+      * **port** - port
+      * **dbName** - Database name
+      * **defaultSchema** - defaultSchema
+  * **mongoParams** - Mongo connection params
+      * **uri** - Mongodb connection string
+      * **dbName** - Database name
 
 ## Namespace
+### Overview
+Namespace is for grouping resources.
+
+### Namespace definition
+* **id** - unique namespace id
+* **name** - unique namespace name
+* **description** - Datasource description
+
+### Special namespaces:
+1. Default namespace (name=default): Default namespace is auto create on initial setup. When new resource is created, if you have not defined namespace upon resource definition, default namespace
+2. System namespace (name=system): System namespace is for holding all system resources.
 
 ## User
+### Overview
+User is for authentication purposes.
+
+### User definition
+* **id** - unique id
+* **username** - unique username
+* **password** - password for authentication
+* **securityContext** - security context is to apply ACL to resource property -
+  see [security context](#security-context)
 
 ## Extension
+### Overview
+Extensions is one of the main features of Data Handler. Extensions is for extending capabilities of Data handler.
+So you can define custom resources and you can define how it will work. 
 
-adasd
+Extensions can be developed technically in any language which supports grpc protocol. But currently we have built in support for golang.
+So you can define a resource, an extension and you can develop how your resource will work.
+
+### Extension definition
+* **id** - unique namespace id
+* **name** - unique namespace name
+* **description** - Datasource description
+* **namespace** - namespace of resource you want to extend
+* **resource** - name of resource you want to extend
