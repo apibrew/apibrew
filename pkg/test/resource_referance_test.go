@@ -1,6 +1,7 @@
 package test
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"github.com/tislib/data-handler/pkg/test/setup"
@@ -24,6 +25,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 					Type:     model.ResourceProperty_STRING,
 					Mapping:  "name",
 					Required: true,
+					Unique:   true,
 					Length:   255,
 				},
 				{
@@ -185,6 +187,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 	})
 
 	if err != nil {
+		log.Print(err)
 		t.Error("It should create records")
 		return
 	}

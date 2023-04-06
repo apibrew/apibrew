@@ -65,7 +65,7 @@ func ByResourcePropertyType(resourcePropertyType model.ResourceProperty_Type) Pr
 	case model.ResourceProperty_OBJECT:
 		return objectType{}
 	case model.ResourceProperty_REFERENCE:
-		return referenceType{}
+		return ReferenceType
 	case model.ResourceProperty_ENUM:
 		return StringType
 	case model.ResourceProperty_MAP:

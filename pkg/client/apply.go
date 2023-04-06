@@ -3,12 +3,11 @@ package client
 import (
 	"context"
 	"errors"
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	errors2 "github.com/tislib/data-handler/pkg/errors"
+	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
-	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
 )
@@ -266,61 +265,29 @@ func (d *dhClient) ApplyNamespace(ctx context.Context, namespace *model.Namespac
 func (d *dhClient) ApplyRecord(ctx context.Context, resource *model.Resource, record *model.Record) error {
 	// locate existing record
 	var existingRecord *model.Record
-	var checked = false
 
-	if record.Id != "" {
-		resp, err := d.recordClient.Get(ctx, &stub.GetRecordRequest{
-			Token:     d.GetToken(),
-			Namespace: resource.Namespace,
-			Resource:  resource.Name,
-			Id:        record.Id,
-		})
+	identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
 
-		if err != nil {
-			return err
-		}
-
-		existingRecord = resp.Record
-	} else {
-		// locating uniqueness
-		for _, prop := range resource.Properties {
-			if prop.Unique && record.Properties[prop.Name] != nil && record.Properties[prop.Name].AsInterface() != nil {
-				propTyp := types.ByResourcePropertyType(prop.Type)
-
-				unpacked, err := propTyp.UnPack(record.Properties[prop.Name])
-
-				if err != nil {
-					return err
-				}
-
-				resp, err := d.recordClient.List(ctx, &stub.ListRecordRequest{
-					Token:     d.GetToken(),
-					Namespace: resource.Namespace,
-					Resource:  resource.Name,
-					Filters: map[string]string{
-						prop.Name: propTyp.String(unpacked),
-					},
-				})
-
-				if err != nil {
-					return err
-				}
-
-				checked = true
-				if resp.Total > 0 {
-					if resp.Total > 1 {
-						return errors.New("returned record is not unique: " + prop.Name + " => " + propTyp.String(unpacked))
-					}
-
-					existingRecord = resp.Content[0]
-				}
-			}
-		}
-		// locate by index // fixme
+	if err != nil {
+		return err
 	}
 
-	if !checked {
-		return fmt.Errorf("could not locate record: resource %s should have either unique prop or unique index and record should have provided data for that prop", resource.Name)
+	qb := helper.NewQueryBuilder()
+
+	searchRes, err := d.recordClient.Search(ctx, &stub.SearchRecordRequest{
+		Token:     d.GetToken(),
+		Namespace: resource.Namespace,
+		Resource:  resource.Name,
+		Query:     qb.FromProperties(identifierProps),
+		Limit:     1,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if searchRes.Total > 0 {
+		existingRecord = searchRes.Content[0]
 	}
 
 	if existingRecord == nil {
