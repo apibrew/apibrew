@@ -480,6 +480,18 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 		}
 	}
 
+	if propEx, ok := query.Expression.(*model.Expression_RefValue); ok {
+		referencedResource := r.Schema.ResourceByNamespaceSlashName[propEx.RefValue.Namespace+"/"+propEx.RefValue.Resource]
+
+		innerSql, err := r.backend.resolveReference(propEx.RefValue.Properties, r.builder.Var, referencedResource)
+
+		if err != nil {
+			return "", errors.LogicalError.WithDetails(err.Error())
+		}
+
+		return innerSql, nil
+	}
+
 	panic("unknown expression type: " + query.String())
 }
 
@@ -520,7 +532,7 @@ func DbDecode(property *model.ResourceProperty, val interface{}) (interface{}, e
 
 		val = *data
 	} else if property.Type == model.ResourceProperty_REFERENCE {
-		return types.ReferenceType{
+		return map[string]interface{}{
 			"id": val,
 		}, nil
 	}

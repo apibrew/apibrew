@@ -48,6 +48,16 @@ func (q QueryBuilder) Equal(property string, value *structpb.Value) *model.Boole
 	}
 }
 
+func (q QueryBuilder) FromProperties(props map[string]*structpb.Value) *model.BooleanExpression {
+	var list []*model.BooleanExpression
+
+	for prop, value := range props {
+		list = append(list, q.Equal(prop, value))
+	}
+
+	return q.And(list...)
+}
+
 func NewQueryBuilder() QueryBuilder {
 	return QueryBuilder{}
 }
@@ -73,8 +83,24 @@ type ReferenceQueryBuilder[RefType abs.Entity[RefType]] struct {
 }
 
 func (r ReferenceQueryBuilder[RefType]) Equals(val RefType) *model.BooleanExpression {
-	qb := NewQueryBuilder()
-	return qb.Equal(r.PropName, structpb.NewStructValue(&structpb.Struct{Fields: val.ToProperties()}))
+	properties := val.ToProperties()
+
+	return &model.BooleanExpression{
+		Expression: &model.BooleanExpression_Equal{
+			Equal: &model.PairExpression{
+				Left: &model.Expression{
+					Expression: &model.Expression_Property{Property: r.PropName},
+				},
+				Right: &model.Expression{
+					Expression: &model.Expression_RefValue{RefValue: &model.RefValue{
+						Namespace:  val.GetNamespace(),
+						Resource:   val.GetResourceName(),
+						Properties: properties,
+					}},
+				},
+			},
+		},
+	}
 }
 
 type UuidQueryBuilder struct {

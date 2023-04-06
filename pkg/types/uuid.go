@@ -5,12 +5,14 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+var emptyUuid = uuid.UUID{}
+
 // string
 type uuidType struct {
 }
 
 func (u uuidType) Equals(a, b interface{}) bool {
-	return a == b
+	return u.String(a) == u.String(b)
 }
 
 func (u uuidType) Pack(value interface{}) (*structpb.Value, error) {
@@ -22,7 +24,7 @@ func (u uuidType) UnPack(val *structpb.Value) (interface{}, error) {
 }
 
 func (u uuidType) Default() any {
-	return uuid.New()
+	return emptyUuid
 }
 
 func (u uuidType) Pointer(required bool) any {

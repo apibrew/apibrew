@@ -12,7 +12,7 @@ type timestampType struct {
 }
 
 func (t timestampType) Equals(a, b interface{}) bool {
-	return a == b
+	return a.(time.Time).Equal(b.(time.Time))
 }
 
 func (t timestampType) Pack(value interface{}) (*structpb.Value, error) {

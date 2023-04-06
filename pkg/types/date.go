@@ -10,7 +10,7 @@ type dateType struct {
 }
 
 func (u dateType) Equals(a, b interface{}) bool {
-	return a == b
+	return a.(time.Time).Equal(b.(time.Time))
 }
 
 func (u dateType) Pack(value interface{}) (*structpb.Value, error) {

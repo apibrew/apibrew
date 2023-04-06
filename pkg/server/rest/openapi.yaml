@@ -399,6 +399,14 @@ paths:
                   in: query
                   schema:
                     $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: query.not.not.equal.left.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.refValue.resource
+                  in: query
+                  schema:
+                    type: string
                 - name: query.not.not.equal.right.property
                   in: query
                   schema:
@@ -407,6 +415,14 @@ paths:
                   in: query
                   schema:
                     $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: query.not.not.equal.right.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.right.refValue.resource
+                  in: query
+                  schema:
+                    type: string
                 - name: query.not.not.regexMatch.pattern
                   in: query
                   schema:
@@ -1313,6 +1329,14 @@ paths:
                   in: query
                   schema:
                     $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: query.not.not.equal.left.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.refValue.resource
+                  in: query
+                  schema:
+                    type: string
                 - name: query.not.not.equal.right.property
                   in: query
                   schema:
@@ -1321,6 +1345,14 @@ paths:
                   in: query
                   schema:
                     $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: query.not.not.equal.right.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.right.refValue.resource
+                  in: query
+                  schema:
+                    type: string
                 - name: query.not.not.regexMatch.pattern
                   in: query
                   schema:
