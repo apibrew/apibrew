@@ -31,8 +31,3 @@ jobs:
           docker push tislib/data-handler:full-${GITHUB_REF##*/}
           docker push tislib/data-handler:latest
           docker push tislib/data-handler:full-latest
-          DOCKER_BUILDKIT=1 docker build --target=build-binaries-export --build-arg OS=windows --build-arg ARCH=amd64 --build-arg APP=dhctl --build-arg SUFFIX=.exe --output out -f binaries.Dockerfile .
-      - uses: actions/upload-artifact@v3
-        with:
-          name: dhctl-windows-amd64.exe
-          path: out/app/output/dhctl-windows-amd64.exe
