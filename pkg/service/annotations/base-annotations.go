@@ -9,10 +9,10 @@ const KeepHistory = "KeepHistory"
 const HistoryResource = "HistoryResource"
 const NormalizedResource = "NormalizedResource"
 const AutoCreated = "AutoCreated"
-const EnableAudit = "DisableAudit"
+const EnableAudit = "EnableAudit"
 const DisableVersion = "DisableVersion"
 const DisableBackup = "DisableBackup"
-const DoPrimaryKeyLookup = "DoPrimaryKeyLookup"
+const DoPrimaryKeyLookup = "DoPrimaryKeyLookup" // deprecated
 
 // property params
 const SourceDef = "SourceDef"
