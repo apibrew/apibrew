@@ -140,6 +140,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 	for _, record := range params.Records {
 		util.InitRecord(ctx, resource, record)
 		util.NormalizeRecord(resource, record)
+		log.Print("Normalized record: " + record.Id)
 	}
 
 	if err = r.validateRecords(resource, params.Records, false); err != nil {

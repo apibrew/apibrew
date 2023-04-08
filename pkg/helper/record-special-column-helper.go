@@ -85,6 +85,20 @@ func (h RecordSpecialColumnHelper) SetUpdatedOn(updatedOn *timestamppb.Timestamp
 	h.Record.Properties["updatedOn"] = val
 }
 
+func (h RecordSpecialColumnHelper) HasIdSpecialProperty() bool {
+	for _, prop := range h.Resource.Properties {
+		if prop.Name == "id" && prop.Type == model.ResourceProperty_UUID && prop.Primary {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (h RecordSpecialColumnHelper) SetId(id string) {
+	h.Record.Properties["id"] = structpb.NewStringValue(id)
+}
+
 func (h RecordSpecialColumnHelper) SetUpdatedBy(updatedBy string) {
 	h.Record.Properties["updatedBy"] = structpb.NewStringValue(updatedBy)
 }

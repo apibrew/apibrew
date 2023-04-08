@@ -69,5 +69,3 @@
 {{- if (default false $.Site.Params.GeekdocOverwriteHTMLBase) }}
   <base href="{{ .Site.BaseURL }}" />
 {{- end }}
-
-{{ printf "<!-- %s -->" "Made with Geekdoc theme https://github.com/thegeeklab/hugo-geekdoc" | safeHTML }}
