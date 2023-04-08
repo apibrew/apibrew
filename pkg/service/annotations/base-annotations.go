@@ -12,7 +12,6 @@ const AutoCreated = "AutoCreated"
 const EnableAudit = "EnableAudit"
 const DisableVersion = "DisableVersion"
 const DisableBackup = "DisableBackup"
-const DoPrimaryKeyLookup = "DoPrimaryKeyLookup" // deprecated
 
 // property params
 const SourceDef = "SourceDef"

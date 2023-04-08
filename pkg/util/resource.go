@@ -90,12 +90,6 @@ func RemarkResource(resource *model.Resource) {
 			annotations.Enable(resource, annotations.DisableVersion)
 		}
 	}
-
-	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) {
-		if propertyNameMap[resources.IdProperty.Name] == nil || propertyNameMap[resources.IdProperty.Name].Type != resources.IdProperty.Type {
-			annotations.Enable(resource, annotations.DoPrimaryKeyLookup)
-		}
-	}
 }
 
 func NormalizeResource(resource *model.Resource) {
@@ -122,7 +116,7 @@ func NormalizeResource(resource *model.Resource) {
 		resource.Properties = append(resource.Properties, resources.VersionProperty)
 	}
 
-	if !annotations.IsEnabled(resource, annotations.DoPrimaryKeyLookup) && propertyNameMap[resources.IdProperty.Name] == nil {
+	if !HasResourcePrimaryProp(resource) && propertyNameMap[resources.IdProperty.Name] == nil {
 		resource.Properties = append([]*model.ResourceProperty{resources.IdProperty}, resource.Properties...)
 	}
 
@@ -139,6 +133,16 @@ func HasResourceSinglePrimaryProp(resource *model.Resource) bool {
 	}
 
 	return primaryPropCount == 1
+}
+
+func HasResourcePrimaryProp(resource *model.Resource) bool {
+	for _, item := range resource.Properties {
+		if item.Primary {
+			return true
+		}
+	}
+
+	return false
 }
 
 func GetResourceSinglePrimaryProp(resource *model.Resource) *model.ResourceProperty {
