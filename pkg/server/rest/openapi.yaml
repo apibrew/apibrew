@@ -1,5 +1,5 @@
 # Generated with protoc-gen-openapi
-# https://github.com/kollalabs/protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
 
 openapi: 3.0.3
 info:
@@ -71,7 +71,6 @@ paths:
         post:
             tags:
                 - Record
-            summary: ReadStream
             operationId: Record_ReadStream
             requestBody:
                 content:
@@ -96,7 +95,6 @@ paths:
         get:
             tags:
                 - Record
-            summary: List
             operationId: Record_List
             parameters:
                 - name: namespace
@@ -149,7 +147,6 @@ paths:
         put:
             tags:
                 - Record
-            summary: Update
             operationId: Record_Update
             parameters:
                 - name: namespace
@@ -196,7 +193,6 @@ paths:
         post:
             tags:
                 - Record
-            summary: Create
             operationId: Record_Create
             parameters:
                 - name: namespace
@@ -236,7 +232,6 @@ paths:
         put:
             tags:
                 - Record
-            summary: Update
             operationId: Record_Update
             parameters:
                 - name: namespace
@@ -283,7 +278,6 @@ paths:
         post:
             tags:
                 - Record
-            summary: Create
             operationId: Record_Create
             parameters:
                 - name: namespace
@@ -330,7 +324,6 @@ paths:
         delete:
             tags:
                 - Record
-            summary: Delete
             operationId: Record_Delete
             parameters:
                 - name: namespace
@@ -374,7 +367,6 @@ paths:
         post:
             tags:
                 - Record
-            summary: UpdateMulti
             operationId: Record_UpdateMulti
             parameters:
                 - name: namespace
@@ -448,7 +440,6 @@ paths:
         post:
             tags:
                 - Record
-            summary: Search
             operationId: Record_Search
             parameters:
                 - name: namespace
@@ -484,7 +475,6 @@ paths:
         get:
             tags:
                 - Record
-            summary: Get
             operationId: Record_Get
             parameters:
                 - name: namespace
@@ -522,7 +512,6 @@ paths:
         delete:
             tags:
                 - Record
-            summary: Delete
             operationId: Record_Delete
             parameters:
                 - name: namespace
@@ -561,7 +550,6 @@ paths:
         get:
             tags:
                 - DataSource
-            summary: List
             operationId: DataSource_List
             parameters:
                 - name: token
@@ -584,7 +572,6 @@ paths:
         put:
             tags:
                 - DataSource
-            summary: Update
             operationId: DataSource_Update
             requestBody:
                 content:
@@ -608,7 +595,6 @@ paths:
         post:
             tags:
                 - DataSource
-            summary: Create
             operationId: DataSource_Create
             requestBody:
                 content:
@@ -632,7 +618,6 @@ paths:
         delete:
             tags:
                 - DataSource
-            summary: Delete
             operationId: DataSource_Delete
             requestBody:
                 content:
@@ -657,7 +642,6 @@ paths:
         get:
             tags:
                 - DataSource
-            summary: Get
             operationId: DataSource_Get
             parameters:
                 - name: id
@@ -686,7 +670,6 @@ paths:
         post:
             tags:
                 - DataSource
-            summary: PrepareResourceFromEntity
             operationId: DataSource_PrepareResourceFromEntity
             parameters:
                 - name: id
@@ -717,7 +700,6 @@ paths:
         get:
             tags:
                 - DataSource
-            summary: Status
             operationId: DataSource_Status
             parameters:
                 - name: id
@@ -746,7 +728,6 @@ paths:
         get:
             tags:
                 - DataSource
-            summary: ListEntities
             operationId: DataSource_ListEntities
             parameters:
                 - name: id
@@ -775,7 +756,6 @@ paths:
         get:
             tags:
                 - Namespace
-            summary: List
             operationId: Namespace_List
             parameters:
                 - name: token
@@ -798,7 +778,6 @@ paths:
         put:
             tags:
                 - Namespace
-            summary: Update
             operationId: Namespace_Update
             requestBody:
                 content:
@@ -822,7 +801,6 @@ paths:
         post:
             tags:
                 - Namespace
-            summary: Create
             operationId: Namespace_Create
             requestBody:
                 content:
@@ -846,7 +824,6 @@ paths:
         delete:
             tags:
                 - Namespace
-            summary: Delete
             operationId: Namespace_Delete
             requestBody:
                 content:
@@ -871,7 +848,6 @@ paths:
         get:
             tags:
                 - Namespace
-            summary: Get
             operationId: Namespace_Get
             parameters:
                 - name: id
@@ -900,7 +876,6 @@ paths:
         get:
             tags:
                 - Resource
-            summary: List
             operationId: Resource_List
             parameters:
                 - name: token
@@ -923,7 +898,6 @@ paths:
         put:
             tags:
                 - Resource
-            summary: Update
             operationId: Resource_Update
             requestBody:
                 content:
@@ -947,7 +921,6 @@ paths:
         post:
             tags:
                 - Resource
-            summary: Create
             operationId: Resource_Create
             requestBody:
                 content:
@@ -971,7 +944,6 @@ paths:
         delete:
             tags:
                 - Resource
-            summary: Delete
             operationId: Resource_Delete
             requestBody:
                 content:
@@ -996,7 +968,6 @@ paths:
         post:
             tags:
                 - Resource
-            summary: PrepareResourceMigrationPlan
             operationId: Resource_PrepareResourceMigrationPlan
             requestBody:
                 content:
@@ -1021,7 +992,6 @@ paths:
         get:
             tags:
                 - Resource
-            summary: Get
             operationId: Resource_Get
             parameters:
                 - name: id
@@ -1050,7 +1020,6 @@ paths:
         get:
             tags:
                 - Resource
-            summary: GetByName
             operationId: Resource_GetByName
             parameters:
                 - name: namespace
@@ -1084,7 +1053,6 @@ paths:
         get:
             tags:
                 - User
-            summary: List
             operationId: User_List
             parameters:
                 - name: token
@@ -1118,7 +1086,6 @@ paths:
         put:
             tags:
                 - User
-            summary: Update
             operationId: User_Update
             parameters:
                 - name: token
@@ -1141,16 +1108,30 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.auditData.createdOn
+                - name: user.auditData.createdOn.seconds
                   in: query
+                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
                   schema:
-                    type: string
-                    format: date-time
-                - name: user.auditData.updatedOn
+                    type: integer
+                    format: int64
+                - name: user.auditData.createdOn.nanos
                   in: query
+                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
                   schema:
-                    type: string
-                    format: date-time
+                    type: integer
+                    format: int32
+                - name: user.auditData.updatedOn.seconds
+                  in: query
+                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
+                  schema:
+                    type: integer
+                    format: int64
+                - name: user.auditData.updatedOn.nanos
+                  in: query
+                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
+                  schema:
+                    type: integer
+                    format: int32
                 - name: user.auditData.createdBy
                   in: query
                   schema:
@@ -1180,7 +1161,6 @@ paths:
         post:
             tags:
                 - User
-            summary: Create
             operationId: User_Create
             parameters:
                 - name: token
@@ -1203,16 +1183,30 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.auditData.createdOn
+                - name: user.auditData.createdOn.seconds
                   in: query
+                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
                   schema:
-                    type: string
-                    format: date-time
-                - name: user.auditData.updatedOn
+                    type: integer
+                    format: int64
+                - name: user.auditData.createdOn.nanos
                   in: query
+                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
                   schema:
-                    type: string
-                    format: date-time
+                    type: integer
+                    format: int32
+                - name: user.auditData.updatedOn.seconds
+                  in: query
+                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
+                  schema:
+                    type: integer
+                    format: int64
+                - name: user.auditData.updatedOn.nanos
+                  in: query
+                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
+                  schema:
+                    type: integer
+                    format: int32
                 - name: user.auditData.createdBy
                   in: query
                   schema:
@@ -1242,7 +1236,6 @@ paths:
         delete:
             tags:
                 - User
-            summary: Delete
             operationId: User_Delete
             parameters:
                 - name: token
@@ -1276,7 +1269,6 @@ paths:
         get:
             tags:
                 - User
-            summary: Get
             operationId: User_Get
             parameters:
                 - name: id
@@ -1305,7 +1297,6 @@ paths:
         post:
             tags:
                 - Watch
-            summary: Watch
             description: Sends a greeting
             operationId: Watch_Watch
             parameters:
@@ -1366,13 +1357,7 @@ paths:
                   schema:
                     type: array
                     items:
-                        enum:
-                            - CREATE
-                            - UPDATE
-                            - DELETE
-                            - GET
-                            - LIST
-                        type: string
+                        type: integer
                         format: enum
             responses:
                 "200":
@@ -1417,13 +1402,9 @@ components:
                 password:
                     type: string
                 term:
-                    enum:
-                        - SHORT
-                        - MIDDLE
-                        - LONG
-                        - VERY_LONG
-                    type: string
+                    type: integer
                     format: enum
+            description: Token Lifespan
         AuthenticationResponse:
             type: object
             properties:
@@ -1552,14 +1533,7 @@ components:
                 id:
                     type: string
                 backend:
-                    enum:
-                        - POSTGRESQL
-                        - VIRTUAL
-                        - MYSQL
-                        - ORACLE
-                        - MONGODB
-                        - REDIS
-                    type: string
+                    type: integer
                     format: enum
                 name:
                     type: string
@@ -1927,12 +1901,7 @@ components:
                 token:
                     type: string
                 term:
-                    enum:
-                        - SHORT
-                        - MIDDLE
-                        - LONG
-                        - VERY_LONG
-                    type: string
+                    type: integer
                     format: enum
         RenewTokenResponse:
             type: object
@@ -1987,10 +1956,7 @@ components:
                     items:
                         $ref: '#/components/schemas/ResourceIndexProperty'
                 indexType:
-                    enum:
-                        - BTREE
-                        - HASH
-                    type: string
+                    type: integer
                     format: enum
                 unique:
                     type: boolean
@@ -2004,11 +1970,7 @@ components:
                 name:
                     type: string
                 order:
-                    enum:
-                        - ORDER_UNKNOWN
-                        - ORDER_ASC
-                        - ORDER_DESC
-                    type: string
+                    type: integer
                     format: enum
         ResourceMigrationCreateIndex:
             type: object
@@ -2094,24 +2056,7 @@ components:
                 name:
                     type: string
                 type:
-                    enum:
-                        - BOOL
-                        - STRING
-                        - FLOAT32
-                        - FLOAT64
-                        - INT32
-                        - INT64
-                        - BYTES
-                        - UUID
-                        - DATE
-                        - TIME
-                        - TIMESTAMP
-                        - OBJECT
-                        - MAP
-                        - LIST
-                        - REFERENCE
-                        - ENUM
-                    type: string
+                    type: integer
                     format: enum
                 mapping:
                     type: string
@@ -2139,24 +2084,7 @@ components:
                 reference:
                     $ref: '#/components/schemas/Reference'
                 subType:
-                    enum:
-                        - BOOL
-                        - STRING
-                        - FLOAT32
-                        - FLOAT64
-                        - INT32
-                        - INT64
-                        - BYTES
-                        - UUID
-                        - DATE
-                        - TIME
-                        - TIMESTAMP
-                        - OBJECT
-                        - MAP
-                        - LIST
-                        - REFERENCE
-                        - ENUM
-                    type: string
+                    type: integer
                     format: enum
                 title:
                     type: string
@@ -2234,20 +2162,10 @@ components:
                     items:
                         type: string
                 operation:
-                    enum:
-                        - OPERATION_TYPE_READ
-                        - OPERATION_TYPE_CREATE
-                        - OPERATION_TYPE_UPDATE
-                        - OPERATION_TYPE_DELETE
-                        - FULL
-                    type: string
+                    type: integer
                     format: enum
                 permit:
-                    enum:
-                        - PERMIT_TYPE_ALLOW
-                        - PERMIT_TYPE_REJECT
-                        - PERMIT_TYPE_UNKNOWN
-                    type: string
+                    type: integer
                     format: enum
         SecurityContext:
             type: object
@@ -2283,12 +2201,7 @@ components:
             type: object
             properties:
                 term:
-                    enum:
-                        - SHORT
-                        - MIDDLE
-                        - LONG
-                        - VERY_LONG
-                    type: string
+                    type: integer
                     format: enum
                 content:
                     type: string
@@ -2409,10 +2322,7 @@ components:
             type: object
             properties:
                 mode:
-                    enum:
-                        - DISCARD
-                        - ERROR
-                    type: string
+                    type: integer
                     format: enum
         WatchMessage:
             type: object
@@ -2424,13 +2334,7 @@ components:
                     items:
                         type: string
                 event:
-                    enum:
-                        - CREATE
-                        - UPDATE
-                        - DELETE
-                        - GET
-                        - LIST
-                    type: string
+                    type: integer
                     format: enum
                 eventOn:
                     type: string
