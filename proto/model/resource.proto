@@ -13,6 +13,11 @@ import 'google/protobuf/struct.proto';
 
 import "google/protobuf/descriptor.proto";
 
+/*
+  Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record
+  Data handler is responsible to validate data according to property types. For example, when you call create record and
+if you send 123.45 for int64
+ */
 message ResourceProperty {
   enum Type {
     BOOL = 0;
@@ -33,35 +38,39 @@ message ResourceProperty {
     ENUM = 16;
   }
   optional string id = 1 [(model.hcl_ignore) = true];
-  string name = 2 [(model.hcl_label) = "name"];
-  Type type = 3;
-  string mapping = 4;
-  bool required = 5;
-  bool primary = 6;
-  uint32 length = 7;
+  string name = 2 [(model.hcl_label) = "name"]; // property name
+  Type type = 3; // type of property - see [property-types](#property-types) section
+  string mapping = 4; // mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
+  bool required = 5; // this is to mark property as required
+  bool primary = 6; // this is to mark property as primary. Primary properties is like a part of primary key. Primary property(s) is used in to identify record.
+  uint32 length = 7; // length property is only valid and required for String typed properties
   bool unique = 8;
-  bool immutable = 14; // if true, update will not be allowed on this columns
-  optional SecurityContext securityContext = 9;
-  optional google.protobuf.Value defaultValue = 10;
-  optional google.protobuf.Value exampleValue = 17;
-  repeated google.protobuf.Value enumValues = 11; // if type is enum
-  optional Reference reference = 12 [(model.hcl_block) = "reference"]; // if type is reference
-  optional Type subType = 13; // if type is map or list
-  optional string title = 15;
-  optional string description = 16;
+  bool immutable = 14; // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded
+  optional SecurityContext securityContext = 9; // security context is to apply ACL to resource property
+  optional google.protobuf.Value defaultValue = 10; // defaultValue is default value.
+  optional google.protobuf.Value exampleValue = 17; // exampleValue is example value. It is an informative column
+  repeated google.protobuf.Value enumValues = 11; // enumValues is used if property type is an enum
+  optional Reference reference = 12 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
+  optional Type subType = 13; // subType is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
+  optional string title = 15; // It is an informative column
+  optional string description = 16; // It is an informative column
 
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
 
 message Reference {
-  string referencedResource = 2;
-  bool cascade = 3;
+  string referencedResource = 2; // referenced resource name
+  bool cascade = 3; // if cascade is true, delete/update operations will be cascaded to back referenced resources
 }
 
+/*
+ source config is to configure resource and bind it to data-source and an entity inside data source.
+ An entity is like a table on sql databases or collection on mongodb etc.
+ */
 message ResourceSourceConfig {
-  string dataSource = 1;
-  string catalog = 2;
-  string entity = 3;
+  string dataSource = 1; // data source name: where resource structure and its data will be physically exists. Data source name is required if resource is not virtual
+  string catalog = 2; // catalog is like a folder/schema/database. It is changing from backend to backend. Basically it is for grouping entities
+  string entity = 3; // entity name an item on datasource backend where resource will be bound. For sql databases it is table name, for mongo it is collection name, etc.
 }
 
 enum Order {
@@ -81,22 +90,22 @@ enum ResourceIndexType {
 }
 
 message ResourceIndex {
-  repeated ResourceIndexProperty properties = 1;
-  ResourceIndexType indexType = 2;
-  bool unique = 3;
+  repeated ResourceIndexProperty properties = 1; // list of properties inside single index. Normally you will need only single property. Multi property will be needed for multi property indexes(for complex indexes)
+  ResourceIndexType indexType = 2; // Index type(BTREE, HASH)
+  bool unique = 3; // if true index will be unique index
 
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
 
 message Resource {
-  string id = 1 [(model.hcl_ignore) = true];  // id; read only
-  string name = 2 [(model.hcl_label) = "name"]; // uniq(per namespace) // name
-  string namespace = 3; // create only?
-  ResourceSourceConfig sourceConfig = 5 [(model.hcl_block) = "sourceConfig"];
-  repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"];
-  repeated ResourceIndex indexes = 7 [(model.hcl_block) = "index"];
-  SecurityContext securityContext = 10;
-  bool virtual = 11;
+  string id = 1 [(model.hcl_ignore) = true];  // unique resource id; read only
+  string name = 2 [(model.hcl_label) = "name"]; // unique resource name, it is unique per namespace
+  string namespace = 3; // each resource is kept inside a namespace. One namespace can have multiple resources
+  ResourceSourceConfig sourceConfig = 5 [(model.hcl_block) = "sourceConfig"]; //
+  repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
+  repeated ResourceIndex indexes = 7 [(model.hcl_block) = "index"]; // list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends.
+  SecurityContext securityContext = 10; // security context is to apply ACL to resource property
+  bool virtual = 11; // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.
   bool immutable = 12; // if true, delete and update will not be allowed on this resource
   bool abstract = 13; // if abstract, resource is only available to internal and extension side operations
   optional string title = 14;

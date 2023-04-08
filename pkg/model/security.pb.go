@@ -125,20 +125,21 @@ func (PermitType) EnumDescriptor() ([]byte, []int) {
 	return file_model_security_proto_rawDescGZIP(), []int{1}
 }
 
+// SecurityConstraint is a rule
 type SecurityConstraint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Namespace string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	Resource  string                 `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
-	Property  string                 `protobuf:"bytes,3,opt,name=property,proto3" json:"property,omitempty"`
-	Before    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=before,proto3" json:"before,omitempty"`
-	After     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=after,proto3" json:"after,omitempty"`
-	Principal string                 `protobuf:"bytes,7,opt,name=principal,proto3" json:"principal,omitempty"`
-	RecordIds []string               `protobuf:"bytes,8,rep,name=recordIds,proto3" json:"recordIds,omitempty"`
-	Operation OperationType          `protobuf:"varint,13,opt,name=operation,proto3,enum=model.OperationType" json:"operation,omitempty"`
-	Permit    PermitType             `protobuf:"varint,14,opt,name=permit,proto3,enum=model.PermitType" json:"permit,omitempty"`
+	Namespace string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`                            //  namespace name where it will be applied
+	Resource  string                 `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`                              // resource name where it will be applied
+	Property  string                 `protobuf:"bytes,3,opt,name=property,proto3" json:"property,omitempty"`                              // property name where it will be applied
+	Before    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=before,proto3" json:"before,omitempty"`                                  // before it is valid
+	After     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=after,proto3" json:"after,omitempty"`                                    // after it is valid
+	Principal string                 `protobuf:"bytes,7,opt,name=principal,proto3" json:"principal,omitempty"`                            // username which it is applied to
+	RecordIds []string               `protobuf:"bytes,8,rep,name=recordIds,proto3" json:"recordIds,omitempty"`                            // list of record ids which it is applied to
+	Operation OperationType          `protobuf:"varint,13,opt,name=operation,proto3,enum=model.OperationType" json:"operation,omitempty"` // operation name which it is applied to
+	Permit    PermitType             `protobuf:"varint,14,opt,name=permit,proto3,enum=model.PermitType" json:"permit,omitempty"`          // permission
 }
 
 func (x *SecurityConstraint) Reset() {

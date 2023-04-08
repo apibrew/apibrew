@@ -19,17 +19,6 @@
 
 ## Resource
 
-Resource is main element among all elements. Resource is for defining schema of your structure. After that you can do
-crud operation inside resource.
-When you crete new resource, it is defining same structure on its backend.
-
-Depending on data source backend, it can store and manage data differently.
-
-But for all data sources and for different backends (sql, mongo, redis, etc.). Everything is working as same.
-**It means that, if you use postgresql and moved your resources from postgresql to mongodb everything will work as is.
-**. It is internal logic of data-handler how it is handling operation on which backend. At high level, end user expects
-that all data source backends are the same.
-
 See [definition](proto.md#resource), [resource.proto](https://github.com/tislib/data-handler/blob/master/proto/model/resource.proto)
 
 ### Special properties
@@ -171,6 +160,40 @@ Data source is also an abstraction point for various databases.
 
 Proto file: [resource.proto](https://github.com/tislib/data-handler/blob/master/proto/model/data-source.proto)
 
+Data source has the following properties:
+
+* **id** - unique data source id
+* **name** - unique data source name
+* **description** - Datasource description
+* **backend** - Data source backend is an enum. And you define which database you will use by setting backend. Backend
+  has following values
+    * POSTGRESQL - postgresql database
+    * VIRTUAL - virtual backend is not a real backend. It is not storing any data inside it. It is just for extension
+      purposes. Which resource will be extended, they can be configured to virtual backend.
+    * MYSQL
+    * ORACLE
+    * MONGODB
+    * REDIS
+* **params** - params is to configure database backend connection configuration params. For each backend type we have
+  different available params.
+    * **postgresqlParams** - Postgresql connection params
+        * **username** - username
+        * **password** - password
+        * **host** - host
+        * **port** - port
+        * **dbName** - Database name
+        * **defaultSchema** - defaultSchema
+    * **mysqlParams** - Mysql connection params
+        * **username** - username
+        * **password** - password
+        * **host** - host
+        * **port** - port
+        * **dbName** - Database name
+        * **defaultSchema** - defaultSchema
+    * **mongoParams** - Mongo connection params
+        * **uri** - Mongodb connection string
+        * **dbName** - Database name
+
 ## Namespace
 
 ### Overview
@@ -178,6 +201,12 @@ Proto file: [resource.proto](https://github.com/tislib/data-handler/blob/master/
 Namespace is for grouping resources.
 
 ### Namespace definition
+
+* **id** - unique namespace id
+* **name** - unique namespace name
+* **description** - Datasource description
+* **securityContext** - security context is to apply ACL to resource property -
+  see [security context](#security-context)
 
 ### Special namespaces:
 
@@ -193,6 +222,12 @@ User is for authentication purposes.
 
 ### User definition
 
+* **id** - unique id
+* **username** - unique username
+* **password** - password for authentication
+* **securityContext** - security context is to apply ACL to resource property -
+  see [security context](#security-context)
+
 ## Extension
 
 ### Overview
@@ -206,7 +241,52 @@ So you can define a resource, an extension and you can develop how your resource
 
 ### Extension definition
 
+* **id** - unique namespace id
+* **name** - unique namespace name
+* **description** - Datasource description
+* **namespace** - namespace of resource you want to extend
+* **resource** - name of resource you want to extend
+* **before** - you can define before action so, before resource operation, extension will be called
+    * **create** - before create => external call (see [External call definition](#external-call-definition))
+    * **update** - before update => external call (see [External call definition](#external-call-definition))
+    * **delete** - before delete => external call (see [External call definition](#external-call-definition))
+    * **list** - before list => external call (see [External call definition](#external-call-definition))
+    * **get** - before get => external call (see [External call definition](#external-call-definition))
+    * **all** - before all operations => external call (see [External call definition](#external-call-definition))
+    * **sync** - if sync is true, operation will be synchronous, otherwise, operation will be async, it means that Data
+      Handler will trigger external extension call, but will not wait for it
+* **after** - you can define after action so, after resource operation, extension will be called
+    * **create** - after create => external call (see [External call definition](#external-call-definition))
+    * **update** - after update => external call (see [External call definition](#external-call-definition))
+    * **delete** - after delete => external call (see [External call definition](#external-call-definition))
+    * **list** - after list => external call (see [External call definition](#external-call-definition))
+    * **get** - after get => external call (see [External call definition](#external-call-definition))
+    * **all** - after all operations => external call (see [External call definition](#external-call-definition))
+    * **sync** - if sync is true, operation will be synchronous, otherwise, operation will be async, it means that Data
+      Handler will trigger external extension call, but will not wait for it
+* **instead** - when you define instead action, operation on records will not call actual backend, instead extension
+  will be responsible to operate and response. "Instead" actions is always synchronous and you have only one extension
+  with instead per resource operation
+    * **create** - after create => external call (see [External call definition](#external-call-definition))
+    * **update** - after update => external call (see [External call definition](#external-call-definition))
+    * **delete** - after delete => external call (see [External call definition](#external-call-definition))
+    * **list** - after list => external call (see [External call definition](#external-call-definition))
+    * **get** - after get => external call (see [External call definition](#external-call-definition))
+    * **all** - after all operations => external call (see [External call definition](#external-call-definition))
+*
+
 ### External call definition
+
+* **kind** - there are two kind of external call. Http, Grpc(functionCall)
+* **functionCall** - when function call is defined as external call, Data handler calls extension service with grpc
+  protocol. You can see its service definition
+  here: [Service definition proto file]([resource.proto](https://github.com/tislib/data-handler/blob/master/proto/ext/function.proto))
+    * **host** - host
+    * **functionName**
+* **httpCall** - when http call is defined, Data handler is sending Http request with Rest standards. It sends Json data
+  and expects Json data.
+    * **uri** - URI to call
+    * **method** - Method to call
 
 When function call is defined. Data handlers sends request in following format:
 

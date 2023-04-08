@@ -21,20 +21,24 @@ enum PermitType {
   PERMIT_TYPE_UNKNOWN = 2;
 }
 
+/*
+SecurityConstraint is a rule
+ */
 message SecurityConstraint {
-  string namespace = 1;
-  string resource = 2;
-  string property = 3;
+  string namespace = 1; //  namespace name where it will be applied
+  string resource = 2; // resource name where it will be applied
+  string property = 3; // property name where it will be applied
 
-  google.protobuf.Timestamp before = 5;
-  google.protobuf.Timestamp after = 6;
+  google.protobuf.Timestamp before = 5; // before it is valid
+  google.protobuf.Timestamp after = 6; // after it is valid
 
-  string principal = 7;
-  repeated string recordIds = 8;
+  string principal = 7; // username which it is applied to
+  repeated string recordIds = 8; // list of record ids which it is applied to
 
-  OperationType operation = 13;
-  PermitType permit = 14;
+  OperationType operation = 13; // operation name which it is applied to
+  PermitType permit = 14; // permission
 }
+
 
 message SecurityContext {
   repeated SecurityConstraint constraints = 1 [(model.hcl_block) = "constraint"];
