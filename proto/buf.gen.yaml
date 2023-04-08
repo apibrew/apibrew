@@ -16,3 +16,7 @@ plugins:
   - name: openapi
     strategy: all
     out: ../pkg/server/rest
+  - name: doc
+    strategy: all
+    out: ../docs/grpc/
+    opt: markdown,docs.md
