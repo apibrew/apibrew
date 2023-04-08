@@ -486,7 +486,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 		innerSql, err := r.backend.resolveReference(propEx.RefValue.Properties, r.builder.Var, referencedResource)
 
 		if err != nil {
-			return "", errors.LogicalError.WithDetails(err.Error())
+			return "", err
 		}
 
 		return innerSql, nil

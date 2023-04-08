@@ -17,6 +17,38 @@ import (
 	"time"
 )
 
+type PropertyAccessor struct {
+	Property *model.ResourceProperty
+	Get      func(record *model.Record) interface{}
+	Set      func(record *model.Record, val interface{})
+}
+
+func GetResourceSpecialProperties(resource *model.Resource) []PropertyAccessor {
+	var specialProps []PropertyAccessor
+
+	idProp := GetResourceSinglePrimaryProp(resource)
+
+	if idProp != nil && idProp.Name == "id" && idProp.Type == model.ResourceProperty_UUID {
+		specialProps = append(specialProps, PropertyAccessor{
+			Property: resources.IdProperty,
+			Get: func(record *model.Record) interface{} {
+				val, err := uuid.Parse(record.Id)
+
+				if err != nil {
+					log.Warn(err)
+				}
+
+				return val
+			},
+			Set: func(record *model.Record, val interface{}) {
+				record.Id = val.(uuid.UUID).String()
+			},
+		})
+	}
+
+	return specialProps
+}
+
 func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Record) {
 	var idParts []string
 	for _, prop := range resource.Properties {
@@ -57,6 +89,10 @@ func InitRecord(ctx context.Context, resource *model.Resource, record *model.Rec
 	if ah.IsVersionEnabled() {
 		ah.InitVersion()
 	}
+
+	if ah.HasIdSpecialProperty() {
+		ah.SetId(record.Id)
+	}
 }
 
 func NormalizeRecord(resource *model.Resource, record *model.Record) {
@@ -64,7 +100,7 @@ func NormalizeRecord(resource *model.Resource, record *model.Record) {
 		record.Properties = make(map[string]*structpb.Value)
 	}
 
-	specialProps := resources.GetResourceSpecialProperties(resource)
+	specialProps := GetResourceSpecialProperties(resource)
 
 	for _, prop := range specialProps {
 		var err error
@@ -85,7 +121,7 @@ func DeNormalizeRecord(resource *model.Resource, record *model.Record) {
 		return
 	}
 
-	specialProps := resources.GetResourceSpecialProperties(resource)
+	specialProps := GetResourceSpecialProperties(resource)
 
 	for _, prop := range specialProps {
 		if record.Properties[prop.Property.Name] == nil {
@@ -116,17 +152,19 @@ func PrepareUpdateForRecord(ctx context.Context, resource *model.Resource, recor
 		if ah.GetCreatedOn() == nil {
 			ah.SetCreatedOn(timestamppb.New(time.Now()))
 		}
-
 		if ah.GetCreatedBy() == nil {
 			ah.SetCreatedBy(security.GetUserPrincipalFromContext(ctx))
 		}
-
 		ah.SetUpdatedOn(timestamppb.New(time.Now()))
 		ah.SetUpdatedBy(security.GetUserPrincipalFromContext(ctx))
 	}
 
 	if ah.IsVersionEnabled() {
 		ah.IncreaseVersion()
+	}
+
+	if record.Id != "" && ah.HasIdSpecialProperty() {
+		ah.SetId(record.Id)
 	}
 }
 
