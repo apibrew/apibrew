@@ -205,28 +205,31 @@ func (ResourceProperty_Type) EnumDescriptor() ([]byte, []int) {
 	return file_model_resource_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record
+// Data handler is responsible to validate data according to property types. For example, when you call create record and
+// if you send 123.45 for int64
 type ResourceProperty struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	Id              *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
-	Name            string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Type            ResourceProperty_Type  `protobuf:"varint,3,opt,name=type,proto3,enum=model.ResourceProperty_Type" json:"type,omitempty"`
-	Mapping         string                 `protobuf:"bytes,4,opt,name=mapping,proto3" json:"mapping,omitempty"`
-	Required        bool                   `protobuf:"varint,5,opt,name=required,proto3" json:"required,omitempty"`
-	Primary         bool                   `protobuf:"varint,6,opt,name=primary,proto3" json:"primary,omitempty"`
-	Length          uint32                 `protobuf:"varint,7,opt,name=length,proto3" json:"length,omitempty"`
+	Name            string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                                   // property name
+	Type            ResourceProperty_Type  `protobuf:"varint,3,opt,name=type,proto3,enum=model.ResourceProperty_Type" json:"type,omitempty"` // type of property - see [property-types](#property-types) section
+	Mapping         string                 `protobuf:"bytes,4,opt,name=mapping,proto3" json:"mapping,omitempty"`                             // mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
+	Required        bool                   `protobuf:"varint,5,opt,name=required,proto3" json:"required,omitempty"`                          // this is to mark property as required
+	Primary         bool                   `protobuf:"varint,6,opt,name=primary,proto3" json:"primary,omitempty"`                            // this is to mark property as primary. Primary properties is like a part of primary key. Primary property(s) is used in to identify record.
+	Length          uint32                 `protobuf:"varint,7,opt,name=length,proto3" json:"length,omitempty"`                              // length property is only valid and required for String typed properties
 	Unique          bool                   `protobuf:"varint,8,opt,name=unique,proto3" json:"unique,omitempty"`
-	Immutable       bool                   `protobuf:"varint,14,opt,name=immutable,proto3" json:"immutable,omitempty"` // if true, update will not be allowed on this columns
-	SecurityContext *SecurityContext       `protobuf:"bytes,9,opt,name=securityContext,proto3,oneof" json:"securityContext,omitempty"`
-	DefaultValue    *structpb.Value        `protobuf:"bytes,10,opt,name=defaultValue,proto3,oneof" json:"defaultValue,omitempty"`
-	ExampleValue    *structpb.Value        `protobuf:"bytes,17,opt,name=exampleValue,proto3,oneof" json:"exampleValue,omitempty"`
-	EnumValues      []*structpb.Value      `protobuf:"bytes,11,rep,name=enumValues,proto3" json:"enumValues,omitempty"`                                   // if type is enum
-	Reference       *Reference             `protobuf:"bytes,12,opt,name=reference,proto3,oneof" json:"reference,omitempty"`                               // if type is reference
-	SubType         *ResourceProperty_Type `protobuf:"varint,13,opt,name=subType,proto3,enum=model.ResourceProperty_Type,oneof" json:"subType,omitempty"` // if type is map or list
-	Title           *string                `protobuf:"bytes,15,opt,name=title,proto3,oneof" json:"title,omitempty"`
-	Description     *string                `protobuf:"bytes,16,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Immutable       bool                   `protobuf:"varint,14,opt,name=immutable,proto3" json:"immutable,omitempty"`                                    // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded
+	SecurityContext *SecurityContext       `protobuf:"bytes,9,opt,name=securityContext,proto3,oneof" json:"securityContext,omitempty"`                    // security context is to apply ACL to resource property
+	DefaultValue    *structpb.Value        `protobuf:"bytes,10,opt,name=defaultValue,proto3,oneof" json:"defaultValue,omitempty"`                         // defaultValue is default value.
+	ExampleValue    *structpb.Value        `protobuf:"bytes,17,opt,name=exampleValue,proto3,oneof" json:"exampleValue,omitempty"`                         // exampleValue is example value. It is an informative column
+	EnumValues      []*structpb.Value      `protobuf:"bytes,11,rep,name=enumValues,proto3" json:"enumValues,omitempty"`                                   // enumValues is used if property type is an enum
+	Reference       *Reference             `protobuf:"bytes,12,opt,name=reference,proto3,oneof" json:"reference,omitempty"`                               // reference property is only valid and required for Reference types.
+	SubType         *ResourceProperty_Type `protobuf:"varint,13,opt,name=subType,proto3,enum=model.ResourceProperty_Type,oneof" json:"subType,omitempty"` // subType is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
+	Title           *string                `protobuf:"bytes,15,opt,name=title,proto3,oneof" json:"title,omitempty"`                                       // It is an informative column
+	Description     *string                `protobuf:"bytes,16,opt,name=description,proto3,oneof" json:"description,omitempty"`                           // It is an informative column
 	Annotations     map[string]string      `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -393,8 +396,8 @@ type Reference struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ReferencedResource string `protobuf:"bytes,2,opt,name=referencedResource,proto3" json:"referencedResource,omitempty"`
-	Cascade            bool   `protobuf:"varint,3,opt,name=cascade,proto3" json:"cascade,omitempty"`
+	ReferencedResource string `protobuf:"bytes,2,opt,name=referencedResource,proto3" json:"referencedResource,omitempty"` // referenced resource name
+	Cascade            bool   `protobuf:"varint,3,opt,name=cascade,proto3" json:"cascade,omitempty"`                      // if cascade is true, delete/update operations will be cascaded to back referenced resources
 }
 
 func (x *Reference) Reset() {
@@ -443,14 +446,16 @@ func (x *Reference) GetCascade() bool {
 	return false
 }
 
+// source config is to configure resource and bind it to data-source and an entity inside data source.
+// An entity is like a table on sql databases or collection on mongodb etc.
 type ResourceSourceConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	DataSource string `protobuf:"bytes,1,opt,name=dataSource,proto3" json:"dataSource,omitempty"`
-	Catalog    string `protobuf:"bytes,2,opt,name=catalog,proto3" json:"catalog,omitempty"`
-	Entity     string `protobuf:"bytes,3,opt,name=entity,proto3" json:"entity,omitempty"`
+	DataSource string `protobuf:"bytes,1,opt,name=dataSource,proto3" json:"dataSource,omitempty"` // data source name: where resource structure and its data will be physically exists. Data source name is required if resource is not virtual
+	Catalog    string `protobuf:"bytes,2,opt,name=catalog,proto3" json:"catalog,omitempty"`       // catalog is like a folder/schema/database. It is changing from backend to backend. Basically it is for grouping entities
+	Entity     string `protobuf:"bytes,3,opt,name=entity,proto3" json:"entity,omitempty"`         // entity name an item on datasource backend where resource will be bound. For sql databases it is table name, for mongo it is collection name, etc.
 }
 
 func (x *ResourceSourceConfig) Reset() {
@@ -566,9 +571,9 @@ type ResourceIndex struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Properties  []*ResourceIndexProperty `protobuf:"bytes,1,rep,name=properties,proto3" json:"properties,omitempty"`
-	IndexType   ResourceIndexType        `protobuf:"varint,2,opt,name=indexType,proto3,enum=model.ResourceIndexType" json:"indexType,omitempty"`
-	Unique      bool                     `protobuf:"varint,3,opt,name=unique,proto3" json:"unique,omitempty"`
+	Properties  []*ResourceIndexProperty `protobuf:"bytes,1,rep,name=properties,proto3" json:"properties,omitempty"`                             // list of properties inside single index. Normally you will need only single property. Multi property will be needed for multi property indexes(for complex indexes)
+	IndexType   ResourceIndexType        `protobuf:"varint,2,opt,name=indexType,proto3,enum=model.ResourceIndexType" json:"indexType,omitempty"` // Index type(BTREE, HASH)
+	Unique      bool                     `protobuf:"varint,3,opt,name=unique,proto3" json:"unique,omitempty"`                                    // if true index will be unique index
 	Annotations map[string]string        `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -637,16 +642,16 @@ type Resource struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id              string                `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`               // id; read only
-	Name            string                `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`           // uniq(per namespace) // name
-	Namespace       string                `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"` // create only?
-	SourceConfig    *ResourceSourceConfig `protobuf:"bytes,5,opt,name=sourceConfig,proto3" json:"sourceConfig,omitempty"`
-	Properties      []*ResourceProperty   `protobuf:"bytes,6,rep,name=properties,proto3" json:"properties,omitempty"`
-	Indexes         []*ResourceIndex      `protobuf:"bytes,7,rep,name=indexes,proto3" json:"indexes,omitempty"`
-	SecurityContext *SecurityContext      `protobuf:"bytes,10,opt,name=securityContext,proto3" json:"securityContext,omitempty"`
-	Virtual         bool                  `protobuf:"varint,11,opt,name=virtual,proto3" json:"virtual,omitempty"`
-	Immutable       bool                  `protobuf:"varint,12,opt,name=immutable,proto3" json:"immutable,omitempty"` // if true, delete and update will not be allowed on this resource
-	Abstract        bool                  `protobuf:"varint,13,opt,name=abstract,proto3" json:"abstract,omitempty"`   // if abstract, resource is only available to internal and extension side operations
+	Id              string                `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                            // unique resource id; read only
+	Name            string                `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                        // unique resource name, it is unique per namespace
+	Namespace       string                `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"`              // each resource is kept inside a namespace. One namespace can have multiple resources
+	SourceConfig    *ResourceSourceConfig `protobuf:"bytes,5,opt,name=sourceConfig,proto3" json:"sourceConfig,omitempty"`        //
+	Properties      []*ResourceProperty   `protobuf:"bytes,6,rep,name=properties,proto3" json:"properties,omitempty"`            // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
+	Indexes         []*ResourceIndex      `protobuf:"bytes,7,rep,name=indexes,proto3" json:"indexes,omitempty"`                  // list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends.
+	SecurityContext *SecurityContext      `protobuf:"bytes,10,opt,name=securityContext,proto3" json:"securityContext,omitempty"` // security context is to apply ACL to resource property
+	Virtual         bool                  `protobuf:"varint,11,opt,name=virtual,proto3" json:"virtual,omitempty"`                // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.
+	Immutable       bool                  `protobuf:"varint,12,opt,name=immutable,proto3" json:"immutable,omitempty"`            // if true, delete and update will not be allowed on this resource
+	Abstract        bool                  `protobuf:"varint,13,opt,name=abstract,proto3" json:"abstract,omitempty"`              // if abstract, resource is only available to internal and extension side operations
 	Title           *string               `protobuf:"bytes,14,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	Description     *string               `protobuf:"bytes,15,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	AuditData       *AuditData            `protobuf:"bytes,101,opt,name=auditData,proto3" json:"auditData,omitempty"`

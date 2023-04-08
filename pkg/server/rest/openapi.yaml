@@ -2094,6 +2094,7 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+            description: Resource properties is used to describe its schema. Each resource property is corresponding to a field in a recordData handler is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64
         ResourceSourceConfig:
             type: object
             properties:
@@ -2103,6 +2104,7 @@ components:
                     type: string
                 entity:
                     type: string
+            description: source config is to configure resource and bind it to data-source and an entity inside data source.An entity is like a table on sql databases or collection on mongodb etc.
         SearchRecordRequest:
             type: object
             properties:
@@ -2167,6 +2169,7 @@ components:
                 permit:
                     type: integer
                     format: enum
+            description: SecurityConstraint is a rule
         SecurityContext:
             type: object
             properties:

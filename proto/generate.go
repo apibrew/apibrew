@@ -1,3 +1,3 @@
 package rest
 
-//go:generate buf generate --path=model,stub,ext
+//go:generate buf generate --path=stub,model,ext
