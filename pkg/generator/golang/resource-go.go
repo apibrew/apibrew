@@ -3,6 +3,7 @@ package golang
 import (
 	"bytes"
 	"github.com/Masterminds/sprig"
+	"github.com/gosimple/slug"
 	"github.com/iancoleman/strcase"
 	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
@@ -12,6 +13,7 @@ import (
 	"go/format"
 	"html/template"
 	"io"
+	"os"
 	"reflect"
 	"strings"
 )
@@ -19,9 +21,10 @@ import (
 type GenerateResourceCodeParams struct {
 	Package   string
 	Resources []*model.Resource
+	Path      string
 }
 
-func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCodeParams) (string, error) {
+func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCodeParams) error {
 	var b bytes.Buffer
 	br := io.Writer(&b)
 
@@ -30,18 +33,28 @@ func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCod
 	})
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	rawCode := b.String()
-	formatted, err := format.Source([]byte(rawCode))
+	code, err := format.Source([]byte(rawCode))
 	if err != nil {
-		log.Print(err)
-		//log.Print(b.String())
-		return rawCode, nil
+		log.Print(code)
+
+		return err
 	}
 
-	return string(formatted), nil
+	resourceFileName := slug.Make(resource.Namespace) + "-" + slug.Make(resource.Name) + ".go"
+
+	if resource.Namespace == "default" {
+		resourceFileName = slug.Make(resource.Name) + ".go"
+	}
+
+	if err := os.MkdirAll(params.Path, 0777); err != nil {
+		log.Fatal(err)
+	}
+
+	return os.WriteFile(params.Path+"/"+resourceFileName, code, 0777)
 }
 
 func PropGoType(prop *model.ResourceProperty) string {
