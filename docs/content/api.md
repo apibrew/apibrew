@@ -14,7 +14,7 @@
 * [**SDK and code generation**](#sdk)
     * [**Golang**](#golang)
     * [**Python**](#python)
-    * [**Javascript**](#javascript)
+    * [**Nodejs**](#nodejs)
 * [**CLI**](#cli)
 
 # Grpc Api

@@ -22,39 +22,48 @@ type GenerateResourceCodeParams struct {
 	Package   string
 	Resources []*model.Resource
 	Path      string
+	Namespace string
 }
 
-func GenerateGoResourceCode(resource *model.Resource, params GenerateResourceCodeParams) error {
-	var b bytes.Buffer
-	br := io.Writer(&b)
+func GenerateGoResourceCode(params GenerateResourceCodeParams) error {
+	for _, resource := range params.Resources {
+		var b bytes.Buffer
+		br := io.Writer(&b)
 
-	err := tmpl.ExecuteTemplate(br, "resource.tmpl", map[string]interface{}{
-		"resource": resource,
-	})
+		err := tmpl.ExecuteTemplate(br, "resource.tmpl", map[string]interface{}{
+			"resource": resource,
+		})
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+
+		rawCode := b.String()
+		code, err := format.Source([]byte(rawCode))
+		if err != nil {
+			log.Print(code)
+
+			return err
+		}
+
+		resourceFileName := slug.Make(resource.Namespace) + "-" + slug.Make(resource.Name) + ".go"
+
+		if resource.Namespace == "default" {
+			resourceFileName = slug.Make(resource.Name) + ".go"
+		}
+
+		if err := os.MkdirAll(params.Path, 0777); err != nil {
+			log.Fatal(err)
+		}
+
+		err = os.WriteFile(params.Path+"/"+resourceFileName, code, 0777)
+
+		if err != nil {
+			return err
+		}
 	}
 
-	rawCode := b.String()
-	code, err := format.Source([]byte(rawCode))
-	if err != nil {
-		log.Print(code)
-
-		return err
-	}
-
-	resourceFileName := slug.Make(resource.Namespace) + "-" + slug.Make(resource.Name) + ".go"
-
-	if resource.Namespace == "default" {
-		resourceFileName = slug.Make(resource.Name) + ".go"
-	}
-
-	if err := os.MkdirAll(params.Path, 0777); err != nil {
-		log.Fatal(err)
-	}
-
-	return os.WriteFile(params.Path+"/"+resourceFileName, code, 0777)
+	return nil
 }
 
 func PropGoType(prop *model.ResourceProperty) string {
