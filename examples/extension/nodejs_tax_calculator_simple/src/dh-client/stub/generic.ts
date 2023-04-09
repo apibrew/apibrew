@@ -9,111 +9,156 @@ import * as dependency_3 from "./../google/protobuf/struct";
 import * as dependency_4 from "./../google/protobuf/any";
 import * as pb_1 from "google-protobuf";
 import * as grpc_1 from "@grpc/grpc-js";
-export namespace stub {
-    export class ListRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            token?: string;
-            namespace?: string;
-            resource?: string;
-            filters?: Map<string, string>;
-            limit?: number;
-            offset?: number;
-            useHistory?: boolean;
-            resolveReferences?: string[];
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [8], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("resource" in data && data.resource != undefined) {
-                    this.resource = data.resource;
-                }
-                if ("filters" in data && data.filters != undefined) {
-                    this.filters = data.filters;
-                }
-                if ("limit" in data && data.limit != undefined) {
-                    this.limit = data.limit;
-                }
-                if ("offset" in data && data.offset != undefined) {
-                    this.offset = data.offset;
-                }
-                if ("useHistory" in data && data.useHistory != undefined) {
-                    this.useHistory = data.useHistory;
-                }
-                if ("resolveReferences" in data && data.resolveReferences != undefined) {
-                    this.resolveReferences = data.resolveReferences;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
+export class ListRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        filters?: Map<string, string>;
+        limit?: number;
+        offset?: number;
+        useHistory?: boolean;
+        resolveReferences?: string[];
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [8], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
             }
-            if (!this.filters)
-                this.filters = new Map();
-            if (!this.annotations)
-                this.annotations = new Map();
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("resource" in data && data.resource != undefined) {
+                this.resource = data.resource;
+            }
+            if ("filters" in data && data.filters != undefined) {
+                this.filters = data.filters;
+            }
+            if ("limit" in data && data.limit != undefined) {
+                this.limit = data.limit;
+            }
+            if ("offset" in data && data.offset != undefined) {
+                this.offset = data.offset;
+            }
+            if ("useHistory" in data && data.useHistory != undefined) {
+                this.useHistory = data.useHistory;
+            }
+            if ("resolveReferences" in data && data.resolveReferences != undefined) {
+                this.resolveReferences = data.resolveReferences;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
         }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        if (!this.filters)
+            this.filters = new Map();
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get resource() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set resource(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get filters() {
+        return pb_1.Message.getField(this, 4) as any as Map<string, string>;
+    }
+    set filters(value: Map<string, string>) {
+        pb_1.Message.setField(this, 4, value as any);
+    }
+    get limit() {
+        return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
+    }
+    set limit(value: number) {
+        pb_1.Message.setField(this, 5, value);
+    }
+    get offset() {
+        return pb_1.Message.getFieldWithDefault(this, 6, 0) as number;
+    }
+    set offset(value: number) {
+        pb_1.Message.setField(this, 6, value);
+    }
+    get useHistory() {
+        return pb_1.Message.getFieldWithDefault(this, 7, false) as boolean;
+    }
+    set useHistory(value: boolean) {
+        pb_1.Message.setField(this, 7, value);
+    }
+    get resolveReferences() {
+        return pb_1.Message.getFieldWithDefault(this, 8, []) as string[];
+    }
+    set resolveReferences(value: string[]) {
+        pb_1.Message.setField(this, 8, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        filters?: {
+            [key: string]: string;
+        };
+        limit?: number;
+        offset?: number;
+        useHistory?: boolean;
+        resolveReferences?: string[];
+        annotations?: {
+            [key: string]: string;
+        };
+    }): ListRequest {
+        const message = new ListRequest({});
+        if (data.token != null) {
+            message.token = data.token;
         }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
         }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        if (data.resource != null) {
+            message.resource = data.resource;
         }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 2, value);
+        if (typeof data.filters == "object") {
+            message.filters = new Map(Object.entries(data.filters));
         }
-        get resource() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        if (data.limit != null) {
+            message.limit = data.limit;
         }
-        set resource(value: string) {
-            pb_1.Message.setField(this, 3, value);
+        if (data.offset != null) {
+            message.offset = data.offset;
         }
-        get filters() {
-            return pb_1.Message.getField(this, 4) as any as Map<string, string>;
+        if (data.useHistory != null) {
+            message.useHistory = data.useHistory;
         }
-        set filters(value: Map<string, string>) {
-            pb_1.Message.setField(this, 4, value as any);
+        if (data.resolveReferences != null) {
+            message.resolveReferences = data.resolveReferences;
         }
-        get limit() {
-            return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
         }
-        set limit(value: number) {
-            pb_1.Message.setField(this, 5, value);
-        }
-        get offset() {
-            return pb_1.Message.getFieldWithDefault(this, 6, 0) as number;
-        }
-        set offset(value: number) {
-            pb_1.Message.setField(this, 6, value);
-        }
-        get useHistory() {
-            return pb_1.Message.getFieldWithDefault(this, 7, false) as boolean;
-        }
-        set useHistory(value: boolean) {
-            pb_1.Message.setField(this, 7, value);
-        }
-        get resolveReferences() {
-            return pb_1.Message.getFieldWithDefault(this, 8, []) as string[];
-        }
-        set resolveReferences(value: string[]) {
-            pb_1.Message.setField(this, 8, value);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             namespace?: string;
             resource?: string;
@@ -127,1715 +172,1697 @@ export namespace stub {
             annotations?: {
                 [key: string]: string;
             };
-        }): ListRequest {
-            const message = new ListRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.resource != null) {
-                message.resource = data.resource;
-            }
-            if (typeof data.filters == "object") {
-                message.filters = new Map(Object.entries(data.filters));
-            }
-            if (data.limit != null) {
-                message.limit = data.limit;
-            }
-            if (data.offset != null) {
-                message.offset = data.offset;
-            }
-            if (data.useHistory != null) {
-                message.useHistory = data.useHistory;
-            }
-            if (data.resolveReferences != null) {
-                message.resolveReferences = data.resolveReferences;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                namespace?: string;
-                resource?: string;
-                filters?: {
-                    [key: string]: string;
-                };
-                limit?: number;
-                offset?: number;
-                useHistory?: boolean;
-                resolveReferences?: string[];
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.resource != null) {
-                data.resource = this.resource;
-            }
-            if (this.filters != null) {
-                data.filters = (Object.fromEntries)(this.filters);
-            }
-            if (this.limit != null) {
-                data.limit = this.limit;
-            }
-            if (this.offset != null) {
-                data.offset = this.offset;
-            }
-            if (this.useHistory != null) {
-                data.useHistory = this.useHistory;
-            }
-            if (this.resolveReferences != null) {
-                data.resolveReferences = this.resolveReferences;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.namespace.length)
-                writer.writeString(2, this.namespace);
-            if (this.resource.length)
-                writer.writeString(3, this.resource);
-            for (const [key, value] of this.filters) {
-                writer.writeMessage(4, this.filters, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (this.limit != 0)
-                writer.writeUint32(5, this.limit);
-            if (this.offset != 0)
-                writer.writeUint64(6, this.offset);
-            if (this.useHistory != false)
-                writer.writeBool(7, this.useHistory);
-            if (this.resolveReferences.length)
-                writer.writeRepeatedString(8, this.resolveReferences);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.resource != null) {
+            data.resource = this.resource;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (this.filters != null) {
+            data.filters = (Object.fromEntries)(this.filters);
+        }
+        if (this.limit != null) {
+            data.limit = this.limit;
+        }
+        if (this.offset != null) {
+            data.offset = this.offset;
+        }
+        if (this.useHistory != null) {
+            data.useHistory = this.useHistory;
+        }
+        if (this.resolveReferences != null) {
+            data.resolveReferences = this.resolveReferences;
+        }
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.namespace.length)
+            writer.writeString(2, this.namespace);
+        if (this.resource.length)
+            writer.writeString(3, this.resource);
+        for (const [key, value] of this.filters) {
+            writer.writeMessage(4, this.filters, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (this.limit != 0)
+            writer.writeUint32(5, this.limit);
+        if (this.offset != 0)
+            writer.writeUint64(6, this.offset);
+        if (this.useHistory != false)
+            writer.writeBool(7, this.useHistory);
+        if (this.resolveReferences.length)
+            writer.writeRepeatedString(8, this.resolveReferences);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.namespace = reader.readString();
-                        break;
-                    case 3:
-                        message.resource = reader.readString();
-                        break;
-                    case 4:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.filters as any, reader, reader.readString, reader.readString));
-                        break;
-                    case 5:
-                        message.limit = reader.readUint32();
-                        break;
-                    case 6:
-                        message.offset = reader.readUint64();
-                        break;
-                    case 7:
-                        message.useHistory = reader.readBool();
-                        break;
-                    case 8:
-                        pb_1.Message.addToRepeatedField(message, 8, reader.readString());
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.namespace = reader.readString();
+                    break;
+                case 3:
+                    message.resource = reader.readString();
+                    break;
+                case 4:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.filters as any, reader, reader.readString, reader.readString));
+                    break;
+                case 5:
+                    message.limit = reader.readUint32();
+                    break;
+                case 6:
+                    message.offset = reader.readUint64();
+                    break;
+                case 7:
+                    message.useHistory = reader.readBool();
+                    break;
+                case 8:
+                    pb_1.Message.addToRepeatedField(message, 8, reader.readString());
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ListRequest {
-            return ListRequest.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ListRequest {
+        return ListRequest.deserialize(bytes);
+    }
+}
+export class ListResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        total?: number;
+        content?: dependency_4.Any[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("total" in data && data.total != undefined) {
+                this.total = data.total;
+            }
+            if ("content" in data && data.content != undefined) {
+                this.content = data.content;
+            }
         }
     }
-    export class ListResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            total?: number;
-            content?: dependency_4.google.protobuf.Any[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("total" in data && data.total != undefined) {
-                    this.total = data.total;
-                }
-                if ("content" in data && data.content != undefined) {
-                    this.content = data.content;
-                }
-            }
-        }
-        get total() {
-            return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
-        }
-        set total(value: number) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get content() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_4.google.protobuf.Any, 2) as dependency_4.google.protobuf.Any[];
-        }
-        set content(value: dependency_4.google.protobuf.Any[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 2, value);
-        }
-        static fromObject(data: {
-            total?: number;
-            content?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-        }): ListResponse {
-            const message = new ListResponse({});
-            if (data.total != null) {
-                message.total = data.total;
-            }
-            if (data.content != null) {
-                message.content = data.content.map(item => dependency_4.google.protobuf.Any.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                total?: number;
-                content?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-            } = {};
-            if (this.total != null) {
-                data.total = this.total;
-            }
-            if (this.content != null) {
-                data.content = this.content.map((item: dependency_4.google.protobuf.Any) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.total != 0)
-                writer.writeUint32(1, this.total);
-            if (this.content.length)
-                writer.writeRepeatedMessage(2, this.content, (item: dependency_4.google.protobuf.Any) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.total = reader.readUint32();
-                        break;
-                    case 2:
-                        reader.readMessage(message.content, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.google.protobuf.Any.deserialize(reader), dependency_4.google.protobuf.Any));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ListResponse {
-            return ListResponse.deserialize(bytes);
-        }
+    get total() {
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
-    export class SearchRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    set total(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get content() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_4.Any, 2) as dependency_4.Any[];
+    }
+    set content(value: dependency_4.Any[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+    }
+    static fromObject(data: {
+        total?: number;
+        content?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+    }): ListResponse {
+        const message = new ListResponse({});
+        if (data.total != null) {
+            message.total = data.total;
+        }
+        if (data.content != null) {
+            message.content = data.content.map(item => dependency_4.Any.fromObject(item));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            total?: number;
+            content?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+        } = {};
+        if (this.total != null) {
+            data.total = this.total;
+        }
+        if (this.content != null) {
+            data.content = this.content.map((item: dependency_4.Any) => item.toObject());
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.total != 0)
+            writer.writeUint32(1, this.total);
+        if (this.content.length)
+            writer.writeRepeatedMessage(2, this.content, (item: dependency_4.Any) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.total = reader.readUint32();
+                    break;
+                case 2:
+                    reader.readMessage(message.content, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.Any.deserialize(reader), dependency_4.Any));
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ListResponse {
+        return ListResponse.deserialize(bytes);
+    }
+}
+export class SearchRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        query?: dependency_1.BooleanExpression;
+        limit?: number;
+        offset?: number;
+        useHistory?: boolean;
+        resolveReferences?: string[];
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [8], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("resource" in data && data.resource != undefined) {
+                this.resource = data.resource;
+            }
+            if ("query" in data && data.query != undefined) {
+                this.query = data.query;
+            }
+            if ("limit" in data && data.limit != undefined) {
+                this.limit = data.limit;
+            }
+            if ("offset" in data && data.offset != undefined) {
+                this.offset = data.offset;
+            }
+            if ("useHistory" in data && data.useHistory != undefined) {
+                this.useHistory = data.useHistory;
+            }
+            if ("resolveReferences" in data && data.resolveReferences != undefined) {
+                this.resolveReferences = data.resolveReferences;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
+        }
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get resource() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set resource(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get query() {
+        return pb_1.Message.getWrapperField(this, dependency_1.BooleanExpression, 4) as dependency_1.BooleanExpression;
+    }
+    set query(value: dependency_1.BooleanExpression) {
+        pb_1.Message.setWrapperField(this, 4, value);
+    }
+    get hasQuery() {
+        return pb_1.Message.getField(this, 4) != null;
+    }
+    get limit() {
+        return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
+    }
+    set limit(value: number) {
+        pb_1.Message.setField(this, 5, value);
+    }
+    get offset() {
+        return pb_1.Message.getFieldWithDefault(this, 6, 0) as number;
+    }
+    set offset(value: number) {
+        pb_1.Message.setField(this, 6, value);
+    }
+    get useHistory() {
+        return pb_1.Message.getFieldWithDefault(this, 7, false) as boolean;
+    }
+    set useHistory(value: boolean) {
+        pb_1.Message.setField(this, 7, value);
+    }
+    get resolveReferences() {
+        return pb_1.Message.getFieldWithDefault(this, 8, []) as string[];
+    }
+    set resolveReferences(value: string[]) {
+        pb_1.Message.setField(this, 8, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        query?: ReturnType<typeof dependency_1.BooleanExpression.prototype.toObject>;
+        limit?: number;
+        offset?: number;
+        useHistory?: boolean;
+        resolveReferences?: string[];
+        annotations?: {
+            [key: string]: string;
+        };
+    }): SearchRequest {
+        const message = new SearchRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
+        }
+        if (data.resource != null) {
+            message.resource = data.resource;
+        }
+        if (data.query != null) {
+            message.query = dependency_1.BooleanExpression.fromObject(data.query);
+        }
+        if (data.limit != null) {
+            message.limit = data.limit;
+        }
+        if (data.offset != null) {
+            message.offset = data.offset;
+        }
+        if (data.useHistory != null) {
+            message.useHistory = data.useHistory;
+        }
+        if (data.resolveReferences != null) {
+            message.resolveReferences = data.resolveReferences;
+        }
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             namespace?: string;
             resource?: string;
-            query?: dependency_1.model.BooleanExpression;
+            query?: ReturnType<typeof dependency_1.BooleanExpression.prototype.toObject>;
             limit?: number;
             offset?: number;
             useHistory?: boolean;
             resolveReferences?: string[];
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [8], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("resource" in data && data.resource != undefined) {
-                    this.resource = data.resource;
-                }
-                if ("query" in data && data.query != undefined) {
-                    this.query = data.query;
-                }
-                if ("limit" in data && data.limit != undefined) {
-                    this.limit = data.limit;
-                }
-                if ("offset" in data && data.offset != undefined) {
-                    this.offset = data.offset;
-                }
-                if ("useHistory" in data && data.useHistory != undefined) {
-                    this.useHistory = data.useHistory;
-                }
-                if ("resolveReferences" in data && data.resolveReferences != undefined) {
-                    this.resolveReferences = data.resolveReferences;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
-            }
-            if (!this.annotations)
-                this.annotations = new Map();
-        }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
-        }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get resource() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
-        }
-        set resource(value: string) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        get query() {
-            return pb_1.Message.getWrapperField(this, dependency_1.model.BooleanExpression, 4) as dependency_1.model.BooleanExpression;
-        }
-        set query(value: dependency_1.model.BooleanExpression) {
-            pb_1.Message.setWrapperField(this, 4, value);
-        }
-        get has_query() {
-            return pb_1.Message.getField(this, 4) != null;
-        }
-        get limit() {
-            return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
-        }
-        set limit(value: number) {
-            pb_1.Message.setField(this, 5, value);
-        }
-        get offset() {
-            return pb_1.Message.getFieldWithDefault(this, 6, 0) as number;
-        }
-        set offset(value: number) {
-            pb_1.Message.setField(this, 6, value);
-        }
-        get useHistory() {
-            return pb_1.Message.getFieldWithDefault(this, 7, false) as boolean;
-        }
-        set useHistory(value: boolean) {
-            pb_1.Message.setField(this, 7, value);
-        }
-        get resolveReferences() {
-            return pb_1.Message.getFieldWithDefault(this, 8, []) as string[];
-        }
-        set resolveReferences(value: string[]) {
-            pb_1.Message.setField(this, 8, value);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
-            token?: string;
-            namespace?: string;
-            resource?: string;
-            query?: ReturnType<typeof dependency_1.model.BooleanExpression.prototype.toObject>;
-            limit?: number;
-            offset?: number;
-            useHistory?: boolean;
-            resolveReferences?: string[];
             annotations?: {
                 [key: string]: string;
             };
-        }): SearchRequest {
-            const message = new SearchRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.resource != null) {
-                message.resource = data.resource;
-            }
-            if (data.query != null) {
-                message.query = dependency_1.model.BooleanExpression.fromObject(data.query);
-            }
-            if (data.limit != null) {
-                message.limit = data.limit;
-            }
-            if (data.offset != null) {
-                message.offset = data.offset;
-            }
-            if (data.useHistory != null) {
-                message.useHistory = data.useHistory;
-            }
-            if (data.resolveReferences != null) {
-                message.resolveReferences = data.resolveReferences;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                namespace?: string;
-                resource?: string;
-                query?: ReturnType<typeof dependency_1.model.BooleanExpression.prototype.toObject>;
-                limit?: number;
-                offset?: number;
-                useHistory?: boolean;
-                resolveReferences?: string[];
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.resource != null) {
-                data.resource = this.resource;
-            }
-            if (this.query != null) {
-                data.query = this.query.toObject();
-            }
-            if (this.limit != null) {
-                data.limit = this.limit;
-            }
-            if (this.offset != null) {
-                data.offset = this.offset;
-            }
-            if (this.useHistory != null) {
-                data.useHistory = this.useHistory;
-            }
-            if (this.resolveReferences != null) {
-                data.resolveReferences = this.resolveReferences;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.namespace.length)
-                writer.writeString(2, this.namespace);
-            if (this.resource.length)
-                writer.writeString(3, this.resource);
-            if (this.has_query)
-                writer.writeMessage(4, this.query, () => this.query.serialize(writer));
-            if (this.limit != 0)
-                writer.writeUint32(5, this.limit);
-            if (this.offset != 0)
-                writer.writeUint64(6, this.offset);
-            if (this.useHistory != false)
-                writer.writeBool(7, this.useHistory);
-            if (this.resolveReferences.length)
-                writer.writeRepeatedString(8, this.resolveReferences);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.resource != null) {
+            data.resource = this.resource;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (this.query != null) {
+            data.query = this.query.toObject();
+        }
+        if (this.limit != null) {
+            data.limit = this.limit;
+        }
+        if (this.offset != null) {
+            data.offset = this.offset;
+        }
+        if (this.useHistory != null) {
+            data.useHistory = this.useHistory;
+        }
+        if (this.resolveReferences != null) {
+            data.resolveReferences = this.resolveReferences;
+        }
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.namespace.length)
+            writer.writeString(2, this.namespace);
+        if (this.resource.length)
+            writer.writeString(3, this.resource);
+        if (this.hasQuery)
+            writer.writeMessage(4, this.query, () => this.query.serialize(writer));
+        if (this.limit != 0)
+            writer.writeUint32(5, this.limit);
+        if (this.offset != 0)
+            writer.writeUint64(6, this.offset);
+        if (this.useHistory != false)
+            writer.writeBool(7, this.useHistory);
+        if (this.resolveReferences.length)
+            writer.writeRepeatedString(8, this.resolveReferences);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.namespace = reader.readString();
-                        break;
-                    case 3:
-                        message.resource = reader.readString();
-                        break;
-                    case 4:
-                        reader.readMessage(message.query, () => message.query = dependency_1.model.BooleanExpression.deserialize(reader));
-                        break;
-                    case 5:
-                        message.limit = reader.readUint32();
-                        break;
-                    case 6:
-                        message.offset = reader.readUint64();
-                        break;
-                    case 7:
-                        message.useHistory = reader.readBool();
-                        break;
-                    case 8:
-                        pb_1.Message.addToRepeatedField(message, 8, reader.readString());
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.namespace = reader.readString();
+                    break;
+                case 3:
+                    message.resource = reader.readString();
+                    break;
+                case 4:
+                    reader.readMessage(message.query, () => message.query = dependency_1.BooleanExpression.deserialize(reader));
+                    break;
+                case 5:
+                    message.limit = reader.readUint32();
+                    break;
+                case 6:
+                    message.offset = reader.readUint64();
+                    break;
+                case 7:
+                    message.useHistory = reader.readBool();
+                    break;
+                case 8:
+                    pb_1.Message.addToRepeatedField(message, 8, reader.readString());
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): SearchRequest {
-            return SearchRequest.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): SearchRequest {
+        return SearchRequest.deserialize(bytes);
+    }
+}
+export class SearchResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        total?: number;
+        content?: dependency_4.Any[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("total" in data && data.total != undefined) {
+                this.total = data.total;
+            }
+            if ("content" in data && data.content != undefined) {
+                this.content = data.content;
+            }
         }
     }
-    export class SearchResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            total?: number;
-            content?: dependency_4.google.protobuf.Any[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("total" in data && data.total != undefined) {
-                    this.total = data.total;
-                }
-                if ("content" in data && data.content != undefined) {
-                    this.content = data.content;
-                }
-            }
-        }
-        get total() {
-            return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
-        }
-        set total(value: number) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get content() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_4.google.protobuf.Any, 2) as dependency_4.google.protobuf.Any[];
-        }
-        set content(value: dependency_4.google.protobuf.Any[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 2, value);
-        }
-        static fromObject(data: {
-            total?: number;
-            content?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-        }): SearchResponse {
-            const message = new SearchResponse({});
-            if (data.total != null) {
-                message.total = data.total;
-            }
-            if (data.content != null) {
-                message.content = data.content.map(item => dependency_4.google.protobuf.Any.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                total?: number;
-                content?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-            } = {};
-            if (this.total != null) {
-                data.total = this.total;
-            }
-            if (this.content != null) {
-                data.content = this.content.map((item: dependency_4.google.protobuf.Any) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.total != 0)
-                writer.writeUint32(1, this.total);
-            if (this.content.length)
-                writer.writeRepeatedMessage(2, this.content, (item: dependency_4.google.protobuf.Any) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.total = reader.readUint32();
-                        break;
-                    case 2:
-                        reader.readMessage(message.content, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.google.protobuf.Any.deserialize(reader), dependency_4.google.protobuf.Any));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): SearchResponse {
-            return SearchResponse.deserialize(bytes);
-        }
+    get total() {
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
-    export class CreateRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    set total(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get content() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_4.Any, 2) as dependency_4.Any[];
+    }
+    set content(value: dependency_4.Any[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+    }
+    static fromObject(data: {
+        total?: number;
+        content?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+    }): SearchResponse {
+        const message = new SearchResponse({});
+        if (data.total != null) {
+            message.total = data.total;
+        }
+        if (data.content != null) {
+            message.content = data.content.map(item => dependency_4.Any.fromObject(item));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            total?: number;
+            content?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+        } = {};
+        if (this.total != null) {
+            data.total = this.total;
+        }
+        if (this.content != null) {
+            data.content = this.content.map((item: dependency_4.Any) => item.toObject());
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.total != 0)
+            writer.writeUint32(1, this.total);
+        if (this.content.length)
+            writer.writeRepeatedMessage(2, this.content, (item: dependency_4.Any) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.total = reader.readUint32();
+                    break;
+                case 2:
+                    reader.readMessage(message.content, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.Any.deserialize(reader), dependency_4.Any));
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): SearchResponse {
+        return SearchResponse.deserialize(bytes);
+    }
+}
+export class CreateRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        items?: dependency_4.Any[];
+        ignoreIfExists?: boolean;
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [4], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("resource" in data && data.resource != undefined) {
+                this.resource = data.resource;
+            }
+            if ("items" in data && data.items != undefined) {
+                this.items = data.items;
+            }
+            if ("ignoreIfExists" in data && data.ignoreIfExists != undefined) {
+                this.ignoreIfExists = data.ignoreIfExists;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
+        }
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get resource() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set resource(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get items() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_4.Any, 4) as dependency_4.Any[];
+    }
+    set items(value: dependency_4.Any[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 4, value);
+    }
+    get ignoreIfExists() {
+        return pb_1.Message.getFieldWithDefault(this, 5, false) as boolean;
+    }
+    set ignoreIfExists(value: boolean) {
+        pb_1.Message.setField(this, 5, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+        ignoreIfExists?: boolean;
+        annotations?: {
+            [key: string]: string;
+        };
+    }): CreateRequest {
+        const message = new CreateRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
+        }
+        if (data.resource != null) {
+            message.resource = data.resource;
+        }
+        if (data.items != null) {
+            message.items = data.items.map(item => dependency_4.Any.fromObject(item));
+        }
+        if (data.ignoreIfExists != null) {
+            message.ignoreIfExists = data.ignoreIfExists;
+        }
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             namespace?: string;
             resource?: string;
-            items?: dependency_4.google.protobuf.Any[];
-            ignoreIfExists?: boolean;
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [4], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("resource" in data && data.resource != undefined) {
-                    this.resource = data.resource;
-                }
-                if ("items" in data && data.items != undefined) {
-                    this.items = data.items;
-                }
-                if ("ignoreIfExists" in data && data.ignoreIfExists != undefined) {
-                    this.ignoreIfExists = data.ignoreIfExists;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
-            }
-            if (!this.annotations)
-                this.annotations = new Map();
-        }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
-        }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get resource() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
-        }
-        set resource(value: string) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        get items() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_4.google.protobuf.Any, 4) as dependency_4.google.protobuf.Any[];
-        }
-        set items(value: dependency_4.google.protobuf.Any[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 4, value);
-        }
-        get ignoreIfExists() {
-            return pb_1.Message.getFieldWithDefault(this, 5, false) as boolean;
-        }
-        set ignoreIfExists(value: boolean) {
-            pb_1.Message.setField(this, 5, value);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
-            token?: string;
-            namespace?: string;
-            resource?: string;
-            items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
+            items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
             ignoreIfExists?: boolean;
             annotations?: {
                 [key: string]: string;
             };
-        }): CreateRequest {
-            const message = new CreateRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.resource != null) {
-                message.resource = data.resource;
-            }
-            if (data.items != null) {
-                message.items = data.items.map(item => dependency_4.google.protobuf.Any.fromObject(item));
-            }
-            if (data.ignoreIfExists != null) {
-                message.ignoreIfExists = data.ignoreIfExists;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                namespace?: string;
-                resource?: string;
-                items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-                ignoreIfExists?: boolean;
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.resource != null) {
-                data.resource = this.resource;
-            }
-            if (this.items != null) {
-                data.items = this.items.map((item: dependency_4.google.protobuf.Any) => item.toObject());
-            }
-            if (this.ignoreIfExists != null) {
-                data.ignoreIfExists = this.ignoreIfExists;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.namespace.length)
-                writer.writeString(2, this.namespace);
-            if (this.resource.length)
-                writer.writeString(3, this.resource);
-            if (this.items.length)
-                writer.writeRepeatedMessage(4, this.items, (item: dependency_4.google.protobuf.Any) => item.serialize(writer));
-            if (this.ignoreIfExists != false)
-                writer.writeBool(5, this.ignoreIfExists);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.resource != null) {
+            data.resource = this.resource;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CreateRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CreateRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (this.items != null) {
+            data.items = this.items.map((item: dependency_4.Any) => item.toObject());
+        }
+        if (this.ignoreIfExists != null) {
+            data.ignoreIfExists = this.ignoreIfExists;
+        }
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.namespace.length)
+            writer.writeString(2, this.namespace);
+        if (this.resource.length)
+            writer.writeString(3, this.resource);
+        if (this.items.length)
+            writer.writeRepeatedMessage(4, this.items, (item: dependency_4.Any) => item.serialize(writer));
+        if (this.ignoreIfExists != false)
+            writer.writeBool(5, this.ignoreIfExists);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CreateRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CreateRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.namespace = reader.readString();
-                        break;
-                    case 3:
-                        message.resource = reader.readString();
-                        break;
-                    case 4:
-                        reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 4, dependency_4.google.protobuf.Any.deserialize(reader), dependency_4.google.protobuf.Any));
-                        break;
-                    case 5:
-                        message.ignoreIfExists = reader.readBool();
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.namespace = reader.readString();
+                    break;
+                case 3:
+                    message.resource = reader.readString();
+                    break;
+                case 4:
+                    reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 4, dependency_4.Any.deserialize(reader), dependency_4.Any));
+                    break;
+                case 5:
+                    message.ignoreIfExists = reader.readBool();
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): CreateRequest {
-            return CreateRequest.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): CreateRequest {
+        return CreateRequest.deserialize(bytes);
+    }
+}
+export class CreateResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        items?: dependency_4.Any[];
+        inserted?: boolean[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2, 4], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("items" in data && data.items != undefined) {
+                this.items = data.items;
+            }
+            if ("inserted" in data && data.inserted != undefined) {
+                this.inserted = data.inserted;
+            }
         }
     }
-    export class CreateResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            items?: dependency_4.google.protobuf.Any[];
-            inserted?: boolean[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2, 4], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("items" in data && data.items != undefined) {
-                    this.items = data.items;
-                }
-                if ("inserted" in data && data.inserted != undefined) {
-                    this.inserted = data.inserted;
-                }
-            }
-        }
-        get items() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_4.google.protobuf.Any, 2) as dependency_4.google.protobuf.Any[];
-        }
-        set items(value: dependency_4.google.protobuf.Any[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 2, value);
-        }
-        get inserted() {
-            return pb_1.Message.getFieldWithDefault(this, 4, []) as boolean[];
-        }
-        set inserted(value: boolean[]) {
-            pb_1.Message.setField(this, 4, value);
-        }
-        static fromObject(data: {
-            items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-            inserted?: boolean[];
-        }): CreateResponse {
-            const message = new CreateResponse({});
-            if (data.items != null) {
-                message.items = data.items.map(item => dependency_4.google.protobuf.Any.fromObject(item));
-            }
-            if (data.inserted != null) {
-                message.inserted = data.inserted;
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-                inserted?: boolean[];
-            } = {};
-            if (this.items != null) {
-                data.items = this.items.map((item: dependency_4.google.protobuf.Any) => item.toObject());
-            }
-            if (this.inserted != null) {
-                data.inserted = this.inserted;
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.items.length)
-                writer.writeRepeatedMessage(2, this.items, (item: dependency_4.google.protobuf.Any) => item.serialize(writer));
-            if (this.inserted.length)
-                writer.writePackedBool(4, this.inserted);
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CreateResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CreateResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 2:
-                        reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.google.protobuf.Any.deserialize(reader), dependency_4.google.protobuf.Any));
-                        break;
-                    case 4:
-                        message.inserted = reader.readPackedBool();
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): CreateResponse {
-            return CreateResponse.deserialize(bytes);
-        }
+    get items() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_4.Any, 2) as dependency_4.Any[];
     }
-    export class UpdateRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    set items(value: dependency_4.Any[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+    }
+    get inserted() {
+        return pb_1.Message.getFieldWithDefault(this, 4, []) as boolean[];
+    }
+    set inserted(value: boolean[]) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    static fromObject(data: {
+        items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+        inserted?: boolean[];
+    }): CreateResponse {
+        const message = new CreateResponse({});
+        if (data.items != null) {
+            message.items = data.items.map(item => dependency_4.Any.fromObject(item));
+        }
+        if (data.inserted != null) {
+            message.inserted = data.inserted;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+            inserted?: boolean[];
+        } = {};
+        if (this.items != null) {
+            data.items = this.items.map((item: dependency_4.Any) => item.toObject());
+        }
+        if (this.inserted != null) {
+            data.inserted = this.inserted;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.items.length)
+            writer.writeRepeatedMessage(2, this.items, (item: dependency_4.Any) => item.serialize(writer));
+        if (this.inserted.length)
+            writer.writePackedBool(4, this.inserted);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CreateResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CreateResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 2:
+                    reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.Any.deserialize(reader), dependency_4.Any));
+                    break;
+                case 4:
+                    message.inserted = reader.readPackedBool();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): CreateResponse {
+        return CreateResponse.deserialize(bytes);
+    }
+}
+export class UpdateRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        items?: dependency_4.Any[];
+        checkVersion?: boolean;
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [4], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("resource" in data && data.resource != undefined) {
+                this.resource = data.resource;
+            }
+            if ("items" in data && data.items != undefined) {
+                this.items = data.items;
+            }
+            if ("checkVersion" in data && data.checkVersion != undefined) {
+                this.checkVersion = data.checkVersion;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
+        }
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get resource() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set resource(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get items() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_4.Any, 4) as dependency_4.Any[];
+    }
+    set items(value: dependency_4.Any[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 4, value);
+    }
+    get checkVersion() {
+        return pb_1.Message.getFieldWithDefault(this, 5, false) as boolean;
+    }
+    set checkVersion(value: boolean) {
+        pb_1.Message.setField(this, 5, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+        checkVersion?: boolean;
+        annotations?: {
+            [key: string]: string;
+        };
+    }): UpdateRequest {
+        const message = new UpdateRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
+        }
+        if (data.resource != null) {
+            message.resource = data.resource;
+        }
+        if (data.items != null) {
+            message.items = data.items.map(item => dependency_4.Any.fromObject(item));
+        }
+        if (data.checkVersion != null) {
+            message.checkVersion = data.checkVersion;
+        }
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             namespace?: string;
             resource?: string;
-            items?: dependency_4.google.protobuf.Any[];
-            checkVersion?: boolean;
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [4], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("resource" in data && data.resource != undefined) {
-                    this.resource = data.resource;
-                }
-                if ("items" in data && data.items != undefined) {
-                    this.items = data.items;
-                }
-                if ("checkVersion" in data && data.checkVersion != undefined) {
-                    this.checkVersion = data.checkVersion;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
-            }
-            if (!this.annotations)
-                this.annotations = new Map();
-        }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
-        }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get resource() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
-        }
-        set resource(value: string) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        get items() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_4.google.protobuf.Any, 4) as dependency_4.google.protobuf.Any[];
-        }
-        set items(value: dependency_4.google.protobuf.Any[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 4, value);
-        }
-        get checkVersion() {
-            return pb_1.Message.getFieldWithDefault(this, 5, false) as boolean;
-        }
-        set checkVersion(value: boolean) {
-            pb_1.Message.setField(this, 5, value);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
-            token?: string;
-            namespace?: string;
-            resource?: string;
-            items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
+            items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
             checkVersion?: boolean;
             annotations?: {
                 [key: string]: string;
             };
-        }): UpdateRequest {
-            const message = new UpdateRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.resource != null) {
-                message.resource = data.resource;
-            }
-            if (data.items != null) {
-                message.items = data.items.map(item => dependency_4.google.protobuf.Any.fromObject(item));
-            }
-            if (data.checkVersion != null) {
-                message.checkVersion = data.checkVersion;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                namespace?: string;
-                resource?: string;
-                items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-                checkVersion?: boolean;
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.resource != null) {
-                data.resource = this.resource;
-            }
-            if (this.items != null) {
-                data.items = this.items.map((item: dependency_4.google.protobuf.Any) => item.toObject());
-            }
-            if (this.checkVersion != null) {
-                data.checkVersion = this.checkVersion;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.namespace.length)
-                writer.writeString(2, this.namespace);
-            if (this.resource.length)
-                writer.writeString(3, this.resource);
-            if (this.items.length)
-                writer.writeRepeatedMessage(4, this.items, (item: dependency_4.google.protobuf.Any) => item.serialize(writer));
-            if (this.checkVersion != false)
-                writer.writeBool(5, this.checkVersion);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.resource != null) {
+            data.resource = this.resource;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (this.items != null) {
+            data.items = this.items.map((item: dependency_4.Any) => item.toObject());
+        }
+        if (this.checkVersion != null) {
+            data.checkVersion = this.checkVersion;
+        }
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.namespace.length)
+            writer.writeString(2, this.namespace);
+        if (this.resource.length)
+            writer.writeString(3, this.resource);
+        if (this.items.length)
+            writer.writeRepeatedMessage(4, this.items, (item: dependency_4.Any) => item.serialize(writer));
+        if (this.checkVersion != false)
+            writer.writeBool(5, this.checkVersion);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.namespace = reader.readString();
-                        break;
-                    case 3:
-                        message.resource = reader.readString();
-                        break;
-                    case 4:
-                        reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 4, dependency_4.google.protobuf.Any.deserialize(reader), dependency_4.google.protobuf.Any));
-                        break;
-                    case 5:
-                        message.checkVersion = reader.readBool();
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.namespace = reader.readString();
+                    break;
+                case 3:
+                    message.resource = reader.readString();
+                    break;
+                case 4:
+                    reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 4, dependency_4.Any.deserialize(reader), dependency_4.Any));
+                    break;
+                case 5:
+                    message.checkVersion = reader.readBool();
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): UpdateRequest {
-            return UpdateRequest.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): UpdateRequest {
+        return UpdateRequest.deserialize(bytes);
+    }
+}
+export class UpdateResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        items?: dependency_4.Any[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("items" in data && data.items != undefined) {
+                this.items = data.items;
+            }
         }
     }
-    export class UpdateResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            items?: dependency_4.google.protobuf.Any[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("items" in data && data.items != undefined) {
-                    this.items = data.items;
-                }
-            }
-        }
-        get items() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_4.google.protobuf.Any, 2) as dependency_4.google.protobuf.Any[];
-        }
-        set items(value: dependency_4.google.protobuf.Any[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 2, value);
-        }
-        static fromObject(data: {
-            items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-        }): UpdateResponse {
-            const message = new UpdateResponse({});
-            if (data.items != null) {
-                message.items = data.items.map(item => dependency_4.google.protobuf.Any.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-            } = {};
-            if (this.items != null) {
-                data.items = this.items.map((item: dependency_4.google.protobuf.Any) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.items.length)
-                writer.writeRepeatedMessage(2, this.items, (item: dependency_4.google.protobuf.Any) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 2:
-                        reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.google.protobuf.Any.deserialize(reader), dependency_4.google.protobuf.Any));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): UpdateResponse {
-            return UpdateResponse.deserialize(bytes);
-        }
+    get items() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_4.Any, 2) as dependency_4.Any[];
     }
-    export class UpdateMultiRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    set items(value: dependency_4.Any[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+    }
+    static fromObject(data: {
+        items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+    }): UpdateResponse {
+        const message = new UpdateResponse({});
+        if (data.items != null) {
+            message.items = data.items.map(item => dependency_4.Any.fromObject(item));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+        } = {};
+        if (this.items != null) {
+            data.items = this.items.map((item: dependency_4.Any) => item.toObject());
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.items.length)
+            writer.writeRepeatedMessage(2, this.items, (item: dependency_4.Any) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 2:
+                    reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.Any.deserialize(reader), dependency_4.Any));
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): UpdateResponse {
+        return UpdateResponse.deserialize(bytes);
+    }
+}
+export class UpdateMultiRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        query?: dependency_1.BooleanExpression;
+        properties?: Map<string, dependency_3.Value>;
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("resource" in data && data.resource != undefined) {
+                this.resource = data.resource;
+            }
+            if ("query" in data && data.query != undefined) {
+                this.query = data.query;
+            }
+            if ("properties" in data && data.properties != undefined) {
+                this.properties = data.properties;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
+        }
+        if (!this.properties)
+            this.properties = new Map();
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get resource() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set resource(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get query() {
+        return pb_1.Message.getWrapperField(this, dependency_1.BooleanExpression, 4) as dependency_1.BooleanExpression;
+    }
+    set query(value: dependency_1.BooleanExpression) {
+        pb_1.Message.setWrapperField(this, 4, value);
+    }
+    get hasQuery() {
+        return pb_1.Message.getField(this, 4) != null;
+    }
+    get properties() {
+        return pb_1.Message.getField(this, 5) as any as Map<string, dependency_3.Value>;
+    }
+    set properties(value: Map<string, dependency_3.Value>) {
+        pb_1.Message.setField(this, 5, value as any);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        query?: ReturnType<typeof dependency_1.BooleanExpression.prototype.toObject>;
+        properties?: {
+            [key: string]: ReturnType<typeof dependency_3.Value.prototype.toObject>;
+        };
+        annotations?: {
+            [key: string]: string;
+        };
+    }): UpdateMultiRequest {
+        const message = new UpdateMultiRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
+        }
+        if (data.resource != null) {
+            message.resource = data.resource;
+        }
+        if (data.query != null) {
+            message.query = dependency_1.BooleanExpression.fromObject(data.query);
+        }
+        if (typeof data.properties == "object") {
+            message.properties = new Map(Object.entries(data.properties).map(([key, value]) => [key, dependency_3.Value.fromObject(value)]));
+        }
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             namespace?: string;
             resource?: string;
-            query?: dependency_1.model.BooleanExpression;
-            properties?: Map<string, dependency_3.google.protobuf.Value>;
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("resource" in data && data.resource != undefined) {
-                    this.resource = data.resource;
-                }
-                if ("query" in data && data.query != undefined) {
-                    this.query = data.query;
-                }
-                if ("properties" in data && data.properties != undefined) {
-                    this.properties = data.properties;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
-            }
-            if (!this.properties)
-                this.properties = new Map();
-            if (!this.annotations)
-                this.annotations = new Map();
-        }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
-        }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get resource() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
-        }
-        set resource(value: string) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        get query() {
-            return pb_1.Message.getWrapperField(this, dependency_1.model.BooleanExpression, 4) as dependency_1.model.BooleanExpression;
-        }
-        set query(value: dependency_1.model.BooleanExpression) {
-            pb_1.Message.setWrapperField(this, 4, value);
-        }
-        get has_query() {
-            return pb_1.Message.getField(this, 4) != null;
-        }
-        get properties() {
-            return pb_1.Message.getField(this, 5) as any as Map<string, dependency_3.google.protobuf.Value>;
-        }
-        set properties(value: Map<string, dependency_3.google.protobuf.Value>) {
-            pb_1.Message.setField(this, 5, value as any);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
-            token?: string;
-            namespace?: string;
-            resource?: string;
-            query?: ReturnType<typeof dependency_1.model.BooleanExpression.prototype.toObject>;
+            query?: ReturnType<typeof dependency_1.BooleanExpression.prototype.toObject>;
             properties?: {
-                [key: string]: ReturnType<typeof dependency_3.google.protobuf.Value.prototype.toObject>;
+                [key: string]: ReturnType<typeof dependency_3.Value.prototype.toObject>;
             };
             annotations?: {
                 [key: string]: string;
             };
-        }): UpdateMultiRequest {
-            const message = new UpdateMultiRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.resource != null) {
-                message.resource = data.resource;
-            }
-            if (data.query != null) {
-                message.query = dependency_1.model.BooleanExpression.fromObject(data.query);
-            }
-            if (typeof data.properties == "object") {
-                message.properties = new Map(Object.entries(data.properties).map(([key, value]) => [key, dependency_3.google.protobuf.Value.fromObject(value)]));
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                namespace?: string;
-                resource?: string;
-                query?: ReturnType<typeof dependency_1.model.BooleanExpression.prototype.toObject>;
-                properties?: {
-                    [key: string]: ReturnType<typeof dependency_3.google.protobuf.Value.prototype.toObject>;
-                };
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.resource != null) {
-                data.resource = this.resource;
-            }
-            if (this.query != null) {
-                data.query = this.query.toObject();
-            }
-            if (this.properties != null) {
-                data.properties = (Object.fromEntries)((Array.from)(this.properties).map(([key, value]) => [key, value.toObject()]));
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.namespace.length)
-                writer.writeString(2, this.namespace);
-            if (this.resource.length)
-                writer.writeString(3, this.resource);
-            if (this.has_query)
-                writer.writeMessage(4, this.query, () => this.query.serialize(writer));
-            for (const [key, value] of this.properties) {
-                writer.writeMessage(5, this.properties, () => {
-                    writer.writeString(1, key);
-                    writer.writeMessage(2, value, () => value.serialize(writer));
-                });
-            }
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.resource != null) {
+            data.resource = this.resource;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateMultiRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateMultiRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (this.query != null) {
+            data.query = this.query.toObject();
+        }
+        if (this.properties != null) {
+            data.properties = (Object.fromEntries)((Array.from)(this.properties).map(([key, value]) => [key, value.toObject()]));
+        }
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.namespace.length)
+            writer.writeString(2, this.namespace);
+        if (this.resource.length)
+            writer.writeString(3, this.resource);
+        if (this.hasQuery)
+            writer.writeMessage(4, this.query, () => this.query.serialize(writer));
+        for (const [key, value] of this.properties) {
+            writer.writeMessage(5, this.properties, () => {
+                writer.writeString(1, key);
+                writer.writeMessage(2, value, () => value.serialize(writer));
+            });
+        }
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateMultiRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateMultiRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.namespace = reader.readString();
-                        break;
-                    case 3:
-                        message.resource = reader.readString();
-                        break;
-                    case 4:
-                        reader.readMessage(message.query, () => message.query = dependency_1.model.BooleanExpression.deserialize(reader));
-                        break;
-                    case 5:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.properties as any, reader, reader.readString, () => {
-                            let value;
-                            reader.readMessage(message, () => value = dependency_3.google.protobuf.Value.deserialize(reader));
-                            return value;
-                        }));
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.namespace = reader.readString();
+                    break;
+                case 3:
+                    message.resource = reader.readString();
+                    break;
+                case 4:
+                    reader.readMessage(message.query, () => message.query = dependency_1.BooleanExpression.deserialize(reader));
+                    break;
+                case 5:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.properties as any, reader, reader.readString, () => {
+                        let value;
+                        reader.readMessage(message, () => value = dependency_3.Value.deserialize(reader));
+                        return value;
+                    }));
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): UpdateMultiRequest {
-            return UpdateMultiRequest.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): UpdateMultiRequest {
+        return UpdateMultiRequest.deserialize(bytes);
+    }
+}
+export class UpdateMultiResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        items?: dependency_4.Any[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("items" in data && data.items != undefined) {
+                this.items = data.items;
+            }
         }
     }
-    export class UpdateMultiResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            items?: dependency_4.google.protobuf.Any[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("items" in data && data.items != undefined) {
-                    this.items = data.items;
-                }
-            }
-        }
-        get items() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_4.google.protobuf.Any, 2) as dependency_4.google.protobuf.Any[];
-        }
-        set items(value: dependency_4.google.protobuf.Any[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 2, value);
-        }
-        static fromObject(data: {
-            items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-        }): UpdateMultiResponse {
-            const message = new UpdateMultiResponse({});
-            if (data.items != null) {
-                message.items = data.items.map(item => dependency_4.google.protobuf.Any.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                items?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>[];
-            } = {};
-            if (this.items != null) {
-                data.items = this.items.map((item: dependency_4.google.protobuf.Any) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.items.length)
-                writer.writeRepeatedMessage(2, this.items, (item: dependency_4.google.protobuf.Any) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateMultiResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateMultiResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 2:
-                        reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.google.protobuf.Any.deserialize(reader), dependency_4.google.protobuf.Any));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): UpdateMultiResponse {
-            return UpdateMultiResponse.deserialize(bytes);
-        }
+    get items() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_4.Any, 2) as dependency_4.Any[];
     }
-    export class DeleteRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    set items(value: dependency_4.Any[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+    }
+    static fromObject(data: {
+        items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+    }): UpdateMultiResponse {
+        const message = new UpdateMultiResponse({});
+        if (data.items != null) {
+            message.items = data.items.map(item => dependency_4.Any.fromObject(item));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            items?: ReturnType<typeof dependency_4.Any.prototype.toObject>[];
+        } = {};
+        if (this.items != null) {
+            data.items = this.items.map((item: dependency_4.Any) => item.toObject());
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.items.length)
+            writer.writeRepeatedMessage(2, this.items, (item: dependency_4.Any) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateMultiResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateMultiResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 2:
+                    reader.readMessage(message.items, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_4.Any.deserialize(reader), dependency_4.Any));
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): UpdateMultiResponse {
+        return UpdateMultiResponse.deserialize(bytes);
+    }
+}
+export class DeleteRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        id?: string[];
+        ids?: string[];
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [4, 5], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("resource" in data && data.resource != undefined) {
+                this.resource = data.resource;
+            }
+            if ("id" in data && data.id != undefined) {
+                this.id = data.id;
+            }
+            if ("ids" in data && data.ids != undefined) {
+                this.ids = data.ids;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
+        }
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get resource() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set resource(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get id() {
+        return pb_1.Message.getFieldWithDefault(this, 4, []) as string[];
+    }
+    set id(value: string[]) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    get ids() {
+        return pb_1.Message.getFieldWithDefault(this, 5, []) as string[];
+    }
+    set ids(value: string[]) {
+        pb_1.Message.setField(this, 5, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        id?: string[];
+        ids?: string[];
+        annotations?: {
+            [key: string]: string;
+        };
+    }): DeleteRequest {
+        const message = new DeleteRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
+        }
+        if (data.resource != null) {
+            message.resource = data.resource;
+        }
+        if (data.id != null) {
+            message.id = data.id;
+        }
+        if (data.ids != null) {
+            message.ids = data.ids;
+        }
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             namespace?: string;
             resource?: string;
             id?: string[];
             ids?: string[];
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [4, 5], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("resource" in data && data.resource != undefined) {
-                    this.resource = data.resource;
-                }
-                if ("id" in data && data.id != undefined) {
-                    this.id = data.id;
-                }
-                if ("ids" in data && data.ids != undefined) {
-                    this.ids = data.ids;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
-            }
-            if (!this.annotations)
-                this.annotations = new Map();
-        }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
-        }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get resource() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
-        }
-        set resource(value: string) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        get id() {
-            return pb_1.Message.getFieldWithDefault(this, 4, []) as string[];
-        }
-        set id(value: string[]) {
-            pb_1.Message.setField(this, 4, value);
-        }
-        get ids() {
-            return pb_1.Message.getFieldWithDefault(this, 5, []) as string[];
-        }
-        set ids(value: string[]) {
-            pb_1.Message.setField(this, 5, value);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
-            token?: string;
-            namespace?: string;
-            resource?: string;
-            id?: string[];
-            ids?: string[];
             annotations?: {
                 [key: string]: string;
             };
-        }): DeleteRequest {
-            const message = new DeleteRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.resource != null) {
-                message.resource = data.resource;
-            }
-            if (data.id != null) {
-                message.id = data.id;
-            }
-            if (data.ids != null) {
-                message.ids = data.ids;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                namespace?: string;
-                resource?: string;
-                id?: string[];
-                ids?: string[];
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.resource != null) {
-                data.resource = this.resource;
-            }
-            if (this.id != null) {
-                data.id = this.id;
-            }
-            if (this.ids != null) {
-                data.ids = this.ids;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.namespace.length)
-                writer.writeString(2, this.namespace);
-            if (this.resource.length)
-                writer.writeString(3, this.resource);
-            if (this.id.length)
-                writer.writeRepeatedString(4, this.id);
-            if (this.ids.length)
-                writer.writeRepeatedString(5, this.ids);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.resource != null) {
+            data.resource = this.resource;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.namespace = reader.readString();
-                        break;
-                    case 3:
-                        message.resource = reader.readString();
-                        break;
-                    case 4:
-                        pb_1.Message.addToRepeatedField(message, 4, reader.readString());
-                        break;
-                    case 5:
-                        pb_1.Message.addToRepeatedField(message, 5, reader.readString());
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
+        if (this.id != null) {
+            data.id = this.id;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
+        if (this.ids != null) {
+            data.ids = this.ids;
         }
-        static deserializeBinary(bytes: Uint8Array): DeleteRequest {
-            return DeleteRequest.deserialize(bytes);
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
         }
+        return data;
     }
-    export class DeleteResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {}) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") { }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.namespace.length)
+            writer.writeString(2, this.namespace);
+        if (this.resource.length)
+            writer.writeString(3, this.resource);
+        if (this.id.length)
+            writer.writeRepeatedString(4, this.id);
+        if (this.ids.length)
+            writer.writeRepeatedString(5, this.ids);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
         }
-        static fromObject(data: {}): DeleteResponse {
-            const message = new DeleteResponse({});
-            return message;
-        }
-        toObject() {
-            const data: {} = {};
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): DeleteResponse {
-            return DeleteResponse.deserialize(bytes);
-        }
+        if (!w)
+            return writer.getResultBuffer();
     }
-    export class GetRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            token?: string;
-            namespace?: string;
-            resource?: string;
-            id?: string;
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("resource" in data && data.resource != undefined) {
-                    this.resource = data.resource;
-                }
-                if ("id" in data && data.id != undefined) {
-                    this.id = data.id;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
+                    break;
+                case 2:
+                    message.namespace = reader.readString();
+                    break;
+                case 3:
+                    message.resource = reader.readString();
+                    break;
+                case 4:
+                    pb_1.Message.addToRepeatedField(message, 4, reader.readString());
+                    break;
+                case 5:
+                    pb_1.Message.addToRepeatedField(message, 5, reader.readString());
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            if (!this.annotations)
-                this.annotations = new Map();
         }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): DeleteRequest {
+        return DeleteRequest.deserialize(bytes);
+    }
+}
+export class DeleteResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {}) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") { }
+    }
+    static fromObject(data: {}): DeleteResponse {
+        const message = new DeleteResponse({});
+        return message;
+    }
+    toObject() {
+        const data: {} = {};
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                default: reader.skipField();
+            }
         }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): DeleteResponse {
+        return DeleteResponse.deserialize(bytes);
+    }
+}
+export class GetRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        id?: string;
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("resource" in data && data.resource != undefined) {
+                this.resource = data.resource;
+            }
+            if ("id" in data && data.id != undefined) {
+                this.id = data.id;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
         }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get resource() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set resource(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get id() {
+        return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+    }
+    set id(value: string) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        token?: string;
+        namespace?: string;
+        resource?: string;
+        id?: string;
+        annotations?: {
+            [key: string]: string;
+        };
+    }): GetRequest {
+        const message = new GetRequest({});
+        if (data.token != null) {
+            message.token = data.token;
         }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 2, value);
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
         }
-        get resource() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        if (data.resource != null) {
+            message.resource = data.resource;
         }
-        set resource(value: string) {
-            pb_1.Message.setField(this, 3, value);
+        if (data.id != null) {
+            message.id = data.id;
         }
-        get id() {
-            return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
         }
-        set id(value: string) {
-            pb_1.Message.setField(this, 4, value);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             namespace?: string;
             resource?: string;
@@ -1843,299 +1870,270 @@ export namespace stub {
             annotations?: {
                 [key: string]: string;
             };
-        }): GetRequest {
-            const message = new GetRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.resource != null) {
-                message.resource = data.resource;
-            }
-            if (data.id != null) {
-                message.id = data.id;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                namespace?: string;
-                resource?: string;
-                id?: string;
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.resource != null) {
-                data.resource = this.resource;
-            }
-            if (this.id != null) {
-                data.id = this.id;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.namespace.length)
-                writer.writeString(2, this.namespace);
-            if (this.resource.length)
-                writer.writeString(3, this.resource);
-            if (this.id.length)
-                writer.writeString(4, this.id);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.resource != null) {
+            data.resource = this.resource;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (this.id != null) {
+            data.id = this.id;
+        }
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.namespace.length)
+            writer.writeString(2, this.namespace);
+        if (this.resource.length)
+            writer.writeString(3, this.resource);
+        if (this.id.length)
+            writer.writeString(4, this.id);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.namespace = reader.readString();
-                        break;
-                    case 3:
-                        message.resource = reader.readString();
-                        break;
-                    case 4:
-                        message.id = reader.readString();
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): GetRequest {
-            return GetRequest.deserialize(bytes);
-        }
-    }
-    export class GetResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            item?: dependency_4.google.protobuf.Any;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("item" in data && data.item != undefined) {
-                    this.item = data.item;
-                }
-            }
-        }
-        get item() {
-            return pb_1.Message.getWrapperField(this, dependency_4.google.protobuf.Any, 1) as dependency_4.google.protobuf.Any;
-        }
-        set item(value: dependency_4.google.protobuf.Any) {
-            pb_1.Message.setWrapperField(this, 1, value);
-        }
-        get has_item() {
-            return pb_1.Message.getField(this, 1) != null;
-        }
-        static fromObject(data: {
-            item?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>;
-        }): GetResponse {
-            const message = new GetResponse({});
-            if (data.item != null) {
-                message.item = dependency_4.google.protobuf.Any.fromObject(data.item);
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                item?: ReturnType<typeof dependency_4.google.protobuf.Any.prototype.toObject>;
-            } = {};
-            if (this.item != null) {
-                data.item = this.item.toObject();
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.has_item)
-                writer.writeMessage(1, this.item, () => this.item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+                case 2:
+                    message.namespace = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.item, () => message.item = dependency_4.google.protobuf.Any.deserialize(reader));
-                        break;
-                    default: reader.skipField();
-                }
+                case 3:
+                    message.resource = reader.readString();
+                    break;
+                case 4:
+                    message.id = reader.readString();
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): GetResponse {
-            return GetResponse.deserialize(bytes);
-        }
+        return message;
     }
-    interface GrpcUnaryServiceInterface<P, R> {
-        (message: P, metadata: grpc_1.Metadata, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
-        (message: P, metadata: grpc_1.Metadata, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
-        (message: P, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
-        (message: P, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+    serializeBinary(): Uint8Array {
+        return this.serialize();
     }
-    interface GrpcStreamServiceInterface<P, R> {
-        (message: P, metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<R>;
-        (message: P, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<R>;
+    static deserializeBinary(bytes: Uint8Array): GetRequest {
+        return GetRequest.deserialize(bytes);
     }
-    interface GrpWritableServiceInterface<P, R> {
-        (metadata: grpc_1.Metadata, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
-        (metadata: grpc_1.Metadata, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
-        (options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
-        (callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
-    }
-    interface GrpcChunkServiceInterface<P, R> {
-        (metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): grpc_1.ClientDuplexStream<P, R>;
-        (options?: grpc_1.CallOptions): grpc_1.ClientDuplexStream<P, R>;
-    }
-    interface GrpcPromiseServiceInterface<P, R> {
-        (message: P, metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): Promise<R>;
-        (message: P, options?: grpc_1.CallOptions): Promise<R>;
-    }
-    export abstract class UnimplementedGenericService {
-        static definition = {
-            Create: {
-                path: "/stub.Generic/Create",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: CreateRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => CreateRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: CreateResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => CreateResponse.deserialize(new Uint8Array(bytes))
-            },
-            Update: {
-                path: "/stub.Generic/Update",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: UpdateRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => UpdateRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: UpdateResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => UpdateResponse.deserialize(new Uint8Array(bytes))
-            },
-            UpdateMulti: {
-                path: "/stub.Generic/UpdateMulti",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: UpdateMultiRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => UpdateMultiRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: UpdateMultiResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => UpdateMultiResponse.deserialize(new Uint8Array(bytes))
-            },
-            Delete: {
-                path: "/stub.Generic/Delete",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: DeleteRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => DeleteRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: DeleteResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => DeleteResponse.deserialize(new Uint8Array(bytes))
-            },
-            List: {
-                path: "/stub.Generic/List",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: ListRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => ListRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: ListResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => ListResponse.deserialize(new Uint8Array(bytes))
-            },
-            Search: {
-                path: "/stub.Generic/Search",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: SearchRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => SearchRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: SearchResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => SearchResponse.deserialize(new Uint8Array(bytes))
-            },
-            Get: {
-                path: "/stub.Generic/Get",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: GetRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => GetRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: GetResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => GetResponse.deserialize(new Uint8Array(bytes))
+}
+export class GetResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        item?: dependency_4.Any;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("item" in data && data.item != undefined) {
+                this.item = data.item;
             }
-        };
-        [method: string]: grpc_1.UntypedHandleCall;
-        abstract Create(call: grpc_1.ServerUnaryCall<CreateRequest, CreateResponse>, callback: grpc_1.sendUnaryData<CreateResponse>): void;
-        abstract Update(call: grpc_1.ServerUnaryCall<UpdateRequest, UpdateResponse>, callback: grpc_1.sendUnaryData<UpdateResponse>): void;
-        abstract UpdateMulti(call: grpc_1.ServerUnaryCall<UpdateMultiRequest, UpdateMultiResponse>, callback: grpc_1.sendUnaryData<UpdateMultiResponse>): void;
-        abstract Delete(call: grpc_1.ServerUnaryCall<DeleteRequest, DeleteResponse>, callback: grpc_1.sendUnaryData<DeleteResponse>): void;
-        abstract List(call: grpc_1.ServerUnaryCall<ListRequest, ListResponse>, callback: grpc_1.sendUnaryData<ListResponse>): void;
-        abstract Search(call: grpc_1.ServerUnaryCall<SearchRequest, SearchResponse>, callback: grpc_1.sendUnaryData<SearchResponse>): void;
-        abstract Get(call: grpc_1.ServerUnaryCall<GetRequest, GetResponse>, callback: grpc_1.sendUnaryData<GetResponse>): void;
-    }
-    export class GenericClient extends grpc_1.makeGenericClientConstructor(UnimplementedGenericService.definition, "Generic", {}) {
-        constructor(address: string, credentials: grpc_1.ChannelCredentials, options?: Partial<grpc_1.ChannelOptions>) {
-            super(address, credentials, options);
         }
-        Create: GrpcUnaryServiceInterface<CreateRequest, CreateResponse> = (message: CreateRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<CreateResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<CreateResponse>, callback?: grpc_1.requestCallback<CreateResponse>): grpc_1.ClientUnaryCall => {
-            return super.Create(message, metadata, options, callback);
-        };
-        Update: GrpcUnaryServiceInterface<UpdateRequest, UpdateResponse> = (message: UpdateRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<UpdateResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<UpdateResponse>, callback?: grpc_1.requestCallback<UpdateResponse>): grpc_1.ClientUnaryCall => {
-            return super.Update(message, metadata, options, callback);
-        };
-        UpdateMulti: GrpcUnaryServiceInterface<UpdateMultiRequest, UpdateMultiResponse> = (message: UpdateMultiRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<UpdateMultiResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<UpdateMultiResponse>, callback?: grpc_1.requestCallback<UpdateMultiResponse>): grpc_1.ClientUnaryCall => {
-            return super.UpdateMulti(message, metadata, options, callback);
-        };
-        Delete: GrpcUnaryServiceInterface<DeleteRequest, DeleteResponse> = (message: DeleteRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<DeleteResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<DeleteResponse>, callback?: grpc_1.requestCallback<DeleteResponse>): grpc_1.ClientUnaryCall => {
-            return super.Delete(message, metadata, options, callback);
-        };
-        List: GrpcUnaryServiceInterface<ListRequest, ListResponse> = (message: ListRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<ListResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<ListResponse>, callback?: grpc_1.requestCallback<ListResponse>): grpc_1.ClientUnaryCall => {
-            return super.List(message, metadata, options, callback);
-        };
-        Search: GrpcUnaryServiceInterface<SearchRequest, SearchResponse> = (message: SearchRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<SearchResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<SearchResponse>, callback?: grpc_1.requestCallback<SearchResponse>): grpc_1.ClientUnaryCall => {
-            return super.Search(message, metadata, options, callback);
-        };
-        Get: GrpcUnaryServiceInterface<GetRequest, GetResponse> = (message: GetRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<GetResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<GetResponse>, callback?: grpc_1.requestCallback<GetResponse>): grpc_1.ClientUnaryCall => {
-            return super.Get(message, metadata, options, callback);
-        };
     }
+    get item() {
+        return pb_1.Message.getWrapperField(this, dependency_4.Any, 1) as dependency_4.Any;
+    }
+    set item(value: dependency_4.Any) {
+        pb_1.Message.setWrapperField(this, 1, value);
+    }
+    get hasItem() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    static fromObject(data: {
+        item?: ReturnType<typeof dependency_4.Any.prototype.toObject>;
+    }): GetResponse {
+        const message = new GetResponse({});
+        if (data.item != null) {
+            message.item = dependency_4.Any.fromObject(data.item);
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            item?: ReturnType<typeof dependency_4.Any.prototype.toObject>;
+        } = {};
+        if (this.item != null) {
+            data.item = this.item.toObject();
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.hasItem)
+            writer.writeMessage(1, this.item, () => this.item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.item, () => message.item = dependency_4.Any.deserialize(reader));
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): GetResponse {
+        return GetResponse.deserialize(bytes);
+    }
+}
+interface GrpcUnaryServiceInterface<P, R> {
+    (message: P, metadata: grpc_1.Metadata, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+    (message: P, metadata: grpc_1.Metadata, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+    (message: P, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+    (message: P, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+}
+interface GrpcStreamServiceInterface<P, R> {
+    (message: P, metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<R>;
+    (message: P, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<R>;
+}
+interface GrpWritableServiceInterface<P, R> {
+    (metadata: grpc_1.Metadata, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
+    (metadata: grpc_1.Metadata, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
+    (options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
+    (callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
+}
+interface GrpcChunkServiceInterface<P, R> {
+    (metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): grpc_1.ClientDuplexStream<P, R>;
+    (options?: grpc_1.CallOptions): grpc_1.ClientDuplexStream<P, R>;
+}
+interface GrpcPromiseServiceInterface<P, R> {
+    (message: P, metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): Promise<R>;
+    (message: P, options?: grpc_1.CallOptions): Promise<R>;
+}
+export abstract class UnimplementedGenericService {
+    static definition = {
+        Create: {
+            path: "/stub.Generic/Create",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: CreateRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => CreateRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: CreateResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => CreateResponse.deserialize(new Uint8Array(bytes))
+        },
+        Update: {
+            path: "/stub.Generic/Update",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: UpdateRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => UpdateRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: UpdateResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => UpdateResponse.deserialize(new Uint8Array(bytes))
+        },
+        UpdateMulti: {
+            path: "/stub.Generic/UpdateMulti",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: UpdateMultiRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => UpdateMultiRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: UpdateMultiResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => UpdateMultiResponse.deserialize(new Uint8Array(bytes))
+        },
+        Delete: {
+            path: "/stub.Generic/Delete",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: DeleteRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => DeleteRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: DeleteResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => DeleteResponse.deserialize(new Uint8Array(bytes))
+        },
+        List: {
+            path: "/stub.Generic/List",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: ListRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => ListRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: ListResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => ListResponse.deserialize(new Uint8Array(bytes))
+        },
+        Search: {
+            path: "/stub.Generic/Search",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: SearchRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => SearchRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: SearchResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => SearchResponse.deserialize(new Uint8Array(bytes))
+        },
+        Get: {
+            path: "/stub.Generic/Get",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: GetRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => GetRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: GetResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => GetResponse.deserialize(new Uint8Array(bytes))
+        }
+    };
+    [method: string]: grpc_1.UntypedHandleCall;
+    abstract Create(call: grpc_1.ServerUnaryCall<CreateRequest, CreateResponse>, callback: grpc_1.sendUnaryData<CreateResponse>): void;
+    abstract Update(call: grpc_1.ServerUnaryCall<UpdateRequest, UpdateResponse>, callback: grpc_1.sendUnaryData<UpdateResponse>): void;
+    abstract UpdateMulti(call: grpc_1.ServerUnaryCall<UpdateMultiRequest, UpdateMultiResponse>, callback: grpc_1.sendUnaryData<UpdateMultiResponse>): void;
+    abstract Delete(call: grpc_1.ServerUnaryCall<DeleteRequest, DeleteResponse>, callback: grpc_1.sendUnaryData<DeleteResponse>): void;
+    abstract List(call: grpc_1.ServerUnaryCall<ListRequest, ListResponse>, callback: grpc_1.sendUnaryData<ListResponse>): void;
+    abstract Search(call: grpc_1.ServerUnaryCall<SearchRequest, SearchResponse>, callback: grpc_1.sendUnaryData<SearchResponse>): void;
+    abstract Get(call: grpc_1.ServerUnaryCall<GetRequest, GetResponse>, callback: grpc_1.sendUnaryData<GetResponse>): void;
+}
+export class GenericClient extends grpc_1.makeGenericClientConstructor(UnimplementedGenericService.definition, "Generic", {}) {
+    constructor(address: string, credentials: grpc_1.ChannelCredentials, options?: Partial<grpc_1.ChannelOptions>) {
+        super(address, credentials, options);
+    }
+    Create: GrpcUnaryServiceInterface<CreateRequest, CreateResponse> = (message: CreateRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<CreateResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<CreateResponse>, callback?: grpc_1.requestCallback<CreateResponse>): grpc_1.ClientUnaryCall => {
+        return super.Create(message, metadata, options, callback);
+    };
+    Update: GrpcUnaryServiceInterface<UpdateRequest, UpdateResponse> = (message: UpdateRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<UpdateResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<UpdateResponse>, callback?: grpc_1.requestCallback<UpdateResponse>): grpc_1.ClientUnaryCall => {
+        return super.Update(message, metadata, options, callback);
+    };
+    UpdateMulti: GrpcUnaryServiceInterface<UpdateMultiRequest, UpdateMultiResponse> = (message: UpdateMultiRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<UpdateMultiResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<UpdateMultiResponse>, callback?: grpc_1.requestCallback<UpdateMultiResponse>): grpc_1.ClientUnaryCall => {
+        return super.UpdateMulti(message, metadata, options, callback);
+    };
+    Delete: GrpcUnaryServiceInterface<DeleteRequest, DeleteResponse> = (message: DeleteRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<DeleteResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<DeleteResponse>, callback?: grpc_1.requestCallback<DeleteResponse>): grpc_1.ClientUnaryCall => {
+        return super.Delete(message, metadata, options, callback);
+    };
+    List: GrpcUnaryServiceInterface<ListRequest, ListResponse> = (message: ListRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<ListResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<ListResponse>, callback?: grpc_1.requestCallback<ListResponse>): grpc_1.ClientUnaryCall => {
+        return super.List(message, metadata, options, callback);
+    };
+    Search: GrpcUnaryServiceInterface<SearchRequest, SearchResponse> = (message: SearchRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<SearchResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<SearchResponse>, callback?: grpc_1.requestCallback<SearchResponse>): grpc_1.ClientUnaryCall => {
+        return super.Search(message, metadata, options, callback);
+    };
+    Get: GrpcUnaryServiceInterface<GetRequest, GetResponse> = (message: GetRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<GetResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<GetResponse>, callback?: grpc_1.requestCallback<GetResponse>): grpc_1.ClientUnaryCall => {
+        return super.Get(message, metadata, options, callback);
+    };
 }

@@ -5,4 +5,3 @@
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as dependency_1 from "./http";
 import * as dependency_2 from "./../protobuf/descriptor";
-export namespace google.api { }

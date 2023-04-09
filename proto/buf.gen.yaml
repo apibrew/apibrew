@@ -6,6 +6,9 @@ plugins:
       - paths=source_relative
   - name: ts
     out: ../examples/extension/nodejs_tax_calculator_simple/src/dh-client
+    opt:
+      - no_namespace
+      - json_names
   - name: go-grpc
     out: ../pkg/
     opt:

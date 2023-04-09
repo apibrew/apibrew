@@ -7,341 +7,337 @@ import * as dependency_1 from "./record";
 import * as dependency_2 from "./resource";
 import * as dependency_3 from "./../google/protobuf/struct";
 import * as pb_1 from "google-protobuf";
-export namespace model {
-    export class BatchHeader extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            mode?: BatchHeader.BatchMode;
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("mode" in data && data.mode != undefined) {
-                    this.mode = data.mode;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
+export class BatchHeader extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        mode?: BatchHeaderBatchMode;
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("mode" in data && data.mode != undefined) {
+                this.mode = data.mode;
             }
-            if (!this.annotations)
-                this.annotations = new Map();
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
         }
-        get mode() {
-            return pb_1.Message.getFieldWithDefault(this, 1, BatchHeader.BatchMode.CREATE) as BatchHeader.BatchMode;
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get mode() {
+        return pb_1.Message.getFieldWithDefault(this, 1, BatchHeaderBatchMode.CREATE) as BatchHeaderBatchMode;
+    }
+    set mode(value: BatchHeaderBatchMode) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        mode?: BatchHeaderBatchMode;
+        annotations?: {
+            [key: string]: string;
+        };
+    }): BatchHeader {
+        const message = new BatchHeader({});
+        if (data.mode != null) {
+            message.mode = data.mode;
         }
-        set mode(value: BatchHeader.BatchMode) {
-            pb_1.Message.setField(this, 1, value);
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
         }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
-            mode?: BatchHeader.BatchMode;
+        return message;
+    }
+    toObject() {
+        const data: {
+            mode?: BatchHeaderBatchMode;
             annotations?: {
                 [key: string]: string;
             };
-        }): BatchHeader {
-            const message = new BatchHeader({});
-            if (data.mode != null) {
-                message.mode = data.mode;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.mode != null) {
+            data.mode = this.mode;
         }
-        toObject() {
-            const data: {
-                mode?: BatchHeader.BatchMode;
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.mode != null) {
-                data.mode = this.mode;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.mode != BatchHeader.BatchMode.CREATE)
-                writer.writeEnum(1, this.mode);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.mode != BatchHeaderBatchMode.CREATE)
+            writer.writeEnum(1, this.mode);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): BatchHeader {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new BatchHeader();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): BatchHeader {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new BatchHeader();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.mode = reader.readEnum();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.mode = reader.readEnum();
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): BatchHeader {
-            return BatchHeader.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): BatchHeader {
+        return BatchHeader.deserialize(bytes);
+    }
+}
+export enum BatchHeaderBatchMode {
+    CREATE = 0,
+    UPDATE = 1,
+    DELETE = 2
+}
+export class BatchRecordsPart extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        namespace?: string;
+        resource?: string;
+        values?: dependency_3.Value[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("resource" in data && data.resource != undefined) {
+                this.resource = data.resource;
+            }
+            if ("values" in data && data.values != undefined) {
+                this.values = data.values;
+            }
         }
     }
-    export namespace BatchHeader {
-        export enum BatchMode {
-            CREATE = 0,
-            UPDATE = 1,
-            DELETE = 2
-        }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
     }
-    export class BatchRecordsPart extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get resource() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set resource(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get values() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_3.Value, 3) as dependency_3.Value[];
+    }
+    set values(value: dependency_3.Value[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 3, value);
+    }
+    static fromObject(data: {
+        namespace?: string;
+        resource?: string;
+        values?: ReturnType<typeof dependency_3.Value.prototype.toObject>[];
+    }): BatchRecordsPart {
+        const message = new BatchRecordsPart({});
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
+        }
+        if (data.resource != null) {
+            message.resource = data.resource;
+        }
+        if (data.values != null) {
+            message.values = data.values.map(item => dependency_3.Value.fromObject(item));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             namespace?: string;
             resource?: string;
-            values?: dependency_3.google.protobuf.Value[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("resource" in data && data.resource != undefined) {
-                    this.resource = data.resource;
-                }
-                if ("values" in data && data.values != undefined) {
-                    this.values = data.values;
-                }
-            }
+            values?: ReturnType<typeof dependency_3.Value.prototype.toObject>[];
+        } = {};
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        if (this.resource != null) {
+            data.resource = this.resource;
         }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 1, value);
+        if (this.values != null) {
+            data.values = this.values.map((item: dependency_3.Value) => item.toObject());
         }
-        get resource() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set resource(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get values() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_3.google.protobuf.Value, 3) as dependency_3.google.protobuf.Value[];
-        }
-        set values(value: dependency_3.google.protobuf.Value[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 3, value);
-        }
-        static fromObject(data: {
-            namespace?: string;
-            resource?: string;
-            values?: ReturnType<typeof dependency_3.google.protobuf.Value.prototype.toObject>[];
-        }): BatchRecordsPart {
-            const message = new BatchRecordsPart({});
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.resource != null) {
-                message.resource = data.resource;
-            }
-            if (data.values != null) {
-                message.values = data.values.map(item => dependency_3.google.protobuf.Value.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                namespace?: string;
-                resource?: string;
-                values?: ReturnType<typeof dependency_3.google.protobuf.Value.prototype.toObject>[];
-            } = {};
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.resource != null) {
-                data.resource = this.resource;
-            }
-            if (this.values != null) {
-                data.values = this.values.map((item: dependency_3.google.protobuf.Value) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.namespace.length)
-                writer.writeString(1, this.namespace);
-            if (this.resource.length)
-                writer.writeString(2, this.resource);
-            if (this.values.length)
-                writer.writeRepeatedMessage(3, this.values, (item: dependency_3.google.protobuf.Value) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): BatchRecordsPart {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new BatchRecordsPart();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.namespace.length)
+            writer.writeString(1, this.namespace);
+        if (this.resource.length)
+            writer.writeString(2, this.resource);
+        if (this.values.length)
+            writer.writeRepeatedMessage(3, this.values, (item: dependency_3.Value) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): BatchRecordsPart {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new BatchRecordsPart();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.namespace = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.namespace = reader.readString();
-                        break;
-                    case 2:
-                        message.resource = reader.readString();
-                        break;
-                    case 3:
-                        reader.readMessage(message.values, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_3.google.protobuf.Value.deserialize(reader), dependency_3.google.protobuf.Value));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.resource = reader.readString();
+                    break;
+                case 3:
+                    reader.readMessage(message.values, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_3.Value.deserialize(reader), dependency_3.Value));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): BatchRecordsPart {
-            return BatchRecordsPart.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): BatchRecordsPart {
+        return BatchRecordsPart.deserialize(bytes);
+    }
+}
+export class Batch extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        header?: BatchHeader;
+        resources?: dependency_2.Resource[];
+        batchRecords?: BatchRecordsPart[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2, 3], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("header" in data && data.header != undefined) {
+                this.header = data.header;
+            }
+            if ("resources" in data && data.resources != undefined) {
+                this.resources = data.resources;
+            }
+            if ("batchRecords" in data && data.batchRecords != undefined) {
+                this.batchRecords = data.batchRecords;
+            }
         }
     }
-    export class Batch extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            header?: BatchHeader;
-            resources?: dependency_2.model.Resource[];
-            batchRecords?: BatchRecordsPart[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2, 3], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("header" in data && data.header != undefined) {
-                    this.header = data.header;
-                }
-                if ("resources" in data && data.resources != undefined) {
-                    this.resources = data.resources;
-                }
-                if ("batchRecords" in data && data.batchRecords != undefined) {
-                    this.batchRecords = data.batchRecords;
-                }
-            }
+    get header() {
+        return pb_1.Message.getWrapperField(this, BatchHeader, 1) as BatchHeader;
+    }
+    set header(value: BatchHeader) {
+        pb_1.Message.setWrapperField(this, 1, value);
+    }
+    get hasHeader() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    get resources() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.Resource, 2) as dependency_2.Resource[];
+    }
+    set resources(value: dependency_2.Resource[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+    }
+    get batchRecords() {
+        return pb_1.Message.getRepeatedWrapperField(this, BatchRecordsPart, 3) as BatchRecordsPart[];
+    }
+    set batchRecords(value: BatchRecordsPart[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 3, value);
+    }
+    static fromObject(data: {
+        header?: ReturnType<typeof BatchHeader.prototype.toObject>;
+        resources?: ReturnType<typeof dependency_2.Resource.prototype.toObject>[];
+        batchRecords?: ReturnType<typeof BatchRecordsPart.prototype.toObject>[];
+    }): Batch {
+        const message = new Batch({});
+        if (data.header != null) {
+            message.header = BatchHeader.fromObject(data.header);
         }
-        get header() {
-            return pb_1.Message.getWrapperField(this, BatchHeader, 1) as BatchHeader;
+        if (data.resources != null) {
+            message.resources = data.resources.map(item => dependency_2.Resource.fromObject(item));
         }
-        set header(value: BatchHeader) {
-            pb_1.Message.setWrapperField(this, 1, value);
+        if (data.batchRecords != null) {
+            message.batchRecords = data.batchRecords.map(item => BatchRecordsPart.fromObject(item));
         }
-        get has_header() {
-            return pb_1.Message.getField(this, 1) != null;
-        }
-        get resources() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_2.model.Resource, 2) as dependency_2.model.Resource[];
-        }
-        set resources(value: dependency_2.model.Resource[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 2, value);
-        }
-        get batchRecords() {
-            return pb_1.Message.getRepeatedWrapperField(this, BatchRecordsPart, 3) as BatchRecordsPart[];
-        }
-        set batchRecords(value: BatchRecordsPart[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 3, value);
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             header?: ReturnType<typeof BatchHeader.prototype.toObject>;
-            resources?: ReturnType<typeof dependency_2.model.Resource.prototype.toObject>[];
+            resources?: ReturnType<typeof dependency_2.Resource.prototype.toObject>[];
             batchRecords?: ReturnType<typeof BatchRecordsPart.prototype.toObject>[];
-        }): Batch {
-            const message = new Batch({});
-            if (data.header != null) {
-                message.header = BatchHeader.fromObject(data.header);
-            }
-            if (data.resources != null) {
-                message.resources = data.resources.map(item => dependency_2.model.Resource.fromObject(item));
-            }
-            if (data.batchRecords != null) {
-                message.batchRecords = data.batchRecords.map(item => BatchRecordsPart.fromObject(item));
-            }
-            return message;
+        } = {};
+        if (this.header != null) {
+            data.header = this.header.toObject();
         }
-        toObject() {
-            const data: {
-                header?: ReturnType<typeof BatchHeader.prototype.toObject>;
-                resources?: ReturnType<typeof dependency_2.model.Resource.prototype.toObject>[];
-                batchRecords?: ReturnType<typeof BatchRecordsPart.prototype.toObject>[];
-            } = {};
-            if (this.header != null) {
-                data.header = this.header.toObject();
-            }
-            if (this.resources != null) {
-                data.resources = this.resources.map((item: dependency_2.model.Resource) => item.toObject());
-            }
-            if (this.batchRecords != null) {
-                data.batchRecords = this.batchRecords.map((item: BatchRecordsPart) => item.toObject());
-            }
-            return data;
+        if (this.resources != null) {
+            data.resources = this.resources.map((item: dependency_2.Resource) => item.toObject());
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.has_header)
-                writer.writeMessage(1, this.header, () => this.header.serialize(writer));
-            if (this.resources.length)
-                writer.writeRepeatedMessage(2, this.resources, (item: dependency_2.model.Resource) => item.serialize(writer));
-            if (this.batchRecords.length)
-                writer.writeRepeatedMessage(3, this.batchRecords, (item: BatchRecordsPart) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.batchRecords != null) {
+            data.batchRecords = this.batchRecords.map((item: BatchRecordsPart) => item.toObject());
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Batch {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Batch();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.hasHeader)
+            writer.writeMessage(1, this.header, () => this.header.serialize(writer));
+        if (this.resources.length)
+            writer.writeRepeatedMessage(2, this.resources, (item: dependency_2.Resource) => item.serialize(writer));
+        if (this.batchRecords.length)
+            writer.writeRepeatedMessage(3, this.batchRecords, (item: BatchRecordsPart) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Batch {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Batch();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.header, () => message.header = BatchHeader.deserialize(reader));
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.header, () => message.header = BatchHeader.deserialize(reader));
-                        break;
-                    case 2:
-                        reader.readMessage(message.resources, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_2.model.Resource.deserialize(reader), dependency_2.model.Resource));
-                        break;
-                    case 3:
-                        reader.readMessage(message.batchRecords, () => pb_1.Message.addToRepeatedWrapperField(message, 3, BatchRecordsPart.deserialize(reader), BatchRecordsPart));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    reader.readMessage(message.resources, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_2.Resource.deserialize(reader), dependency_2.Resource));
+                    break;
+                case 3:
+                    reader.readMessage(message.batchRecords, () => pb_1.Message.addToRepeatedWrapperField(message, 3, BatchRecordsPart.deserialize(reader), BatchRecordsPart));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): Batch {
-            return Batch.deserialize(bytes);
-        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): Batch {
+        return Batch.deserialize(bytes);
     }
 }

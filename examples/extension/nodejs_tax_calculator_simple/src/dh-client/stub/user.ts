@@ -10,1015 +10,1013 @@ import * as dependency_4 from "./../google/api/annotations";
 import * as dependency_5 from "./../openapiv3/annotations";
 import * as pb_1 from "google-protobuf";
 import * as grpc_1 from "@grpc/grpc-js";
-export namespace stub {
-    export class CreateUserRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            token?: string;
-            user?: dependency_2.model.User;
-            users?: dependency_2.model.User[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("user" in data && data.user != undefined) {
-                    this.user = data.user;
-                }
-                if ("users" in data && data.users != undefined) {
-                    this.users = data.users;
-                }
+export class CreateUserRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        user?: dependency_2.User;
+        users?: dependency_2.User[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
             }
-        }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
-        }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get user() {
-            return pb_1.Message.getWrapperField(this, dependency_2.model.User, 2) as dependency_2.model.User;
-        }
-        set user(value: dependency_2.model.User) {
-            pb_1.Message.setWrapperField(this, 2, value);
-        }
-        get has_user() {
-            return pb_1.Message.getField(this, 2) != null;
-        }
-        get users() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_2.model.User, 3) as dependency_2.model.User[];
-        }
-        set users(value: dependency_2.model.User[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 3, value);
-        }
-        static fromObject(data: {
-            token?: string;
-            user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-            users?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-        }): CreateUserRequest {
-            const message = new CreateUserRequest({});
-            if (data.token != null) {
-                message.token = data.token;
+            if ("user" in data && data.user != undefined) {
+                this.user = data.user;
             }
-            if (data.user != null) {
-                message.user = dependency_2.model.User.fromObject(data.user);
+            if ("users" in data && data.users != undefined) {
+                this.users = data.users;
             }
-            if (data.users != null) {
-                message.users = data.users.map(item => dependency_2.model.User.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                token?: string;
-                user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-                users?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.user != null) {
-                data.user = this.user.toObject();
-            }
-            if (this.users != null) {
-                data.users = this.users.map((item: dependency_2.model.User) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.has_user)
-                writer.writeMessage(2, this.user, () => this.user.serialize(writer));
-            if (this.users.length)
-                writer.writeRepeatedMessage(3, this.users, (item: dependency_2.model.User) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CreateUserRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CreateUserRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        reader.readMessage(message.user, () => message.user = dependency_2.model.User.deserialize(reader));
-                        break;
-                    case 3:
-                        reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_2.model.User.deserialize(reader), dependency_2.model.User));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): CreateUserRequest {
-            return CreateUserRequest.deserialize(bytes);
         }
     }
-    export class CreateUserResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            user?: dependency_2.model.User;
-            users?: dependency_2.model.User[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("user" in data && data.user != undefined) {
-                    this.user = data.user;
-                }
-                if ("users" in data && data.users != undefined) {
-                    this.users = data.users;
-                }
-            }
-        }
-        get user() {
-            return pb_1.Message.getWrapperField(this, dependency_2.model.User, 1) as dependency_2.model.User;
-        }
-        set user(value: dependency_2.model.User) {
-            pb_1.Message.setWrapperField(this, 1, value);
-        }
-        get has_user() {
-            return pb_1.Message.getField(this, 1) != null;
-        }
-        get users() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_2.model.User, 2) as dependency_2.model.User[];
-        }
-        set users(value: dependency_2.model.User[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 2, value);
-        }
-        static fromObject(data: {
-            user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-            users?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-        }): CreateUserResponse {
-            const message = new CreateUserResponse({});
-            if (data.user != null) {
-                message.user = dependency_2.model.User.fromObject(data.user);
-            }
-            if (data.users != null) {
-                message.users = data.users.map(item => dependency_2.model.User.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-                users?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-            } = {};
-            if (this.user != null) {
-                data.user = this.user.toObject();
-            }
-            if (this.users != null) {
-                data.users = this.users.map((item: dependency_2.model.User) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.has_user)
-                writer.writeMessage(1, this.user, () => this.user.serialize(writer));
-            if (this.users.length)
-                writer.writeRepeatedMessage(2, this.users, (item: dependency_2.model.User) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CreateUserResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CreateUserResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.user, () => message.user = dependency_2.model.User.deserialize(reader));
-                        break;
-                    case 2:
-                        reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_2.model.User.deserialize(reader), dependency_2.model.User));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): CreateUserResponse {
-            return CreateUserResponse.deserialize(bytes);
-        }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
     }
-    export class UpdateUserRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get user() {
+        return pb_1.Message.getWrapperField(this, dependency_2.User, 2) as dependency_2.User;
+    }
+    set user(value: dependency_2.User) {
+        pb_1.Message.setWrapperField(this, 2, value);
+    }
+    get hasUser() {
+        return pb_1.Message.getField(this, 2) != null;
+    }
+    get users() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.User, 3) as dependency_2.User[];
+    }
+    set users(value: dependency_2.User[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 3, value);
+    }
+    static fromObject(data: {
+        token?: string;
+        user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+        users?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+    }): CreateUserRequest {
+        const message = new CreateUserRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.user != null) {
+            message.user = dependency_2.User.fromObject(data.user);
+        }
+        if (data.users != null) {
+            message.users = data.users.map(item => dependency_2.User.fromObject(item));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
-            user?: dependency_2.model.User;
-            users?: dependency_2.model.User[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("user" in data && data.user != undefined) {
-                    this.user = data.user;
-                }
-                if ("users" in data && data.users != undefined) {
-                    this.users = data.users;
-                }
+            user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+            users?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
+        }
+        if (this.user != null) {
+            data.user = this.user.toObject();
+        }
+        if (this.users != null) {
+            data.users = this.users.map((item: dependency_2.User) => item.toObject());
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.hasUser)
+            writer.writeMessage(2, this.user, () => this.user.serialize(writer));
+        if (this.users.length)
+            writer.writeRepeatedMessage(3, this.users, (item: dependency_2.User) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CreateUserRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CreateUserRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
+                    break;
+                case 2:
+                    reader.readMessage(message.user, () => message.user = dependency_2.User.deserialize(reader));
+                    break;
+                case 3:
+                    reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_2.User.deserialize(reader), dependency_2.User));
+                    break;
+                default: reader.skipField();
             }
         }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): CreateUserRequest {
+        return CreateUserRequest.deserialize(bytes);
+    }
+}
+export class CreateUserResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        user?: dependency_2.User;
+        users?: dependency_2.User[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("user" in data && data.user != undefined) {
+                this.user = data.user;
+            }
+            if ("users" in data && data.users != undefined) {
+                this.users = data.users;
+            }
         }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
+    }
+    get user() {
+        return pb_1.Message.getWrapperField(this, dependency_2.User, 1) as dependency_2.User;
+    }
+    set user(value: dependency_2.User) {
+        pb_1.Message.setWrapperField(this, 1, value);
+    }
+    get hasUser() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    get users() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.User, 2) as dependency_2.User[];
+    }
+    set users(value: dependency_2.User[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+    }
+    static fromObject(data: {
+        user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+        users?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+    }): CreateUserResponse {
+        const message = new CreateUserResponse({});
+        if (data.user != null) {
+            message.user = dependency_2.User.fromObject(data.user);
         }
-        get user() {
-            return pb_1.Message.getWrapperField(this, dependency_2.model.User, 2) as dependency_2.model.User;
+        if (data.users != null) {
+            message.users = data.users.map(item => dependency_2.User.fromObject(item));
         }
-        set user(value: dependency_2.model.User) {
-            pb_1.Message.setWrapperField(this, 2, value);
+        return message;
+    }
+    toObject() {
+        const data: {
+            user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+            users?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+        } = {};
+        if (this.user != null) {
+            data.user = this.user.toObject();
         }
-        get has_user() {
-            return pb_1.Message.getField(this, 2) != null;
+        if (this.users != null) {
+            data.users = this.users.map((item: dependency_2.User) => item.toObject());
         }
-        get users() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_2.model.User, 3) as dependency_2.model.User[];
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.hasUser)
+            writer.writeMessage(1, this.user, () => this.user.serialize(writer));
+        if (this.users.length)
+            writer.writeRepeatedMessage(2, this.users, (item: dependency_2.User) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CreateUserResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CreateUserResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.user, () => message.user = dependency_2.User.deserialize(reader));
+                    break;
+                case 2:
+                    reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_2.User.deserialize(reader), dependency_2.User));
+                    break;
+                default: reader.skipField();
+            }
         }
-        set users(value: dependency_2.model.User[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 3, value);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): CreateUserResponse {
+        return CreateUserResponse.deserialize(bytes);
+    }
+}
+export class UpdateUserRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        user?: dependency_2.User;
+        users?: dependency_2.User[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("user" in data && data.user != undefined) {
+                this.user = data.user;
+            }
+            if ("users" in data && data.users != undefined) {
+                this.users = data.users;
+            }
         }
-        static fromObject(data: {
+    }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get user() {
+        return pb_1.Message.getWrapperField(this, dependency_2.User, 2) as dependency_2.User;
+    }
+    set user(value: dependency_2.User) {
+        pb_1.Message.setWrapperField(this, 2, value);
+    }
+    get hasUser() {
+        return pb_1.Message.getField(this, 2) != null;
+    }
+    get users() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.User, 3) as dependency_2.User[];
+    }
+    set users(value: dependency_2.User[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 3, value);
+    }
+    static fromObject(data: {
+        token?: string;
+        user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+        users?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+    }): UpdateUserRequest {
+        const message = new UpdateUserRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.user != null) {
+            message.user = dependency_2.User.fromObject(data.user);
+        }
+        if (data.users != null) {
+            message.users = data.users.map(item => dependency_2.User.fromObject(item));
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
-            user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-            users?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-        }): UpdateUserRequest {
-            const message = new UpdateUserRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.user != null) {
-                message.user = dependency_2.model.User.fromObject(data.user);
-            }
-            if (data.users != null) {
-                message.users = data.users.map(item => dependency_2.model.User.fromObject(item));
-            }
-            return message;
+            user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+            users?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-                users?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.user != null) {
-                data.user = this.user.toObject();
-            }
-            if (this.users != null) {
-                data.users = this.users.map((item: dependency_2.model.User) => item.toObject());
-            }
-            return data;
+        if (this.user != null) {
+            data.user = this.user.toObject();
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.has_user)
-                writer.writeMessage(2, this.user, () => this.user.serialize(writer));
-            if (this.users.length)
-                writer.writeRepeatedMessage(3, this.users, (item: dependency_2.model.User) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.users != null) {
+            data.users = this.users.map((item: dependency_2.User) => item.toObject());
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateUserRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateUserRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.hasUser)
+            writer.writeMessage(2, this.user, () => this.user.serialize(writer));
+        if (this.users.length)
+            writer.writeRepeatedMessage(3, this.users, (item: dependency_2.User) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateUserRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateUserRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        reader.readMessage(message.user, () => message.user = dependency_2.model.User.deserialize(reader));
-                        break;
-                    case 3:
-                        reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_2.model.User.deserialize(reader), dependency_2.model.User));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    reader.readMessage(message.user, () => message.user = dependency_2.User.deserialize(reader));
+                    break;
+                case 3:
+                    reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_2.User.deserialize(reader), dependency_2.User));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): UpdateUserRequest {
-            return UpdateUserRequest.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): UpdateUserRequest {
+        return UpdateUserRequest.deserialize(bytes);
+    }
+}
+export class UpdateUserResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        user?: dependency_2.User;
+        users?: dependency_2.User[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("user" in data && data.user != undefined) {
+                this.user = data.user;
+            }
+            if ("users" in data && data.users != undefined) {
+                this.users = data.users;
+            }
         }
     }
-    export class UpdateUserResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            user?: dependency_2.model.User;
-            users?: dependency_2.model.User[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("user" in data && data.user != undefined) {
-                    this.user = data.user;
-                }
-                if ("users" in data && data.users != undefined) {
-                    this.users = data.users;
-                }
-            }
+    get user() {
+        return pb_1.Message.getWrapperField(this, dependency_2.User, 1) as dependency_2.User;
+    }
+    set user(value: dependency_2.User) {
+        pb_1.Message.setWrapperField(this, 1, value);
+    }
+    get hasUser() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    get users() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.User, 2) as dependency_2.User[];
+    }
+    set users(value: dependency_2.User[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+    }
+    static fromObject(data: {
+        user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+        users?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+    }): UpdateUserResponse {
+        const message = new UpdateUserResponse({});
+        if (data.user != null) {
+            message.user = dependency_2.User.fromObject(data.user);
         }
-        get user() {
-            return pb_1.Message.getWrapperField(this, dependency_2.model.User, 1) as dependency_2.model.User;
+        if (data.users != null) {
+            message.users = data.users.map(item => dependency_2.User.fromObject(item));
         }
-        set user(value: dependency_2.model.User) {
-            pb_1.Message.setWrapperField(this, 1, value);
+        return message;
+    }
+    toObject() {
+        const data: {
+            user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+            users?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+        } = {};
+        if (this.user != null) {
+            data.user = this.user.toObject();
         }
-        get has_user() {
-            return pb_1.Message.getField(this, 1) != null;
+        if (this.users != null) {
+            data.users = this.users.map((item: dependency_2.User) => item.toObject());
         }
-        get users() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_2.model.User, 2) as dependency_2.model.User[];
-        }
-        set users(value: dependency_2.model.User[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 2, value);
-        }
-        static fromObject(data: {
-            user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-            users?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-        }): UpdateUserResponse {
-            const message = new UpdateUserResponse({});
-            if (data.user != null) {
-                message.user = dependency_2.model.User.fromObject(data.user);
-            }
-            if (data.users != null) {
-                message.users = data.users.map(item => dependency_2.model.User.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-                users?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-            } = {};
-            if (this.user != null) {
-                data.user = this.user.toObject();
-            }
-            if (this.users != null) {
-                data.users = this.users.map((item: dependency_2.model.User) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.has_user)
-                writer.writeMessage(1, this.user, () => this.user.serialize(writer));
-            if (this.users.length)
-                writer.writeRepeatedMessage(2, this.users, (item: dependency_2.model.User) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateUserResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateUserResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.hasUser)
+            writer.writeMessage(1, this.user, () => this.user.serialize(writer));
+        if (this.users.length)
+            writer.writeRepeatedMessage(2, this.users, (item: dependency_2.User) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateUserResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateUserResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.user, () => message.user = dependency_2.User.deserialize(reader));
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.user, () => message.user = dependency_2.model.User.deserialize(reader));
-                        break;
-                    case 2:
-                        reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_2.model.User.deserialize(reader), dependency_2.model.User));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_2.User.deserialize(reader), dependency_2.User));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): UpdateUserResponse {
-            return UpdateUserResponse.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): UpdateUserResponse {
+        return UpdateUserResponse.deserialize(bytes);
+    }
+}
+export class DeleteUserRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        id?: string;
+        ids?: string[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("id" in data && data.id != undefined) {
+                this.id = data.id;
+            }
+            if ("ids" in data && data.ids != undefined) {
+                this.ids = data.ids;
+            }
         }
     }
-    export class DeleteUserRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get id() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set id(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get ids() {
+        return pb_1.Message.getFieldWithDefault(this, 3, []) as string[];
+    }
+    set ids(value: string[]) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    static fromObject(data: {
+        token?: string;
+        id?: string;
+        ids?: string[];
+    }): DeleteUserRequest {
+        const message = new DeleteUserRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.id != null) {
+            message.id = data.id;
+        }
+        if (data.ids != null) {
+            message.ids = data.ids;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             id?: string;
             ids?: string[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("id" in data && data.id != undefined) {
-                    this.id = data.id;
-                }
-                if ("ids" in data && data.ids != undefined) {
-                    this.ids = data.ids;
-                }
-            }
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        if (this.id != null) {
+            data.id = this.id;
         }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
+        if (this.ids != null) {
+            data.ids = this.ids;
         }
-        get id() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set id(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get ids() {
-            return pb_1.Message.getFieldWithDefault(this, 3, []) as string[];
-        }
-        set ids(value: string[]) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        static fromObject(data: {
-            token?: string;
-            id?: string;
-            ids?: string[];
-        }): DeleteUserRequest {
-            const message = new DeleteUserRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.id != null) {
-                message.id = data.id;
-            }
-            if (data.ids != null) {
-                message.ids = data.ids;
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                token?: string;
-                id?: string;
-                ids?: string[];
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.id != null) {
-                data.id = this.id;
-            }
-            if (this.ids != null) {
-                data.ids = this.ids;
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.id.length)
-                writer.writeString(2, this.id);
-            if (this.ids.length)
-                writer.writeRepeatedString(3, this.ids);
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteUserRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteUserRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.id.length)
+            writer.writeString(2, this.id);
+        if (this.ids.length)
+            writer.writeRepeatedString(3, this.ids);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteUserRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteUserRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.id = reader.readString();
-                        break;
-                    case 3:
-                        pb_1.Message.addToRepeatedField(message, 3, reader.readString());
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.id = reader.readString();
+                    break;
+                case 3:
+                    pb_1.Message.addToRepeatedField(message, 3, reader.readString());
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): DeleteUserRequest {
+        return DeleteUserRequest.deserialize(bytes);
+    }
+}
+export class DeleteUserResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {}) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") { }
+    }
+    static fromObject(data: {}): DeleteUserResponse {
+        const message = new DeleteUserResponse({});
+        return message;
+    }
+    toObject() {
+        const data: {} = {};
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteUserResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteUserResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                default: reader.skipField();
+            }
         }
-        static deserializeBinary(bytes: Uint8Array): DeleteUserRequest {
-            return DeleteUserRequest.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): DeleteUserResponse {
+        return DeleteUserResponse.deserialize(bytes);
+    }
+}
+export class ListUserRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        limit?: number;
+        offset?: number;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("limit" in data && data.limit != undefined) {
+                this.limit = data.limit;
+            }
+            if ("offset" in data && data.offset != undefined) {
+                this.offset = data.offset;
+            }
         }
     }
-    export class DeleteUserResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {}) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") { }
-        }
-        static fromObject(data: {}): DeleteUserResponse {
-            const message = new DeleteUserResponse({});
-            return message;
-        }
-        toObject() {
-            const data: {} = {};
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteUserResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteUserResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): DeleteUserResponse {
-            return DeleteUserResponse.deserialize(bytes);
-        }
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
     }
-    export class ListUserRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            token?: string;
-            limit?: number;
-            offset?: number;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("limit" in data && data.limit != undefined) {
-                    this.limit = data.limit;
-                }
-                if ("offset" in data && data.offset != undefined) {
-                    this.offset = data.offset;
-                }
-            }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get limit() {
+        return pb_1.Message.getFieldWithDefault(this, 4, 0) as number;
+    }
+    set limit(value: number) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    get offset() {
+        return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
+    }
+    set offset(value: number) {
+        pb_1.Message.setField(this, 5, value);
+    }
+    static fromObject(data: {
+        token?: string;
+        limit?: number;
+        offset?: number;
+    }): ListUserRequest {
+        const message = new ListUserRequest({});
+        if (data.token != null) {
+            message.token = data.token;
         }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        if (data.limit != null) {
+            message.limit = data.limit;
         }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
+        if (data.offset != null) {
+            message.offset = data.offset;
         }
-        get limit() {
-            return pb_1.Message.getFieldWithDefault(this, 4, 0) as number;
-        }
-        set limit(value: number) {
-            pb_1.Message.setField(this, 4, value);
-        }
-        get offset() {
-            return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
-        }
-        set offset(value: number) {
-            pb_1.Message.setField(this, 5, value);
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             limit?: number;
             offset?: number;
-        }): ListUserRequest {
-            const message = new ListUserRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.limit != null) {
-                message.limit = data.limit;
-            }
-            if (data.offset != null) {
-                message.offset = data.offset;
-            }
-            return message;
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        toObject() {
-            const data: {
-                token?: string;
-                limit?: number;
-                offset?: number;
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.limit != null) {
-                data.limit = this.limit;
-            }
-            if (this.offset != null) {
-                data.offset = this.offset;
-            }
-            return data;
+        if (this.limit != null) {
+            data.limit = this.limit;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.limit != 0)
-                writer.writeUint32(4, this.limit);
-            if (this.offset != 0)
-                writer.writeUint64(5, this.offset);
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.offset != null) {
+            data.offset = this.offset;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListUserRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListUserRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.limit != 0)
+            writer.writeUint32(4, this.limit);
+        if (this.offset != 0)
+            writer.writeUint64(5, this.offset);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListUserRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListUserRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 4:
-                        message.limit = reader.readUint32();
-                        break;
-                    case 5:
-                        message.offset = reader.readUint64();
-                        break;
-                    default: reader.skipField();
-                }
+                case 4:
+                    message.limit = reader.readUint32();
+                    break;
+                case 5:
+                    message.offset = reader.readUint64();
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ListUserRequest {
-            return ListUserRequest.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ListUserRequest {
+        return ListUserRequest.deserialize(bytes);
+    }
+}
+export class ListUserResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        content?: dependency_2.User[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("content" in data && data.content != undefined) {
+                this.content = data.content;
+            }
         }
     }
-    export class ListUserResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            content?: dependency_2.model.User[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("content" in data && data.content != undefined) {
-                    this.content = data.content;
-                }
-            }
+    get content() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.User, 1) as dependency_2.User[];
+    }
+    set content(value: dependency_2.User[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 1, value);
+    }
+    static fromObject(data: {
+        content?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+    }): ListUserResponse {
+        const message = new ListUserResponse({});
+        if (data.content != null) {
+            message.content = data.content.map(item => dependency_2.User.fromObject(item));
         }
-        get content() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_2.model.User, 1) as dependency_2.model.User[];
+        return message;
+    }
+    toObject() {
+        const data: {
+            content?: ReturnType<typeof dependency_2.User.prototype.toObject>[];
+        } = {};
+        if (this.content != null) {
+            data.content = this.content.map((item: dependency_2.User) => item.toObject());
         }
-        set content(value: dependency_2.model.User[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 1, value);
-        }
-        static fromObject(data: {
-            content?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-        }): ListUserResponse {
-            const message = new ListUserResponse({});
-            if (data.content != null) {
-                message.content = data.content.map(item => dependency_2.model.User.fromObject(item));
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                content?: ReturnType<typeof dependency_2.model.User.prototype.toObject>[];
-            } = {};
-            if (this.content != null) {
-                data.content = this.content.map((item: dependency_2.model.User) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.content.length)
-                writer.writeRepeatedMessage(1, this.content, (item: dependency_2.model.User) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListUserResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListUserResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.content.length)
+            writer.writeRepeatedMessage(1, this.content, (item: dependency_2.User) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListUserResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListUserResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.content, () => pb_1.Message.addToRepeatedWrapperField(message, 1, dependency_2.User.deserialize(reader), dependency_2.User));
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.content, () => pb_1.Message.addToRepeatedWrapperField(message, 1, dependency_2.model.User.deserialize(reader), dependency_2.model.User));
-                        break;
-                    default: reader.skipField();
-                }
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ListUserResponse {
-            return ListUserResponse.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ListUserResponse {
+        return ListUserResponse.deserialize(bytes);
+    }
+}
+export class GetUserRequest extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        token?: string;
+        id?: string;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("token" in data && data.token != undefined) {
+                this.token = data.token;
+            }
+            if ("id" in data && data.id != undefined) {
+                this.id = data.id;
+            }
         }
     }
-    export class GetUserRequest extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    get token() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set token(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get id() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set id(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    static fromObject(data: {
+        token?: string;
+        id?: string;
+    }): GetUserRequest {
+        const message = new GetUserRequest({});
+        if (data.token != null) {
+            message.token = data.token;
+        }
+        if (data.id != null) {
+            message.id = data.id;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             token?: string;
             id?: string;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("token" in data && data.token != undefined) {
-                    this.token = data.token;
-                }
-                if ("id" in data && data.id != undefined) {
-                    this.id = data.id;
-                }
-            }
+        } = {};
+        if (this.token != null) {
+            data.token = this.token;
         }
-        get token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        if (this.id != null) {
+            data.id = this.id;
         }
-        set token(value: string) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get id() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set id(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        static fromObject(data: {
-            token?: string;
-            id?: string;
-        }): GetUserRequest {
-            const message = new GetUserRequest({});
-            if (data.token != null) {
-                message.token = data.token;
-            }
-            if (data.id != null) {
-                message.id = data.id;
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                token?: string;
-                id?: string;
-            } = {};
-            if (this.token != null) {
-                data.token = this.token;
-            }
-            if (this.id != null) {
-                data.id = this.id;
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.token.length)
-                writer.writeString(1, this.token);
-            if (this.id.length)
-                writer.writeString(2, this.id);
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetUserRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetUserRequest();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.token.length)
+            writer.writeString(1, this.token);
+        if (this.id.length)
+            writer.writeString(2, this.id);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetUserRequest {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetUserRequest();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.token = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.token = reader.readString();
-                        break;
-                    case 2:
-                        message.id = reader.readString();
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): GetUserRequest {
-            return GetUserRequest.deserialize(bytes);
-        }
-    }
-    export class GetUserResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            user?: dependency_2.model.User;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("user" in data && data.user != undefined) {
-                    this.user = data.user;
-                }
-            }
-        }
-        get user() {
-            return pb_1.Message.getWrapperField(this, dependency_2.model.User, 1) as dependency_2.model.User;
-        }
-        set user(value: dependency_2.model.User) {
-            pb_1.Message.setWrapperField(this, 1, value);
-        }
-        get has_user() {
-            return pb_1.Message.getField(this, 1) != null;
-        }
-        static fromObject(data: {
-            user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-        }): GetUserResponse {
-            const message = new GetUserResponse({});
-            if (data.user != null) {
-                message.user = dependency_2.model.User.fromObject(data.user);
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                user?: ReturnType<typeof dependency_2.model.User.prototype.toObject>;
-            } = {};
-            if (this.user != null) {
-                data.user = this.user.toObject();
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.has_user)
-                writer.writeMessage(1, this.user, () => this.user.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetUserResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetUserResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+                case 2:
+                    message.id = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.user, () => message.user = dependency_2.model.User.deserialize(reader));
-                        break;
-                    default: reader.skipField();
-                }
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): GetUserResponse {
-            return GetUserResponse.deserialize(bytes);
-        }
+        return message;
     }
-    interface GrpcUnaryServiceInterface<P, R> {
-        (message: P, metadata: grpc_1.Metadata, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
-        (message: P, metadata: grpc_1.Metadata, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
-        (message: P, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
-        (message: P, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+    serializeBinary(): Uint8Array {
+        return this.serialize();
     }
-    interface GrpcStreamServiceInterface<P, R> {
-        (message: P, metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<R>;
-        (message: P, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<R>;
+    static deserializeBinary(bytes: Uint8Array): GetUserRequest {
+        return GetUserRequest.deserialize(bytes);
     }
-    interface GrpWritableServiceInterface<P, R> {
-        (metadata: grpc_1.Metadata, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
-        (metadata: grpc_1.Metadata, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
-        (options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
-        (callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
-    }
-    interface GrpcChunkServiceInterface<P, R> {
-        (metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): grpc_1.ClientDuplexStream<P, R>;
-        (options?: grpc_1.CallOptions): grpc_1.ClientDuplexStream<P, R>;
-    }
-    interface GrpcPromiseServiceInterface<P, R> {
-        (message: P, metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): Promise<R>;
-        (message: P, options?: grpc_1.CallOptions): Promise<R>;
-    }
-    export abstract class UnimplementedUserService {
-        static definition = {
-            Create: {
-                path: "/stub.User/Create",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: CreateUserRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => CreateUserRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: CreateUserResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => CreateUserResponse.deserialize(new Uint8Array(bytes))
-            },
-            Update: {
-                path: "/stub.User/Update",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: UpdateUserRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => UpdateUserRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: UpdateUserResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => UpdateUserResponse.deserialize(new Uint8Array(bytes))
-            },
-            Delete: {
-                path: "/stub.User/Delete",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: DeleteUserRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => DeleteUserRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: DeleteUserResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => DeleteUserResponse.deserialize(new Uint8Array(bytes))
-            },
-            List: {
-                path: "/stub.User/List",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: ListUserRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => ListUserRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: ListUserResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => ListUserResponse.deserialize(new Uint8Array(bytes))
-            },
-            Get: {
-                path: "/stub.User/Get",
-                requestStream: false,
-                responseStream: false,
-                requestSerialize: (message: GetUserRequest) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => GetUserRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: GetUserResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => GetUserResponse.deserialize(new Uint8Array(bytes))
+}
+export class GetUserResponse extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        user?: dependency_2.User;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("user" in data && data.user != undefined) {
+                this.user = data.user;
             }
-        };
-        [method: string]: grpc_1.UntypedHandleCall;
-        abstract Create(call: grpc_1.ServerUnaryCall<CreateUserRequest, CreateUserResponse>, callback: grpc_1.sendUnaryData<CreateUserResponse>): void;
-        abstract Update(call: grpc_1.ServerUnaryCall<UpdateUserRequest, UpdateUserResponse>, callback: grpc_1.sendUnaryData<UpdateUserResponse>): void;
-        abstract Delete(call: grpc_1.ServerUnaryCall<DeleteUserRequest, DeleteUserResponse>, callback: grpc_1.sendUnaryData<DeleteUserResponse>): void;
-        abstract List(call: grpc_1.ServerUnaryCall<ListUserRequest, ListUserResponse>, callback: grpc_1.sendUnaryData<ListUserResponse>): void;
-        abstract Get(call: grpc_1.ServerUnaryCall<GetUserRequest, GetUserResponse>, callback: grpc_1.sendUnaryData<GetUserResponse>): void;
-    }
-    export class UserClient extends grpc_1.makeGenericClientConstructor(UnimplementedUserService.definition, "User", {}) {
-        constructor(address: string, credentials: grpc_1.ChannelCredentials, options?: Partial<grpc_1.ChannelOptions>) {
-            super(address, credentials, options);
         }
-        Create: GrpcUnaryServiceInterface<CreateUserRequest, CreateUserResponse> = (message: CreateUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<CreateUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<CreateUserResponse>, callback?: grpc_1.requestCallback<CreateUserResponse>): grpc_1.ClientUnaryCall => {
-            return super.Create(message, metadata, options, callback);
-        };
-        Update: GrpcUnaryServiceInterface<UpdateUserRequest, UpdateUserResponse> = (message: UpdateUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<UpdateUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<UpdateUserResponse>, callback?: grpc_1.requestCallback<UpdateUserResponse>): grpc_1.ClientUnaryCall => {
-            return super.Update(message, metadata, options, callback);
-        };
-        Delete: GrpcUnaryServiceInterface<DeleteUserRequest, DeleteUserResponse> = (message: DeleteUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<DeleteUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<DeleteUserResponse>, callback?: grpc_1.requestCallback<DeleteUserResponse>): grpc_1.ClientUnaryCall => {
-            return super.Delete(message, metadata, options, callback);
-        };
-        List: GrpcUnaryServiceInterface<ListUserRequest, ListUserResponse> = (message: ListUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<ListUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<ListUserResponse>, callback?: grpc_1.requestCallback<ListUserResponse>): grpc_1.ClientUnaryCall => {
-            return super.List(message, metadata, options, callback);
-        };
-        Get: GrpcUnaryServiceInterface<GetUserRequest, GetUserResponse> = (message: GetUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<GetUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<GetUserResponse>, callback?: grpc_1.requestCallback<GetUserResponse>): grpc_1.ClientUnaryCall => {
-            return super.Get(message, metadata, options, callback);
-        };
     }
+    get user() {
+        return pb_1.Message.getWrapperField(this, dependency_2.User, 1) as dependency_2.User;
+    }
+    set user(value: dependency_2.User) {
+        pb_1.Message.setWrapperField(this, 1, value);
+    }
+    get hasUser() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    static fromObject(data: {
+        user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+    }): GetUserResponse {
+        const message = new GetUserResponse({});
+        if (data.user != null) {
+            message.user = dependency_2.User.fromObject(data.user);
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            user?: ReturnType<typeof dependency_2.User.prototype.toObject>;
+        } = {};
+        if (this.user != null) {
+            data.user = this.user.toObject();
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.hasUser)
+            writer.writeMessage(1, this.user, () => this.user.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetUserResponse {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetUserResponse();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.user, () => message.user = dependency_2.User.deserialize(reader));
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): GetUserResponse {
+        return GetUserResponse.deserialize(bytes);
+    }
+}
+interface GrpcUnaryServiceInterface<P, R> {
+    (message: P, metadata: grpc_1.Metadata, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+    (message: P, metadata: grpc_1.Metadata, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+    (message: P, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+    (message: P, callback: grpc_1.requestCallback<R>): grpc_1.ClientUnaryCall;
+}
+interface GrpcStreamServiceInterface<P, R> {
+    (message: P, metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<R>;
+    (message: P, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<R>;
+}
+interface GrpWritableServiceInterface<P, R> {
+    (metadata: grpc_1.Metadata, options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
+    (metadata: grpc_1.Metadata, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
+    (options: grpc_1.CallOptions, callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
+    (callback: grpc_1.requestCallback<R>): grpc_1.ClientWritableStream<P>;
+}
+interface GrpcChunkServiceInterface<P, R> {
+    (metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): grpc_1.ClientDuplexStream<P, R>;
+    (options?: grpc_1.CallOptions): grpc_1.ClientDuplexStream<P, R>;
+}
+interface GrpcPromiseServiceInterface<P, R> {
+    (message: P, metadata: grpc_1.Metadata, options?: grpc_1.CallOptions): Promise<R>;
+    (message: P, options?: grpc_1.CallOptions): Promise<R>;
+}
+export abstract class UnimplementedUserService {
+    static definition = {
+        Create: {
+            path: "/stub.User/Create",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: CreateUserRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => CreateUserRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: CreateUserResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => CreateUserResponse.deserialize(new Uint8Array(bytes))
+        },
+        Update: {
+            path: "/stub.User/Update",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: UpdateUserRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => UpdateUserRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: UpdateUserResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => UpdateUserResponse.deserialize(new Uint8Array(bytes))
+        },
+        Delete: {
+            path: "/stub.User/Delete",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: DeleteUserRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => DeleteUserRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: DeleteUserResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => DeleteUserResponse.deserialize(new Uint8Array(bytes))
+        },
+        List: {
+            path: "/stub.User/List",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: ListUserRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => ListUserRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: ListUserResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => ListUserResponse.deserialize(new Uint8Array(bytes))
+        },
+        Get: {
+            path: "/stub.User/Get",
+            requestStream: false,
+            responseStream: false,
+            requestSerialize: (message: GetUserRequest) => Buffer.from(message.serialize()),
+            requestDeserialize: (bytes: Buffer) => GetUserRequest.deserialize(new Uint8Array(bytes)),
+            responseSerialize: (message: GetUserResponse) => Buffer.from(message.serialize()),
+            responseDeserialize: (bytes: Buffer) => GetUserResponse.deserialize(new Uint8Array(bytes))
+        }
+    };
+    [method: string]: grpc_1.UntypedHandleCall;
+    abstract Create(call: grpc_1.ServerUnaryCall<CreateUserRequest, CreateUserResponse>, callback: grpc_1.sendUnaryData<CreateUserResponse>): void;
+    abstract Update(call: grpc_1.ServerUnaryCall<UpdateUserRequest, UpdateUserResponse>, callback: grpc_1.sendUnaryData<UpdateUserResponse>): void;
+    abstract Delete(call: grpc_1.ServerUnaryCall<DeleteUserRequest, DeleteUserResponse>, callback: grpc_1.sendUnaryData<DeleteUserResponse>): void;
+    abstract List(call: grpc_1.ServerUnaryCall<ListUserRequest, ListUserResponse>, callback: grpc_1.sendUnaryData<ListUserResponse>): void;
+    abstract Get(call: grpc_1.ServerUnaryCall<GetUserRequest, GetUserResponse>, callback: grpc_1.sendUnaryData<GetUserResponse>): void;
+}
+export class UserClient extends grpc_1.makeGenericClientConstructor(UnimplementedUserService.definition, "User", {}) {
+    constructor(address: string, credentials: grpc_1.ChannelCredentials, options?: Partial<grpc_1.ChannelOptions>) {
+        super(address, credentials, options);
+    }
+    Create: GrpcUnaryServiceInterface<CreateUserRequest, CreateUserResponse> = (message: CreateUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<CreateUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<CreateUserResponse>, callback?: grpc_1.requestCallback<CreateUserResponse>): grpc_1.ClientUnaryCall => {
+        return super.Create(message, metadata, options, callback);
+    };
+    Update: GrpcUnaryServiceInterface<UpdateUserRequest, UpdateUserResponse> = (message: UpdateUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<UpdateUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<UpdateUserResponse>, callback?: grpc_1.requestCallback<UpdateUserResponse>): grpc_1.ClientUnaryCall => {
+        return super.Update(message, metadata, options, callback);
+    };
+    Delete: GrpcUnaryServiceInterface<DeleteUserRequest, DeleteUserResponse> = (message: DeleteUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<DeleteUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<DeleteUserResponse>, callback?: grpc_1.requestCallback<DeleteUserResponse>): grpc_1.ClientUnaryCall => {
+        return super.Delete(message, metadata, options, callback);
+    };
+    List: GrpcUnaryServiceInterface<ListUserRequest, ListUserResponse> = (message: ListUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<ListUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<ListUserResponse>, callback?: grpc_1.requestCallback<ListUserResponse>): grpc_1.ClientUnaryCall => {
+        return super.List(message, metadata, options, callback);
+    };
+    Get: GrpcUnaryServiceInterface<GetUserRequest, GetUserResponse> = (message: GetUserRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<GetUserResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<GetUserResponse>, callback?: grpc_1.requestCallback<GetUserResponse>): grpc_1.ClientUnaryCall => {
+        return super.Get(message, metadata, options, callback);
+    };
 }

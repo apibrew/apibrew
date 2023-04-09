@@ -4,405 +4,403 @@
  * source: google/protobuf/struct.proto
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as pb_1 from "google-protobuf";
-export namespace google.protobuf {
-    export enum NullValue {
-        NULL_VALUE = 0
-    }
-    export class Struct extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            fields?: Map<string, Value>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("fields" in data && data.fields != undefined) {
-                    this.fields = data.fields;
-                }
+export enum NullValue {
+    NULL_VALUE = 0
+}
+export class Struct extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        fields?: Map<string, Value>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("fields" in data && data.fields != undefined) {
+                this.fields = data.fields;
             }
-            if (!this.fields)
-                this.fields = new Map();
         }
-        get fields() {
-            return pb_1.Message.getField(this, 1) as any as Map<string, Value>;
+        if (!this.fields)
+            this.fields = new Map();
+    }
+    get fields() {
+        return pb_1.Message.getField(this, 1) as any as Map<string, Value>;
+    }
+    set fields(value: Map<string, Value>) {
+        pb_1.Message.setField(this, 1, value as any);
+    }
+    static fromObject(data: {
+        fields?: {
+            [key: string]: ReturnType<typeof Value.prototype.toObject>;
+        };
+    }): Struct {
+        const message = new Struct({});
+        if (typeof data.fields == "object") {
+            message.fields = new Map(Object.entries(data.fields).map(([key, value]) => [key, Value.fromObject(value)]));
         }
-        set fields(value: Map<string, Value>) {
-            pb_1.Message.setField(this, 1, value as any);
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             fields?: {
                 [key: string]: ReturnType<typeof Value.prototype.toObject>;
             };
-        }): Struct {
-            const message = new Struct({});
-            if (typeof data.fields == "object") {
-                message.fields = new Map(Object.entries(data.fields).map(([key, value]) => [key, Value.fromObject(value)]));
-            }
-            return message;
+        } = {};
+        if (this.fields != null) {
+            data.fields = (Object.fromEntries)((Array.from)(this.fields).map(([key, value]) => [key, value.toObject()]));
         }
-        toObject() {
-            const data: {
-                fields?: {
-                    [key: string]: ReturnType<typeof Value.prototype.toObject>;
-                };
-            } = {};
-            if (this.fields != null) {
-                data.fields = (Object.fromEntries)((Array.from)(this.fields).map(([key, value]) => [key, value.toObject()]));
-            }
-            return data;
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        for (const [key, value] of this.fields) {
+            writer.writeMessage(1, this.fields, () => {
+                writer.writeString(1, key);
+                writer.writeMessage(2, value, () => value.serialize(writer));
+            });
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            for (const [key, value] of this.fields) {
-                writer.writeMessage(1, this.fields, () => {
-                    writer.writeString(1, key);
-                    writer.writeMessage(2, value, () => value.serialize(writer));
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Struct {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Struct();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Struct {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Struct();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.fields as any, reader, reader.readString, () => {
+                        let value;
+                        reader.readMessage(message, () => value = Value.deserialize(reader));
+                        return value;
+                    }));
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.fields as any, reader, reader.readString, () => {
-                            let value;
-                            reader.readMessage(message, () => value = Value.deserialize(reader));
-                            return value;
-                        }));
-                        break;
-                    default: reader.skipField();
-                }
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): Struct {
-            return Struct.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): Struct {
+        return Struct.deserialize(bytes);
+    }
+}
+export class Value extends pb_1.Message {
+    #one_of_decls: number[][] = [[1, 2, 3, 4, 5, 6]];
+    constructor(data?: any[] | ({} & (({
+        nullValue?: NullValue;
+        numberValue?: never;
+        stringValue?: never;
+        boolValue?: never;
+        structValue?: never;
+        listValue?: never;
+    } | {
+        nullValue?: never;
+        numberValue?: number;
+        stringValue?: never;
+        boolValue?: never;
+        structValue?: never;
+        listValue?: never;
+    } | {
+        nullValue?: never;
+        numberValue?: never;
+        stringValue?: string;
+        boolValue?: never;
+        structValue?: never;
+        listValue?: never;
+    } | {
+        nullValue?: never;
+        numberValue?: never;
+        stringValue?: never;
+        boolValue?: boolean;
+        structValue?: never;
+        listValue?: never;
+    } | {
+        nullValue?: never;
+        numberValue?: never;
+        stringValue?: never;
+        boolValue?: never;
+        structValue?: Struct;
+        listValue?: never;
+    } | {
+        nullValue?: never;
+        numberValue?: never;
+        stringValue?: never;
+        boolValue?: never;
+        structValue?: never;
+        listValue?: ListValue;
+    })))) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("nullValue" in data && data.nullValue != undefined) {
+                this.nullValue = data.nullValue;
+            }
+            if ("numberValue" in data && data.numberValue != undefined) {
+                this.numberValue = data.numberValue;
+            }
+            if ("stringValue" in data && data.stringValue != undefined) {
+                this.stringValue = data.stringValue;
+            }
+            if ("boolValue" in data && data.boolValue != undefined) {
+                this.boolValue = data.boolValue;
+            }
+            if ("structValue" in data && data.structValue != undefined) {
+                this.structValue = data.structValue;
+            }
+            if ("listValue" in data && data.listValue != undefined) {
+                this.listValue = data.listValue;
+            }
         }
     }
-    export class Value extends pb_1.Message {
-        #one_of_decls: number[][] = [[1, 2, 3, 4, 5, 6]];
-        constructor(data?: any[] | ({} & (({
-            null_value?: NullValue;
-            number_value?: never;
-            string_value?: never;
-            bool_value?: never;
-            struct_value?: never;
-            list_value?: never;
-        } | {
-            null_value?: never;
-            number_value?: number;
-            string_value?: never;
-            bool_value?: never;
-            struct_value?: never;
-            list_value?: never;
-        } | {
-            null_value?: never;
-            number_value?: never;
-            string_value?: string;
-            bool_value?: never;
-            struct_value?: never;
-            list_value?: never;
-        } | {
-            null_value?: never;
-            number_value?: never;
-            string_value?: never;
-            bool_value?: boolean;
-            struct_value?: never;
-            list_value?: never;
-        } | {
-            null_value?: never;
-            number_value?: never;
-            string_value?: never;
-            bool_value?: never;
-            struct_value?: Struct;
-            list_value?: never;
-        } | {
-            null_value?: never;
-            number_value?: never;
-            string_value?: never;
-            bool_value?: never;
-            struct_value?: never;
-            list_value?: ListValue;
-        })))) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("null_value" in data && data.null_value != undefined) {
-                    this.null_value = data.null_value;
-                }
-                if ("number_value" in data && data.number_value != undefined) {
-                    this.number_value = data.number_value;
-                }
-                if ("string_value" in data && data.string_value != undefined) {
-                    this.string_value = data.string_value;
-                }
-                if ("bool_value" in data && data.bool_value != undefined) {
-                    this.bool_value = data.bool_value;
-                }
-                if ("struct_value" in data && data.struct_value != undefined) {
-                    this.struct_value = data.struct_value;
-                }
-                if ("list_value" in data && data.list_value != undefined) {
-                    this.list_value = data.list_value;
-                }
-            }
+    get nullValue() {
+        return pb_1.Message.getFieldWithDefault(this, 1, NullValue.NULL_VALUE) as NullValue;
+    }
+    set nullValue(value: NullValue) {
+        pb_1.Message.setOneofField(this, 1, this.#one_of_decls[0], value);
+    }
+    get hasNullValue() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    get numberValue() {
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
+    }
+    set numberValue(value: number) {
+        pb_1.Message.setOneofField(this, 2, this.#one_of_decls[0], value);
+    }
+    get hasNumberValue() {
+        return pb_1.Message.getField(this, 2) != null;
+    }
+    get stringValue() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set stringValue(value: string) {
+        pb_1.Message.setOneofField(this, 3, this.#one_of_decls[0], value);
+    }
+    get hasStringValue() {
+        return pb_1.Message.getField(this, 3) != null;
+    }
+    get boolValue() {
+        return pb_1.Message.getFieldWithDefault(this, 4, false) as boolean;
+    }
+    set boolValue(value: boolean) {
+        pb_1.Message.setOneofField(this, 4, this.#one_of_decls[0], value);
+    }
+    get hasBoolValue() {
+        return pb_1.Message.getField(this, 4) != null;
+    }
+    get structValue() {
+        return pb_1.Message.getWrapperField(this, Struct, 5) as Struct;
+    }
+    set structValue(value: Struct) {
+        pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[0], value);
+    }
+    get hasStructValue() {
+        return pb_1.Message.getField(this, 5) != null;
+    }
+    get listValue() {
+        return pb_1.Message.getWrapperField(this, ListValue, 6) as ListValue;
+    }
+    set listValue(value: ListValue) {
+        pb_1.Message.setOneofWrapperField(this, 6, this.#one_of_decls[0], value);
+    }
+    get hasListValue() {
+        return pb_1.Message.getField(this, 6) != null;
+    }
+    get kind() {
+        const cases: {
+            [index: number]: "none" | "nullValue" | "numberValue" | "stringValue" | "boolValue" | "structValue" | "listValue";
+        } = {
+            0: "none",
+            1: "nullValue",
+            2: "numberValue",
+            3: "stringValue",
+            4: "boolValue",
+            5: "structValue",
+            6: "listValue"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [1, 2, 3, 4, 5, 6])];
+    }
+    static fromObject(data: {
+        nullValue?: NullValue;
+        numberValue?: number;
+        stringValue?: string;
+        boolValue?: boolean;
+        structValue?: ReturnType<typeof Struct.prototype.toObject>;
+        listValue?: ReturnType<typeof ListValue.prototype.toObject>;
+    }): Value {
+        const message = new Value({});
+        if (data.nullValue != null) {
+            message.nullValue = data.nullValue;
         }
-        get null_value() {
-            return pb_1.Message.getFieldWithDefault(this, 1, NullValue.NULL_VALUE) as NullValue;
+        if (data.numberValue != null) {
+            message.numberValue = data.numberValue;
         }
-        set null_value(value: NullValue) {
-            pb_1.Message.setOneofField(this, 1, this.#one_of_decls[0], value);
+        if (data.stringValue != null) {
+            message.stringValue = data.stringValue;
         }
-        get has_null_value() {
-            return pb_1.Message.getField(this, 1) != null;
+        if (data.boolValue != null) {
+            message.boolValue = data.boolValue;
         }
-        get number_value() {
-            return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
+        if (data.structValue != null) {
+            message.structValue = Struct.fromObject(data.structValue);
         }
-        set number_value(value: number) {
-            pb_1.Message.setOneofField(this, 2, this.#one_of_decls[0], value);
+        if (data.listValue != null) {
+            message.listValue = ListValue.fromObject(data.listValue);
         }
-        get has_number_value() {
-            return pb_1.Message.getField(this, 2) != null;
+        return message;
+    }
+    toObject() {
+        const data: {
+            nullValue?: NullValue;
+            numberValue?: number;
+            stringValue?: string;
+            boolValue?: boolean;
+            structValue?: ReturnType<typeof Struct.prototype.toObject>;
+            listValue?: ReturnType<typeof ListValue.prototype.toObject>;
+        } = {};
+        if (this.nullValue != null) {
+            data.nullValue = this.nullValue;
         }
-        get string_value() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        if (this.numberValue != null) {
+            data.numberValue = this.numberValue;
         }
-        set string_value(value: string) {
-            pb_1.Message.setOneofField(this, 3, this.#one_of_decls[0], value);
+        if (this.stringValue != null) {
+            data.stringValue = this.stringValue;
         }
-        get has_string_value() {
-            return pb_1.Message.getField(this, 3) != null;
+        if (this.boolValue != null) {
+            data.boolValue = this.boolValue;
         }
-        get bool_value() {
-            return pb_1.Message.getFieldWithDefault(this, 4, false) as boolean;
+        if (this.structValue != null) {
+            data.structValue = this.structValue.toObject();
         }
-        set bool_value(value: boolean) {
-            pb_1.Message.setOneofField(this, 4, this.#one_of_decls[0], value);
+        if (this.listValue != null) {
+            data.listValue = this.listValue.toObject();
         }
-        get has_bool_value() {
-            return pb_1.Message.getField(this, 4) != null;
-        }
-        get struct_value() {
-            return pb_1.Message.getWrapperField(this, Struct, 5) as Struct;
-        }
-        set struct_value(value: Struct) {
-            pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[0], value);
-        }
-        get has_struct_value() {
-            return pb_1.Message.getField(this, 5) != null;
-        }
-        get list_value() {
-            return pb_1.Message.getWrapperField(this, ListValue, 6) as ListValue;
-        }
-        set list_value(value: ListValue) {
-            pb_1.Message.setOneofWrapperField(this, 6, this.#one_of_decls[0], value);
-        }
-        get has_list_value() {
-            return pb_1.Message.getField(this, 6) != null;
-        }
-        get kind() {
-            const cases: {
-                [index: number]: "none" | "null_value" | "number_value" | "string_value" | "bool_value" | "struct_value" | "list_value";
-            } = {
-                0: "none",
-                1: "null_value",
-                2: "number_value",
-                3: "string_value",
-                4: "bool_value",
-                5: "struct_value",
-                6: "list_value"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [1, 2, 3, 4, 5, 6])];
-        }
-        static fromObject(data: {
-            null_value?: NullValue;
-            number_value?: number;
-            string_value?: string;
-            bool_value?: boolean;
-            struct_value?: ReturnType<typeof Struct.prototype.toObject>;
-            list_value?: ReturnType<typeof ListValue.prototype.toObject>;
-        }): Value {
-            const message = new Value({});
-            if (data.null_value != null) {
-                message.null_value = data.null_value;
-            }
-            if (data.number_value != null) {
-                message.number_value = data.number_value;
-            }
-            if (data.string_value != null) {
-                message.string_value = data.string_value;
-            }
-            if (data.bool_value != null) {
-                message.bool_value = data.bool_value;
-            }
-            if (data.struct_value != null) {
-                message.struct_value = Struct.fromObject(data.struct_value);
-            }
-            if (data.list_value != null) {
-                message.list_value = ListValue.fromObject(data.list_value);
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                null_value?: NullValue;
-                number_value?: number;
-                string_value?: string;
-                bool_value?: boolean;
-                struct_value?: ReturnType<typeof Struct.prototype.toObject>;
-                list_value?: ReturnType<typeof ListValue.prototype.toObject>;
-            } = {};
-            if (this.null_value != null) {
-                data.null_value = this.null_value;
-            }
-            if (this.number_value != null) {
-                data.number_value = this.number_value;
-            }
-            if (this.string_value != null) {
-                data.string_value = this.string_value;
-            }
-            if (this.bool_value != null) {
-                data.bool_value = this.bool_value;
-            }
-            if (this.struct_value != null) {
-                data.struct_value = this.struct_value.toObject();
-            }
-            if (this.list_value != null) {
-                data.list_value = this.list_value.toObject();
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.has_null_value)
-                writer.writeEnum(1, this.null_value);
-            if (this.has_number_value)
-                writer.writeDouble(2, this.number_value);
-            if (this.has_string_value)
-                writer.writeString(3, this.string_value);
-            if (this.has_bool_value)
-                writer.writeBool(4, this.bool_value);
-            if (this.has_struct_value)
-                writer.writeMessage(5, this.struct_value, () => this.struct_value.serialize(writer));
-            if (this.has_list_value)
-                writer.writeMessage(6, this.list_value, () => this.list_value.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Value {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Value();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.hasNullValue)
+            writer.writeEnum(1, this.nullValue);
+        if (this.hasNumberValue)
+            writer.writeDouble(2, this.numberValue);
+        if (this.hasStringValue)
+            writer.writeString(3, this.stringValue);
+        if (this.hasBoolValue)
+            writer.writeBool(4, this.boolValue);
+        if (this.hasStructValue)
+            writer.writeMessage(5, this.structValue, () => this.structValue.serialize(writer));
+        if (this.hasListValue)
+            writer.writeMessage(6, this.listValue, () => this.listValue.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Value {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Value();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.nullValue = reader.readEnum();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.null_value = reader.readEnum();
-                        break;
-                    case 2:
-                        message.number_value = reader.readDouble();
-                        break;
-                    case 3:
-                        message.string_value = reader.readString();
-                        break;
-                    case 4:
-                        message.bool_value = reader.readBool();
-                        break;
-                    case 5:
-                        reader.readMessage(message.struct_value, () => message.struct_value = Struct.deserialize(reader));
-                        break;
-                    case 6:
-                        reader.readMessage(message.list_value, () => message.list_value = ListValue.deserialize(reader));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.numberValue = reader.readDouble();
+                    break;
+                case 3:
+                    message.stringValue = reader.readString();
+                    break;
+                case 4:
+                    message.boolValue = reader.readBool();
+                    break;
+                case 5:
+                    reader.readMessage(message.structValue, () => message.structValue = Struct.deserialize(reader));
+                    break;
+                case 6:
+                    reader.readMessage(message.listValue, () => message.listValue = ListValue.deserialize(reader));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): Value {
-            return Value.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): Value {
+        return Value.deserialize(bytes);
+    }
+}
+export class ListValue extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        values?: Value[];
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("values" in data && data.values != undefined) {
+                this.values = data.values;
+            }
         }
     }
-    export class ListValue extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            values?: Value[];
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("values" in data && data.values != undefined) {
-                    this.values = data.values;
-                }
-            }
+    get values() {
+        return pb_1.Message.getRepeatedWrapperField(this, Value, 1) as Value[];
+    }
+    set values(value: Value[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 1, value);
+    }
+    static fromObject(data: {
+        values?: ReturnType<typeof Value.prototype.toObject>[];
+    }): ListValue {
+        const message = new ListValue({});
+        if (data.values != null) {
+            message.values = data.values.map(item => Value.fromObject(item));
         }
-        get values() {
-            return pb_1.Message.getRepeatedWrapperField(this, Value, 1) as Value[];
-        }
-        set values(value: Value[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 1, value);
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             values?: ReturnType<typeof Value.prototype.toObject>[];
-        }): ListValue {
-            const message = new ListValue({});
-            if (data.values != null) {
-                message.values = data.values.map(item => Value.fromObject(item));
-            }
-            return message;
+        } = {};
+        if (this.values != null) {
+            data.values = this.values.map((item: Value) => item.toObject());
         }
-        toObject() {
-            const data: {
-                values?: ReturnType<typeof Value.prototype.toObject>[];
-            } = {};
-            if (this.values != null) {
-                data.values = this.values.map((item: Value) => item.toObject());
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.values.length)
-                writer.writeRepeatedMessage(1, this.values, (item: Value) => item.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListValue {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListValue();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.values.length)
+            writer.writeRepeatedMessage(1, this.values, (item: Value) => item.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListValue {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListValue();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.values, () => pb_1.Message.addToRepeatedWrapperField(message, 1, Value.deserialize(reader), Value));
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.values, () => pb_1.Message.addToRepeatedWrapperField(message, 1, Value.deserialize(reader), Value));
-                        break;
-                    default: reader.skipField();
-                }
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ListValue {
-            return ListValue.deserialize(bytes);
-        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ListValue {
+        return ListValue.deserialize(bytes);
     }
 }

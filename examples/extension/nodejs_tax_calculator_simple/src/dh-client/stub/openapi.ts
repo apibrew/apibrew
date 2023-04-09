@@ -7,4 +7,3 @@ import * as dependency_1 from "./../model/error";
 import * as dependency_2 from "./../model/token";
 import * as dependency_3 from "./../google/api/annotations";
 import * as dependency_4 from "./../openapiv3/annotations";
-export namespace stub { }
