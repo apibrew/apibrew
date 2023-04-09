@@ -5,4 +5,3 @@
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as dependency_1 from "./OpenAPIv3";
 import * as dependency_2 from "./../google/protobuf/descriptor";
-export namespace openapi.v3 { }

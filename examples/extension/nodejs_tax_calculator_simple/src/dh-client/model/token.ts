@@ -5,127 +5,125 @@
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as dependency_1 from "./../google/protobuf/timestamp";
 import * as pb_1 from "google-protobuf";
-export namespace model {
-    export enum TokenTerm {
-        SHORT = 0,
-        MIDDLE = 1,
-        LONG = 2,
-        VERY_LONG = 3
+export enum TokenTerm {
+    SHORT = 0,
+    MIDDLE = 1,
+    LONG = 2,
+    VERY_LONG = 3
+}
+export class Token extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        term?: TokenTerm;
+        content?: string;
+        expiration?: dependency_1.Timestamp;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("term" in data && data.term != undefined) {
+                this.term = data.term;
+            }
+            if ("content" in data && data.content != undefined) {
+                this.content = data.content;
+            }
+            if ("expiration" in data && data.expiration != undefined) {
+                this.expiration = data.expiration;
+            }
+        }
     }
-    export class Token extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    get term() {
+        return pb_1.Message.getFieldWithDefault(this, 1, TokenTerm.SHORT) as TokenTerm;
+    }
+    set term(value: TokenTerm) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get content() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set content(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get expiration() {
+        return pb_1.Message.getWrapperField(this, dependency_1.Timestamp, 3) as dependency_1.Timestamp;
+    }
+    set expiration(value: dependency_1.Timestamp) {
+        pb_1.Message.setWrapperField(this, 3, value);
+    }
+    get hasExpiration() {
+        return pb_1.Message.getField(this, 3) != null;
+    }
+    static fromObject(data: {
+        term?: TokenTerm;
+        content?: string;
+        expiration?: ReturnType<typeof dependency_1.Timestamp.prototype.toObject>;
+    }): Token {
+        const message = new Token({});
+        if (data.term != null) {
+            message.term = data.term;
+        }
+        if (data.content != null) {
+            message.content = data.content;
+        }
+        if (data.expiration != null) {
+            message.expiration = dependency_1.Timestamp.fromObject(data.expiration);
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             term?: TokenTerm;
             content?: string;
-            expiration?: dependency_1.google.protobuf.Timestamp;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("term" in data && data.term != undefined) {
-                    this.term = data.term;
-                }
-                if ("content" in data && data.content != undefined) {
-                    this.content = data.content;
-                }
-                if ("expiration" in data && data.expiration != undefined) {
-                    this.expiration = data.expiration;
-                }
-            }
+            expiration?: ReturnType<typeof dependency_1.Timestamp.prototype.toObject>;
+        } = {};
+        if (this.term != null) {
+            data.term = this.term;
         }
-        get term() {
-            return pb_1.Message.getFieldWithDefault(this, 1, TokenTerm.SHORT) as TokenTerm;
+        if (this.content != null) {
+            data.content = this.content;
         }
-        set term(value: TokenTerm) {
-            pb_1.Message.setField(this, 1, value);
+        if (this.expiration != null) {
+            data.expiration = this.expiration.toObject();
         }
-        get content() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set content(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get expiration() {
-            return pb_1.Message.getWrapperField(this, dependency_1.google.protobuf.Timestamp, 3) as dependency_1.google.protobuf.Timestamp;
-        }
-        set expiration(value: dependency_1.google.protobuf.Timestamp) {
-            pb_1.Message.setWrapperField(this, 3, value);
-        }
-        get has_expiration() {
-            return pb_1.Message.getField(this, 3) != null;
-        }
-        static fromObject(data: {
-            term?: TokenTerm;
-            content?: string;
-            expiration?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-        }): Token {
-            const message = new Token({});
-            if (data.term != null) {
-                message.term = data.term;
-            }
-            if (data.content != null) {
-                message.content = data.content;
-            }
-            if (data.expiration != null) {
-                message.expiration = dependency_1.google.protobuf.Timestamp.fromObject(data.expiration);
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                term?: TokenTerm;
-                content?: string;
-                expiration?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-            } = {};
-            if (this.term != null) {
-                data.term = this.term;
-            }
-            if (this.content != null) {
-                data.content = this.content;
-            }
-            if (this.expiration != null) {
-                data.expiration = this.expiration.toObject();
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.term != TokenTerm.SHORT)
-                writer.writeEnum(1, this.term);
-            if (this.content.length)
-                writer.writeString(2, this.content);
-            if (this.has_expiration)
-                writer.writeMessage(3, this.expiration, () => this.expiration.serialize(writer));
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Token {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Token();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.term != TokenTerm.SHORT)
+            writer.writeEnum(1, this.term);
+        if (this.content.length)
+            writer.writeString(2, this.content);
+        if (this.hasExpiration)
+            writer.writeMessage(3, this.expiration, () => this.expiration.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Token {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Token();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.term = reader.readEnum();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.term = reader.readEnum();
-                        break;
-                    case 2:
-                        message.content = reader.readString();
-                        break;
-                    case 3:
-                        reader.readMessage(message.expiration, () => message.expiration = dependency_1.google.protobuf.Timestamp.deserialize(reader));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.content = reader.readString();
+                    break;
+                case 3:
+                    reader.readMessage(message.expiration, () => message.expiration = dependency_1.Timestamp.deserialize(reader));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): Token {
-            return Token.deserialize(bytes);
-        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): Token {
+        return Token.deserialize(bytes);
     }
 }

@@ -5,147 +5,145 @@
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as dependency_1 from "./../google/protobuf/timestamp";
 import * as pb_1 from "google-protobuf";
-export namespace model {
-    export class AuditData extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            created_on?: dependency_1.google.protobuf.Timestamp;
-            updated_on?: dependency_1.google.protobuf.Timestamp;
-            created_by?: string;
-            updated_by?: string;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("created_on" in data && data.created_on != undefined) {
-                    this.created_on = data.created_on;
-                }
-                if ("updated_on" in data && data.updated_on != undefined) {
-                    this.updated_on = data.updated_on;
-                }
-                if ("created_by" in data && data.created_by != undefined) {
-                    this.created_by = data.created_by;
-                }
-                if ("updated_by" in data && data.updated_by != undefined) {
-                    this.updated_by = data.updated_by;
-                }
+export class AuditData extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        createdOn?: dependency_1.Timestamp;
+        updatedOn?: dependency_1.Timestamp;
+        createdBy?: string;
+        updatedBy?: string;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("createdOn" in data && data.createdOn != undefined) {
+                this.createdOn = data.createdOn;
+            }
+            if ("updatedOn" in data && data.updatedOn != undefined) {
+                this.updatedOn = data.updatedOn;
+            }
+            if ("createdBy" in data && data.createdBy != undefined) {
+                this.createdBy = data.createdBy;
+            }
+            if ("updatedBy" in data && data.updatedBy != undefined) {
+                this.updatedBy = data.updatedBy;
             }
         }
-        get created_on() {
-            return pb_1.Message.getWrapperField(this, dependency_1.google.protobuf.Timestamp, 1) as dependency_1.google.protobuf.Timestamp;
+    }
+    get createdOn() {
+        return pb_1.Message.getWrapperField(this, dependency_1.Timestamp, 1) as dependency_1.Timestamp;
+    }
+    set createdOn(value: dependency_1.Timestamp) {
+        pb_1.Message.setWrapperField(this, 1, value);
+    }
+    get hasCreatedOn() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    get updatedOn() {
+        return pb_1.Message.getWrapperField(this, dependency_1.Timestamp, 2) as dependency_1.Timestamp;
+    }
+    set updatedOn(value: dependency_1.Timestamp) {
+        pb_1.Message.setWrapperField(this, 2, value);
+    }
+    get hasUpdatedOn() {
+        return pb_1.Message.getField(this, 2) != null;
+    }
+    get createdBy() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set createdBy(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get updatedBy() {
+        return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+    }
+    set updatedBy(value: string) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    static fromObject(data: {
+        createdOn?: ReturnType<typeof dependency_1.Timestamp.prototype.toObject>;
+        updatedOn?: ReturnType<typeof dependency_1.Timestamp.prototype.toObject>;
+        createdBy?: string;
+        updatedBy?: string;
+    }): AuditData {
+        const message = new AuditData({});
+        if (data.createdOn != null) {
+            message.createdOn = dependency_1.Timestamp.fromObject(data.createdOn);
         }
-        set created_on(value: dependency_1.google.protobuf.Timestamp) {
-            pb_1.Message.setWrapperField(this, 1, value);
+        if (data.updatedOn != null) {
+            message.updatedOn = dependency_1.Timestamp.fromObject(data.updatedOn);
         }
-        get has_created_on() {
-            return pb_1.Message.getField(this, 1) != null;
+        if (data.createdBy != null) {
+            message.createdBy = data.createdBy;
         }
-        get updated_on() {
-            return pb_1.Message.getWrapperField(this, dependency_1.google.protobuf.Timestamp, 2) as dependency_1.google.protobuf.Timestamp;
+        if (data.updatedBy != null) {
+            message.updatedBy = data.updatedBy;
         }
-        set updated_on(value: dependency_1.google.protobuf.Timestamp) {
-            pb_1.Message.setWrapperField(this, 2, value);
+        return message;
+    }
+    toObject() {
+        const data: {
+            createdOn?: ReturnType<typeof dependency_1.Timestamp.prototype.toObject>;
+            updatedOn?: ReturnType<typeof dependency_1.Timestamp.prototype.toObject>;
+            createdBy?: string;
+            updatedBy?: string;
+        } = {};
+        if (this.createdOn != null) {
+            data.createdOn = this.createdOn.toObject();
         }
-        get has_updated_on() {
-            return pb_1.Message.getField(this, 2) != null;
+        if (this.updatedOn != null) {
+            data.updatedOn = this.updatedOn.toObject();
         }
-        get created_by() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        if (this.createdBy != null) {
+            data.createdBy = this.createdBy;
         }
-        set created_by(value: string) {
-            pb_1.Message.setField(this, 3, value);
+        if (this.updatedBy != null) {
+            data.updatedBy = this.updatedBy;
         }
-        get updated_by() {
-            return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
-        }
-        set updated_by(value: string) {
-            pb_1.Message.setField(this, 4, value);
-        }
-        static fromObject(data: {
-            created_on?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-            updated_on?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-            created_by?: string;
-            updated_by?: string;
-        }): AuditData {
-            const message = new AuditData({});
-            if (data.created_on != null) {
-                message.created_on = dependency_1.google.protobuf.Timestamp.fromObject(data.created_on);
-            }
-            if (data.updated_on != null) {
-                message.updated_on = dependency_1.google.protobuf.Timestamp.fromObject(data.updated_on);
-            }
-            if (data.created_by != null) {
-                message.created_by = data.created_by;
-            }
-            if (data.updated_by != null) {
-                message.updated_by = data.updated_by;
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                created_on?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-                updated_on?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-                created_by?: string;
-                updated_by?: string;
-            } = {};
-            if (this.created_on != null) {
-                data.created_on = this.created_on.toObject();
-            }
-            if (this.updated_on != null) {
-                data.updated_on = this.updated_on.toObject();
-            }
-            if (this.created_by != null) {
-                data.created_by = this.created_by;
-            }
-            if (this.updated_by != null) {
-                data.updated_by = this.updated_by;
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.has_created_on)
-                writer.writeMessage(1, this.created_on, () => this.created_on.serialize(writer));
-            if (this.has_updated_on)
-                writer.writeMessage(2, this.updated_on, () => this.updated_on.serialize(writer));
-            if (this.created_by.length)
-                writer.writeString(3, this.created_by);
-            if (this.updated_by.length)
-                writer.writeString(4, this.updated_by);
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): AuditData {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new AuditData();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.hasCreatedOn)
+            writer.writeMessage(1, this.createdOn, () => this.createdOn.serialize(writer));
+        if (this.hasUpdatedOn)
+            writer.writeMessage(2, this.updatedOn, () => this.updatedOn.serialize(writer));
+        if (this.createdBy.length)
+            writer.writeString(3, this.createdBy);
+        if (this.updatedBy.length)
+            writer.writeString(4, this.updatedBy);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): AuditData {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new AuditData();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.createdOn, () => message.createdOn = dependency_1.Timestamp.deserialize(reader));
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.created_on, () => message.created_on = dependency_1.google.protobuf.Timestamp.deserialize(reader));
-                        break;
-                    case 2:
-                        reader.readMessage(message.updated_on, () => message.updated_on = dependency_1.google.protobuf.Timestamp.deserialize(reader));
-                        break;
-                    case 3:
-                        message.created_by = reader.readString();
-                        break;
-                    case 4:
-                        message.updated_by = reader.readString();
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    reader.readMessage(message.updatedOn, () => message.updatedOn = dependency_1.Timestamp.deserialize(reader));
+                    break;
+                case 3:
+                    message.createdBy = reader.readString();
+                    break;
+                case 4:
+                    message.updatedBy = reader.readString();
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): AuditData {
-            return AuditData.deserialize(bytes);
-        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): AuditData {
+        return AuditData.deserialize(bytes);
     }
 }

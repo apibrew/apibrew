@@ -11,1479 +11,1475 @@ import * as dependency_5 from "./annotations";
 import * as dependency_6 from "./../google/protobuf/struct";
 import * as dependency_7 from "./../google/protobuf/descriptor";
 import * as pb_1 from "google-protobuf";
-export namespace model {
-    export enum Order {
-        ORDER_UNKNOWN = 0,
-        ORDER_ASC = 1,
-        ORDER_DESC = 2
-    }
-    export enum ResourceIndexType {
-        BTREE = 0,
-        HASH = 1
-    }
-    export class ResourceProperty extends pb_1.Message {
-        #one_of_decls: number[][] = [[1], [9], [10], [17], [12], [13], [15], [16]];
-        constructor(data?: any[] | ({
-            name?: string;
-            type?: ResourceProperty.Type;
-            mapping?: string;
-            required?: boolean;
-            primary?: boolean;
-            length?: number;
-            unique?: boolean;
-            immutable?: boolean;
-            enumValues?: dependency_6.google.protobuf.Value[];
-            annotations?: Map<string, string>;
-        } & (({
-            id?: string;
-        }) | ({
-            securityContext?: dependency_4.model.SecurityContext;
-        }) | ({
-            defaultValue?: dependency_6.google.protobuf.Value;
-        }) | ({
-            exampleValue?: dependency_6.google.protobuf.Value;
-        }) | ({
-            reference?: Reference;
-        }) | ({
-            subType?: ResourceProperty.Type;
-        }) | ({
-            title?: string;
-        }) | ({
-            description?: string;
-        })))) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [11], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("id" in data && data.id != undefined) {
-                    this.id = data.id;
-                }
-                if ("name" in data && data.name != undefined) {
-                    this.name = data.name;
-                }
-                if ("type" in data && data.type != undefined) {
-                    this.type = data.type;
-                }
-                if ("mapping" in data && data.mapping != undefined) {
-                    this.mapping = data.mapping;
-                }
-                if ("required" in data && data.required != undefined) {
-                    this.required = data.required;
-                }
-                if ("primary" in data && data.primary != undefined) {
-                    this.primary = data.primary;
-                }
-                if ("length" in data && data.length != undefined) {
-                    this.length = data.length;
-                }
-                if ("unique" in data && data.unique != undefined) {
-                    this.unique = data.unique;
-                }
-                if ("immutable" in data && data.immutable != undefined) {
-                    this.immutable = data.immutable;
-                }
-                if ("securityContext" in data && data.securityContext != undefined) {
-                    this.securityContext = data.securityContext;
-                }
-                if ("defaultValue" in data && data.defaultValue != undefined) {
-                    this.defaultValue = data.defaultValue;
-                }
-                if ("exampleValue" in data && data.exampleValue != undefined) {
-                    this.exampleValue = data.exampleValue;
-                }
-                if ("enumValues" in data && data.enumValues != undefined) {
-                    this.enumValues = data.enumValues;
-                }
-                if ("reference" in data && data.reference != undefined) {
-                    this.reference = data.reference;
-                }
-                if ("subType" in data && data.subType != undefined) {
-                    this.subType = data.subType;
-                }
-                if ("title" in data && data.title != undefined) {
-                    this.title = data.title;
-                }
-                if ("description" in data && data.description != undefined) {
-                    this.description = data.description;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
+export enum Order {
+    ORDER_UNKNOWN = 0,
+    ORDER_ASC = 1,
+    ORDER_DESC = 2
+}
+export enum ResourceIndexType {
+    BTREE = 0,
+    HASH = 1
+}
+export class ResourceProperty extends pb_1.Message {
+    #one_of_decls: number[][] = [[1], [9], [10], [17], [12], [13], [15], [16]];
+    constructor(data?: any[] | ({
+        name?: string;
+        type?: ResourcePropertyType;
+        mapping?: string;
+        required?: boolean;
+        primary?: boolean;
+        length?: number;
+        unique?: boolean;
+        immutable?: boolean;
+        enumValues?: dependency_6.Value[];
+        annotations?: Map<string, string>;
+    } & (({
+        id?: string;
+    }) | ({
+        securityContext?: dependency_4.SecurityContext;
+    }) | ({
+        defaultValue?: dependency_6.Value;
+    }) | ({
+        exampleValue?: dependency_6.Value;
+    }) | ({
+        reference?: Reference;
+    }) | ({
+        subType?: ResourcePropertyType;
+    }) | ({
+        title?: string;
+    }) | ({
+        description?: string;
+    })))) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [11], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("id" in data && data.id != undefined) {
+                this.id = data.id;
             }
-            if (!this.annotations)
-                this.annotations = new Map();
+            if ("name" in data && data.name != undefined) {
+                this.name = data.name;
+            }
+            if ("type" in data && data.type != undefined) {
+                this.type = data.type;
+            }
+            if ("mapping" in data && data.mapping != undefined) {
+                this.mapping = data.mapping;
+            }
+            if ("required" in data && data.required != undefined) {
+                this.required = data.required;
+            }
+            if ("primary" in data && data.primary != undefined) {
+                this.primary = data.primary;
+            }
+            if ("length" in data && data.length != undefined) {
+                this.length = data.length;
+            }
+            if ("unique" in data && data.unique != undefined) {
+                this.unique = data.unique;
+            }
+            if ("immutable" in data && data.immutable != undefined) {
+                this.immutable = data.immutable;
+            }
+            if ("securityContext" in data && data.securityContext != undefined) {
+                this.securityContext = data.securityContext;
+            }
+            if ("defaultValue" in data && data.defaultValue != undefined) {
+                this.defaultValue = data.defaultValue;
+            }
+            if ("exampleValue" in data && data.exampleValue != undefined) {
+                this.exampleValue = data.exampleValue;
+            }
+            if ("enumValues" in data && data.enumValues != undefined) {
+                this.enumValues = data.enumValues;
+            }
+            if ("reference" in data && data.reference != undefined) {
+                this.reference = data.reference;
+            }
+            if ("subType" in data && data.subType != undefined) {
+                this.subType = data.subType;
+            }
+            if ("title" in data && data.title != undefined) {
+                this.title = data.title;
+            }
+            if ("description" in data && data.description != undefined) {
+                this.description = data.description;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
         }
-        get id() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get id() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set id(value: string) {
+        pb_1.Message.setOneofField(this, 1, this.#one_of_decls[0], value);
+    }
+    get hasId() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    get name() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set name(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get type() {
+        return pb_1.Message.getFieldWithDefault(this, 3, ResourcePropertyType.BOOL) as ResourcePropertyType;
+    }
+    set type(value: ResourcePropertyType) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get mapping() {
+        return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+    }
+    set mapping(value: string) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    get required() {
+        return pb_1.Message.getFieldWithDefault(this, 5, false) as boolean;
+    }
+    set required(value: boolean) {
+        pb_1.Message.setField(this, 5, value);
+    }
+    get primary() {
+        return pb_1.Message.getFieldWithDefault(this, 6, false) as boolean;
+    }
+    set primary(value: boolean) {
+        pb_1.Message.setField(this, 6, value);
+    }
+    get length() {
+        return pb_1.Message.getFieldWithDefault(this, 7, 0) as number;
+    }
+    set length(value: number) {
+        pb_1.Message.setField(this, 7, value);
+    }
+    get unique() {
+        return pb_1.Message.getFieldWithDefault(this, 8, false) as boolean;
+    }
+    set unique(value: boolean) {
+        pb_1.Message.setField(this, 8, value);
+    }
+    get immutable() {
+        return pb_1.Message.getFieldWithDefault(this, 14, false) as boolean;
+    }
+    set immutable(value: boolean) {
+        pb_1.Message.setField(this, 14, value);
+    }
+    get securityContext() {
+        return pb_1.Message.getWrapperField(this, dependency_4.SecurityContext, 9) as dependency_4.SecurityContext;
+    }
+    set securityContext(value: dependency_4.SecurityContext) {
+        pb_1.Message.setOneofWrapperField(this, 9, this.#one_of_decls[1], value);
+    }
+    get hasSecurityContext() {
+        return pb_1.Message.getField(this, 9) != null;
+    }
+    get defaultValue() {
+        return pb_1.Message.getWrapperField(this, dependency_6.Value, 10) as dependency_6.Value;
+    }
+    set defaultValue(value: dependency_6.Value) {
+        pb_1.Message.setOneofWrapperField(this, 10, this.#one_of_decls[2], value);
+    }
+    get hasDefaultValue() {
+        return pb_1.Message.getField(this, 10) != null;
+    }
+    get exampleValue() {
+        return pb_1.Message.getWrapperField(this, dependency_6.Value, 17) as dependency_6.Value;
+    }
+    set exampleValue(value: dependency_6.Value) {
+        pb_1.Message.setOneofWrapperField(this, 17, this.#one_of_decls[3], value);
+    }
+    get hasExampleValue() {
+        return pb_1.Message.getField(this, 17) != null;
+    }
+    get enumValues() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_6.Value, 11) as dependency_6.Value[];
+    }
+    set enumValues(value: dependency_6.Value[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 11, value);
+    }
+    get reference() {
+        return pb_1.Message.getWrapperField(this, Reference, 12) as Reference;
+    }
+    set reference(value: Reference) {
+        pb_1.Message.setOneofWrapperField(this, 12, this.#one_of_decls[4], value);
+    }
+    get hasReference() {
+        return pb_1.Message.getField(this, 12) != null;
+    }
+    get subType() {
+        return pb_1.Message.getFieldWithDefault(this, 13, ResourcePropertyType.BOOL) as ResourcePropertyType;
+    }
+    set subType(value: ResourcePropertyType) {
+        pb_1.Message.setOneofField(this, 13, this.#one_of_decls[5], value);
+    }
+    get hasSubType() {
+        return pb_1.Message.getField(this, 13) != null;
+    }
+    get title() {
+        return pb_1.Message.getFieldWithDefault(this, 15, "") as string;
+    }
+    set title(value: string) {
+        pb_1.Message.setOneofField(this, 15, this.#one_of_decls[6], value);
+    }
+    get hasTitle() {
+        return pb_1.Message.getField(this, 15) != null;
+    }
+    get description() {
+        return pb_1.Message.getFieldWithDefault(this, 16, "") as string;
+    }
+    set description(value: string) {
+        pb_1.Message.setOneofField(this, 16, this.#one_of_decls[7], value);
+    }
+    get hasDescription() {
+        return pb_1.Message.getField(this, 16) != null;
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    get _id() {
+        const cases: {
+            [index: number]: "none" | "id";
+        } = {
+            0: "none",
+            1: "id"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [1])];
+    }
+    get _securityContext() {
+        const cases: {
+            [index: number]: "none" | "securityContext";
+        } = {
+            0: "none",
+            9: "securityContext"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [9])];
+    }
+    get _defaultValue() {
+        const cases: {
+            [index: number]: "none" | "defaultValue";
+        } = {
+            0: "none",
+            10: "defaultValue"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [10])];
+    }
+    get _exampleValue() {
+        const cases: {
+            [index: number]: "none" | "exampleValue";
+        } = {
+            0: "none",
+            17: "exampleValue"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [17])];
+    }
+    get _reference() {
+        const cases: {
+            [index: number]: "none" | "reference";
+        } = {
+            0: "none",
+            12: "reference"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [12])];
+    }
+    get _subType() {
+        const cases: {
+            [index: number]: "none" | "subType";
+        } = {
+            0: "none",
+            13: "subType"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [13])];
+    }
+    get _title() {
+        const cases: {
+            [index: number]: "none" | "title";
+        } = {
+            0: "none",
+            15: "title"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [15])];
+    }
+    get _description() {
+        const cases: {
+            [index: number]: "none" | "description";
+        } = {
+            0: "none",
+            16: "description"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [16])];
+    }
+    static fromObject(data: {
+        id?: string;
+        name?: string;
+        type?: ResourcePropertyType;
+        mapping?: string;
+        required?: boolean;
+        primary?: boolean;
+        length?: number;
+        unique?: boolean;
+        immutable?: boolean;
+        securityContext?: ReturnType<typeof dependency_4.SecurityContext.prototype.toObject>;
+        defaultValue?: ReturnType<typeof dependency_6.Value.prototype.toObject>;
+        exampleValue?: ReturnType<typeof dependency_6.Value.prototype.toObject>;
+        enumValues?: ReturnType<typeof dependency_6.Value.prototype.toObject>[];
+        reference?: ReturnType<typeof Reference.prototype.toObject>;
+        subType?: ResourcePropertyType;
+        title?: string;
+        description?: string;
+        annotations?: {
+            [key: string]: string;
+        };
+    }): ResourceProperty {
+        const message = new ResourceProperty({});
+        if (data.id != null) {
+            message.id = data.id;
         }
-        set id(value: string) {
-            pb_1.Message.setOneofField(this, 1, this.#one_of_decls[0], value);
+        if (data.name != null) {
+            message.name = data.name;
         }
-        get has_id() {
-            return pb_1.Message.getField(this, 1) != null;
+        if (data.type != null) {
+            message.type = data.type;
         }
-        get name() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        if (data.mapping != null) {
+            message.mapping = data.mapping;
         }
-        set name(value: string) {
-            pb_1.Message.setField(this, 2, value);
+        if (data.required != null) {
+            message.required = data.required;
         }
-        get type() {
-            return pb_1.Message.getFieldWithDefault(this, 3, ResourceProperty.Type.BOOL) as ResourceProperty.Type;
+        if (data.primary != null) {
+            message.primary = data.primary;
         }
-        set type(value: ResourceProperty.Type) {
-            pb_1.Message.setField(this, 3, value);
+        if (data.length != null) {
+            message.length = data.length;
         }
-        get mapping() {
-            return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+        if (data.unique != null) {
+            message.unique = data.unique;
         }
-        set mapping(value: string) {
-            pb_1.Message.setField(this, 4, value);
+        if (data.immutable != null) {
+            message.immutable = data.immutable;
         }
-        get required() {
-            return pb_1.Message.getFieldWithDefault(this, 5, false) as boolean;
+        if (data.securityContext != null) {
+            message.securityContext = dependency_4.SecurityContext.fromObject(data.securityContext);
         }
-        set required(value: boolean) {
-            pb_1.Message.setField(this, 5, value);
+        if (data.defaultValue != null) {
+            message.defaultValue = dependency_6.Value.fromObject(data.defaultValue);
         }
-        get primary() {
-            return pb_1.Message.getFieldWithDefault(this, 6, false) as boolean;
+        if (data.exampleValue != null) {
+            message.exampleValue = dependency_6.Value.fromObject(data.exampleValue);
         }
-        set primary(value: boolean) {
-            pb_1.Message.setField(this, 6, value);
+        if (data.enumValues != null) {
+            message.enumValues = data.enumValues.map(item => dependency_6.Value.fromObject(item));
         }
-        get length() {
-            return pb_1.Message.getFieldWithDefault(this, 7, 0) as number;
+        if (data.reference != null) {
+            message.reference = Reference.fromObject(data.reference);
         }
-        set length(value: number) {
-            pb_1.Message.setField(this, 7, value);
+        if (data.subType != null) {
+            message.subType = data.subType;
         }
-        get unique() {
-            return pb_1.Message.getFieldWithDefault(this, 8, false) as boolean;
+        if (data.title != null) {
+            message.title = data.title;
         }
-        set unique(value: boolean) {
-            pb_1.Message.setField(this, 8, value);
+        if (data.description != null) {
+            message.description = data.description;
         }
-        get immutable() {
-            return pb_1.Message.getFieldWithDefault(this, 14, false) as boolean;
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
         }
-        set immutable(value: boolean) {
-            pb_1.Message.setField(this, 14, value);
-        }
-        get securityContext() {
-            return pb_1.Message.getWrapperField(this, dependency_4.model.SecurityContext, 9) as dependency_4.model.SecurityContext;
-        }
-        set securityContext(value: dependency_4.model.SecurityContext) {
-            pb_1.Message.setOneofWrapperField(this, 9, this.#one_of_decls[1], value);
-        }
-        get has_securityContext() {
-            return pb_1.Message.getField(this, 9) != null;
-        }
-        get defaultValue() {
-            return pb_1.Message.getWrapperField(this, dependency_6.google.protobuf.Value, 10) as dependency_6.google.protobuf.Value;
-        }
-        set defaultValue(value: dependency_6.google.protobuf.Value) {
-            pb_1.Message.setOneofWrapperField(this, 10, this.#one_of_decls[2], value);
-        }
-        get has_defaultValue() {
-            return pb_1.Message.getField(this, 10) != null;
-        }
-        get exampleValue() {
-            return pb_1.Message.getWrapperField(this, dependency_6.google.protobuf.Value, 17) as dependency_6.google.protobuf.Value;
-        }
-        set exampleValue(value: dependency_6.google.protobuf.Value) {
-            pb_1.Message.setOneofWrapperField(this, 17, this.#one_of_decls[3], value);
-        }
-        get has_exampleValue() {
-            return pb_1.Message.getField(this, 17) != null;
-        }
-        get enumValues() {
-            return pb_1.Message.getRepeatedWrapperField(this, dependency_6.google.protobuf.Value, 11) as dependency_6.google.protobuf.Value[];
-        }
-        set enumValues(value: dependency_6.google.protobuf.Value[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 11, value);
-        }
-        get reference() {
-            return pb_1.Message.getWrapperField(this, Reference, 12) as Reference;
-        }
-        set reference(value: Reference) {
-            pb_1.Message.setOneofWrapperField(this, 12, this.#one_of_decls[4], value);
-        }
-        get has_reference() {
-            return pb_1.Message.getField(this, 12) != null;
-        }
-        get subType() {
-            return pb_1.Message.getFieldWithDefault(this, 13, ResourceProperty.Type.BOOL) as ResourceProperty.Type;
-        }
-        set subType(value: ResourceProperty.Type) {
-            pb_1.Message.setOneofField(this, 13, this.#one_of_decls[5], value);
-        }
-        get has_subType() {
-            return pb_1.Message.getField(this, 13) != null;
-        }
-        get title() {
-            return pb_1.Message.getFieldWithDefault(this, 15, "") as string;
-        }
-        set title(value: string) {
-            pb_1.Message.setOneofField(this, 15, this.#one_of_decls[6], value);
-        }
-        get has_title() {
-            return pb_1.Message.getField(this, 15) != null;
-        }
-        get description() {
-            return pb_1.Message.getFieldWithDefault(this, 16, "") as string;
-        }
-        set description(value: string) {
-            pb_1.Message.setOneofField(this, 16, this.#one_of_decls[7], value);
-        }
-        get has_description() {
-            return pb_1.Message.getField(this, 16) != null;
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        get _id() {
-            const cases: {
-                [index: number]: "none" | "id";
-            } = {
-                0: "none",
-                1: "id"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [1])];
-        }
-        get _securityContext() {
-            const cases: {
-                [index: number]: "none" | "securityContext";
-            } = {
-                0: "none",
-                9: "securityContext"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [9])];
-        }
-        get _defaultValue() {
-            const cases: {
-                [index: number]: "none" | "defaultValue";
-            } = {
-                0: "none",
-                10: "defaultValue"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [10])];
-        }
-        get _exampleValue() {
-            const cases: {
-                [index: number]: "none" | "exampleValue";
-            } = {
-                0: "none",
-                17: "exampleValue"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [17])];
-        }
-        get _reference() {
-            const cases: {
-                [index: number]: "none" | "reference";
-            } = {
-                0: "none",
-                12: "reference"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [12])];
-        }
-        get _subType() {
-            const cases: {
-                [index: number]: "none" | "subType";
-            } = {
-                0: "none",
-                13: "subType"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [13])];
-        }
-        get _title() {
-            const cases: {
-                [index: number]: "none" | "title";
-            } = {
-                0: "none",
-                15: "title"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [15])];
-        }
-        get _description() {
-            const cases: {
-                [index: number]: "none" | "description";
-            } = {
-                0: "none",
-                16: "description"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [16])];
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             id?: string;
             name?: string;
-            type?: ResourceProperty.Type;
+            type?: ResourcePropertyType;
             mapping?: string;
             required?: boolean;
             primary?: boolean;
             length?: number;
             unique?: boolean;
             immutable?: boolean;
-            securityContext?: ReturnType<typeof dependency_4.model.SecurityContext.prototype.toObject>;
-            defaultValue?: ReturnType<typeof dependency_6.google.protobuf.Value.prototype.toObject>;
-            exampleValue?: ReturnType<typeof dependency_6.google.protobuf.Value.prototype.toObject>;
-            enumValues?: ReturnType<typeof dependency_6.google.protobuf.Value.prototype.toObject>[];
+            securityContext?: ReturnType<typeof dependency_4.SecurityContext.prototype.toObject>;
+            defaultValue?: ReturnType<typeof dependency_6.Value.prototype.toObject>;
+            exampleValue?: ReturnType<typeof dependency_6.Value.prototype.toObject>;
+            enumValues?: ReturnType<typeof dependency_6.Value.prototype.toObject>[];
             reference?: ReturnType<typeof Reference.prototype.toObject>;
-            subType?: ResourceProperty.Type;
+            subType?: ResourcePropertyType;
             title?: string;
             description?: string;
             annotations?: {
                 [key: string]: string;
             };
-        }): ResourceProperty {
-            const message = new ResourceProperty({});
-            if (data.id != null) {
-                message.id = data.id;
-            }
-            if (data.name != null) {
-                message.name = data.name;
-            }
-            if (data.type != null) {
-                message.type = data.type;
-            }
-            if (data.mapping != null) {
-                message.mapping = data.mapping;
-            }
-            if (data.required != null) {
-                message.required = data.required;
-            }
-            if (data.primary != null) {
-                message.primary = data.primary;
-            }
-            if (data.length != null) {
-                message.length = data.length;
-            }
-            if (data.unique != null) {
-                message.unique = data.unique;
-            }
-            if (data.immutable != null) {
-                message.immutable = data.immutable;
-            }
-            if (data.securityContext != null) {
-                message.securityContext = dependency_4.model.SecurityContext.fromObject(data.securityContext);
-            }
-            if (data.defaultValue != null) {
-                message.defaultValue = dependency_6.google.protobuf.Value.fromObject(data.defaultValue);
-            }
-            if (data.exampleValue != null) {
-                message.exampleValue = dependency_6.google.protobuf.Value.fromObject(data.exampleValue);
-            }
-            if (data.enumValues != null) {
-                message.enumValues = data.enumValues.map(item => dependency_6.google.protobuf.Value.fromObject(item));
-            }
-            if (data.reference != null) {
-                message.reference = Reference.fromObject(data.reference);
-            }
-            if (data.subType != null) {
-                message.subType = data.subType;
-            }
-            if (data.title != null) {
-                message.title = data.title;
-            }
-            if (data.description != null) {
-                message.description = data.description;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.id != null) {
+            data.id = this.id;
         }
-        toObject() {
-            const data: {
-                id?: string;
-                name?: string;
-                type?: ResourceProperty.Type;
-                mapping?: string;
-                required?: boolean;
-                primary?: boolean;
-                length?: number;
-                unique?: boolean;
-                immutable?: boolean;
-                securityContext?: ReturnType<typeof dependency_4.model.SecurityContext.prototype.toObject>;
-                defaultValue?: ReturnType<typeof dependency_6.google.protobuf.Value.prototype.toObject>;
-                exampleValue?: ReturnType<typeof dependency_6.google.protobuf.Value.prototype.toObject>;
-                enumValues?: ReturnType<typeof dependency_6.google.protobuf.Value.prototype.toObject>[];
-                reference?: ReturnType<typeof Reference.prototype.toObject>;
-                subType?: ResourceProperty.Type;
-                title?: string;
-                description?: string;
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.id != null) {
-                data.id = this.id;
-            }
-            if (this.name != null) {
-                data.name = this.name;
-            }
-            if (this.type != null) {
-                data.type = this.type;
-            }
-            if (this.mapping != null) {
-                data.mapping = this.mapping;
-            }
-            if (this.required != null) {
-                data.required = this.required;
-            }
-            if (this.primary != null) {
-                data.primary = this.primary;
-            }
-            if (this.length != null) {
-                data.length = this.length;
-            }
-            if (this.unique != null) {
-                data.unique = this.unique;
-            }
-            if (this.immutable != null) {
-                data.immutable = this.immutable;
-            }
-            if (this.securityContext != null) {
-                data.securityContext = this.securityContext.toObject();
-            }
-            if (this.defaultValue != null) {
-                data.defaultValue = this.defaultValue.toObject();
-            }
-            if (this.exampleValue != null) {
-                data.exampleValue = this.exampleValue.toObject();
-            }
-            if (this.enumValues != null) {
-                data.enumValues = this.enumValues.map((item: dependency_6.google.protobuf.Value) => item.toObject());
-            }
-            if (this.reference != null) {
-                data.reference = this.reference.toObject();
-            }
-            if (this.subType != null) {
-                data.subType = this.subType;
-            }
-            if (this.title != null) {
-                data.title = this.title;
-            }
-            if (this.description != null) {
-                data.description = this.description;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.name != null) {
+            data.name = this.name;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.has_id)
-                writer.writeString(1, this.id);
-            if (this.name.length)
-                writer.writeString(2, this.name);
-            if (this.type != ResourceProperty.Type.BOOL)
-                writer.writeEnum(3, this.type);
-            if (this.mapping.length)
-                writer.writeString(4, this.mapping);
-            if (this.required != false)
-                writer.writeBool(5, this.required);
-            if (this.primary != false)
-                writer.writeBool(6, this.primary);
-            if (this.length != 0)
-                writer.writeUint32(7, this.length);
-            if (this.unique != false)
-                writer.writeBool(8, this.unique);
-            if (this.immutable != false)
-                writer.writeBool(14, this.immutable);
-            if (this.has_securityContext)
-                writer.writeMessage(9, this.securityContext, () => this.securityContext.serialize(writer));
-            if (this.has_defaultValue)
-                writer.writeMessage(10, this.defaultValue, () => this.defaultValue.serialize(writer));
-            if (this.has_exampleValue)
-                writer.writeMessage(17, this.exampleValue, () => this.exampleValue.serialize(writer));
-            if (this.enumValues.length)
-                writer.writeRepeatedMessage(11, this.enumValues, (item: dependency_6.google.protobuf.Value) => item.serialize(writer));
-            if (this.has_reference)
-                writer.writeMessage(12, this.reference, () => this.reference.serialize(writer));
-            if (this.has_subType)
-                writer.writeEnum(13, this.subType);
-            if (this.has_title)
-                writer.writeString(15, this.title);
-            if (this.has_description)
-                writer.writeString(16, this.description);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.type != null) {
+            data.type = this.type;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ResourceProperty {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ResourceProperty();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (this.mapping != null) {
+            data.mapping = this.mapping;
+        }
+        if (this.required != null) {
+            data.required = this.required;
+        }
+        if (this.primary != null) {
+            data.primary = this.primary;
+        }
+        if (this.length != null) {
+            data.length = this.length;
+        }
+        if (this.unique != null) {
+            data.unique = this.unique;
+        }
+        if (this.immutable != null) {
+            data.immutable = this.immutable;
+        }
+        if (this.securityContext != null) {
+            data.securityContext = this.securityContext.toObject();
+        }
+        if (this.defaultValue != null) {
+            data.defaultValue = this.defaultValue.toObject();
+        }
+        if (this.exampleValue != null) {
+            data.exampleValue = this.exampleValue.toObject();
+        }
+        if (this.enumValues != null) {
+            data.enumValues = this.enumValues.map((item: dependency_6.Value) => item.toObject());
+        }
+        if (this.reference != null) {
+            data.reference = this.reference.toObject();
+        }
+        if (this.subType != null) {
+            data.subType = this.subType;
+        }
+        if (this.title != null) {
+            data.title = this.title;
+        }
+        if (this.description != null) {
+            data.description = this.description;
+        }
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.hasId)
+            writer.writeString(1, this.id);
+        if (this.name.length)
+            writer.writeString(2, this.name);
+        if (this.type != ResourcePropertyType.BOOL)
+            writer.writeEnum(3, this.type);
+        if (this.mapping.length)
+            writer.writeString(4, this.mapping);
+        if (this.required != false)
+            writer.writeBool(5, this.required);
+        if (this.primary != false)
+            writer.writeBool(6, this.primary);
+        if (this.length != 0)
+            writer.writeUint32(7, this.length);
+        if (this.unique != false)
+            writer.writeBool(8, this.unique);
+        if (this.immutable != false)
+            writer.writeBool(14, this.immutable);
+        if (this.hasSecurityContext)
+            writer.writeMessage(9, this.securityContext, () => this.securityContext.serialize(writer));
+        if (this.hasDefaultValue)
+            writer.writeMessage(10, this.defaultValue, () => this.defaultValue.serialize(writer));
+        if (this.hasExampleValue)
+            writer.writeMessage(17, this.exampleValue, () => this.exampleValue.serialize(writer));
+        if (this.enumValues.length)
+            writer.writeRepeatedMessage(11, this.enumValues, (item: dependency_6.Value) => item.serialize(writer));
+        if (this.hasReference)
+            writer.writeMessage(12, this.reference, () => this.reference.serialize(writer));
+        if (this.hasSubType)
+            writer.writeEnum(13, this.subType);
+        if (this.hasTitle)
+            writer.writeString(15, this.title);
+        if (this.hasDescription)
+            writer.writeString(16, this.description);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ResourceProperty {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ResourceProperty();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.id = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.id = reader.readString();
-                        break;
-                    case 2:
-                        message.name = reader.readString();
-                        break;
-                    case 3:
-                        message.type = reader.readEnum();
-                        break;
-                    case 4:
-                        message.mapping = reader.readString();
-                        break;
-                    case 5:
-                        message.required = reader.readBool();
-                        break;
-                    case 6:
-                        message.primary = reader.readBool();
-                        break;
-                    case 7:
-                        message.length = reader.readUint32();
-                        break;
-                    case 8:
-                        message.unique = reader.readBool();
-                        break;
-                    case 14:
-                        message.immutable = reader.readBool();
-                        break;
-                    case 9:
-                        reader.readMessage(message.securityContext, () => message.securityContext = dependency_4.model.SecurityContext.deserialize(reader));
-                        break;
-                    case 10:
-                        reader.readMessage(message.defaultValue, () => message.defaultValue = dependency_6.google.protobuf.Value.deserialize(reader));
-                        break;
-                    case 17:
-                        reader.readMessage(message.exampleValue, () => message.exampleValue = dependency_6.google.protobuf.Value.deserialize(reader));
-                        break;
-                    case 11:
-                        reader.readMessage(message.enumValues, () => pb_1.Message.addToRepeatedWrapperField(message, 11, dependency_6.google.protobuf.Value.deserialize(reader), dependency_6.google.protobuf.Value));
-                        break;
-                    case 12:
-                        reader.readMessage(message.reference, () => message.reference = Reference.deserialize(reader));
-                        break;
-                    case 13:
-                        message.subType = reader.readEnum();
-                        break;
-                    case 15:
-                        message.title = reader.readString();
-                        break;
-                    case 16:
-                        message.description = reader.readString();
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.name = reader.readString();
+                    break;
+                case 3:
+                    message.type = reader.readEnum();
+                    break;
+                case 4:
+                    message.mapping = reader.readString();
+                    break;
+                case 5:
+                    message.required = reader.readBool();
+                    break;
+                case 6:
+                    message.primary = reader.readBool();
+                    break;
+                case 7:
+                    message.length = reader.readUint32();
+                    break;
+                case 8:
+                    message.unique = reader.readBool();
+                    break;
+                case 14:
+                    message.immutable = reader.readBool();
+                    break;
+                case 9:
+                    reader.readMessage(message.securityContext, () => message.securityContext = dependency_4.SecurityContext.deserialize(reader));
+                    break;
+                case 10:
+                    reader.readMessage(message.defaultValue, () => message.defaultValue = dependency_6.Value.deserialize(reader));
+                    break;
+                case 17:
+                    reader.readMessage(message.exampleValue, () => message.exampleValue = dependency_6.Value.deserialize(reader));
+                    break;
+                case 11:
+                    reader.readMessage(message.enumValues, () => pb_1.Message.addToRepeatedWrapperField(message, 11, dependency_6.Value.deserialize(reader), dependency_6.Value));
+                    break;
+                case 12:
+                    reader.readMessage(message.reference, () => message.reference = Reference.deserialize(reader));
+                    break;
+                case 13:
+                    message.subType = reader.readEnum();
+                    break;
+                case 15:
+                    message.title = reader.readString();
+                    break;
+                case 16:
+                    message.description = reader.readString();
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ResourceProperty {
-            return ResourceProperty.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ResourceProperty {
+        return ResourceProperty.deserialize(bytes);
+    }
+}
+export enum ResourcePropertyType {
+    BOOL = 0,
+    STRING = 1,
+    FLOAT32 = 2,
+    FLOAT64 = 3,
+    INT32 = 4,
+    INT64 = 5,
+    BYTES = 6,
+    UUID = 8,
+    DATE = 9,
+    TIME = 10,
+    TIMESTAMP = 11,
+    OBJECT = 12,
+    MAP = 13,
+    LIST = 14,
+    REFERENCE = 15,
+    ENUM = 16
+}
+export class Reference extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        referencedResource?: string;
+        cascade?: boolean;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("referencedResource" in data && data.referencedResource != undefined) {
+                this.referencedResource = data.referencedResource;
+            }
+            if ("cascade" in data && data.cascade != undefined) {
+                this.cascade = data.cascade;
+            }
         }
     }
-    export namespace ResourceProperty {
-        export enum Type {
-            BOOL = 0,
-            STRING = 1,
-            FLOAT32 = 2,
-            FLOAT64 = 3,
-            INT32 = 4,
-            INT64 = 5,
-            BYTES = 6,
-            UUID = 8,
-            DATE = 9,
-            TIME = 10,
-            TIMESTAMP = 11,
-            OBJECT = 12,
-            MAP = 13,
-            LIST = 14,
-            REFERENCE = 15,
-            ENUM = 16
-        }
+    get referencedResource() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
     }
-    export class Reference extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    set referencedResource(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get cascade() {
+        return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
+    }
+    set cascade(value: boolean) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    static fromObject(data: {
+        referencedResource?: string;
+        cascade?: boolean;
+    }): Reference {
+        const message = new Reference({});
+        if (data.referencedResource != null) {
+            message.referencedResource = data.referencedResource;
+        }
+        if (data.cascade != null) {
+            message.cascade = data.cascade;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             referencedResource?: string;
             cascade?: boolean;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("referencedResource" in data && data.referencedResource != undefined) {
-                    this.referencedResource = data.referencedResource;
-                }
-                if ("cascade" in data && data.cascade != undefined) {
-                    this.cascade = data.cascade;
-                }
-            }
+        } = {};
+        if (this.referencedResource != null) {
+            data.referencedResource = this.referencedResource;
         }
-        get referencedResource() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        if (this.cascade != null) {
+            data.cascade = this.cascade;
         }
-        set referencedResource(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get cascade() {
-            return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
-        }
-        set cascade(value: boolean) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        static fromObject(data: {
-            referencedResource?: string;
-            cascade?: boolean;
-        }): Reference {
-            const message = new Reference({});
-            if (data.referencedResource != null) {
-                message.referencedResource = data.referencedResource;
-            }
-            if (data.cascade != null) {
-                message.cascade = data.cascade;
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                referencedResource?: string;
-                cascade?: boolean;
-            } = {};
-            if (this.referencedResource != null) {
-                data.referencedResource = this.referencedResource;
-            }
-            if (this.cascade != null) {
-                data.cascade = this.cascade;
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.referencedResource.length)
-                writer.writeString(2, this.referencedResource);
-            if (this.cascade != false)
-                writer.writeBool(3, this.cascade);
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Reference {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Reference();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.referencedResource.length)
+            writer.writeString(2, this.referencedResource);
+        if (this.cascade != false)
+            writer.writeBool(3, this.cascade);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Reference {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Reference();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 2:
+                    message.referencedResource = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 2:
-                        message.referencedResource = reader.readString();
-                        break;
-                    case 3:
-                        message.cascade = reader.readBool();
-                        break;
-                    default: reader.skipField();
-                }
+                case 3:
+                    message.cascade = reader.readBool();
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): Reference {
-            return Reference.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): Reference {
+        return Reference.deserialize(bytes);
+    }
+}
+export class ResourceSourceConfig extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        dataSource?: string;
+        catalog?: string;
+        entity?: string;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("dataSource" in data && data.dataSource != undefined) {
+                this.dataSource = data.dataSource;
+            }
+            if ("catalog" in data && data.catalog != undefined) {
+                this.catalog = data.catalog;
+            }
+            if ("entity" in data && data.entity != undefined) {
+                this.entity = data.entity;
+            }
         }
     }
-    export class ResourceSourceConfig extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+    get dataSource() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set dataSource(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get catalog() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set catalog(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get entity() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set entity(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    static fromObject(data: {
+        dataSource?: string;
+        catalog?: string;
+        entity?: string;
+    }): ResourceSourceConfig {
+        const message = new ResourceSourceConfig({});
+        if (data.dataSource != null) {
+            message.dataSource = data.dataSource;
+        }
+        if (data.catalog != null) {
+            message.catalog = data.catalog;
+        }
+        if (data.entity != null) {
+            message.entity = data.entity;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
             dataSource?: string;
             catalog?: string;
             entity?: string;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("dataSource" in data && data.dataSource != undefined) {
-                    this.dataSource = data.dataSource;
-                }
-                if ("catalog" in data && data.catalog != undefined) {
-                    this.catalog = data.catalog;
-                }
-                if ("entity" in data && data.entity != undefined) {
-                    this.entity = data.entity;
-                }
-            }
+        } = {};
+        if (this.dataSource != null) {
+            data.dataSource = this.dataSource;
         }
-        get dataSource() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        if (this.catalog != null) {
+            data.catalog = this.catalog;
         }
-        set dataSource(value: string) {
-            pb_1.Message.setField(this, 1, value);
+        if (this.entity != null) {
+            data.entity = this.entity;
         }
-        get catalog() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
-        }
-        set catalog(value: string) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        get entity() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
-        }
-        set entity(value: string) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        static fromObject(data: {
-            dataSource?: string;
-            catalog?: string;
-            entity?: string;
-        }): ResourceSourceConfig {
-            const message = new ResourceSourceConfig({});
-            if (data.dataSource != null) {
-                message.dataSource = data.dataSource;
-            }
-            if (data.catalog != null) {
-                message.catalog = data.catalog;
-            }
-            if (data.entity != null) {
-                message.entity = data.entity;
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                dataSource?: string;
-                catalog?: string;
-                entity?: string;
-            } = {};
-            if (this.dataSource != null) {
-                data.dataSource = this.dataSource;
-            }
-            if (this.catalog != null) {
-                data.catalog = this.catalog;
-            }
-            if (this.entity != null) {
-                data.entity = this.entity;
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.dataSource.length)
-                writer.writeString(1, this.dataSource);
-            if (this.catalog.length)
-                writer.writeString(2, this.catalog);
-            if (this.entity.length)
-                writer.writeString(3, this.entity);
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ResourceSourceConfig {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ResourceSourceConfig();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.dataSource.length)
+            writer.writeString(1, this.dataSource);
+        if (this.catalog.length)
+            writer.writeString(2, this.catalog);
+        if (this.entity.length)
+            writer.writeString(3, this.entity);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ResourceSourceConfig {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ResourceSourceConfig();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.dataSource = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.dataSource = reader.readString();
-                        break;
-                    case 2:
-                        message.catalog = reader.readString();
-                        break;
-                    case 3:
-                        message.entity = reader.readString();
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.catalog = reader.readString();
+                    break;
+                case 3:
+                    message.entity = reader.readString();
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ResourceSourceConfig {
-            return ResourceSourceConfig.deserialize(bytes);
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ResourceSourceConfig {
+        return ResourceSourceConfig.deserialize(bytes);
+    }
+}
+export class ResourceIndexProperty extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        name?: string;
+        order?: Order;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("name" in data && data.name != undefined) {
+                this.name = data.name;
+            }
+            if ("order" in data && data.order != undefined) {
+                this.order = data.order;
+            }
         }
     }
-    export class ResourceIndexProperty extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            name?: string;
-            order?: Order;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("name" in data && data.name != undefined) {
-                    this.name = data.name;
-                }
-                if ("order" in data && data.order != undefined) {
-                    this.order = data.order;
-                }
-            }
-        }
-        get name() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
-        }
-        set name(value: string) {
-            pb_1.Message.setField(this, 1, value);
-        }
-        get order() {
-            return pb_1.Message.getFieldWithDefault(this, 2, Order.ORDER_UNKNOWN) as Order;
-        }
-        set order(value: Order) {
-            pb_1.Message.setField(this, 2, value);
-        }
-        static fromObject(data: {
-            name?: string;
-            order?: Order;
-        }): ResourceIndexProperty {
-            const message = new ResourceIndexProperty({});
-            if (data.name != null) {
-                message.name = data.name;
-            }
-            if (data.order != null) {
-                message.order = data.order;
-            }
-            return message;
-        }
-        toObject() {
-            const data: {
-                name?: string;
-                order?: Order;
-            } = {};
-            if (this.name != null) {
-                data.name = this.name;
-            }
-            if (this.order != null) {
-                data.order = this.order;
-            }
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.name.length)
-                writer.writeString(1, this.name);
-            if (this.order != Order.ORDER_UNKNOWN)
-                writer.writeEnum(2, this.order);
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ResourceIndexProperty {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ResourceIndexProperty();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.name = reader.readString();
-                        break;
-                    case 2:
-                        message.order = reader.readEnum();
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ResourceIndexProperty {
-            return ResourceIndexProperty.deserialize(bytes);
-        }
+    get name() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
     }
-    export class ResourceIndex extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
-            properties?: ResourceIndexProperty[];
-            indexType?: ResourceIndexType;
-            unique?: boolean;
-            annotations?: Map<string, string>;
-        }) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("properties" in data && data.properties != undefined) {
-                    this.properties = data.properties;
-                }
-                if ("indexType" in data && data.indexType != undefined) {
-                    this.indexType = data.indexType;
-                }
-                if ("unique" in data && data.unique != undefined) {
-                    this.unique = data.unique;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
+    set name(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get order() {
+        return pb_1.Message.getFieldWithDefault(this, 2, Order.ORDER_UNKNOWN) as Order;
+    }
+    set order(value: Order) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    static fromObject(data: {
+        name?: string;
+        order?: Order;
+    }): ResourceIndexProperty {
+        const message = new ResourceIndexProperty({});
+        if (data.name != null) {
+            message.name = data.name;
+        }
+        if (data.order != null) {
+            message.order = data.order;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            name?: string;
+            order?: Order;
+        } = {};
+        if (this.name != null) {
+            data.name = this.name;
+        }
+        if (this.order != null) {
+            data.order = this.order;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.name.length)
+            writer.writeString(1, this.name);
+        if (this.order != Order.ORDER_UNKNOWN)
+            writer.writeEnum(2, this.order);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ResourceIndexProperty {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ResourceIndexProperty();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.name = reader.readString();
+                    break;
+                case 2:
+                    message.order = reader.readEnum();
+                    break;
+                default: reader.skipField();
             }
-            if (!this.annotations)
-                this.annotations = new Map();
         }
-        get properties() {
-            return pb_1.Message.getRepeatedWrapperField(this, ResourceIndexProperty, 1) as ResourceIndexProperty[];
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ResourceIndexProperty {
+        return ResourceIndexProperty.deserialize(bytes);
+    }
+}
+export class ResourceIndex extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        properties?: ResourceIndexProperty[];
+        indexType?: ResourceIndexType;
+        unique?: boolean;
+        annotations?: Map<string, string>;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("properties" in data && data.properties != undefined) {
+                this.properties = data.properties;
+            }
+            if ("indexType" in data && data.indexType != undefined) {
+                this.indexType = data.indexType;
+            }
+            if ("unique" in data && data.unique != undefined) {
+                this.unique = data.unique;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
         }
-        set properties(value: ResourceIndexProperty[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 1, value);
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get properties() {
+        return pb_1.Message.getRepeatedWrapperField(this, ResourceIndexProperty, 1) as ResourceIndexProperty[];
+    }
+    set properties(value: ResourceIndexProperty[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 1, value);
+    }
+    get indexType() {
+        return pb_1.Message.getFieldWithDefault(this, 2, ResourceIndexType.BTREE) as ResourceIndexType;
+    }
+    set indexType(value: ResourceIndexType) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get unique() {
+        return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
+    }
+    set unique(value: boolean) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    static fromObject(data: {
+        properties?: ReturnType<typeof ResourceIndexProperty.prototype.toObject>[];
+        indexType?: ResourceIndexType;
+        unique?: boolean;
+        annotations?: {
+            [key: string]: string;
+        };
+    }): ResourceIndex {
+        const message = new ResourceIndex({});
+        if (data.properties != null) {
+            message.properties = data.properties.map(item => ResourceIndexProperty.fromObject(item));
         }
-        get indexType() {
-            return pb_1.Message.getFieldWithDefault(this, 2, ResourceIndexType.BTREE) as ResourceIndexType;
+        if (data.indexType != null) {
+            message.indexType = data.indexType;
         }
-        set indexType(value: ResourceIndexType) {
-            pb_1.Message.setField(this, 2, value);
+        if (data.unique != null) {
+            message.unique = data.unique;
         }
-        get unique() {
-            return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
         }
-        set unique(value: boolean) {
-            pb_1.Message.setField(this, 3, value);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             properties?: ReturnType<typeof ResourceIndexProperty.prototype.toObject>[];
             indexType?: ResourceIndexType;
             unique?: boolean;
             annotations?: {
                 [key: string]: string;
             };
-        }): ResourceIndex {
-            const message = new ResourceIndex({});
-            if (data.properties != null) {
-                message.properties = data.properties.map(item => ResourceIndexProperty.fromObject(item));
-            }
-            if (data.indexType != null) {
-                message.indexType = data.indexType;
-            }
-            if (data.unique != null) {
-                message.unique = data.unique;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.properties != null) {
+            data.properties = this.properties.map((item: ResourceIndexProperty) => item.toObject());
         }
-        toObject() {
-            const data: {
-                properties?: ReturnType<typeof ResourceIndexProperty.prototype.toObject>[];
-                indexType?: ResourceIndexType;
-                unique?: boolean;
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.properties != null) {
-                data.properties = this.properties.map((item: ResourceIndexProperty) => item.toObject());
-            }
-            if (this.indexType != null) {
-                data.indexType = this.indexType;
-            }
-            if (this.unique != null) {
-                data.unique = this.unique;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.indexType != null) {
+            data.indexType = this.indexType;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.properties.length)
-                writer.writeRepeatedMessage(1, this.properties, (item: ResourceIndexProperty) => item.serialize(writer));
-            if (this.indexType != ResourceIndexType.BTREE)
-                writer.writeEnum(2, this.indexType);
-            if (this.unique != false)
-                writer.writeBool(3, this.unique);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.unique != null) {
+            data.unique = this.unique;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ResourceIndex {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ResourceIndex();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        reader.readMessage(message.properties, () => pb_1.Message.addToRepeatedWrapperField(message, 1, ResourceIndexProperty.deserialize(reader), ResourceIndexProperty));
-                        break;
-                    case 2:
-                        message.indexType = reader.readEnum();
-                        break;
-                    case 3:
-                        message.unique = reader.readBool();
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
-            }
-            return message;
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): ResourceIndex {
-            return ResourceIndex.deserialize(bytes);
-        }
+        return data;
     }
-    export class Resource extends pb_1.Message {
-        #one_of_decls: number[][] = [[14], [15]];
-        constructor(data?: any[] | ({
-            id?: string;
-            name?: string;
-            namespace?: string;
-            sourceConfig?: ResourceSourceConfig;
-            properties?: ResourceProperty[];
-            indexes?: ResourceIndex[];
-            securityContext?: dependency_4.model.SecurityContext;
-            virtual?: boolean;
-            immutable?: boolean;
-            abstract?: boolean;
-            auditData?: dependency_1.model.AuditData;
-            version?: number;
-            annotations?: Map<string, string>;
-        } & (({
-            title?: string;
-        }) | ({
-            description?: string;
-        })))) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [6, 7], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") {
-                if ("id" in data && data.id != undefined) {
-                    this.id = data.id;
-                }
-                if ("name" in data && data.name != undefined) {
-                    this.name = data.name;
-                }
-                if ("namespace" in data && data.namespace != undefined) {
-                    this.namespace = data.namespace;
-                }
-                if ("sourceConfig" in data && data.sourceConfig != undefined) {
-                    this.sourceConfig = data.sourceConfig;
-                }
-                if ("properties" in data && data.properties != undefined) {
-                    this.properties = data.properties;
-                }
-                if ("indexes" in data && data.indexes != undefined) {
-                    this.indexes = data.indexes;
-                }
-                if ("securityContext" in data && data.securityContext != undefined) {
-                    this.securityContext = data.securityContext;
-                }
-                if ("virtual" in data && data.virtual != undefined) {
-                    this.virtual = data.virtual;
-                }
-                if ("immutable" in data && data.immutable != undefined) {
-                    this.immutable = data.immutable;
-                }
-                if ("abstract" in data && data.abstract != undefined) {
-                    this.abstract = data.abstract;
-                }
-                if ("title" in data && data.title != undefined) {
-                    this.title = data.title;
-                }
-                if ("description" in data && data.description != undefined) {
-                    this.description = data.description;
-                }
-                if ("auditData" in data && data.auditData != undefined) {
-                    this.auditData = data.auditData;
-                }
-                if ("version" in data && data.version != undefined) {
-                    this.version = data.version;
-                }
-                if ("annotations" in data && data.annotations != undefined) {
-                    this.annotations = data.annotations;
-                }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.properties.length)
+            writer.writeRepeatedMessage(1, this.properties, (item: ResourceIndexProperty) => item.serialize(writer));
+        if (this.indexType != ResourceIndexType.BTREE)
+            writer.writeEnum(2, this.indexType);
+        if (this.unique != false)
+            writer.writeBool(3, this.unique);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ResourceIndex {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ResourceIndex();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.properties, () => pb_1.Message.addToRepeatedWrapperField(message, 1, ResourceIndexProperty.deserialize(reader), ResourceIndexProperty));
+                    break;
+                case 2:
+                    message.indexType = reader.readEnum();
+                    break;
+                case 3:
+                    message.unique = reader.readBool();
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            if (!this.annotations)
-                this.annotations = new Map();
         }
-        get id() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ResourceIndex {
+        return ResourceIndex.deserialize(bytes);
+    }
+}
+export class Resource extends pb_1.Message {
+    #one_of_decls: number[][] = [[14], [15]];
+    constructor(data?: any[] | ({
+        id?: string;
+        name?: string;
+        namespace?: string;
+        sourceConfig?: ResourceSourceConfig;
+        properties?: ResourceProperty[];
+        indexes?: ResourceIndex[];
+        securityContext?: dependency_4.SecurityContext;
+        virtual?: boolean;
+        immutable?: boolean;
+        abstract?: boolean;
+        auditData?: dependency_1.AuditData;
+        version?: number;
+        annotations?: Map<string, string>;
+    } & (({
+        title?: string;
+    }) | ({
+        description?: string;
+    })))) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [6, 7], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("id" in data && data.id != undefined) {
+                this.id = data.id;
+            }
+            if ("name" in data && data.name != undefined) {
+                this.name = data.name;
+            }
+            if ("namespace" in data && data.namespace != undefined) {
+                this.namespace = data.namespace;
+            }
+            if ("sourceConfig" in data && data.sourceConfig != undefined) {
+                this.sourceConfig = data.sourceConfig;
+            }
+            if ("properties" in data && data.properties != undefined) {
+                this.properties = data.properties;
+            }
+            if ("indexes" in data && data.indexes != undefined) {
+                this.indexes = data.indexes;
+            }
+            if ("securityContext" in data && data.securityContext != undefined) {
+                this.securityContext = data.securityContext;
+            }
+            if ("virtual" in data && data.virtual != undefined) {
+                this.virtual = data.virtual;
+            }
+            if ("immutable" in data && data.immutable != undefined) {
+                this.immutable = data.immutable;
+            }
+            if ("abstract" in data && data.abstract != undefined) {
+                this.abstract = data.abstract;
+            }
+            if ("title" in data && data.title != undefined) {
+                this.title = data.title;
+            }
+            if ("description" in data && data.description != undefined) {
+                this.description = data.description;
+            }
+            if ("auditData" in data && data.auditData != undefined) {
+                this.auditData = data.auditData;
+            }
+            if ("version" in data && data.version != undefined) {
+                this.version = data.version;
+            }
+            if ("annotations" in data && data.annotations != undefined) {
+                this.annotations = data.annotations;
+            }
         }
-        set id(value: string) {
-            pb_1.Message.setField(this, 1, value);
+        if (!this.annotations)
+            this.annotations = new Map();
+    }
+    get id() {
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+    }
+    set id(value: string) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get name() {
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+    }
+    set name(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get namespace() {
+        return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+    }
+    set namespace(value: string) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get sourceConfig() {
+        return pb_1.Message.getWrapperField(this, ResourceSourceConfig, 5) as ResourceSourceConfig;
+    }
+    set sourceConfig(value: ResourceSourceConfig) {
+        pb_1.Message.setWrapperField(this, 5, value);
+    }
+    get hasSourceConfig() {
+        return pb_1.Message.getField(this, 5) != null;
+    }
+    get properties() {
+        return pb_1.Message.getRepeatedWrapperField(this, ResourceProperty, 6) as ResourceProperty[];
+    }
+    set properties(value: ResourceProperty[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 6, value);
+    }
+    get indexes() {
+        return pb_1.Message.getRepeatedWrapperField(this, ResourceIndex, 7) as ResourceIndex[];
+    }
+    set indexes(value: ResourceIndex[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 7, value);
+    }
+    get securityContext() {
+        return pb_1.Message.getWrapperField(this, dependency_4.SecurityContext, 10) as dependency_4.SecurityContext;
+    }
+    set securityContext(value: dependency_4.SecurityContext) {
+        pb_1.Message.setWrapperField(this, 10, value);
+    }
+    get hasSecurityContext() {
+        return pb_1.Message.getField(this, 10) != null;
+    }
+    get virtual() {
+        return pb_1.Message.getFieldWithDefault(this, 11, false) as boolean;
+    }
+    set virtual(value: boolean) {
+        pb_1.Message.setField(this, 11, value);
+    }
+    get immutable() {
+        return pb_1.Message.getFieldWithDefault(this, 12, false) as boolean;
+    }
+    set immutable(value: boolean) {
+        pb_1.Message.setField(this, 12, value);
+    }
+    get abstract() {
+        return pb_1.Message.getFieldWithDefault(this, 13, false) as boolean;
+    }
+    set abstract(value: boolean) {
+        pb_1.Message.setField(this, 13, value);
+    }
+    get title() {
+        return pb_1.Message.getFieldWithDefault(this, 14, "") as string;
+    }
+    set title(value: string) {
+        pb_1.Message.setOneofField(this, 14, this.#one_of_decls[0], value);
+    }
+    get hasTitle() {
+        return pb_1.Message.getField(this, 14) != null;
+    }
+    get description() {
+        return pb_1.Message.getFieldWithDefault(this, 15, "") as string;
+    }
+    set description(value: string) {
+        pb_1.Message.setOneofField(this, 15, this.#one_of_decls[1], value);
+    }
+    get hasDescription() {
+        return pb_1.Message.getField(this, 15) != null;
+    }
+    get auditData() {
+        return pb_1.Message.getWrapperField(this, dependency_1.AuditData, 101) as dependency_1.AuditData;
+    }
+    set auditData(value: dependency_1.AuditData) {
+        pb_1.Message.setWrapperField(this, 101, value);
+    }
+    get hasAuditData() {
+        return pb_1.Message.getField(this, 101) != null;
+    }
+    get version() {
+        return pb_1.Message.getFieldWithDefault(this, 102, 0) as number;
+    }
+    set version(value: number) {
+        pb_1.Message.setField(this, 102, value);
+    }
+    get annotations() {
+        return pb_1.Message.getField(this, 103) as any as Map<string, string>;
+    }
+    set annotations(value: Map<string, string>) {
+        pb_1.Message.setField(this, 103, value as any);
+    }
+    get _title() {
+        const cases: {
+            [index: number]: "none" | "title";
+        } = {
+            0: "none",
+            14: "title"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [14])];
+    }
+    get _description() {
+        const cases: {
+            [index: number]: "none" | "description";
+        } = {
+            0: "none",
+            15: "description"
+        };
+        return cases[pb_1.Message.computeOneofCase(this, [15])];
+    }
+    static fromObject(data: {
+        id?: string;
+        name?: string;
+        namespace?: string;
+        sourceConfig?: ReturnType<typeof ResourceSourceConfig.prototype.toObject>;
+        properties?: ReturnType<typeof ResourceProperty.prototype.toObject>[];
+        indexes?: ReturnType<typeof ResourceIndex.prototype.toObject>[];
+        securityContext?: ReturnType<typeof dependency_4.SecurityContext.prototype.toObject>;
+        virtual?: boolean;
+        immutable?: boolean;
+        abstract?: boolean;
+        title?: string;
+        description?: string;
+        auditData?: ReturnType<typeof dependency_1.AuditData.prototype.toObject>;
+        version?: number;
+        annotations?: {
+            [key: string]: string;
+        };
+    }): Resource {
+        const message = new Resource({});
+        if (data.id != null) {
+            message.id = data.id;
         }
-        get name() {
-            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        if (data.name != null) {
+            message.name = data.name;
         }
-        set name(value: string) {
-            pb_1.Message.setField(this, 2, value);
+        if (data.namespace != null) {
+            message.namespace = data.namespace;
         }
-        get namespace() {
-            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        if (data.sourceConfig != null) {
+            message.sourceConfig = ResourceSourceConfig.fromObject(data.sourceConfig);
         }
-        set namespace(value: string) {
-            pb_1.Message.setField(this, 3, value);
+        if (data.properties != null) {
+            message.properties = data.properties.map(item => ResourceProperty.fromObject(item));
         }
-        get sourceConfig() {
-            return pb_1.Message.getWrapperField(this, ResourceSourceConfig, 5) as ResourceSourceConfig;
+        if (data.indexes != null) {
+            message.indexes = data.indexes.map(item => ResourceIndex.fromObject(item));
         }
-        set sourceConfig(value: ResourceSourceConfig) {
-            pb_1.Message.setWrapperField(this, 5, value);
+        if (data.securityContext != null) {
+            message.securityContext = dependency_4.SecurityContext.fromObject(data.securityContext);
         }
-        get has_sourceConfig() {
-            return pb_1.Message.getField(this, 5) != null;
+        if (data.virtual != null) {
+            message.virtual = data.virtual;
         }
-        get properties() {
-            return pb_1.Message.getRepeatedWrapperField(this, ResourceProperty, 6) as ResourceProperty[];
+        if (data.immutable != null) {
+            message.immutable = data.immutable;
         }
-        set properties(value: ResourceProperty[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 6, value);
+        if (data.abstract != null) {
+            message.abstract = data.abstract;
         }
-        get indexes() {
-            return pb_1.Message.getRepeatedWrapperField(this, ResourceIndex, 7) as ResourceIndex[];
+        if (data.title != null) {
+            message.title = data.title;
         }
-        set indexes(value: ResourceIndex[]) {
-            pb_1.Message.setRepeatedWrapperField(this, 7, value);
+        if (data.description != null) {
+            message.description = data.description;
         }
-        get securityContext() {
-            return pb_1.Message.getWrapperField(this, dependency_4.model.SecurityContext, 10) as dependency_4.model.SecurityContext;
+        if (data.auditData != null) {
+            message.auditData = dependency_1.AuditData.fromObject(data.auditData);
         }
-        set securityContext(value: dependency_4.model.SecurityContext) {
-            pb_1.Message.setWrapperField(this, 10, value);
+        if (data.version != null) {
+            message.version = data.version;
         }
-        get has_securityContext() {
-            return pb_1.Message.getField(this, 10) != null;
+        if (typeof data.annotations == "object") {
+            message.annotations = new Map(Object.entries(data.annotations));
         }
-        get virtual() {
-            return pb_1.Message.getFieldWithDefault(this, 11, false) as boolean;
-        }
-        set virtual(value: boolean) {
-            pb_1.Message.setField(this, 11, value);
-        }
-        get immutable() {
-            return pb_1.Message.getFieldWithDefault(this, 12, false) as boolean;
-        }
-        set immutable(value: boolean) {
-            pb_1.Message.setField(this, 12, value);
-        }
-        get abstract() {
-            return pb_1.Message.getFieldWithDefault(this, 13, false) as boolean;
-        }
-        set abstract(value: boolean) {
-            pb_1.Message.setField(this, 13, value);
-        }
-        get title() {
-            return pb_1.Message.getFieldWithDefault(this, 14, "") as string;
-        }
-        set title(value: string) {
-            pb_1.Message.setOneofField(this, 14, this.#one_of_decls[0], value);
-        }
-        get has_title() {
-            return pb_1.Message.getField(this, 14) != null;
-        }
-        get description() {
-            return pb_1.Message.getFieldWithDefault(this, 15, "") as string;
-        }
-        set description(value: string) {
-            pb_1.Message.setOneofField(this, 15, this.#one_of_decls[1], value);
-        }
-        get has_description() {
-            return pb_1.Message.getField(this, 15) != null;
-        }
-        get auditData() {
-            return pb_1.Message.getWrapperField(this, dependency_1.model.AuditData, 101) as dependency_1.model.AuditData;
-        }
-        set auditData(value: dependency_1.model.AuditData) {
-            pb_1.Message.setWrapperField(this, 101, value);
-        }
-        get has_auditData() {
-            return pb_1.Message.getField(this, 101) != null;
-        }
-        get version() {
-            return pb_1.Message.getFieldWithDefault(this, 102, 0) as number;
-        }
-        set version(value: number) {
-            pb_1.Message.setField(this, 102, value);
-        }
-        get annotations() {
-            return pb_1.Message.getField(this, 103) as any as Map<string, string>;
-        }
-        set annotations(value: Map<string, string>) {
-            pb_1.Message.setField(this, 103, value as any);
-        }
-        get _title() {
-            const cases: {
-                [index: number]: "none" | "title";
-            } = {
-                0: "none",
-                14: "title"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [14])];
-        }
-        get _description() {
-            const cases: {
-                [index: number]: "none" | "description";
-            } = {
-                0: "none",
-                15: "description"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [15])];
-        }
-        static fromObject(data: {
+        return message;
+    }
+    toObject() {
+        const data: {
             id?: string;
             name?: string;
             namespace?: string;
             sourceConfig?: ReturnType<typeof ResourceSourceConfig.prototype.toObject>;
             properties?: ReturnType<typeof ResourceProperty.prototype.toObject>[];
             indexes?: ReturnType<typeof ResourceIndex.prototype.toObject>[];
-            securityContext?: ReturnType<typeof dependency_4.model.SecurityContext.prototype.toObject>;
+            securityContext?: ReturnType<typeof dependency_4.SecurityContext.prototype.toObject>;
             virtual?: boolean;
             immutable?: boolean;
             abstract?: boolean;
             title?: string;
             description?: string;
-            auditData?: ReturnType<typeof dependency_1.model.AuditData.prototype.toObject>;
+            auditData?: ReturnType<typeof dependency_1.AuditData.prototype.toObject>;
             version?: number;
             annotations?: {
                 [key: string]: string;
             };
-        }): Resource {
-            const message = new Resource({});
-            if (data.id != null) {
-                message.id = data.id;
-            }
-            if (data.name != null) {
-                message.name = data.name;
-            }
-            if (data.namespace != null) {
-                message.namespace = data.namespace;
-            }
-            if (data.sourceConfig != null) {
-                message.sourceConfig = ResourceSourceConfig.fromObject(data.sourceConfig);
-            }
-            if (data.properties != null) {
-                message.properties = data.properties.map(item => ResourceProperty.fromObject(item));
-            }
-            if (data.indexes != null) {
-                message.indexes = data.indexes.map(item => ResourceIndex.fromObject(item));
-            }
-            if (data.securityContext != null) {
-                message.securityContext = dependency_4.model.SecurityContext.fromObject(data.securityContext);
-            }
-            if (data.virtual != null) {
-                message.virtual = data.virtual;
-            }
-            if (data.immutable != null) {
-                message.immutable = data.immutable;
-            }
-            if (data.abstract != null) {
-                message.abstract = data.abstract;
-            }
-            if (data.title != null) {
-                message.title = data.title;
-            }
-            if (data.description != null) {
-                message.description = data.description;
-            }
-            if (data.auditData != null) {
-                message.auditData = dependency_1.model.AuditData.fromObject(data.auditData);
-            }
-            if (data.version != null) {
-                message.version = data.version;
-            }
-            if (typeof data.annotations == "object") {
-                message.annotations = new Map(Object.entries(data.annotations));
-            }
-            return message;
+        } = {};
+        if (this.id != null) {
+            data.id = this.id;
         }
-        toObject() {
-            const data: {
-                id?: string;
-                name?: string;
-                namespace?: string;
-                sourceConfig?: ReturnType<typeof ResourceSourceConfig.prototype.toObject>;
-                properties?: ReturnType<typeof ResourceProperty.prototype.toObject>[];
-                indexes?: ReturnType<typeof ResourceIndex.prototype.toObject>[];
-                securityContext?: ReturnType<typeof dependency_4.model.SecurityContext.prototype.toObject>;
-                virtual?: boolean;
-                immutable?: boolean;
-                abstract?: boolean;
-                title?: string;
-                description?: string;
-                auditData?: ReturnType<typeof dependency_1.model.AuditData.prototype.toObject>;
-                version?: number;
-                annotations?: {
-                    [key: string]: string;
-                };
-            } = {};
-            if (this.id != null) {
-                data.id = this.id;
-            }
-            if (this.name != null) {
-                data.name = this.name;
-            }
-            if (this.namespace != null) {
-                data.namespace = this.namespace;
-            }
-            if (this.sourceConfig != null) {
-                data.sourceConfig = this.sourceConfig.toObject();
-            }
-            if (this.properties != null) {
-                data.properties = this.properties.map((item: ResourceProperty) => item.toObject());
-            }
-            if (this.indexes != null) {
-                data.indexes = this.indexes.map((item: ResourceIndex) => item.toObject());
-            }
-            if (this.securityContext != null) {
-                data.securityContext = this.securityContext.toObject();
-            }
-            if (this.virtual != null) {
-                data.virtual = this.virtual;
-            }
-            if (this.immutable != null) {
-                data.immutable = this.immutable;
-            }
-            if (this.abstract != null) {
-                data.abstract = this.abstract;
-            }
-            if (this.title != null) {
-                data.title = this.title;
-            }
-            if (this.description != null) {
-                data.description = this.description;
-            }
-            if (this.auditData != null) {
-                data.auditData = this.auditData.toObject();
-            }
-            if (this.version != null) {
-                data.version = this.version;
-            }
-            if (this.annotations != null) {
-                data.annotations = (Object.fromEntries)(this.annotations);
-            }
-            return data;
+        if (this.name != null) {
+            data.name = this.name;
         }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (this.id.length)
-                writer.writeString(1, this.id);
-            if (this.name.length)
-                writer.writeString(2, this.name);
-            if (this.namespace.length)
-                writer.writeString(3, this.namespace);
-            if (this.has_sourceConfig)
-                writer.writeMessage(5, this.sourceConfig, () => this.sourceConfig.serialize(writer));
-            if (this.properties.length)
-                writer.writeRepeatedMessage(6, this.properties, (item: ResourceProperty) => item.serialize(writer));
-            if (this.indexes.length)
-                writer.writeRepeatedMessage(7, this.indexes, (item: ResourceIndex) => item.serialize(writer));
-            if (this.has_securityContext)
-                writer.writeMessage(10, this.securityContext, () => this.securityContext.serialize(writer));
-            if (this.virtual != false)
-                writer.writeBool(11, this.virtual);
-            if (this.immutable != false)
-                writer.writeBool(12, this.immutable);
-            if (this.abstract != false)
-                writer.writeBool(13, this.abstract);
-            if (this.has_title)
-                writer.writeString(14, this.title);
-            if (this.has_description)
-                writer.writeString(15, this.description);
-            if (this.has_auditData)
-                writer.writeMessage(101, this.auditData, () => this.auditData.serialize(writer));
-            if (this.version != 0)
-                writer.writeUint32(102, this.version);
-            for (const [key, value] of this.annotations) {
-                writer.writeMessage(103, this.annotations, () => {
-                    writer.writeString(1, key);
-                    writer.writeString(2, value);
-                });
-            }
-            if (!w)
-                return writer.getResultBuffer();
+        if (this.namespace != null) {
+            data.namespace = this.namespace;
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Resource {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Resource();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
+        if (this.sourceConfig != null) {
+            data.sourceConfig = this.sourceConfig.toObject();
+        }
+        if (this.properties != null) {
+            data.properties = this.properties.map((item: ResourceProperty) => item.toObject());
+        }
+        if (this.indexes != null) {
+            data.indexes = this.indexes.map((item: ResourceIndex) => item.toObject());
+        }
+        if (this.securityContext != null) {
+            data.securityContext = this.securityContext.toObject();
+        }
+        if (this.virtual != null) {
+            data.virtual = this.virtual;
+        }
+        if (this.immutable != null) {
+            data.immutable = this.immutable;
+        }
+        if (this.abstract != null) {
+            data.abstract = this.abstract;
+        }
+        if (this.title != null) {
+            data.title = this.title;
+        }
+        if (this.description != null) {
+            data.description = this.description;
+        }
+        if (this.auditData != null) {
+            data.auditData = this.auditData.toObject();
+        }
+        if (this.version != null) {
+            data.version = this.version;
+        }
+        if (this.annotations != null) {
+            data.annotations = (Object.fromEntries)(this.annotations);
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.id.length)
+            writer.writeString(1, this.id);
+        if (this.name.length)
+            writer.writeString(2, this.name);
+        if (this.namespace.length)
+            writer.writeString(3, this.namespace);
+        if (this.hasSourceConfig)
+            writer.writeMessage(5, this.sourceConfig, () => this.sourceConfig.serialize(writer));
+        if (this.properties.length)
+            writer.writeRepeatedMessage(6, this.properties, (item: ResourceProperty) => item.serialize(writer));
+        if (this.indexes.length)
+            writer.writeRepeatedMessage(7, this.indexes, (item: ResourceIndex) => item.serialize(writer));
+        if (this.hasSecurityContext)
+            writer.writeMessage(10, this.securityContext, () => this.securityContext.serialize(writer));
+        if (this.virtual != false)
+            writer.writeBool(11, this.virtual);
+        if (this.immutable != false)
+            writer.writeBool(12, this.immutable);
+        if (this.abstract != false)
+            writer.writeBool(13, this.abstract);
+        if (this.hasTitle)
+            writer.writeString(14, this.title);
+        if (this.hasDescription)
+            writer.writeString(15, this.description);
+        if (this.hasAuditData)
+            writer.writeMessage(101, this.auditData, () => this.auditData.serialize(writer));
+        if (this.version != 0)
+            writer.writeUint32(102, this.version);
+        for (const [key, value] of this.annotations) {
+            writer.writeMessage(103, this.annotations, () => {
+                writer.writeString(1, key);
+                writer.writeString(2, value);
+            });
+        }
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Resource {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Resource();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.id = reader.readString();
                     break;
-                switch (reader.getFieldNumber()) {
-                    case 1:
-                        message.id = reader.readString();
-                        break;
-                    case 2:
-                        message.name = reader.readString();
-                        break;
-                    case 3:
-                        message.namespace = reader.readString();
-                        break;
-                    case 5:
-                        reader.readMessage(message.sourceConfig, () => message.sourceConfig = ResourceSourceConfig.deserialize(reader));
-                        break;
-                    case 6:
-                        reader.readMessage(message.properties, () => pb_1.Message.addToRepeatedWrapperField(message, 6, ResourceProperty.deserialize(reader), ResourceProperty));
-                        break;
-                    case 7:
-                        reader.readMessage(message.indexes, () => pb_1.Message.addToRepeatedWrapperField(message, 7, ResourceIndex.deserialize(reader), ResourceIndex));
-                        break;
-                    case 10:
-                        reader.readMessage(message.securityContext, () => message.securityContext = dependency_4.model.SecurityContext.deserialize(reader));
-                        break;
-                    case 11:
-                        message.virtual = reader.readBool();
-                        break;
-                    case 12:
-                        message.immutable = reader.readBool();
-                        break;
-                    case 13:
-                        message.abstract = reader.readBool();
-                        break;
-                    case 14:
-                        message.title = reader.readString();
-                        break;
-                    case 15:
-                        message.description = reader.readString();
-                        break;
-                    case 101:
-                        reader.readMessage(message.auditData, () => message.auditData = dependency_1.model.AuditData.deserialize(reader));
-                        break;
-                    case 102:
-                        message.version = reader.readUint32();
-                        break;
-                    case 103:
-                        reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
-                        break;
-                    default: reader.skipField();
-                }
+                case 2:
+                    message.name = reader.readString();
+                    break;
+                case 3:
+                    message.namespace = reader.readString();
+                    break;
+                case 5:
+                    reader.readMessage(message.sourceConfig, () => message.sourceConfig = ResourceSourceConfig.deserialize(reader));
+                    break;
+                case 6:
+                    reader.readMessage(message.properties, () => pb_1.Message.addToRepeatedWrapperField(message, 6, ResourceProperty.deserialize(reader), ResourceProperty));
+                    break;
+                case 7:
+                    reader.readMessage(message.indexes, () => pb_1.Message.addToRepeatedWrapperField(message, 7, ResourceIndex.deserialize(reader), ResourceIndex));
+                    break;
+                case 10:
+                    reader.readMessage(message.securityContext, () => message.securityContext = dependency_4.SecurityContext.deserialize(reader));
+                    break;
+                case 11:
+                    message.virtual = reader.readBool();
+                    break;
+                case 12:
+                    message.immutable = reader.readBool();
+                    break;
+                case 13:
+                    message.abstract = reader.readBool();
+                    break;
+                case 14:
+                    message.title = reader.readString();
+                    break;
+                case 15:
+                    message.description = reader.readString();
+                    break;
+                case 101:
+                    reader.readMessage(message.auditData, () => message.auditData = dependency_1.AuditData.deserialize(reader));
+                    break;
+                case 102:
+                    message.version = reader.readUint32();
+                    break;
+                case 103:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.annotations as any, reader, reader.readString, reader.readString));
+                    break;
+                default: reader.skipField();
             }
-            return message;
         }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): Resource {
-            return Resource.deserialize(bytes);
-        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): Resource {
+        return Resource.deserialize(bytes);
     }
 }
