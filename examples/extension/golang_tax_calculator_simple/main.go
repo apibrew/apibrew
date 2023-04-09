@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/tislib/data-handler/examples/extension/tax_calculator_simple/model"
+	"github.com/tislib/data-handler/examples/extension/golang_tax_calculator_simple/model"
 	"github.com/tislib/data-handler/pkg/client"
 	"math"
 	"sort"

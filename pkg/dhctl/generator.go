@@ -1,7 +1,6 @@
 package dhctl
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/generator/golang"
 	"github.com/tislib/data-handler/pkg/model"
@@ -21,6 +20,9 @@ var generatorCmd = &cobra.Command{
 		check(err)
 
 		pkg, err := cmd.Flags().GetString("package")
+		check(err)
+
+		platform, err := cmd.Flags().GetString("platform")
 		check(err)
 
 		resp, err := GetDhClient().GetResourceClient().List(cmd.Context(), &stub.ListResourceRequest{
@@ -45,21 +47,17 @@ var generatorCmd = &cobra.Command{
 			pkg = "model"
 		}
 
-		for _, resource := range filteredResources {
-			if namespace != resource.Namespace {
-				continue
-			}
-
-			err := golang.GenerateGoResourceCode(resource, golang.GenerateResourceCodeParams{
+		switch platform {
+		case "golang":
+			err = golang.GenerateGoResourceCode(golang.GenerateResourceCodeParams{
+				Namespace: namespace,
 				Package:   pkg,
 				Resources: resp.Resources,
 				Path:      path,
 			})
-
-			if err != nil {
-				log.Fatal(err)
-			}
 		}
+
+		check(err)
 	},
 }
 
@@ -67,4 +65,5 @@ func init() {
 	generatorCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	generatorCmd.PersistentFlags().StringP("path", "p", "", "Path")
 	generatorCmd.PersistentFlags().String("package", "", "Package")
+	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, nodejs]")
 }

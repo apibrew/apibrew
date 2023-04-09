@@ -4,6 +4,8 @@ plugins:
     out: ../pkg/
     opt:
       - paths=source_relative
+  - name: ts
+    out: ../examples/extension/nodejs_tax_calculator_simple/src/dh-client
   - name: go-grpc
     out: ../pkg/
     opt:
