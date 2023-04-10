@@ -1,10 +1,8 @@
 import { Struct } from 'google-protobuf/google/protobuf/struct_pb';
 import { Record } from './model/record';
-import { Resource } from './model/resource';
-import { Namespace } from './model/namespace';
+
 import { Extension } from './model/extension';
-import { User } from './model/user';
-import { DataSource } from './model/data-source';
+
 import { BooleanExpression } from './model/query';
 import { AuthenticationClient, AuthenticationRequest, AuthenticationResponse } from './stub/authentication';
 import { DataSourceClient } from './stub/data-source';
@@ -15,65 +13,63 @@ import { RecordClient } from './stub/record';
 import { ResourceClient } from './stub/resource';
 import { UserClient } from './stub/user';
 import { credentials } from '@grpc/grpc-js';
-import { TokenTerm } from './model/token';
 import { FunctionCallRequest, FunctionCallResponse, FunctionClient } from "./ext/function";
-import { Any } from "google-protobuf/google/protobuf/any_pb";
-import { FunctionCall } from './model/external';
-import { Server, ServerCredentials } from "@grpc/grpc-js";
+
 import * as dependency_6 from "./google/protobuf/any";
+import { TokenTerm } from './model/token';
 
 /////// #### abs #### //////
 
 interface Entity<T> {
-    ToRecord(): Record;
-    FromRecord(record: Record): void;
-    FromProperties(properties: { [key: string]: Struct }): void;
-    ToProperties(): { [key: string]: Struct };
-    GetResourceName(): string;
-    GetNamespace(): string;
-    Equals(other: T): boolean;
-    Same(other: T): boolean;
+    toRecord(): Record;
+    fromRecord(record: Record): void;
+    fromProperties(properties: { [key: string]: Struct }): void;
+    toProperties(): { [key: string]: Struct };
+    getResourceName(): string;
+    getNamespace(): string;
+    equals(other: T): boolean;
+    same(other: T): boolean;
 }
 
 interface DhClient {
-    GetAuthenticationClient(): AuthenticationClient;
-    GetDataSourceClient(): DataSourceClient;
-    GetResourceClient(): ResourceClient;
-    GetRecordClient(): RecordClient;
-    GetGenericClient(): GenericClient;
-    GetNamespaceClient(): NamespaceClient;
-    GetExtensionClient(): ExtensionClient;
-    GetUserClient(): UserClient;
-    GetToken(): string;
-    AuthenticateWithToken(token: string): void;
+    getAuthenticationClient(): AuthenticationClient;
+    getDataSourceClient(): DataSourceClient;
+    getResourceClient(): ResourceClient;
+    getRecordClient(): RecordClient;
+    getGenericClient(): GenericClient;
+    getNamespaceClient(): NamespaceClient;
+    getExtensionClient(): ExtensionClient;
+    getUserClient(): UserClient;
+    gettoken(): string;
+    AuthenticateWithtoken(token: string): void;
     AuthenticateWithUsernameAndPassword(username: string, password: string): Promise<void>;
     NewExtensionService(host: string): ExtensionService;
 }
 
 interface Repository<T extends Entity<T>> {
-    Create(entity: T): Promise<T>;
-    Update(entity: T): Promise<T>;
-    Save(entity: T): Promise<T>;
-    Get(id: string): Promise<T>;
-    Find(params: FindParams): Promise<T[]>;
-    Extend(extension: Extension): RepositoryExtension<T>;
+    create(entity: T): Promise<T>;
+    update(entity: T): Promise<T>;
+    save(entity: T): Promise<T>;
+    get(id: string): Promise<T>;
+    find(params: FindParams): Promise<T[]>;
+    extend(extensionService: ExtensionService): RepositoryExtension<T>;
 }
 
 interface FindParams {
-    Limit?: number;
-    Offset?: number;
-    UseHistory?: boolean;
-    Annotations?: { [key: string]: string };
-    ResolveReferences?: string[]; // default ["*"]
-    Query?: BooleanExpression | null;
+    limit?: number;
+    offset?: number;
+    useHistory?: boolean;
+    annotations?: { [key: string]: string };
+    resolveReferences?: string[]; // default ["*"]
+    query?: BooleanExpression | null;
 }
 
-interface RepositoryExtension<T extends Entity<T>> {
-    Create(entity: T): Promise<T>;
-    Update(entity: T): Promise<T>;
-    Save(entity: T): Promise<T>;
-    Get(id: string): Promise<T>;
-    Find(params: FindParams): Promise<T[]>;
+export interface RepositoryExtension<T extends Entity<T>> {
+    onCreate(handler: (elem: T) => Promise<T>): Promise<void>;
+    onUpdate(handler: (elem: T) => Promise<T>): Promise<void>;
+    onDelete(handler: (elem: T) => Promise<T>): Promise<void>;
+    onGet(handler: (id: string) => Promise<T>): Promise<void>;
+    onList(handler: () => Promise<T[]>): Promise<void>;
 }
 
 
@@ -82,7 +78,7 @@ interface RepositoryExtension<T extends Entity<T>> {
 export interface DhClientParams {
     Addr: string;
     Insecure: boolean;
-    Token: string;
+    token: string;
 }
 
 export class DhClientImpl implements DhClient {
@@ -124,7 +120,7 @@ export class DhClientImpl implements DhClient {
                     return
                 }
 
-                this.params.Token = resp?.token.content as string
+                this.params.token = resp?.token.content as string
 
                 resolve()
             });
@@ -133,43 +129,43 @@ export class DhClientImpl implements DhClient {
 
     }
 
-    public AuthenticateWithToken(token: string): void {
-        this.params.Token = token;
+    public AuthenticateWithtoken(token: string): void {
+        this.params.token = token;
     }
 
-    public GetNamespaceClient(): NamespaceClient {
+    public getNamespaceClient(): NamespaceClient {
         return this.namespaceClient;
     }
 
-    public GetToken(): string {
-        return this.params.Token;
+    public gettoken(): string {
+        return this.params.token;
     }
 
-    public GetAuthenticationClient(): AuthenticationClient {
+    public getAuthenticationClient(): AuthenticationClient {
         return this.authenticationClient;
     }
 
-    public GetDataSourceClient(): DataSourceClient {
+    public getDataSourceClient(): DataSourceClient {
         return this.dataSourceClient;
     }
 
-    public GetResourceClient(): ResourceClient {
+    public getResourceClient(): ResourceClient {
         return this.resourceClient;
     }
 
-    public GetRecordClient(): RecordClient {
+    public getRecordClient(): RecordClient {
         return this.recordClient;
     }
 
-    public GetGenericClient(): GenericClient {
+    public getGenericClient(): GenericClient {
         return this.genericClient;
     }
 
-    public GetExtensionClient(): ExtensionClient {
+    public getExtensionClient(): ExtensionClient {
         return this.extensionClient;
     }
 
-    public GetUserClient(): UserClient {
+    public getUserClient(): UserClient {
         return this.userClient;
     }
 
@@ -229,5 +225,195 @@ class ExtensionServiceImpl implements ExtensionService {
 
     async run(): Promise<void> {
 
+    }
+}
+
+interface RepositoryParams<T extends Entity<T>> {
+    updateCheckVersion: boolean;
+    instanceProvider: () => T;
+}
+
+interface RecordResponse {
+    record: any;
+}
+
+export class RepositoryImpl<T extends Entity<T>> implements Repository<T> {
+    private readonly client: DhClient;
+    private readonly params: RepositoryParams<T>;
+
+    constructor(client: DhClient, params: RepositoryParams<T>) {
+        this.client = client;
+        this.params = params;
+    }
+
+    async create(entity: T): Promise<T> {
+        const resp = await this.client.getRecordClient().create({
+            token: this.client.gettoken(),
+            namespace: entity.getNamespace(),
+            resource: entity.getResourceName(),
+            record: entity.toRecord(),
+        });
+
+        entity.fromRecord(resp.record);
+
+        return entity;
+    }
+
+    async update(entity: T): Promise<T> {
+        const resp = await this.client.getRecordClient().update({
+            token: this.client.gettoken(),
+            namespace: entity.getNamespace(),
+            resource: entity.getResourceName(),
+            record: entity.toRecord(),
+            checkVersion: this.params.updateCheckVersion,
+        });
+
+        entity.fromRecord(resp.record);
+
+        return entity;
+    }
+
+    async save(entity: T): Promise<T> {
+        const resource = await this.loadResource();
+
+        entity.fromRecord(await this.client.applyRecord(resource, entity.toRecord()));
+
+        return entity
+    }
+
+    async get(id: string): Promise<T> {
+        const instance = this.params.instanceProvider();
+
+        const resp = await this.client.getRecordClient().get({
+            token: this.client.gettoken(),
+            namespace: instance.getNamespace(),
+            resource: instance.getResourceName(),
+            id: id,
+        });
+
+        instance.fromRecord(resp.record);
+
+        return instance;
+    }
+
+    async find(params: FindParams): Promise<T[]> {
+        const instance = this.params.instanceProvider();
+
+        if (!params.resolveReferences) {
+            params.resolveReferences = ["*"];
+        }
+
+        const resp = await this.client.getRecordClient().search({
+            token: this.client.gettoken(),
+            namespace: instance.getNamespace(),
+            resource: instance.getResourceName(),
+            query: params.query,
+            limit: params.limit,
+            offset: params.offset,
+            useHistory: params.useHistory,
+            resolveReferences: params.resolveReferences,
+            annotations: params.annotations,
+        });
+
+        return resp.content.map((record: RecordResponse) => {
+            const newInstance = this.params.instanceProvider();
+
+            newInstance.fromRecord(record.record);
+
+            return newInstance;
+        });
+    }
+
+    extend(extensionService: ExtensionService): RepositoryExtension<T> {
+        const instance = this.params.instanceProvider();
+
+        return new RepositoryExtensionImpl<T>(this, extensionService, instance.getResourceName(), instance.getNamespace(), this.params.instanceProvider, this.client);
+    }
+
+    private async loadResource() {
+        const instance = this.params.instanceProvider();
+
+        const resp = await this.client.getResourceClient().getByName({
+            token: this.client.gettoken(),
+            namespace: instance.getNamespace(),
+            name: instance.getResourceName(),
+        });
+
+        return resp.resource;
+    }
+}
+
+
+// ## repository extension
+
+export class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryExtension<T> {
+    private repository: Repository<T>;
+    private extension: ExtensionService;
+    private resourceName: string;
+    private namespace: string;
+    private instanceProvider: () => T;
+    private client: DhClient;
+
+    constructor(
+        repository: Repository<T>,
+        extension: ExtensionService,
+        resourceName: string,
+        namespace: string,
+        instanceProvider: () => T,
+        client: DhClient
+    ) {
+        this.repository = repository;
+        this.extension = extension;
+        this.resourceName = resourceName;
+        this.namespace = namespace;
+        this.instanceProvider = instanceProvider;
+        this.client = client;
+    }
+
+    async onCreate(handler: (elem: T) => Promise<T>): Promise<void> {
+        const extensionName = this.getExtensionName("OnCreate");
+
+        this.extension.registerFunction(extensionName, CreateRecordTypedFunction(this.instanceProvider, handler));
+
+        const ext: Extension = {
+            name: extensionName,
+            namespace: this.namespace,
+            resource: this.resourceName,
+            instead: {
+                create: {
+                    kind: "functionCall",
+                    functionCall: {
+                        host: this.extension.GetRemoteHost(),
+                        functionName: extensionName,
+                    },
+                },
+            },
+        };
+
+        await this.client.ApplyExtension(ext);
+    }
+
+    async onUpdate(handler: (elem: T) => Promise<T>): Promise<void> {
+        //TODO implement me
+        throw new Error("Method not implemented.");
+    }
+
+    async onDelete(handler: (elem: T) => Promise<T>): Promise<void> {
+        //TODO implement me
+        throw new Error("Method not implemented.");
+    }
+
+    async onGet(handler: (id: string) => Promise<T>): Promise<void> {
+        //TODO implement me
+        throw new Error("Method not implemented.");
+    }
+
+    async onList(handler: () => Promise<T[]>): Promise<void> {
+        //TODO implement me
+        throw new Error("Method not implemented.");
+    }
+
+    private getExtensionName(action: string): string {
+        return `${this.namespace}-${this.resourceName}-${action}`;
     }
 }
