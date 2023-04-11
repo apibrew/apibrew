@@ -422,13 +422,13 @@
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -469,13 +469,13 @@
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -518,13 +518,13 @@
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -656,13 +656,13 @@
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -1098,7 +1098,7 @@ License information for the exposed API.
 <a name="openapi-v3-Link"></a>
 
 ### Link
-The `Link object` represents a possible design-time link for a response. The presence of a link does not guarantee the caller&#39;s ability to successfully invoke it, rather it provides a known relationship and traversal mechanism between responses and other operations.  Unlike _dynamic_ links (i.e. links provided **in** the response payload), the OAS linking mechanism does not require link information in the runtime response.  For computing links, and providing instructions to execute them, a runtime expression is used for accessing values in an operation and using them as parameters while invoking the linked operation.
+The `Link object` represents a possible design-time link for a response. The presence of a link does not guarantee the caller's ability to successfully invoke it, rather it provides a known relationship and traversal mechanism between responses and other operations.  Unlike _dynamic_ links (i.e. links provided **in** the response payload), the OAS linking mechanism does not require link information in the runtime response.  For computing links, and providing instructions to execute them, a runtime expression is used for accessing values in an operation and using them as parameters while invoking the linked operation.
 
 
 | Field | Type | Label | Description |
@@ -1867,7 +1867,7 @@ Lists the required security schemes to execute this operation. The name used for
 <a name="openapi-v3-SecurityScheme"></a>
 
 ### SecurityScheme
-Defines a security scheme that can be used by the operations. Supported schemes are HTTP authentication, an API key (either as a header, a cookie parameter or as a query parameter), mutual TLS (use of a client certificate), OAuth2&#39;s common flows (implicit, password, application and access code) as defined in RFC6749, and OpenID Connect.   Please note that currently (2019) the implicit flow is about to be deprecated OAuth 2.0 Security Best Current Practice. Recommended for most use case is Authorization Code Grant flow with PKCE.
+Defines a security scheme that can be used by the operations. Supported schemes are HTTP authentication, an API key (either as a header, a cookie parameter or as a query parameter), mutual TLS (use of a client certificate), OAuth2's common flows (implicit, password, application and access code) as defined in RFC6749, and OpenID Connect.   Please note that currently (2019) the implicit flow is about to be deprecated OAuth 2.0 Security Best Current Practice. Recommended for most use case is Authorization Code Grant flow with PKCE.
 
 
 | Field | Type | Label | Description |
@@ -2053,13 +2053,13 @@ A metadata object that allows for more fine-tuned XML model definitions.  When u
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -2069,9 +2069,9 @@ A metadata object that allows for more fine-tuned XML model definitions.  When u
 ## model/annotations.proto
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
 
 <a name="model_annotations-proto-extensions"></a>
@@ -2083,9 +2083,9 @@ A metadata object that allows for more fine-tuned XML model definitions.  When u
 | hcl_ignore | bool | .google.protobuf.FieldOptions | 1146 |  |
 | hcl_label | string | .google.protobuf.FieldOptions | 1145 |  |
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -2133,7 +2133,7 @@ SecurityConstraint is a rule
 
 
 
- 
+ <!-- end messages -->
 
 
 <a name="model-OperationType"></a>
@@ -2163,11 +2163,11 @@ SecurityConstraint is a rule
 | PERMIT_TYPE_UNKNOWN | 2 |  |
 
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -2356,7 +2356,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
 
 <a name="model-Order"></a>
@@ -2409,11 +2409,11 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | ENUM | 16 |  |
 
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -2458,7 +2458,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
 
 <a name="model-ErrorCode"></a>
@@ -2487,11 +2487,11 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | EXTERNAL_BACKEND_ERROR | 16 |  |
 
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -2564,11 +2564,11 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="ext-Function"></a>
@@ -2580,7 +2580,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | ----------- | ------------ | ------------- | ------------|
 | FunctionCall | [FunctionCallRequest](#ext-FunctionCallRequest) | [FunctionCallResponse](#ext-FunctionCallResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -2656,7 +2656,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
 
 <a name="model-BatchHeader-BatchMode"></a>
@@ -2671,11 +2671,11 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | DELETE | 2 |  |
 
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -2830,7 +2830,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
 
 <a name="model-DataSourceBackendType"></a>
@@ -2860,11 +2860,11 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | ERROR | 1 |  |
 
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -2922,13 +2922,13 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3024,13 +3024,13 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3040,13 +3040,13 @@ An entity is like a table on sql databases or collection on mongodb etc.
 ## model/hcl.proto
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3078,13 +3078,13 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3115,13 +3115,13 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3174,13 +3174,13 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3341,13 +3341,13 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3374,7 +3374,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
 
 <a name="model-TokenTerm"></a>
@@ -3390,11 +3390,11 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | VERY_LONG | 3 | 2 years |
 
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3422,7 +3422,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
 
 <a name="model-EventType"></a>
@@ -3439,11 +3439,11 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | LIST | 4 |  |
 
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3453,9 +3453,9 @@ An entity is like a table on sql databases or collection on mongodb etc.
 ## openapiv3/annotations.proto
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
 
 <a name="openapiv3_annotations-proto-extensions"></a>
@@ -3469,9 +3469,9 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | schema | Schema | .google.protobuf.MessageOptions | 1143 |  |
 | operation | Operation | .google.protobuf.MethodOptions | 1143 |  |
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -3544,11 +3544,11 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-Authentication"></a>
@@ -3561,7 +3561,7 @@ Authentication Service is for authentication related operations
 | Authenticate | [AuthenticationRequest](#stub-AuthenticationRequest) | [AuthenticationResponse](#stub-AuthenticationResponse) |  |
 | RenewToken | [RenewTokenRequest](#stub-RenewTokenRequest) | [RenewTokenResponse](#stub-RenewTokenResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -3816,11 +3816,11 @@ Authentication Service is for authentication related operations
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-DataSource"></a>
@@ -3839,7 +3839,7 @@ DataSource Service is for managing data sources
 | ListEntities | [ListEntitiesRequest](#stub-ListEntitiesRequest) | [ListEntitiesResponse](#stub-ListEntitiesResponse) |  |
 | PrepareResourceFromEntity | [PrepareResourceFromEntityRequest](#stub-PrepareResourceFromEntityRequest) | [PrepareResourceFromEntityResponse](#stub-PrepareResourceFromEntityResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -3998,11 +3998,11 @@ DataSource Service is for managing data sources
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-Extension"></a>
@@ -4018,7 +4018,7 @@ Extension Service is for managing extensions
 | Update | [UpdateExtensionRequest](#stub-UpdateExtensionRequest) | [UpdateExtensionResponse](#stub-UpdateExtensionResponse) |  |
 | Delete | [DeleteExtensionRequest](#stub-DeleteExtensionRequest) | [DeleteExtensionResponse](#stub-DeleteExtensionResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -4420,11 +4420,11 @@ Extension Service is for managing extensions
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-Generic"></a>
@@ -4442,7 +4442,7 @@ Extension Service is for managing extensions
 | Search | [SearchRequest](#stub-SearchRequest) | [SearchResponse](#stub-SearchResponse) |  |
 | Get | [GetRequest](#stub-GetRequest) | [GetResponse](#stub-GetResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -4606,11 +4606,11 @@ Extension Service is for managing extensions
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-Namespace"></a>
@@ -4626,7 +4626,7 @@ Namespace Service is for managing namespaces
 | Delete | [DeleteNamespaceRequest](#stub-DeleteNamespaceRequest) | [DeleteNamespaceResponse](#stub-DeleteNamespaceResponse) |  |
 | Get | [GetNamespaceRequest](#stub-GetNamespaceRequest) | [GetNamespaceResponse](#stub-GetNamespaceResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -4636,13 +4636,13 @@ Namespace Service is for managing namespaces
 ## stub/openapi.proto
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -5107,11 +5107,11 @@ Namespace Service is for managing namespaces
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-Record"></a>
@@ -5131,7 +5131,7 @@ Record service is an abstract service for records of all resources. You can do C
 | WriteStream | [.model.Record](#model-Record) stream | [WriteStreamResponse](#stub-WriteStreamResponse) |  |
 | Get | [GetRecordRequest](#stub-GetRecordRequest) | [GetRecordResponse](#stub-GetRecordResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -5527,11 +5527,11 @@ Record service is an abstract service for records of all resources. You can do C
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-Resource"></a>
@@ -5550,7 +5550,7 @@ Resource service is for managing resources
 | GetByName | [GetResourceByNameRequest](#stub-GetResourceByNameRequest) | [GetResourceByNameResponse](#stub-GetResourceByNameResponse) |  |
 | GetSystemResource | [GetSystemResourceRequest](#stub-GetSystemResourceRequest) | [GetSystemResourceResponse](#stub-GetSystemResourceResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -5772,11 +5772,11 @@ Resource service is for managing resources
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="rest-Record"></a>
@@ -5790,7 +5790,7 @@ Record service is an abstract service for records of all resources. You can do C
 | Update | [UpdateRecordRequest](#rest-UpdateRecordRequest) | [UpdateRecordResponse](#rest-UpdateRecordResponse) |  |
 | Delete | [DeleteRecordRequest](#rest-DeleteRecordRequest) | [DeleteRecordResponse](#rest-DeleteRecordResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -5956,11 +5956,11 @@ Record service is an abstract service for records of all resources. You can do C
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-User"></a>
@@ -5976,7 +5976,7 @@ User service is for managing users
 | List | [ListUserRequest](#stub-ListUserRequest) | [ListUserResponse](#stub-ListUserResponse) |  |
 | Get | [GetUserRequest](#stub-GetUserRequest) | [GetUserResponse](#stub-GetUserResponse) |  |
 
- 
+ <!-- end services -->
 
 
 
@@ -6005,11 +6005,11 @@ User service is for managing users
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="stub-Watch"></a>
@@ -6021,7 +6021,7 @@ Watch service watching operations on records
 | ----------- | ------------ | ------------- | ------------|
 | Watch | [WatchRequest](#stub-WatchRequest) | [.model.WatchMessage](#model-WatchMessage) stream | Sends a greeting |
 
- 
+ <!-- end services -->
 
 
 
