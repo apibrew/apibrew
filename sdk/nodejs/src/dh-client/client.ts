@@ -1,12 +1,16 @@
-import {Extension} from './model/extension';
-
 import {BooleanExpression} from './model/query';
 import {AuthenticationClient, AuthenticationRequest} from './stub/authentication';
 import {DataSourceClient} from './stub/data-source';
 import {ExtensionClient} from './stub/extension';
 import {GenericClient} from './stub/generic';
 import {NamespaceClient} from './stub/namespace';
-import {RecordClient, SearchRecordRequest, SearchRecordResponse} from './stub/record';
+import {
+    CreateRecordRequest,
+    CreateRecordResponse,
+    RecordClient,
+    SearchRecordRequest,
+    SearchRecordResponse
+} from './stub/record';
 import {ResourceClient} from './stub/resource';
 import {UserClient} from './stub/user';
 import {credentials} from '@grpc/grpc-js';
@@ -249,12 +253,21 @@ export class RepositoryImpl<T extends Entity<T>> implements Repository<T> {
         const record = new Record()
         record.properties = entity.toProperties()
 
-        const resp = await this.client.getRecordClient().create({
-            token: this.client.getToken(),
-            namespace: entity.getNamespace(),
-            resource: entity.getResourceName(),
-            record: record,
-        });
+        const resp = await new Promise<CreateRecordResponse>((resolve, reject) => {
+            this.client.getRecordClient().Create(new CreateRecordRequest({
+                token: this.client.getToken(),
+                namespace: entity.getNamespace(),
+                resource: entity.getResourceName(),
+                record: record,
+            }), (err, resp) => {
+                if (err) {
+                    reject(err.message)
+                    return
+                }
+
+                resolve(resp!)
+            });
+        })
 
         entity.fromProperties(resp.record.properties)
 
