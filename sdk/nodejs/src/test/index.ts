@@ -47,12 +47,17 @@ class Country implements Entity<Country> {
 
     fromProperties(properties: Map<string, dependency_1.Value>): void {
         // set properties from record
+        this.id = properties.get("id")?.stringValue
         this.name = properties.get("name")?.stringValue
         this.description = properties.get("description")?.stringValue
     }
 
     toProperties(): Map<string, dependency_1.Value> {
         const properties = new Map<string, dependency_1.Value>()
+
+        properties.set("id", dependency_1.Value.fromObject({
+            stringValue: this.id
+        }))
 
         properties.set("name", dependency_1.Value.fromObject({
             stringValue: this.name
@@ -73,6 +78,14 @@ async function run() {
     repo.find({}).then((result) => {
       console.log(result)
     })
+
+    // const country = new Country()
+    // country.name = "India2"
+    // country.description = "A country in Asia"
+    //
+    // repo.create(country).then((result) => {
+    //     console.log(result)
+    // })
 }
 
 run()
