@@ -3,6 +3,7 @@ package dhctl
 import (
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/generator/golang"
+	"github.com/tislib/data-handler/pkg/generator/nodejs"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 )
@@ -50,6 +51,13 @@ var generatorCmd = &cobra.Command{
 		switch platform {
 		case "golang":
 			err = golang.GenerateGoResourceCode(golang.GenerateResourceCodeParams{
+				Namespace: namespace,
+				Package:   pkg,
+				Resources: resp.Resources,
+				Path:      path,
+			})
+		case "nodejs":
+			err = nodejs.GenerateResourceCode(nodejs.GenerateResourceCodeParams{
 				Namespace: namespace,
 				Package:   pkg,
 				Resources: resp.Resources,

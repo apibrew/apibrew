@@ -4,11 +4,11 @@ plugins:
     out: ../pkg/
     opt:
       - paths=source_relative
-  - name: ts
-    out: ../examples/extension/nodejs_tax_calculator_simple/src/dh-client
-    opt:
-      - no_namespace
-      - json_names
+#  - name: ts
+#    out: ../sdk/nodejs/src/dh-client
+#    opt:
+#      - no_namespace
+#      - json_names
   - name: go-grpc
     out: ../pkg/
     opt:
@@ -24,4 +24,4 @@ plugins:
   - name: doc
     strategy: all
     out: ../docs/content/
-    opt: markdown,proto.md
+    opt: ../docs/content/proto.tmpl,proto.md

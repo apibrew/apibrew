@@ -15,7 +15,7 @@
 
 # Core elements
 
-![](/dh_elements.png)
+![](dh_elements.png)
 
 ## Resource
 
