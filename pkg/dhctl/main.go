@@ -19,7 +19,6 @@ func init() {
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(generatorCmd)
 	rootCmd.AddCommand(createCmd)
-	rootCmd.AddCommand(prepareCmd)
 	rootCmd.AddCommand(updateCmd)
 	rootCmd.AddCommand(deleteCmd)
 	rootCmd.AddCommand(dataSourceCmd)
