@@ -261,11 +261,12 @@ func (d *dhClient) ApplyNamespace(ctx context.Context, namespace *model.Namespac
 }
 
 func (d *dhClient) ApplyRecord(ctx context.Context, resource *model.Resource, record *model.Record) error {
-	d.recordClient.Apply(ctx, &stub.ApplyRecordRequest{
+	_, err := d.recordClient.Apply(ctx, &stub.ApplyRecordRequest{
 		Token:     d.GetToken(),
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
 		Record:    record,
 	})
-	return nil
+
+	return err
 }
