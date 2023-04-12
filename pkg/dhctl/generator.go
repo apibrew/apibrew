@@ -53,7 +53,7 @@ var generatorCmd = &cobra.Command{
 			err = golang.GenerateGoResourceCode(golang.GenerateResourceCodeParams{
 				Namespace: namespace,
 				Package:   pkg,
-				Resources: resp.Resources,
+				Resources: filteredResources,
 				Path:      path,
 			})
 		case "nodejs":
