@@ -9,6 +9,12 @@ plugins:
 #    opt:
 #      - no_namespace
 #      - json_names
+  - name: js
+    out: ../sdk/nodejs/src/dh-client
+    opt: import_style=commonjs,binary
+  - name: grpc
+    out: ../sdk/nodejs/src/dh-client
+    opt: grpc_js
   - name: go-grpc
     out: ../pkg/
     opt:
