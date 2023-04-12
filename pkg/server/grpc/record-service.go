@@ -138,6 +138,20 @@ func (r *recordServer) Update(ctx context.Context, request *stub.UpdateRecordReq
 	}, util.ToStatusError(err)
 }
 
+func (r *recordServer) Apply(ctx context.Context, request *stub.ApplyRecordRequest) (*stub.ApplyRecordResponse, error) {
+	records, err := r.service.Apply(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
+		Namespace:    request.Namespace,
+		Resource:     request.Resource,
+		Records:      util.ArrayPrepend(request.Records, request.Record),
+		CheckVersion: request.CheckVersion,
+	})
+
+	return &stub.ApplyRecordResponse{
+		Record:  util.ArrayFirst(records),
+		Records: records,
+	}, util.ToStatusError(err)
+}
+
 func (r *recordServer) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
 	record, err := r.service.Get(annotations.WithContext(ctx, request), abs.RecordGetParams{
 		Namespace: request.Namespace,

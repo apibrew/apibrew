@@ -33,6 +33,24 @@ func (r *recordService) Create(ctx context.Context, request *rest.CreateRecordRe
 	}, util.ToStatusError(err)
 }
 
+func (r *recordService) Apply(ctx context.Context, request *rest.ApplyRecordRequest) (*rest.ApplyRecordResponse, error) {
+	records, err := r.service.Apply(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
+		Namespace: request.Namespace,
+		Resource:  request.Resource,
+		Records: []*model.Record{{
+			Properties: request.Properties,
+		}},
+	})
+
+	if err != nil {
+		return nil, util.ToStatusError(err)
+	}
+
+	return &rest.ApplyRecordResponse{
+		Properties: records[0].Properties,
+	}, util.ToStatusError(err)
+}
+
 func (r *recordService) Update(ctx context.Context, request *rest.UpdateRecordRequest) (*rest.UpdateRecordResponse, error) {
 	records, err := r.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
 		Namespace: request.Namespace,

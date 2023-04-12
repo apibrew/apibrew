@@ -24,6 +24,12 @@ service Record {
     };
   }
 
+  rpc Apply (ApplyRecordRequest) returns (ApplyRecordResponse) {
+    option (google.api.http) = {
+      patch: "/records/{namespace}/{resource}/_bulk"
+    };
+  }
+
   rpc UpdateMulti (UpdateMultiRecordRequest) returns (UpdateMultiRecordResponse) {
     option (google.api.http) = {
       post: "/records/{namespace}/{resource}/_multi"
@@ -61,7 +67,7 @@ service Record {
   rpc Get (GetRecordRequest) returns (GetRecordResponse) {
     option (google.api.http) = {
       get: "/records/{namespace}/{resource}/{id}",
-      response_body: "record"
+      response_body: "record.properties"
     };
   }
 }
@@ -152,6 +158,22 @@ message UpdateRecordRequest {
 }
 
 message UpdateRecordResponse {
+  model.Record record = 1;  // Rest Only
+  repeated model.Record records = 2;
+}
+
+message ApplyRecordRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  model.Record record = 4;  // Rest Only
+  repeated model.Record records = 5;
+  bool checkVersion = 6;
+
+  map<string, string> annotations = 103;
+}
+
+message ApplyRecordResponse {
   model.Record record = 1;  // Rest Only
   repeated model.Record records = 2;
 }

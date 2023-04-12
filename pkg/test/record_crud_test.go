@@ -8,6 +8,7 @@ import (
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"log"
+	"strconv"
 	"testing"
 )
 
@@ -31,12 +32,11 @@ func TestComplexPayload1Fail(t *testing.T) {
 	errorFields := util.GetErrorFields(err)
 
 	if len(errorFields) != 12 {
-		t.Error("There must be 12 error field")
+		t.Error("There must be 12 error field but: " + strconv.Itoa(len(errorFields)))
 	}
 }
 
 func TestComplexPayload1Success(t *testing.T) {
-
 	record1 := new(model.Record)
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"bool":   true,

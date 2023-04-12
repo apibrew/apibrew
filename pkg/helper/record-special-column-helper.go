@@ -1,6 +1,7 @@
 package helper
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/types"
@@ -15,6 +16,9 @@ type RecordSpecialColumnHelper struct {
 }
 
 func (h RecordSpecialColumnHelper) IsAuditEnabled() bool {
+	if h.Resource.Namespace != "system" {
+		log.Print("found")
+	}
 	return annotations.IsEnabled(h.Resource, annotations.EnableAudit)
 }
 

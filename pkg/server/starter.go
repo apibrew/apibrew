@@ -66,7 +66,7 @@ func Run() {
 	tcpm := cmux.New(l)
 
 	// Declare the match for different services required.
-	httpl := tcpm.Match(cmux.HTTP1Fast())
+	httpl := tcpm.Match(cmux.HTTP1Fast("PATCH"))
 	grpcl := tcpm.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
 	http2 := tcpm.Match(cmux.HTTP2())
 	http2Tls := tcpm.Match(cmux.TLS())

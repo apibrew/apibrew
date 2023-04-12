@@ -232,6 +232,53 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - Record
+            summary: Apply
+            operationId: Record_Apply
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+                - name: checkVersion
+                  in: query
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ApplyRecordRequest_PropertiesEntry'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplyRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /records/{namespace}/{resource}/_bulk:
         put:
             tags:
@@ -364,6 +411,53 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DeleteRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - Record
+            summary: Apply
+            operationId: Record_Apply
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: record.id
+                  in: query
+                  schema:
+                    type: string
+                - name: record.propertiesPacked
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: checkVersion
+                  in: query
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplyRecordResponse'
                 default:
                     description: Default error response
                     content:
@@ -765,6 +859,131 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListEntitiesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/extensions:
+        get:
+            tags:
+                - Extension
+            summary: List
+            operationId: Extension_List
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Extension
+            summary: Update
+            operationId: Extension_Update
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateExtensionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Extension
+            summary: Create
+            operationId: Extension_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateExtensionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Extension
+            summary: Delete
+            operationId: Extension_Delete
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteExtensionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/extensions/{id}:
+        get:
+            tags:
+                - Extension
+            summary: Get
+            operationId: Extension_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetExtensionResponse'
                 default:
                     description: Default error response
                     content:
@@ -1396,6 +1615,22 @@ components:
                     $ref: '#/components/schemas/GoogleProtobufAny'
                 yaml:
                     type: string
+        ApplyRecordRequest_PropertiesEntry:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+        ApplyRecordResponse:
+            type: object
+            properties:
+                record:
+                    $ref: '#/components/schemas/Record'
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
         AuditData:
             type: object
             properties:
@@ -1477,6 +1712,22 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/DataSource'
+        CreateExtensionRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
+        CreateExtensionResponse:
+            type: object
+            properties:
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
         CreateNamespaceRequest:
             type: object
             properties:
@@ -1608,6 +1859,18 @@ components:
         DeleteDataSourceResponse:
             type: object
             properties: {}
+        DeleteExtensionRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
+        DeleteExtensionResponse:
+            type: object
+            properties: {}
         DeleteNamespaceRequest:
             type: object
             properties:
@@ -1657,11 +1920,105 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/NamedAny'
+        Extension:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                namespace:
+                    type: string
+                resource:
+                    type: string
+                before:
+                    $ref: '#/components/schemas/Extension_Before'
+                instead:
+                    $ref: '#/components/schemas/Extension_Instead'
+                after:
+                    $ref: '#/components/schemas/Extension_After'
+                auditData:
+                    $ref: '#/components/schemas/AuditData'
+                version:
+                    type: integer
+                    format: uint32
+        Extension_After:
+            type: object
+            properties:
+                all:
+                    $ref: '#/components/schemas/ExternalCall'
+                create:
+                    $ref: '#/components/schemas/ExternalCall'
+                update:
+                    $ref: '#/components/schemas/ExternalCall'
+                delete:
+                    $ref: '#/components/schemas/ExternalCall'
+                get:
+                    $ref: '#/components/schemas/ExternalCall'
+                list:
+                    $ref: '#/components/schemas/ExternalCall'
+                sync:
+                    type: boolean
+        Extension_Before:
+            type: object
+            properties:
+                all:
+                    $ref: '#/components/schemas/ExternalCall'
+                create:
+                    $ref: '#/components/schemas/ExternalCall'
+                update:
+                    $ref: '#/components/schemas/ExternalCall'
+                delete:
+                    $ref: '#/components/schemas/ExternalCall'
+                get:
+                    $ref: '#/components/schemas/ExternalCall'
+                list:
+                    $ref: '#/components/schemas/ExternalCall'
+                sync:
+                    type: boolean
+        Extension_Instead:
+            type: object
+            properties:
+                all:
+                    $ref: '#/components/schemas/ExternalCall'
+                create:
+                    $ref: '#/components/schemas/ExternalCall'
+                update:
+                    $ref: '#/components/schemas/ExternalCall'
+                delete:
+                    $ref: '#/components/schemas/ExternalCall'
+                get:
+                    $ref: '#/components/schemas/ExternalCall'
+                list:
+                    $ref: '#/components/schemas/ExternalCall'
+                finalize:
+                    type: boolean
+        ExternalCall:
+            type: object
+            properties:
+                functionCall:
+                    $ref: '#/components/schemas/FunctionCall'
+                httpCall:
+                    $ref: '#/components/schemas/HttpCall'
+        FunctionCall:
+            type: object
+            properties:
+                host:
+                    type: string
+                functionName:
+                    type: string
         GetDataSourceResponse:
             type: object
             properties:
                 dataSource:
                     $ref: '#/components/schemas/DataSource'
+        GetExtensionResponse:
+            type: object
+            properties:
+                extension:
+                    $ref: '#/components/schemas/Extension'
         GetNamespaceResponse:
             type: object
             properties:
@@ -1697,6 +2054,13 @@ components:
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
         GoogleProtobufValue:
             description: Represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values.
+        HttpCall:
+            type: object
+            properties:
+                uri:
+                    type: string
+                method:
+                    type: string
         ListDataSourceResponse:
             type: object
             properties:
@@ -1711,6 +2075,13 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/DataSourceCatalog'
+        ListExtensionResponse:
+            type: object
+            properties:
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
         ListNamespaceResponse:
             type: object
             properties:
@@ -2314,6 +2685,22 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/DataSource'
+        UpdateExtensionRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
+        UpdateExtensionResponse:
+            type: object
+            properties:
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
         UpdateMultiRecordResponse:
             type: object
             properties:
@@ -2450,6 +2837,8 @@ tags:
       description: Authentication Service is for authentication related operations
     - name: DataSource
       description: DataSource Service is for managing data sources
+    - name: Extension
+      description: Extension Service is for managing extensions
     - name: Namespace
       description: Namespace Service is for managing namespaces
     - name: Record

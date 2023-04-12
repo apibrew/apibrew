@@ -49,6 +49,7 @@ type RecordService interface {
 	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
 	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError)
 	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
+	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
 	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
 	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
 }

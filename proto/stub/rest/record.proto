@@ -28,6 +28,14 @@ service Record {
     };
   }
 
+  rpc Apply (ApplyRecordRequest) returns (ApplyRecordResponse) {
+    option (google.api.http) = {
+      patch: "/records/{namespace}/{resource}"
+      body: "properties"
+      response_body: "properties"
+    };
+  }
+
   rpc Delete (DeleteRecordRequest)   returns (DeleteRecordResponse) {
     option (google.api.http) = {
       delete: "/records/{namespace}/{resource}/{id}"
@@ -61,6 +69,21 @@ message UpdateRecordRequest {
 }
 
 message UpdateRecordResponse {
+  map<string, google.protobuf.Value> properties = 5;
+}
+
+message ApplyRecordRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+  string id = 4; // id; read only
+  map<string, google.protobuf.Value> properties = 5;
+  bool checkVersion = 6;
+
+  map<string, string> annotations = 103;
+}
+
+message ApplyRecordResponse {
   map<string, google.protobuf.Value> properties = 5;
 }
 

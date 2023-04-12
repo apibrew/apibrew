@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type RecordClient interface {
 	Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error)
 	Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error)
+	Apply(ctx context.Context, in *ApplyRecordRequest, opts ...grpc.CallOption) (*ApplyRecordResponse, error)
 	UpdateMulti(ctx context.Context, in *UpdateMultiRecordRequest, opts ...grpc.CallOption) (*UpdateMultiRecordResponse, error)
 	Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error)
 	List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error)
@@ -54,6 +55,15 @@ func (c *recordClient) Create(ctx context.Context, in *CreateRecordRequest, opts
 func (c *recordClient) Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error) {
 	out := new(UpdateRecordResponse)
 	err := c.cc.Invoke(ctx, "/stub.Record/Update", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *recordClient) Apply(ctx context.Context, in *ApplyRecordRequest, opts ...grpc.CallOption) (*ApplyRecordResponse, error) {
+	out := new(ApplyRecordResponse)
+	err := c.cc.Invoke(ctx, "/stub.Record/Apply", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -177,6 +187,7 @@ func (c *recordClient) Get(ctx context.Context, in *GetRecordRequest, opts ...gr
 type RecordServer interface {
 	Create(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error)
 	Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error)
+	Apply(context.Context, *ApplyRecordRequest) (*ApplyRecordResponse, error)
 	UpdateMulti(context.Context, *UpdateMultiRecordRequest) (*UpdateMultiRecordResponse, error)
 	Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error)
 	List(context.Context, *ListRecordRequest) (*ListRecordResponse, error)
@@ -196,6 +207,9 @@ func (UnimplementedRecordServer) Create(context.Context, *CreateRecordRequest) (
 }
 func (UnimplementedRecordServer) Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedRecordServer) Apply(context.Context, *ApplyRecordRequest) (*ApplyRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Apply not implemented")
 }
 func (UnimplementedRecordServer) UpdateMulti(context.Context, *UpdateMultiRecordRequest) (*UpdateMultiRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMulti not implemented")
@@ -263,6 +277,24 @@ func _Record_Update_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RecordServer).Update(ctx, req.(*UpdateRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Record_Apply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordServer).Apply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/stub.Record/Apply",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordServer).Apply(ctx, req.(*ApplyRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -418,6 +450,10 @@ var Record_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Update",
 			Handler:    _Record_Update_Handler,
+		},
+		{
+			MethodName: "Apply",
+			Handler:    _Record_Apply_Handler,
 		},
 		{
 			MethodName: "UpdateMulti",

@@ -120,11 +120,8 @@ func (e *externalService) CallHttp(ctx context.Context, call *model.HttpCall, in
 		return errors.InternalError.WithDetails(err.Error())
 	}
 
-	bodyStr := string(body)
-
-	log.Println(bodyStr)
-
 	req, err := http.NewRequestWithContext(ctx, call.Method, call.Uri, bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 
 	if err != nil {
 		log.Error(err)
