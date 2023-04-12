@@ -96,6 +96,8 @@ func (g *GenericHandler) BeforeCreate(ctx context.Context, resource *model.Resou
 }
 
 func (g *GenericHandler) Create(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams) (handled bool, records []*model.Record, inserted []bool, err errors.ServiceError) {
+	records = params.Records
+
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
@@ -145,6 +147,8 @@ func (g *GenericHandler) BeforeUpdate(ctx context.Context, resource *model.Resou
 }
 
 func (g *GenericHandler) Update(ctx context.Context, resource *model.Resource, params abs.RecordUpdateParams) (handled bool, records []*model.Record, err errors.ServiceError) {
+	records = params.Records
+
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue

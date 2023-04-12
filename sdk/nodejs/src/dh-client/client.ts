@@ -1,43 +1,11 @@
-import {BooleanExpression} from './model/query';
-import {AuthenticationClient, AuthenticationRequest} from './stub/authentication';
-import {DataSourceClient} from './stub/data-source';
-import {ExtensionClient} from './stub/extension';
-import {GenericClient} from './stub/generic';
-import {NamespaceClient} from './stub/namespace';
-import {
-    CreateRecordRequest,
-    CreateRecordResponse,
-    RecordClient,
-    SearchRecordRequest,
-    SearchRecordResponse,
-    UpdateRecordRequest,
-    UpdateRecordResponse
-} from './stub/record';
-import {ResourceClient} from './stub/resource';
-import {UserClient} from './stub/user';
-import {credentials, Server} from '@grpc/grpc-js';
-import {FunctionCallRequest, FunctionCallResponse} from "./ext/function";
-
-import * as dependency_6 from "./google/protobuf/any";
-import {TokenTerm} from './model/token';
-import * as dependency_1 from "./google/protobuf/struct";
-import {Record} from "./model/record";
+import {components} from "./schema";
+import axios from "axios";
 
 
 /////// #### abs #### //////
 
 export interface Entity<T> {
-    fromProperties(properties: Map<string, dependency_1.Value>): void;
-
-    toProperties(): Map<string, dependency_1.Value>;
-
-    getResourceName(): string;
-
-    getNamespace(): string;
-
-    equals(other: T): boolean;
-
-    same(other: T): boolean;
+    id?: string
 }
 
 interface Repository<T extends Entity<T>> {
@@ -45,13 +13,17 @@ interface Repository<T extends Entity<T>> {
 
     update(entity: T): Promise<T>;
 
-    save(entity: T): Promise<T>;
+    apply(entity: T): Promise<T>;
 
     get(id: string): Promise<T>;
 
-    find(params: FindParams): Promise<T[]>;
+    find(params: FindParams): Promise<{ total: number, content: { properties: T }[] }>;
 
     extend(extensionService: ExtensionService): RepositoryExtension<T>;
+}
+
+interface BooleanExpression {
+
 }
 
 interface FindParams {
@@ -64,15 +36,15 @@ interface FindParams {
 }
 
 export interface RepositoryExtension<T extends Entity<T>> {
-    onCreate(handler: (elem: T) => Promise<T>): Promise<void>;
+    onCreate(handler: (elem: T) => Promise<T>): void;
 
-    onUpdate(handler: (elem: T) => Promise<T>): Promise<void>;
+    onUpdate(handler: (elem: T) => Promise<T>): void;
 
-    onDelete(handler: (elem: T) => Promise<T>): Promise<void>;
+    onDelete(handler: (elem: T) => Promise<T>): void;
 
-    onGet(handler: (id: string) => Promise<T>): Promise<void>;
+    onGet(handler: (id: string) => Promise<T>): void;
 
-    onList(handler: () => Promise<T[]>): Promise<void>;
+    onList(handler: () => Promise<{ properties: T }[]>): void;
 }
 
 
@@ -85,106 +57,49 @@ export interface DhClientParams {
 }
 
 export class DhClient {
-    private recordClient: RecordClient;
-    private authenticationClient: AuthenticationClient;
-    private resourceClient: ResourceClient;
-    private dataSourceClient: DataSourceClient;
-    private userClient: UserClient;
-    private extensionClient: ExtensionClient;
-    private genericClient: GenericClient;
-    private namespaceClient: NamespaceClient;
     params: DhClientParams;
 
     constructor(params: DhClientParams) {
-        const creds = credentials.createInsecure()
-
-        this.recordClient = new RecordClient(params.Addr, creds);
-        this.authenticationClient = new AuthenticationClient(params.Addr, creds);
-        this.resourceClient = new ResourceClient(params.Addr, creds);
-        this.dataSourceClient = new DataSourceClient(params.Addr, creds);
-        this.userClient = new UserClient(params.Addr, creds);
-        this.extensionClient = new ExtensionClient(params.Addr, creds);
-        this.genericClient = new GenericClient(params.Addr, creds);
-        this.namespaceClient = new NamespaceClient(params.Addr, creds);
-
         this.params = params
     }
 
     public async authenticateWithUsernameAndPassword(username: string, password: string): Promise<void> {
-        const authRequest = new AuthenticationRequest();
-        authRequest.username = username
-        authRequest.password = password
-        authRequest.term = TokenTerm.LONG
+        const authRequest: components["schemas"]["AuthenticationRequest"] = {
+            username: username,
+            password: password,
+            term: "LONG"
+        }
 
-        return new Promise((resolve, reject) => {
-            this.authenticationClient.Authenticate(authRequest, (err, resp) => {
-                if (err) {
-                    reject(err.message)
-                    return
-                }
+        const result = await axios.post<components["schemas"]["AuthenticationResponse"]>(`http://${this.params.Addr}/authentication/token`, authRequest);
 
-                this.params.token = resp?.token.content as string
-
-                resolve()
-            });
-        })
+        this.params.token = result.data.token!.content;
     }
 
-    public newRepository<T extends Entity<T>>(type: new () => T): Repository<T> {
-        return new RepositoryImpl<T>(this, type, {
+    public newRepository<T extends Entity<T>>(namespace: string, resource: string): Repository<T> {
+        return new RepositoryImpl<T>(this, {
+            namespace: namespace,
+            resource: resource,
             updateCheckVersion: false,
         });
     }
 
-    public authenticateWithToken(token: string): void {
-        this.params.token = token;
-    }
-
-    public getNamespaceClient(): NamespaceClient {
-        return this.namespaceClient;
-    }
-
-    public getToken(): string {
-        return this.params.token!;
-    }
-
-    public getAuthenticationClient(): AuthenticationClient {
-        return this.authenticationClient;
-    }
-
-    public getDataSourceClient(): DataSourceClient {
-        return this.dataSourceClient;
-    }
-
-    public getResourceClient(): ResourceClient {
-        return this.resourceClient;
-    }
-
-    public getRecordClient(): RecordClient {
-        return this.recordClient;
-    }
-
-    public getGenericClient(): GenericClient {
-        return this.genericClient;
-    }
-
-    public getExtensionClient(): ExtensionClient {
-        return this.extensionClient;
-    }
-
-    public getUserClient(): UserClient {
-        return this.userClient;
-    }
-
-    public NewExtensionService(host: string): ExtensionService {
-        return new ExtensionServiceImpl(host, host, this);
+    public NewExtensionService(host: string, port: number): ExtensionService {
+        return new ExtensionServiceImpl(host, port, host + ':' + port, this);
     }
 }
 
-type ExternalFunctionData = Map<string, dependency_6.Any>
+type ExternalFunctionData = { [key: string]: any }
 
-type ExternalFunction = (req: ExternalFunctionData) => Promise<[ExternalFunctionData, Error | undefined]>;
+type ExternalFunction = (req: ExternalFunctionData) => Promise<ExternalFunctionData>;
 
+interface FunctionCallRequest {
+    name: string;
+    request: ExternalFunctionData
+}
+
+interface FunctionCallResponse {
+    response: ExternalFunctionData
+}
 
 interface ExtensionService {
     run(): Promise<void>;
@@ -196,12 +111,14 @@ interface ExtensionService {
 
 class ExtensionServiceImpl implements ExtensionService {
     private host: string;
+    private port: number;
     private remoteHost: string;
     private client: DhClient;
     private functions: { [key: string]: ExternalFunction };
 
-    constructor(host: string, remoteHost: string, client: DhClient) {
+    constructor(host: string, port: number, remoteHost: string, client: DhClient) {
         this.host = host;
+        this.port = port
         this.remoteHost = remoteHost;
         this.client = client;
         this.functions = {};
@@ -215,178 +132,109 @@ class ExtensionServiceImpl implements ExtensionService {
         this.functions[name] = handler;
     }
 
-    async functionCall(request: FunctionCallRequest): Promise<FunctionCallResponse> {
-        if (!this.functions[request.name]) {
-            throw new Error("External function not found")
-        }
-
-        const fn = this.functions[request.name]
-        const [responseData, error] = await fn(request.request)
-
-        if (error) {
-            throw new Error(error.message)
-        }
-
-        return new FunctionCallResponse({
-            response: responseData as Map<string, dependency_6.Any>
-        })
-    }
-
     async run(): Promise<void> {
-        const server = new Server();
+        const express = require('express')
+        const app = express()
 
-        console.log(functionProto)
+        app.use(express.json())
 
-        // server.addService(functionProto.Function.service, {
-        //     FunctionCall: this.functionCall.bind(this),
-        // });
-        // server.bindAsync(this.host, grpc.ServerCredentials.createInsecure(), () => {
-        //     server.start();
-        // });
+        app.get('/', (req: any, res: any) => {
+            res.send('ok')
+        })
+
+        app.post('/:name', async (req: any, res: any) => {
+            const name = req.params.name
+
+            const request: FunctionCallRequest = {
+                name: name,
+                request: req.body.content
+            }
+
+            const response = await this.functions[name](request.request)
+
+            res.send({
+                content: response
+            })
+        })
+
+        console.log('starting extension service')
+        app.listen(this.port, this.host, () => {
+            console.log(`External service is listening on ${this.host}`)
+        })
     }
 }
 
 interface RepositoryParams<T extends Entity<T>> {
+    namespace: string,
+    resource: string,
     updateCheckVersion: boolean;
 }
 
 export class RepositoryImpl<T extends Entity<T>> implements Repository<T> {
     private readonly client: DhClient;
     private readonly params: RepositoryParams<T>;
-    private type: { new(): T };
 
-    constructor(client: DhClient, type: new () => T, params: RepositoryParams<T>) {
+    constructor(client: DhClient, params: RepositoryParams<T>) {
         this.client = client;
-        this.type = type
         this.params = params;
     }
 
     async create(entity: T): Promise<T> {
-        const record = new Record()
-        record.properties = entity.toProperties()
+        const result = await axios.post<T>(`http://${this.client.params.Addr}/records/${this.params.namespace}/${this.params.resource}`, entity, {
+            headers: {
+                Authorization: `Bearer ${this.client.params.token}`
+            }
+        });
 
-        const resp = await new Promise<CreateRecordResponse>((resolve, reject) => {
-            this.client.getRecordClient().Create(new CreateRecordRequest({
-                token: this.client.getToken(),
-                namespace: entity.getNamespace(),
-                resource: entity.getResourceName(),
-                record: record,
-            }), (err, resp) => {
-                if (err) {
-                    reject(err.message)
-                    return
-                }
-
-                resolve(resp!)
-            });
-        })
-
-        entity.fromProperties(resp.record.properties)
-
-        return entity;
+        return result.data;
     }
 
     async update(entity: T): Promise<T> {
-        const record = new Record()
-        record.properties = entity.toProperties()
+        const result = await axios.put<T>(`http://${this.client.params.Addr}/records/${this.params.namespace}/${this.params.resource}/${entity.id}`, entity, {
+            headers: {
+                Authorization: `Bearer ${this.client.params.token}`
+            }
+        });
 
-        const resp = await new Promise<UpdateRecordResponse>((resolve, reject) => {
-            this.client.getRecordClient().Update(new UpdateRecordRequest({
-                token: this.client.getToken(),
-                namespace: entity.getNamespace(),
-                resource: entity.getResourceName(),
-                record: record,
-                checkVersion: this.params.updateCheckVersion,
-            }), (err, resp) => {
-                if (err) {
-                    reject(err.message)
-                    return
-                }
-
-                resolve(resp!)
-            })
-        })
-
-        entity.fromProperties(resp.record.properties)
-
-        return entity;
-    }
-
-    async save(entity: T): Promise<T> {
-        const resource = await this.loadResource();
-
-        // entity.fromRecord(await this.client.applyRecord(resource, entity.toRecord()));
-
-        return entity
+        return result.data;
     }
 
     async get(id: string): Promise<T> {
-        const instance = new this.type()
-
-        const resp = await this.client.getRecordClient().get({
-            token: this.client.getToken(),
-            namespace: instance.getNamespace(),
-            resource: instance.getResourceName(),
-            id: id,
+        const result = await axios.get<T>(`http://${this.client.params.Addr}/records/${this.params.namespace}/${this.params.resource}/${id}`, {
+            headers: {
+                Authorization: `Bearer ${this.client.params.token}`
+            }
         });
 
-        instance.fromProperties(resp.record.properties)
-
-        return instance;
+        return result.data;
     }
 
-    async find(params: FindParams): Promise<T[]> {
-        const instance = new this.type()
+    public async apply<T>(entity: T): Promise<T> {
+        const result = await axios.patch<T>(`http://${this.client.params.Addr}/${this.params.namespace}/${this.params.resource}`, entity, {
+            headers: {
+                Authorization: `Bearer ${this.client.params.token}`
+            }
+        });
 
+        return result.data;
+    }
+
+    async find(params: FindParams): Promise<{ total: number, content: { properties: T }[] }> {
         if (!params.resolveReferences) {
             params.resolveReferences = ["*"];
         }
 
-        const resp = await new Promise<SearchRecordResponse>((resolve, reject) => {
-            this.client.getRecordClient().Search(new SearchRecordRequest({
-                token: this.client.getToken(),
-                namespace: instance.getNamespace(),
-                resource: instance.getResourceName(),
-                query: params.query!,
-                limit: params.limit!,
-                offset: params.offset!,
-                useHistory: params.useHistory!,
-                resolveReferences: params.resolveReferences!,
-                annotations: new Map<string, string>(),
-            }), (err, resp) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(resp!);
-                }
-            });
-        })
-
-        return resp.content.map((record: Record) => {
-            const newInstance = new this.type()
-
-            newInstance.fromProperties(record.properties);
-
-            return newInstance;
+        const result = await axios.get<{ total: number, content: { properties: T }[] }>(`http://${this.client.params.Addr}/records/${this.params.namespace}/${this.params.resource}`, {
+            headers: {
+                Authorization: `Bearer ${this.client.params.token}`
+            }
         });
+
+        return result.data;
     }
 
     extend(extensionService: ExtensionService): RepositoryExtension<T> {
-        const instance = new this.type()
-
-        return new RepositoryExtensionImpl<T>(this, extensionService, instance.getResourceName(), instance.getNamespace(), this.type, this.client);
-    }
-
-    private async loadResource() {
-        const instance = new this.type()
-
-        const resp = await this.client.getResourceClient().getByName({
-            token: this.client.getToken(),
-            namespace: instance.getNamespace(),
-            name: instance.getResourceName(),
-        });
-
-        return resp.resource;
+        return new RepositoryExtensionImpl<T>(this, extensionService, this.params.resource, this.params.namespace, this.client);
     }
 }
 
@@ -398,46 +246,67 @@ export class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryE
     private extension: ExtensionService;
     private resourceName: string;
     private namespace: string;
-    private type: { new(): T };
     private client: DhClient;
+    private extensionRepository: RepositoryImpl<components["schemas"]["Extension"]>;
 
     constructor(
         repository: Repository<T>,
         extension: ExtensionService,
         resourceName: string,
         namespace: string,
-        type: { new(): T },
         client: DhClient
     ) {
         this.repository = repository;
         this.extension = extension;
         this.resourceName = resourceName;
         this.namespace = namespace;
-        this.type = type;
         this.client = client;
+        this.extensionRepository = new RepositoryImpl<components["schemas"]["Extension"]>(client, {
+            namespace: "system", resource: "extension", updateCheckVersion: false
+        })
     }
 
     async onCreate(handler: (elem: T) => Promise<T>): Promise<void> {
-        // const extensionName = this.getExtensionName("OnCreate");
-        //
-        // this.extension.registerFunction(extensionName, CreateRecordTypedFunction(this.instanceProvider, handler));
-        //
-        // const ext: Extension = {
-        //     name: extensionName,
-        //     namespace: this.namespace,
-        //     resource: this.resourceName,
-        //     instead: {
-        //         create: {
-        //             kind: "functionCall",
-        //             functionCall: {
-        //                 host: this.extension.GetRemoteHost(),
-        //                 functionName: extensionName,
-        //             },
-        //         },
-        //     },
-        // };
-        //
-        // await this.client.ApplyExtension(ext);
+        const extensionName = this.getExtensionName("OnCreate");
+
+        this.extension.registerFunction(extensionName, async function (data: ExternalFunctionData) {
+            const records = []
+
+            console.log('data', data)
+
+            for (const record of data.request.records) {
+                const entity = await handler(record.properties)
+                records.push({
+                    properties: entity
+                })
+            }
+
+            const response: ExternalFunctionData = {
+                "response": {
+                    '@type': 'type.googleapis.com/stub.CreateRecordResponse',
+                    "records": records
+                }
+            }
+
+            console.log("response", response)
+
+            return response
+        });
+
+        const ext = {
+            name: extensionName,
+            namespace: this.namespace,
+            resource: this.resourceName,
+            instead: {
+                create: {
+                    kind: "httpCall",
+                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    method: 'POST',
+                },
+            },
+        };
+
+        await this.extensionRepository.apply(ext)
     }
 
     async onUpdate(handler: (elem: T) => Promise<T>): Promise<void> {
@@ -455,7 +324,7 @@ export class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryE
         throw new Error("Method not implemented.");
     }
 
-    async onList(handler: () => Promise<T[]>): Promise<void> {
+    async onList(handler: () => Promise<{ properties: T }[]>): Promise<void> {
         //TODO implement me
         throw new Error("Method not implemented.");
     }

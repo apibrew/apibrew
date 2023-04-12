@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type RecordClient interface {
 	Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error)
 	Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error)
+	Apply(ctx context.Context, in *ApplyRecordRequest, opts ...grpc.CallOption) (*ApplyRecordResponse, error)
 	Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error)
 }
 
@@ -53,6 +54,15 @@ func (c *recordClient) Update(ctx context.Context, in *UpdateRecordRequest, opts
 	return out, nil
 }
 
+func (c *recordClient) Apply(ctx context.Context, in *ApplyRecordRequest, opts ...grpc.CallOption) (*ApplyRecordResponse, error) {
+	out := new(ApplyRecordResponse)
+	err := c.cc.Invoke(ctx, "/rest.Record/Apply", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *recordClient) Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
 	out := new(DeleteRecordResponse)
 	err := c.cc.Invoke(ctx, "/rest.Record/Delete", in, out, opts...)
@@ -68,6 +78,7 @@ func (c *recordClient) Delete(ctx context.Context, in *DeleteRecordRequest, opts
 type RecordServer interface {
 	Create(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error)
 	Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error)
+	Apply(context.Context, *ApplyRecordRequest) (*ApplyRecordResponse, error)
 	Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error)
 	mustEmbedUnimplementedRecordServer()
 }
@@ -81,6 +92,9 @@ func (UnimplementedRecordServer) Create(context.Context, *CreateRecordRequest) (
 }
 func (UnimplementedRecordServer) Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedRecordServer) Apply(context.Context, *ApplyRecordRequest) (*ApplyRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Apply not implemented")
 }
 func (UnimplementedRecordServer) Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
@@ -134,6 +148,24 @@ func _Record_Update_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Record_Apply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordServer).Apply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rest.Record/Apply",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordServer).Apply(ctx, req.(*ApplyRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Record_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRecordRequest)
 	if err := dec(in); err != nil {
@@ -166,6 +198,10 @@ var Record_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Update",
 			Handler:    _Record_Update_Handler,
+		},
+		{
+			MethodName: "Apply",
+			Handler:    _Record_Apply_Handler,
 		},
 		{
 			MethodName: "Delete",

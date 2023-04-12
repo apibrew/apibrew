@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
+	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/logging"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/resources"
@@ -103,13 +104,6 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 }
 
 func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
-	var result []*model.Record
-
-	var err errors.ServiceError
-
-	var success = true
-	var txCtx context.Context
-
 	if params.Resource == "" {
 		return nil, nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
@@ -117,9 +111,19 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if resource == nil {
-		success = false
 		return nil, nil, errors.ResourceNotFoundError
 	}
+
+	return r.CreateWithResource(ctx, resource, params)
+}
+
+func (r *recordService) CreateWithResource(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
+	var result []*model.Record
+
+	var err errors.ServiceError
+
+	var success = true
+	var txCtx context.Context
 
 	if err = checkAccess(ctx, checkAccessParams{
 		Resource:  resource,
@@ -176,6 +180,8 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 
 	if handled, records, inserted, err := r.genericHandler.Create(ctx, resource, params); handled {
 		return records, inserted, err
+	} else {
+		params.Records = records
 	}
 
 	if resource.Virtual {
@@ -263,12 +269,7 @@ func isResourceRelatedResource(resource *model.Resource) bool {
 	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name || resource.Name == resources.ResourcePropertyResource.Name)
 }
 
-func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
-	var result []*model.Record
-	var err errors.ServiceError
-
-	var success = true
-
+func (r *recordService) Apply(ctx context.Context, params abs.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
 	if params.Resource == "" {
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
@@ -278,6 +279,93 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 	if resource == nil {
 		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + params.Resource)
 	}
+
+	var result []*model.Record
+
+	for _, record := range params.Records {
+
+		// locate existing record
+		var existingRecord *model.Record
+
+		identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
+
+		if err != nil {
+			return nil, errors.RecordValidationError.WithMessage(err.Error())
+		}
+
+		qb := helper.NewQueryBuilder()
+
+		searchRes, total, err := r.List(ctx, abs.RecordListParams{
+			Namespace: resource.Namespace,
+			Resource:  resource.Name,
+			Limit:     1,
+			Query:     qb.FromProperties(identifierProps),
+		})
+
+		if err != nil {
+			return nil, errors.RecordValidationError.WithMessage(err.Error())
+		}
+
+		if total > 0 {
+			existingRecord = searchRes[0]
+		}
+
+		if existingRecord == nil {
+			records, _, err := r.CreateWithResource(ctx, resource, abs.RecordCreateParams{
+				Namespace: resource.Namespace,
+				Resource:  resource.Name,
+				Records:   []*model.Record{record},
+			})
+
+			if err != nil {
+				return nil, errors.RecordValidationError.WithMessage(err.Error())
+			}
+
+			result = append(result, records...)
+		} else {
+			record.Id = existingRecord.Id
+
+			if util.IsSameRecord(existingRecord, record) {
+				return params.Records, nil
+			}
+
+			records, err := r.UpdateWithResource(ctx, resource, abs.RecordUpdateParams{
+				Namespace:    resource.Namespace,
+				Resource:     resource.Name,
+				Records:      []*model.Record{record},
+				CheckVersion: params.CheckVersion,
+			})
+
+			if err != nil {
+				return nil, errors.RecordValidationError.WithMessage(err.Error())
+			}
+
+			result = append(result, records...)
+		}
+	}
+
+	return result, nil
+}
+
+func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
+	if params.Resource == "" {
+		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
+	}
+
+	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+
+	if resource == nil {
+		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + params.Resource)
+	}
+
+	return r.UpdateWithResource(ctx, resource, params)
+}
+
+func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.Resource, params abs.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
+	var result []*model.Record
+	var err errors.ServiceError
+
+	var success = true
 
 	if isResourceRelatedResource(resource) {
 		return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
@@ -324,6 +412,8 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 	if handled, records, err := r.genericHandler.Update(ctx, resource, params); handled {
 		success = false
 		return records, err
+	} else {
+		params.Records = records
 	}
 
 	if resource.Virtual {

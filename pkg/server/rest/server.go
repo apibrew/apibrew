@@ -130,7 +130,7 @@ func (s *server) configureRoutes() {
 	r.Use(s.TrackingMiddleWare)
 
 	c := cors.New(cors.Options{
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
 		AllowCredentials: true,
 		AllowedOrigins:   []string{"*"},
 		AllowedHeaders:   []string{"Authorization"},
@@ -161,6 +161,9 @@ func (s *server) configureRoutes() {
 		log.Fatal(err)
 	}
 	if err := stub.RegisterDataSourceHandlerServer(context.TODO(), m, grpc.NewDataSourceServer(s.container.GetDataSourceService())); err != nil {
+		log.Fatal(err)
+	}
+	if err := stub.RegisterExtensionHandlerServer(context.TODO(), m, grpc.NewExtensionServer(s.container.GetExtensionService())); err != nil {
 		log.Fatal(err)
 	}
 	if err := stub.RegisterWatchHandlerServer(context.TODO(), m, grpc.NewWatchServer(s.container.GetWatchService())); err != nil {

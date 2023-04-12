@@ -47,7 +47,7 @@ func (d *extensionService) prepareExtensionHandler(extension *model.Extension) *
 
 			if extension.Instead != nil {
 				err = util.CoalesceThen(func(externalCall *model.ExternalCall) errors.ServiceError {
-					handled = true
+					handled = extension.Instead.Finalize
 					return d.externalService.Call(ctx, externalCall, request, response)
 				}, extension.Instead.List, extension.Instead.All)
 			}
@@ -107,7 +107,7 @@ func (d *extensionService) prepareExtensionHandler(extension *model.Extension) *
 
 			if extension.Instead != nil {
 				err = util.CoalesceThen(func(externalCall *model.ExternalCall) errors.ServiceError {
-					handled = true
+					handled = extension.Instead.Finalize
 					return d.externalService.Call(ctx, externalCall, request, response)
 				}, extension.Instead.Create, extension.Instead.All)
 			}
@@ -166,7 +166,7 @@ func (d *extensionService) prepareExtensionHandler(extension *model.Extension) *
 
 			if extension.Instead != nil {
 				err = util.CoalesceThen(func(externalCall *model.ExternalCall) errors.ServiceError {
-					handled = true
+					handled = extension.Instead.Finalize
 					return d.externalService.Call(ctx, externalCall, request, response)
 				}, extension.Instead.Update, extension.Instead.All)
 			}
@@ -233,7 +233,7 @@ func (d *extensionService) prepareExtensionHandler(extension *model.Extension) *
 
 			if extension.Instead != nil {
 				err = util.CoalesceThen(func(externalCall *model.ExternalCall) errors.ServiceError {
-					handled = true
+					handled = extension.Instead.Finalize
 					return d.externalService.Call(ctx, externalCall, request, response)
 				}, extension.Instead.Get, extension.Instead.All)
 			}
@@ -296,7 +296,7 @@ func (d *extensionService) prepareExtensionHandler(extension *model.Extension) *
 
 			if extension.Instead != nil {
 				err = util.CoalesceThen(func(externalCall *model.ExternalCall) errors.ServiceError {
-					handled = true
+					handled = extension.Instead.Finalize
 					return d.externalService.Call(ctx, externalCall, request, response)
 				}, extension.Instead.Delete, extension.Instead.All)
 			}

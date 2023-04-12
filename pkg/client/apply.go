@@ -5,10 +5,8 @@ import (
 	"errors"
 	log "github.com/sirupsen/logrus"
 	errors2 "github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/helper"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
-	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -263,62 +261,11 @@ func (d *dhClient) ApplyNamespace(ctx context.Context, namespace *model.Namespac
 }
 
 func (d *dhClient) ApplyRecord(ctx context.Context, resource *model.Resource, record *model.Record) error {
-	// locate existing record
-	var existingRecord *model.Record
-
-	identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
-
-	if err != nil {
-		return err
-	}
-
-	qb := helper.NewQueryBuilder()
-
-	searchRes, err := d.recordClient.Search(ctx, &stub.SearchRecordRequest{
+	d.recordClient.Apply(ctx, &stub.ApplyRecordRequest{
 		Token:     d.GetToken(),
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
-		Query:     qb.FromProperties(identifierProps),
-		Limit:     1,
+		Record:    record,
 	})
-
-	if err != nil {
-		return err
-	}
-
-	if searchRes.Total > 0 {
-		existingRecord = searchRes.Content[0]
-	}
-
-	if existingRecord == nil {
-		_, err := d.recordClient.Create(ctx, &stub.CreateRecordRequest{
-			Token:     d.GetToken(),
-			Namespace: resource.Namespace,
-			Resource:  resource.Name,
-			Records:   []*model.Record{record},
-		})
-
-		if err != nil {
-			return err
-		}
-	} else {
-		record.Id = existingRecord.Id
-
-		if util.IsSameRecord(existingRecord, record) {
-			return nil
-		}
-
-		_, err := d.recordClient.Update(ctx, &stub.UpdateRecordRequest{
-			Token:     d.GetToken(),
-			Namespace: resource.Namespace,
-			Resource:  resource.Name,
-			Records:   []*model.Record{record},
-		})
-
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 }

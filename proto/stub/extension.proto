@@ -9,11 +9,34 @@ import 'model/extension.proto';
 
 // Extension Service is for managing extensions
 service Extension {
-  rpc List (ListExtensionRequest) returns (ListExtensionResponse) {}
-  rpc Get (GetExtensionRequest) returns (GetExtensionResponse) {}
-  rpc Create (CreateExtensionRequest) returns (CreateExtensionResponse) {}
-  rpc Update (UpdateExtensionRequest) returns (UpdateExtensionResponse) {}
-  rpc Delete (DeleteExtensionRequest) returns (DeleteExtensionResponse) {}
+  rpc List (ListExtensionRequest) returns (ListExtensionResponse) {
+    option (google.api.http) = {
+      get: "/system/extensions"
+    };
+  }
+  rpc Get (GetExtensionRequest) returns (GetExtensionResponse) {
+    option (google.api.http) = {
+      get: "/system/extensions/{id}",
+    };
+  }
+  rpc Create (CreateExtensionRequest) returns (CreateExtensionResponse) {
+    option (google.api.http) = {
+      post: "/system/extensions",
+      body: "*"
+    };
+  }
+  rpc Update (UpdateExtensionRequest) returns (UpdateExtensionResponse) {
+    option (google.api.http) = {
+      put: "/system/extensions",
+      body: "*"
+    };
+  }
+  rpc Delete (DeleteExtensionRequest) returns (DeleteExtensionResponse) {
+    option (google.api.http) = {
+      delete: "/system/extensions",
+      body: "*"
+    };
+  }
 }
 
 message ListExtensionRequest {

@@ -43,6 +43,7 @@ message Extension {
     ExternalCall delete = 4 [(model.hcl_block) = "delete"];
     ExternalCall get = 5 [(model.hcl_block) = "get"];
     ExternalCall list = 6 [(model.hcl_block) = "list"];
+    bool finalize = 7; // if true, it will respond with the result of the call, otherwise it will pass to backend
   }
 
   Before before = 7 [(model.hcl_block) = "before"];

@@ -39,12 +39,13 @@ func ExtensionToRecord(extension *model.Extension) *model.Record {
 
 	if extension.Instead != nil {
 		properties["instead"] = structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
-			"create": ExternalCallToStruct(extension.Instead.Create),
-			"update": ExternalCallToStruct(extension.Instead.Update),
-			"delete": ExternalCallToStruct(extension.Instead.Delete),
-			"get":    ExternalCallToStruct(extension.Instead.Get),
-			"list":   ExternalCallToStruct(extension.Instead.List),
-			"all":    ExternalCallToStruct(extension.Instead.All),
+			"create":   ExternalCallToStruct(extension.Instead.Create),
+			"update":   ExternalCallToStruct(extension.Instead.Update),
+			"delete":   ExternalCallToStruct(extension.Instead.Delete),
+			"get":      ExternalCallToStruct(extension.Instead.Get),
+			"list":     ExternalCallToStruct(extension.Instead.List),
+			"all":      ExternalCallToStruct(extension.Instead.All),
+			"finalize": structpb.NewBoolValue(extension.Instead.Finalize),
 		}})
 	}
 
@@ -145,12 +146,13 @@ func ExtensionFromRecord(record *model.Record) *model.Extension {
 	if record.Properties["instead"] != nil {
 		val := record.Properties["instead"].GetStructValue()
 		result.Instead = &model.Extension_Instead{
-			All:    ExternalCallFromStruct(val.Fields["all"]),
-			Create: ExternalCallFromStruct(val.Fields["create"]),
-			Update: ExternalCallFromStruct(val.Fields["update"]),
-			Delete: ExternalCallFromStruct(val.Fields["delete"]),
-			Get:    ExternalCallFromStruct(val.Fields["get"]),
-			List:   ExternalCallFromStruct(val.Fields["list"]),
+			All:      ExternalCallFromStruct(val.Fields["all"]),
+			Create:   ExternalCallFromStruct(val.Fields["create"]),
+			Update:   ExternalCallFromStruct(val.Fields["update"]),
+			Delete:   ExternalCallFromStruct(val.Fields["delete"]),
+			Get:      ExternalCallFromStruct(val.Fields["get"]),
+			List:     ExternalCallFromStruct(val.Fields["list"]),
+			Finalize: val.Fields["finalize"].GetBoolValue(),
 		}
 	}
 
