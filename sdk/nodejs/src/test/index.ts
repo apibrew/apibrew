@@ -79,6 +79,10 @@ async function run() {
       console.log(result)
     })
 
+    const extension = client.NewExtensionService("127.0.0.1:7691")
+
+    await extension.run()
+
     // const country = new Country()
     // country.name = "India2"
     // country.description = "A country in Asia"

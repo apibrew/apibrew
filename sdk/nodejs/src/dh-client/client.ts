@@ -9,17 +9,20 @@ import {
     CreateRecordResponse,
     RecordClient,
     SearchRecordRequest,
-    SearchRecordResponse
+    SearchRecordResponse,
+    UpdateRecordRequest,
+    UpdateRecordResponse
 } from './stub/record';
 import {ResourceClient} from './stub/resource';
 import {UserClient} from './stub/user';
-import {credentials} from '@grpc/grpc-js';
+import {credentials, Server} from '@grpc/grpc-js';
 import {FunctionCallRequest, FunctionCallResponse} from "./ext/function";
 
 import * as dependency_6 from "./google/protobuf/any";
 import {TokenTerm} from './model/token';
 import * as dependency_1 from "./google/protobuf/struct";
 import {Record} from "./model/record";
+
 
 /////// #### abs #### //////
 
@@ -230,7 +233,16 @@ class ExtensionServiceImpl implements ExtensionService {
     }
 
     async run(): Promise<void> {
+        const server = new Server();
 
+        console.log(functionProto)
+
+        // server.addService(functionProto.Function.service, {
+        //     FunctionCall: this.functionCall.bind(this),
+        // });
+        // server.bindAsync(this.host, grpc.ServerCredentials.createInsecure(), () => {
+        //     server.start();
+        // });
     }
 }
 
@@ -278,13 +290,22 @@ export class RepositoryImpl<T extends Entity<T>> implements Repository<T> {
         const record = new Record()
         record.properties = entity.toProperties()
 
-        const resp = await this.client.getRecordClient().update({
-            token: this.client.getToken(),
-            namespace: entity.getNamespace(),
-            resource: entity.getResourceName(),
-            record: record,
-            checkVersion: this.params.updateCheckVersion,
-        });
+        const resp = await new Promise<UpdateRecordResponse>((resolve, reject) => {
+            this.client.getRecordClient().Update(new UpdateRecordRequest({
+                token: this.client.getToken(),
+                namespace: entity.getNamespace(),
+                resource: entity.getResourceName(),
+                record: record,
+                checkVersion: this.params.updateCheckVersion,
+            }), (err, resp) => {
+                if (err) {
+                    reject(err.message)
+                    return
+                }
+
+                resolve(resp!)
+            })
+        })
 
         entity.fromProperties(resp.record.properties)
 
