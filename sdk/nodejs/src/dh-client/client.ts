@@ -36,15 +36,15 @@ interface FindParams {
 }
 
 export interface RepositoryExtension<T extends Entity<T>> {
-    onCreate(handler: (elem: T) => Promise<T>): void;
+    onCreate(handler: (elem: T) => Promise<T>, finalize?: boolean): void;
 
-    onUpdate(handler: (elem: T) => Promise<T>): void;
+    onUpdate(handler: (elem: T) => Promise<T>, finalize?: boolean): void;
 
-    onDelete(handler: (elem: T) => Promise<T>): void;
+    onDelete(handler: (elem: T) => Promise<T>, finalize?: boolean): void;
 
-    onGet(handler: (id: string) => Promise<T>): void;
+    onGet(handler: (id: string) => Promise<T>, finalize?: boolean): void;
 
-    onList(handler: () => Promise<{ properties: T }[]>): void;
+    onList(handler: () => Promise<{ properties: T }[]>, finalize?: boolean): void;
 }
 
 
@@ -266,13 +266,11 @@ export class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryE
         })
     }
 
-    async onCreate(handler: (elem: T) => Promise<T>): Promise<void> {
+    async onCreate(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void> {
         const extensionName = this.getExtensionName("OnCreate");
 
         this.extension.registerFunction(extensionName, async function (data: ExternalFunctionData) {
             const records = []
-
-            console.log('data', data)
 
             for (const record of data.request.records) {
                 const entity = await handler(record.properties)
@@ -288,8 +286,6 @@ export class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryE
                 }
             }
 
-            console.log("response", response)
-
             return response
         });
 
@@ -303,6 +299,7 @@ export class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryE
                     uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
                     method: 'POST',
                 },
+                finalize: finalize,
             },
         };
 
