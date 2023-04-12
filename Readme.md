@@ -5,6 +5,15 @@ See [docs](docs/index.md) for detailed information
 
 # Overview
 
+Data Handler is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
+
+You can use **Data Handler** for following purposes:
+
+1. You have a database and you want to build CRUD like APIs on it without coding or by minimal coding
+2. You want to manage data source alongside with creating APIs. For example
+    1. You want to create new table/collection in your datasource and create API without much coding
+3. You want to manage multiple data source and do operations on top of them with auto created APIs
+
 **Data Handler** is an application to manage your data in a CRUD fashion
 
 There are two main things in data-handler:
@@ -12,7 +21,8 @@ There are two main things in data-handler:
 * Resource - This is your schema entry
 * Record - This is your data
 
-Data Handler by default uses postgresql as a database for your data but it also supports various databases (mysql, mongo, etc.)
+Data Handler by default uses postgresql as a database for your data but it also supports various databases (mysql,
+mongo, etc.)
 
 You can define your schema, and it will prepare you CRUD APIs (Rest, Grpc) and Swagger docs
 
@@ -21,26 +31,28 @@ You can define your schema, and it will prepare you CRUD APIs (Rest, Grpc) and S
 Quick Example:
 ![](http://static.tisserv.net/dh_overview.gif)
 
-country.hcl
+country.yml
+
 ```
-schema {
-   resource "country" {
-    property "name" {
-      type   = "string"
-      length = 124
-    }
-    property "description" {
-      type   = "string"
-      length = 124
-    }
-   }
-}
+type: resource
+name: country
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255
 ```
+
 ```
 dhctl apply -f country.hcl
 ```
 
 Swagger: http://localhost:9009/docs/index.html
+
 ```
 # Create Country
 curl -X POST --location "http://localhost:9009/country" \
@@ -54,7 +66,6 @@ curl -X POST --location "http://localhost:9009/country" \
 curl "http://localhost:9009/country" -H "Authorization: <token>"
 ```
 
-
 # Quick Start
 
 Let's run application on standalone mode:
@@ -64,16 +75,20 @@ docker run -d -p 9009:9009 tislib/data-handler:full-latest
 ```
 
 Let's install our client
+
 ```
 go install github.com/tislib/data-handler/cmd/dhctl@latest
 ```
 
 Now let's configure our client to point to server
+
 ```
 mkdir -p ~/.dhctl
 nano  ~/.dhctl/config
 ```
+
 Paste config to there
+
 ```
 type: server
 servers:
@@ -85,49 +100,16 @@ servers:
 defaultServer: local
 ```
 
+# [Tutorials](docs/content/tutorials/index.md)
 
-[![Build Status](docs/static/Overview.png)](https://app.travis-ci.com/tislib/data-handler)
+you can find various tutorials [here](docs/content/tutorials/index.md)
 
-**Website: [https://datahandler.talehibrahimli.com/](https://datahandler.talehibrahimli.com/)**
+# [Docs](docs/index.md)
 
-Data Handler is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
-
-You can use **Data Handler** for following purposes:
-
-1. You have a database and you want to build CRUD like APIs on it without coding or by minimal coding
-2. You want to manage data source alongside with creating APIs. For example
-    1. You want to create new table/collection in your datasource and create API without much coding
-3. You want to manage multiple data source and do operations on top of them with auto created APIs
-
-# Installation
-
-## Installation (server)
-
-### Running with docker
-
-You need to copy and adjust init config for data-handler
-[init.json](examples/data/init.example.json)
-
-```
- docker run -v <path-to-init.json>:/app/config.json  tislib/data-handler:latest
-```
-
-## Installation (client)
-
-### Installing via go install
-
-```
-go install github.com/tislib/data-handler/cmd/dhctl@latest
-```
-
-You need to configure client pointing to right server:
-[config](examples/data/dhctl.example.config) and move this file to ~/.dhctl/config
-
-Sample commands
-
-```
-dhctl get resources
-dhctl get user -n system
-```
-
-For detailed documentation: [link](docs/old/dhctl.md)
+- [Tutorials](docs/content/tutorials/index.md) - Tutorials
+- [Installation](docs/content/installation.md) - Installation
+- [General](docs/content/general.md) - General information about Data Handler
+- [API](docs/content/api.md) - GRPC and Rest API documentation
+- [CLI](docs/content/dhctl/dhctl.md) - CLI interface(dhctl) documentation
+- [Proto](docs/content/proto.md) - Proto documentation
+- [SDK](docs/content/sdk.md) - SDK documentation
