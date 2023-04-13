@@ -22,7 +22,7 @@ service Record {
 
   rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {
     option (google.api.http) = {
-      put: "/records/{namespace}/{resource}"
+      put: "/records/{namespace}/{resource}/{id}"
       body: "properties"
       response_body: "properties"
     };

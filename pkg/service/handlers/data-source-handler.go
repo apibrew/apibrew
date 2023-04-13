@@ -16,6 +16,7 @@ func (h *dataSourceHandler) BeforeCreate(ctx context.Context, resource *model.Re
 	if resource.Namespace != "system" || resource.Name != "data-source" {
 		return nil
 	}
+
 	return nil
 }
 

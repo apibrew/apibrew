@@ -15,10 +15,6 @@ async function run() {
     await client.authenticateWithUsernameAndPassword("admin", "admin")
     const repo = client.newRepository<Country>("default", "country")
 
-    repo.find({}).then((result) => {
-        console.log(result.content.map(item => item.properties))
-    })
-
     const extension = client.NewExtensionService("127.0.0.1", 17686)
 
     await extension.run()
@@ -26,6 +22,12 @@ async function run() {
     repo.extend(extension).onCreate(async (entity: Country) => {
         console.log(entity)
         entity.description = 'Updated desc 123'
+        return entity
+    }, true)
+
+    repo.extend(extension).onUpdate(async (entity: Country) => {
+        console.log(entity)
+        entity.description = entity.description + ' Updated desc 123'
         return entity
     }, true)
 }

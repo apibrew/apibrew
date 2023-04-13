@@ -146,53 +146,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-        put:
-            tags:
-                - Record
-            summary: Update
-            operationId: Record_Update
-            parameters:
-                - name: namespace
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: resource
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: id
-                  in: query
-                  schema:
-                    type: string
-                - name: checkVersion
-                  in: query
-                  schema:
-                    type: boolean
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateRecordRequest_PropertiesEntry'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateRecordResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
         post:
             tags:
                 - Record
@@ -607,6 +560,54 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Record
+            summary: Update
+            operationId: Record_Update
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: checkVersion
+                  in: query
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateRecordRequest_PropertiesEntry'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateRecordResponse'
                 default:
                     description: Default error response
                     content:

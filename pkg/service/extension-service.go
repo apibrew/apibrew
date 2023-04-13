@@ -44,7 +44,6 @@ func (d *extensionService) List(ctx context.Context) ([]*model.Extension, errors
 func (d *extensionService) Create(ctx context.Context, extensions []*model.Extension) ([]*model.Extension, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("extensions", extensions).Debug("Begin data-source Create")
-	defer logger.Debug("End data-source Create")
 
 	// insert records via resource service
 	records := mapping.MapToRecord(extensions, mapping.ExtensionToRecord)
@@ -119,7 +118,7 @@ func (d *extensionService) Init(data *model.InitData) {
 
 func (d *extensionService) keepExtensionsRunning() {
 	for {
-		time.Sleep(10 * time.Minute)
+		time.Sleep(10 * time.Second)
 
 		d.runConfigureExtensions()
 	}

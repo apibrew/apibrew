@@ -138,7 +138,7 @@ func local_request_Record_Create_0(ctx context.Context, marshaler runtime.Marsha
 }
 
 var (
-	filter_Record_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{"properties": 0, "namespace": 1, "resource": 2}, Base: []int{1, 2, 4, 6, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 2, 3, 3, 4, 4}}
+	filter_Record_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{"properties": 0, "namespace": 1, "resource": 2, "id": 3}, Base: []int{1, 2, 4, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5}}
 )
 
 func request_Record_Update_0(ctx context.Context, marshaler runtime.Marshaler, client RecordClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -178,6 +178,16 @@ func request_Record_Update_0(ctx context.Context, marshaler runtime.Marshaler, c
 	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
+	}
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -229,6 +239,16 @@ func local_request_Record_Update_0(ctx context.Context, marshaler runtime.Marsha
 	protoReq.Resource, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "resource", err)
+	}
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -498,7 +518,7 @@ func RegisterRecordHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/rest.Record/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/rest.Record/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -634,7 +654,7 @@ func RegisterRecordHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/rest.Record/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/rest.Record/Update", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -727,7 +747,7 @@ func (m response_Record_Apply_0) XXX_ResponseBody() interface{} {
 var (
 	pattern_Record_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "resource"}, ""))
 
-	pattern_Record_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "resource"}, ""))
+	pattern_Record_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"records", "namespace", "resource", "id"}, ""))
 
 	pattern_Record_Apply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"records", "namespace", "resource"}, ""))
 

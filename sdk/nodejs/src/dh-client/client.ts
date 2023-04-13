@@ -306,9 +306,44 @@ export class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryE
         await this.extensionRepository.apply(ext)
     }
 
-    async onUpdate(handler: (elem: T) => Promise<T>): Promise<void> {
-        //TODO implement me
-        throw new Error("Method not implemented.");
+    async onUpdate(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void> {
+        const extensionName = this.getExtensionName("OnUpdate");
+
+        this.extension.registerFunction(extensionName, async function (data: ExternalFunctionData) {
+            const records = []
+
+            for (const record of data.request.records) {
+                const entity = await handler(record.properties)
+                records.push({
+                    properties: entity
+                })
+            }
+
+            const response: ExternalFunctionData = {
+                "response": {
+                    '@type': 'type.googleapis.com/stub.UpdateRecordResponse',
+                    "records": records
+                }
+            }
+
+            return response
+        });
+
+        const ext = {
+            name: extensionName,
+            namespace: this.namespace,
+            resource: this.resourceName,
+            instead: {
+                update: {
+                    kind: "httpCall",
+                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    method: 'POST',
+                },
+                finalize: finalize,
+            },
+        };
+
+        await this.extensionRepository.apply(ext)
     }
 
     async onDelete(handler: (elem: T) => Promise<T>): Promise<void> {
