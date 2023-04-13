@@ -1,5 +1,5 @@
+import {DhClient} from "data-handler-client";
 import {Order, Product} from "./schema";
-import {DhClient} from "../dh-client/client";
 
 const client = new DhClient({
     Addr: "127.0.0.1:9009",

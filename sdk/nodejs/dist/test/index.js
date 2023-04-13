@@ -43,32 +43,64 @@ var client = new client_1.DhClient({
 });
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var repo, extension;
+        var productRepo, orderRepo, extension, orderExtension;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, client.authenticateWithUsernameAndPassword("admin", "admin")];
                 case 1:
                     _a.sent();
-                    repo = client.newRepository("default", "country");
+                    productRepo = client.newRepository("default", "product");
+                    orderRepo = client.newRepository("default", "order");
                     extension = client.NewExtensionService("127.0.0.1", 17686);
                     return [4 /*yield*/, extension.run()];
                 case 2:
                     _a.sent();
-                    repo.extend(extension).onCreate(function (entity) { return __awaiter(_this, void 0, void 0, function () {
+                    orderExtension = orderRepo.extend(extension);
+                    orderExtension.onCreate(function (order) { return __awaiter(_this, void 0, void 0, function () {
+                        var product;
                         return __generator(this, function (_a) {
-                            console.log(entity);
-                            entity.description = 'Updated desc 123';
-                            return [2 /*return*/, entity];
+                            switch (_a.label) {
+                                case 0:
+                                    if (order.status != 'pending') {
+                                        throw new Error('Order must be created with pending status');
+                                    }
+                                    return [4 /*yield*/, productRepo.get(order.product.id)];
+                                case 1:
+                                    product = _a.sent();
+                                    if (product.quantity < order.quantity) {
+                                        throw new Error('Not enough product in stock');
+                                    }
+                                    return [2 /*return*/, order];
+                            }
                         });
                     }); });
-                    repo.extend(extension).onUpdate(function (entity) { return __awaiter(_this, void 0, void 0, function () {
+                    orderExtension.onUpdate(function (order) { return __awaiter(_this, void 0, void 0, function () {
+                        var existingOrder, product;
                         return __generator(this, function (_a) {
-                            console.log(entity);
-                            entity.description = entity.description + ' Updated desc 123';
-                            return [2 /*return*/, entity];
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, orderRepo.get(order.id)];
+                                case 1:
+                                    existingOrder = _a.sent();
+                                    if (existingOrder.status == 'completed') {
+                                        throw new Error('Cannot update completed order');
+                                    }
+                                    if (!(order.status == 'completed')) return [3 /*break*/, 4];
+                                    return [4 /*yield*/, productRepo.get(order.product.id)];
+                                case 2:
+                                    product = _a.sent();
+                                    if (product.quantity < order.quantity) {
+                                        throw new Error('Not enough product in stock');
+                                    }
+                                    product.quantity -= order.quantity;
+                                    return [4 /*yield*/, productRepo.update(product)];
+                                case 3:
+                                    _a.sent();
+                                    _a.label = 4;
+                                case 4: return [2 /*return*/, order];
+                            }
                         });
-                    }); }, false);
+                    }); });
                     return [2 /*return*/];
             }
         });

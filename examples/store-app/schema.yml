@@ -1,0 +1,105 @@
+type: resource
+name: store
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255
+---
+type: resource
+name: category
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255
+---
+type: resource
+name: product
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255
+  - name: price
+    type: FLOAT32
+    required: true
+  - name: store
+    type: REFERENCE
+    required: true
+    reference:
+      referencedResource: store
+      cascade: true
+  - name: category
+    type: REFERENCE
+    reference:
+      referencedResource: category
+      cascade: true
+  - name: quantity
+    type: INT32
+    required: true
+---
+type: resource
+name: customer
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255
+  - name: email
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: phone
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+---
+type: resource
+name: order
+properties:
+  - name: customer
+    type: REFERENCE
+    required: true
+    reference:
+      referencedResource: customer
+      cascade: true
+  - name: product
+    type: REFERENCE
+    required: true
+    reference:
+      referencedResource: product
+      cascade: true
+  - name: quantity
+    type: INT32
+    required: true
+  - name: price
+    type: FLOAT32
+    required: true
+  - name: status
+    type: ENUM
+    required: true
+    defaultValue: PENDING
+    enumValues:
+        - PENDING
+        - SHIPPED
+        - DELIVERED
+        - CANCELLED

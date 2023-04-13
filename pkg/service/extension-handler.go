@@ -105,11 +105,18 @@ func (d *extensionService) prepareExtensionHandler(extension *model.Extension) *
 				"response": listRecordResponse,
 			}
 
+			var executed = false
+
 			if extension.Instead != nil {
 				err = util.CoalesceThen(func(externalCall *model.ExternalCall) errors.ServiceError {
 					handled = extension.Instead.Finalize
+					executed = true
 					return d.externalService.Call(ctx, externalCall, request, response)
 				}, extension.Instead.Create, extension.Instead.All)
+			}
+
+			if !executed {
+				listRecordResponse.Records = params.Records
 			}
 
 			return handled, listRecordResponse.Records, listRecordResponse.Inserted, err
@@ -164,11 +171,18 @@ func (d *extensionService) prepareExtensionHandler(extension *model.Extension) *
 				"response": listRecordResponse,
 			}
 
+			executed := false
+
 			if extension.Instead != nil {
 				err = util.CoalesceThen(func(externalCall *model.ExternalCall) errors.ServiceError {
 					handled = extension.Instead.Finalize
+					executed = true
 					return d.externalService.Call(ctx, externalCall, request, response)
 				}, extension.Instead.Update, extension.Instead.All)
+			}
+
+			if !executed {
+				listRecordResponse.Records = params.Records
 			}
 
 			return handled, listRecordResponse.Records, err

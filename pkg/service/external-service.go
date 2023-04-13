@@ -146,8 +146,15 @@ func (e *externalService) CallHttp(ctx context.Context, call *model.HttpCall, in
 	err = protojson.Unmarshal(responseData, responseWrap)
 
 	if err != nil {
-		log.Error(err)
-		return errors.ExternalBackendCommunicationError.WithDetails(err.Error())
+		var responseError = &model.Error{}
+
+		err = protojson.Unmarshal(responseData, responseError)
+
+		if err != nil {
+			return errors.ExternalBackendCommunicationError.WithDetails(err.Error())
+		}
+
+		return errors.RecordValidationError.WithDetails(responseError.Message)
 	}
 
 	for key, item := range responseWrap.Content {
