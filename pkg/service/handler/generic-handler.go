@@ -55,7 +55,7 @@ func (g *GenericHandler) List(ctx context.Context, resource *model.Resource, par
 			continue
 		}
 		if item.List != nil {
-			if handled, records, total, err = item.List(ctx, resource, params); handled {
+			if handled, records, total, err = item.List(ctx, resource, params); handled || err != nil {
 				return
 			}
 		}
@@ -103,7 +103,7 @@ func (g *GenericHandler) Create(ctx context.Context, resource *model.Resource, p
 			continue
 		}
 		if item.Create != nil {
-			if handled, records, inserted, err = item.Create(ctx, resource, params); handled {
+			if handled, records, inserted, err = item.Create(ctx, resource, params); handled || err != nil {
 				return
 			}
 		}
@@ -154,7 +154,7 @@ func (g *GenericHandler) Update(ctx context.Context, resource *model.Resource, p
 			continue
 		}
 		if item.Update != nil {
-			if handled, records, err = item.Update(ctx, resource, params); handled {
+			if handled, records, err = item.Update(ctx, resource, params); handled || err != nil {
 				return
 			}
 		}
@@ -197,13 +197,13 @@ func (g *GenericHandler) BeforeGet(ctx context.Context, resource *model.Resource
 	return nil
 }
 
-func (g *GenericHandler) Get(ctx context.Context, resource *model.Resource, id string) (handled bool, record *model.Record, error errors.ServiceError) {
+func (g *GenericHandler) Get(ctx context.Context, resource *model.Resource, id string) (handled bool, record *model.Record, err errors.ServiceError) {
 	for _, item := range g.handlers {
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
 		}
 		if item.Get != nil {
-			if handled, record, error = item.Get(ctx, resource, id); handled {
+			if handled, record, err = item.Get(ctx, resource, id); handled || err != nil {
 				return
 			}
 		}
@@ -252,7 +252,7 @@ func (g *GenericHandler) Delete(ctx context.Context, resource *model.Resource, p
 			continue
 		}
 		if item.Delete != nil {
-			if handled, err = item.Delete(ctx, resource, params); handled {
+			if handled, err = item.Delete(ctx, resource, params); handled || err != nil {
 				return
 			}
 		}

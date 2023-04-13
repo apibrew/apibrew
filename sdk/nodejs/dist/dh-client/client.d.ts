@@ -1,7 +1,7 @@
-export interface Entity<T> {
+export interface Entity {
     id?: string;
 }
-interface Repository<T extends Entity<T>> {
+interface Repository<T extends Entity> {
     create(entity: T): Promise<T>;
     update(entity: T): Promise<T>;
     apply(entity: T): Promise<T>;
@@ -26,7 +26,7 @@ interface FindParams {
     resolveReferences?: string[];
     query?: BooleanExpression | null;
 }
-export interface RepositoryExtension<T extends Entity<T>> {
+export interface RepositoryExtension<T extends Entity> {
     onCreate(handler: (elem: T) => Promise<T>, finalize?: boolean): void;
     onUpdate(handler: (elem: T) => Promise<T>, finalize?: boolean): void;
     onDelete(handler: (elem: T) => Promise<T>, finalize?: boolean): void;
@@ -44,7 +44,7 @@ export declare class DhClient {
     params: DhClientParams;
     constructor(params: DhClientParams);
     authenticateWithUsernameAndPassword(username: string, password: string): Promise<void>;
-    newRepository<T extends Entity<T>>(namespace: string, resource: string): Repository<T>;
+    newRepository<T extends Entity>(namespace: string, resource: string): Repository<T>;
     NewExtensionService(host: string, port: number): ExtensionService;
 }
 type ExternalFunctionData = {
@@ -56,12 +56,12 @@ interface ExtensionService {
     registerFunction(name: string, handler: ExternalFunction): void;
     getRemoteHost(): string;
 }
-interface RepositoryParams<T extends Entity<T>> {
+interface RepositoryParams<T extends Entity> {
     namespace: string;
     resource: string;
     updateCheckVersion: boolean;
 }
-export declare class RepositoryImpl<T extends Entity<T>> implements Repository<T> {
+export declare class RepositoryImpl<T extends Entity> implements Repository<T> {
     private readonly client;
     private readonly params;
     constructor(client: DhClient, params: RepositoryParams<T>);
@@ -77,7 +77,7 @@ export declare class RepositoryImpl<T extends Entity<T>> implements Repository<T
     }>;
     extend(extensionService: ExtensionService): RepositoryExtension<T>;
 }
-export declare class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryExtension<T> {
+export declare class RepositoryExtensionImpl<T extends Entity> implements RepositoryExtension<T> {
     private repository;
     private extension;
     private resourceName;

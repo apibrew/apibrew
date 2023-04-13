@@ -104,7 +104,7 @@ var ExtensionServiceImpl = /** @class */ (function () {
                     res.send('ok');
                 });
                 app.post('/:name', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-                    var name, request, response;
+                    var name, request, response, e_1;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -113,13 +113,24 @@ var ExtensionServiceImpl = /** @class */ (function () {
                                     name: name,
                                     request: req.body.content
                                 };
-                                return [4 /*yield*/, this.functions[name](request.request)];
+                                _a.label = 1;
                             case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                return [4 /*yield*/, this.functions[name](request.request)];
+                            case 2:
                                 response = _a.sent();
                                 res.send({
                                     content: response
                                 });
-                                return [2 /*return*/];
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_1 = _a.sent();
+                                console.log(e_1);
+                                res.status(400).send({
+                                    message: e_1.message
+                                });
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
                         }
                     });
                 }); });

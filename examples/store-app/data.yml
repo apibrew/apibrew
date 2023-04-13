@@ -1,0 +1,58 @@
+type: record
+resource: store
+properties:
+  name: "store-1"
+  description: "store-1 Description"
+---
+type: record
+resource: category
+properties:
+  name: "category-1"
+  description: "category-1 Description"
+---
+type: record
+resource: product
+properties:
+  name: "Shoes"
+  description: "My Shoes Description"
+  price: 100.0
+  quantity: 10
+  store:
+        name: "store-1"
+---
+type: record
+resource: product
+properties:
+  name: "T-Shirt"
+  description: "My T-Shirt Description"
+  price: 50.0
+  quantity: 25
+  store:
+        name: "store-1"
+  category:
+        name: "category-1"
+---
+type: record
+resource: product
+properties:
+  name: "Pants"
+  description: "My Pants Description"
+  price: 75.0
+  quantity: 15
+  store:
+        name: "store-1"
+  category:
+        name: "category-1"
+---
+type: record
+resource: product
+properties:
+  name: "Hat"
+  description: "My Hat Description"
+  price: 25.0
+  quantity: 20
+  store:
+        name: "store-1"
+  category:
+        name: "category-1"
+

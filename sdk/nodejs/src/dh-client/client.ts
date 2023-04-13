@@ -4,11 +4,11 @@ import axios from "axios";
 
 /////// #### abs #### //////
 
-export interface Entity<T> {
+export interface Entity {
     id?: string
 }
 
-interface Repository<T extends Entity<T>> {
+interface Repository<T extends Entity> {
     create(entity: T): Promise<T>;
 
     update(entity: T): Promise<T>;
@@ -35,7 +35,7 @@ interface FindParams {
     query?: BooleanExpression | null;
 }
 
-export interface RepositoryExtension<T extends Entity<T>> {
+export interface RepositoryExtension<T extends Entity> {
     onCreate(handler: (elem: T) => Promise<T>, finalize?: boolean): void;
 
     onUpdate(handler: (elem: T) => Promise<T>, finalize?: boolean): void;
@@ -75,7 +75,7 @@ export class DhClient {
         this.params.token = result.data.token!.content;
     }
 
-    public newRepository<T extends Entity<T>>(namespace: string, resource: string): Repository<T> {
+    public newRepository<T extends Entity>(namespace: string, resource: string): Repository<T> {
         return new RepositoryImpl<T>(this, {
             namespace: namespace,
             resource: resource,
@@ -150,11 +150,18 @@ class ExtensionServiceImpl implements ExtensionService {
                 request: req.body.content
             }
 
-            const response = await this.functions[name](request.request)
+            try {
 
-            res.send({
-                content: response
-            })
+                const response = await this.functions[name](request.request)
+                res.send({
+                    content: response
+                })
+            } catch (e: any) {
+                console.log(e)
+                res.status(400).send({
+                    message: e.message
+                })
+            }
         })
 
         console.log('starting extension service')
@@ -164,13 +171,13 @@ class ExtensionServiceImpl implements ExtensionService {
     }
 }
 
-interface RepositoryParams<T extends Entity<T>> {
+interface RepositoryParams<T extends Entity> {
     namespace: string,
     resource: string,
     updateCheckVersion: boolean;
 }
 
-export class RepositoryImpl<T extends Entity<T>> implements Repository<T> {
+export class RepositoryImpl<T extends Entity> implements Repository<T> {
     private readonly client: DhClient;
     private readonly params: RepositoryParams<T>;
 
@@ -241,7 +248,7 @@ export class RepositoryImpl<T extends Entity<T>> implements Repository<T> {
 
 // ## repository extension
 
-export class RepositoryExtensionImpl<T extends Entity<T>> implements RepositoryExtension<T> {
+export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExtension<T> {
     private repository: Repository<T>;
     private extension: ExtensionService;
     private resourceName: string;

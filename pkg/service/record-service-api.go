@@ -34,7 +34,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, err
 	}
 
-	if handled, records, total, err := r.genericHandler.List(ctx, resource, params); handled {
+	if handled, records, total, err := r.genericHandler.List(ctx, resource, params); handled || err != nil {
 		return records, total, err
 	}
 
@@ -178,7 +178,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	var records []*model.Record
 	var inserted []bool
 
-	if handled, records, inserted, err := r.genericHandler.Create(ctx, resource, params); handled {
+	if handled, records, inserted, err := r.genericHandler.Create(ctx, resource, params); handled || err != nil {
 		return records, inserted, err
 	} else {
 		params.Records = records
@@ -186,6 +186,10 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 
 	if resource.Virtual {
 		return nil, nil, virtualResourceBackendAccessError
+	}
+
+	if params.Records == nil {
+		return nil, nil, nil
 	}
 
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
@@ -409,7 +413,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		return nil, err
 	}
 
-	if handled, records, err := r.genericHandler.Update(ctx, resource, params); handled {
+	if handled, records, err := r.genericHandler.Update(ctx, resource, params); handled || err != nil {
 		success = false
 		return records, err
 	} else {
@@ -516,7 +520,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	if handled, res, err := r.genericHandler.Get(ctx, resource, id); handled {
+	if handled, res, err := r.genericHandler.Get(ctx, resource, id); handled || err != nil {
 		return res, err
 	}
 
@@ -631,7 +635,7 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 		return err
 	}
 
-	if handled, err := r.genericHandler.Delete(ctx, resource, params); handled {
+	if handled, err := r.genericHandler.Delete(ctx, resource, params); handled || err != nil {
 		return err
 	}
 
