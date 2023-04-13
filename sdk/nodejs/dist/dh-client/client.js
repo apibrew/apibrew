@@ -307,11 +307,65 @@ var RepositoryExtensionImpl = /** @class */ (function () {
             });
         });
     };
-    RepositoryExtensionImpl.prototype.onUpdate = function (handler) {
+    RepositoryExtensionImpl.prototype.onUpdate = function (handler, finalize) {
         return __awaiter(this, void 0, void 0, function () {
+            var extensionName, ext;
             return __generator(this, function (_a) {
-                //TODO implement me
-                throw new Error("Method not implemented.");
+                switch (_a.label) {
+                    case 0:
+                        extensionName = this.getExtensionName("OnUpdate");
+                        this.extension.registerFunction(extensionName, function (data) {
+                            return __awaiter(this, void 0, void 0, function () {
+                                var records, _i, _a, record, entity, response;
+                                return __generator(this, function (_b) {
+                                    switch (_b.label) {
+                                        case 0:
+                                            records = [];
+                                            _i = 0, _a = data.request.records;
+                                            _b.label = 1;
+                                        case 1:
+                                            if (!(_i < _a.length)) return [3 /*break*/, 4];
+                                            record = _a[_i];
+                                            return [4 /*yield*/, handler(record.properties)];
+                                        case 2:
+                                            entity = _b.sent();
+                                            records.push({
+                                                properties: entity
+                                            });
+                                            _b.label = 3;
+                                        case 3:
+                                            _i++;
+                                            return [3 /*break*/, 1];
+                                        case 4:
+                                            response = {
+                                                "response": {
+                                                    '@type': 'type.googleapis.com/stub.UpdateRecordResponse',
+                                                    "records": records
+                                                }
+                                            };
+                                            return [2 /*return*/, response];
+                                    }
+                                });
+                            });
+                        });
+                        ext = {
+                            name: extensionName,
+                            namespace: this.namespace,
+                            resource: this.resourceName,
+                            instead: {
+                                update: {
+                                    kind: "httpCall",
+                                    uri: "http://".concat(this.extension.getRemoteHost(), "/").concat(extensionName),
+                                    method: 'POST',
+                                },
+                                finalize: finalize,
+                            },
+                        };
+                        return [4 /*yield*/, this.extensionRepository.apply(ext)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
             });
         });
     };

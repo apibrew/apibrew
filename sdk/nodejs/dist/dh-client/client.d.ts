@@ -86,7 +86,7 @@ export declare class RepositoryExtensionImpl<T extends Entity<T>> implements Rep
     private extensionRepository;
     constructor(repository: Repository<T>, extension: ExtensionService, resourceName: string, namespace: string, client: DhClient);
     onCreate(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void>;
-    onUpdate(handler: (elem: T) => Promise<T>): Promise<void>;
+    onUpdate(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void>;
     onDelete(handler: (elem: T) => Promise<T>): Promise<void>;
     onGet(handler: (id: string) => Promise<T>): Promise<void>;
     onList(handler: () => Promise<{

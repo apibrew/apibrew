@@ -51,9 +51,6 @@ function run() {
                 case 1:
                     _a.sent();
                     repo = client.newRepository("default", "country");
-                    repo.find({}).then(function (result) {
-                        console.log(result.content.map(function (item) { return item.properties; }));
-                    });
                     extension = client.NewExtensionService("127.0.0.1", 17686);
                     return [4 /*yield*/, extension.run()];
                 case 2:
@@ -65,6 +62,13 @@ function run() {
                             return [2 /*return*/, entity];
                         });
                     }); });
+                    repo.extend(extension).onUpdate(function (entity) { return __awaiter(_this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            console.log(entity);
+                            entity.description = entity.description + ' Updated desc 123';
+                            return [2 /*return*/, entity];
+                        });
+                    }); }, false);
                     return [2 /*return*/];
             }
         });

@@ -102,7 +102,7 @@ func (g *GenericHandler) Create(ctx context.Context, resource *model.Resource, p
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
 		}
-		if item.List != nil {
+		if item.Create != nil {
 			if handled, records, inserted, err = item.Create(ctx, resource, params); handled {
 				return
 			}
@@ -153,7 +153,7 @@ func (g *GenericHandler) Update(ctx context.Context, resource *model.Resource, p
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
 		}
-		if item.List != nil {
+		if item.Update != nil {
 			if handled, records, err = item.Update(ctx, resource, params); handled {
 				return
 			}
@@ -202,7 +202,7 @@ func (g *GenericHandler) Get(ctx context.Context, resource *model.Resource, id s
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
 		}
-		if item.List != nil {
+		if item.Get != nil {
 			if handled, record, error = item.Get(ctx, resource, id); handled {
 				return
 			}
@@ -251,7 +251,7 @@ func (g *GenericHandler) Delete(ctx context.Context, resource *model.Resource, p
 		if g.selectorMap[item] != nil && !g.selectorMap[item](ctx, resource) {
 			continue
 		}
-		if item.List != nil {
+		if item.Delete != nil {
 			if handled, err = item.Delete(ctx, resource, params); handled {
 				return
 			}

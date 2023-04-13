@@ -56,6 +56,7 @@ func (r *recordService) Update(ctx context.Context, request *rest.UpdateRecordRe
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records: []*model.Record{{
+			Id:         request.Id,
 			Properties: request.Properties,
 		}},
 	})
