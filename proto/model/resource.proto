@@ -58,6 +58,7 @@ message ResourceProperty {
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
 
+// Reference is a data structure which is used to describe a reference. Reference is like a foreign key on sql databases or reference on mongodb etc.
 message Reference {
   string referencedResource = 2; // referenced resource name
   bool cascade = 3; // if cascade is true, delete/update operations will be cascaded to back referenced resources
@@ -79,16 +80,19 @@ enum Order {
   ORDER_DESC = 2;
 }
 
+// ResourceIndexProperty is a data structure which is used to describe a resource index property. Resource index property is like a index property on sql databases or index property on mongodb etc.
 message ResourceIndexProperty {
-  string name = 1;
-  Order order = 2;
+  string name = 1; // property name
+  Order order = 2; // order
 }
 
+// ResourceIndexType is a data structure which is used to describe a resource index type. Resource index type is like a index type on sql databases or index type on mongodb etc.
 enum ResourceIndexType {
-  BTREE = 0;
-  HASH = 1;
+  BTREE = 0; // BTREE is a balanced tree index
+  HASH = 1; // HASH is a hash index
 }
 
+// ResourceIndex is a data structure which is used to describe a resource index. Resource index is like a index on sql databases or index on mongodb etc.
 message ResourceIndex {
   repeated ResourceIndexProperty properties = 1; // list of properties inside single index. Normally you will need only single property. Multi property will be needed for multi property indexes(for complex indexes)
   ResourceIndexType indexType = 2; // Index type(BTREE, HASH)
@@ -97,6 +101,15 @@ message ResourceIndex {
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
 
+// ResourceQuery is a data structure which is used to describe a resource query. Resource query is like a sql query on sql databases or mongodb query on mongodb etc.
+message ResourceQuery {
+  string name = 1; // query name. It is unique per resource. It is used to identify query. It is also used to generate query id.
+  repeated string input = 2; // input is a list of property names. It is used to define input parameters of query. It is like a function parameters on sql databases.
+  string description = 3; // query description. It is an informative column. It is used to describe query.
+  model.BooleanExpression query = 4; // query is a boolean expression. It is used to filter records. It is like a where clause on sql databases.
+}
+
+// Resource is a data structure which is used to describe a resource. Resource is like a table on sql databases or collection on mongodb etc.
 message Resource {
   string id = 1 [(model.hcl_ignore) = true];  // unique resource id; read only
   string name = 2 [(model.hcl_label) = "name"]; // unique resource name, it is unique per namespace
@@ -108,10 +121,11 @@ message Resource {
   bool virtual = 11; // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.
   bool immutable = 12; // if true, delete and update will not be allowed on this resource
   bool abstract = 13; // if abstract, resource is only available to internal and extension side operations
-  optional string title = 14;
-  optional string description = 15;
+  optional string title = 14; // It is an informative column. It is used to describe resource
+  optional string description = 15; // It is an informative column. It is used to describe resource
+  repeated ResourceQuery queries = 16; // list of resource queries. Queries is used to query records of resource. Queries is like a view on sql databases. Queries is not supported by all backends. It is only supported by backends which supports query language. You can predefine parameterized queries and use them in your application. Queries is also used to generate client side libraries.
 
-  AuditData auditData = 101;
-  uint32 version = 102;
-  map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
+  AuditData auditData = 101; // audit data is used to track changes on resource.
+  uint32 version = 102; // version is used to track changes on resource. It is incremented on each update.
+  map<string, string> annotations = 103 [(model.hcl_block) = "annotations"]; // annotations is used to add custom key value pairs to resource.
 }
