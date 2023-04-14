@@ -149,6 +149,24 @@ var RepositoryImpl = /** @class */ (function () {
         this.client = client;
         this.params = params;
     }
+    RepositoryImpl.prototype.loadResources = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.resource) {
+                            return [2 /*return*/];
+                        }
+                        return [4 /*yield*/, axios_1.default.get("http://".concat(this.client.params.Addr, "/system/resources/").concat(this.params.namespace, "/").concat(this.params.resource))];
+                    case 1:
+                        result = _a.sent();
+                        this.resource = result.data.resource;
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     RepositoryImpl.prototype.create = function (entity) {
         return __awaiter(this, void 0, void 0, function () {
             var result;

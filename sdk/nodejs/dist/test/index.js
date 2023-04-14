@@ -58,15 +58,17 @@ function run() {
                     _a.sent();
                     orderExtension = orderRepo.extend(extension);
                     orderExtension.onCreate(function (order) { return __awaiter(_this, void 0, void 0, function () {
-                        var product;
+                        var existingOrder, product;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
-                                case 0:
+                                case 0: return [4 /*yield*/, orderRepo.get(order.id)];
+                                case 1:
+                                    existingOrder = _a.sent();
                                     if (order.status != 'pending') {
                                         throw new Error('Order must be created with pending status');
                                     }
-                                    return [4 /*yield*/, productRepo.get(order.product.id)];
-                                case 1:
+                                    return [4 /*yield*/, productRepo.get(existingOrder.product.id)];
+                                case 2:
                                     product = _a.sent();
                                     if (product.quantity < order.quantity) {
                                         throw new Error('Not enough product in stock');
