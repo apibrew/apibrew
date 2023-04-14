@@ -4,6 +4,7 @@ export interface Entity {
 interface Repository<T extends Entity> {
     create(entity: T): Promise<T>;
     update(entity: T): Promise<T>;
+    loadResources(): Promise<void>;
     apply(entity: T): Promise<T>;
     get(id: string): Promise<T>;
     find(params: FindParams): Promise<{
@@ -64,7 +65,9 @@ interface RepositoryParams<T extends Entity> {
 export declare class RepositoryImpl<T extends Entity> implements Repository<T> {
     private readonly client;
     private readonly params;
+    private resource?;
     constructor(client: DhClient, params: RepositoryParams<T>);
+    loadResources(): Promise<void>;
     create(entity: T): Promise<T>;
     update(entity: T): Promise<T>;
     get(id: string): Promise<T>;

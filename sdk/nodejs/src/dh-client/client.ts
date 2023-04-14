@@ -6,12 +6,18 @@ import axios from "axios";
 
 export interface Entity {
     id?: string
+
+    [key: string]: any
 }
 
 interface Repository<T extends Entity> {
     create(entity: T): Promise<T>;
 
     update(entity: T): Promise<T>;
+
+    loadResources(): Promise<void>;
+
+    load(entity: T): Promise<T>;
 
     apply(entity: T): Promise<T>;
 
@@ -151,7 +157,6 @@ class ExtensionServiceImpl implements ExtensionService {
             }
 
             try {
-
                 const response = await this.functions[name](request.request)
                 res.send({
                     content: response
@@ -180,10 +185,20 @@ interface RepositoryParams<T extends Entity> {
 export class RepositoryImpl<T extends Entity> implements Repository<T> {
     private readonly client: DhClient;
     private readonly params: RepositoryParams<T>;
+    private resource?: components["schemas"]["Resource"];
 
     constructor(client: DhClient, params: RepositoryParams<T>) {
         this.client = client;
         this.params = params;
+    }
+
+    async loadResources(): Promise<void> {
+        if (this.resource) {
+            return
+        }
+
+        const result = await axios.get<components["schemas"]["GetResourceByNameResponse"]>(`http://${this.client.params.Addr}/system/resources/${this.params.namespace}/${this.params.resource}`);
+        this.resource = result.data.resource;
     }
 
     async create(entity: T): Promise<T> {
@@ -214,6 +229,33 @@ export class RepositoryImpl<T extends Entity> implements Repository<T> {
         });
 
         return result.data;
+    }
+
+    public async load(entity: T): Promise<T> {
+        if (entity.id) {
+            return this.get(entity.id);
+        } else {
+            await this.loadResources();
+
+            for (const prop of this.resource!.properties!) {
+                if (prop.unique) {
+                    const val = entity[prop.name!]
+                    const result = await axios.get<components["schemas"]["ListRecordResponse"]>(`http://${this.client.params.Addr}/${this.params.namespace}/${this.params.resource}?filters=${prop.name}&filters=${val}&limit=1`, {
+                        headers: {
+                            Authorization: `Bearer ${this.client.params.token}`
+                        }
+                    });
+
+                    if (!result.data.total) {
+                        continue
+                    }
+
+                    return result.data.content![0].properties as T;
+                }
+            }
+        }
+
+        throw new Error(`Entity not found: ${this.params.namespace}/${this.params.resource}`);
     }
 
     public async apply<T>(entity: T): Promise<T> {

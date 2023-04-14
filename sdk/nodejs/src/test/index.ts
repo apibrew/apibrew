@@ -22,7 +22,7 @@ async function run() {
             throw new Error('Order must be created with pending status')
         }
 
-        const product = await productRepo.get(order.product.id)
+        const product = await productRepo.load(order.product)
 
         if (product.quantity < order.quantity) {
             throw new Error('Not enough product in stock')
@@ -39,7 +39,7 @@ async function run() {
         }
 
         if (order.status == 'completed') {
-            const product = await productRepo.get(order.product.id)
+            const product = await productRepo.load(order.product)
 
             if (product.quantity < order.quantity) {
                 throw new Error('Not enough product in stock')

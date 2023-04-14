@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -168,8 +169,8 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 		Description: description,
 		Get: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     title,
-			Description: description + " - get list",
+			Summary:     fmt.Sprintf("%s - List items", title),
+			Description: fmt.Sprintf("%s - List items", description),
 			Responses: map[string]*openapi3.ResponseRef{
 				"200": {
 					Value: &openapi3.Response{
@@ -182,8 +183,30 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 		},
 		Post: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     title,
-			Description: description + " - create item",
+			Summary:     fmt.Sprintf("%s - Create new item", title),
+			Description: fmt.Sprintf("%s - Create new item", description),
+			RequestBody: &openapi3.RequestBodyRef{
+				Value: &openapi3.RequestBody{
+					Required: true,
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: jsonSchemaRef,
+					}),
+				},
+			},
+			Responses: map[string]*openapi3.ResponseRef{
+				"200": {
+					Value: &openapi3.Response{
+						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+							Ref: jsonSchemaRef,
+						}),
+					},
+				},
+			},
+		},
+		Patch: &openapi3.Operation{
+			Tags:        tags,
+			Summary:     fmt.Sprintf("%s - Apply an item", title),
+			Description: fmt.Sprintf("%s - Apply an item, it will check id and unique properties, if such item is exists, update operation will be executed, if not create operation is executed. If There are no change between updating record and existing record, nothing will be done", description),
 			RequestBody: &openapi3.RequestBodyRef{
 				Value: &openapi3.RequestBody{
 					Required: true,
@@ -209,8 +232,22 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 		Description: description,
 		Get: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     title,
-			Description: description + " - get item",
+			Summary:     fmt.Sprintf("%s - Get item", title),
+			Description: fmt.Sprintf("%s - Get item", description),
+			Parameters: []*openapi3.ParameterRef{
+				{
+					Value: &openapi3.Parameter{
+						Name:     "id",
+						In:       "path",
+						Required: true,
+						Schema: &openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: "string",
+							},
+						},
+					},
+				},
+			},
 			Responses: map[string]*openapi3.ResponseRef{
 				"200": {
 					Value: &openapi3.Response{
@@ -223,8 +260,22 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 		},
 		Delete: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     title,
-			Description: description + " - delete item",
+			Summary:     fmt.Sprintf("%s - Delete item", title),
+			Description: fmt.Sprintf("%s - Delete item", description),
+			Parameters: []*openapi3.ParameterRef{
+				{
+					Value: &openapi3.Parameter{
+						Name:     "id",
+						In:       "path",
+						Required: true,
+						Schema: &openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: "string",
+							},
+						},
+					},
+				},
+			},
 			Responses: map[string]*openapi3.ResponseRef{
 				"200": {
 					Value: &openapi3.Response{
@@ -237,8 +288,22 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 		},
 		Put: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     title,
-			Description: description + " - update item",
+			Summary:     fmt.Sprintf("%s - Update item", title),
+			Description: fmt.Sprintf("%s - Update item", description),
+			Parameters: []*openapi3.ParameterRef{
+				{
+					Value: &openapi3.Parameter{
+						Name:     "id",
+						In:       "path",
+						Required: true,
+						Schema: &openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: "string",
+							},
+						},
+					},
+				},
+			},
 			RequestBody: &openapi3.RequestBodyRef{
 				Value: &openapi3.RequestBody{
 					Required: true,
@@ -252,6 +317,28 @@ func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, re
 					Value: &openapi3.Response{
 						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 							Ref: jsonSchemaRef,
+						}),
+					},
+				},
+			},
+		},
+	}
+
+	doc.Paths["/"+s.getResourceFQN(resource)+"/_search"] = &openapi3.PathItem{
+		Summary:     title + " - Search",
+		Description: description + " - Search",
+		Post: &openapi3.Operation{
+			Tags:        tags,
+			Summary:     fmt.Sprintf("%s - Search items", title),
+			Description: fmt.Sprintf("%s - Search items", description),
+			RequestBody: &openapi3.RequestBodyRef{
+				Ref: "#/components/schemas/SearchRecordRequest",
+			},
+			Responses: map[string]*openapi3.ResponseRef{
+				"200": {
+					Value: &openapi3.Response{
+						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+							Ref: "#/components/schemas/item-" + s.getResourceFQN(resource),
 						}),
 					},
 				},
