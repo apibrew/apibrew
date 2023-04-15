@@ -96,10 +96,11 @@ func (p *protoMessageParserFlags[T]) prepareFlags(path string, cmd *cobra.Comman
 				cmd.PersistentFlags().String(name, "", strings.Join(names, ", "))
 			case "message":
 				if field.IsList() {
-					calls = append(calls, func() {
-						newName := name + "-[index]"
-						p.prepareFlags(newName, cmd, field.Message().Fields())
-					})
+					// not implemented
+					//calls = append(calls, func() {
+					//	newName := name + "-[index]"
+					//	p.prepareFlags(newName, cmd, field.Message().Fields())
+					//})
 				} else if field.IsMap() {
 					cmd.PersistentFlags().String(name, "", "")
 				} else {

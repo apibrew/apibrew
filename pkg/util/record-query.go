@@ -63,6 +63,8 @@ func deStringifyPropertyValue(actualValue string, property *model.ResourceProper
 		return structpb.NewStringValue(actualValue), nil
 	case model.ResourceProperty_OBJECT:
 		return nil, errors.UnsupportedOperation.WithDetails("Object de-serialization from string is not supported")
+	case model.ResourceProperty_STRUCT:
+		return nil, errors.UnsupportedOperation.WithDetails("Struct de-serialization from string is not supported")
 	case model.ResourceProperty_MAP:
 		return nil, errors.UnsupportedOperation.WithDetails("Map de-serialization from string is not supported")
 	case model.ResourceProperty_LIST:

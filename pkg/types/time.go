@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+var TimeType = timeType{}
+
 // string
 type timeType struct {
 }
@@ -35,18 +37,6 @@ func (t timeType) String(val any) string {
 
 func (t timeType) IsEmpty(value any) bool {
 	return value == nil
-}
-
-func (t timeType) ValidatePackedValue(value *structpb.Value) error {
-	err := canCast[string]("string", value.AsInterface())
-
-	if err != nil {
-		return err
-	}
-
-	_, err = time.Parse("15:04:05", value.GetStringValue())
-
-	return err
 }
 
 func (t timeType) Default() any {

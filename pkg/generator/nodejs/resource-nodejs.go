@@ -9,6 +9,7 @@ import (
 	"github.com/tislib/data-handler/pkg/generator/nodejs/statik"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/types"
+	"github.com/tislib/data-handler/pkg/util"
 	"html/template"
 	"io"
 	"os"
@@ -51,7 +52,7 @@ func PropNodejsType(prop *model.ResourceProperty) string {
 	if prop.Type == model.ResourceProperty_REFERENCE {
 		return strcase.ToCamel(prop.Reference.ReferencedResource)
 	}
-	return types.ResourcePropertyTypeToJsonSchemaType(prop.Type).Type
+	return util.ResourcePropertyTypeToJsonSchemaType(prop.Type).Type
 }
 
 func IsNullable(prop *model.ResourceProperty) bool {

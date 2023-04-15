@@ -7,6 +7,8 @@ import (
 
 var emptyUuid = uuid.UUID{}
 
+var UuidType = uuidType{}
+
 // string
 type uuidType struct {
 }
@@ -41,16 +43,4 @@ func (u uuidType) String(val any) string {
 
 func (u uuidType) IsEmpty(value any) bool {
 	return value == nil
-}
-
-func (u uuidType) ValidatePackedValue(value *structpb.Value) error {
-	err := canCast[string]("string", value.AsInterface())
-
-	if err != nil {
-		return err
-	}
-
-	_, err = uuid.Parse(value.GetStringValue())
-
-	return err
 }

@@ -70,8 +70,8 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 
 	errorFields := util.GetErrorFields(err)
 
-	if len(errorFields) != 5 {
-		t.Error("There should be 5 errors; but " + strconv.Itoa(len(errorFields)))
+	if len(errorFields) != 6 {
+		t.Error("There should be 6 errors; but " + strconv.Itoa(len(errorFields)))
 		return
 	}
 

@@ -5,6 +5,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+var BytesType = bytesType{}
+
 // string: base64
 type bytesType struct {
 }
@@ -48,18 +50,6 @@ func (b bytesType) String(val any) string {
 
 func (b bytesType) IsEmpty(val any) bool {
 	return val == nil || len(val.([]byte)) == 0
-}
-
-func (b bytesType) ValidatePackedValue(value *structpb.Value) error {
-	err := canCast[string]("string", value.AsInterface())
-
-	if err != nil {
-		return err
-	}
-
-	_, err = b.UnPack(value)
-
-	return err
 }
 
 func (b bytesType) Default() any {
