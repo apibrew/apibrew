@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+var DateType = dateType{}
+
 // string
 type dateType struct {
 }
@@ -39,16 +41,4 @@ func (u dateType) String(val any) string {
 
 func (u dateType) IsEmpty(value any) bool {
 	return value == nil
-}
-
-func (u dateType) ValidatePackedValue(value *structpb.Value) error {
-	err := canCast[string]("string", value.AsInterface())
-
-	if err != nil {
-		return err
-	}
-
-	_, err = u.UnPack(value)
-
-	return err
 }

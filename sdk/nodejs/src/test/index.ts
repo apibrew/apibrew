@@ -51,6 +51,16 @@ async function run() {
 
         return order
     })
+
+    orderExtension.onDelete(async (order) => {
+        const existingOrder = await orderRepo.get(order.id)
+
+        if (existingOrder.status == 'completed') {
+            throw new Error('Cannot delete completed order')
+        }
+
+        return order
+    })
 }
 
 run().then()

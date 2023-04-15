@@ -5,6 +5,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+var Float64Type = float64Type{}
+
 // float64
 type float64Type struct {
 }
@@ -35,10 +37,6 @@ func (d float64Type) String(val any) string {
 
 func (d float64Type) IsEmpty(value any) bool {
 	return value == nil
-}
-
-func (d float64Type) ValidatePackedValue(value *structpb.Value) error {
-	return canCastNumber[float64]("float64", value.AsInterface())
 }
 
 func (d float64Type) Default() any {

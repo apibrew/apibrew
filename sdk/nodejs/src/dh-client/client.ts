@@ -395,19 +395,104 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
         await this.extensionRepository.apply(ext)
     }
 
-    async onDelete(handler: (elem: T) => Promise<T>): Promise<void> {
-        //TODO implement me
-        throw new Error("Method not implemented.");
+    async onDelete(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void> {
+        const extensionName = this.getExtensionName("OnDelete");
+
+        this.extension.registerFunction(extensionName, async (data: ExternalFunctionData) => {
+
+            for (const id of data.request.ids) {
+                await handler(await this.repository.get(id))
+            }
+
+            const response: ExternalFunctionData = {
+                "response": {
+                    '@type': 'type.googleapis.com/stub.DeleteRecordResponse',
+                }
+            }
+
+            return response
+        });
+
+        const ext = {
+            name: extensionName,
+            namespace: this.namespace,
+            resource: this.resourceName,
+            instead: {
+                delete: {
+                    kind: "httpCall",
+                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    method: 'POST',
+                },
+                finalize: finalize,
+            },
+        };
+
+        await this.extensionRepository.apply(ext)
     }
 
-    async onGet(handler: (id: string) => Promise<T>): Promise<void> {
-        //TODO implement me
-        throw new Error("Method not implemented.");
+    async onGet(handler: (id: string) => Promise<T>, finalize?: boolean): Promise<void> {
+        const extensionName = this.getExtensionName("OnGet");
+
+        this.extension.registerFunction(extensionName, async (data: ExternalFunctionData) => {
+            await handler(data.request.id)
+
+            const response: ExternalFunctionData = {
+                "response": {
+                    '@type': 'type.googleapis.com/stub.GetRecordResponse',
+                }
+            }
+
+            return response
+        });
+
+        const ext = {
+            name: extensionName,
+            namespace: this.namespace,
+            resource: this.resourceName,
+            instead: {
+                get: {
+                    kind: "httpCall",
+                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    method: 'POST',
+                },
+                finalize: finalize,
+            },
+        };
+
+        await this.extensionRepository.apply(ext)
     }
 
-    async onList(handler: () => Promise<{ properties: T }[]>): Promise<void> {
-        //TODO implement me
-        throw new Error("Method not implemented.");
+    async onList(handler: () => Promise<{ properties: T }[]>, finalize?: boolean): Promise<void> {
+        const extensionName = this.getExtensionName("OnList");
+
+        this.extension.registerFunction(extensionName, async function (data: ExternalFunctionData) {
+            const records = await handler()
+
+            const response: ExternalFunctionData = {
+                "response": {
+                    '@type': 'type.googleapis.com/stub.UpdateRecordResponse',
+                    "records": records
+                }
+            }
+
+            return response
+        });
+
+        const ext = {
+            name: extensionName,
+            namespace: this.namespace,
+            resource: this.resourceName,
+            instead: {
+                list: {
+                    kind: "httpCall",
+                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    method: 'POST',
+                },
+                finalize: finalize,
+            },
+        };
+
+        await this.extensionRepository.apply(ext)
     }
 
     private getExtensionName(action: string): string {

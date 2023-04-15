@@ -147,7 +147,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		log.Print("Normalized record: " + record.Id)
 	}
 
-	if err = r.validateRecords(resource, params.Records, false); err != nil {
+	if err = validateRecords(resource, params.Records, false); err != nil {
 		return nil, nil, err
 	}
 
@@ -401,7 +401,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		util.NormalizeRecord(resource, record)
 	}
 
-	err = r.validateRecords(resource, params.Records, true)
+	err = validateRecords(resource, params.Records, true)
 
 	if err != nil {
 		success = false

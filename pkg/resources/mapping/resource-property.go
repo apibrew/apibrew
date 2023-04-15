@@ -17,7 +17,25 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 		properties["description"] = structpb.NewStringValue(*property.Description)
 	}
 	properties["type"] = structpb.NewNumberValue(float64(property.Type.Number()))
-	properties["subType"] = structpb.NewNumberValue(float64(property.Type.Number()))
+
+	if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
+		properties["subProperty"] = structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(property.SubProperty, resource).Properties})
+	}
+
+	if property.Type == model.ResourceProperty_STRUCT {
+		var propertyValues []*structpb.Value
+
+		for _, subProperty := range property.Properties {
+			propertyValues = append(propertyValues, structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(subProperty, resource).Properties}))
+		}
+
+		properties["properties"] = structpb.NewListValue(&structpb.ListValue{Values: propertyValues})
+	}
+
+	if property.Type == model.ResourceProperty_ENUM {
+		properties["enumValues"] = structpb.NewListValue(&structpb.ListValue{Values: property.EnumValues})
+	}
+
 	properties["resource"] = util.StructKv("id", resource.Id)
 	properties["required"] = structpb.NewBoolValue(property.Required)
 	properties["primary"] = structpb.NewBoolValue(property.Primary)
@@ -37,7 +55,6 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 
 	properties["defaultValue"] = property.DefaultValue
 	properties["exampleValue"] = property.ExampleValue
-	properties["enumValues"] = structpb.NewListValue(&structpb.ListValue{Values: property.EnumValues})
 
 	properties["annotations"], _ = structpb.NewValue(convertMap(property.Annotations, func(v string) interface{} {
 		return v
@@ -104,6 +121,28 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	if record.Properties["description"] != nil {
 		resourceProperty.Description = new(string)
 		*resourceProperty.Description = record.Properties["description"].GetStringValue()
+	}
+
+	if resourceProperty.Type == model.ResourceProperty_LIST || resourceProperty.Type == model.ResourceProperty_MAP {
+		resourceProperty.SubProperty = ResourcePropertyFromRecord(&model.Record{
+			Properties: record.Properties["subProperty"].GetStructValue().GetFields(),
+		})
+	}
+
+	if resourceProperty.Type == model.ResourceProperty_STRUCT {
+		var properties []*model.ResourceProperty
+
+		for _, propertyValue := range record.Properties["properties"].GetListValue().GetValues() {
+			properties = append(properties, ResourcePropertyFromRecord(&model.Record{
+				Properties: propertyValue.GetStructValue().GetFields(),
+			}))
+		}
+
+		resourceProperty.Properties = properties
+	}
+
+	if resourceProperty.Type == model.ResourceProperty_ENUM {
+		resourceProperty.EnumValues = record.Properties["enumValues"].GetListValue().GetValues()
 	}
 
 	mapSpecialColumnsFromRecord(resourceProperty, &record.Properties)

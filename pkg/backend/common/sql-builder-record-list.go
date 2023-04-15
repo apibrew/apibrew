@@ -522,7 +522,7 @@ func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, 
 }
 
 func DbDecode(property *model.ResourceProperty, val interface{}) (interface{}, errors.ServiceError) {
-	if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
+	if property.Type == model.ResourceProperty_STRUCT || property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
 		var data = new(interface{})
 		err2 := json.Unmarshal([]byte(val.(string)), data)
 

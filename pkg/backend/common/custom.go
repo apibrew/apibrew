@@ -1,19 +1,19 @@
-package types
+package common
 
 import (
 	"fmt"
+	"github.com/tislib/data-handler/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type CustomType struct {
-	CustomEquals              func(a, b interface{}) bool
-	CustomPack                func(value interface{}) (*structpb.Value, error)
-	CustomUnPack              func(val *structpb.Value) (interface{}, error)
-	CustomDefault             func() any
-	CustomPointer             func(required bool) any
-	CustomString              func(val any) string
-	CustomIsEmpty             func(value any) bool
-	CustomValidatePackedValue func(value *structpb.Value) error
+	CustomEquals  func(a, b interface{}) bool
+	CustomPack    func(value interface{}) (*structpb.Value, error)
+	CustomUnPack  func(val *structpb.Value) (interface{}, error)
+	CustomDefault func() any
+	CustomPointer func(required bool) any
+	CustomString  func(val any) string
+	CustomIsEmpty func(value any) bool
 }
 
 func (u CustomType) Equals(a, b interface{}) bool {
@@ -76,24 +76,15 @@ func (u CustomType) IsEmpty(value any) bool {
 	}
 }
 
-func (u CustomType) ValidatePackedValue(value *structpb.Value) error {
-	if u.CustomValidatePackedValue == nil {
-		return nil
-	} else {
-		return u.CustomValidatePackedValue(value)
-	}
-}
-
-func CustomTypeFromType(typ PropertyType, override CustomType) CustomType {
+func CustomTypeFromType(typ types.PropertyType, override CustomType) CustomType {
 	customType := CustomType{
-		CustomEquals:              typ.Equals,
-		CustomPack:                typ.Pack,
-		CustomUnPack:              typ.UnPack,
-		CustomDefault:             typ.Default,
-		CustomPointer:             typ.Pointer,
-		CustomString:              typ.String,
-		CustomIsEmpty:             typ.IsEmpty,
-		CustomValidatePackedValue: typ.ValidatePackedValue,
+		CustomEquals:  typ.Equals,
+		CustomPack:    typ.Pack,
+		CustomUnPack:  typ.UnPack,
+		CustomDefault: typ.Default,
+		CustomPointer: typ.Pointer,
+		CustomString:  typ.String,
+		CustomIsEmpty: typ.IsEmpty,
 	}
 
 	if override.CustomEquals != nil {
@@ -122,10 +113,6 @@ func CustomTypeFromType(typ PropertyType, override CustomType) CustomType {
 
 	if override.CustomIsEmpty != nil {
 		customType.CustomIsEmpty = override.CustomIsEmpty
-	}
-
-	if override.CustomValidatePackedValue != nil {
-		customType.CustomValidatePackedValue = override.CustomValidatePackedValue
 	}
 
 	return customType

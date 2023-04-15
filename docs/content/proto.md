@@ -837,7 +837,8 @@ if you send 123.45 for int64
 | exampleValue | [google.protobuf.Value](#google-protobuf-Value) | optional | exampleValue is example value. It is an informative column |
 | enumValues | [google.protobuf.Value](#google-protobuf-Value) | repeated | enumValues is used if property type is an enum |
 | reference | [Reference](#model-Reference) | optional | reference property is only valid and required for Reference types. |
-| subType | [ResourceProperty.Type](#model-ResourceProperty-Type) | optional | subType is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string) |
+| properties | [ResourceProperty](#model-ResourceProperty) | repeated | list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself |
+| subProperty | [ResourceProperty](#model-ResourceProperty) | optional | subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string) |
 | title | [string](#string) | optional | It is an informative column |
 | description | [string](#string) | optional | It is an informative column |
 | annotations | [ResourceProperty.AnnotationsEntry](#model-ResourceProperty-AnnotationsEntry) | repeated |  |
@@ -931,6 +932,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 | LIST | 14 |  |
 | REFERENCE | 15 |  |
 | ENUM | 16 |  |
+| STRUCT | 17 |  |
 
 
  <!-- end enums -->
