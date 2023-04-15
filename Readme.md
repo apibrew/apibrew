@@ -6,7 +6,6 @@ Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/
 [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/data-handler)
 
-# Overview
 
 ## Introduction
 **Everything is a *Resource***. And **Everything has a *CRUD API***
