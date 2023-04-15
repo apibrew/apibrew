@@ -2465,6 +2465,7 @@ components:
                     type: string
                 name:
                     type: string
+                    description: property name
                 type:
                     enum:
                         - BOOL
@@ -2485,11 +2486,14 @@ components:
                         - ENUM
                         - STRUCT
                     type: string
+                    description: type of property
                     format: enum
                 mapping:
                     type: string
+                    description: mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
                 required:
                     type: boolean
+                    description: this is to mark property as required
                 primary:
                     type: boolean
                 length:
@@ -2525,7 +2529,7 @@ components:
                     type: object
                     additionalProperties:
                         type: string
-            description: Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record Data handler is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64
+            description: Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record Data handler is responsible to validate data according to property types. For example, when you call create record and if you send 123.45 for int64
         ResourceSourceConfig:
             type: object
             properties:
@@ -2747,6 +2751,7 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+            description: taleh123
         UpdateResourceResponse:
             type: object
             properties:
