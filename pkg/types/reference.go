@@ -52,7 +52,3 @@ func (u referenceType) String(val any) string {
 func (u referenceType) IsEmpty(value any) bool {
 	return value == nil
 }
-
-func (u referenceType) ValidatePackedValue(value *structpb.Value) error {
-	return canCast[map[string]interface{}]("ReferenceType", value.AsInterface())
-}

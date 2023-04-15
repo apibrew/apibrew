@@ -5,24 +5,24 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-var ObjectType = objectType{}
+var MapType = mapType{}
 
 // string
-type objectType struct {
+type mapType struct {
 }
 
-func (o objectType) Equals(a, b interface{}) bool {
+func (o mapType) Equals(a, b interface{}) bool {
 	v1, _ := o.Serialize(a)
 	v2, _ := o.Serialize(b)
 
 	return v1 == v2
 }
 
-func (o objectType) Pack(value interface{}) (*structpb.Value, error) {
+func (o mapType) Pack(value interface{}) (*structpb.Value, error) {
 	return structpb.NewValue(value)
 }
 
-func (o objectType) Serialize(value interface{}) (interface{}, error) {
+func (o mapType) Serialize(value interface{}) (interface{}, error) {
 	data, err := json.Marshal(value)
 
 	if err != nil {
@@ -32,11 +32,11 @@ func (o objectType) Serialize(value interface{}) (interface{}, error) {
 	return string(data), nil
 }
 
-func (o objectType) UnPack(value *structpb.Value) (interface{}, error) {
+func (o mapType) UnPack(value *structpb.Value) (interface{}, error) {
 	return value.AsInterface(), nil
 }
 
-func (o objectType) Pointer(required bool) any {
+func (o mapType) Pointer(required bool) any {
 	if required {
 		return new(string)
 	} else {
@@ -44,14 +44,14 @@ func (o objectType) Pointer(required bool) any {
 	}
 }
 
-func (o objectType) String(val any) string {
+func (o mapType) String(val any) string {
 	return ""
 }
 
-func (o objectType) IsEmpty(value any) bool {
+func (o mapType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (o objectType) Default() any {
+func (o mapType) Default() any {
 	return map[string]interface{}{}
 }

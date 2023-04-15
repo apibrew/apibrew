@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+var BoolType = boolType{}
+
 // bool
 type boolType struct {
 }
@@ -43,8 +45,4 @@ func (u boolType) typed(val any) bool {
 
 func (u boolType) IsEmpty(value any) bool {
 	return value == nil
-}
-
-func (u boolType) ValidatePackedValue(value *structpb.Value) error {
-	return canCast[bool]("bool", value.AsInterface())
 }

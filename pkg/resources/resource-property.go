@@ -81,9 +81,15 @@ var ResourcePropertyResource = &model.Resource{
 			},
 		},
 		{
-			Name:     "subType",
-			Mapping:  "sub_type",
-			Type:     model.ResourceProperty_INT32,
+			Name:     "subProperty",
+			Mapping:  "sub_property",
+			Type:     model.ResourceProperty_OBJECT,
+			Required: false,
+		},
+		{
+			Name:     "properties",
+			Mapping:  "properties",
+			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},
 		{

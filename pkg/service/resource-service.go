@@ -10,7 +10,6 @@ import (
 	"github.com/tislib/data-handler/pkg/resources"
 	"github.com/tislib/data-handler/pkg/resources/mapping"
 	"github.com/tislib/data-handler/pkg/service/annotations"
-	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -698,10 +697,71 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 			}
 		}
 
+		if prop.Type == model.ResourceProperty_ENUM {
+			if prop.EnumValues == nil || len(prop.EnumValues) == 0 {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "EnumValues",
+					Message:  "EnumValues should not be empty for enum type",
+					Value:    nil,
+				})
+			}
+		}
+
+		if prop.Type == model.ResourceProperty_REFERENCE {
+			if prop.Reference == nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "Reference",
+					Message:  "Reference should not be empty for reference type",
+					Value:    nil,
+				})
+			} else if prop.Reference.ReferencedResource == "" {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "Reference.ReferencedResource",
+					Message:  "Reference.ReferencedResource should not be empty for reference type",
+					Value:    nil,
+				})
+			}
+		}
+
+		if prop.Type == model.ResourceProperty_LIST {
+			if prop.SubProperty == nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "SubProperty",
+					Message:  "SubProperty should not be empty for list type",
+					Value:    nil,
+				})
+			}
+		}
+
+		if prop.Type == model.ResourceProperty_MAP {
+			if prop.SubProperty == nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "SubProperty",
+					Message:  "SubProperty should not be empty for map type",
+					Value:    nil,
+				})
+			}
+		}
+
+		if prop.Type == model.ResourceProperty_STRUCT {
+			if prop.Properties == nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "Properties",
+					Message:  "Properties should not be empty for struct type",
+					Value:    nil,
+				})
+			}
+		}
+
 		// check for additional fields
 		if prop.DefaultValue != nil && prop.DefaultValue.AsInterface() != nil {
-			propertyType := types.ByResourcePropertyType(prop.Type)
-			err := propertyType.ValidatePackedValue(prop.DefaultValue)
+			err := validatePropertyPackedValue(prop, prop.DefaultValue)
 
 			if err != nil {
 				errorFields = append(errorFields, &model.ErrorField{
@@ -713,19 +773,15 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 			}
 		}
 		if prop.ExampleValue != nil && prop.ExampleValue.AsInterface() != nil {
-			propertyType := types.ByResourcePropertyType(prop.Type)
+			err := validatePropertyPackedValue(prop, prop.ExampleValue)
 
-			if prop.ExampleValue != nil {
-				err := propertyType.ValidatePackedValue(prop.ExampleValue)
-
-				if err != nil {
-					errorFields = append(errorFields, &model.ErrorField{
-						RecordId: resource.Id,
-						Property: propertyPrefix + "ExampleValue",
-						Message:  err.Error(),
-						Value:    prop.ExampleValue,
-					})
-				}
+			if err != nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: propertyPrefix + "ExampleValue",
+					Message:  err.Error(),
+					Value:    prop.ExampleValue,
+				})
 			}
 		}
 	}
