@@ -98,7 +98,7 @@ func (p *mysqlBackendOptions) DbEncode(property *model.ResourceProperty, packedV
 
 	if property.Type == model.ResourceProperty_TIME {
 		return propertyType.String(v), nil
-	} else if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
+	} else if property.Type == model.ResourceProperty_STRUCT || property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
 		var err error
 		val, err = json.Marshal(packedVal.AsInterface())
 

@@ -103,7 +103,9 @@ func fakeValidValues(propertyType model.ResourceProperty_Type) []interface{} {
 		}
 	case model.ResourceProperty_ENUM:
 		return []interface{}{
-			RandStringRunes(16),
+			"enum1",
+			"enum2",
+			"enum3",
 		}
 	case model.ResourceProperty_MAP:
 		return []interface{}{
@@ -129,6 +131,16 @@ func fakeValidValues(propertyType model.ResourceProperty_Type) []interface{} {
 					"a124": 124,
 					"a125": 124,
 				},
+			},
+		}
+	case model.ResourceProperty_STRUCT:
+		return []interface{}{
+			map[string]interface{}{
+				"field-1": "abc",
+				"field-2": 123,
+			},
+			map[string]interface{}{
+				"field-1": "xyz",
 			},
 		}
 	default:
@@ -234,6 +246,23 @@ func fakeInvalidValues(propertyType model.ResourceProperty_Type) []interface{} {
 		}
 	case model.ResourceProperty_OBJECT:
 		return []interface{}{}
+	case model.ResourceProperty_STRUCT:
+		return []interface{}{
+			map[string]interface{}{
+				"field-2": 123,
+			},
+			map[string]interface{}{
+				"field-1": "asd",
+				"field-2": 123,
+				"field-3": "asd",
+			},
+			rand.Int31(),
+			rand.Int63(),
+			false,
+			true,
+			rand.Float64(),
+			RandStringRunes(12),
+		}
 	case model.ResourceProperty_REFERENCE:
 		return []interface{}{
 			rand.Int31(),
@@ -250,6 +279,7 @@ func fakeInvalidValues(propertyType model.ResourceProperty_Type) []interface{} {
 			false,
 			true,
 			rand.Float64(),
+			RandStringRunes(12),
 		}
 	case model.ResourceProperty_MAP:
 		return []interface{}{}

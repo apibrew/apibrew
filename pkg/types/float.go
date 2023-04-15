@@ -39,10 +39,6 @@ func (f float32Type) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (f float32Type) ValidatePackedValue(value *structpb.Value) error {
-	return canCastNumber[float32]("float32", value.AsInterface())
-}
-
 func (f float32Type) Default() any {
 	return float32(0)
 }

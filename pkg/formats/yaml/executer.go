@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/client"
 	"github.com/tislib/data-handler/pkg/formats"
 	"github.com/tislib/data-handler/pkg/model"
@@ -21,7 +22,6 @@ type executor struct {
 }
 
 func (e *executor) Restore(ctx context.Context, file *os.File) error {
-
 	var jsonUMo = protojson.UnmarshalOptions{
 		AllowPartial:   false,
 		DiscardUnknown: false,
@@ -58,6 +58,7 @@ func (e *executor) Restore(ctx context.Context, file *os.File) error {
 			err = jsonUMo.Unmarshal(jsonData, resource)
 
 			if err != nil {
+				log.Print(string(jsonData))
 				return err
 			}
 
@@ -137,6 +138,7 @@ func convert(i interface{}) interface{} {
 	case map[interface{}]interface{}:
 		m2 := map[string]interface{}{}
 		for k, v := range x {
+			// TODO: check if key is string
 			m2[k.(string)] = convert(v)
 		}
 		return m2

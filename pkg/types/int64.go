@@ -42,7 +42,3 @@ func (i int64Type) String(val any) string {
 func (i int64Type) IsEmpty(value any) bool {
 	return value == nil
 }
-
-func (i int64Type) ValidatePackedValue(value *structpb.Value) error {
-	return canCastNumber[int64]("int64", value.AsInterface())
-}

@@ -89,7 +89,7 @@ func (p *postgreSqlBackendOptions) DbEncode(property *model.ResourceProperty, pa
 	propertyType := types.ByResourcePropertyType(property.Type)
 	var val interface{}
 
-	if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
+	if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_STRUCT || property.Type == model.ResourceProperty_ENUM || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
 		var err error
 		val, err = json.Marshal(packedVal.AsInterface())
 
