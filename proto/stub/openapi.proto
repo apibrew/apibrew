@@ -7,9 +7,9 @@ option go_package = "github.com/tislib/data-handler/pkg/stub";
 import 'model/error.proto';
 import 'model/token.proto';
 import "google/api/annotations.proto";
-import "openapiv3/annotations.proto";
+import "gnostic/openapi/v3/annotations.proto";
 
-option (openapi.v3.document) = {
+option (gnostic.openapi.v3.document) = {
   info: {
     title: "Data Handler";
     version: "1.0";

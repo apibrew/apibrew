@@ -8,7 +8,7 @@ import 'model/error.proto';
 import 'model/resource.proto';
 import 'model/resource-migration.proto';
 import "google/api/annotations.proto";
-import "openapiv3/annotations.proto";
+import "gnostic/openapi/v3/annotations.proto";
 
 // Resource service is for managing resources
 service Resource {
@@ -80,6 +80,7 @@ message CreateResourceResponse {
   repeated model.Resource resources = 1;
 }
 
+// taleh123
 message UpdateResourceRequest {
   string token = 1;
   repeated model.Resource resources = 2;

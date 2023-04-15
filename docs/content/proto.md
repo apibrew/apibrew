@@ -825,7 +825,7 @@ if you send 123.45 for int64
 | ----- | ---- | ----- | ----------- |
 | id | [string](#string) | optional |  |
 | name | [string](#string) |  | property name |
-| type | [ResourceProperty.Type](#model-ResourceProperty-Type) |  | type of property - see [property-types](#property-types) section |
+| type | [ResourceProperty.Type](#model-ResourceProperty-Type) |  | type of property |
 | mapping | [string](#string) |  | mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property |
 | required | [bool](#bool) |  | this is to mark property as required |
 | primary | [bool](#bool) |  | this is to mark property as primary. Primary properties is like a part of primary key. Primary property(s) is used in to identify record. |
@@ -4034,7 +4034,7 @@ Record service is an abstract service for records of all resources. You can do C
 <a name="stub-UpdateResourceRequest"></a>
 
 ### UpdateResourceRequest
-
+taleh123
 
 
 | Field | Type | Label | Description |

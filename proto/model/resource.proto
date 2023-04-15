@@ -16,7 +16,7 @@ import "google/protobuf/descriptor.proto";
 /*
   Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record
   Data handler is responsible to validate data according to property types. For example, when you call create record and
-if you send 123.45 for int64
+  if you send 123.45 for int64
  */
 message ResourceProperty {
   enum Type {
@@ -39,10 +39,19 @@ message ResourceProperty {
     STRUCT = 17;
   }
   optional string id = 1 [(model.hcl_ignore) = true];
-  string name = 2 [(model.hcl_label) = "name"]; // property name
-  Type type = 3; // type of property - see [property-types](#property-types) section
-  string mapping = 4; // mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
-  bool required = 5; // this is to mark property as required
+  /*
+    property name
+   */
+  string name = 2 [(model.hcl_label) = "name"];
+
+  // type of property
+  Type type = 3;
+
+  // mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
+  string mapping = 4;
+
+  // this is to mark property as required
+  bool required = 5;
   bool primary = 6; // this is to mark property as primary. Primary properties is like a part of primary key. Primary property(s) is used in to identify record.
   uint32 length = 7; // length property is only valid and required for String typed properties
   bool unique = 8;

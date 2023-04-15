@@ -7,7 +7,7 @@ option go_package = "github.com/tislib/data-handler/pkg/stub";
 import 'model/watch.proto';
 import 'model/query.proto';
 import "google/api/annotations.proto";
-import "openapiv3/annotations.proto";
+import "gnostic/openapi/v3/annotations.proto";
 
 // Watch service watching operations on records
 service Watch {
