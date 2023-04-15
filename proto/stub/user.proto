@@ -8,7 +8,7 @@ import 'model/error.proto';
 import 'model/user.proto';
 import 'model/query.proto';
 import "google/api/annotations.proto";
-import "openapiv3/annotations.proto";
+import "gnostic/openapi/v3/annotations.proto";
 
 // User service is for managing users
 service User {

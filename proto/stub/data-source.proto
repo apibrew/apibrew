@@ -8,7 +8,7 @@ import 'model/data-source.proto';
 import 'model/error.proto';
 import 'model/resource.proto';
 import "google/api/annotations.proto";
-import "openapiv3/annotations.proto";
+import "gnostic/openapi/v3/annotations.proto";
 
 // DataSource Service is for managing data sources
 service DataSource {

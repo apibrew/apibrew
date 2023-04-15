@@ -18,7 +18,7 @@ package model;
 
 option go_package = "github.com/tislib/data-handler/pkg/model";
 
-import "openapiv3/OpenAPIv3.proto";
+import "gnostic/openapi/v3/openapiv3.proto";
 import "google/protobuf/descriptor.proto";
 
 // This option lets the proto compiler generate Java code inside the package

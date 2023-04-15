@@ -7,12 +7,12 @@ option go_package = "github.com/tislib/data-handler/pkg/stub";
 import 'model/error.proto';
 import 'model/token.proto';
 import "google/api/annotations.proto";
-import "openapiv3/annotations.proto";
+import "gnostic/openapi/v3/annotations.proto";
 
 // Authentication Service is for authentication related operations
 service Authentication {
   rpc Authenticate(AuthenticationRequest) returns(AuthenticationResponse) {
-    option (openapi.v3.operation) = {
+    option (gnostic.openapi.v3.operation) = {
       tags : "Authentication",
       summary: "Authentication with username/password"
       description: "Authentication with username/password and create new token"
@@ -24,7 +24,7 @@ service Authentication {
     };
   }
   rpc RenewToken(RenewTokenRequest) returns(RenewTokenResponse) {
-    option (openapi.v3.operation) = {
+    option (gnostic.openapi.v3.operation) = {
       tags : "Authentication",
       summary: "Renew token"
       description: "Renew token with existing token"
@@ -41,7 +41,7 @@ message AuthenticationRequest {
   string username = 1;
   string password = 2;
 
-  option (openapi.v3.schema) = {description: "Token Lifespan"};
+  option (gnostic.openapi.v3.schema) = {description: "Token Lifespan"};
   model.TokenTerm term = 3;
 }
 

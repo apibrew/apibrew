@@ -216,25 +216,29 @@ type ResourceProperty struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id              *string               `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
-	Name            string                `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                                   // property name
-	Type            ResourceProperty_Type `protobuf:"varint,3,opt,name=type,proto3,enum=model.ResourceProperty_Type" json:"type,omitempty"` // type of property - see [property-types](#property-types) section
-	Mapping         string                `protobuf:"bytes,4,opt,name=mapping,proto3" json:"mapping,omitempty"`                             // mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
-	Required        bool                  `protobuf:"varint,5,opt,name=required,proto3" json:"required,omitempty"`                          // this is to mark property as required
-	Primary         bool                  `protobuf:"varint,6,opt,name=primary,proto3" json:"primary,omitempty"`                            // this is to mark property as primary. Primary properties is like a part of primary key. Primary property(s) is used in to identify record.
-	Length          uint32                `protobuf:"varint,7,opt,name=length,proto3" json:"length,omitempty"`                              // length property is only valid and required for String typed properties
-	Unique          bool                  `protobuf:"varint,8,opt,name=unique,proto3" json:"unique,omitempty"`
-	Immutable       bool                  `protobuf:"varint,9,opt,name=immutable,proto3" json:"immutable,omitempty"`                   // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded
-	SecurityContext *SecurityContext      `protobuf:"bytes,10,opt,name=securityContext,proto3,oneof" json:"securityContext,omitempty"` // security context is to apply ACL to resource property
-	DefaultValue    *structpb.Value       `protobuf:"bytes,11,opt,name=defaultValue,proto3,oneof" json:"defaultValue,omitempty"`       // defaultValue is default value.
-	ExampleValue    *structpb.Value       `protobuf:"bytes,12,opt,name=exampleValue,proto3,oneof" json:"exampleValue,omitempty"`       // exampleValue is example value. It is an informative column
-	EnumValues      []*structpb.Value     `protobuf:"bytes,13,rep,name=enumValues,proto3" json:"enumValues,omitempty"`                 // enumValues is used if property type is an enum
-	Reference       *Reference            `protobuf:"bytes,14,opt,name=reference,proto3,oneof" json:"reference,omitempty"`             // reference property is only valid and required for Reference types.
-	Properties      []*ResourceProperty   `protobuf:"bytes,15,rep,name=properties,proto3" json:"properties,omitempty"`                 // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
-	SubProperty     *ResourceProperty     `protobuf:"bytes,16,opt,name=subProperty,proto3,oneof" json:"subProperty,omitempty"`         // subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
-	Title           *string               `protobuf:"bytes,17,opt,name=title,proto3,oneof" json:"title,omitempty"`                     // It is an informative column
-	Description     *string               `protobuf:"bytes,18,opt,name=description,proto3,oneof" json:"description,omitempty"`         // It is an informative column
-	Annotations     map[string]string     `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Id *string `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
+	// property name
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// type of property
+	Type ResourceProperty_Type `protobuf:"varint,3,opt,name=type,proto3,enum=model.ResourceProperty_Type" json:"type,omitempty"`
+	// mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
+	Mapping string `protobuf:"bytes,4,opt,name=mapping,proto3" json:"mapping,omitempty"`
+	// this is to mark property as required
+	Required        bool                `protobuf:"varint,5,opt,name=required,proto3" json:"required,omitempty"`
+	Primary         bool                `protobuf:"varint,6,opt,name=primary,proto3" json:"primary,omitempty"` // this is to mark property as primary. Primary properties is like a part of primary key. Primary property(s) is used in to identify record.
+	Length          uint32              `protobuf:"varint,7,opt,name=length,proto3" json:"length,omitempty"`   // length property is only valid and required for String typed properties
+	Unique          bool                `protobuf:"varint,8,opt,name=unique,proto3" json:"unique,omitempty"`
+	Immutable       bool                `protobuf:"varint,9,opt,name=immutable,proto3" json:"immutable,omitempty"`                   // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded
+	SecurityContext *SecurityContext    `protobuf:"bytes,10,opt,name=securityContext,proto3,oneof" json:"securityContext,omitempty"` // security context is to apply ACL to resource property
+	DefaultValue    *structpb.Value     `protobuf:"bytes,11,opt,name=defaultValue,proto3,oneof" json:"defaultValue,omitempty"`       // defaultValue is default value.
+	ExampleValue    *structpb.Value     `protobuf:"bytes,12,opt,name=exampleValue,proto3,oneof" json:"exampleValue,omitempty"`       // exampleValue is example value. It is an informative column
+	EnumValues      []*structpb.Value   `protobuf:"bytes,13,rep,name=enumValues,proto3" json:"enumValues,omitempty"`                 // enumValues is used if property type is an enum
+	Reference       *Reference          `protobuf:"bytes,14,opt,name=reference,proto3,oneof" json:"reference,omitempty"`             // reference property is only valid and required for Reference types.
+	Properties      []*ResourceProperty `protobuf:"bytes,15,rep,name=properties,proto3" json:"properties,omitempty"`                 // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
+	SubProperty     *ResourceProperty   `protobuf:"bytes,16,opt,name=subProperty,proto3,oneof" json:"subProperty,omitempty"`         // subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
+	Title           *string             `protobuf:"bytes,17,opt,name=title,proto3,oneof" json:"title,omitempty"`                     // It is an informative column
+	Description     *string             `protobuf:"bytes,18,opt,name=description,proto3,oneof" json:"description,omitempty"`         // It is an informative column
+	Annotations     map[string]string   `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (x *ResourceProperty) Reset() {
