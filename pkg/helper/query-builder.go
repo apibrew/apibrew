@@ -78,6 +78,50 @@ func (sq StringQueryBuilder) Contains(val string) *model.BooleanExpression {
 	return nil
 }
 
+type ListQueryBuilder struct {
+	PropName string
+}
+
+func (sq ListQueryBuilder) Equals(val []interface{}) *model.BooleanExpression {
+	return nil
+}
+
+func (sq ListQueryBuilder) Contains(val []interface{}) *model.BooleanExpression {
+	return nil
+}
+
+type MapQueryBuilder struct {
+	PropName string
+}
+
+func (sq MapQueryBuilder) Equals(val map[string]interface{}) *model.BooleanExpression {
+	return nil
+}
+
+type StructQueryBuilder struct {
+	PropName string
+}
+
+func (sq MapQueryBuilder) Contains(val map[string]interface{}) *model.BooleanExpression {
+	return nil
+}
+
+func (sq StructQueryBuilder) Equals(val map[string]interface{}) *model.BooleanExpression {
+	return nil
+}
+
+func (sq StructQueryBuilder) Contains(val map[string]interface{}) *model.BooleanExpression {
+	return nil
+}
+
+type EnumQueryBuilder struct {
+	PropName string
+}
+
+func (sq EnumQueryBuilder) Equals(val string) *model.BooleanExpression {
+	return nil
+}
+
 type ReferenceQueryBuilder[RefType abs.Entity[RefType]] struct {
 	PropName string
 }

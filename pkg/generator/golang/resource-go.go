@@ -30,7 +30,7 @@ func GenerateGoResourceCode(params GenerateResourceCodeParams) error {
 		var b bytes.Buffer
 		br := io.Writer(&b)
 
-		err := tmpl.ExecuteTemplate(br, "resource.tmpl", map[string]interface{}{
+		err := tmpl.ExecuteTemplate(br, "resource", map[string]interface{}{
 			"resource": resource,
 		})
 
