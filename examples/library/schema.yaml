@@ -1,0 +1,36 @@
+type: resource
+name: author
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    unique: true
+    required: true
+  - name: description
+    type: STRING
+    length: 255
+    unique: true
+    required: true
+---
+type: resource
+name: book
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    unique: true
+    required: true
+  - name: description
+    type: STRING
+    length: 255
+    unique: true
+    required: true
+  - name: author
+    type: REFERENCE
+    reference:
+      referencedResource: author
+  - name: isbn
+    type: STRING
+    length: 255
+    unique: true
+    required: true

@@ -55,7 +55,7 @@ Data Handler is a **Low Code software** that allows to create various Grpc and R
 
 ## Features
 
-* ***Declarative*** -*Data handler* is declarative. You can define your schema in a declarative way, it will create your APIs
+* ***Declarative*** - *Data handler* is declarative. You can define your schema in a declarative way, it will create your APIs
 * ***Low Code*** - With data handler, you can create APIs for your data without coding. But you can also extend your APIs with
   extensions, so you can customize behavior of your Resources/Apis
 * ***Rest API*** - As you create resources, Rest Apis for them is made automatically
@@ -75,28 +75,13 @@ Data Handler is a **Low Code software** that allows to create various Grpc and R
 
 ## Use Cases
 
-You can use **Data Handler** for following purposes:
+* Creating backend for your mobile application or website
+* Creating backend for your existing database
+* Managing your data in a CRUD fashion
+* Creating Standardized, well documented APIs for your data
 
-1. You have a database, and you want to build CRUD like APIs on it without coding or by minimal coding
-2. You want to manage data source alongside with creating APIs. For example
-    1. You want to create new table/collection in your datasource and create API without much coding
-3. You want to manage multiple data source and do operations on top of them with auto created APIs
 
-**Data Handler** is an application to manage your data in a CRUD fashion
-
-There are two main things in data-handler:
-
-* Resource - This is your schema entry
-* Record - This is your data
-
-Data Handler by default uses postgresql as a database for your data but it also supports various databases (mysql,
-mongo, etc.)
-
-You can define your schema, and it will prepare you CRUD APIs (Rest, Grpc) and Swagger docs
-
-**Data Handler can either use your existing database schema or create new schema for you**
-
-Quick Example:
+## Quick Example
 ![](http://static.tisserv.net/dh_overview.gif)
 
 country.yml
@@ -167,6 +152,8 @@ servers:
       password: admin
 defaultServer: local
 ```
+
+Now we are ready.
 
 # [Tutorials](docs/content/tutorials/index.md)
 
