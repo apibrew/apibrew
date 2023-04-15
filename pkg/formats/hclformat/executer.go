@@ -263,7 +263,7 @@ func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource
 
 func (e *executor) parseBlockProperty(prop *model.ResourceProperty, blockItem *hcl.Block) (*structpb.Value, error) {
 	switch prop.Type {
-	case model.ResourceProperty_OBJECT, model.ResourceProperty_REFERENCE:
+	case model.ResourceProperty_OBJECT, model.ResourceProperty_STRUCT, model.ResourceProperty_REFERENCE:
 		attributes, diags := blockItem.Body.JustAttributes()
 
 		if diags != nil {

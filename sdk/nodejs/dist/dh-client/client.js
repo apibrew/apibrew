@@ -155,7 +155,7 @@ var RepositoryImpl = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.resource) {
+                        if (this.resource) {
                             return [2 /*return*/];
                         }
                         return [4 /*yield*/, axios_1.default.get("http://".concat(this.client.params.Addr, "/system/resources/").concat(this.params.namespace, "/").concat(this.params.resource))];
@@ -214,6 +214,43 @@ var RepositoryImpl = /** @class */ (function () {
                     case 1:
                         result = _a.sent();
                         return [2 /*return*/, result.data];
+                }
+            });
+        });
+    };
+    RepositoryImpl.prototype.load = function (entity) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _i, _a, prop, val, result;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (!entity.id) return [3 /*break*/, 1];
+                        return [2 /*return*/, this.get(entity.id)];
+                    case 1: return [4 /*yield*/, this.loadResources()];
+                    case 2:
+                        _b.sent();
+                        _i = 0, _a = this.resource.properties;
+                        _b.label = 3;
+                    case 3:
+                        if (!(_i < _a.length)) return [3 /*break*/, 6];
+                        prop = _a[_i];
+                        if (!prop.unique) return [3 /*break*/, 5];
+                        val = entity[prop.name];
+                        return [4 /*yield*/, axios_1.default.get("http://".concat(this.client.params.Addr, "/").concat(this.params.namespace, "/").concat(this.params.resource, "?filters=").concat(prop.name, "&filters=").concat(val, "&limit=1"), {
+                                headers: {
+                                    Authorization: "Bearer ".concat(this.client.params.token)
+                                }
+                            })];
+                    case 4:
+                        result = _b.sent();
+                        if (!result.data.total) {
+                            return [3 /*break*/, 5];
+                        }
+                        return [2 /*return*/, result.data.content[0].properties];
+                    case 5:
+                        _i++;
+                        return [3 /*break*/, 3];
+                    case 6: throw new Error("Entity not found: ".concat(this.params.namespace, "/").concat(this.params.resource));
                 }
             });
         });

@@ -1,10 +1,12 @@
 export interface Entity {
     id?: string;
+    [key: string]: any;
 }
 interface Repository<T extends Entity> {
     create(entity: T): Promise<T>;
     update(entity: T): Promise<T>;
     loadResources(): Promise<void>;
+    load(entity: T): Promise<T>;
     apply(entity: T): Promise<T>;
     get(id: string): Promise<T>;
     find(params: FindParams): Promise<{
@@ -71,6 +73,7 @@ export declare class RepositoryImpl<T extends Entity> implements Repository<T> {
     create(entity: T): Promise<T>;
     update(entity: T): Promise<T>;
     get(id: string): Promise<T>;
+    load(entity: T): Promise<T>;
     apply<T>(entity: T): Promise<T>;
     find(params: FindParams): Promise<{
         total: number;

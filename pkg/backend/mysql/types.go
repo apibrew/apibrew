@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/tislib/data-handler/pkg/backend/common"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -9,7 +10,7 @@ import (
 
 func (p mysqlBackendOptions) TypeModifier(propertyType model.ResourceProperty_Type) types.PropertyType {
 	if propertyType == model.ResourceProperty_TIME {
-		return types.CustomTypeFromType(types.ByResourcePropertyType(model.ResourceProperty_TIME), types.CustomType{
+		return common.CustomTypeFromType(types.ByResourcePropertyType(model.ResourceProperty_TIME), common.CustomType{
 			CustomPack: func(value interface{}) (*structpb.Value, error) {
 				return structpb.NewValue(string(value.([]uint8)))
 			},

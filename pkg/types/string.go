@@ -41,7 +41,3 @@ func (s stringType) String(val any) string {
 func (s stringType) IsEmpty(value any) bool {
 	return value == nil || value == ""
 }
-
-func (s stringType) ValidatePackedValue(value *structpb.Value) error {
-	return canCast[string]("string", value.AsInterface())
-}
