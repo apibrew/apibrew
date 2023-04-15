@@ -1,6 +1,11 @@
 Data Handler [![Build Status](https://app.travis-ci.com/tislib/data-handler.svg?branch=master)](https://app.travis-ci.com/tislib/data-handler)
 ======================
-
+[![Go Report Card](https://goreportcard.com/badge/github.com/tislib/data-handler)](https://goreportcard.com/report/github.com/tislib/data-handler)
+[![Go Reference](https://pkg.go.dev/badge/github.com/tislib/data-handler.svg)](https://pkg.go.dev/github.com/tislib/data-handler)
+[![codecov](https://codecov.io/gh/tislib/data-handler/branch/master/graph/badge.svg?token=QZQZQZQZQZ)](https://codecov.io/gh/tislib/data-handler)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
+[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/data-handler)
 
 See [docs](docs/index.md) for detailed information
 
