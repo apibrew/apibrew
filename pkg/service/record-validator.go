@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/types"
@@ -103,10 +102,6 @@ func validatePropertyPackedValue(property *model.ResourceProperty, value *struct
 
 	if _, ok := value.Kind.(*structpb.Value_NullValue); ok {
 		return nil
-	}
-
-	if property == nil {
-		log.Print("Found!")
 	}
 
 	propertyType := types.ByResourcePropertyType(property.Type)
