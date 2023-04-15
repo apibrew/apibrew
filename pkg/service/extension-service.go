@@ -26,12 +26,13 @@ type extensionService struct {
 
 func (d *extensionService) List(ctx context.Context) ([]*model.Extension, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
-	logger.Debug("Begin data-source List")
-	defer logger.Debug("End data-source List")
+	logger.Trace("Begin extension List")
+	defer logger.Trace("End extension List")
 
 	result, _, err := d.recordService.List(ctx, abs.RecordListParams{
 		Namespace: resources.ExtensionResource.Namespace,
 		Resource:  resources.ExtensionResource.Name,
+		Limit:     1000,
 	})
 
 	if err != nil {
@@ -125,7 +126,7 @@ func (d *extensionService) keepExtensionsRunning() {
 }
 
 func (d *extensionService) runConfigureExtensions() {
-	log.Debug("Start reconfiguring extension services")
+	log.Trace("Start reconfiguring extension services")
 
 	extensions, err := d.List(security.WithSystemContext(context.TODO()))
 
@@ -134,10 +135,11 @@ func (d *extensionService) runConfigureExtensions() {
 	}
 
 	for _, ext := range extensions {
+		log.Tracef("Configure extension: %v", ext)
 		d.configureExtension(ext)
 	}
 
-	log.Debug("Finish reconfiguring extension services")
+	log.Trace("Finish reconfiguring extension services")
 }
 
 func (d *extensionService) RegisterExtension(extension *model.Extension) {

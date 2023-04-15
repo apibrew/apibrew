@@ -1,5 +1,5 @@
-import {DhClient} from "data-handler-client";
 import {Order, Product} from "./schema";
+import {DhClient} from "data-handler-client";
 
 const client = new DhClient({
     Addr: "127.0.0.1:9009",
@@ -22,7 +22,7 @@ async function run() {
             throw new Error('Order must be created with pending status')
         }
 
-        const product = await productRepo.get(order.product.id)
+        const product = await productRepo.load(order.product)
 
         if (product.quantity < order.quantity) {
             throw new Error('Not enough product in stock')
@@ -39,7 +39,7 @@ async function run() {
         }
 
         if (order.status == 'completed') {
-            const product = await productRepo.get(order.product.id)
+            const product = await productRepo.load(order.product)
 
             if (product.quantity < order.quantity) {
                 throw new Error('Not enough product in stock')
@@ -47,6 +47,16 @@ async function run() {
 
             product.quantity -= order.quantity
             await productRepo.update(product)
+        }
+
+        return order
+    })
+
+    orderExtension.onDelete(async (order) => {
+        const existingOrder = await orderRepo.get(order.id)
+
+        if (existingOrder.status == 'completed') {
+            throw new Error('Cannot delete completed order')
         }
 
         return order

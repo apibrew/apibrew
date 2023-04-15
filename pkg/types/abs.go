@@ -1,19 +1,15 @@
 package types
 
 import (
-	"fmt"
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/tislib/data-handler/pkg/model"
 	"google.golang.org/protobuf/types/known/structpb"
 	"reflect"
-	"time"
 )
 
 type PropertyType interface {
 	Pointer(required bool) any
 	String(val any) string
 	IsEmpty(value any) bool
-	ValidatePackedValue(value *structpb.Value) error
 	Pack(value interface{}) (*structpb.Value, error)
 	UnPack(value *structpb.Value) (interface{}, error)
 	Default() any
@@ -49,31 +45,33 @@ func ByResourcePropertyType(resourcePropertyType model.ResourceProperty_Type) Pr
 	case model.ResourceProperty_FLOAT32:
 		return Float32Type
 	case model.ResourceProperty_FLOAT64:
-		return float64Type{}
+		return Float64Type
 	case model.ResourceProperty_STRING:
-		return stringType{}
+		return StringType
 	case model.ResourceProperty_UUID:
-		return uuidType{}
+		return UuidType
 	case model.ResourceProperty_DATE:
-		return dateType{}
+		return DateType
 	case model.ResourceProperty_TIME:
-		return timeType{}
+		return TimeType
 	case model.ResourceProperty_TIMESTAMP:
 		return TimestampType
 	case model.ResourceProperty_BOOL:
-		return boolType{}
+		return BoolType
 	case model.ResourceProperty_OBJECT:
-		return objectType{}
+		return ObjectType
 	case model.ResourceProperty_REFERENCE:
 		return ReferenceType
 	case model.ResourceProperty_ENUM:
 		return StringType
 	case model.ResourceProperty_MAP:
-		return objectType{}
+		return MapType
 	case model.ResourceProperty_LIST:
-		return objectType{}
+		return ListType
 	case model.ResourceProperty_BYTES:
-		return bytesType{}
+		return BytesType
+	case model.ResourceProperty_STRUCT:
+		return StructType
 	default:
 		panic("unknown property type: " + resourcePropertyType.String())
 	}
@@ -96,127 +94,4 @@ func GetAllResourcePropertyTypes() []model.ResourceProperty_Type {
 	}
 
 	return types
-}
-
-func canCast[T interface{}](typeName string, val interface{}) error {
-	if _, ok := val.(T); ok {
-		return nil
-	} else {
-		return fmt.Errorf("value is not %s: %v", typeName, val)
-	}
-
-}
-
-type number interface {
-	float64 | float32 | int64 | int32 | int | int8 | uint64 | uint32 | uint8
-}
-
-func canCastNumber[T number](typeName string, val interface{}) error {
-	if val == T(0) {
-		return nil
-	}
-	err := canCast[float64](typeName, val)
-
-	if err != nil {
-		return err
-	}
-
-	castedValue := float64(T(val.(float64)))
-	if val.(float64)-castedValue > 0.000001 {
-		return fmt.Errorf("value is not in type %s: %v", typeName, val)
-	}
-
-	return nil
-}
-
-func ValidateDateTime(value interface{}) error {
-	err := canCast[string]("string", value)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = time.Parse(time.RFC3339, value.(string))
-
-	return err
-}
-
-func ResourcePropertyTypeToJsonSchemaType(resourcePropertyType model.ResourceProperty_Type) *openapi3.Schema {
-	switch resourcePropertyType {
-	case model.ResourceProperty_STRING:
-		return &openapi3.Schema{
-			Type: "string",
-		}
-	case model.ResourceProperty_INT64:
-		return &openapi3.Schema{
-			Type:   "number",
-			Format: "int64",
-		}
-	case model.ResourceProperty_INT32:
-		return &openapi3.Schema{
-			Type:   "number",
-			Format: "int32",
-		}
-	case model.ResourceProperty_FLOAT64:
-		return &openapi3.Schema{
-			Type:   "number",
-			Format: "float",
-		}
-	case model.ResourceProperty_FLOAT32:
-		return &openapi3.Schema{
-			Type:   "number",
-			Format: "double",
-		}
-	case model.ResourceProperty_TIMESTAMP:
-		return &openapi3.Schema{
-			Type:   "string",
-			Format: "datetime",
-		}
-	case model.ResourceProperty_TIME:
-		return &openapi3.Schema{
-			Type:   "string",
-			Format: "time",
-		}
-	case model.ResourceProperty_DATE:
-		return &openapi3.Schema{
-			Type:   "string",
-			Format: "date",
-		}
-	case model.ResourceProperty_UUID:
-		return &openapi3.Schema{
-			Type:   "string",
-			Format: "uuid",
-		}
-	case model.ResourceProperty_ENUM:
-		return &openapi3.Schema{
-			Type: "string",
-		}
-	case model.ResourceProperty_BOOL:
-		return &openapi3.Schema{
-			Type: "boolean",
-		}
-	case model.ResourceProperty_REFERENCE:
-		return &openapi3.Schema{
-			Type: "object",
-		}
-	case model.ResourceProperty_OBJECT:
-		return &openapi3.Schema{
-			Type: "object",
-		}
-	case model.ResourceProperty_MAP:
-		return &openapi3.Schema{
-			Type: "object",
-		}
-	case model.ResourceProperty_LIST:
-		return &openapi3.Schema{
-			Type: "array",
-		}
-	case model.ResourceProperty_BYTES:
-		return &openapi3.Schema{
-			Type:   "string",
-			Format: "base64",
-		}
-	default:
-		panic("unknown property type: " + resourcePropertyType.String())
-	}
 }

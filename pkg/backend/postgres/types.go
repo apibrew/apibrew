@@ -44,9 +44,10 @@ func (p postgreSqlBackendOptions) GetSqlTypeFromProperty(propertyType model.Reso
 		return "JSONB"
 	case model.ResourceProperty_LIST:
 		return "JSONB"
-
+	case model.ResourceProperty_STRUCT:
+		return "JSONB"
 	default:
-		panic("unknown property type")
+		panic("unknown property type: " + propertyType.String() + " for postgres type conversion")
 	}
 }
 

@@ -11,7 +11,6 @@ import (
 	"github.com/tislib/data-handler/pkg/abs"
 	"github.com/tislib/data-handler/pkg/errors"
 	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/types"
 	"github.com/tislib/data-handler/pkg/util"
 	"io"
 	"net/http"
@@ -395,7 +394,7 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 	}
 
 	for _, property := range resource.Properties {
-		propSchema := types.ResourcePropertyTypeToJsonSchemaType(property.Type)
+		propSchema := util.ResourcePropertyTypeToJsonSchemaType(property.Type)
 
 		if property.ExampleValue != nil {
 			propSchema.Example = property.ExampleValue.AsInterface()

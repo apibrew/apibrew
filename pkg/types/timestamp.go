@@ -39,18 +39,6 @@ func (t timestampType) IsEmpty(value any) bool {
 	return value == nil
 }
 
-func (t timestampType) ValidatePackedValue(value *structpb.Value) error {
-	err := ValidateDateTime(value.AsInterface())
-
-	if err != nil {
-		return err
-	}
-
-	_, err = t.UnPack(value)
-
-	return err
-}
-
 func (t timestampType) Default() any {
 	return time.Now()
 }

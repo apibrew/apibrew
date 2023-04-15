@@ -65,6 +65,10 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 		t.Run(subCase.recordType.String()+" - Create - Valid", func(t *testing.T) {
 			testRecordCreationValidationValidCase(setup.Ctx, t, subCase)
 		})
+		// create
+		t.Run(subCase.recordType.String()+" - Create - Default - Valid", func(t *testing.T) {
+			testRecordCreationValidationDefaultValidCase(setup.Ctx, t, subCase)
+		})
 		t.Run(subCase.recordType.String()+" - Create - Invalid", func(t *testing.T) {
 			testRecordCreationValidationInvalidCase(setup.Ctx, t, subCase)
 		})
@@ -86,6 +90,65 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 		properties[subCase.resource.Properties[0].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
 		properties[subCase.resource.Properties[1].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
 		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+
+		validRecord := &model.Record{
+			Properties: properties,
+		}
+
+		records = append(records, validRecord)
+	}
+
+	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
+		Resource: subCase.resource.Name,
+		Records:  records,
+	})
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	propertyType := types.ByResourcePropertyType(subCase.recordType)
+
+	for i := 0; i < len(resp.Records); i++ {
+		createdRecord := resp.Records[i]
+		record := records[i]
+
+		createdRecordValue0, _ := propertyType.UnPack(createdRecord.Properties[subCase.resource.Properties[0].Name])
+		createdRecordValue1, _ := propertyType.UnPack(createdRecord.Properties[subCase.resource.Properties[1].Name])
+		createdRecordValue2, _ := propertyType.UnPack(createdRecord.Properties[subCase.resource.Properties[2].Name])
+
+		recordValue0, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[0].Name])
+		recordValue1, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[1].Name])
+		recordValue2, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[2].Name])
+
+		if !propertyType.Equals(createdRecordValue0, recordValue0) {
+			t.Errorf("values are different: %s <=> %s", createdRecordValue0, recordValue0)
+		}
+
+		if !propertyType.Equals(createdRecordValue1, recordValue1) {
+			t.Errorf("values are different: %s <=> %s", createdRecordValue1, recordValue1)
+		}
+
+		if !propertyType.Equals(createdRecordValue2, recordValue2) {
+			t.Errorf("values are different: %s <=> %s", createdRecordValue2, recordValue2)
+		}
+	}
+}
+
+func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
+	var records []*model.Record
+	for i := 0; i < 30; i += 3 {
+		var properties = make(map[string]*structpb.Value, 3)
+		typ := types.ByResourcePropertyType(subCase.recordType)
+
+		properties[subCase.resource.Properties[0].Name], _ = typ.Pack(typ.Default())
+		properties[subCase.resource.Properties[1].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+
+		if subCase.recordType == model.ResourceProperty_ENUM || subCase.recordType == model.ResourceProperty_STRUCT {
+			properties[subCase.resource.Properties[0].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+		}
 
 		validRecord := &model.Record{
 			Properties: properties,
@@ -261,6 +324,8 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 			continue
 		}
 
+		checkUnique := typ != model.ResourceProperty_BOOL && typ != model.ResourceProperty_ENUM && typ != model.ResourceProperty_MAP && typ != model.ResourceProperty_LIST && typ != model.ResourceProperty_STRUCT
+
 		propNames := []string{
 			fakePropertyName(),
 			fakePropertyName(),
@@ -268,6 +333,7 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 			fakePropertyName(),
 		}
 		length := uint32(32)
+
 		resource := fakeResource(
 			&model.ResourceProperty{
 				Name:     propNames[0],
@@ -294,9 +360,41 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 				Required: false,
 				Primary:  false,
 				Length:   length,
-				Unique:   typ != model.ResourceProperty_BOOL,
+				Unique:   checkUnique,
 			},
 		)
+
+		for _, prop := range resource.Properties {
+			switch typ {
+			case model.ResourceProperty_ENUM:
+				prop.EnumValues = []*structpb.Value{
+					structpb.NewStringValue("enum1"),
+					structpb.NewStringValue("enum2"),
+					structpb.NewStringValue("enum3"),
+					structpb.NewStringValue("enum4"),
+				}
+			case model.ResourceProperty_MAP:
+				prop.SubProperty = &model.ResourceProperty{
+					Type: model.ResourceProperty_STRING,
+				}
+			case model.ResourceProperty_LIST:
+				prop.SubProperty = &model.ResourceProperty{
+					Type: model.ResourceProperty_STRING,
+				}
+			case model.ResourceProperty_STRUCT:
+				prop.Properties = []*model.ResourceProperty{
+					{
+						Name:     "field-1",
+						Required: true,
+						Type:     model.ResourceProperty_STRING,
+					},
+					{
+						Name: "field-2",
+						Type: model.ResourceProperty_INT32,
+					},
+				}
+			}
+		}
 
 		cases = append(cases, TestRecordCreationValidationSubCase{
 			recordType: typ,

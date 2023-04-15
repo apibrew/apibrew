@@ -36,6 +36,7 @@ message ResourceProperty {
     LIST = 14;
     REFERENCE = 15;
     ENUM = 16;
+    STRUCT = 17;
   }
   optional string id = 1 [(model.hcl_ignore) = true];
   string name = 2 [(model.hcl_label) = "name"]; // property name
@@ -45,15 +46,16 @@ message ResourceProperty {
   bool primary = 6; // this is to mark property as primary. Primary properties is like a part of primary key. Primary property(s) is used in to identify record.
   uint32 length = 7; // length property is only valid and required for String typed properties
   bool unique = 8;
-  bool immutable = 14; // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded
-  optional SecurityContext securityContext = 9; // security context is to apply ACL to resource property
-  optional google.protobuf.Value defaultValue = 10; // defaultValue is default value.
-  optional google.protobuf.Value exampleValue = 17; // exampleValue is example value. It is an informative column
-  repeated google.protobuf.Value enumValues = 11; // enumValues is used if property type is an enum
-  optional Reference reference = 12 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
-  optional Type subType = 13; // subType is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
-  optional string title = 15; // It is an informative column
-  optional string description = 16; // It is an informative column
+  bool immutable = 9; // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded
+  optional SecurityContext securityContext = 10; // security context is to apply ACL to resource property
+  optional google.protobuf.Value defaultValue = 11; // defaultValue is default value.
+  optional google.protobuf.Value exampleValue = 12; // exampleValue is example value. It is an informative column
+  repeated google.protobuf.Value enumValues = 13; // enumValues is used if property type is an enum
+  optional Reference reference = 14 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
+  repeated ResourceProperty properties = 15 [(model.hcl_block) = "property"]; // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
+  optional ResourceProperty subProperty = 16; // subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
+  optional string title = 17; // It is an informative column
+  optional string description = 18; // It is an informative column
 
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }

@@ -53,6 +53,8 @@ func (p *recordParserFlags) Declare(cmd *cobra.Command) {
 			p.parserMap[prop.Name] = funct(flags.String(name, "", ""))
 		case model.ResourceProperty_OBJECT:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", "")) //todo fix
+		case model.ResourceProperty_STRUCT:
+			p.parserMap[prop.Name] = funct(flags.String(name, "", "")) //todo fix
 		case model.ResourceProperty_MAP:
 			p.parserMap[prop.Name] = funct(flags.String(name, "", "")) //todo fix
 		case model.ResourceProperty_LIST:
