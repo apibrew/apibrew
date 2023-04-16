@@ -7,7 +7,7 @@ Data handler SDK is a library that provides a set of functions to interact with 
 
 Javascript SDK
 
-#Prerequisites
+# Prerequisites
 
 ```bash
 npm install data-handler-client
