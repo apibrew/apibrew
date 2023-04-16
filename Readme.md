@@ -66,7 +66,7 @@ Data Handler is a **Low Code software** that allows to create various Grpc and R
 * ***Authentication*** - Data handler supports various authentication methods. Including JWT authentication etc.
 * ***Authorization*** - Data handler supports authorization. You can define permissions for your resources
 * ***Multi Database*** - You can define multiple databases and do operations on top of them
-* ***Scalable*** - Data handler is scalable. You can run it on multiple instances, and it will work as expected, as Data handler does not have any data internally, you can scale it. 
+* ***Scalable*** - Data handler is scalable. You can run it on multiple instances, and it will work as expected, as Data handler does not have any data internally, you can scale it.
 * ***Extensible*** - Data handler is extensible. You can extend your resources with extensions. You can also extend your APIs with extensions
 * ***CLI support*** - Data handler has a cli tool to manage your resources, dataSources, etc. It is called `dhctl`
 * ***Docker*** - Data handler is dockerized. You can run it on docker
@@ -127,8 +127,11 @@ Let's run application on standalone mode:
 docker run -d -p 9009:9009 tislib/data-handler:full-latest
 ```
 
-Let's install our client
+Let's install our client **dhctl**
 
+You can download client binary from release page https://github.com/tislib/data-handler/releases/latest (download dhctl-OS-ARCH)
+
+You can also use go install if you have go runtime on your local
 ```
 go install github.com/tislib/data-handler/cmd/dhctl@latest
 ```
