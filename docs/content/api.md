@@ -1,21 +1,3 @@
-# Table of contents
-
-* [**Grpc API**](#grpc-api)
-    * [**Authentication**](#authentication)
-    * [**Resource**](#resource)
-    * [**Record**](#record)
-    * [**Namespace**](#namespace)
-    * [**Datasource**](#data-source)
-    * [**User**](#user)
-    * [**Extension**](#extension)
-    * [**ExternalCall**](#external-call)
-* [**Rest API**](#rest-api)
-    * [**Swagger**](#swagger)
-* [**SDK and code generation**](#sdk)
-    * [**Golang**](#golang)
-    * [**Python**](#python)
-    * [**Nodejs**](#nodejs)
-* [**CLI**](#cli)
 
 # Grpc Api
 
