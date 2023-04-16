@@ -42,13 +42,8 @@ You also need to create two database on your postgresql server. see [init.sql](i
 docker run -d -p 9009:9009 -v ${PWD}/config.json:/app/config.json tislib/data-handler:latest
 ```
 
-## Docker compose p[]
+## Docker compose ([see](https://github.com/tislib/data-handler/tree/master/deploy/docker-compose))
 
-```bash
-git clone git@github.com:tislib/data-handler.git
+## Kubernetes ([see](https://github.com/tislib/data-handler/tree/master/deploy/kubernetes))
 
-cd data-handler/deploy/docker-compose
-
-docker-compose up -d
-```
 
