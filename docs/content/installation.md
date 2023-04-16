@@ -26,13 +26,13 @@ For running application on docker normal mode you need to have postgresql databa
 * Postgresql
 
 ### Configure
-see [config.json](config.json)
+see [config.json](files/config.json)
 
 You need to update systemDataSource and initDataSources in config.json
 
 After that you need to mount config.json to /app/config.json
 
-You also need to create two database on your postgresql server. see [init.sql](init.sql)
+You also need to create two database on your postgresql server. see [init.sql](files/init.sql)
 
 ### Run
 
