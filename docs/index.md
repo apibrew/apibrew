@@ -1,4 +1,4 @@
-Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/data-handler/actions/workflows/build.yml)  - [docs](docs/index.md)
+Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/data-handler/actions/workflows/build.yml)  - [docs](index.md)
 ======================
 [![Go Report Card](https://goreportcard.com/badge/github.com/tislib/data-handler)](https://goreportcard.com/report/github.com/tislib/data-handler)
 [![Go Reference](https://pkg.go.dev/badge/github.com/tislib/data-handler.svg)](https://pkg.go.dev/github.com/tislib/data-handler)
@@ -104,7 +104,7 @@ properties:
 dhctl apply -f country.hcl
 ```
 
-Swagger: http://localhost:9009/docs/index.html
+Swagger: http://localhost:9009/index.html
 
 ```
 # Create Country
@@ -158,16 +158,16 @@ defaultServer: local
 
 Now we are ready.
 
-# [Tutorials](docs/content/tutorials/index.md)
+# [Tutorials](content/tutorials/index.md)
 
-you can find various tutorials [here](docs/content/tutorials/index.md)
+you can find various tutorials [here](content/tutorials/index.md)
 
-# [Docs](docs/index.md)
+# [Docs](index.md)
 
-- [Tutorials](docs/content/tutorials/index.md) - Tutorials
-- [Installation](docs/content/installation.md) - Installation
-- [General](docs/content/general.md) - General information about Data Handler
-- [API](docs/content/api.md) - GRPC and Rest API documentation
-- [CLI](docs/content/dhctl/dhctl.md) - CLI interface(dhctl) documentation
-- [Proto](docs/content/proto.md) - Proto documentation
-- [SDK](docs/content/sdk.md) - SDK documentation
+- [Tutorials](content/tutorials/index.md) - Tutorials
+- [Installation](content/installation.md) - Installation
+- [General](content/general.md) - General information about Data Handler
+- [API](content/api.md) - GRPC and Rest API documentation
+- [CLI](content/dhctl/dhctl.md) - CLI interface(dhctl) documentation
+- [Proto](content/proto.md) - Proto documentation
+- [SDK](content/sdk.md) - SDK documentation
