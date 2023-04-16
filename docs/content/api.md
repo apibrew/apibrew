@@ -19,29 +19,27 @@
 
 # Grpc Api
 
-Grpc is main interface of Data Handler. By defaul 9009 port is used to communicate to Data handler grpc service.
+Grpc is main interface of Data Handler. By default, 9009 port is used to communicate to Data handler grpc service.
 
 Grpc services:
 
-* [**Authentication**](#authentication) - Authentication
-* [**Resource**](#resource) - Resource operations
-* [**Record**](#record) - Record operations (CRUD)
-* [**Namespace**](#namespace) - Namespace operations (CRUD)
-* [**Datasource**](#data-source) - Data Source operations (CRUD)
-* [**User**](#user) - User operations (CRUD)
-* [**Extension**](#extension) - Extension operations (CRUD)
+* [**Authentication**](proto#authentication-service) - Authentication
+* [**Resource**](proto#resource-service) - Resource operations
+* [**Record**](proto#record-service) - Record operations (CRUD)
+* [**Namespace**](proto#namespace-service) - Namespace operations (CRUD)
+* [**Datasource**](proto#datasource-service) - Data Source operations (CRUD)
+* [**User**](proto#user-service) - User operations (CRUD)
+* [**Extension**](proto#extension-service) - Extension operations (CRUD)
 
-## Resource
+# Rest Api
 
-Proto file: [resource.proto](https://github.com/tislib/data-handler/blob/master/proto/stub/resource.proto)
+You can see Rest api docs on swagger, by default swagger is available on http://localhost:9009/docs/index.html
 
-Resource service is for managing resources inside Data handler.
-For detailed information about resource
-see [link](general.md#resource)
-
-Methods:
-* [**create**]  
-
-* [**ExternalCall**](#external-call) - External call service is for extension purposes and it is not available by
-  Datahandler itself, instead, External call service is required to be implemented on extension service, So data handler
-  is communicating with extension service through this service
+Rest services:
+* [**Authentication**](openapi.md#authentication) - Authentication
+* [**Resource**](openapi#resourceget) - Resource operations
+* [**Record**](openapi#recordget) - Record operations (CRUD)
+* [**Namespace**](openapi#namespaceget) - Namespace operations (CRUD)
+* [**Datasource**](openapi#datasourceget) - Data Source operations (CRUD)
+* [**User**](openapi#userget) - User operations (CRUD)
+* [**Extension**](openapi#extensionget) - Extension operations (CRUD)

@@ -1099,7 +1099,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 <a name="ext-Function"></a>
 
-### Function
+### Function Service
 
 
 | Method Name | Request Type | Response Type | Description |
@@ -2052,7 +2052,7 @@ An entity is like a table on sql databases or collection on mongodb etc.
 
 <a name="stub-Authentication"></a>
 
-### Authentication
+### Authentication Service
 Authentication Service is for authentication related operations
 
 | Method Name | Request Type | Response Type | Description |
@@ -2324,7 +2324,7 @@ Authentication Service is for authentication related operations
 
 <a name="stub-DataSource"></a>
 
-### DataSource
+### DataSource Service
 DataSource Service is for managing data sources
 
 | Method Name | Request Type | Response Type | Description |
@@ -2506,7 +2506,7 @@ DataSource Service is for managing data sources
 
 <a name="stub-Extension"></a>
 
-### Extension
+### Extension Service
 Extension Service is for managing extensions
 
 | Method Name | Request Type | Response Type | Description |
@@ -2928,7 +2928,7 @@ Extension Service is for managing extensions
 
 <a name="stub-Generic"></a>
 
-### Generic
+### Generic Service
 
 
 | Method Name | Request Type | Response Type | Description |
@@ -3114,7 +3114,7 @@ Extension Service is for managing extensions
 
 <a name="stub-Namespace"></a>
 
-### Namespace
+### Namespace Service
 Namespace Service is for managing namespaces
 
 | Method Name | Request Type | Response Type | Description |
@@ -3668,7 +3668,7 @@ Namespace Service is for managing namespaces
 
 <a name="stub-Record"></a>
 
-### Record
+### Record Service
 Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
 
 | Method Name | Request Type | Response Type | Description |
@@ -4089,7 +4089,7 @@ taleh123
 
 <a name="stub-Resource"></a>
 
-### Resource
+### Resource Service
 Resource service is for managing resources
 
 | Method Name | Request Type | Response Type | Description |
@@ -4418,7 +4418,7 @@ Resource service is for managing resources
 
 <a name="rest-Record"></a>
 
-### Record
+### Record Service
 Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
 
 | Method Name | Request Type | Response Type | Description |
@@ -4603,7 +4603,7 @@ Record service is an abstract service for records of all resources. You can do C
 
 <a name="stub-User"></a>
 
-### User
+### User Service
 User service is for managing users
 
 | Method Name | Request Type | Response Type | Description |
@@ -4652,7 +4652,7 @@ User service is for managing users
 
 <a name="stub-Watch"></a>
 
-### Watch
+### Watch Service
 Watch service watching operations on records
 
 | Method Name | Request Type | Response Type | Description |
