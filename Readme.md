@@ -1,4 +1,4 @@
-Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/data-handler/actions/workflows/build.yml)  - [docs](docs/index.md)
+Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/data-handler/actions/workflows/build.yml)  - [website](http://data-handler.tislib.net/)
 ======================
 [![Go Report Card](https://goreportcard.com/badge/github.com/tislib/data-handler)](https://goreportcard.com/report/github.com/tislib/data-handler)
 [![Go Reference](https://pkg.go.dev/badge/github.com/tislib/data-handler.svg)](https://pkg.go.dev/github.com/tislib/data-handler)
