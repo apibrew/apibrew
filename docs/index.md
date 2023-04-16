@@ -158,16 +158,16 @@ defaultServer: local
 
 Now we are ready.
 
-# [Tutorials](content/tutorials/index.md)
+# [Tutorials](content/tutorials/index)
 
 you can find various tutorials [here](content/tutorials/index.md)
 
 # [Docs](index.md)
 
-- [Tutorials](content/tutorials/index.md) - Tutorials
-- [Installation](content/installation.md) - Installation
-- [General](content/general.md) - General information about Data Handler
-- [API](content/api.md) - GRPC and Rest API documentation
-- [CLI](content/dhctl/dhctl.md) - CLI interface(dhctl) documentation
-- [Proto](content/proto.md) - Proto documentation
-- [SDK](content/sdk.md) - SDK documentation
+- [Tutorials](content/tutorials/index) - Tutorials
+- [Installation](content/installation) - Installation
+- [General](content/general) - General information about Data Handler
+- [API](content/api) - GRPC and Rest API documentation
+- [CLI](content/dhctl/dhctl) - CLI interface(dhctl) documentation
+- [Proto](content/proto) - Proto documentation
+- [SDK](content/sdk) - SDK documentation

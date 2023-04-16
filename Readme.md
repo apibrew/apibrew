@@ -162,12 +162,12 @@ Now we are ready.
 
 you can find various tutorials [here](docs/content/tutorials/index.md)
 
-# [Docs](docs/index.md)
+# [Docs](https://data-handler.tislib.net)
 
-- [Tutorials](docs/content/tutorials/index.md) - Tutorials
-- [Installation](docs/content/installation.md) - Installation
-- [General](docs/content/general.md) - General information about Data Handler
-- [API](docs/content/api.md) - GRPC and Rest API documentation
-- [CLI](docs/content/dhctl/dhctl.md) - CLI interface(dhctl) documentation
-- [Proto](docs/content/proto.md) - Proto documentation
-- [SDK](docs/content/sdk.md) - SDK documentation
+- [Tutorials](https://data-handler.tislib.net/content/tutorials/index) - Tutorials
+- [Installation](https://data-handler.tislib.net/content/installation) - Installation
+- [General](https://data-handler.tislib.net/content/general) - General information about Data Handler
+- [API](https://data-handler.tislib.net/content/api) - GRPC and Rest API documentation
+- [CLI](https://data-handler.tislib.net/content/dhctl/dhctl) - CLI interface(dhctl) documentation
+- [Proto](https://data-handler.tislib.net/content/proto) - Proto documentation
+- [SDK](https://data-handler.tislib.net/content/sdk) - SDK documentation
