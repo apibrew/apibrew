@@ -46,4 +46,35 @@ docker run -d -p 9009:9009 -v ${PWD}/config.json:/app/config.json tislib/data-ha
 
 ## Kubernetes ([see](https://github.com/tislib/data-handler/tree/master/deploy/kubernetes))
 
+## Client 
+Let's install our client **dhctl**
+
+You can download client binary from release page https://github.com/tislib/data-handler/releases/latest (download dhctl-OS-ARCH)
+
+You can also use go install if you have go runtime on your local
+```
+go install github.com/tislib/data-handler/cmd/dhctl@latest
+```
+
+Now let's configure our client to point to server
+
+```
+mkdir -p ~/.dhctl
+nano  ~/.dhctl/config
+```
+
+Paste config to there
+
+```
+type: server
+servers:
+  - name: local
+    host: 127.0.0.1:9009
+    authentication:
+      username: admin
+      password: admin
+defaultServer: local
+```
+
+
 
