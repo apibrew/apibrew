@@ -14,7 +14,7 @@ Docker standalone mode is most basic mode to run data handler
 *Run docker container*
 
 ```bash
-docker run -d -p 9009:9009 -v ./data:/var/lib/postgresql/data tislib/data-handler:full-latest
+docker run -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
 ```
 
 ## Docker [normal]

@@ -129,7 +129,7 @@ curl "http://localhost:9009/country" -H "Authorization: <token>"
 Let's run application on standalone mode:
 
 ```
-docker run -d -p 9009:9009 tislib/data-handler:full-latest
+docker run -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
 ```
 
 Let's install our client **dhctl**
