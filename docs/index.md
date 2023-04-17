@@ -12,6 +12,7 @@ Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/
 
 With Data handler, you can create CRUD APIs for your data in a few minutes
 
+country.yml
 ```yaml
 type: resource
 name: country
@@ -24,6 +25,10 @@ properties:
   - name: description # name of the property
     type: STRING # type of the property
     length: 255
+```
+
+```bash
+dhctl apply -f country.yml
 ```
 So you are ready, you have fully established Rest API for country resource
 
@@ -41,10 +46,10 @@ Everything can be written by resources, not?
 
 ```javascript
 countryExtension.onCreate(async (country) => {
-        country.description = country.description + ' - Extended'
+  country.description = country.description + ' - Extended'
 
-        return country
-    })
+  return country
+})
 ```
 So we have extended our country resource with modification description on create
 
