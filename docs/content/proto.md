@@ -1984,14 +1984,14 @@ An entity is like a table on sql databases or collection on mongodb etc.
 <a name="stub-AuthenticationRequest"></a>
 
 ### AuthenticationRequest
-
+AuthenticationRequest is the request for authentication
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | username | [string](#string) |  |  |
 | password | [string](#string) |  |  |
-| term | [model.TokenTerm](#model-TokenTerm) |  |  |
+| term | [model.TokenTerm](#model-TokenTerm) |  | Token Lifespan |
 
 
 
@@ -2057,8 +2057,8 @@ Authentication Service is for authentication related operations
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Authenticate | [AuthenticationRequest](#stub-AuthenticationRequest) | [AuthenticationResponse](#stub-AuthenticationResponse) |  |
-| RenewToken | [RenewTokenRequest](#stub-RenewTokenRequest) | [RenewTokenResponse](#stub-RenewTokenResponse) |  |
+| Authenticate | [AuthenticationRequest](#stub-AuthenticationRequest) | [AuthenticationResponse](#stub-AuthenticationResponse) | Authentication with username/password and create new token Later on, you need to use this token to access other services, for grpc, you need to set the token on request. For Rest, you need to set the token on Authorization header with Bearer prefix |
+| RenewToken | [RenewTokenRequest](#stub-RenewTokenRequest) | [RenewTokenResponse](#stub-RenewTokenResponse) | Renew token with existing token |
 
  <!-- end services -->
 
@@ -2229,9 +2229,9 @@ Authentication Service is for authentication related operations
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | token | [string](#string) |  |  |
-| id | [string](#string) |  |  |
-| catalog | [string](#string) |  |  |
-| entity | [string](#string) |  |  |
+| id | [string](#string) |  | data source id, required, It is for specifying that which database the operation will be performed |
+| catalog | [string](#string) |  | catalog is optional, if not provided, default catalog will be used, catalog is like schema in database |
+| entity | [string](#string) |  | entity is required, it is like table in database, collection on mongodb, etc. |
 
 
 
@@ -2334,9 +2334,9 @@ DataSource Service is for managing data sources
 | Update | [UpdateDataSourceRequest](#stub-UpdateDataSourceRequest) | [UpdateDataSourceResponse](#stub-UpdateDataSourceResponse) |  |
 | Delete | [DeleteDataSourceRequest](#stub-DeleteDataSourceRequest) | [DeleteDataSourceResponse](#stub-DeleteDataSourceResponse) |  |
 | Get | [GetDataSourceRequest](#stub-GetDataSourceRequest) | [GetDataSourceResponse](#stub-GetDataSourceResponse) |  |
-| Status | [StatusRequest](#stub-StatusRequest) | [StatusResponse](#stub-StatusResponse) |  |
-| ListEntities | [ListEntitiesRequest](#stub-ListEntitiesRequest) | [ListEntitiesResponse](#stub-ListEntitiesResponse) |  |
-| PrepareResourceFromEntity | [PrepareResourceFromEntityRequest](#stub-PrepareResourceFromEntityRequest) | [PrepareResourceFromEntityResponse](#stub-PrepareResourceFromEntityResponse) |  |
+| Status | [StatusRequest](#stub-StatusRequest) | [StatusResponse](#stub-StatusResponse) | Status will return connection status of data source |
+| ListEntities | [ListEntitiesRequest](#stub-ListEntitiesRequest) | [ListEntitiesResponse](#stub-ListEntitiesResponse) | List entities will return all entities from data source |
+| PrepareResourceFromEntity | [PrepareResourceFromEntityRequest](#stub-PrepareResourceFromEntityRequest) | [PrepareResourceFromEntityResponse](#stub-PrepareResourceFromEntityResponse) | PrepareResourceFromEntity will return resource from data source based on entity. It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it. |
 
  <!-- end services -->
 
@@ -2929,7 +2929,7 @@ Extension Service is for managing extensions
 <a name="stub-Generic"></a>
 
 ### Generic Service
-
+Not implemented yet
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -3676,12 +3676,12 @@ Record service is an abstract service for records of all resources. You can do C
 | Create | [CreateRecordRequest](#stub-CreateRecordRequest) | [CreateRecordResponse](#stub-CreateRecordResponse) |  |
 | Update | [UpdateRecordRequest](#stub-UpdateRecordRequest) | [UpdateRecordResponse](#stub-UpdateRecordResponse) |  |
 | Apply | [ApplyRecordRequest](#stub-ApplyRecordRequest) | [ApplyRecordResponse](#stub-ApplyRecordResponse) |  |
-| UpdateMulti | [UpdateMultiRecordRequest](#stub-UpdateMultiRecordRequest) | [UpdateMultiRecordResponse](#stub-UpdateMultiRecordResponse) |  |
+| UpdateMulti | [UpdateMultiRecordRequest](#stub-UpdateMultiRecordRequest) | [UpdateMultiRecordResponse](#stub-UpdateMultiRecordResponse) | Not implemented yet |
 | Delete | [DeleteRecordRequest](#stub-DeleteRecordRequest) | [DeleteRecordResponse](#stub-DeleteRecordResponse) |  |
 | List | [ListRecordRequest](#stub-ListRecordRequest) | [ListRecordResponse](#stub-ListRecordResponse) |  |
 | Search | [SearchRecordRequest](#stub-SearchRecordRequest) | [SearchRecordResponse](#stub-SearchRecordResponse) |  |
 | ReadStream | [ReadStreamRequest](#stub-ReadStreamRequest) | [.model.Record](#model-Record) stream |  |
-| WriteStream | [.model.Record](#model-Record) stream | [WriteStreamResponse](#stub-WriteStreamResponse) |  |
+| WriteStream | [.model.Record](#model-Record) stream | [WriteStreamResponse](#stub-WriteStreamResponse) | Not implemented yet |
 | Get | [GetRecordRequest](#stub-GetRecordRequest) | [GetRecordResponse](#stub-GetRecordResponse) |  |
 
  <!-- end services -->
@@ -3705,8 +3705,8 @@ Record service is an abstract service for records of all resources. You can do C
 | ----- | ---- | ----- | ----------- |
 | token | [string](#string) |  |  |
 | resources | [model.Resource](#model-Resource) | repeated |  |
-| doMigration | [bool](#bool) |  |  |
-| forceMigration | [bool](#bool) |  |  |
+| doMigration | [bool](#bool) |  | if true, it will try to migrate the resource to the data source, if it is false, resource will be only created, backend will not be affected. |
+| forceMigration | [bool](#bool) |  | if true, it will force the migration, if it is false, it will not migrate if there is a conflict. Force migration will also do following things: - if column/index is deleted from resource, it will delete it from backend |
 | annotations | [CreateResourceRequest.AnnotationsEntry](#stub-CreateResourceRequest-AnnotationsEntry) | repeated |  |
 
 
@@ -3755,8 +3755,8 @@ Record service is an abstract service for records of all resources. You can do C
 | ----- | ---- | ----- | ----------- |
 | token | [string](#string) |  |  |
 | ids | [string](#string) | repeated |  |
-| doMigration | [bool](#bool) |  |  |
-| forceMigration | [bool](#bool) |  |  |
+| doMigration | [bool](#bool) |  | See the comments on CreateResourceRequest.doMigration |
+| forceMigration | [bool](#bool) |  | See the comments on CreateResourceRequest.forceMigration |
 | annotations | [DeleteResourceRequest.AnnotationsEntry](#stub-DeleteResourceRequest-AnnotationsEntry) | repeated |  |
 
 
@@ -4034,15 +4034,15 @@ Record service is an abstract service for records of all resources. You can do C
 <a name="stub-UpdateResourceRequest"></a>
 
 ### UpdateResourceRequest
-taleh123
+
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | token | [string](#string) |  |  |
 | resources | [model.Resource](#model-Resource) | repeated |  |
-| doMigration | [bool](#bool) |  |  |
-| forceMigration | [bool](#bool) |  |  |
+| doMigration | [bool](#bool) |  | See the comments on CreateResourceRequest.doMigration |
+| forceMigration | [bool](#bool) |  | See the comments on CreateResourceRequest.forceMigration |
 | annotations | [UpdateResourceRequest.AnnotationsEntry](#stub-UpdateResourceRequest-AnnotationsEntry) | repeated |  |
 
 
@@ -4098,7 +4098,7 @@ Resource service is for managing resources
 | Update | [UpdateResourceRequest](#stub-UpdateResourceRequest) | [UpdateResourceResponse](#stub-UpdateResourceResponse) |  |
 | Delete | [DeleteResourceRequest](#stub-DeleteResourceRequest) | [DeleteResourceResponse](#stub-DeleteResourceResponse) |  |
 | List | [ListResourceRequest](#stub-ListResourceRequest) | [ListResourceResponse](#stub-ListResourceResponse) |  |
-| PrepareResourceMigrationPlan | [PrepareResourceMigrationPlanRequest](#stub-PrepareResourceMigrationPlanRequest) | [PrepareResourceMigrationPlanResponse](#stub-PrepareResourceMigrationPlanResponse) |  |
+| PrepareResourceMigrationPlan | [PrepareResourceMigrationPlanRequest](#stub-PrepareResourceMigrationPlanRequest) | [PrepareResourceMigrationPlanResponse](#stub-PrepareResourceMigrationPlanResponse) | PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration. |
 | Get | [GetResourceRequest](#stub-GetResourceRequest) | [GetResourceResponse](#stub-GetResourceResponse) |  |
 | GetByName | [GetResourceByNameRequest](#stub-GetResourceByNameRequest) | [GetResourceByNameResponse](#stub-GetResourceByNameResponse) |  |
 | GetSystemResource | [GetSystemResourceRequest](#stub-GetSystemResourceRequest) | [GetSystemResourceResponse](#stub-GetSystemResourceResponse) |  |

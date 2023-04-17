@@ -422,6 +422,7 @@ paths:
             tags:
                 - Record
             summary: UpdateMulti
+            description: Not implemented yet
             operationId: Record_UpdateMulti
             parameters:
                 - name: namespace
@@ -782,10 +783,14 @@ paths:
             tags:
                 - DataSource
             summary: PrepareResourceFromEntity
+            description: |-
+                PrepareResourceFromEntity will return resource from data source based on entity.
+                 It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
             operationId: DataSource_PrepareResourceFromEntity
             parameters:
                 - name: id
                   in: path
+                  description: data source id, required, It is for specifying that which database the operation will be performed
                   required: true
                   schema:
                     type: string
@@ -813,6 +818,7 @@ paths:
             tags:
                 - DataSource
             summary: Status
+            description: Status will return connection status of data source
             operationId: DataSource_Status
             parameters:
                 - name: id
@@ -842,6 +848,7 @@ paths:
             tags:
                 - DataSource
             summary: ListEntities
+            description: List entities will return all entities from data source
             operationId: DataSource_ListEntities
             parameters:
                 - name: id
@@ -1217,6 +1224,7 @@ paths:
             tags:
                 - Resource
             summary: PrepareResourceMigrationPlan
+            description: PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration.
             operationId: Resource_PrepareResourceMigrationPlan
             requestBody:
                 content:
@@ -1659,7 +1667,9 @@ components:
                         - LONG
                         - VERY_LONG
                     type: string
+                    description: Token Lifespan
                     format: enum
+            description: AuthenticationRequest is the request for authentication
         AuthenticationResponse:
             type: object
             properties:
@@ -1776,8 +1786,10 @@ components:
                         $ref: '#/components/schemas/Resource'
                 doMigration:
                     type: boolean
+                    description: if true, it will try to migrate the resource to the data source, if it is false, resource will be only created, backend will not be affected.
                 forceMigration:
                     type: boolean
+                    description: 'if true, it will force the migration, if it is false, it will not migrate if there is a conflict. Force migration will also do following things: - if column/index is deleted from resource, it will delete it from backend'
                 annotations:
                     type: object
                     additionalProperties:
@@ -1902,8 +1914,10 @@ components:
                         type: string
                 doMigration:
                     type: boolean
+                    description: See the comments on CreateResourceRequest.doMigration
                 forceMigration:
                     type: boolean
+                    description: See the comments on CreateResourceRequest.forceMigration
                 annotations:
                     type: object
                     additionalProperties:
@@ -2194,10 +2208,13 @@ components:
                     type: string
                 id:
                     type: string
+                    description: data source id, required, It is for specifying that which database the operation will be performed
                 catalog:
                     type: string
+                    description: catalog is optional, if not provided, default catalog will be used, catalog is like schema in database
                 entity:
                     type: string
+                    description: entity is required, it is like table in database, collection on mongodb, etc.
         PrepareResourceFromEntityResponse:
             type: object
             properties:
@@ -2745,13 +2762,14 @@ components:
                         $ref: '#/components/schemas/Resource'
                 doMigration:
                     type: boolean
+                    description: See the comments on CreateResourceRequest.doMigration
                 forceMigration:
                     type: boolean
+                    description: See the comments on CreateResourceRequest.forceMigration
                 annotations:
                     type: object
                     additionalProperties:
                         type: string
-            description: taleh123
         UpdateResourceResponse:
             type: object
             properties:

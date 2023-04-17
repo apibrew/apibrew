@@ -35,6 +35,9 @@ service Resource {
       get: "/system/resources",
     };
   }
+  /*
+  PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration.
+   */
   rpc PrepareResourceMigrationPlan(PrepareResourceMigrationPlanRequest) returns(PrepareResourceMigrationPlanResponse) {
     option (google.api.http) = {
       post: "/system/resources/_migrate",
@@ -70,7 +73,15 @@ message CreateResourceRequest {
   string token = 1;
   repeated model.Resource resources = 2;
 
+  /*
+  if true, it will try to migrate the resource to the data source, if it is false, resource will be only created, backend will not be affected.
+   */
   bool doMigration = 3;
+  /*
+  if true, it will force the migration, if it is false, it will not migrate if there is a conflict.
+  Force migration will also do following things:
+   - if column/index is deleted from resource, it will delete it from backend
+   */
   bool forceMigration = 4;
 
   map<string, string> annotations = 103;
@@ -80,12 +91,17 @@ message CreateResourceResponse {
   repeated model.Resource resources = 1;
 }
 
-// taleh123
 message UpdateResourceRequest {
   string token = 1;
   repeated model.Resource resources = 2;
 
+  /*
+  See the comments on CreateResourceRequest.doMigration
+   */
   bool doMigration = 3;
+  /*
+  See the comments on CreateResourceRequest.forceMigration
+   */
   bool forceMigration = 4;
 
   map<string, string> annotations = 103;
@@ -100,7 +116,13 @@ message DeleteResourceRequest {
   string token = 1;
   repeated string ids = 3;
 
+  /*
+  See the comments on CreateResourceRequest.doMigration
+   */
   bool doMigration = 4;
+  /*
+ See the comments on CreateResourceRequest.forceMigration
+  */
   bool forceMigration = 5;
 
   map<string, string> annotations = 103;

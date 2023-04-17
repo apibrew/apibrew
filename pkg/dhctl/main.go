@@ -18,8 +18,6 @@ func init() {
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(generatorCmd)
-	rootCmd.AddCommand(createCmd)
-	rootCmd.AddCommand(updateCmd)
 	rootCmd.AddCommand(deleteCmd)
 	rootCmd.AddCommand(dataSourceCmd)
 	defineRootFlags(rootCmd)
@@ -27,8 +25,6 @@ func init() {
 
 func Run() {
 	initGetCmd()
-	initCreateCmd()
-	initUpdateCmd()
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)

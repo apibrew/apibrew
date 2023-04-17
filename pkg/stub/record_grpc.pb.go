@@ -26,11 +26,13 @@ type RecordClient interface {
 	Create(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error)
 	Update(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error)
 	Apply(ctx context.Context, in *ApplyRecordRequest, opts ...grpc.CallOption) (*ApplyRecordResponse, error)
+	// Not implemented yet
 	UpdateMulti(ctx context.Context, in *UpdateMultiRecordRequest, opts ...grpc.CallOption) (*UpdateMultiRecordResponse, error)
 	Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error)
 	List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error)
 	Search(ctx context.Context, in *SearchRecordRequest, opts ...grpc.CallOption) (*SearchRecordResponse, error)
 	ReadStream(ctx context.Context, in *ReadStreamRequest, opts ...grpc.CallOption) (Record_ReadStreamClient, error)
+	// Not implemented yet
 	WriteStream(ctx context.Context, opts ...grpc.CallOption) (Record_WriteStreamClient, error)
 	Get(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error)
 }
@@ -188,11 +190,13 @@ type RecordServer interface {
 	Create(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error)
 	Update(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error)
 	Apply(context.Context, *ApplyRecordRequest) (*ApplyRecordResponse, error)
+	// Not implemented yet
 	UpdateMulti(context.Context, *UpdateMultiRecordRequest) (*UpdateMultiRecordResponse, error)
 	Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error)
 	List(context.Context, *ListRecordRequest) (*ListRecordResponse, error)
 	Search(context.Context, *SearchRecordRequest) (*SearchRecordResponse, error)
 	ReadStream(*ReadStreamRequest, Record_ReadStreamServer) error
+	// Not implemented yet
 	WriteStream(Record_WriteStreamServer) error
 	Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error)
 	mustEmbedUnimplementedRecordServer()

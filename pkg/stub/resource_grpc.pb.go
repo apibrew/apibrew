@@ -26,6 +26,7 @@ type ResourceClient interface {
 	Update(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error)
 	Delete(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*DeleteResourceResponse, error)
 	List(ctx context.Context, in *ListResourceRequest, opts ...grpc.CallOption) (*ListResourceResponse, error)
+	// PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration.
 	PrepareResourceMigrationPlan(ctx context.Context, in *PrepareResourceMigrationPlanRequest, opts ...grpc.CallOption) (*PrepareResourceMigrationPlanResponse, error)
 	Get(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error)
 	GetByName(ctx context.Context, in *GetResourceByNameRequest, opts ...grpc.CallOption) (*GetResourceByNameResponse, error)
@@ -120,6 +121,7 @@ type ResourceServer interface {
 	Update(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error)
 	Delete(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error)
 	List(context.Context, *ListResourceRequest) (*ListResourceResponse, error)
+	// PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration.
 	PrepareResourceMigrationPlan(context.Context, *PrepareResourceMigrationPlanRequest) (*PrepareResourceMigrationPlanResponse, error)
 	Get(context.Context, *GetResourceRequest) (*GetResourceResponse, error)
 	GetByName(context.Context, *GetResourceByNameRequest) (*GetResourceByNameResponse, error)

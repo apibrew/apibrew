@@ -27,8 +27,12 @@ type DataSourceClient interface {
 	Update(ctx context.Context, in *UpdateDataSourceRequest, opts ...grpc.CallOption) (*UpdateDataSourceResponse, error)
 	Delete(ctx context.Context, in *DeleteDataSourceRequest, opts ...grpc.CallOption) (*DeleteDataSourceResponse, error)
 	Get(ctx context.Context, in *GetDataSourceRequest, opts ...grpc.CallOption) (*GetDataSourceResponse, error)
+	// Status will return connection status of data source
 	Status(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusResponse, error)
+	// List entities will return all entities from data source
 	ListEntities(ctx context.Context, in *ListEntitiesRequest, opts ...grpc.CallOption) (*ListEntitiesResponse, error)
+	// PrepareResourceFromEntity will return resource from data source based on entity.
+	// It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
 	PrepareResourceFromEntity(ctx context.Context, in *PrepareResourceFromEntityRequest, opts ...grpc.CallOption) (*PrepareResourceFromEntityResponse, error)
 }
 
@@ -121,8 +125,12 @@ type DataSourceServer interface {
 	Update(context.Context, *UpdateDataSourceRequest) (*UpdateDataSourceResponse, error)
 	Delete(context.Context, *DeleteDataSourceRequest) (*DeleteDataSourceResponse, error)
 	Get(context.Context, *GetDataSourceRequest) (*GetDataSourceResponse, error)
+	// Status will return connection status of data source
 	Status(context.Context, *StatusRequest) (*StatusResponse, error)
+	// List entities will return all entities from data source
 	ListEntities(context.Context, *ListEntitiesRequest) (*ListEntitiesResponse, error)
+	// PrepareResourceFromEntity will return resource from data source based on entity.
+	// It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
 	PrepareResourceFromEntity(context.Context, *PrepareResourceFromEntityRequest) (*PrepareResourceFromEntityResponse, error)
 	mustEmbedUnimplementedDataSourceServer()
 }
