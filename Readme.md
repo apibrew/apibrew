@@ -163,10 +163,6 @@ defaultServer: local
 
 Now we are ready.
 
-# [Tutorials](docs/content/tutorials/index.md)
-
-you can find various tutorials [here](docs/content/tutorials/index.md)
-
 # [Docs](https://data-handler.tislib.net)
 
 - [Tutorials](https://data-handler.tislib.net/content/tutorials/index) - Tutorials
