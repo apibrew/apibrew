@@ -24,10 +24,14 @@ const (
 type TokenTerm int32
 
 const (
-	TokenTerm_SHORT     TokenTerm = 0 // 1 minute
-	TokenTerm_MIDDLE    TokenTerm = 1 // 2 hours
-	TokenTerm_LONG      TokenTerm = 2 // 2 days
-	TokenTerm_VERY_LONG TokenTerm = 3 // 2 years
+	// 1 minute
+	TokenTerm_SHORT TokenTerm = 0
+	// 2 hours
+	TokenTerm_MIDDLE TokenTerm = 1
+	// 2 days
+	TokenTerm_LONG TokenTerm = 2
+	// 2 years
+	TokenTerm_VERY_LONG TokenTerm = 3
 )
 
 // Enum value maps for TokenTerm.

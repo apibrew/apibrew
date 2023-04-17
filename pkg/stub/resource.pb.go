@@ -145,9 +145,13 @@ type CreateResourceRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Token          string            `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	Resources      []*model.Resource `protobuf:"bytes,2,rep,name=resources,proto3" json:"resources,omitempty"`
-	DoMigration    bool              `protobuf:"varint,3,opt,name=doMigration,proto3" json:"doMigration,omitempty"`
+	Token     string            `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Resources []*model.Resource `protobuf:"bytes,2,rep,name=resources,proto3" json:"resources,omitempty"`
+	// if true, it will try to migrate the resource to the data source, if it is false, resource will be only created, backend will not be affected.
+	DoMigration bool `protobuf:"varint,3,opt,name=doMigration,proto3" json:"doMigration,omitempty"`
+	// if true, it will force the migration, if it is false, it will not migrate if there is a conflict.
+	// Force migration will also do following things:
+	// - if column/index is deleted from resource, it will delete it from backend
 	ForceMigration bool              `protobuf:"varint,4,opt,name=forceMigration,proto3" json:"forceMigration,omitempty"`
 	Annotations    map[string]string `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -266,15 +270,16 @@ func (x *CreateResourceResponse) GetResources() []*model.Resource {
 	return nil
 }
 
-// taleh123
 type UpdateResourceRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Token          string            `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	Resources      []*model.Resource `protobuf:"bytes,2,rep,name=resources,proto3" json:"resources,omitempty"`
-	DoMigration    bool              `protobuf:"varint,3,opt,name=doMigration,proto3" json:"doMigration,omitempty"`
+	Token     string            `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Resources []*model.Resource `protobuf:"bytes,2,rep,name=resources,proto3" json:"resources,omitempty"`
+	// See the comments on CreateResourceRequest.doMigration
+	DoMigration bool `protobuf:"varint,3,opt,name=doMigration,proto3" json:"doMigration,omitempty"`
+	// See the comments on CreateResourceRequest.forceMigration
 	ForceMigration bool              `protobuf:"varint,4,opt,name=forceMigration,proto3" json:"forceMigration,omitempty"`
 	Annotations    map[string]string `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -398,9 +403,11 @@ type DeleteResourceRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Token          string            `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	Ids            []string          `protobuf:"bytes,3,rep,name=ids,proto3" json:"ids,omitempty"`
-	DoMigration    bool              `protobuf:"varint,4,opt,name=doMigration,proto3" json:"doMigration,omitempty"`
+	Token string   `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Ids   []string `protobuf:"bytes,3,rep,name=ids,proto3" json:"ids,omitempty"`
+	// See the comments on CreateResourceRequest.doMigration
+	DoMigration bool `protobuf:"varint,4,opt,name=doMigration,proto3" json:"doMigration,omitempty"`
+	// See the comments on CreateResourceRequest.forceMigration
 	ForceMigration bool              `protobuf:"varint,5,opt,name=forceMigration,proto3" json:"forceMigration,omitempty"`
 	Annotations    map[string]string `protobuf:"bytes,103,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }

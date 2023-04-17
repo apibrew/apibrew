@@ -30,6 +30,9 @@ service Record {
     };
   }
 
+  /*
+  Not implemented yet
+   */
   rpc UpdateMulti (UpdateMultiRecordRequest) returns (UpdateMultiRecordResponse) {
     option (google.api.http) = {
       post: "/records/{namespace}/{resource}/_multi"
@@ -62,6 +65,9 @@ service Record {
     };
   }
 
+  /*
+ Not implemented yet
+  */
   rpc WriteStream (stream model.Record) returns (WriteStreamResponse) {}
 
   rpc Get (GetRecordRequest) returns (GetRecordResponse) {

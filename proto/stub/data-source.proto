@@ -40,16 +40,26 @@ service DataSource {
       get: "/system/data-sources/{id}",
     };
   }
+  /*
+  Status will return connection status of data source
+   */
   rpc Status(StatusRequest) returns (StatusResponse) {
     option (google.api.http) = {
       get: "/system/data-sources/{id}/_status",
     };
   }
+  /*
+  List entities will return all entities from data source
+   */
   rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {
     option (google.api.http) = {
       get: "/system/data-sources/{id}/entities",
     };
   }
+  /*
+  PrepareResourceFromEntity will return resource from data source based on entity.
+  It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
+   */
   rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {
     option (google.api.http) = {
       post: "/system/data-sources/{id}/_prepare_entity",
@@ -60,8 +70,11 @@ service DataSource {
 
 message PrepareResourceFromEntityRequest {
   string token = 1;
+  // data source id, required, It is for specifying that which database the operation will be performed
   string id = 2;
+  // catalog is optional, if not provided, default catalog will be used, catalog is like schema in database
   string catalog = 3;
+  // entity is required, it is like table in database, collection on mongodb, etc.
   string entity = 4;
 }
 

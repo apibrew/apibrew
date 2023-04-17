@@ -22,7 +22,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthenticationClient interface {
+	// Authentication with username/password and create new token
+	// Later on, you need to use this token to access other services, for grpc, you need to set the token on request. For Rest, you need to set the token on Authorization header with Bearer prefix
 	Authenticate(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error)
+	// Renew token with existing token
 	RenewToken(ctx context.Context, in *RenewTokenRequest, opts ...grpc.CallOption) (*RenewTokenResponse, error)
 }
 
@@ -56,7 +59,10 @@ func (c *authenticationClient) RenewToken(ctx context.Context, in *RenewTokenReq
 // All implementations must embed UnimplementedAuthenticationServer
 // for forward compatibility
 type AuthenticationServer interface {
+	// Authentication with username/password and create new token
+	// Later on, you need to use this token to access other services, for grpc, you need to set the token on request. For Rest, you need to set the token on Authorization header with Bearer prefix
 	Authenticate(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error)
+	// Renew token with existing token
 	RenewToken(context.Context, *RenewTokenRequest) (*RenewTokenResponse, error)
 	mustEmbedUnimplementedAuthenticationServer()
 }

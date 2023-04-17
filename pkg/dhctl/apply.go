@@ -112,7 +112,7 @@ var applyCmd = &cobra.Command{
 }
 
 func init() {
-	applyCmd.PersistentFlags().StringP("file", "f", "", "Output file")
+	applyCmd.PersistentFlags().StringP("file", "f", "", "Input file")
 	applyCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	applyCmd.PersistentFlags().BoolP("migrate", "m", true, "Migrate")
 	applyCmd.PersistentFlags().Bool("force", false, "Force")

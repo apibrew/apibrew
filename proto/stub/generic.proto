@@ -9,6 +9,9 @@ import 'model/error.proto';
 import 'google/protobuf/struct.proto';
 import "google/protobuf/any.proto";
 
+/*
+ Not implemented yet
+  */
 service Generic {
   rpc Create (CreateRequest) returns (CreateResponse) {}
   rpc Update (UpdateRequest) returns (UpdateResponse) {}

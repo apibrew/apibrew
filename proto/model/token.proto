@@ -7,10 +7,14 @@ option go_package = "github.com/tislib/data-handler/pkg/model";
 import 'google/protobuf/timestamp.proto';
 
 enum TokenTerm {
-  SHORT = 0;      // 1 minute
-  MIDDLE = 1;     // 2 hours
-  LONG = 2;       // 2 days
-  VERY_LONG = 3;  // 2 years
+  // 1 minute
+  SHORT = 0;
+  // 2 hours
+  MIDDLE = 1;
+  // 2 days
+  LONG = 2;
+  // 2 years
+  VERY_LONG = 3;
 }
 
 message Token {

@@ -27,10 +27,13 @@ type PrepareResourceFromEntityRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Token   string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	Id      string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	Token string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	// data source id, required, It is for specifying that which database the operation will be performed
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// catalog is optional, if not provided, default catalog will be used, catalog is like schema in database
 	Catalog string `protobuf:"bytes,3,opt,name=catalog,proto3" json:"catalog,omitempty"`
-	Entity  string `protobuf:"bytes,4,opt,name=entity,proto3" json:"entity,omitempty"`
+	// entity is required, it is like table in database, collection on mongodb, etc.
+	Entity string `protobuf:"bytes,4,opt,name=entity,proto3" json:"entity,omitempty"`
 }
 
 func (x *PrepareResourceFromEntityRequest) Reset() {
