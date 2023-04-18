@@ -165,10 +165,10 @@ Now we are ready.
 
 # [Docs](https://data-handler.tislib.net)
 
-- [Tutorials](https://data-handler.tislib.net/content/tutorials/index) - Tutorials
-- [Installation](https://data-handler.tislib.net/content/installation) - Installation
-- [General](https://data-handler.tislib.net/content/general) - General information about Data Handler
-- [API](https://data-handler.tislib.net/content/api) - GRPC and Rest API documentation
-- [CLI](https://data-handler.tislib.net/content/dhctl/dhctl) - CLI interface(dhctl) documentation
-- [Proto](https://data-handler.tislib.net/content/proto) - Proto documentation
-- [SDK](https://data-handler.tislib.net/content/sdk) - SDK documentation
+- [Tutorials](https://data-handler.tislib.net/docs/tutorials/index) - Tutorials
+- [Installation](https://data-handler.tislib.net/docs/installation) - Installation
+- [General](https://data-handler.tislib.net/docs/general) - General information about Data Handler
+- [API](https://data-handler.tislib.net/docs/api) - GRPC and Rest API documentation
+- [CLI](https://data-handler.tislib.net/docs/dhctl) - CLI interface(dhctl) documentation
+- [Proto](https://data-handler.tislib.net/docs/proto) - Proto documentation
+- [SDK](https://data-handler.tislib.net/docs/sdk) - SDK documentation
