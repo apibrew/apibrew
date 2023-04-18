@@ -1,1 +1,10 @@
 theme: just-the-docs
+
+permalink: pretty
+
+exclude:
+  - content/files
+
+aux_links:
+  "Data Handler on GitHub":
+    - "//github.com/tislib/data-handler"
