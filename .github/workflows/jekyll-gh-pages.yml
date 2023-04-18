@@ -31,7 +31,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Build with Jekyll
-        uses: tislib/jekyll-build-pages@v1.1
+        uses: tislib/jekyll-build-pages@latest
         with:
           source: ./docs/
           destination: ./_site
