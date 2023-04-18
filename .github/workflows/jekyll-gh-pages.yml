@@ -1,7 +1,12 @@
-name: Testing the GitHub Pages publication
+name: Website build & deploy
 
 on:
-  push
+  push:
+    tags:
+      - v*
+    branches:
+      - master
+  pull_request:
 
 jobs:
   jekyll:
@@ -20,3 +25,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           jekyll_src: 'docs'
+          target_branch: 'master'
