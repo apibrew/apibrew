@@ -1,3 +1,9 @@
+---
+layout: default
+title: General
+nav_order: 2
+---
+
 # Table of contents
 
 * Core elements - Inside Data Handler there are 6 main elements
