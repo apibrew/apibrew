@@ -1,8 +1,0 @@
----
-main:
-  - name: General
-    ref: "/general"
-    icon: "gdoc_path"
-  - name: Api
-    ref: "/api"
-    icon: "gdoc_path"
