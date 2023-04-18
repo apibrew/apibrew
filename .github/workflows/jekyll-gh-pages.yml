@@ -20,4 +20,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           jekyll_src: 'docs'
-          gem_src: 'docs/Gemfile'
+          gem_src: 'Gemfile'
