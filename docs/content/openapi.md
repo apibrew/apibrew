@@ -1,5 +1,5 @@
 ---
-title: Data Handler v1.0
+title: Rest Api
 language_tabs:
   - shell: Shell
   - http: HTTP
