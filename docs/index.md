@@ -1,10 +1,8 @@
-Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/data-handler/actions/workflows/build.yml) -  [repository](https://github.com/tislib/data-handler)
-======================
 [![Go Report Card](https://goreportcard.com/badge/github.com/tislib/data-handler)](https://goreportcard.com/report/github.com/tislib/data-handler)
 [![Go Reference](https://pkg.go.dev/badge/github.com/tislib/data-handler.svg)](https://pkg.go.dev/github.com/tislib/data-handler)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
 [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/data-handler)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/data-handler)  [![build](https://github.com/tislib/data-handler/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/data-handler/actions/workflows/build.yml) -  [repository](https://github.com/tislib/data-handler)
 
 
 ## Introduction
