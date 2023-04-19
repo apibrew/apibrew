@@ -38,15 +38,8 @@ fi
 echo "Downloading ${PLATFORM} binary"
 curl -L -o "dhctl${SUFFIX}" "https://github.com/tislib/data-handler/releases/download/v1.1.8/dhctl-${PLATFORM}${SUFFIX}"
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  chmod +x dhctl
-  mv dhctl /usr/local/bin/dhctl
-fi
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  chmod +x dhctl
-  mv dhctl /usr/local/bin/dhctl
-fi
+chmod +x dhctl
+sudo mv dhctl /usr/local/bin/dhctl
 
 echo "Dhctl installation is done"
 echo "Configuring dhctl"
@@ -62,4 +55,3 @@ echo "Run data-handler standalone mode"
 docker run --name data-handler-standalone -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
 
 echo "Done!"
-
