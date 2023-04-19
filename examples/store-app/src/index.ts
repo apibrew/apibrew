@@ -1,66 +1,28 @@
-import {Order, Product} from "./schema";
+import {Pet} from "./schema";
 import {DhClient} from "data-handler-client";
 
 const client = new DhClient({
-    Addr: "127.0.0.1:9009",
+    Addr: "127.0.0.1:9009", // data handler server address
     Insecure: true,
 })
 
 async function run() {
     await client.authenticateWithUsernameAndPassword("admin", "admin")
-    const productRepo = client.newRepository<Product>("default", "product")
-    const orderRepo = client.newRepository<Order>("default", "order")
+    const petRepo = client.newRepository<Pet>("default", "pet")
 
-    const extension = client.NewExtensionService("127.0.0.1", 17686)
+    const extension = client.NewExtensionService("127.0.0.1", 17686, "http://host.docker.internal:17686") // which port we will run extension
 
     await extension.run()
 
-    const orderExtension = orderRepo.extend(extension)
+    const petExtension = petRepo.extend(extension)
 
-    orderExtension.onCreate(async (order) => {
-        if (order.status != 'pending') {
-            throw new Error('Order must be created with pending status')
+    petExtension.onCreate(async (pet) => {
+        if (!pet.description) {
+            pet.description = pet.name + ' Pet'
         }
 
-        const product = await productRepo.load(order.product)
-
-        if (product.quantity < order.quantity) {
-            throw new Error('Not enough product in stock')
-        }
-
-        return order
-    })
-
-    orderExtension.onUpdate(async (order) => {
-        const existingOrder = await orderRepo.get(order.id)
-
-        if (existingOrder.status == 'completed') {
-            throw new Error('Cannot update completed order')
-        }
-
-        if (order.status == 'completed') {
-            const product = await productRepo.load(order.product)
-
-            if (product.quantity < order.quantity) {
-                throw new Error('Not enough product in stock')
-            }
-
-            product.quantity -= order.quantity
-            await productRepo.update(product)
-        }
-
-        return order
-    })
-
-    orderExtension.onDelete(async (order) => {
-        const existingOrder = await orderRepo.get(order.id)
-
-        if (existingOrder.status == 'completed') {
-            throw new Error('Cannot delete completed order')
-        }
-
-        return order
+        return pet
     })
 }
 
-run().then()
+run()

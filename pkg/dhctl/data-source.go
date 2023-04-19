@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/dhctl/flags"
+	yamlformat "github.com/tislib/data-handler/pkg/formats/yaml"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/service/annotations"
 	"github.com/tislib/data-handler/pkg/stub"
@@ -158,15 +159,12 @@ var dataSourceListEntitiesCmd = &cobra.Command{
 var dataSourcePrepareCmd = &cobra.Command{
 	Use:   "prepare",
 	Short: "prepare - Prepare resources from existing data source entities",
-}
-
-var dataSourcePrepareDescribe = &cobra.Command{
-	Use:   "describe",
-	Short: "describe - Describe resource candidate from data source prepare",
 	Run: func(cmd *cobra.Command, args []string) {
 		dataSource := loadDataSourceByNameOrId(cmd.Context(), *dataSourceId, *dataSourceName)
 
 		ch := prepareResourcesFromDataSource(cmd.Context(), dataSource)
+
+		var yamlWriter = yamlformat.NewWriter(os.Stdout)
 
 		var overrideConfig = new(flags.OverrideConfig)
 		overrideFlags.Parse(overrideConfig, cmd, args)
@@ -180,57 +178,7 @@ var dataSourcePrepareDescribe = &cobra.Command{
 				item.SourceConfig.DataSource = overrideConfig.DataSource
 			}
 
-			describeWriter.WriteResources([]*model.Resource{item})
-		}
-	},
-}
-
-var dataSourcePrepareApply = &cobra.Command{
-	Use:   "apply",
-	Short: "apply - Apply resource candidate from data source prepare",
-	Run: func(cmd *cobra.Command, args []string) {
-		dataSource := loadDataSourceByNameOrId(cmd.Context(), *dataSourceId, *dataSourceName)
-
-		ch := prepareResourcesFromDataSource(cmd.Context(), dataSource)
-
-		var overrideConfig = new(flags.OverrideConfig)
-		overrideFlags.Parse(overrideConfig, cmd, args)
-
-		for item := range ch {
-			if overrideConfig.Namespace != "" {
-				item.Namespace = overrideConfig.Namespace
-			}
-
-			if overrideConfig.DataSource != "" {
-				item.SourceConfig.DataSource = overrideConfig.DataSource
-			}
-
-			resource, err := GetDhClient().GetResourceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
-				Token:     GetDhClient().GetToken(),
-				Namespace: item.Namespace,
-				Name:      item.Name,
-			})
-
-			if err == nil {
-				item.Id = resource.Resource.Id
-				check2(GetDhClient().GetResourceClient().Update(cmd.Context(), &stub.UpdateResourceRequest{
-					Token: GetDhClient().GetToken(),
-					Resources: []*model.Resource{
-						item,
-					},
-					DoMigration: *dataSourcePrepareApplyMigrate,
-				}))
-				log.Printf("Resource Updated: %s/%s \n", item.Namespace, item.Name)
-			} else {
-				check2(GetDhClient().GetResourceClient().Create(cmd.Context(), &stub.CreateResourceRequest{
-					Token: GetDhClient().GetToken(),
-					Resources: []*model.Resource{
-						item,
-					},
-					DoMigration: *dataSourcePrepareApplyMigrate,
-				}))
-				log.Printf("Resource Created: %s/%s \n", item.Namespace, item.Name)
-			}
+			yamlWriter.WriteResource(item)
 		}
 	},
 }
@@ -241,15 +189,10 @@ func init() {
 
 	dataSourcePrepareEntityNames = dataSourcePrepareCmd.PersistentFlags().StringP("entity", "e", "*", "Select entities for resource preparation, default value is * for selection of all entities, you can use comma to select multiple entities")
 	dataSourcePrepareCatalogs = dataSourcePrepareCmd.PersistentFlags().StringP("catalog", "c", "*", "Select catalogs for resource preparation, default value is * for selection of all catalogs, you can use comma to select multiple catalogs")
-	dataSourcePrepareApplyMigrate = dataSourcePrepareApply.PersistentFlags().BoolP("migrate", "m", false, "migrate")
 
 	dataSourceCmd.AddCommand(dataSourceStatusCmd)
 	dataSourceCmd.AddCommand(dataSourcePrepareCmd)
 	dataSourceCmd.AddCommand(dataSourceListEntitiesCmd)
 
-	dataSourcePrepareCmd.AddCommand(dataSourcePrepareDescribe)
-	dataSourcePrepareCmd.AddCommand(dataSourcePrepareApply)
-
-	overrideFlags.Declare(dataSourcePrepareDescribe)
-	overrideFlags.Declare(dataSourcePrepareApply)
+	overrideFlags.Declare(dataSourcePrepareCmd)
 }

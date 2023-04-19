@@ -1,4 +1,4 @@
-import { Entity } from "../dh-client/client";
+import { Entity } from "data-handler-client";
 export interface Country2 extends Entity {
     id: string;
     name: string;

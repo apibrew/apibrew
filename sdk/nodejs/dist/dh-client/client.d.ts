@@ -48,7 +48,7 @@ export declare class DhClient {
     constructor(params: DhClientParams);
     authenticateWithUsernameAndPassword(username: string, password: string): Promise<void>;
     newRepository<T extends Entity>(namespace: string, resource: string): Repository<T>;
-    NewExtensionService(host: string, port: number): ExtensionService;
+    NewExtensionService(host: string, port: number, remoteUrl?: string): ExtensionService;
 }
 type ExternalFunctionData = {
     [key: string]: any;
@@ -93,11 +93,11 @@ export declare class RepositoryExtensionImpl<T extends Entity> implements Reposi
     constructor(repository: Repository<T>, extension: ExtensionService, resourceName: string, namespace: string, client: DhClient);
     onCreate(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void>;
     onUpdate(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void>;
-    onDelete(handler: (elem: T) => Promise<T>): Promise<void>;
-    onGet(handler: (id: string) => Promise<T>): Promise<void>;
+    onDelete(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void>;
+    onGet(handler: (id: string) => Promise<T>, finalize?: boolean): Promise<void>;
     onList(handler: () => Promise<{
         properties: T;
-    }[]>): Promise<void>;
+    }[]>, finalize?: boolean): Promise<void>;
     private getExtensionName;
 }
 export {};
