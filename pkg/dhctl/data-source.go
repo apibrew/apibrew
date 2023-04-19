@@ -19,7 +19,6 @@ var dataSourceId *string
 var dataSourceName *string
 var dataSourcePrepareEntityNames *string
 var dataSourcePrepareCatalogs *string
-var dataSourcePrepareApplyMigrate *bool
 
 func prepareResourcesFromDataSource(ctx context.Context, dataSource *model.DataSource) <-chan *model.Resource {
 	ch := make(chan *model.Resource)
@@ -159,7 +158,7 @@ var dataSourceListEntitiesCmd = &cobra.Command{
 var dataSourcePrepareCmd = &cobra.Command{
 	Use:   "prepare",
 	Short: "prepare - Prepare resources from existing data source entities",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		dataSource := loadDataSourceByNameOrId(cmd.Context(), *dataSourceId, *dataSourceName)
 
 		ch := prepareResourcesFromDataSource(cmd.Context(), dataSource)
@@ -178,8 +177,14 @@ var dataSourcePrepareCmd = &cobra.Command{
 				item.SourceConfig.DataSource = overrideConfig.DataSource
 			}
 
-			yamlWriter.WriteResource(item)
+			err := yamlWriter.WriteResource(item)
+
+			if err != nil {
+				return err
+			}
 		}
+
+		return nil
 	},
 }
 
