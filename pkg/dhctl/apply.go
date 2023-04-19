@@ -2,71 +2,85 @@ package dhctl
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/spf13/cobra"
 	"github.com/tislib/data-handler/pkg/dhctl/flags"
 	"github.com/tislib/data-handler/pkg/formats/batch"
 	"github.com/tislib/data-handler/pkg/formats/hclformat"
-	yamlformat "github.com/tislib/data-handler/pkg/formats/yaml"
-	"log"
-	"os"
-	"strings"
+	"github.com/tislib/data-handler/pkg/formats/yaml"
 )
 
 var applyCmd = &cobra.Command{
 	Use:   "apply",
 	Short: "apply - apply resources",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		parseRootFlags(cmd)
 
-		file, err := cmd.Flags().GetString("file")
-		check(err)
-
-		migrate, err := cmd.Flags().GetBool("migrate")
-		check(err)
-
-		dataOnly, err := cmd.Flags().GetBool("data-only")
-		check(err)
-
-		force, err := cmd.Flags().GetBool("force")
-		check(err)
-
-		var overrideConfig = new(flags.OverrideConfig)
-		overrideFlags.Parse(overrideConfig, cmd, args)
-
-		if file == "" {
-			log.Fatal("file should provided")
+		inputFilePath, err := cmd.Flags().GetString("file")
+		if err != nil {
+			return fmt.Errorf("failed to get input file path: %w", err)
+		}
+		if inputFilePath == "" {
+			return errors.New("file must be provided")
 		}
 
-		if strings.HasSuffix(file, ".hcl") {
-			in, err := os.Open(file)
+		doMigration, err := cmd.Flags().GetBool("migrate")
+		if err != nil {
+			return fmt.Errorf("failed to get migration flag: %w", err)
+		}
 
-			check(err)
+		dataOnly, err := cmd.Flags().GetBool("data-only")
+		if err != nil {
+			return fmt.Errorf("failed to get data-only flag: %w", err)
+		}
 
-			hclExecutor, err := hclformat.NewExecutor(hclformat.ExecutorParams{
+		force, err := cmd.Flags().GetBool("force")
+		if err != nil {
+			return fmt.Errorf("failed to get force flag: %w", err)
+			return err
+		}
+
+		overrideConfig := new(flags.OverrideConfig)
+		if err := overrideFlags.Parse(overrideConfig, cmd, args); err != nil {
+			return fmt.Errorf("failed to parse override flags: %w", err)
+		}
+
+		var executor yaml.Executor
+		switch {
+		case strings.HasSuffix(inputFilePath, ".hcl"):
+			in, err := os.Open(inputFilePath)
+			if err != nil {
+				return fmt.Errorf("failed to open HCL file: %w", err)
+			}
+			defer in.Close()
+
+			executor, err = hclformat.NewExecutor(hclformat.ExecutorParams{
 				Input:          in,
 				Token:          GetDhClient().GetToken(),
 				DhClient:       GetDhClient(),
-				DoMigration:    migrate,
+				DoMigration:    doMigration,
 				ForceMigration: force,
 				OverrideConfig: hclformat.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,
 				},
 			})
+			if err != nil {
+				return fmt.Errorf("failed to create HCL executor: %w", err)
+			}
 
-			check(err)
+		case strings.HasSuffix(inputFilePath, ".pbe"):
+			in, err := os.Open(inputFilePath)
+			if err != nil {
+				return fmt.Errorf("failed to open PBE file: %w", err)
+			}
+			defer in.Close()
 
-			err = hclExecutor.Restore(context.TODO(), in)
-
-			check(err)
-
-			return
-		} else if strings.HasSuffix(file, ".pbe") {
-			in, err := os.Open(file)
-
-			check(err)
-
-			batchExecutor := batch.NewExecutor(batch.ExecutorParams{
+			executor = batch.NewExecutor(batch.ExecutorParams{
 				Input:          in,
 				Token:          GetDhClient().GetToken(),
 				ResourceClient: GetDhClient().GetResourceClient(),
@@ -77,37 +91,41 @@ var applyCmd = &cobra.Command{
 					DataSource: overrideConfig.DataSource,
 				},
 			})
+			if err != nil {
+				return fmt.Errorf("failed to create PBE executor: %w", err)
+			}
 
-			err = batchExecutor.Restore(context.TODO(), in)
+		case strings.HasSuffix(inputFilePath, ".yml"), strings.HasSuffix(inputFilePath, ".yaml"):
+			in, err := os.Open(inputFilePath)
+			if err != nil {
+				return fmt.Errorf("failed to open YAML file: %w", err)
+			}
+			defer in.Close()
 
-			check(err)
-
-			return
-		} else if strings.HasSuffix(file, "yml") || strings.HasSuffix(file, "yaml") {
-			in, err := os.Open(file)
-
-			check(err)
-
-			yamlExecutor, err := yamlformat.NewExecutor(yamlformat.ExecutorParams{
+			executor, err = yaml.NewExecutor(yaml.ExecutorParams{
 				Input:          in,
 				Token:          GetDhClient().GetToken(),
 				DhClient:       GetDhClient(),
-				DoMigration:    migrate,
+				DoMigration:    doMigration,
 				ForceMigration: force,
-				OverrideConfig: yamlformat.OverrideConfig{
+				OverrideConfig: yaml.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,
 				},
 			})
+			if err != nil {
+				return fmt.Errorf("failed to create YAML executor: %w", err)
+			}
 
-			check(err)
-
-			err = yamlExecutor.Restore(context.TODO(), in)
-
-			check(err)
-
-			return
+		default:
+			return fmt.Errorf("unsupported file format: %s", inputFilePath)
 		}
+
+		if err := executor.Restore(context.Background()); err != nil {
+			return fmt.Errorf("failed to restore resources: %w", err)
+		}
+
+		return nil
 	},
 }
 
