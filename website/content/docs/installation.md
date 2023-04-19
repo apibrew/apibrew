@@ -1,6 +1,13 @@
 Installation
 ========
 
+## Easy install 
+```bash
+curl -L https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/run.sh | bash
+```
+
+It will install both data handler and dhctl for you
+
 ## Docker [standalone]
 
 Docker standalone mode is most basic mode to run data handler

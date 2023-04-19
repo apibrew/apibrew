@@ -58,7 +58,7 @@ echo "Dhctl configuration is done"
 
 echo "Run data-handler standalone mode"
 
-docker run -n data-handler-standalone -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
+docker run --name data-handler-standalone -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
 
 echo "Done!"
 
