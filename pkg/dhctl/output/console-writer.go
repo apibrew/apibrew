@@ -64,7 +64,7 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 
 	for _, item := range resource.Properties {
 
-		typeStr := strings.ToLower(item.Type.String())[5:]
+		typeStr := strings.ToLower(item.Type.String())
 
 		data = append(data, []string{
 			item.Name,

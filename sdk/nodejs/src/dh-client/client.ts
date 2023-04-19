@@ -89,8 +89,11 @@ export class DhClient {
         });
     }
 
-    public NewExtensionService(host: string, port: number): ExtensionService {
-        return new ExtensionServiceImpl(host, port, host + ':' + port, this);
+    public NewExtensionService(host: string, port: number, remoteUrl?: string): ExtensionService {
+        if (!remoteUrl) {
+            remoteUrl = "http://" + host + ':' + port
+        }
+        return new ExtensionServiceImpl(host, port, remoteUrl, this);
     }
 }
 
@@ -118,20 +121,20 @@ interface ExtensionService {
 class ExtensionServiceImpl implements ExtensionService {
     private host: string;
     private port: number;
-    private remoteHost: string;
+    private remoteUrl: string;
     private client: DhClient;
     private functions: { [key: string]: ExternalFunction };
 
-    constructor(host: string, port: number, remoteHost: string, client: DhClient) {
+    constructor(host: string, port: number, remoteUrl: string, client: DhClient) {
         this.host = host;
         this.port = port
-        this.remoteHost = remoteHost;
+        this.remoteUrl = remoteUrl;
         this.client = client;
         this.functions = {};
     }
 
     getRemoteHost(): string {
-        return this.remoteHost;
+        return this.remoteUrl;
     }
 
     registerFunction(name: string, handler: ExternalFunction): void {
@@ -345,7 +348,7 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
             instead: {
                 create: {
                     kind: "httpCall",
-                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    uri: `${this.extension.getRemoteHost()}/${extensionName}`,
                     method: 'POST',
                 },
                 finalize: finalize,
@@ -385,7 +388,7 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
             instead: {
                 update: {
                     kind: "httpCall",
-                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    uri: `${this.extension.getRemoteHost()}/${extensionName}`,
                     method: 'POST',
                 },
                 finalize: finalize,
@@ -420,7 +423,7 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
             instead: {
                 delete: {
                     kind: "httpCall",
-                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    uri: `${this.extension.getRemoteHost()}/${extensionName}`,
                     method: 'POST',
                 },
                 finalize: finalize,
@@ -452,7 +455,7 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
             instead: {
                 get: {
                     kind: "httpCall",
-                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    uri: `${this.extension.getRemoteHost()}/${extensionName}`,
                     method: 'POST',
                 },
                 finalize: finalize,
@@ -485,7 +488,7 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
             instead: {
                 list: {
                     kind: "httpCall",
-                    uri: `http://${this.extension.getRemoteHost()}/${extensionName}`,
+                    uri: `${this.extension.getRemoteHost()}/${extensionName}`,
                     method: 'POST',
                 },
                 finalize: finalize,

@@ -1,0 +1,26 @@
+type: resource
+name: pet
+title: Pet
+description: API for Pet
+properties:
+  - name: name # property name
+    required: true
+    type: STRING
+    length: 255
+    title: Name
+    description: Name of Pet
+  - name: description # property name
+    type: STRING
+    length: 255
+    title: Description
+    description: Name of Pet
+  - name: tags # property name
+    type: LIST
+    subProperty:
+      type: STRING
+  - name: status # property name
+    type: ENUM
+    enumValues:
+      - available
+      - pending
+      - sold

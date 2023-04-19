@@ -72,22 +72,25 @@ var DhClient = /** @class */ (function () {
             updateCheckVersion: false,
         });
     };
-    DhClient.prototype.NewExtensionService = function (host, port) {
-        return new ExtensionServiceImpl(host, port, host + ':' + port, this);
+    DhClient.prototype.NewExtensionService = function (host, port, remoteUrl) {
+        if (!remoteUrl) {
+            remoteUrl = "http://" + host + ':' + port;
+        }
+        return new ExtensionServiceImpl(host, port, remoteUrl, this);
     };
     return DhClient;
 }());
 exports.DhClient = DhClient;
 var ExtensionServiceImpl = /** @class */ (function () {
-    function ExtensionServiceImpl(host, port, remoteHost, client) {
+    function ExtensionServiceImpl(host, port, remoteUrl, client) {
         this.host = host;
         this.port = port;
-        this.remoteHost = remoteHost;
+        this.remoteUrl = remoteUrl;
         this.client = client;
         this.functions = {};
     }
     ExtensionServiceImpl.prototype.getRemoteHost = function () {
-        return this.remoteHost;
+        return this.remoteUrl;
     };
     ExtensionServiceImpl.prototype.registerFunction = function (name, handler) {
         this.functions[name] = handler;
@@ -359,7 +362,7 @@ var RepositoryExtensionImpl = /** @class */ (function () {
                             instead: {
                                 create: {
                                     kind: "httpCall",
-                                    uri: "http://".concat(this.extension.getRemoteHost(), "/").concat(extensionName),
+                                    uri: "".concat(this.extension.getRemoteHost(), "/").concat(extensionName),
                                     method: 'POST',
                                 },
                                 finalize: finalize,
@@ -421,7 +424,7 @@ var RepositoryExtensionImpl = /** @class */ (function () {
                             instead: {
                                 update: {
                                     kind: "httpCall",
-                                    uri: "http://".concat(this.extension.getRemoteHost(), "/").concat(extensionName),
+                                    uri: "".concat(this.extension.getRemoteHost(), "/").concat(extensionName),
                                     method: 'POST',
                                 },
                                 finalize: finalize,
@@ -435,27 +438,153 @@ var RepositoryExtensionImpl = /** @class */ (function () {
             });
         });
     };
-    RepositoryExtensionImpl.prototype.onDelete = function (handler) {
+    RepositoryExtensionImpl.prototype.onDelete = function (handler, finalize) {
         return __awaiter(this, void 0, void 0, function () {
+            var extensionName, ext;
+            var _this = this;
             return __generator(this, function (_a) {
-                //TODO implement me
-                throw new Error("Method not implemented.");
+                switch (_a.label) {
+                    case 0:
+                        extensionName = this.getExtensionName("OnDelete");
+                        this.extension.registerFunction(extensionName, function (data) { return __awaiter(_this, void 0, void 0, function () {
+                            var _i, _a, id, _b, response;
+                            return __generator(this, function (_c) {
+                                switch (_c.label) {
+                                    case 0:
+                                        _i = 0, _a = data.request.ids;
+                                        _c.label = 1;
+                                    case 1:
+                                        if (!(_i < _a.length)) return [3 /*break*/, 5];
+                                        id = _a[_i];
+                                        _b = handler;
+                                        return [4 /*yield*/, this.repository.get(id)];
+                                    case 2: return [4 /*yield*/, _b.apply(void 0, [_c.sent()])];
+                                    case 3:
+                                        _c.sent();
+                                        _c.label = 4;
+                                    case 4:
+                                        _i++;
+                                        return [3 /*break*/, 1];
+                                    case 5:
+                                        response = {
+                                            "response": {
+                                                '@type': 'type.googleapis.com/stub.DeleteRecordResponse',
+                                            }
+                                        };
+                                        return [2 /*return*/, response];
+                                }
+                            });
+                        }); });
+                        ext = {
+                            name: extensionName,
+                            namespace: this.namespace,
+                            resource: this.resourceName,
+                            instead: {
+                                delete: {
+                                    kind: "httpCall",
+                                    uri: "".concat(this.extension.getRemoteHost(), "/").concat(extensionName),
+                                    method: 'POST',
+                                },
+                                finalize: finalize,
+                            },
+                        };
+                        return [4 /*yield*/, this.extensionRepository.apply(ext)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
             });
         });
     };
-    RepositoryExtensionImpl.prototype.onGet = function (handler) {
+    RepositoryExtensionImpl.prototype.onGet = function (handler, finalize) {
         return __awaiter(this, void 0, void 0, function () {
+            var extensionName, ext;
+            var _this = this;
             return __generator(this, function (_a) {
-                //TODO implement me
-                throw new Error("Method not implemented.");
+                switch (_a.label) {
+                    case 0:
+                        extensionName = this.getExtensionName("OnGet");
+                        this.extension.registerFunction(extensionName, function (data) { return __awaiter(_this, void 0, void 0, function () {
+                            var response;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, handler(data.request.id)];
+                                    case 1:
+                                        _a.sent();
+                                        response = {
+                                            "response": {
+                                                '@type': 'type.googleapis.com/stub.GetRecordResponse',
+                                            }
+                                        };
+                                        return [2 /*return*/, response];
+                                }
+                            });
+                        }); });
+                        ext = {
+                            name: extensionName,
+                            namespace: this.namespace,
+                            resource: this.resourceName,
+                            instead: {
+                                get: {
+                                    kind: "httpCall",
+                                    uri: "".concat(this.extension.getRemoteHost(), "/").concat(extensionName),
+                                    method: 'POST',
+                                },
+                                finalize: finalize,
+                            },
+                        };
+                        return [4 /*yield*/, this.extensionRepository.apply(ext)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
             });
         });
     };
-    RepositoryExtensionImpl.prototype.onList = function (handler) {
+    RepositoryExtensionImpl.prototype.onList = function (handler, finalize) {
         return __awaiter(this, void 0, void 0, function () {
+            var extensionName, ext;
             return __generator(this, function (_a) {
-                //TODO implement me
-                throw new Error("Method not implemented.");
+                switch (_a.label) {
+                    case 0:
+                        extensionName = this.getExtensionName("OnList");
+                        this.extension.registerFunction(extensionName, function (data) {
+                            return __awaiter(this, void 0, void 0, function () {
+                                var records, response;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0: return [4 /*yield*/, handler()];
+                                        case 1:
+                                            records = _a.sent();
+                                            response = {
+                                                "response": {
+                                                    '@type': 'type.googleapis.com/stub.UpdateRecordResponse',
+                                                    "records": records
+                                                }
+                                            };
+                                            return [2 /*return*/, response];
+                                    }
+                                });
+                            });
+                        });
+                        ext = {
+                            name: extensionName,
+                            namespace: this.namespace,
+                            resource: this.resourceName,
+                            instead: {
+                                list: {
+                                    kind: "httpCall",
+                                    uri: "".concat(this.extension.getRemoteHost(), "/").concat(extensionName),
+                                    method: 'POST',
+                                },
+                                finalize: finalize,
+                            },
+                        };
+                        return [4 /*yield*/, this.extensionRepository.apply(ext)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
             });
         });
     };

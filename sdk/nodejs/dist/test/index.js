@@ -101,6 +101,20 @@ function run() {
                             }
                         });
                     }); });
+                    orderExtension.onDelete(function (order) { return __awaiter(_this, void 0, void 0, function () {
+                        var existingOrder;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, orderRepo.get(order.id)];
+                                case 1:
+                                    existingOrder = _a.sent();
+                                    if (existingOrder.status == 'completed') {
+                                        throw new Error('Cannot delete completed order');
+                                    }
+                                    return [2 /*return*/, order];
+                            }
+                        });
+                    }); });
                     return [2 /*return*/];
             }
         });

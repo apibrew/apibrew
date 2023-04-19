@@ -1,147 +1,15 @@
 import {Entity} from "data-handler-client";
 
 
-export interface Country2 extends Entity {
+export interface Pet extends Entity {
 
     id: string;
     name: string;
     description: string;
-    version: number;
-
-}
-
-export interface Store extends Entity {
-
-    id: string;
-    name: string;
-    description: string;
-    version: number;
-
-}
-
-export interface Category extends Entity {
-
-    id: string;
-    name: string;
-    description: string;
-    version: number;
-
-}
-
-export interface Product extends Entity {
-
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    store: Store;
-    category: Category;
-    quantity: number;
-    version: number;
-
-}
-
-export interface Customer extends Entity {
-
-    id: string;
-    name: string;
-    description: string;
-    email: string;
-    phone: string;
-    version: number;
-
-}
-
-export interface Order extends Entity {
-
-    id: string;
-    customer: Customer;
-    product: Product;
-    quantity: number;
-    price: number;
+    tags: string[];
     status: string;
     version: number;
-
-}
-
-export interface RichTest3995 extends Entity {
-
-    object: object;
-    id: string;
-    createdBy: string;
-    int32O: number;
-    int32: number;
-    int64: number;
-    text: string;
-    float: number;
-    time: string;
-    timestamp: string;
-    string: string;
-    updatedBy: string;
-    double: number;
-    uuid: string;
-    bool: boolean;
-    bytes: string;
-    date: string;
-    updatedOn: string;
-    version: number;
-    createdOn: string;
-
-}
-
-export interface Country extends Entity {
-
-    id: string;
-    name: string;
-    description: string;
-    population: number;
-    area: number;
-    version: number;
-
-}
-
-export interface City extends Entity {
-
-    id: string;
-    name: string;
-    country: Country;
-    description: string;
-    version: number;
-
-}
-
-export interface Income extends Entity {
-
-    id: string;
-    country: Country;
-    city: City;
-    grossIncome: number;
-    tax: number;
-    netIncome: number;
-    version: number;
-
-}
-
-export interface TaxRate extends Entity {
-
-    id: string;
-    name: string;
-    country: Country;
-    city: City;
-    order: number;
-    until: number;
-    rate: number;
-    version: number;
-
-}
-
-export interface VirtualResource extends Entity {
-
-    description: string;
-    version: number;
-    id: string;
-    name: string;
-
+    
 }
 
 export interface Namespace extends Entity {
@@ -156,7 +24,7 @@ export interface Namespace extends Entity {
     description: string;
     details: object;
     securityContext: object;
-
+    
 }
 
 export interface User extends Entity {
@@ -171,7 +39,7 @@ export interface User extends Entity {
     password: string;
     securityContext: object;
     details: object;
-
+    
 }
 
 export interface DataSource extends Entity {
@@ -202,7 +70,7 @@ export interface DataSource extends Entity {
     optionsRedisDb: number;
     optionsMongoUri: string;
     optionsMongoDbName: string;
-
+    
 }
 
 export interface Extension extends Entity {
@@ -220,7 +88,7 @@ export interface Extension extends Entity {
     before: object;
     after: object;
     instead: object;
-
+    
 }
 
 export interface Resource extends Entity {
@@ -244,6 +112,6 @@ export interface Resource extends Entity {
     securityContext: object;
     title: string;
     description: string;
-
+    
 }
 
