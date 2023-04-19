@@ -44,10 +44,10 @@ Everything can be written by resources, not?
 
 ```javascript
 countryExtension.onCreate(async (country) => {
-  country.description = country.description + ' - Extended'
+        country.description = country.description + ' - Extended'
 
-  return country
-})
+        return country
+    })
 ```
 So we have extended our country resource with modification description on create
 
@@ -85,7 +85,16 @@ Data Handler is a **Low Code software** that allows to create various Grpc and R
 
 
 ## Quick Example
-![](http://static.tisserv.net/dh_overview.gif)
+
+### Easy Installation
+
+```bash
+curl -L https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/run.sh | bash
+```
+
+For more detailed installation, see [Installation](https://data-handler.tislib.net/docs/installation)
+
+### Let's create a resource
 
 country.yml
 
@@ -107,7 +116,7 @@ properties:
 dhctl apply -f country.hcl
 ```
 
-Swagger: http://localhost:9009/index.html
+Swagger: http://localhost:9009/docs/index.html
 
 ```
 # Create Country
@@ -120,42 +129,5 @@ curl -X POST --location "http://localhost:9009/country" \
 
 # List Countries
 curl "http://localhost:9009/country" -H "Authorization: <token>"
-```
-
-# Quick Start
-
-Let's run application on standalone mode:
-
-```
-docker run -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
-```
-
-Let's install our client **dhctl**
-
-You can download client binary from release page https://github.com/tislib/data-handler/releases/latest (download dhctl-OS-ARCH)
-
-You can also use go install if you have go runtime on your local
-```
-go install github.com/tislib/data-handler/cmd/dhctl@latest
-```
-
-Now let's configure our client to point to server
-
-```
-mkdir -p ~/.dhctl
-nano  ~/.dhctl/config
-```
-
-Paste config to there
-
-```
-type: server
-servers:
-  - name: local
-    host: 127.0.0.1:9009
-    authentication:
-      username: admin
-      password: admin
-defaultServer: local
 ```
 
