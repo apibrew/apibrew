@@ -1,7 +1,6 @@
 package dhctl
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -23,10 +22,8 @@ func init() {
 	defineRootFlags(rootCmd)
 }
 
-func Run() {
+func PrepareRootCmd() *cobra.Command {
 	initGetCmd()
 
-	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
-	}
+	return rootCmd
 }

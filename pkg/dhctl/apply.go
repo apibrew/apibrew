@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/tislib/data-handler/pkg/formats"
 	"os"
 	"strings"
 
@@ -41,15 +42,12 @@ var applyCmd = &cobra.Command{
 		force, err := cmd.Flags().GetBool("force")
 		if err != nil {
 			return fmt.Errorf("failed to get force flag: %w", err)
-			return err
 		}
 
 		overrideConfig := new(flags.OverrideConfig)
-		if err := overrideFlags.Parse(overrideConfig, cmd, args); err != nil {
-			return fmt.Errorf("failed to parse override flags: %w", err)
-		}
+		overrideFlags.Parse(overrideConfig, cmd, args)
 
-		var executor yaml.Executor
+		var executor formats.Executor
 		switch {
 		case strings.HasSuffix(inputFilePath, ".hcl"):
 			in, err := os.Open(inputFilePath)
@@ -102,13 +100,13 @@ var applyCmd = &cobra.Command{
 			}
 			defer in.Close()
 
-			executor, err = yaml.NewExecutor(yaml.ExecutorParams{
+			executor, err = yamlformat.NewExecutor(yamlformat.ExecutorParams{
 				Input:          in,
 				Token:          GetDhClient().GetToken(),
 				DhClient:       GetDhClient(),
 				DoMigration:    doMigration,
 				ForceMigration: force,
-				OverrideConfig: yaml.OverrideConfig{
+				OverrideConfig: yamlformat.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,
 				},
