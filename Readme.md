@@ -128,37 +128,8 @@ curl "http://localhost:9009/country" -H "Authorization: <token>"
 
 Let's run application on standalone mode:
 
-```
-docker run -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
-```
-
-Let's install our client **dhctl**
-
-You can download client binary from release page https://github.com/tislib/data-handler/releases/latest (download dhctl-OS-ARCH)
-
-You can also use go install if you have go runtime on your local
-```
-go install github.com/tislib/data-handler/cmd/dhctl@latest
-```
-
-Now let's configure our client to point to server
-
-```
-mkdir -p ~/.dhctl
-nano  ~/.dhctl/config
-```
-
-Paste config to there
-
-```
-type: server
-servers:
-  - name: local
-    host: 127.0.0.1:9009
-    authentication:
-      username: admin
-      password: admin
-defaultServer: local
+```bash
+curl -L https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/run.sh | bash
 ```
 
 Now we are ready.
