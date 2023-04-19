@@ -115,7 +115,7 @@ properties:
 ```
 
 ```
-dhctl apply -f country.hcl
+dhctl apply -f country.yml
 ```
 
 Swagger: http://localhost:9009/docs/index.html
