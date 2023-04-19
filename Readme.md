@@ -87,7 +87,16 @@ Data Handler is a **Low Code software** that allows to create various Grpc and R
 
 
 ## Quick Example
-![](http://static.tisserv.net/dh_overview.gif)
+
+### Easy Installation 
+
+```bash
+curl -L https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/run.sh | bash
+```
+
+For more detailed installation, see [Installation](https://data-handler.tislib.net/docs/installation)
+
+### Let's create a resource
 
 country.yml
 
@@ -123,16 +132,6 @@ curl -X POST --location "http://localhost:9009/country" \
 # List Countries
 curl "http://localhost:9009/country" -H "Authorization: <token>"
 ```
-
-# Quick Start
-
-Let's run application on standalone mode:
-
-```bash
-curl -L https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/run.sh | bash
-```
-
-Now we are ready.
 
 # [Docs](https://data-handler.tislib.net)
 
