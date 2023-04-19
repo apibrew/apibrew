@@ -20,7 +20,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/structpb"
 	"io"
-	"os"
 	"strings"
 )
 
@@ -30,14 +29,14 @@ type executor struct {
 	evalContext *hcl.EvalContext
 }
 
-func (e *executor) Restore(ctx context.Context, file *os.File) error {
-	data, err := io.ReadAll(file)
+func (e *executor) Restore(ctx context.Context) error {
+	data, err := io.ReadAll(e.params.Input)
 
 	if err != nil {
 		return err
 	}
 
-	hclFile, diags := hclsyntax.ParseConfig(data, file.Name(),
+	hclFile, diags := hclsyntax.ParseConfig(data, e.params.FileName,
 		hcl.Pos{Line: 1, Column: 1, Byte: 0})
 	if diags != nil && diags.HasErrors() {
 		e.reportHclErrors(diags)
@@ -571,6 +570,7 @@ type ExecutorParams struct {
 	DoMigration    bool
 	ForceMigration bool
 	DataOnly       bool
+	FileName       string
 }
 
 func NewExecutor(params ExecutorParams) (formats.Executor, error) {

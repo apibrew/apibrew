@@ -4,23 +4,23 @@ import (
 	"context"
 	"encoding/binary"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/data-handler/pkg/formats"
 	"github.com/tislib/data-handler/pkg/model"
 	"github.com/tislib/data-handler/pkg/stub"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"io"
-	"os"
 )
 
 type executor struct {
 	params ExecutorParams
 }
 
-func (e executor) Restore(ctx context.Context, in *os.File) error {
+func (e executor) Restore(ctx context.Context) error {
 	for {
 		var messageLength uint32
 
-		err := binary.Read(in, binary.BigEndian, &messageLength)
+		err := binary.Read(e.params.Input, binary.BigEndian, &messageLength)
 
 		if err == io.EOF {
 			return nil
@@ -32,7 +32,7 @@ func (e executor) Restore(ctx context.Context, in *os.File) error {
 
 		var messageData = make([]byte, messageLength)
 
-		_, err = in.Read(messageData)
+		_, err = e.params.Input.Read(messageData)
 
 		if err != nil {
 			return err
@@ -146,6 +146,6 @@ type ExecutorParams struct {
 	DataOnly       bool
 }
 
-func NewExecutor(params ExecutorParams) Executor {
+func NewExecutor(params ExecutorParams) formats.Executor {
 	return &executor{params: params}
 }

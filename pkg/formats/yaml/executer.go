@@ -12,7 +12,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v3"
 	"io"
-	"os"
 )
 
 type executor struct {
@@ -21,14 +20,14 @@ type executor struct {
 	resourceNameMap map[string]*model.Resource
 }
 
-func (e *executor) Restore(ctx context.Context, file *os.File) error {
+func (e *executor) Restore(ctx context.Context) error {
 	var jsonUMo = protojson.UnmarshalOptions{
 		AllowPartial:   false,
 		DiscardUnknown: false,
 		Resolver:       nil,
 	}
 
-	decoder := yaml.NewDecoder(file)
+	decoder := yaml.NewDecoder(e.params.Input)
 
 	for {
 		var body map[string]interface{}
