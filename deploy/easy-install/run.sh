@@ -52,6 +52,7 @@ echo "Dhctl installation is done"
 echo "Configuring dhctl"
 
 mkdir -p ~/.dhctl
+cp ~/.dhctl/config ~/.dhctl/config.bak
 curl -L -o ~/.dhctl/config "https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/config"
 
 echo "Dhctl configuration is done"
