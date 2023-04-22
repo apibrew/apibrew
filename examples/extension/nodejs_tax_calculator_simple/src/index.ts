@@ -1,4 +1,4 @@
-import {DhClient, Entity} from "data-handler-client";
+import {DhClient, Entity} from "apibrew-client";
 
 const client = new DhClient({
     Addr: "127.0.0.1:9009",

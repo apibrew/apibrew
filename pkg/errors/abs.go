@@ -2,7 +2,7 @@ package errors
 
 import (
 	"fmt"
-	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/apibrew/pkg/model"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

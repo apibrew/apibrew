@@ -2,8 +2,8 @@ package dhctl
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/client"
-	"github.com/tislib/data-handler/pkg/dhctl/flags"
+	"github.com/tislib/apibrew/pkg/client"
+	"github.com/tislib/apibrew/pkg/dhctl/flags"
 )
 
 var selectorFlags = flags.NewSelectorFlags(GetDhClient)

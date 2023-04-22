@@ -1,7 +1,7 @@
 package errors
 
 import (
-	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/apibrew/pkg/model"
 	"google.golang.org/grpc/codes"
 )
 

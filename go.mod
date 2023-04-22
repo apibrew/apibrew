@@ -1,4 +1,4 @@
-module github.com/tislib/data-handler
+module github.com/tislib/apibrew
 
 go 1.19
 

@@ -2,10 +2,10 @@ package test
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/stub"
-	"github.com/tislib/data-handler/pkg/test/setup"
-	"github.com/tislib/data-handler/pkg/util"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/stub"
+	"github.com/tislib/apibrew/pkg/test/setup"
+	"github.com/tislib/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
 )

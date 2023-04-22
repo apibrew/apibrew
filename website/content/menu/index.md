@@ -10,4 +10,4 @@ headless = true
 - [CLI]({{< relref "/docs/dhctl" >}})
 - [Proto]({{< relref "/docs/proto" >}})
 - [SDK]({{< relref "/docs/sdk" >}})
-- [![](files/github.svg)](http://github.com/tislib/data-handler)
+- [![](files/github.svg)](http://github.com/tislib/apibrew)

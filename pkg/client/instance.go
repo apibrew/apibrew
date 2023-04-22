@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/apibrew/pkg/stub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

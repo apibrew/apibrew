@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 	"fmt"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/errors"
+	"github.com/tislib/apibrew/pkg/model"
 	"math/rand"
 )
 

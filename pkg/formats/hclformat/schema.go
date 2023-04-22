@@ -2,10 +2,10 @@ package hclformat
 
 import (
 	"github.com/hashicorp/hcl/v2"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/resources"
-	"github.com/tislib/data-handler/pkg/service/annotations"
-	"github.com/tislib/data-handler/pkg/util"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/resources"
+	"github.com/tislib/apibrew/pkg/service/annotations"
+	"github.com/tislib/apibrew/pkg/util"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )

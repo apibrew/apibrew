@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stub;
 
-option go_package = "github.com/tislib/data-handler/pkg/stub";
+option go_package = "github.com/tislib/apibrew/pkg/stub";
 
 import 'model/record.proto';
 import 'model/query.proto';

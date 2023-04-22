@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/tislib/data-handler/pkg/ext"
-	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/apibrew/pkg/ext"
+	"github.com/tislib/apibrew/pkg/model"
 	"google.golang.org/grpc"
 	"log"
 	"net"

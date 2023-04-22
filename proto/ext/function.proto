@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ext;
 
-option go_package = "github.com/tislib/data-handler/pkg/ext";
+option go_package = "github.com/tislib/apibrew/pkg/ext";
 
 import 'model/record.proto';
 import 'model/resource.proto';

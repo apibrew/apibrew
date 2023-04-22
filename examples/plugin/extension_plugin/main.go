@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/tislib/data-handler/pkg/plugin"
+	"github.com/tislib/apibrew/pkg/plugin"
 )
 
 var MetaDataKey = plugin.MetaData{

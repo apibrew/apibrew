@@ -1,9 +1,9 @@
-module github.com/tislib/data-handler/examples/extension/insurance_extension_service
+module github.com/tislib/apibrew/examples/extension/insurance_extension_service
 
 go 1.19
 
 require (
-	github.com/tislib/data-handler v1.0.6
+	github.com/tislib/apibrew v1.0.6
 	google.golang.org/grpc v1.52.0
 )
 

@@ -1,4 +1,4 @@
-package data_handler
+package apibrew
 
 //cp Readme.md docs/content/index.md
 //go:generate sh -c "cd proto; go generate"

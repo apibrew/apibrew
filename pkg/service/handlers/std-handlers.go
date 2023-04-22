@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/resources"
-	"github.com/tislib/data-handler/pkg/service/handler"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/resources"
+	"github.com/tislib/apibrew/pkg/service/handler"
 )
 
 type StdHandler interface {
