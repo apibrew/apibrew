@@ -17,7 +17,7 @@
     "precheck:links": "npm run build",
     "postbuild:preview": "npm run _check:links",
     "postbuild:production": "npm run _check:links",
-    "prepare": "cd .. && npm install",
+    "prepare": "cd themes/docsy && npm install",
     "serve": "npm run _serve"
   },
   "devDependencies": {
