@@ -1,4 +1,4 @@
-[![](website/content/static/logo.svg)](https://github.com/tislib/apibrew/actions/workflows/build.yml) [Website](http://apibrew.io/)
+[![](website/content/static/logo-cropped.svg)](https://github.com/tislib/apibrew/actions/workflows/build.yml) [Website](http://apibrew.io/)
 ======================
 [![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/tislib/apibrew)](https://goreportcard.com/report/github.com/tislib/apibrew)
