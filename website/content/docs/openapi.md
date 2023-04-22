@@ -19029,7 +19029,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
 |name|string|false|none|none|
 |namespace|string|false|none|none|
 |sourceConfig|[ResourceSourceConfig](#schemaresourcesourceconfig)|false|none|source config is to configure resource and bind it to data-source and an entity inside data source. An entity is like a table on sql databases or collection on mongodb etc.|
-|properties|[[ResourceProperty](#schemaresourceproperty)]|false|none|[Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record Data handler is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64]|
+|properties|[[ResourceProperty](#schemaresourceproperty)]|false|none|[Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64]|
 |indexes|[[ResourceIndex](#schemaresourceindex)]|false|none|none|
 |securityContext|[SecurityContext](#schemasecuritycontext)|false|none|none|
 |virtual|boolean|false|none|none|
@@ -19741,7 +19741,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
 
 ```
 
-Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record Data handler is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64
+Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64
 
 ### Properties
 
@@ -19761,8 +19761,8 @@ Resource properties is used to describe its schema. Each resource property is co
 |exampleValue|[GoogleProtobufValue](#schemagoogleprotobufvalue)|false|none|Represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values.|
 |enumValues|[[GoogleProtobufValue](#schemagoogleprotobufvalue)]|false|none|[Represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values.]|
 |reference|[Reference](#schemareference)|false|none|none|
-|properties|[[ResourceProperty](#schemaresourceproperty)]|false|none|[Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record Data handler is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64]|
-|subProperty|[ResourceProperty](#schemaresourceproperty)|false|none|Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record Data handler is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64|
+|properties|[[ResourceProperty](#schemaresourceproperty)]|false|none|[Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64]|
+|subProperty|[ResourceProperty](#schemaresourceproperty)|false|none|Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64|
 |title|string|false|none|none|
 |description|string|false|none|none|
 |annotations|object|false|none|none|
