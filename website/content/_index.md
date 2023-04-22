@@ -1,14 +1,24 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/tislib/apibrew)](https://goreportcard.com/report/github.com/tislib/apibrew)
-[![Go Reference](https://pkg.go.dev/badge/github.com/tislib/apibrew.svg)](https://pkg.go.dev/github.com/tislib/apibrew)
-[![Docker Pulls](https://img.shields.io/docker/pulls/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
-[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/apibrew)  [![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml) -  [repository](https://github.com/tislib/apibrew)
+---
+title: About API Brew
+linkTitle: About
+menu: { main: { weight: 10 } }
+---
 
+{{% blocks/cover title="About API Brew" height="auto" %}}
 
-## Introduction
-**Everything is a *Resource***. And **Everything has a *CRUD API***
+Apibrew is an open-source tool that allows you to quickly and easily create CRUD APIs for your data. With Apibrew, you
+define your schema in a declarative way, and the tool generates the corresponding APIs for you, minimizing the amount of
+coding you have to do.
 
-With API Brew, you can create CRUD APIs for your data in a few minutes
+Apibrew is designed to be low-code, which means that you can create APIs without writing a lot of code. It is also
+database agnostic and supports various database platforms, including PostgreSQL, MongoDB, MySQL, Redis, and more.
+Apibrew supports multiple databases, so you can define multiple databases and perform operations on them.
+
+{{% /blocks/cover %}}
+
+{{% blocks/section color="white" %}}
+
+## Quick Example
 
 country.yml
 ```yaml
@@ -53,81 +63,5 @@ So we have extended our country resource with modification description on create
 
 So, with **API Brew**, you can create your application with resources and you can customize behavior of your resources with extensions
 
-## About
-API Brew is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
 
-## Features
-
-* ***Declarative*** - *API Brew* is declarative. You can define your schema in a declarative way, it will create your APIs
-* ***Low Code*** - With API Brew, you can create APIs for your data without coding. But you can also extend your APIs with
-  extensions, so you can customize behavior of your Resources/Apis
-* ***Rest API*** - As you create resources, Rest Apis for them is made automatically
-* ***Grpc*** - As you create resources, Grpc Apis for them is made automatically
-* ***Database agnostic*** - API Brew is using Postgresql database by default, but it also supports various databases. Including Mongo, Mysql, Redis, etc.
-* ***CRUD*** - Crud is on the heart of API Brew.
-* ***Swagger*** - Swagger docs are generated automatically
-* ***Authentication*** - API Brew supports various authentication methods. Including JWT authentication etc.
-* ***Authorization*** - API Brew supports authorization. You can define permissions for your resources
-* ***Multi Database*** - You can define multiple databases and do operations on top of them
-* ***Scalable*** - API Brew is scalable. You can run it on multiple instances, and it will work as expected, as API Brew does not have any data internally, you can scale it.
-* ***Extensible*** - API Brew is extensible. You can extend your resources with extensions. You can also extend your APIs with extensions
-* ***CLI support*** - API Brew has a cli tool to manage your resources, dataSources, etc. It is called `dhctl`
-* ***Docker*** - API Brew is dockerized. You can run it on docker
-* ***Docker Compose*** - API Brew is docker-compose ready. You can run it on docker-compose, see [docker-compose](deploy/docker-compose)
-* ***Kubernetes*** - API Brew is kubernetes ready. You can run it on kubernetes, see [kubernetes](deploy/kubernetes)
-
-## Use Cases
-
-* Creating backend for your mobile application or website
-* Creating backend for your existing database
-* Managing your data in a CRUD fashion
-* Creating Standardized, well documented APIs for your data
-
-
-## Quick Example
-
-### Easy Installation
-
-```bash
-curl -L https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/run.sh | bash
-```
-
-For more detailed installation, see [Installation](https://apibrew.tislib.net/docs/installation)
-
-### Let's create a resource
-
-country.yml
-
-```
-type: resource
-name: country
-properties:
-  - name: name
-    type: STRING
-    length: 255
-    required: true
-    unique: true
-  - name: description
-    type: STRING
-    length: 255
-```
-
-```
-dhctl apply -f country.yml
-```
-
-Swagger: http://localhost:9009/docs/index.html
-
-```
-# Create Country
-curl -X POST --location "http://localhost:9009/country" \
-    -H "Authorization: <token>" \
-    -d "{
-   \"name\": \"Country1\",
-   \"description\": \"Sample Country 1\"
-}"
-
-# List Countries
-curl "http://localhost:9009/country" -H "Authorization: <token>"
-```
-
+{{% /blocks/section %}}
