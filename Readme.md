@@ -1,16 +1,16 @@
-Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/data-handler/actions/workflows/build.yml)  - [website](http://data-handler.tislib.net/)
+API Brew [![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml)  - [website](http://apibrew.io/)
 ======================
-[![Go Report Card](https://goreportcard.com/badge/github.com/tislib/data-handler)](https://goreportcard.com/report/github.com/tislib/data-handler)
-[![Go Reference](https://pkg.go.dev/badge/github.com/tislib/data-handler.svg)](https://pkg.go.dev/github.com/tislib/data-handler)
-[![Docker Pulls](https://img.shields.io/docker/pulls/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
-[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/data-handler)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tislib/apibrew)](https://goreportcard.com/report/github.com/tislib/apibrew)
+[![Go Reference](https://pkg.go.dev/badge/github.com/tislib/apibrew.svg)](https://pkg.go.dev/github.com/tislib/apibrew)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
+[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/apibrew)
 
 
 ## Introduction
 **Everything is a *Resource***. And **Everything has a *CRUD API***
 
-With Data handler, you can create CRUD APIs for your data in a few minutes
+With API Brew, you can create CRUD APIs for your data in a few minutes
 
 country.yml
 ```yaml
@@ -53,30 +53,30 @@ countryExtension.onCreate(async (country) => {
 ```
 So we have extended our country resource with modification description on create
 
-So, with **data handler**, you can create your application with resources and you can customize behavior of your resources with extensions
+So, with **API Brew**, you can create your application with resources and you can customize behavior of your resources with extensions
 
 ## About
-Data Handler is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
+API Brew is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
 
 ## Features
 
-* ***Declarative*** - *Data handler* is declarative. You can define your schema in a declarative way, it will create your APIs
-* ***Low Code*** - With data handler, you can create APIs for your data without coding. But you can also extend your APIs with
+* ***Declarative*** - *API Brew* is declarative. You can define your schema in a declarative way, it will create your APIs
+* ***Low Code*** - With API Brew, you can create APIs for your data without coding. But you can also extend your APIs with
   extensions, so you can customize behavior of your Resources/Apis
 * ***Rest API*** - As you create resources, Rest Apis for them is made automatically
 * ***Grpc*** - As you create resources, Grpc Apis for them is made automatically
-* ***Database agnostic*** - Data handler is using Postgresql database by default, but it also supports various databases. Including Mongo, Mysql, Redis, etc.
-* ***CRUD*** - Crud is on the heart of data handler.
+* ***Database agnostic*** - API Brew is using Postgresql database by default, but it also supports various databases. Including Mongo, Mysql, Redis, etc.
+* ***CRUD*** - Crud is on the heart of API Brew.
 * ***Swagger*** - Swagger docs are generated automatically
-* ***Authentication*** - Data handler supports various authentication methods. Including JWT authentication etc.
-* ***Authorization*** - Data handler supports authorization. You can define permissions for your resources
+* ***Authentication*** - API Brew supports various authentication methods. Including JWT authentication etc.
+* ***Authorization*** - API Brew supports authorization. You can define permissions for your resources
 * ***Multi Database*** - You can define multiple databases and do operations on top of them
-* ***Scalable*** - Data handler is scalable. You can run it on multiple instances, and it will work as expected, as Data handler does not have any data internally, you can scale it.
-* ***Extensible*** - Data handler is extensible. You can extend your resources with extensions. You can also extend your APIs with extensions
-* ***CLI support*** - Data handler has a cli tool to manage your resources, dataSources, etc. It is called `dhctl`
-* ***Docker*** - Data handler is dockerized. You can run it on docker
-* ***Docker Compose*** - Data handler is docker-compose ready. You can run it on docker-compose, see [docker-compose](deploy/docker-compose)
-* ***Kubernetes*** - Data handler is kubernetes ready. You can run it on kubernetes, see [kubernetes](deploy/kubernetes)
+* ***Scalable*** - API Brew is scalable. You can run it on multiple instances, and it will work as expected, as API Brew does not have any data internally, you can scale it.
+* ***Extensible*** - API Brew is extensible. You can extend your resources with extensions. You can also extend your APIs with extensions
+* ***CLI support*** - API Brew has a cli tool to manage your resources, dataSources, etc. It is called `dhctl`
+* ***Docker*** - API Brew is dockerized. You can run it on docker
+* ***Docker Compose*** - API Brew is docker-compose ready. You can run it on docker-compose, see [docker-compose](deploy/docker-compose)
+* ***Kubernetes*** - API Brew is kubernetes ready. You can run it on kubernetes, see [kubernetes](deploy/kubernetes)
 
 ## Use Cases
 
@@ -91,10 +91,10 @@ Data Handler is a **Low Code software** that allows to create various Grpc and R
 ### Easy Installation 
 
 ```bash
-curl -L https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/run.sh | bash
+curl -L https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/run.sh | bash
 ```
 
-For more detailed installation, see [Installation](https://data-handler.tislib.net/docs/installation)
+For more detailed installation, see [Installation](https://apibrew.io/docs/installation)
 
 ### Let's create a resource
 
@@ -133,12 +133,12 @@ curl -X POST --location "http://localhost:9009/country" \
 curl "http://localhost:9009/country" -H "Authorization: <token>"
 ```
 
-# [Docs](https://data-handler.tislib.net)
+# [Docs](https://apibrew.io)
 
-- [Tutorials](https://data-handler.tislib.net/docs/tutorials/index) - Tutorials
-- [Installation](https://data-handler.tislib.net/docs/installation) - Installation
-- [General](https://data-handler.tislib.net/docs/general) - General information about Data Handler
-- [API](https://data-handler.tislib.net/docs/api) - GRPC and Rest API documentation
-- [CLI](https://data-handler.tislib.net/docs/dhctl) - CLI interface(dhctl) documentation
-- [Proto](https://data-handler.tislib.net/docs/proto) - Proto documentation
-- [SDK](https://data-handler.tislib.net/docs/sdk) - SDK documentation
+- [Tutorials](https://apibrew.io/docs/tutorials/index) - Tutorials
+- [Installation](https://apibrew.io/docs/installation) - Installation
+- [General](https://apibrew.io/docs/general) - General information about API Brew
+- [API](https://apibrew.io/docs/api) - GRPC and Rest API documentation
+- [CLI](https://apibrew.io/docs/dhctl) - CLI interface(dhctl) documentation
+- [Proto](https://apibrew.io/docs/proto) - Proto documentation
+- [SDK](https://apibrew.io/docs/sdk) - SDK documentation

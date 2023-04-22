@@ -1,13 +1,13 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: data-handler-standalone
+  name: apibrew-standalone
   labels:
-    app: data-handler-standalone
+    app: apibrew-standalone
 spec:
   containers:
-    - name: data-handler-standalone
-      image: tislib/data-handler:latest
+    - name: apibrew-standalone
+      image: tislib/apibrew:latest
       imagePullPolicy: Always
       ports:
         - containerPort: 9009
@@ -18,7 +18,7 @@ spec:
   volumes:
     - name: config
       configMap:
-        name: data-handler-standalone-config
+        name: apibrew-standalone-config
         items:
           - key: config.json
             path: config.json
@@ -26,10 +26,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: data-handler-standalone
+  name: apibrew-standalone
 spec:
   selector:
-    app: data-handler-standalone
+    app: apibrew-standalone
   ports:
     - protocol: TCP
       port: 9009
@@ -38,7 +38,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: data-handler-standalone-config
+  name: apibrew-standalone-config
 data:
   config.json: |
     {

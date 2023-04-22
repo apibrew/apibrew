@@ -7,7 +7,7 @@ has_children: true
 
 # Grpc Api
 
-Grpc is main interface of Data Handler. By default, 9009 port is used to communicate to Data handler grpc service.
+Grpc is main interface of API Brew. By default, 9009 port is used to communicate to API Brew grpc service.
 
 Grpc services:
 

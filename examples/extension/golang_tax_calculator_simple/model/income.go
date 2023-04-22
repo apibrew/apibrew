@@ -1,11 +1,11 @@
 package model
 
 import "reflect"
-import "github.com/tislib/data-handler/pkg/helper"
-import "github.com/tislib/data-handler/pkg/model"
-import "github.com/tislib/data-handler/pkg/client"
+import "github.com/tislib/apibrew/pkg/helper"
+import "github.com/tislib/apibrew/pkg/model"
+import "github.com/tislib/apibrew/pkg/client"
 import "github.com/google/uuid"
-import "github.com/tislib/data-handler/pkg/types"
+import "github.com/tislib/apibrew/pkg/types"
 import "google.golang.org/protobuf/types/known/structpb"
 
 type Income struct {

@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/backend/helper"
-	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/logging"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/backend/helper"
+	"github.com/tislib/apibrew/pkg/errors"
+	"github.com/tislib/apibrew/pkg/logging"
 )
 
 type queryLoggerStruct struct {

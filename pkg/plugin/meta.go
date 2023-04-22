@@ -1,7 +1,7 @@
 package plugin
 
 import (
-	"github.com/tislib/data-handler/pkg/service/handler"
+	"github.com/tislib/apibrew/pkg/service/handler"
 )
 
 const MetaDataKey = "MetaDataKey"

@@ -19,7 +19,7 @@ data-source - Data source related operations
 
 ### SEE ALSO
 
-* [dhctl](dhctl.md)	 - dhctl - client for data-handler
+* [dhctl](dhctl.md)	 - dhctl - client for apibrew
 * [dhctl data-source list-entities](dhctl_data-source_list-entities.md)	 - list-entities - List existing entities in data source
 * [dhctl data-source prepare](dhctl_data-source_prepare.md)	 - prepare - Prepare resources from existing data source entities
 * [dhctl data-source status](dhctl_data-source_status.md)	 - status - Data source status

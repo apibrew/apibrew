@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/stub"
 )
 
 type watchGrpcService struct {

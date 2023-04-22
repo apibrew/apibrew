@@ -1,4 +1,4 @@
-import {Entity} from "data-handler-client";
+import {Entity} from "apibrew-client";
 
 {{ range .params.Resources}}
 export interface {{ToCamel .Name}} extends Entity {

@@ -3,11 +3,11 @@
 
 openapi: 3.0.3
 info:
-    title: Data Handler
-    description: OpenApi 3.0 definition for Data Handler Rest API
+    title: API Brew
+    description: OpenApi 3.0 definition for API Brew Rest API
     contact:
         name: Taleh Ibrahimli
-        url: https://github.com/tislib/data-handler
+        url: https://github.com/tislib/apibrew
         email: talehsmail@gmail.com
     license:
         name: Apache License
@@ -2546,7 +2546,7 @@ components:
                     type: object
                     additionalProperties:
                         type: string
-            description: Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record Data handler is responsible to validate data according to property types. For example, when you call create record and if you send 123.45 for int64
+            description: Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record and if you send 123.45 for int64
         ResourceSourceConfig:
             type: object
             properties:

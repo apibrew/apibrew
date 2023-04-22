@@ -3,14 +3,14 @@ package service
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/helper"
-	"github.com/tislib/data-handler/pkg/logging"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/resources"
-	"github.com/tislib/data-handler/pkg/service/annotations"
-	"github.com/tislib/data-handler/pkg/util"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/errors"
+	"github.com/tislib/apibrew/pkg/helper"
+	"github.com/tislib/apibrew/pkg/logging"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/resources"
+	"github.com/tislib/apibrew/pkg/service/annotations"
+	"github.com/tislib/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

@@ -1116,7 +1116,7 @@ export interface components {
         ResourceMigrationUpdateResource: {
             changedFields?: (string)[];
         };
-        /** @description Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record Data handler is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64 */
+        /** @description Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64 */
         ResourceProperty: {
             annotations?: {
                 [key: string]: string | undefined;

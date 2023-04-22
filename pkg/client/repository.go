@@ -2,10 +2,10 @@ package client
 
 import (
 	"context"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/stub"
-	"github.com/tislib/data-handler/pkg/util"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/stub"
+	"github.com/tislib/apibrew/pkg/util"
 )
 
 type repository[T abs.Entity[T]] struct {

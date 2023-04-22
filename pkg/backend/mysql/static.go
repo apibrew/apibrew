@@ -3,7 +3,7 @@ package mysql
 import (
 	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
-	_ "github.com/tislib/data-handler/pkg/backend/mysql/sql/statik"
+	_ "github.com/tislib/apibrew/pkg/backend/mysql/sql/statik"
 	"io"
 	"net/http"
 )

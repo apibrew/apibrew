@@ -4,15 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/tislib/data-handler/pkg/formats"
+	"github.com/tislib/apibrew/pkg/formats"
 	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/tislib/data-handler/pkg/dhctl/flags"
-	"github.com/tislib/data-handler/pkg/formats/batch"
-	"github.com/tislib/data-handler/pkg/formats/hclformat"
-	"github.com/tislib/data-handler/pkg/formats/yaml"
+	"github.com/tislib/apibrew/pkg/dhctl/flags"
+	"github.com/tislib/apibrew/pkg/formats/batch"
+	"github.com/tislib/apibrew/pkg/formats/hclformat"
+	"github.com/tislib/apibrew/pkg/formats/yaml"
 )
 
 var applyCmd = &cobra.Command{

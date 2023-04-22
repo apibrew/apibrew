@@ -1,6 +1,6 @@
 package util
 
-import "github.com/tislib/data-handler/pkg/errors"
+import "github.com/tislib/apibrew/pkg/errors"
 
 func Coalesce[T interface{}](val ...*T) *T {
 	for _, item := range val {

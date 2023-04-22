@@ -3,8 +3,8 @@ package dhctl
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tislib/data-handler/pkg/dhctl/flags"
-	"github.com/tislib/data-handler/pkg/dhctl/output"
+	"github.com/tislib/apibrew/pkg/dhctl/flags"
+	"github.com/tislib/apibrew/pkg/dhctl/output"
 	"io"
 	"os"
 	"strconv"

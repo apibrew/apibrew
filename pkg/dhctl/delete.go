@@ -3,7 +3,7 @@ package dhctl
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/apibrew/pkg/stub"
 )
 
 var deleteCmd = &cobra.Command{

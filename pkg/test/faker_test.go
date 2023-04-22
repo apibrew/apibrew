@@ -2,8 +2,8 @@ package test
 
 import (
 	"github.com/google/uuid"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/test/setup"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/test/setup"
 	"math/rand"
 	"time"
 )

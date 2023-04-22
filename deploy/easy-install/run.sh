@@ -36,7 +36,7 @@ else
 fi
 
 echo "Downloading ${PLATFORM} binary"
-curl -L -o "dhctl${SUFFIX}" "https://github.com/tislib/data-handler/releases/download/v1.1.8/dhctl-${PLATFORM}${SUFFIX}"
+curl -L -o "dhctl${SUFFIX}" "https://github.com/tislib/apibrew/releases/download/v1.1.8/dhctl-${PLATFORM}${SUFFIX}"
 
 chmod +x dhctl
 sudo mv dhctl /usr/local/bin/dhctl
@@ -46,12 +46,12 @@ echo "Configuring dhctl"
 
 mkdir -p ~/.dhctl
 cp ~/.dhctl/config ~/.dhctl/config.bak
-curl -L -o ~/.dhctl/config "https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/config"
+curl -L -o ~/.dhctl/config "https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/config"
 
 echo "Dhctl configuration is done"
 
-echo "Run data-handler standalone mode"
+echo "Run apibrew standalone mode"
 
-docker run --name data-handler-standalone -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
+docker run --name apibrew-standalone -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/apibrew:full-latest
 
 echo "Done!"
