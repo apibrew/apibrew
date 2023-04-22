@@ -47,7 +47,7 @@ jobs:
         id: pages
         uses: actions/configure-pages@v3
       - name: Install Node.js dependencies
-        run: "cd website && npm i && cd themes/docsy && npm i"
+        run: "cd website && npm i"
       - name: Build with Hugo
         env:
           # For maximum backward compatibility with Hugo modules
