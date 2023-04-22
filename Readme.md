@@ -1,4 +1,4 @@
-API Brew [![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml)  - [website](http://apibrew.tislib.net/)
+API Brew [![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml)  - [website](http://apibrew.io/)
 ======================
 [![Go Report Card](https://goreportcard.com/badge/github.com/tislib/apibrew)](https://goreportcard.com/report/github.com/tislib/apibrew)
 [![Go Reference](https://pkg.go.dev/badge/github.com/tislib/apibrew.svg)](https://pkg.go.dev/github.com/tislib/apibrew)
@@ -94,7 +94,7 @@ API Brew is a **Low Code software** that allows to create various Grpc and Rest 
 curl -L https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/run.sh | bash
 ```
 
-For more detailed installation, see [Installation](https://apibrew.tislib.net/docs/installation)
+For more detailed installation, see [Installation](https://apibrew.io/docs/installation)
 
 ### Let's create a resource
 
@@ -133,12 +133,12 @@ curl -X POST --location "http://localhost:9009/country" \
 curl "http://localhost:9009/country" -H "Authorization: <token>"
 ```
 
-# [Docs](https://apibrew.tislib.net)
+# [Docs](https://apibrew.io)
 
-- [Tutorials](https://apibrew.tislib.net/docs/tutorials/index) - Tutorials
-- [Installation](https://apibrew.tislib.net/docs/installation) - Installation
-- [General](https://apibrew.tislib.net/docs/general) - General information about API Brew
-- [API](https://apibrew.tislib.net/docs/api) - GRPC and Rest API documentation
-- [CLI](https://apibrew.tislib.net/docs/dhctl) - CLI interface(dhctl) documentation
-- [Proto](https://apibrew.tislib.net/docs/proto) - Proto documentation
-- [SDK](https://apibrew.tislib.net/docs/sdk) - SDK documentation
+- [Tutorials](https://apibrew.io/docs/tutorials/index) - Tutorials
+- [Installation](https://apibrew.io/docs/installation) - Installation
+- [General](https://apibrew.io/docs/general) - General information about API Brew
+- [API](https://apibrew.io/docs/api) - GRPC and Rest API documentation
+- [CLI](https://apibrew.io/docs/dhctl) - CLI interface(dhctl) documentation
+- [Proto](https://apibrew.io/docs/proto) - Proto documentation
+- [SDK](https://apibrew.io/docs/sdk) - SDK documentation
