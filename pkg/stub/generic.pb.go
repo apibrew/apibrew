@@ -7,7 +7,7 @@
 package stub
 
 import (
-	model "github.com/tislib/data-handler/pkg/model"
+	model "github.com/tislib/apibrew/pkg/model"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"

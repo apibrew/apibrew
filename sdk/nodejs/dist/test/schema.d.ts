@@ -1,4 +1,4 @@
-import { Entity } from "data-handler-client";
+import { Entity } from "apibrew-client";
 export interface Country2 extends Entity {
     id: string;
     name: string;

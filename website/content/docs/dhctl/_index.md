@@ -7,10 +7,10 @@ has_children: true
 
 # dhctl
 
-DHCTL is a command line tool for Data Handler. It is used to manage Data Handler and its components.
+DHCTL is a command line tool for API Brew. It is used to manage API Brew and its components.
 
 ## Commands
- - [dhctl](dhctl.md) - Data Handler command line tool
+ - [dhctl](dhctl.md) - API Brew command line tool
  - [dhctl apply](dhctl_apply.md) - apply - apply resources
  - [dhctl data-source](dhctl_data-source.md) - data-source - Data source related operations
  - [dhctl delete](dhctl_delete.md) - delete

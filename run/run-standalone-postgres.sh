@@ -21,7 +21,7 @@ term_handler() {
 
 trap 'kill ${!}; term_handler' SIGTERM
 
-/bin/data-handler -log-level=debug "-init" "/app/config.json" &
+/bin/apibrew -log-level=debug "-init" "/app/config.json" &
 pid="$!"
 
 # wait forever

@@ -3,7 +3,7 @@ package security
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/apibrew/pkg/model"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/tislib/data-handler/pkg/dhctl"
+	"github.com/tislib/apibrew/pkg/dhctl"
 )
 
 func main() {

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package model;
 
-option go_package = "github.com/tislib/data-handler/pkg/model";
+option go_package = "github.com/tislib/apibrew/pkg/model";
 
 import 'model/audit.proto';
 import 'model/query.proto';
@@ -15,7 +15,7 @@ import "google/protobuf/descriptor.proto";
 
 /*
   Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record
-  Data handler is responsible to validate data according to property types. For example, when you call create record and
+  API Brew is responsible to validate data according to property types. For example, when you call create record and
   if you send 123.45 for int64
  */
 message ResourceProperty {
@@ -61,7 +61,7 @@ message ResourceProperty {
   optional google.protobuf.Value exampleValue = 12; // exampleValue is example value. It is an informative column
   repeated google.protobuf.Value enumValues = 13; // enumValues is used if property type is an enum
   optional Reference reference = 14 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
-  repeated ResourceProperty properties = 15 [(model.hcl_block) = "property"]; // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
+  repeated ResourceProperty properties = 15 [(model.hcl_block) = "property"]; // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
   optional ResourceProperty subProperty = 16; // subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
   optional string title = 17; // It is an informative column
   optional string description = 18; // It is an informative column
@@ -113,7 +113,7 @@ message Resource {
   string name = 2 [(model.hcl_label) = "name"]; // unique resource name, it is unique per namespace
   string namespace = 3; // each resource is kept inside a namespace. One namespace can have multiple resources
   ResourceSourceConfig sourceConfig = 5 [(model.hcl_block) = "sourceConfig"]; //
-  repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
+  repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
   repeated ResourceIndex indexes = 7 [(model.hcl_block) = "index"]; // list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends.
   SecurityContext securityContext = 10; // security context is to apply ACL to resource property
   bool virtual = 11; // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.

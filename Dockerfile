@@ -23,7 +23,7 @@ RUN sh /app/pkg/test/run-tests.sh
 
 FROM buildenv as builder
 
-RUN go build -o data-handler cmd/server/main.go
+RUN go build -o apibrew cmd/server/main.go
 
 FROM golang:1.19-alpine as app-full
 WORKDIR /
@@ -33,7 +33,7 @@ RUN mkdir /run/postgresql
 RUN chown postgres:postgres /run/postgresql/
 VOLUME /var/lib/postgresql/data
 
-COPY --from=builder /app/data-handler /bin/data-handler
+COPY --from=builder /app/apibrew /bin/apibrew
 COPY run/run-standalone-postgres.sh /app/run.sh
 COPY run/init.sql /app/init.sql
 COPY run/config.json /app/config.json
@@ -47,8 +47,8 @@ CMD ["/bin/sh", "/app/run.sh"]
 FROM golang:1.19-alpine as app
 WORKDIR /
 
-COPY --from=builder /app/data-handler /bin/data-handler
+COPY --from=builder /app/apibrew /bin/apibrew
 
 EXPOSE 9009
 
-CMD ["/bin/data-handler", "-init", "/app/config.json"]
+CMD ["/bin/apibrew", "-init", "/app/config.json"]

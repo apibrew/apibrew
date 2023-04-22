@@ -2,10 +2,10 @@ package dhctl
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tislib/data-handler/pkg/generator/golang"
-	"github.com/tislib/data-handler/pkg/generator/nodejs"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/apibrew/pkg/generator/golang"
+	"github.com/tislib/apibrew/pkg/generator/nodejs"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/stub"
 )
 
 var generatorCmd = &cobra.Command{

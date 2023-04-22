@@ -2,7 +2,7 @@ package util
 
 import (
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/apibrew/pkg/model"
 )
 
 func ResourcePropertyTypeToJsonSchemaType(resourcePropertyType model.ResourceProperty_Type) *openapi3.Schema {

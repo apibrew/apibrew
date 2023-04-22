@@ -209,7 +209,7 @@ func (ResourceProperty_Type) EnumDescriptor() ([]byte, []int) {
 }
 
 // Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record
-// Data handler is responsible to validate data according to property types. For example, when you call create record and
+// API Brew is responsible to validate data according to property types. For example, when you call create record and
 // if you send 123.45 for int64
 type ResourceProperty struct {
 	state         protoimpl.MessageState
@@ -234,7 +234,7 @@ type ResourceProperty struct {
 	ExampleValue    *structpb.Value     `protobuf:"bytes,12,opt,name=exampleValue,proto3,oneof" json:"exampleValue,omitempty"`       // exampleValue is example value. It is an informative column
 	EnumValues      []*structpb.Value   `protobuf:"bytes,13,rep,name=enumValues,proto3" json:"enumValues,omitempty"`                 // enumValues is used if property type is an enum
 	Reference       *Reference          `protobuf:"bytes,14,opt,name=reference,proto3,oneof" json:"reference,omitempty"`             // reference property is only valid and required for Reference types.
-	Properties      []*ResourceProperty `protobuf:"bytes,15,rep,name=properties,proto3" json:"properties,omitempty"`                 // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
+	Properties      []*ResourceProperty `protobuf:"bytes,15,rep,name=properties,proto3" json:"properties,omitempty"`                 // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
 	SubProperty     *ResourceProperty   `protobuf:"bytes,16,opt,name=subProperty,proto3,oneof" json:"subProperty,omitempty"`         // subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
 	Title           *string             `protobuf:"bytes,17,opt,name=title,proto3,oneof" json:"title,omitempty"`                     // It is an informative column
 	Description     *string             `protobuf:"bytes,18,opt,name=description,proto3,oneof" json:"description,omitempty"`         // It is an informative column
@@ -661,7 +661,7 @@ type Resource struct {
 	Name            string                `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                        // unique resource name, it is unique per namespace
 	Namespace       string                `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"`              // each resource is kept inside a namespace. One namespace can have multiple resources
 	SourceConfig    *ResourceSourceConfig `protobuf:"bytes,5,opt,name=sourceConfig,proto3" json:"sourceConfig,omitempty"`        //
-	Properties      []*ResourceProperty   `protobuf:"bytes,6,rep,name=properties,proto3" json:"properties,omitempty"`            // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself
+	Properties      []*ResourceProperty   `protobuf:"bytes,6,rep,name=properties,proto3" json:"properties,omitempty"`            // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
 	Indexes         []*ResourceIndex      `protobuf:"bytes,7,rep,name=indexes,proto3" json:"indexes,omitempty"`                  // list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends.
 	SecurityContext *SecurityContext      `protobuf:"bytes,10,opt,name=securityContext,proto3" json:"securityContext,omitempty"` // security context is to apply ACL to resource property
 	Virtual         bool                  `protobuf:"varint,11,opt,name=virtual,proto3" json:"virtual,omitempty"`                // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.

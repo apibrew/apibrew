@@ -4,8 +4,8 @@ import (
 	"encoding/binary"
 	"errors"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/formats"
-	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/apibrew/pkg/formats"
+	"github.com/tislib/apibrew/pkg/model"
 	"google.golang.org/protobuf/proto"
 	"io"
 )

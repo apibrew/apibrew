@@ -2,11 +2,11 @@ package service
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/logging"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/handler"
-	"github.com/tislib/data-handler/pkg/service/handlers"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/logging"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/service/handler"
+	"github.com/tislib/apibrew/pkg/service/handlers"
 )
 
 type App struct {

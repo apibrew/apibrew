@@ -23,11 +23,11 @@ jobs:
       - name: Build the Docker image
         uses: actions/checkout@v3
       - run: |
-          docker build . --progress=plain --no-cache --target=app -t tislib/data-handler:${GITHUB_REF##*/}
-          docker build . --progress=plain --no-cache --target=app-full -t tislib/data-handler:full-${GITHUB_REF##*/}
-          docker tag tislib/data-handler:${GITHUB_REF##*/} tislib/data-handler:latest
-          docker tag tislib/data-handler:full-${GITHUB_REF##*/} tislib/data-handler:full-latest
-          docker push tislib/data-handler:${GITHUB_REF##*/}
-          docker push tislib/data-handler:full-${GITHUB_REF##*/}
-          docker push tislib/data-handler:latest
-          docker push tislib/data-handler:full-latest
+          docker build . --progress=plain --no-cache --target=app -t tislib/apibrew:${GITHUB_REF##*/}
+          docker build . --progress=plain --no-cache --target=app-full -t tislib/apibrew:full-${GITHUB_REF##*/}
+          docker tag tislib/apibrew:${GITHUB_REF##*/} tislib/apibrew:latest
+          docker tag tislib/apibrew:full-${GITHUB_REF##*/} tislib/apibrew:full-latest
+          docker push tislib/apibrew:${GITHUB_REF##*/}
+          docker push tislib/apibrew:full-${GITHUB_REF##*/}
+          docker push tislib/apibrew:latest
+          docker push tislib/apibrew:full-latest

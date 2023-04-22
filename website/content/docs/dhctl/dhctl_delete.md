@@ -17,7 +17,7 @@ delete
 
 ### SEE ALSO
 
-* [dhctl](dhctl.md)	 - dhctl - client for data-handler
+* [dhctl](dhctl.md)	 - dhctl - client for apibrew
 * [dhctl delete data-source](dhctl_delete_data-source.md)	 - 
 * [dhctl delete extension](dhctl_delete_extension.md)	 - 
 * [dhctl delete namespace](dhctl_delete_namespace.md)	 - 

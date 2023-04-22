@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stub;
 
-option go_package = "github.com/tislib/data-handler/pkg/stub";
+option go_package = "github.com/tislib/apibrew/pkg/stub";
 
 import 'model/error.proto';
 import 'model/token.proto';
@@ -11,12 +11,12 @@ import "gnostic/openapi/v3/annotations.proto";
 
 option (gnostic.openapi.v3.document) = {
   info: {
-    title: "Data Handler";
+    title: "API Brew";
     version: "1.0";
-    description: "OpenApi 3.0 definition for Data Handler Rest API";
+    description: "OpenApi 3.0 definition for API Brew Rest API";
     contact: {
       name: "Taleh Ibrahimli";
-      url: "https://github.com/tislib/data-handler";
+      url: "https://github.com/tislib/apibrew";
       email: "talehsmail@gmail.com";
     }
     license: {

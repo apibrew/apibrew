@@ -2,7 +2,7 @@ package security
 
 import (
 	"context"
-	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/apibrew/pkg/abs"
 )
 
 var SystemContext = WithSystemContext(context.TODO())

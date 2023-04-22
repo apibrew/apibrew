@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/logging"
+	"github.com/tislib/apibrew/pkg/errors"
+	"github.com/tislib/apibrew/pkg/logging"
 )
 
 func (p *sqlBackend) acquireConnection(ctx context.Context) (*sql.DB, errors.ServiceError) {

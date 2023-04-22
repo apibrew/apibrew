@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"context"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/handler"
-	"github.com/tislib/data-handler/pkg/service/security"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/errors"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/service/handler"
+	"github.com/tislib/apibrew/pkg/service/security"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

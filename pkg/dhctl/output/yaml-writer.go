@@ -3,7 +3,7 @@ package output
 import (
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/model"
+	"github.com/tislib/apibrew/pkg/model"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v2"
 	"io"
