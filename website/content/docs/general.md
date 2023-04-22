@@ -203,7 +203,7 @@ User is for authentication purposes.
 
 ### Overview
 
-Extensions is one of the main features of API Brew. Extensions is for extending capabilities of Data handler.
+Extensions is one of the main features of API Brew. Extensions is for extending capabilities of API Brew.
 So you can define custom resources and you can define how it will work.
 
 Extensions can be developed technically in any language which supports grpc protocol. But currently we have built in
@@ -214,7 +214,7 @@ So you can define a resource, an extension and you can develop how your resource
 
 ### External call definition
 
-When function call is defined. Data handlers sends request in following format:
+When function call is defined. API Brews sends request in following format:
 
 ```map<string, google.protobuf.Any> request```
 
@@ -231,9 +231,9 @@ For Http call you will have similar structure but in json format
 
 # Property Types
 
-Resource properties can have various types. Data handler supports following types:
+Resource properties can have various types. API Brew supports following types:
 
-Data handler is responsible to validate data according to property types. For example, when you call create record and
+API Brew is responsible to validate data according to property types. For example, when you call create record and
 if you send 123.45 for int64
 
 ## Standard types
@@ -319,7 +319,7 @@ packedType := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(v
 
 # Security Context
 
-Data handler has the ability to define access control of actions on resources
+API Brew has the ability to define access control of actions on resources
 
 Security context can be attached to following levels:
 
@@ -356,7 +356,7 @@ For example, if security context is applied to user, then principal value is ign
 it will be user's username. Same for namespace, if security context is attached to namespace, security context namespace
 will become namespace name where it is assigned to namespace
 
-While deciding about whether operation is permitted or not, Data handler checks security context in following levels:
+While deciding about whether operation is permitted or not, API Brew checks security context in following levels:
 
 1. Property
 2. Resource
@@ -376,14 +376,14 @@ If Reject or Allow found, it will be the decision.
 
 If neither Reject nor Allow found end result will become Unknown.
 
-If end result is Unknown, Data handler checks if this resource is publicely available, if yes, operation will be
+If end result is Unknown, API Brew checks if this resource is publicely available, if yes, operation will be
 allowed, if not, it will be denied
 
 public access can be defined by creating a security context which has principal named guest
 
 # Resource reference
 
-Reference type is one of main type of Data handler. Reference type is for building relationships between resources. It
+Reference type is one of main type of API Brew. Reference type is for building relationships between resources. It
 is like a column with Foreign key in relation databases.
 
 When you set property type to reference type, it is required to set reference details.

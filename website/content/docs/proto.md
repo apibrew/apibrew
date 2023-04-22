@@ -730,7 +730,7 @@ SecurityConstraint is a rule
 | name | [string](#string) |  | unique resource name, it is unique per namespace |
 | namespace | [string](#string) |  | each resource is kept inside a namespace. One namespace can have multiple resources |
 | sourceConfig | [ResourceSourceConfig](#model-ResourceSourceConfig) |  |  |
-| properties | [ResourceProperty](#model-ResourceProperty) | repeated | list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself |
+| properties | [ResourceProperty](#model-ResourceProperty) | repeated | list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself |
 | indexes | [ResourceIndex](#model-ResourceIndex) | repeated | list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends. |
 | securityContext | [SecurityContext](#model-SecurityContext) |  | security context is to apply ACL to resource property |
 | virtual | [bool](#bool) |  | If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems. |
@@ -817,7 +817,7 @@ SecurityConstraint is a rule
 
 ### ResourceProperty
 Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record
-Data handler is responsible to validate data according to property types. For example, when you call create record and
+API Brew is responsible to validate data according to property types. For example, when you call create record and
 if you send 123.45 for int64
 
 
@@ -837,7 +837,7 @@ if you send 123.45 for int64
 | exampleValue | [google.protobuf.Value](#google-protobuf-Value) | optional | exampleValue is example value. It is an informative column |
 | enumValues | [google.protobuf.Value](#google-protobuf-Value) | repeated | enumValues is used if property type is an enum |
 | reference | [Reference](#model-Reference) | optional | reference property is only valid and required for Reference types. |
-| properties | [ResourceProperty](#model-ResourceProperty) | repeated | list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by Data handler itself |
+| properties | [ResourceProperty](#model-ResourceProperty) | repeated | list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself |
 | subProperty | [ResourceProperty](#model-ResourceProperty) | optional | subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string) |
 | title | [string](#string) | optional | It is an informative column |
 | description | [string](#string) | optional | It is an informative column |
