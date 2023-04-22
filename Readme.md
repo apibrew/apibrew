@@ -1,11 +1,11 @@
-API Brew [![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml)  - [website](http://apibrew.io/)
+[![](website/content/static/logo.svg)](https://github.com/tislib/apibrew/actions/workflows/build.yml) [Website](http://apibrew.io/)
 ======================
+[![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/tislib/apibrew)](https://goreportcard.com/report/github.com/tislib/apibrew)
 [![Go Reference](https://pkg.go.dev/badge/github.com/tislib/apibrew.svg)](https://pkg.go.dev/github.com/tislib/apibrew)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
 [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/apibrew)
-
 
 ## Introduction
 **Everything is a *Resource***. And **Everything has a *CRUD API***
