@@ -90,8 +90,9 @@ ul.pagination {
   margin-bottom: $padding-16;
 
   img {
-    height: 1.5em;
-    width: 1.5em;
+//     height: 1.5em;
+//     width: 1.5em;
+margin-top:-50px;
     margin-inline-end: $padding-8;
   }
 }
