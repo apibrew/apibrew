@@ -1,7 +1,7 @@
 package test
 
 import (
-	dhctl "github.com/tislib/data-handler/pkg/dhctl"
+	dhctl "github.com/tislib/apibrew/pkg/dhctl"
 	"testing"
 )
 

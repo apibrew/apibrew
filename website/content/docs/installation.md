@@ -3,14 +3,14 @@ Installation
 
 ## Easy install 
 ```bash
-curl -L https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/run.sh | bash
+curl -L https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/run.sh | bash
 ```
 
-It will install both data handler and dhctl for you
+It will install both API Brew and dhctl for you
 
 ## Docker [standalone]
 
-Docker standalone mode is most basic mode to run data handler
+Docker standalone mode is most basic mode to run API Brew
 
 ### Prerequisites
 
@@ -21,7 +21,7 @@ Docker standalone mode is most basic mode to run data handler
 *Run docker container*
 
 ```bash
-docker run -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/data-handler:full-latest
+docker run -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/apibrew:full-latest
 ```
 
 ## Docker [normal]
@@ -46,23 +46,23 @@ You also need to create two database on your postgresql server. see [init.sql](.
 *Run docker container*
 
 ```bash
-docker run -d -p 9009:9009 -v ${PWD}/config.json:/app/config.json tislib/data-handler:latest
+docker run -d -p 9009:9009 -v ${PWD}/config.json:/app/config.json tislib/apibrew:latest
 ```
 
 ## Docker compose
-[see](https://github.com/tislib/data-handler/tree/master/deploy/docker-compose)
+[see](https://github.com/tislib/apibrew/tree/master/deploy/docker-compose)
 
 ## Kubernetes
-[see](https://github.com/tislib/data-handler/tree/master/deploy/kubernetes)
+[see](https://github.com/tislib/apibrew/tree/master/deploy/kubernetes)
 
 ## Client 
 Let's install our client **dhctl**
 
-You can download client binary from release page https://github.com/tislib/data-handler/releases/latest (download dhctl-OS-ARCH)
+You can download client binary from release page https://github.com/tislib/apibrew/releases/latest (download dhctl-OS-ARCH)
 
 You can also use go install if you have go runtime on your local
 ```
-go install github.com/tislib/data-handler/cmd/dhctl@latest
+go install github.com/tislib/apibrew/cmd/dhctl@latest
 ```
 
 Now let's configure our client to point to server

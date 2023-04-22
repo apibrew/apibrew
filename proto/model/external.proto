@@ -4,7 +4,7 @@ package model;
 
 import "model/annotations.proto";
 
-option go_package = "github.com/tislib/data-handler/pkg/model";
+option go_package = "github.com/tislib/apibrew/pkg/model";
 
 message FunctionCall {
   string host = 1;

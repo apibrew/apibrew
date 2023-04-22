@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package model;
 
-option go_package = "github.com/tislib/data-handler/pkg/model";
+option go_package = "github.com/tislib/apibrew/pkg/model";
 
 import 'google/protobuf/timestamp.proto';
 import 'model/annotations.proto';

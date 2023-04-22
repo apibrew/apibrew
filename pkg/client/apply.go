@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	log "github.com/sirupsen/logrus"
-	errors2 "github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/stub"
+	errors2 "github.com/tislib/apibrew/pkg/errors"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/stub"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -1,11 +1,11 @@
 Library app
 =======
 
-This is a simple library app that demonstrates how to use the Data Handler.
+This is a simple library app that demonstrates how to use the API Brew.
 
 Prerequisites
  - install dhctl
- - install data handler server
+ - install API Brew server
  - clone/download schema file [schema.yaml](schema.yaml)
 
 Let's apply our schema

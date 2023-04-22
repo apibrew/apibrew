@@ -1,8 +1,8 @@
 package util
 
 import (
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/service/annotations"
 )
 
 func IsSameIdentifiedResourceIndex(index1, index2 *model.ResourceIndex) bool {

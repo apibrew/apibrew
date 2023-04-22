@@ -1,8 +1,8 @@
 package setup
 
 import (
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/service/annotations"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/service/annotations"
 )
 
 var SystemDataSource = &model.DataSource{

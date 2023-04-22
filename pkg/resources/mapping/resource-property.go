@@ -1,8 +1,8 @@
 package mapping
 
 import (
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/util"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

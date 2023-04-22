@@ -2,7 +2,7 @@ package main
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/dhctl"
+	"github.com/tislib/apibrew/pkg/dhctl"
 )
 
 func main() {

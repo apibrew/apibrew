@@ -3,11 +3,11 @@
 
 openapi: 3.0.3
 info:
-    title: Data Handler
-    description: OpenApi 3.0 definition for Data Handler Rest API
+    title: API Brew
+    description: OpenApi 3.0 definition for API Brew Rest API
     contact:
         name: Taleh Ibrahimli
-        url: https://github.com/tislib/data-handler
+        url: https://github.com/tislib/apibrew
         email: talehsmail@gmail.com
     license:
         name: Apache License

@@ -1,10 +1,10 @@
 ## dhctl
 
-dhctl - client for data-handler
+dhctl - client for apibrew
 
 ### Synopsis
 
-dhctl is cli util for data-handler, you can do various of operations with dhctl
+dhctl is cli util for apibrew, you can do various of operations with dhctl
 
 ```
 dhctl [flags]

@@ -3,11 +3,11 @@ package setup
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/client"
-	grpc2 "github.com/tislib/data-handler/pkg/server/grpc"
-	"github.com/tislib/data-handler/pkg/service"
-	"github.com/tislib/data-handler/pkg/stub"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/client"
+	grpc2 "github.com/tislib/apibrew/pkg/server/grpc"
+	"github.com/tislib/apibrew/pkg/service"
+	"github.com/tislib/apibrew/pkg/stub"
 	"net"
 	"time"
 )

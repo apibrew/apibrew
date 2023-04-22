@@ -2,9 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/stub"
-	"github.com/tislib/data-handler/pkg/util"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/stub"
+	"github.com/tislib/apibrew/pkg/util"
 )
 
 type NamespaceGrpcService interface {

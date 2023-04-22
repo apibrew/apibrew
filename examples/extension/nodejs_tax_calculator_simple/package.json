@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "data-handler-client": "1.0.2",
+    "apibrew-client": "1.0.2",
     "@types/node": "^18.15.11",
     "typescript": "^5.0.4"
   },

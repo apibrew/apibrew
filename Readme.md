@@ -1,10 +1,10 @@
-Data Handler [![build](https://github.com/tislib/data-handler/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/data-handler/actions/workflows/build.yml)  - [website](http://data-handler.tislib.net/)
+API Brew [![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml)  - [website](http://apibrew.tislib.net/)
 ======================
-[![Go Report Card](https://goreportcard.com/badge/github.com/tislib/data-handler)](https://goreportcard.com/report/github.com/tislib/data-handler)
-[![Go Reference](https://pkg.go.dev/badge/github.com/tislib/data-handler.svg)](https://pkg.go.dev/github.com/tislib/data-handler)
-[![Docker Pulls](https://img.shields.io/docker/pulls/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
-[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/data-handler)](https://hub.docker.com/r/tislib/data-handler)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/data-handler)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tislib/apibrew)](https://goreportcard.com/report/github.com/tislib/apibrew)
+[![Go Reference](https://pkg.go.dev/badge/github.com/tislib/apibrew.svg)](https://pkg.go.dev/github.com/tislib/apibrew)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
+[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/apibrew)
 
 
 ## Introduction
@@ -53,20 +53,20 @@ countryExtension.onCreate(async (country) => {
 ```
 So we have extended our country resource with modification description on create
 
-So, with **data handler**, you can create your application with resources and you can customize behavior of your resources with extensions
+So, with **API Brew**, you can create your application with resources and you can customize behavior of your resources with extensions
 
 ## About
-Data Handler is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
+API Brew is a **Low Code software** that allows to create various Grpc and Rest APIs from various database platforms
 
 ## Features
 
 * ***Declarative*** - *Data handler* is declarative. You can define your schema in a declarative way, it will create your APIs
-* ***Low Code*** - With data handler, you can create APIs for your data without coding. But you can also extend your APIs with
+* ***Low Code*** - With API Brew, you can create APIs for your data without coding. But you can also extend your APIs with
   extensions, so you can customize behavior of your Resources/Apis
 * ***Rest API*** - As you create resources, Rest Apis for them is made automatically
 * ***Grpc*** - As you create resources, Grpc Apis for them is made automatically
 * ***Database agnostic*** - Data handler is using Postgresql database by default, but it also supports various databases. Including Mongo, Mysql, Redis, etc.
-* ***CRUD*** - Crud is on the heart of data handler.
+* ***CRUD*** - Crud is on the heart of API Brew.
 * ***Swagger*** - Swagger docs are generated automatically
 * ***Authentication*** - Data handler supports various authentication methods. Including JWT authentication etc.
 * ***Authorization*** - Data handler supports authorization. You can define permissions for your resources
@@ -91,10 +91,10 @@ Data Handler is a **Low Code software** that allows to create various Grpc and R
 ### Easy Installation 
 
 ```bash
-curl -L https://raw.githubusercontent.com/tislib/data-handler/master/deploy/easy-install/run.sh | bash
+curl -L https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/run.sh | bash
 ```
 
-For more detailed installation, see [Installation](https://data-handler.tislib.net/docs/installation)
+For more detailed installation, see [Installation](https://apibrew.tislib.net/docs/installation)
 
 ### Let's create a resource
 
@@ -133,12 +133,12 @@ curl -X POST --location "http://localhost:9009/country" \
 curl "http://localhost:9009/country" -H "Authorization: <token>"
 ```
 
-# [Docs](https://data-handler.tislib.net)
+# [Docs](https://apibrew.tislib.net)
 
-- [Tutorials](https://data-handler.tislib.net/docs/tutorials/index) - Tutorials
-- [Installation](https://data-handler.tislib.net/docs/installation) - Installation
-- [General](https://data-handler.tislib.net/docs/general) - General information about Data Handler
-- [API](https://data-handler.tislib.net/docs/api) - GRPC and Rest API documentation
-- [CLI](https://data-handler.tislib.net/docs/dhctl) - CLI interface(dhctl) documentation
-- [Proto](https://data-handler.tislib.net/docs/proto) - Proto documentation
-- [SDK](https://data-handler.tislib.net/docs/sdk) - SDK documentation
+- [Tutorials](https://apibrew.tislib.net/docs/tutorials/index) - Tutorials
+- [Installation](https://apibrew.tislib.net/docs/installation) - Installation
+- [General](https://apibrew.tislib.net/docs/general) - General information about API Brew
+- [API](https://apibrew.tislib.net/docs/api) - GRPC and Rest API documentation
+- [CLI](https://apibrew.tislib.net/docs/dhctl) - CLI interface(dhctl) documentation
+- [Proto](https://apibrew.tislib.net/docs/proto) - Proto documentation
+- [SDK](https://apibrew.tislib.net/docs/sdk) - SDK documentation

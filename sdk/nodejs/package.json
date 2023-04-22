@@ -1,7 +1,7 @@
 {
-  "name": "data-handler-client",
+  "name": "apibrew-client",
   "version": "1.0.12",
-  "description": "Client library for data handler client",
+  "description": "Client library for API Brew client",
   "scripts": {
     "prepublish": "tsc"
   },

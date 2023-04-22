@@ -3,7 +3,7 @@ package logging
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/abs"
+	"github.com/tislib/apibrew/pkg/abs"
 )
 
 func WithLogFields(ctx context.Context, fields log.Fields) context.Context {

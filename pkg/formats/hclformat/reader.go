@@ -1,7 +1,7 @@
 package hclformat
 
 import (
-	"github.com/tislib/data-handler/pkg/formats"
+	"github.com/tislib/apibrew/pkg/formats"
 	"io"
 )
 

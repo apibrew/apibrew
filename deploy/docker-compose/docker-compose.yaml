@@ -17,8 +17,8 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 5432:5432
-  data-handler:
-    image: tislib/data-handler:latest
+  apibrew:
+    image: tislib/apibrew:latest
     restart: always
     volumes:
       - ./config.json:/app/config.json

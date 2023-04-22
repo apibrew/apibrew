@@ -19,20 +19,20 @@ headingLevel: 2
 
 <!-- Generator: Widdershins v4.0.1 -->
 
-<h1 id="data-handler">Data Handler v1.0</h1>
+<h1 id="apibrew">API Brew v1.0</h1>
 
 > Scroll down for code samples, example requests and responses. Select a language for code samples from the tabs above or the mobile navigation menu.
 
-OpenApi 3.0 definition for Data Handler Rest API
+OpenApi 3.0 definition for API Brew Rest API
 
-Email: <a href="mailto:talehsmail@gmail.com">Taleh Ibrahimli</a> Web: <a href="https://github.com/tislib/data-handler">Taleh Ibrahimli</a> 
+Email: <a href="mailto:talehsmail@gmail.com">Taleh Ibrahimli</a> Web: <a href="https://github.com/tislib/apibrew">Taleh Ibrahimli</a> 
 License: <a href="https://github.com/google/gnostic/blob/master/LICENSE">Apache License</a>
 
 # Authentication
 
 - HTTP Authentication, scheme: bearer 
 
-<h1 id="data-handler-authentication">Authentication</h1>
+<h1 id="apibrew-authentication">Authentication</h1>
 
 Authentication Service is for authentication related operations
 
@@ -446,7 +446,7 @@ To perform this operation, you must be authenticated by means of one of the foll
 bearerAuth
 </aside>
 
-<h1 id="data-handler-datasource">DataSource</h1>
+<h1 id="apibrew-datasource">DataSource</h1>
 
 DataSource Service is for managing data sources
 
@@ -2420,7 +2420,7 @@ To perform this operation, you must be authenticated by means of one of the foll
 bearerAuth
 </aside>
 
-<h1 id="data-handler-extension">Extension</h1>
+<h1 id="apibrew-extension">Extension</h1>
 
 Extension Service is for managing extensions
 
@@ -5009,7 +5009,7 @@ To perform this operation, you must be authenticated by means of one of the foll
 bearerAuth
 </aside>
 
-<h1 id="data-handler-namespace">Namespace</h1>
+<h1 id="apibrew-namespace">Namespace</h1>
 
 Namespace Service is for managing namespaces
 
@@ -6247,7 +6247,7 @@ To perform this operation, you must be authenticated by means of one of the foll
 bearerAuth
 </aside>
 
-<h1 id="data-handler-record">Record</h1>
+<h1 id="apibrew-record">Record</h1>
 
 Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
 
@@ -8973,7 +8973,7 @@ To perform this operation, you must be authenticated by means of one of the foll
 bearerAuth
 </aside>
 
-<h1 id="data-handler-resource">Resource</h1>
+<h1 id="apibrew-resource">Resource</h1>
 
 Resource service is for managing resources
 
@@ -11801,7 +11801,7 @@ To perform this operation, you must be authenticated by means of one of the foll
 bearerAuth
 </aside>
 
-<h1 id="data-handler-user">User</h1>
+<h1 id="apibrew-user">User</h1>
 
 User service is for managing users
 
@@ -12909,7 +12909,7 @@ To perform this operation, you must be authenticated by means of one of the foll
 bearerAuth
 </aside>
 
-<h1 id="data-handler-watch">Watch</h1>
+<h1 id="apibrew-watch">Watch</h1>
 
 Watch service watching operations on records
 

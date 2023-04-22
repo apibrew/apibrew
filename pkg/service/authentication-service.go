@@ -6,13 +6,13 @@ import (
 	"crypto/rsa"
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/abs"
-	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/logging"
-	"github.com/tislib/data-handler/pkg/model"
-	"github.com/tislib/data-handler/pkg/resources"
-	"github.com/tislib/data-handler/pkg/resources/mapping"
-	"github.com/tislib/data-handler/pkg/service/security"
+	"github.com/tislib/apibrew/pkg/abs"
+	"github.com/tislib/apibrew/pkg/errors"
+	"github.com/tislib/apibrew/pkg/logging"
+	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/resources"
+	"github.com/tislib/apibrew/pkg/resources/mapping"
+	"github.com/tislib/apibrew/pkg/service/security"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
 	"time"
@@ -48,7 +48,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 			SecurityContext: user.SecurityContext,
 		},
 		ExpiresAt: expiration,
-		Issuer:    "github.com/tislib/data-handler",
+		Issuer:    "github.com/tislib/apibrew",
 	})
 
 	logger.Tracef("Token prepared: %s", token)
@@ -88,7 +88,7 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 			SecurityContext: user.SecurityContext,
 		},
 		ExpiresAt: expiration,
-		Issuer:    "github.com/tislib/data-handler",
+		Issuer:    "github.com/tislib/apibrew",
 	})
 
 	if err != nil {

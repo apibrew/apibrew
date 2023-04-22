@@ -3,8 +3,8 @@ package common
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/data-handler/pkg/errors"
-	"github.com/tislib/data-handler/pkg/logging"
+	"github.com/tislib/apibrew/pkg/errors"
+	"github.com/tislib/apibrew/pkg/logging"
 )
 
 func (p *sqlBackend) DestroyDataSource(ctx context.Context) {

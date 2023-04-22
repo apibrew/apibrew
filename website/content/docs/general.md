@@ -6,7 +6,7 @@ nav_order: 2
 
 # Table of contents
 
-* Core elements - Inside Data Handler there are 6 main elements
+* Core elements - Inside API Brew there are 6 main elements
     * [Resource](#resource)
     * [Record](#record)
     * [Data Source](#data-source)
@@ -33,14 +33,14 @@ Depending on data source backend, it can store and manage data differently.
 
 But for all data sources and for different backends (sql, mongo, redis, etc.). Everything is working as same.
 **It means that, if you use postgresql and moved your resources from postgresql to mongodb everything will work as is.
-**. It is internal logic of data-handler how it is handling operation on which backend. At high level, end user expects
+**. It is internal logic of apibrew how it is handling operation on which backend. At high level, end user expects
 that all data source backends are the same.
 
-See [definition](proto.md#resource), [resource.proto](https://github.com/tislib/data-handler/blob/master/proto/model/resource.proto)
+See [definition](proto.md#resource), [resource.proto](https://github.com/tislib/apibrew/blob/master/proto/model/resource.proto)
 
 ### Special properties
 
-When new resource is created or updated, *data-handler* appends some special properties to the resource.
+When new resource is created or updated, *apibrew* appends some special properties to the resource.
 These are:
 
 * id - id field is primary key and record identifier. id special property will be added if resource does not any primary
@@ -125,7 +125,7 @@ collection, Record is an item, etc.
 
 ### Record definition
 
-Proto file: [resource.proto](https://github.com/tislib/data-handler/blob/master/proto/model/record.proto)
+Proto file: [resource.proto](https://github.com/tislib/apibrew/blob/master/proto/model/record.proto)
 
 Record has the following properties:
 
@@ -175,7 +175,7 @@ Data source is also an abstraction point for various databases.
 
 ### Data source definition
 
-Proto file: [resource.proto](https://github.com/tislib/data-handler/blob/master/proto/model/data-source.proto)
+Proto file: [resource.proto](https://github.com/tislib/apibrew/blob/master/proto/model/data-source.proto)
 
 ## Namespace
 
@@ -203,7 +203,7 @@ User is for authentication purposes.
 
 ### Overview
 
-Extensions is one of the main features of Data Handler. Extensions is for extending capabilities of Data handler.
+Extensions is one of the main features of API Brew. Extensions is for extending capabilities of Data handler.
 So you can define custom resources and you can define how it will work.
 
 Extensions can be developed technically in any language which supports grpc protocol. But currently we have built in
@@ -225,7 +225,7 @@ Inside request, you will get followings
 
 Depending on which action is executed, we will have different payload.
 For reference, you can take a look
-to [record service proto definition](https://github.com/tislib/data-handler/blob/master/proto/stub/record.proto)
+to [record service proto definition](https://github.com/tislib/apibrew/blob/master/proto/stub/record.proto)
 
 For Http call you will have similar structure but in json format
 
@@ -330,7 +330,7 @@ Security context can be attached to following levels:
 
 ## Security Context definition
 
-Proto file: [security.proto](https://github.com/tislib/data-handler/blob/master/proto/model/security.proto)
+Proto file: [security.proto](https://github.com/tislib/apibrew/blob/master/proto/model/security.proto)
 SecurityContext has the following properties:
 
 * **namespace** - namespace name where it will be applied

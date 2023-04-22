@@ -3,14 +3,14 @@ SDK
 
 Introduction
 
-Data handler SDK is a library that provides a set of functions to interact with the data handler.
+Data handler SDK is a library that provides a set of functions to interact with the API Brew.
 
 Javascript SDK
 
 # Prerequisites
 
 ```bash
-npm install data-handler-client
+npm install apibrew-client
 npm install typescript --save-dev
 ```
 
@@ -57,12 +57,12 @@ export interface Country extends Entity {
 }
 ```
 
-Now, we can use our generated typescript schema to interact with the data handler
+Now, we can use our generated typescript schema to interact with the API Brew
 
 let's setup our client and repository
 
 ```typescript
-import {DataHandlerClient} from 'data-handler-client';
+import {DataHandlerClient} from 'apibrew-client';
 import {Country} from './schema';
 
 async function run() {
@@ -128,7 +128,7 @@ We will get following response
 
 # Tutorials
 
-- [Store app](https://github.com/tislib/data-handler/tree/master/examples/store-app/Readme.md)
+- [Store app](https://github.com/tislib/apibrew/tree/master/examples/store-app/Readme.md)
 
 
 
