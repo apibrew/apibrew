@@ -1,4 +1,4 @@
-API Brew ![](website/content/static/logo-small.svg)
+![](website/static/logo/logo-small.svg)    -    https://apibrew.io
 ======================
 [![build](https://github.com/tislib/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tislib/apibrew/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/tislib/apibrew)](https://goreportcard.com/report/github.com/tislib/apibrew)
