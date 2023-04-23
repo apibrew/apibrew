@@ -50,5 +50,9 @@ order by table_schema
 		})
 	}
 
+	if catalog != nil && catalog.Entities != nil {
+		result = append(result, catalog)
+	}
+
 	return
 }

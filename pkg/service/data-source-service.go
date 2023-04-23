@@ -102,7 +102,7 @@ func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.Dat
 	}
 
 	for _, item := range dataSources {
-		_ = d.backendProviderService.DestroyBackend(ctx, item.Id) //@fixme
+		_ = d.backendProviderService.DestroyBackend(ctx, item.Id)
 	}
 
 	return mapping2.MapFromRecord(result, mapping2.DataSourceFromRecord), nil
