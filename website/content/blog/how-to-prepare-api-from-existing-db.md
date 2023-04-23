@@ -3,11 +3,11 @@ title: How to prepare API from existing DB in 5 mins?
 date: 2023-04-23
 ---
 
-# Introduction
+## Introduction
 
 With help of API Brew, you can build API from your existing DB. In this article, we will show you how to do it.
 
-# Prerequisites
+## Prerequisites
 
 * API Brew server is running and accessible
 * dhctl is installed
@@ -15,7 +15,7 @@ With help of API Brew, you can build API from your existing DB. In this article,
 
 For installing API Brew server, please refer to [Installation](/docs/installation#easy-install)
 
-# Connect API Brew to your exising DB
+## Connect API Brew to your exising DB
 
 We need to prepare new Data Source for our DB. For this, we will use dhctl.
 
@@ -44,6 +44,8 @@ INFO[0000] DataSource name: mydb
 INFO[0000] ConnectionAlreadyInitiated: false            
 INFO[0000] TestConnection: true                         
 ```
+
+## Prepare API from DB
 
 Let's assume that, we have author table in DB, and we want to expose it as API.
 For testing purposes you can execute this query on DB to have author table
@@ -118,6 +120,8 @@ Now, let's apply our resources
 dhctl apply -f schema.yml -m=false
 ```
 
+## Test API
+
 So, Bingo! We have our API ready. You can check it by visiting Swagger UI
 
 You can use following url to see swagger UI http://localhost:9009/docs/index.html
@@ -141,3 +145,6 @@ curl -X 'GET' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer <token>'
 ```
+
+## Conclusion
+With help of API Brew, you can build API from your existing DB. In this article, we have shown you how to do it.
