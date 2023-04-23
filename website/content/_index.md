@@ -8,7 +8,7 @@ menu: { main: { weight: 10 } }
 
 [//]: # (<img style="width:150px;display: block; margin:0 auto; margin-top:-100px" src="/logo/logo.svg"/>)
 
-<video autoplay="autoplay" muted playsinline id="myVideo" controls loop style="width:1000px; ">
+<video autoplay="autoplay" muted playsinline id="myVideo" controls loop style="width:80%; ">
   <source src="http://static.tisserv.net/apibrew_demo_recording_1_compress.mov" type="video/mp4">
 </video>
 
