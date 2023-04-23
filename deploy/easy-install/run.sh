@@ -36,7 +36,7 @@ else
 fi
 
 echo "Downloading ${PLATFORM} binary"
-curl -L -o "dhctl${SUFFIX}" "https://github.com/tislib/apibrew/releases/download/v1.1.8/dhctl-${PLATFORM}${SUFFIX}"
+curl -L -o "dhctl${SUFFIX}" "https://github.com/tislib/apibrew/releases/download/v1.1.10/dhctl-${PLATFORM}${SUFFIX}"
 
 chmod +x dhctl
 sudo mv dhctl /usr/local/bin/dhctl
