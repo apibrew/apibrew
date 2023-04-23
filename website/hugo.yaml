@@ -22,7 +22,7 @@ imaging:
 menu:
   main:
     - name: Repository
-      weight: 40
+      weight: 55
       url: https://github.com/tislib/apibrew
       post: <sup><i class="ps-1 fa-solid fa-up-right-from-square fa-xs" aria-hidden="true"></i></sup>
 

@@ -20,6 +20,7 @@ import (
 type backendProviderService struct {
 	systemDataSource *model.DataSource
 	backendMap       map[string]abs.Backend
+	backendIdMap     map[string]string
 }
 
 func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) error {
@@ -31,7 +32,9 @@ func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceI
 
 	bck.DestroyDataSource(ctx)
 
+	delete(b.backendMap, b.backendIdMap[dataSourceId])
 	delete(b.backendMap, dataSourceId)
+	delete(b.backendIdMap, dataSourceId)
 
 	return nil
 }
@@ -112,6 +115,7 @@ func (b *backendProviderService) GetBackend(dataSource *model.DataSource) abs.Ba
 	instance := constructor(dataSource)
 
 	b.backendMap[dataSource.Id] = instance
+	b.backendIdMap[dataSource.Id] = dataSource.Name
 	b.backendMap[dataSource.Name] = instance
 
 	return instance
@@ -140,6 +144,7 @@ func (b *backendProviderService) Init(data *model.InitData) {
 
 func NewBackendProviderService() abs.BackendProviderService {
 	return &backendProviderService{
-		backendMap: make(map[string]abs.Backend),
+		backendMap:   make(map[string]abs.Backend),
+		backendIdMap: make(map[string]string),
 	}
 }
