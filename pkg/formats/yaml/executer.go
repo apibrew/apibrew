@@ -43,16 +43,33 @@ func (e *executor) Restore(ctx context.Context) error {
 
 		body = convert(body).(map[string]interface{})
 
-		switch body["type"].(string) {
+		var elemType string
+		var namespace string
+		var resourceName string
+		var ok bool
+
+		if elemType, ok = body["type"].(string); !ok {
+			return errors.New("type field is required on record yaml definition")
+		}
+
+		if namespace, ok = body["namespace"].(string); !ok {
+			namespace = "default"
+		}
+
+		resourceName, _ = body["resource"].(string)
+
+		delete(body, "type")
+		delete(body, "resource")
+		delete(body, "namespace")
+
+		jsonData, err := json.Marshal(body)
+
+		if err != nil {
+			return err
+		}
+
+		switch elemType {
 		case "resource":
-			delete(body, "type")
-
-			jsonData, err := json.Marshal(body)
-
-			if err != nil {
-				return err
-			}
-
 			var resource = new(model.Resource)
 			err = jsonUMo.Unmarshal(jsonData, resource)
 
@@ -67,15 +84,7 @@ func (e *executor) Restore(ctx context.Context) error {
 				return err
 			}
 		case "record":
-			var namespace string
-			var resourceName string
-			var ok bool
-
-			if namespace, ok = body["namespace"].(string); !ok {
-				namespace = "default"
-			}
-
-			if resourceName, ok = body["resource"].(string); !ok {
+			if resourceName == "" {
 				return errors.New("resource field is required on record yaml definition")
 			}
 
@@ -85,17 +94,7 @@ func (e *executor) Restore(ctx context.Context) error {
 				return errors.New("Resource not found: " + namespace + "/" + resourceName)
 			}
 
-			delete(body, "type")
-			delete(body, "resource")
-			delete(body, "namespace")
-
 			// locating resource
-
-			jsonData, err := json.Marshal(body)
-
-			if err != nil {
-				return err
-			}
 
 			var record = new(model.Record)
 			err = jsonUMo.Unmarshal(jsonData, record)
@@ -109,6 +108,64 @@ func (e *executor) Restore(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
+		case "datasource", "data-source", "dataSource":
+			var dataSource = new(model.DataSource)
+
+			err = jsonUMo.Unmarshal(jsonData, dataSource)
+
+			if err != nil {
+				return err
+			}
+
+			err = e.params.DhClient.Apply(ctx, dataSource)
+
+			if err != nil {
+				return err
+			}
+		case "namespace":
+			var dataSource = new(model.Namespace)
+
+			err = jsonUMo.Unmarshal(jsonData, dataSource)
+
+			if err != nil {
+				return err
+			}
+
+			err = e.params.DhClient.Apply(ctx, dataSource)
+
+			if err != nil {
+				return err
+			}
+		case "extension":
+			var dataSource = new(model.Extension)
+
+			err = jsonUMo.Unmarshal(jsonData, dataSource)
+
+			if err != nil {
+				return err
+			}
+
+			err = e.params.DhClient.Apply(ctx, dataSource)
+
+			if err != nil {
+				return err
+			}
+		case "user":
+			var dataSource = new(model.User)
+
+			err = jsonUMo.Unmarshal(jsonData, dataSource)
+
+			if err != nil {
+				return err
+			}
+
+			err = e.params.DhClient.Apply(ctx, dataSource)
+
+			if err != nil {
+				return err
+			}
+		default:
+			return errors.New("unknown type: " + elemType)
 		}
 	}
 
