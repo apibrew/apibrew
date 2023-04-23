@@ -136,7 +136,7 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 			Annotations: make(map[string]string),
 		}
 
-		if *isReferenced {
+		if *isReferenced && targetTable != nil && targetColumn != nil {
 			property.Type = model.ResourceProperty_REFERENCE
 			property.Reference = &model.Reference{
 				ReferencedResource: fmt.Sprintf("[%s]", **targetTable),

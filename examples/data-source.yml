@@ -6,4 +6,4 @@ postgresqlParams:
   port: 5432
   dbName: dh_db_2
   username: root
-  password: root12
+  password: root

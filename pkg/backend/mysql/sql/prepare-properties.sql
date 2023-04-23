@@ -13,8 +13,8 @@ from information_schema.columns
                                                           key_column_usage.table_schema = columns.table_schema and
                                                           key_column_usage.column_name = columns.column_name
          left join information_schema.TABLE_CONSTRAINTS
-                   on TABLE_CONSTRAINTS.TABLE_SCHEMA = COLUMNS.TABLE_SCHEMA and
-                      TABLE_CONSTRAINTS.TABLE_NAME = COLUMNS.TABLE_NAME
+                   on TABLE_CONSTRAINTS.TABLE_SCHEMA = columns.TABLE_SCHEMA and
+                      TABLE_CONSTRAINTS.TABLE_NAME = columns.TABLE_NAME
 where columns.table_schema = ?
   and columns.table_name = ?
 order by columns.ordinal_position;
