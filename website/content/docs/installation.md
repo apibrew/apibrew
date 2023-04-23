@@ -1,5 +1,7 @@
-Installation
-========
+---
+title: Installation
+# Content below, if any, will be added to the community page.
+---
 
 ## Easy install 
 ```bash
