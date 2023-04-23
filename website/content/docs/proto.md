@@ -1,3 +1,8 @@
+---
+title: Proto Documentation
+# Content below, if any, will be added to the community page.
+---
+
 # Protocol Documentation
 <a name="top"></a>
 
