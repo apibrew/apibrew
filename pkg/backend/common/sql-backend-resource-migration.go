@@ -46,7 +46,6 @@ func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runn
 	resource = new(model.Resource)
 	resource.Annotations = make(map[string]string)
 	annotations.Enable(resource, annotations.AutoCreated)
-	resource.AuditData = new(model.AuditData)
 	resource.Name = strings.Replace(entity, ".", "_", -1)
 
 	if catalog != p.options.GetDefaultCatalog() && catalog != "" {
