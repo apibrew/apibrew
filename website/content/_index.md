@@ -4,7 +4,14 @@ linkTitle: About
 menu: { main: { weight: 10 } }
 ---
 
-{{% blocks/cover title="About API Brew" height="auto" %}}
+{{% blocks/cover height="auto" %}}
+
+[//]: # (<img style="width:150px;display: block; margin:0 auto; margin-top:-100px" src="/logo/logo.svg"/>)
+
+<video autoplay="autoplay" muted playsinline id="myVideo" controls loop style="width:1000px; ">
+  <source src="http://static.tisserv.net/apibrew_demo_recording_1_compress.mov" type="video/mp4">
+</video>
+
 
 Apibrew is an open-source tool that allows you to quickly and easily create CRUD APIs for your data. With Apibrew, you
 define your schema in a declarative way, and the tool generates the corresponding APIs for you, minimizing the amount of
@@ -18,50 +25,32 @@ Apibrew supports multiple databases, so you can define multiple databases and pe
 
 {{% blocks/section color="white" %}}
 
-## Quick Example
+## Features
 
-country.yml
-```yaml
-type: resource
-name: country
-properties:
-  - name: name # name of the property
-    type: STRING # type of the property
-    length: 255
-    required: true
-    unique: true
-  - name: description # name of the property
-    type: STRING # type of the property
-    length: 255
-```
+* ***Declarative*** - *API Brew* is declarative. You can define your schema in a declarative way, it will create your APIs
+* ***Low Code*** - With API Brew, you can create APIs for your data without coding. But you can also extend your APIs with
+  extensions, so you can customize behavior of your Resources/Apis
+* ***Rest API*** - As you create resources, Rest Apis for them is made automatically
+* ***Grpc*** - As you create resources, Grpc Apis for them is made automatically
+* ***Database agnostic*** - API Brew is using Postgresql database by default, but it also supports various databases. Including Mongo, Mysql, Redis, etc.
+* ***CRUD*** - Crud is on the heart of API Brew.
+* ***Swagger*** - Swagger docs are generated automatically
+* ***Authentication*** - API Brew supports various authentication methods. Including JWT authentication etc.
+* ***Authorization*** - API Brew supports authorization. You can define permissions for your resources
+* ***Multi Database*** - You can define multiple databases and do operations on top of them
+* ***Scalable*** - API Brew is scalable. You can run it on multiple instances, and it will work as expected, as API Brew does not have any data internally, you can scale it.
+* ***Extensible*** - API Brew is extensible. You can extend your resources with extensions. You can also extend your APIs with extensions
+* ***CLI support*** - API Brew has a cli tool to manage your resources, dataSources, etc. It is called `dhctl`
+* ***Docker*** - API Brew is dockerized. You can run it on docker
+* ***Docker Compose*** - API Brew is docker-compose ready. You can run it on docker-compose, see [docker-compose](deploy/docker-compose)
+* ***Kubernetes*** - API Brew is kubernetes ready. You can run it on kubernetes, see [kubernetes](deploy/kubernetes)
 
-```bash
-dhctl apply -f country.yml
-```
-So you are ready, you have fully established Rest API for country resource
+## Use Cases
 
-```javascript
-axios.post('http://localhost:9009/country', {
-  name: 'Country1',
-  description: 'Sample Country 1'
-})
-```
-
-You can build entire application with resources and references between them (like relations in relational databases)
-
-Everything can be written by resources, not?
-**Let's extend our country resource**
-
-```javascript
-countryExtension.onCreate(async (country) => {
-        country.description = country.description + ' - Extended'
-
-        return country
-    })
-```
-So we have extended our country resource with modification description on create
-
-So, with **API Brew**, you can create your application with resources and you can customize behavior of your resources with extensions
+* Creating backend for your mobile application or website
+* Creating backend for your existing database
+* Managing your data in a CRUD fashion
+* Creating Standardized, well documented APIs for your data
 
 
 {{% /blocks/section %}}
