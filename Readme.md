@@ -30,7 +30,7 @@ properties:
 ```
 
 ```bash
-dhctl apply -f country.yml
+apbr apply -f country.yml
 ```
 So you are ready, you have fully established Rest API for country resource
 
@@ -75,7 +75,7 @@ API Brew is a **Low Code software** that allows to create various Grpc and Rest 
 * ***Multi Database*** - You can define multiple databases and do operations on top of them
 * ***Scalable*** - API Brew is scalable. You can run it on multiple instances, and it will work as expected, as API Brew does not have any data internally, you can scale it.
 * ***Extensible*** - API Brew is extensible. You can extend your resources with extensions. You can also extend your APIs with extensions
-* ***CLI support*** - API Brew has a cli tool to manage your resources, dataSources, etc. It is called `dhctl`
+* ***CLI support*** - API Brew has a cli tool to manage your resources, dataSources, etc. It is called `apbr`
 * ***Docker*** - API Brew is dockerized. You can run it on docker
 * ***Docker Compose*** - API Brew is docker-compose ready. You can run it on docker-compose, see [docker-compose](deploy/docker-compose)
 * ***Kubernetes*** - API Brew is kubernetes ready. You can run it on kubernetes, see [kubernetes](deploy/kubernetes)
@@ -117,7 +117,7 @@ properties:
 ```
 
 ```
-dhctl apply -f country.yml
+apbr apply -f country.yml
 ```
 
 Swagger: http://localhost:9009/docs/index.html
@@ -141,6 +141,6 @@ curl "http://localhost:9009/country" -H "Authorization: <token>"
 - [Installation](https://apibrew.io/docs/installation) - Installation
 - [General](https://apibrew.io/docs/general) - General information about API Brew
 - [API](https://apibrew.io/docs/api) - GRPC and Rest API documentation
-- [CLI](https://apibrew.io/docs/dhctl) - CLI interface(dhctl) documentation
+- [CLI](https://apibrew.io/docs/apbr) - CLI interface(apbr) documentation
 - [Proto](https://apibrew.io/docs/proto) - Proto documentation
 - [SDK](https://apibrew.io/docs/sdk) - SDK documentation

@@ -35,7 +35,7 @@ properties:
 Let's apply our resources
 
 ```bash
-dhctl apply -f country.yml
+apbr apply -f country.yml
 ```
 
 Swagger: http://localhost:9009/docs/index.html
@@ -43,7 +43,7 @@ Swagger: http://localhost:9009/docs/index.html
 Now, we can generate our typescript schema
 
 ```bash
-dhctl generate -p=src --platform=nodejs
+apbr generate -p=src --platform=nodejs
 ```
 
 It will generate following code for you
