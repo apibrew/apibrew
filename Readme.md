@@ -10,6 +10,18 @@
 
 Demo http://tisserv.net:9009/    (swagger docs: http://tisserv.net:9009/docs)
 
+For using demo, you need to use following config on ~/.dhctl/config
+```yaml
+type: server
+servers:
+  - name: local
+    host: tisserv.net:9009
+    authentication:
+      username: admin
+      password: admin
+defaultServer: local
+```
+
 
 ## Introduction
 **Everything is a *Resource***. And **Everything has a *CRUD API***
