@@ -134,3 +134,5 @@ var ResourceResource = &model.Resource{
 		annotations.EnableAudit: "true",
 	},
 }
+
+var ResourceResourceNew = ProtoDescriptorToResource(new(model.Resource).ProtoReflect())

@@ -19,6 +19,7 @@ package model;
 option go_package = "github.com/tislib/apibrew/pkg/model";
 
 import "google/protobuf/descriptor.proto";
+import "model/resource.proto";
 
 // This option lets the proto compiler generate Java code inside the package
 // name (see below) instead of inside an outer class. It creates a simpler
@@ -46,4 +47,5 @@ extend google.protobuf.FieldOptions {
   string hcl_block = 1144;
   string hcl_label = 1145;
   bool hcl_ignore = 1146;
+  ResourceProperty.Type property_type = 1147;
 }

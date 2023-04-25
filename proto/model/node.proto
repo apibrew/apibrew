@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/tislib/apibrew/pkg/model";
+
+import 'model/audit.proto';
+import 'model/common.proto';
+import 'model/annotations.proto';
+
+message Node {
+  string id = 1 [(model.hcl_ignore) = true]; // id; read only
+  string name = 2;
+  string title = 3;
+  string description = 4;
+  string url = 5;
+  string authenticationToken = 6;
+}

@@ -18,6 +18,7 @@ import "google/protobuf/descriptor.proto";
   API Brew is responsible to validate data according to property types. For example, when you call create record and
   if you send 123.45 for int64
  */
+
 message ResourceProperty {
   enum Type {
     BOOL = 0;
@@ -109,7 +110,7 @@ message ResourceIndex {
 }
 
 message Resource {
-  string id = 1 [(model.hcl_ignore) = true];  // unique resource id; read only
+  string id = 1 [(model.hcl_ignore) = true, (property_type) = UUID];  // unique resource id; read only
   string name = 2 [(model.hcl_label) = "name"]; // unique resource name, it is unique per namespace
   string namespace = 3; // each resource is kept inside a namespace. One namespace can have multiple resources
   ResourceSourceConfig sourceConfig = 5 [(model.hcl_block) = "sourceConfig"]; //
