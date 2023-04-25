@@ -49,7 +49,7 @@ func ExtensionToRecord(extension *model.Extension) *model.Record {
 		}})
 	}
 
-	mapSpecialColumnsToRecord(extension, &properties)
+	MapSpecialColumnsToRecord(extension, &properties)
 
 	return &model.Record{
 		Id:         extension.Id,
@@ -156,7 +156,7 @@ func ExtensionFromRecord(record *model.Record) *model.Extension {
 		}
 	}
 
-	mapSpecialColumnsFromRecord(result, &record.Properties)
+	MapSpecialColumnsFromRecord(result, &record.Properties)
 
 	return result
 }

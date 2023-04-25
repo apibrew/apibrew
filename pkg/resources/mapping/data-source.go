@@ -41,7 +41,7 @@ func DataSourceToRecord(dataSource *model.DataSource) *model.Record {
 		properties["options_mongo_db_name"] = structpb.NewStringValue(options.MongoParams.DbName)
 	}
 
-	mapSpecialColumnsToRecord(dataSource, &properties)
+	MapSpecialColumnsToRecord(dataSource, &properties)
 
 	return &model.Record{
 		Id:         dataSource.Id,
@@ -116,7 +116,7 @@ func DataSourceFromRecord(record *model.Record) *model.DataSource {
 		result.Params = options
 	}
 
-	mapSpecialColumnsFromRecord(result, &record.Properties)
+	MapSpecialColumnsFromRecord(result, &record.Properties)
 
 	return result
 }

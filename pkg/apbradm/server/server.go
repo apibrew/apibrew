@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -63,7 +64,7 @@ func (s Server) Run() error {
 
 	reflection.Register(grpcServer)
 
-	stub.RegisterNodeServer(grpcServer, &node{container: app})
+	stub.RegisterNodeServer(grpcServer, &nodeService{container: app})
 	stub.RegisterAuthenticationServer(grpcServer, grpc2.NewAuthenticationServer(app.GetAuthenticationService()))
 
 	go func() {
@@ -75,5 +76,13 @@ func (s Server) Run() error {
 		log.Fatal(err)
 	}
 
+	s.PostRun(app)
+
 	return grpcServer.Serve(l)
+}
+
+func (s Server) PostRun(app *service.App) {
+	if err := app.GetResourceService().Apply(context.Background(), NodeResource, true, true); err != nil {
+		log.Fatalf("failed to apply node resource: %v", err)
+	}
 }

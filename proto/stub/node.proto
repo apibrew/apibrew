@@ -19,6 +19,24 @@ service Node {
   Status will return connection status of data source
    */
   rpc NodeStatus(NodeStatusRequest) returns (NodeStatusResponse) {}
+  rpc InstallNewNode(InstallNewNodeRequest) returns (InstallNewNodeResponse) {}
+  rpc UninstallNode(UninstallNodeRequest) returns (UninstallNodeResponse) {}
+}
+
+message InstallNewNodeRequest {
+  string token = 1;
+}
+
+message InstallNewNodeResponse {
+  model.Node node = 1;
+}
+
+message UninstallNodeRequest {
+  string token = 1;
+}
+
+message UninstallNodeResponse {
+  model.Node node = 1;
 }
 
 message NodeStatusRequest {

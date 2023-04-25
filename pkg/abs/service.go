@@ -61,6 +61,7 @@ type ResourceService interface {
 	GetSystemResourceByName(ctx context.Context, resourceName string) *model.Resource
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
 	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
+	Apply(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
 	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
 	List(ctx context.Context) []*model.Resource
 	ReloadSchema(ctx context.Context) errors.ServiceError

@@ -29,6 +29,8 @@ type NodeClient interface {
 	Get(ctx context.Context, in *GetNodeRequest, opts ...grpc.CallOption) (*GetNodeResponse, error)
 	// Status will return connection status of data source
 	NodeStatus(ctx context.Context, in *NodeStatusRequest, opts ...grpc.CallOption) (*NodeStatusResponse, error)
+	InstallNewNode(ctx context.Context, in *InstallNewNodeRequest, opts ...grpc.CallOption) (*InstallNewNodeResponse, error)
+	UninstallNode(ctx context.Context, in *UninstallNodeRequest, opts ...grpc.CallOption) (*UninstallNodeResponse, error)
 }
 
 type nodeClient struct {
@@ -93,6 +95,24 @@ func (c *nodeClient) NodeStatus(ctx context.Context, in *NodeStatusRequest, opts
 	return out, nil
 }
 
+func (c *nodeClient) InstallNewNode(ctx context.Context, in *InstallNewNodeRequest, opts ...grpc.CallOption) (*InstallNewNodeResponse, error) {
+	out := new(InstallNewNodeResponse)
+	err := c.cc.Invoke(ctx, "/cluster.Node/InstallNewNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *nodeClient) UninstallNode(ctx context.Context, in *UninstallNodeRequest, opts ...grpc.CallOption) (*UninstallNodeResponse, error) {
+	out := new(UninstallNodeResponse)
+	err := c.cc.Invoke(ctx, "/cluster.Node/UninstallNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NodeServer is the server API for Node service.
 // All implementations must embed UnimplementedNodeServer
 // for forward compatibility
@@ -104,6 +124,8 @@ type NodeServer interface {
 	Get(context.Context, *GetNodeRequest) (*GetNodeResponse, error)
 	// Status will return connection status of data source
 	NodeStatus(context.Context, *NodeStatusRequest) (*NodeStatusResponse, error)
+	InstallNewNode(context.Context, *InstallNewNodeRequest) (*InstallNewNodeResponse, error)
+	UninstallNode(context.Context, *UninstallNodeRequest) (*UninstallNodeResponse, error)
 	mustEmbedUnimplementedNodeServer()
 }
 
@@ -128,6 +150,12 @@ func (UnimplementedNodeServer) Get(context.Context, *GetNodeRequest) (*GetNodeRe
 }
 func (UnimplementedNodeServer) NodeStatus(context.Context, *NodeStatusRequest) (*NodeStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NodeStatus not implemented")
+}
+func (UnimplementedNodeServer) InstallNewNode(context.Context, *InstallNewNodeRequest) (*InstallNewNodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InstallNewNode not implemented")
+}
+func (UnimplementedNodeServer) UninstallNode(context.Context, *UninstallNodeRequest) (*UninstallNodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UninstallNode not implemented")
 }
 func (UnimplementedNodeServer) mustEmbedUnimplementedNodeServer() {}
 
@@ -250,6 +278,42 @@ func _Node_NodeStatus_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Node_InstallNewNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InstallNewNodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NodeServer).InstallNewNode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cluster.Node/InstallNewNode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NodeServer).InstallNewNode(ctx, req.(*InstallNewNodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Node_UninstallNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UninstallNodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NodeServer).UninstallNode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cluster.Node/UninstallNode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NodeServer).UninstallNode(ctx, req.(*UninstallNodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Node_ServiceDesc is the grpc.ServiceDesc for Node service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -280,6 +344,14 @@ var Node_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NodeStatus",
 			Handler:    _Node_NodeStatus_Handler,
+		},
+		{
+			MethodName: "InstallNewNode",
+			Handler:    _Node_InstallNewNode_Handler,
+		},
+		{
+			MethodName: "UninstallNode",
+			Handler:    _Node_UninstallNode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

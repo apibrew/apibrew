@@ -16,7 +16,7 @@ func UserToRecord(user *model.User) *model.Record {
 
 	properties["securityContext"] = SecurityContextToValue(user.SecurityContext)
 
-	mapSpecialColumnsToRecord(user, &properties)
+	MapSpecialColumnsToRecord(user, &properties)
 
 	return &model.Record{
 		Id:         user.Id,
@@ -47,7 +47,7 @@ func UserFromRecord(record *model.Record) *model.User {
 		user.Details = record.Properties["details"].GetStructValue()
 	}
 
-	mapSpecialColumnsFromRecord(user, &record.Properties)
+	MapSpecialColumnsFromRecord(user, &record.Properties)
 
 	return user
 }

@@ -137,6 +137,16 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 	return nil
 }
 
+func (r *resourceService) Apply(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
+	if r.GetResourceByName(ctx, resource.Namespace, resource.Name) == nil {
+		_, err := r.Create(ctx, resource, true, true)
+
+		return err
+	} else {
+		return r.Update(ctx, resource, true, true)
+	}
+}
+
 func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
 	r.mu.Lock()
 	defer func() {
