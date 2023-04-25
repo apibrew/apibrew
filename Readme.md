@@ -8,6 +8,8 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/tislib/apibrew)
 ![GitHub](https://img.shields.io/github/license/tislib/apibrew)
 
+Demo http://tisserv.net:9009/    (swagger docs: http://tisserv.net:9009/docs)
+
 
 ## Introduction
 **Everything is a *Resource***. And **Everything has a *CRUD API***
