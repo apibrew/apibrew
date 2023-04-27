@@ -2,6 +2,9 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Prerequisites
+cp public/config.default.js to public/config.js and adjust the values
+
 ## Available Scripts
 
 In the project directory, you can run:
