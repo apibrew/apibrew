@@ -29,3 +29,10 @@ services:
           condition: service_healthy
     links:
       - db
+  apibrew-ui:
+    image: tislib/apibrew-ui:latest
+    restart: always
+    volumes:
+      - ./config.js:/usr/share/nginx/html/config.js
+    ports:
+      - 9080:80
