@@ -5,6 +5,22 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Prerequisites
 cp public/config.default.js to public/config.js and adjust the values
 
+## Project Layout
+
+- pages
+-   page-1
+-     page-1.tsx
+-   page-2
+-     page-2.tsx
+- components
+-   component-1
+-     component-1.tsx
+-   component-2
+-     component-2.tsx
+- services
+-   service-1.ts
+-   service-2.ts
+
 ## Available Scripts
 
 In the project directory, you can run:
