@@ -1,8 +1,8 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Test } from './test/test'
+
 function App(): JSX.Element {
   return (
     <Router>
