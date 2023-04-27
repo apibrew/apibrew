@@ -18,20 +18,25 @@ services:
     ports:
       - 5432:5432
   apibrew:
-    image: tislib/apibrew:latest
     restart: always
+    build:
+      context: ../../
+      dockerfile: ../../Dockerfile
+      target: app
     volumes:
       - ./config.json:/app/config.json
     ports:
       - 9009:9009
     depends_on:
-        db:
-          condition: service_healthy
+      db:
+        condition: service_healthy
     links:
       - db
   apibrew-ui:
-    image: tislib/apibrew-ui:latest
     restart: always
+    build:
+      context: ../../ui/
+      dockerfile: ../../ui/Dockerfile
     volumes:
       - ./config.js:/usr/share/nginx/html/config.js
     ports:
