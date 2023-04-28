@@ -15,17 +15,22 @@ services:
     volumes:
       - ./db_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - 5432:5432
   apibrew:
-    image: tislib/apibrew:latest
     restart: always
+    image: tislib/apibrew:latest
     volumes:
       - ./config.json:/app/config.json
     ports:
       - 9009:9009
     depends_on:
-        db:
-          condition: service_healthy
+      db:
+        condition: service_healthy
     links:
       - db
+  apibrew-ui:
+    restart: always
+    image: tislib/apibrew-ui:latest
+    volumes:
+      - ./config.js:/usr/share/nginx/html/config.js
+    ports:
+      - 9080:80

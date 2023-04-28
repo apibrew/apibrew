@@ -133,8 +133,12 @@ func (s *server) configureRoutes() {
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
 		AllowCredentials: true,
 		AllowedOrigins:   []string{"*"},
-		AllowedHeaders:   []string{"Authorization"},
+		AllowedHeaders:   []string{"*"},
 	})
+
+	if log.GetLevel() >= log.DebugLevel {
+		c.Log = log.New()
+	}
 
 	m := runtime.NewServeMux()
 
@@ -172,7 +176,7 @@ func (s *server) configureRoutes() {
 
 	s.swaggerApi.ConfigureRouter(r)
 
-	s.handler = s.recordsApiFiltersMiddleWare.handler(c.Handler(r))
+	s.handler = c.Handler(s.recordsApiFiltersMiddleWare.handler(r))
 }
 
 func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
