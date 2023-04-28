@@ -37,14 +37,6 @@ export function Login(props: LoginProps): JSX.Element {
     return (
         <>
             <main style={{ width: '450px', height: '500px', margin: '100px auto', borderRadius: '50px', textAlign: 'center' }}>
-                <div className='box'>
-                    <div className='box1'></div>
-                    <div className='box2'></div>
-                    <div className='box3'></div>
-                    <div className='box4'></div>
-                    <div className='box5'></div>
-                    <div className='box6'></div>
-                </div>
                 <ThemeProvider theme={theme}>
                     <Container component="main" maxWidth="xs" style={{ borderRadius: '50px', height: '500px', width: '450px', background: 'none' }}>
                         <CssBaseline />
