@@ -5,13 +5,7 @@ export interface DashboardLayoutProps {
 }
 
 export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
-    return <>
-        <BaseLayout>
-            <>
-            Hello World {BACKEND_URL}
-                { props.children}
-            </>
-
-        </BaseLayout>
-    </>
+    return <BaseLayout>
+       {props.children}
+    </BaseLayout>
 }

@@ -4,13 +4,11 @@ import { DashboardLayout } from '../layout/dashboard-layout'
 
 export function Test(): JSX.Element {
     return (
-        <>
-            <DashboardLayout>
-                <>
+        <DashboardLayout>
+            <>
                 Hello World {BACKEND_URL}
-                </>
+            </>
 
-            </DashboardLayout>
-        </>
+        </DashboardLayout>
     )
 }
