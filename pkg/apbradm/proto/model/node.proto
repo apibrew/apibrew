@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package model;
 
-option go_package = "github.com/tislib/apibrew/pkg/model";
+option go_package = "github.com/tislib/apibrew/pkg/apbradm/model";
 
 import 'model/audit.proto';
-import 'model/common.proto';
+import 'model/deployment.proto';
 import 'model/annotations.proto';
 
 message Node {
@@ -15,6 +15,7 @@ message Node {
   string url = 5;
   string nodeKey = 6;
   string authenticationToken = 7;
+  model.DeploymentConfig deploymentConfig = 8;
 
   AuditData auditData = 101;
   uint32 version = 102;

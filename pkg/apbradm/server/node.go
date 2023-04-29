@@ -3,15 +3,14 @@ package server
 import (
 	"context"
 	"github.com/tislib/apibrew/pkg/abs"
+	. "github.com/tislib/apibrew/pkg/apbradm/stub"
 	"github.com/tislib/apibrew/pkg/resources/mapping"
 	"github.com/tislib/apibrew/pkg/service"
-	"github.com/tislib/apibrew/pkg/stub"
-	. "github.com/tislib/apibrew/pkg/stub"
 	"github.com/tislib/apibrew/pkg/util"
 )
 
 type nodeService struct {
-	stub.NodeServer
+	NodeServer
 	container *service.App
 }
 
@@ -23,7 +22,7 @@ func (n *nodeService) Create(ctx context.Context, req *CreateNodeRequest) (*Crea
 		IgnoreIfExists: false,
 	})
 
-	return &stub.CreateNodeResponse{
+	return &CreateNodeResponse{
 		Nodes: mapping.MapFromRecord(records, RecordToNode),
 	}, util.ToStatusError(err)
 }
@@ -35,7 +34,7 @@ func (n *nodeService) List(ctx context.Context, req *ListNodeRequest) (*ListNode
 		Limit:     10000,
 	})
 
-	return &stub.ListNodeResponse{
+	return &ListNodeResponse{
 		Content: mapping.MapFromRecord(records, RecordToNode),
 	}, util.ToStatusError(err)
 }
@@ -47,7 +46,7 @@ func (n *nodeService) Update(ctx context.Context, req *UpdateNodeRequest) (*Upda
 		Records:   mapping.MapToRecord(req.Nodes, NodeToRecord),
 	})
 
-	return &stub.UpdateNodeResponse{
+	return &UpdateNodeResponse{
 		Nodes: mapping.MapFromRecord(records, RecordToNode),
 	}, util.ToStatusError(err)
 
@@ -59,7 +58,7 @@ func (n *nodeService) Delete(ctx context.Context, req *DeleteNodeRequest) (*Dele
 		Ids:       req.Ids,
 	})
 
-	return &stub.DeleteNodeResponse{}, util.ToStatusError(err)
+	return &DeleteNodeResponse{}, util.ToStatusError(err)
 }
 
 func (n *nodeService) Get(ctx context.Context, req *GetNodeRequest) (*GetNodeResponse, error) {
@@ -69,14 +68,14 @@ func (n *nodeService) Get(ctx context.Context, req *GetNodeRequest) (*GetNodeRes
 		Id:        req.Id,
 	})
 
-	return &stub.GetNodeResponse{
+	return &GetNodeResponse{
 		Node: RecordToNode(record),
 	}, util.ToStatusError(err)
 }
 
 // Status will return connection status of data source
 func (n *nodeService) NodeStatus(ctx context.Context, req *NodeStatusRequest) (*NodeStatusResponse, error) {
-	return &stub.NodeStatusResponse{}, nil
+	return &NodeStatusResponse{}, nil
 }
 
 func (n *nodeService) InstallNewNode(context.Context, *InstallNewNodeRequest) (*InstallNewNodeResponse, error) {

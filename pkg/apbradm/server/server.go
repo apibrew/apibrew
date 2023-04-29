@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	stub2 "github.com/tislib/apibrew/pkg/apbradm/stub"
 	"github.com/tislib/apibrew/pkg/model"
 	grpc2 "github.com/tislib/apibrew/pkg/server/grpc"
 	"github.com/tislib/apibrew/pkg/service"
@@ -64,7 +65,7 @@ func (s Server) Run() error {
 
 	reflection.Register(grpcServer)
 
-	stub.RegisterNodeServer(grpcServer, &nodeService{container: app})
+	stub2.RegisterNodeServer(grpcServer, &nodeService{container: app})
 	stub.RegisterAuthenticationServer(grpcServer, grpc2.NewAuthenticationServer(app.GetAuthenticationService()))
 
 	go func() {

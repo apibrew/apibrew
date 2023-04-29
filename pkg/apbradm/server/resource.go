@@ -1,6 +1,7 @@
 package server
 
 import (
+	. "github.com/tislib/apibrew/pkg/apbradm/model"
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/resources"
 	"github.com/tislib/apibrew/pkg/resources/mapping"
@@ -62,7 +63,7 @@ var NodeResource = &model.Resource{
 	},
 }
 
-func NodeToRecord(node *model.Node) *model.Record {
+func NodeToRecord(node *Node) *model.Record {
 	if node.AuditData == nil {
 		node.AuditData = &model.AuditData{
 			CreatedBy: "system",
@@ -87,8 +88,8 @@ func NodeToRecord(node *model.Node) *model.Record {
 	return record
 }
 
-func RecordToNode(record *model.Record) *model.Node {
-	node := &model.Node{
+func RecordToNode(record *model.Record) *Node {
+	node := &Node{
 		Id:                  record.Id,
 		Name:                record.Properties["name"].GetStringValue(),
 		Description:         record.Properties["description"].GetStringValue(),

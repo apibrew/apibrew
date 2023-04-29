@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/tislib/apibrew/pkg/apbradm/model";
+
+import 'model/audit.proto';
+
+message DeploymentConfig {
+
+}
