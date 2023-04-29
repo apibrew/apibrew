@@ -1,23 +1,22 @@
 import * as React from 'react'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
-import CssBaseline from '@mui/material/CssBaseline'
 import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+
 import { useState } from 'react'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { authenticate } from '../../service/authentication'
+import { BaseLayout } from '../../layout/base-layout'
 
 // eslint-disable-next-line
 export interface LoginProps {
 }
 
 export function Login(props: LoginProps): JSX.Element {
-    const theme = createTheme()
     const [show, setShow] = useState('password')
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -35,11 +34,9 @@ export function Login(props: LoginProps): JSX.Element {
     }
 
     return (
-        <>
-            <main style={{ width: '450px', height: '500px', margin: '100px auto', borderRadius: '50px', textAlign: 'center' }}>
-                <ThemeProvider theme={theme}>
+        <BaseLayout>
+                <main style={{ width: '450px', height: '500px', margin: '100px auto', borderRadius: '50px', textAlign: 'center' }}>
                     <Container component="main" maxWidth="xs" style={{ borderRadius: '50px', height: '500px', width: '450px', background: 'none' }}>
-                        <CssBaseline />
                         <Box
                             sx={{
                                 marginTop: 2,
@@ -77,19 +74,19 @@ export function Login(props: LoginProps): JSX.Element {
 
                                     return false
                                 }}
-                                style={{
-                                    cursor: 'hand',
-                                    position: 'relative',
-                                    top: 60,
-                                    marginLeft: 350,
-                                    border: 0,
-                                    borderRadius: 38,
-                                    color: 'grey',
-                                    width: '40px',
-                                    height: '30px',
-                                    zIndex: 1000,
-                                    background: ' none'
-                                }}>
+                                    style={{
+                                        cursor: 'hand',
+                                        position: 'relative',
+                                        top: 60,
+                                        marginLeft: 350,
+                                        border: 0,
+                                        borderRadius: 38,
+                                        color: 'grey',
+                                        width: '40px',
+                                        height: '30px',
+                                        zIndex: 1000,
+                                        background: ' none'
+                                    }}>
                                     <VisibilityIcon />
                                 </button>
                                 <TextField
@@ -114,8 +111,7 @@ export function Login(props: LoginProps): JSX.Element {
                             </Box>
                         </Box>
                     </Container>
-                </ThemeProvider>
-            </main>
-        </>
+                </main>
+            </BaseLayout>
     )
 }
