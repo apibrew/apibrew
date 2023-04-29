@@ -16,39 +16,32 @@ message Extension {
   string namespace = 5;
   string resource = 6;
 
-  message After {
-    ExternalCall all = 1 [(model.hcl_block) = "all"];
-    ExternalCall create = 2 [(model.hcl_block) = "create"];
-    ExternalCall update = 3 [(model.hcl_block) = "update"];
-    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
-    ExternalCall get = 5 [(model.hcl_block) = "get"];
-    ExternalCall list = 6 [(model.hcl_block) = "list"];
-    bool sync = 7; // if true, it will wait
+  message Operation {
+    enum Step {
+      BEFORE = 0;
+      While = 1;
+      AFTER = 2;
+      ANY = 3;
+    }
+    enum Action {
+      CREATE = 0;
+      UPDATE = 1;
+      DELETE = 2;
+      GET = 3;
+      LIST = 4;
+      ALL = 5;
+    }
+
+    message Execution {
+      ExternalCall call = 1 [(model.hcl_block) = "call"];
+    }
+
+    Step step = 1 [(model.hcl_block) = "step"];
+    Action action = 2 [(model.hcl_block) = "action"];
+    Execution execution = 3 [(model.hcl_block) = "execution"];
   }
 
-  message Before {
-    ExternalCall all = 1 [(model.hcl_block) = "all"];
-    ExternalCall create = 2 [(model.hcl_block) = "create"];
-    ExternalCall update = 3 [(model.hcl_block) = "update"];
-    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
-    ExternalCall get = 5 [(model.hcl_block) = "get"];
-    ExternalCall list = 6 [(model.hcl_block) = "list"];
-    bool sync = 7; // if true, it will wait
-  }
-
-  message Instead {
-    ExternalCall all = 1 [(model.hcl_block) = "all"];
-    ExternalCall create = 2 [(model.hcl_block) = "create"];
-    ExternalCall update = 3 [(model.hcl_block) = "update"];
-    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
-    ExternalCall get = 5 [(model.hcl_block) = "get"];
-    ExternalCall list = 6 [(model.hcl_block) = "list"];
-    bool finalize = 7; // if true, it will respond with the result of the call, otherwise it will pass to backend
-  }
-
-  Before before = 7 [(model.hcl_block) = "before"];
-  Instead instead = 8 [(model.hcl_block) = "instead"];
-  After after = 9 [(model.hcl_block) = "after"];
+  repeated Operation operations = 7 [(model.hcl_block) = "operations"];
 
   AuditData auditData = 101;
   uint32 version = 102;
