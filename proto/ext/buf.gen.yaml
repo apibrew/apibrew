@@ -1,10 +1,10 @@
 version: v1
 plugins:
   - name: go
-    out: ../
+    out: ../../pkg/ext/
     opt:
       - paths=source_relative
   - name: go-grpc
-    out: ../
+    out: ../../pkg/ext/
     opt:
       - paths=source_relative

@@ -1,0 +1,5 @@
+name: buf.build/tislib/apibrew
+version: v1
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/gnostic/gnostic

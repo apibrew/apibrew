@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             (unknown)
-// source: ext/function.proto
+// source: function.proto
 
 package ext
 
@@ -101,5 +101,5 @@ var Function_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "ext/function.proto",
+	Metadata: "function.proto",
 }
