@@ -9,4 +9,5 @@ option go_package = "github.com/tislib/apibrew/pkg/model";
 message Script {
   string language = 1;
   string code = 2;
+  string file = 3;
 }

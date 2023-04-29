@@ -47,6 +47,12 @@ extension:
         language: nodejs
         code: |
           record.description = record.title + "test"
+  - step: BEFORE
+    action: CREATE_UPDATE
+    execution:
+      script:
+        language: nodejs
+        file: ./test.js
 ---
 type: record
 resource: country2
