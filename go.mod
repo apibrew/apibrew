@@ -27,7 +27,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/http-swagger v1.3.3
-	github.com/zclconf/go-cty v1.12.1
+	github.com/zclconf/go-cty v1.13.1
 	go.mongodb.org/mongo-driver v1.11.3
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/net v0.8.0
