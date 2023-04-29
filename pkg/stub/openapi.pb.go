@@ -7,6 +7,7 @@
 package stub
 
 import (
+	_ "github.com/google/gnostic/openapiv3"
 	_ "github.com/tislib/apibrew/pkg/model"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
