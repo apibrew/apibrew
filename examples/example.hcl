@@ -50,6 +50,19 @@ schema {
     property "area" {
       type = "int64"
     }
+
+    extension {
+        step = "BEFORE"
+        action = "CREATE_UPDATE"
+        execution = {
+            script = {
+                language = "nodejs"
+                code = """
+                    record.description = "test"
+                """
+            }
+        }
+    }
   }
 
   resource "state" {
