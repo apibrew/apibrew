@@ -8,6 +8,7 @@ import 'model/audit.proto';
 import 'model/common.proto';
 import 'model/external.proto';
 import 'model/annotations.proto';
+import 'model/script.proto';
 
 message Extension {
   string id = 1;
@@ -30,10 +31,13 @@ message Extension {
       GET = 3;
       LIST = 4;
       ALL = 5;
+      CREATE_UPDATE = 6; // CREATE, UPDATE
+      READ = 7; // GET, LIST
     }
 
     message Execution {
       ExternalCall call = 1 [(model.hcl_block) = "call"];
+      model.Script script = 2 [(model.hcl_block) = "script"];
     }
 
     Step step = 1 [(model.hcl_block) = "step"];

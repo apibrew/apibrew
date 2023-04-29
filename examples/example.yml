@@ -39,6 +39,14 @@ properties:
     reference:
       referencedResource: country2
       cascade: true
+extension:
+  - step: BEFORE
+    action: CREATE_UPDATE
+    execution:
+      script:
+        language: nodejs
+        code: |
+          record.description = record.title + "test"
 ---
 type: record
 resource: country2

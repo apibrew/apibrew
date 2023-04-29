@@ -10,8 +10,8 @@ import 'model/common.proto';
 import 'model/security.proto';
 import 'model/annotations.proto';
 import 'google/protobuf/struct.proto';
-
 import "google/protobuf/descriptor.proto";
+import "model/extension.proto";
 
 /*
   Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record
@@ -63,8 +63,9 @@ message ResourceProperty {
   optional Reference reference = 14 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
   repeated ResourceProperty properties = 15 [(model.hcl_block) = "property"]; // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
   optional ResourceProperty subProperty = 16; // subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
-  optional string title = 17; // It is an informative column
-  optional string description = 18; // It is an informative column
+  repeated model.Extension.Operation extension = 17; // operations is list of operations that can be applied to this property. If not specified, all operations will be allowed
+  optional string title = 18; // It is an informative column
+  optional string description = 19; // It is an informative column
 
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
