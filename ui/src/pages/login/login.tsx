@@ -36,86 +36,86 @@ export function Login(props: LoginProps): JSX.Element {
 
     return (
         <>
-            <ThemeProvider theme={theme}>
-                <Container component="main" maxWidth="xs">
-                    <CssBaseline />
-                    <Box
-                        sx={{
-                            marginTop: 2,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
-                        </Avatar>
-                        <Typography component="h1" variant="h5">
-                            Sign in
-                        </Typography>
-                        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="username"
-                                label="Username"
-                                name="username"
-                                autoComplete="username"
-                                autoFocus
-                            />
-                            <button onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-
-                                if (show === 'password') {
-                                    setShow('text')
-                                } else {
-                                    setShow('password')
-                                }
-
-                                return false
+            <main style={{ width: '450px', height: '500px', margin: '100px auto', borderRadius: '50px', textAlign: 'center' }}>
+                <ThemeProvider theme={theme}>
+                    <Container component="main" maxWidth="xs" style={{ borderRadius: '50px', height: '500px', width: '450px', background: 'none' }}>
+                        <CssBaseline />
+                        <Box
+                            sx={{
+                                marginTop: 2,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center'
                             }}
-                            style={{
-                                cursor: 'hand',
-                                position: 'relative',
-                                top: 60,
-                                marginLeft: 350,
-                                border: 0,
-                                borderRadius: 38,
-                                color: 'grey',
-                                width: '40px',
-                                height: '30px',
-                                zIndex: 1000
-                            }}>
-                                <VisibilityIcon />
-                            </button>
+                        >
+                            <Avatar sx={{ m: 1, bgcolor: 'black' }}>
+                                <LockOutlinedIcon />
+                            </Avatar>
+                            <Typography component="h1" variant="h5" style={{ color: 'white' }}>
+                                Sign in
+                            </Typography>
+                            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="username"
+                                    label="Username"
+                                    name="username"
+                                    autoComplete="username"
+                                    autoFocus
+                                />
+                                <button onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
 
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type={show}
-                                id="password"
-                                autoComplete="current-password"
+                                    if (show === 'password') {
+                                        setShow('text')
+                                    } else {
+                                        setShow('password')
+                                    }
 
-                            />
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                Sign In
-                            </Button>
+                                    return false
+                                }}
+                                style={{
+                                    cursor: 'hand',
+                                    position: 'relative',
+                                    top: 60,
+                                    marginLeft: 350,
+                                    border: 0,
+                                    borderRadius: 38,
+                                    color: 'grey',
+                                    width: '40px',
+                                    height: '30px',
+                                    zIndex: 1000,
+                                    background: ' none'
+                                }}>
+                                    <VisibilityIcon />
+                                </button>
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    name="password"
+                                    label="Password"
+                                    type={show}
+                                    id="password"
+                                    autoComplete="current-password"
+                                />
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                    style={{ background: ' rgba(255, 255, 255, 0.15)' }}
+                                >
+                                    Sign In
+                                </Button>
+                            </Box>
                         </Box>
-                    </Box>
-
-                </Container>
-            </ThemeProvider>
-
+                    </Container>
+                </ThemeProvider>
+            </main>
         </>
     )
 }
