@@ -1,11 +1,7 @@
 import PropTypes from 'prop-types';
 import { NavLink as RouterLink } from 'react-router-dom';
-// @mui
 import { Box, List, ListItemText } from '@mui/material';
-//
 import { StyledNavItem, StyledNavItemIcon } from './styles';
-
-// ----------------------------------------------------------------------
 
 interface NavItemProps {
     item: {
@@ -33,18 +29,12 @@ function NavItem({ item }: NavItemProps) {
                     bgcolor: 'action.selected',
                     fontWeight: 'fontWeightBold',
                 },
-            }}
-        >
+            }}>
             <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
-
-
             <ListItemText disableTypography primary={title} />
-
         </StyledNavItem>
     );
 }
-
-// ----------------------------------------------------------------------
 
 interface NavSectionProps {
     data?: {
@@ -70,7 +60,3 @@ export default function NavSection({ data = [], ...other }: NavSectionProps) {
         </Box>
     );
 }
-
-
-
-

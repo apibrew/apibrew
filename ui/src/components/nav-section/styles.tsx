@@ -1,8 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { ListItemIcon, ListItemButton } from '@mui/material';
 
-// ----------------------------------------------------------------------
-
 export interface StyledNavItemProps {
     children: JSX.Element | JSX.Element[]
 }
@@ -25,4 +23,3 @@ export const StyledNavItemIcon = styled(ListItemIcon)(({ theme }) => ({
     justifyContent: 'center',
     marginRight: theme.spacing(1),
 }));
-

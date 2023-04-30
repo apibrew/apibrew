@@ -1,11 +1,5 @@
-import PropTypes from 'prop-types';
-import { memo } from 'react';
-// @mui
 import { Box, BoxProps } from '@mui/material';
-//
 import { StyledRootScrollbar, StyledScrollbar } from './styles';
-
-// ----------------------------------------------------------------------
 
 type ScrollbarProps = {
     sx?: BoxProps['sx'];
