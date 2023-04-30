@@ -20,6 +20,8 @@ module.exports = {
         "@typescript-eslint/space-before-function-paren": "off",
         "@typescript-eslint/indent": ["error", 4],
         "@typescript-eslint/explicit-function-return-type": "off",
+        "react/display-name": "off",
+        "react/react-in-jsx-scope": "off"
     },
     settings: {
         "react": {

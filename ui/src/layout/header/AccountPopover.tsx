@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
+import { useState } from 'react'
+import { alpha } from '@mui/material/styles'
+import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material'
 
 const MENU_OPTIONS = [
     {
         label: 'Home',
-        icon: 'eva:home-fill',
+        icon: 'eva:home-fill'
     },
     {
         label: 'Profile',
-        icon: 'eva:person-fill',
+        icon: 'eva:person-fill'
     },
     {
         label: 'Settings',
-        icon: 'eva:settings-2-fill',
-    },
-];
+        icon: 'eva:settings-2-fill'
+    }
+]
 
 export default function AccountPopover() {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false)
     const handleOpen = () => {
-        setOpen(true);
-    };
+        setOpen(true)
+    }
 
     const handleClose = () => {
-        setOpen(false);
-    };
+        setOpen(false)
+    }
 
     return (
         <>
@@ -41,9 +41,9 @@ export default function AccountPopover() {
                             height: '100%',
                             borderRadius: '50%',
                             position: 'absolute',
-                            bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
-                        },
-                    }),
+                            bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8)
+                        }
+                    })
                 }}
             >
                 <Avatar alt="photoURL" />
@@ -61,9 +61,9 @@ export default function AccountPopover() {
                         width: 180,
                         '& .MuiMenuItem-root': {
                             typography: 'body2',
-                            borderRadius: 0.75,
-                        },
-                    },
+                            borderRadius: 0.75
+                        }
+                    }
                 }}
             >
                 <Box sx={{ my: 1.5, px: 2.5 }}>
@@ -86,5 +86,5 @@ export default function AccountPopover() {
                 </MenuItem>
             </Popover>
         </>
-    );
+    )
 }

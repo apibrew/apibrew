@@ -12,6 +12,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import { authenticate } from '../../service/authentication'
 import { BaseLayout } from '../../layout/base-layout'
 
+// eslint-disable-next-line
 export interface LoginProps {
 }
 
@@ -73,19 +74,19 @@ export function Login(props: LoginProps): JSX.Element {
 
                                 return false
                             }}
-                                style={{
-                                    cursor: 'hand',
-                                    position: 'relative',
-                                    top: 60,
-                                    marginLeft: 350,
-                                    border: 0,
-                                    borderRadius: 38,
-                                    color: 'grey',
-                                    width: '40px',
-                                    height: '30px',
-                                    zIndex: 1000,
-                                    background: ' none'
-                                }}>
+                            style={{
+                                cursor: 'hand',
+                                position: 'relative',
+                                top: 60,
+                                marginLeft: 350,
+                                border: 0,
+                                borderRadius: 38,
+                                color: 'grey',
+                                width: '40px',
+                                height: '30px',
+                                zIndex: 1000,
+                                background: ' none'
+                            }}>
                                 <VisibilityIcon />
                             </button>
                             <TextField

@@ -1,23 +1,23 @@
-import PropTypes from 'prop-types';
-import { NavLink as RouterLink } from 'react-router-dom';
-import { Box, List, ListItemText } from '@mui/material';
-import { StyledNavItem, StyledNavItemIcon } from './styles';
+import PropTypes from 'prop-types'
+import { NavLink as RouterLink } from 'react-router-dom'
+import { Box, List, ListItemText } from '@mui/material'
+import { StyledNavItem, StyledNavItemIcon } from './styles'
 
 interface NavItemProps {
     item: {
-        title: string;
-        path: string;
-        icon?: React.ReactNode;
-        info?: React.ReactNode;
-    };
+        title: string
+        path: string
+        icon?: React.ReactNode
+        info?: React.ReactNode
+    }
 }
 
 NavItem.propTypes = {
-    item: PropTypes.object,
-};
+    item: PropTypes.object
+}
 
 function NavItem({ item }: NavItemProps) {
-    const { title, path, icon, info } = item;
+    const { title, path, icon } = item
 
     return (
         <StyledNavItem
@@ -27,27 +27,27 @@ function NavItem({ item }: NavItemProps) {
                 '&.active': {
                     color: 'text.primary',
                     bgcolor: 'action.selected',
-                    fontWeight: 'fontWeightBold',
-                },
+                    fontWeight: 'fontWeightBold'
+                }
             }}>
-            <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
+            <StyledNavItemIcon>{icon}</StyledNavItemIcon>
             <ListItemText disableTypography primary={title} />
         </StyledNavItem>
-    );
+    )
 }
 
 interface NavSectionProps {
-    data?: {
-        title: string;
-        path: string;
-        icon?: React.ReactNode;
-        info?: React.ReactNode;
-    }[];
+    data?: Array<{
+        title: string
+        path: string
+        icon?: React.ReactNode
+        info?: React.ReactNode
+    }>
 }
 
 NavSection.propTypes = {
-    data: PropTypes.array,
-};
+    data: PropTypes.array
+}
 
 export default function NavSection({ data = [], ...other }: NavSectionProps) {
     return (
@@ -58,5 +58,5 @@ export default function NavSection({ data = [], ...other }: NavSectionProps) {
                 ))}
             </List>
         </Box>
-    );
+    )
 }

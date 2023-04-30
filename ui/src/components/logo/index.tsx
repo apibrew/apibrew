@@ -1,16 +1,16 @@
-import PropTypes from 'prop-types';
-import { forwardRef, Ref } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { Box, BoxProps, Link } from '@mui/material';
+import PropTypes from 'prop-types'
+import { forwardRef, type Ref } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
+import { Box, type BoxProps, Link } from '@mui/material'
+import React from 'react'
 
 type LogoProps = {
-    disabledLink?: boolean;
-    sx?: BoxProps['sx'];
-} & BoxProps;
+    disabledLink?: boolean
+    sx?: BoxProps['sx']
+} & BoxProps
 
 export const Logo = forwardRef<HTMLDivElement, LogoProps>(
     ({ disabledLink = false, sx, ...other }, ref: Ref<HTMLDivElement>) => {
-
         const logo = (
             <Box
                 ref={ref}
@@ -22,24 +22,24 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
                     marginTop: -2,
                     marginBottom: -5,
                     display: 'inline-flex',
-                    ...sx,
+                    ...sx
                 }}
                 {...other}>
                 <img src="/logo.svg"></img>
             </Box>
-        );
+        )
 
         if (disabledLink) {
-            return <>{logo}</>;
+            return <>{logo}</>
         }
         return (
             <Link to="/" component={RouterLink} sx={{ display: 'contents' }}>
                 {logo}
             </Link>
-        );
-    });
+        )
+    })
 
 Logo.propTypes = {
     sx: PropTypes.object,
-    disabledLink: PropTypes.bool,
-};
+    disabledLink: PropTypes.bool
+}

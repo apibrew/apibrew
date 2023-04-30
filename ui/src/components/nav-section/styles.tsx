@@ -1,5 +1,5 @@
-import { styled } from '@mui/material/styles';
-import { ListItemIcon, ListItemButton } from '@mui/material';
+import { styled } from '@mui/material/styles'
+import { ListItemIcon, ListItemButton } from '@mui/material'
 
 export interface StyledNavItemProps {
     children: JSX.Element | JSX.Element[]
@@ -11,8 +11,8 @@ export const StyledNavItem = styled((props: any) => <ListItemButton disableGutte
     position: 'relative',
     textTransform: 'capitalize',
     color: theme.palette.text.secondary,
-    borderRadius: theme.shape.borderRadius,
-}));
+    borderRadius: theme.shape.borderRadius
+}))
 
 export const StyledNavItemIcon = styled(ListItemIcon)(({ theme }) => ({
     width: 22,
@@ -21,5 +21,5 @@ export const StyledNavItemIcon = styled(ListItemIcon)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: theme.spacing(1),
-}));
+    marginRight: theme.spacing(1)
+}))

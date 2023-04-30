@@ -1,19 +1,19 @@
 const navConfig = [
     {
         title: 'Resource',
-        path: '/dashboard/app',
+        path: '/dashboard/app'
     },
     {
         title: 'Namespace',
-        path: '/dashboard/user',
+        path: '/dashboard/user'
     },
     {
         title: 'User',
-        path: '/dashboard/products',
+        path: '/dashboard/products'
     },
     {
         title: 'Data Source',
-        path: '/dashboard/blog',
-    },
-];
-export default navConfig;
+        path: '/dashboard/blog'
+    }
+]
+export default navConfig
