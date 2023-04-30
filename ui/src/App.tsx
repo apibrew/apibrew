@@ -1,4 +1,3 @@
-import React from 'react'
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Test } from './test/test'
@@ -14,5 +13,4 @@ function App(): JSX.Element {
         </Router>
     )
 }
-
 export default App
