@@ -6,6 +6,7 @@ option go_package = "github.com/tislib/apibrew/pkg/apbradm/stub";
 
 import 'model/node.proto';
 import 'model/error.proto';
+import 'model/deploy.proto';
 
 // Node Service is for managing Cluster Nodes, This service is only available on the cluster server
 service Node {
@@ -24,6 +25,7 @@ service Node {
 
 message InstallNewNodeRequest {
   string token = 1;
+
 }
 
 message InstallNewNodeResponse {

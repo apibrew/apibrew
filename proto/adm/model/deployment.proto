@@ -6,6 +6,23 @@ option go_package = "github.com/tislib/apibrew/pkg/apbradm/model";
 
 import 'model/audit.proto';
 
-message DeploymentConfig {
+message KubernetesDeploymentConfig {
+  string namespace = 1;
+}
 
+message DeploymentConfig {
+  KubernetesDeploymentConfig kubernetes = 1;
+}
+
+
+message KubernetesServerDeploymentConfig {
+  bool insideCluster = 1;
+  string kubeConfigPath = 2;
+}
+
+message DeploymentServerConfig {
+  string name = 1;
+  KubernetesServerDeploymentConfig kubernetes = 2;
+
+  DeploymentConfig defaultDeploymentConfig = 101;
 }
