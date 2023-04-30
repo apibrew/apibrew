@@ -25,14 +25,14 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
-  const [open, setOpen] = useState('');
+  const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
-    setOpen('');
+    setOpen(true);
   };
 
   const handleClose = () => {
-    setOpen('');
+    setOpen(false);
   };
 
   return (
