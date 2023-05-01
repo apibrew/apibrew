@@ -15,7 +15,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.16.2
 	github.com/huandu/xstrings v1.4.0
 	github.com/iancoleman/strcase v0.2.0
-	github.com/lib/pq v1.10.7
+	github.com/lib/pq v1.10.9
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rakyll/statik v0.1.7
 	github.com/redis/go-redis/v9 v9.0.2
