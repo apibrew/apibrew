@@ -56,7 +56,7 @@ export default function AccountPopover() {
                 PaperProps={{
                     sx: {
                         p: 0,
-                        mt: 1.5,
+                        mt: 0,
                         ml: 0.75,
                         width: 180,
                         '& .MuiMenuItem-root': {
