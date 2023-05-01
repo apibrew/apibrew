@@ -7,6 +7,11 @@ import {
     TableRowsOutlined
 } from '@mui/icons-material'
 
+export interface MenuList {
+    title: string
+    items: Array<MenuItem | DividerItem>
+}
+
 export interface MenuItem {
     title: string
     link: string
@@ -17,33 +22,58 @@ export interface DividerItem {
     divider: true
 }
 
-export const menuItems: Array<MenuItem | DividerItem> = [
+export const menuLists: MenuList[] = [
     {
-        title: 'Resources',
-        link: '/dashboard/resources',
-        icon: <TableRowsOutlined/>
+        title: 'Develop',
+        items: [
+            {
+                title: 'Resources',
+                link: '/dashboard/resources',
+                icon: <TableRowsOutlined/>
+            },
+            {
+                title: 'Namespaces',
+                link: '/dashboard/namespaces',
+                icon: <CategoryOutlined/>
+            },
+            {
+                title: 'Data Sources',
+                link: '/inbox',
+                icon: <DatasetOutlined/>
+            },
+            {
+                title: 'Users',
+                link: '/dashboard/users',
+                icon: <PersonOutline/>
+            },
+            {
+                divider: true
+            },
+            {
+                title: 'Extensions',
+                link: '/dashboard/extensions',
+                icon: <ExtensionOutlined/>
+            },
+            {
+                title: 'Records',
+                link: '/dashboard/records',
+                icon: <TableRowsOutlined/>
+            }
+        ]
     },
     {
-        title: 'Namespaces',
-        link: '/dashboard/namespaces',
-        icon: <CategoryOutlined/>
-    },
-    {
-        title: 'Data Sources',
-        link: '/inbox',
-        icon: <DatasetOutlined/>
-    },
-    {
-        title: 'Users',
-        link: '/dashboard/users',
-        icon: <PersonOutline/>
-    },
-    {
-        divider: true
-    },
-    {
-        title: 'Extensions',
-        link: '/dashboard/extensions',
-        icon: <ExtensionOutlined/>
+        title: 'User',
+        items: [
+            {
+                title: 'Country',
+                link: '/dashboard/country',
+                icon: <TableRowsOutlined/>
+            },
+            {
+                title: 'City',
+                link: '/dashboard/city',
+                icon: <TableRowsOutlined/>
+            }
+        ]
     }
 ]
