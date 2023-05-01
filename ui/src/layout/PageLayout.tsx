@@ -1,4 +1,4 @@
-import { Breadcrumbs, Card, CardContent, CardHeader } from '@mui/material'
+import { Breadcrumbs, Card, CardActions, CardContent, CardHeader } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import { Link } from 'react-router-dom'
 import Typography from '@mui/material/Typography'
@@ -8,8 +8,9 @@ import Divider from '@mui/material/Divider'
 
 export interface PageLayoutProps {
     pageTitle: string
-    children: JSX.Element | JSX.Element[]
-    actions?: JSX.Element | JSX.Element[]
+    children: React.ReactNode
+    headerActions?: React.ReactNode
+    bottomActions?: React.ReactNode
 }
 
 export function PageLayout(props: PageLayoutProps) {
@@ -37,7 +38,7 @@ export function PageLayout(props: PageLayoutProps) {
                             </Breadcrumbs>
                         </Box>
                         <Box sx={{ flexGrow: 1 }}/>
-                        {(props.actions != null) && <Box>{props.actions}</Box>}
+                        {(props.headerActions != null) && <Box>{props.headerActions}</Box>}
                     </Box>
                 </Box>
             }></CardHeader>
@@ -45,6 +46,7 @@ export function PageLayout(props: PageLayoutProps) {
             <CardContent>
                 {props.children}
             </CardContent>
+            {(props.bottomActions != null) && <CardActions>{props.bottomActions}</CardActions>}
         </Card>
     </>
 }

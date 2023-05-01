@@ -7,7 +7,7 @@ import { PlusOneOutlined } from '@mui/icons-material'
 export function Test(): JSX.Element {
     return (
         <DashboardLayout>
-            <PageLayout pageTitle={'Test Page'} actions={<>
+            <PageLayout pageTitle={'Test Page'} headerActions={<>
                 <Button variant={'contained'} color='success' startIcon={<PlusOneOutlined/>}>New Item</Button>
             </>}>
                 <>
