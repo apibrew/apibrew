@@ -6,6 +6,7 @@ import Header from './header'
 import Nav from './nav'
 
 export interface DashboardLayoutProps {
+    pageTitle: string
     children: JSX.Element | JSX.Element[]
 }
 export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
@@ -36,7 +37,8 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                 <Header onOpenNav={() => { setOpen(true) }} />
                 <Nav openNav={open} onCloseNav={() => { setOpen(false) }} />
                 <Main>
-                    <Outlet />
+                    <h1>{props.pageTitle}</h1>
+                    {props.children}
                 </Main>
             </StyledRoot>
         </BaseLayout>
