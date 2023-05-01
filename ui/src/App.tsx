@@ -6,7 +6,7 @@ import { DashboardLayout } from './layout/dashboard-layout'
 
 function Dashboard(): JSX.Element {
     return <>
-        <DashboardLayout pageTitle='Test Page'>
+        <DashboardLayout>
             <Routes>
                 <Route path='test' element={<Test></Test>} />
             </Routes>
