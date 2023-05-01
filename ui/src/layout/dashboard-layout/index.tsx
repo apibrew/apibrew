@@ -42,8 +42,8 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                     <img style={{ textAlign: 'center' }} src="/logo-small-white.svg"></img>
                 </Toolbar>
                 <Divider style={{ background: '#AAA' }}/>
-                {menuLists.map((menuList, index) =>
-                    <List key={menuList.title} subheader={<Box sx={{ ml: 1 }}>
+                {menuLists.map((menuList, index) => <>
+                    <List key={menuList.title} subheader={<Box sx={{ ml: 1, mt: 1 }}>
                         <Typography>{menuList.title}</Typography>
                     </Box>}>
                         {menuList.items.map((item, index) => {
@@ -62,7 +62,9 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                                 </ListItem>
                             }
                         })}
-                    </List>)}
+                    </List>
+                    <Divider style={{ background: '#FFF' }}/>
+                </>)}
             </div>
             <div style={{ flexGrow: 1 }}/>
         </Box>
