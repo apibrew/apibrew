@@ -10,7 +10,7 @@ import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import { Stack } from '@mui/material'
 import AccountPopover from './AccountPopover'
-import { type DividerItem, type MenuItem, menuItems } from './menu-items'
+import { type DividerItem, type MenuItem, menuLists } from './menu-items'
 import ListItemButton from '@mui/material/ListItemButton'
 import { Link } from 'react-router-dom'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -42,23 +42,29 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                     <img style={{ textAlign: 'center' }} src="/logo-small-white.svg"></img>
                 </Toolbar>
                 <Divider style={{ background: '#AAA' }}/>
-                <List>
-                    {menuItems.map((item, index) => {
-                        const dividerItem = item as DividerItem
-                        const menuItem = item as MenuItem
+                {menuLists.map((menuList, index) => <>
+                    <List key={menuList.title} subheader={<Box sx={{ ml: 1, mt: 1 }}>
+                        <Typography>{menuList.title}</Typography>
+                    </Box>}>
+                        {menuList.items.map((item, index) => {
+                            const dividerItem = item as DividerItem
+                            const menuItem = item as MenuItem
 
-                        if (dividerItem.divider) {
-                            return <Divider key={menuItem.title}/>
-                        } else {
-                            return <ListItem key={menuItem.title} disablePadding>
-                                <ListItemButton component={Link} to={menuItem.link}>
-                                    {(menuItem.icon != null) && <ListItemIcon style={drawerStyle}>{menuItem.icon} </ListItemIcon>}
-                                    <ListItemText primary={menuItem.title}/>
-                                </ListItemButton>
-                            </ListItem>
-                        }
-                    })}
-                </List>
+                            if (dividerItem.divider) {
+                                return <Divider key={menuItem.title}/>
+                            } else {
+                                return <ListItem key={menuItem.title} disablePadding>
+                                    <ListItemButton component={Link} to={menuItem.link}>
+                                        {(menuItem.icon != null) &&
+                                            <ListItemIcon style={drawerStyle}>{menuItem.icon} </ListItemIcon>}
+                                        <ListItemText primary={menuItem.title}/>
+                                    </ListItemButton>
+                                </ListItem>
+                            }
+                        })}
+                    </List>
+                    <Divider style={{ background: '#FFF' }}/>
+                </>)}
             </div>
             <div style={{ flexGrow: 1 }}/>
         </Box>
