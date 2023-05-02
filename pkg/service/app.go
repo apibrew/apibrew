@@ -94,7 +94,6 @@ func (app *App) initServices() {
 	app.resourceService.Init(app.initData)
 	app.dataSourceService.Init(app.initData)
 	app.namespaceService.Init(app.initData)
-	app.recordService.Init(app.initData)
 	app.userService.Init(app.initData)
 	app.authenticationService.Init(app.initData)
 	app.stdHandler.Init(app.initData)

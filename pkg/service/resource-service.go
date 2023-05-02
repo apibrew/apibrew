@@ -855,7 +855,7 @@ func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.S
 	preparedResource, err := r.backendProviderService.GetSystemBackend(context.TODO()).PrepareResourceFromEntity(context.TODO(), resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
 
 	if err != nil && !errors.RecordNotFoundError.Is(err) {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	migrationPlan, err := r.resourceMigrationService.PreparePlan(context.TODO(), preparedResource, resource)

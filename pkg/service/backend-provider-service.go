@@ -13,6 +13,7 @@ import (
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/resources"
 	"github.com/tislib/apibrew/pkg/resources/mapping"
+	backend_proxy "github.com/tislib/apibrew/pkg/service/backend-proxy"
 	"github.com/tislib/apibrew/pkg/service/security"
 	"github.com/tislib/apibrew/pkg/util"
 )
@@ -113,6 +114,11 @@ func (b *backendProviderService) GetBackend(dataSource *model.DataSource) abs.Ba
 
 	constructor := b.GetBackendConstructor(dataSource.GetBackend())
 	instance := constructor(dataSource)
+
+	// apply proxy
+	proxy := backend_proxy.NewBackendProxy(instance)
+
+	instance = proxy
 
 	b.backendMap[dataSource.Id] = instance
 	b.backendIdMap[dataSource.Id] = dataSource.Name

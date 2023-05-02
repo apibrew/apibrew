@@ -44,8 +44,6 @@ type RecordService interface {
 	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
 	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
 
-	Init(data *model.InitData)
-
 	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
 	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError)
 	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
