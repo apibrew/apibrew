@@ -5,6 +5,7 @@ import (
 	"github.com/tislib/apibrew/pkg/abs"
 	"github.com/tislib/apibrew/pkg/errors"
 	"github.com/tislib/apibrew/pkg/model"
+	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
 )
 
 type BackendProxy interface {
@@ -12,7 +13,12 @@ type BackendProxy interface {
 }
 
 type backendProxy struct {
-	backend abs.Backend
+	backend      abs.Backend
+	eventHandler backend_event_handler.BackendEventHandler
+}
+
+func (b backendProxy) SetSchema(schema *abs.Schema) {
+	b.backend.SetSchema(schema)
 }
 
 func (b backendProxy) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
@@ -23,24 +29,24 @@ func (b backendProxy) DestroyDataSource(ctx context.Context) {
 	b.backend.DestroyDataSource(ctx)
 }
 
-func (b backendProxy) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, []bool, errors.ServiceError) {
-	return b.backend.AddRecords(ctx, params)
+func (b backendProxy) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, []bool, errors.ServiceError) {
+	return b.backend.AddRecords(ctx, resource, records)
 }
 
-func (b backendProxy) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
-	return b.backend.UpdateRecords(ctx, params)
+func (b backendProxy) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+	return b.backend.UpdateRecords(ctx, resource, records)
 }
 
-func (b backendProxy) GetRecord(ctx context.Context, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
-	return b.backend.GetRecord(ctx, resource, schema, id)
+func (b backendProxy) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+	return b.backend.GetRecord(ctx, resource, id)
 }
 
 func (b backendProxy) DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError {
 	return b.backend.DeleteRecords(ctx, resource, list)
 }
 
-func (b backendProxy) ListRecords(ctx context.Context, params abs.ListRecordParams) ([]*model.Record, uint32, errors.ServiceError) {
-	return b.backend.ListRecords(ctx, params)
+func (b backendProxy) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
+	return b.backend.ListRecords(ctx, resource, params, resultChan)
 }
 
 func (b backendProxy) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError) {
@@ -71,6 +77,6 @@ func (b backendProxy) IsTransactionAlive(ctx context.Context) (isAlive bool, ser
 	return b.backend.IsTransactionAlive(ctx)
 }
 
-func NewBackendProxy(backend abs.Backend) BackendProxy {
-	return &backendProxy{backend: backend}
+func NewBackendProxy(backend abs.Backend, eventHandler backend_event_handler.BackendEventHandler) BackendProxy {
+	return &backendProxy{backend: backend, eventHandler: eventHandler}
 }

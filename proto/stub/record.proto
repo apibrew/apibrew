@@ -141,7 +141,6 @@ message CreateRecordRequest {
   string resource = 3;
   model.Record record = 4;
   repeated model.Record records = 5;
-  bool ignoreIfExists = 6;
 
   map<string, string> annotations = 103;
 }
@@ -158,7 +157,6 @@ message UpdateRecordRequest {
   string resource = 3;
   model.Record record = 4;  // Rest Only
   repeated model.Record records = 5;
-  bool checkVersion = 6;
 
   map<string, string> annotations = 103;
 }
@@ -174,7 +172,6 @@ message ApplyRecordRequest {
   string resource = 3;
   model.Record record = 4;  // Rest Only
   repeated model.Record records = 5;
-  bool checkVersion = 6;
 
   map<string, string> annotations = 103;
 }

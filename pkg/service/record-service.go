@@ -10,7 +10,6 @@ import (
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/resources"
 	"github.com/tislib/apibrew/pkg/service/annotations"
-	"github.com/tislib/apibrew/pkg/service/handler"
 	"github.com/tislib/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -18,7 +17,6 @@ import (
 type recordService struct {
 	ServiceName            string
 	resourceService        abs.ResourceService
-	genericHandler         *handler.GenericHandler
 	backendServiceProvider abs.BackendProviderService
 }
 
@@ -26,12 +24,11 @@ func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[stri
 	return util.PrepareQuery(resource, queryMap)
 }
 
-func NewRecordService(resourceService abs.ResourceService, backendProviderService abs.BackendProviderService, genericHandler *handler.GenericHandler) abs.RecordService {
+func NewRecordService(resourceService abs.ResourceService, backendProviderService abs.BackendProviderService) abs.RecordService {
 	return &recordService{
 		ServiceName:            "RecordService",
 		resourceService:        resourceService,
 		backendServiceProvider: backendProviderService,
-		genericHandler:         genericHandler,
 	}
 }
 
@@ -49,14 +46,6 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		Operation: model.OperationType_OPERATION_TYPE_READ,
 	}); err != nil {
 		return nil, 0, err
-	}
-
-	if err := r.genericHandler.BeforeList(ctx, resource, params); err != nil {
-		return nil, 0, err
-	}
-
-	if handled, records, total, err := r.genericHandler.List(ctx, resource, params); handled || err != nil {
-		return records, total, err
 	}
 
 	if resource.Virtual {
@@ -90,16 +79,14 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		}
 	}
 
-	records, total, err := bck.ListRecords(ctx, abs.ListRecordParams{
-		Resource:          resource,
+	records, total, err := bck.ListRecords(ctx, resource, abs.ListRecordParams{
 		Query:             params.Query,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
 		ResolveReferences: params.ResolveReferences,
-		Schema:            r.resourceService.GetSchema(),
-		PackRecords:       params.PackRecords,
-		ResultChan:        params.ResultChan,
-	})
+	}, params.ResultChan)
+
+	// todo implement params.PackRecords
 
 	if err != nil {
 		return nil, 0, err
@@ -109,7 +96,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		util.DeNormalizeRecord(resource, record)
 	}
 
-	if err := checkAccess(ctx, checkAccessParams{
+	if err = checkAccess(ctx, checkAccessParams{
 		Resource:  resource,
 		Records:   &records,
 		Operation: model.OperationType_OPERATION_TYPE_READ,
@@ -117,11 +104,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, err
 	}
 
-	if err = r.genericHandler.AfterList(ctx, resource, params, records, total); err != nil {
-		return nil, 0, err
-	}
-
-	return records, total, err
+	return records, total, nil
 }
 
 func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
@@ -172,10 +155,6 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		return nil, nil, err
 	}
 
-	if err = r.genericHandler.BeforeCreate(ctx, resource, params); err != nil {
-		return nil, nil, err
-	}
-
 	// prepare default values
 	var defaultValueMap = make(map[string]*structpb.Value)
 	for _, prop := range resource.Properties {
@@ -198,12 +177,6 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 
 	var records []*model.Record
 	var inserted []bool
-
-	if handled, records, inserted, err := r.genericHandler.Create(ctx, resource, params); handled || err != nil {
-		return records, inserted, err
-	} else {
-		params.Records = records
-	}
 
 	if resource.Virtual {
 		return nil, nil, virtualResourceBackendAccessError
@@ -246,12 +219,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		}
 	}()
 
-	records, inserted, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
-		Resource:       resource,
-		Records:        params.Records,
-		IgnoreIfExists: params.IgnoreIfExists,
-		Schema:         r.resourceService.GetSchema(),
-	})
+	records, inserted, err = bck.AddRecords(txCtx, resource, params.Records)
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
 		var historyRecords []*model.Record
@@ -263,11 +231,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 			}
 		}
 
-		_, _, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
-			Resource: historyResource,
-			Records:  historyRecords,
-			Schema:   r.resourceService.GetSchema(),
-		})
+		_, _, err = bck.AddRecords(txCtx, historyResource, historyRecords)
 
 		if err != nil {
 			success = false
@@ -276,11 +240,6 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	}
 
 	if err != nil {
-		success = false
-		return nil, nil, err
-	}
-
-	if err = r.genericHandler.AfterCreate(ctx, resource, params, records); err != nil {
 		success = false
 		return nil, nil, err
 	}
@@ -355,10 +314,9 @@ func (r *recordService) Apply(ctx context.Context, params abs.RecordUpdateParams
 			}
 
 			records, err := r.UpdateWithResource(ctx, resource, abs.RecordUpdateParams{
-				Namespace:    resource.Namespace,
-				Resource:     resource.Name,
-				Records:      []*model.Record{record},
-				CheckVersion: params.CheckVersion,
+				Namespace: resource.Namespace,
+				Resource:  resource.Name,
+				Records:   []*model.Record{record},
 			})
 
 			if err != nil {
@@ -412,7 +370,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		return nil, errors.RecordValidationError.WithMessage("Immutable resource cannot be modified or deleted: " + params.Resource)
 	}
 
-	if annotations.IsEnabled(resource, annotations.KeepHistory) && !params.CheckVersion {
+	if annotations.IsEnabled(resource, annotations.KeepHistory) && !annotations.IsEnabledOnCtx(ctx, annotations.CheckVersion) {
 		success = false
 		return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
 	}
@@ -427,18 +385,6 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	if err != nil {
 		success = false
 		return nil, err
-	}
-
-	if err = r.genericHandler.BeforeUpdate(ctx, resource, params); err != nil {
-		success = false
-		return nil, err
-	}
-
-	if handled, records, err := r.genericHandler.Update(ctx, resource, params); handled || err != nil {
-		success = false
-		return records, err
-	} else {
-		params.Records = records
 	}
 
 	if resource.Virtual {
@@ -480,12 +426,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		}
 	}()
 
-	records, err = bck.UpdateRecords(txCtx, abs.BulkRecordsParams{
-		Resource:     resource,
-		Records:      params.Records,
-		CheckVersion: params.CheckVersion,
-		Schema:       r.resourceService.GetSchema(),
-	})
+	records, err = bck.UpdateRecords(txCtx, resource, params.Records)
 
 	if err != nil {
 		success = false
@@ -493,20 +434,12 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	}
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
-		_, _, err = bck.AddRecords(txCtx, abs.BulkRecordsParams{
-			Resource: util.HistoryResource(resource),
-			Records:  records,
-			Schema:   r.resourceService.GetSchema(),
-		})
+		_, _, err = bck.AddRecords(txCtx, util.HistoryResource(resource), records)
 
 		if err != nil {
 			success = false
 			return nil, err
 		}
-	}
-
-	if err = r.genericHandler.AfterUpdate(ctx, resource, params, records); err != nil {
-		return nil, err
 	}
 
 	result = append(result, records...)
@@ -537,14 +470,6 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	if err := r.genericHandler.BeforeGet(ctx, resource, id); err != nil {
-		return nil, err
-	}
-
-	if handled, res, err := r.genericHandler.Get(ctx, resource, id); handled || err != nil {
-		return res, err
-	}
-
 	if resource.Virtual {
 		return nil, virtualResourceBackendAccessError
 	}
@@ -555,7 +480,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	res, err := bck.GetRecord(ctx, resource, r.resourceService.GetSchema(), id)
+	res, err := bck.GetRecord(ctx, resource, id)
 
 	if err != nil {
 		return nil, err
@@ -563,11 +488,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 
 	util.DeNormalizeRecord(resource, res)
 
-	if err = r.genericHandler.AfterGet(ctx, resource, id, res); err != nil {
-		return nil, err
-	}
-
-	return res, err
+	return res, nil
 }
 
 func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError) {
@@ -652,14 +573,6 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 		return errors.RecordValidationError.WithMessage("Immutable resource cannot be modified or deleted: " + params.Resource)
 	}
 
-	if err := r.genericHandler.BeforeDelete(ctx, resource, params); err != nil {
-		return err
-	}
-
-	if handled, err := r.genericHandler.Delete(ctx, resource, params); handled || err != nil {
-		return err
-	}
-
 	if resource.Virtual {
 		return virtualResourceBackendAccessError
 	}
@@ -671,10 +584,6 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 	}
 
 	if err = bck.DeleteRecords(ctx, resource, params.Ids); err != nil {
-		return err
-	}
-
-	if err = r.genericHandler.AfterDelete(ctx, resource, params); err != nil {
 		return err
 	}
 

@@ -111,10 +111,9 @@ func (r *recordServer) ReadStream(request *stub.ReadStreamRequest, resp stub.Rec
 
 func (r *recordServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
 	records, inserted, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
-		Namespace:      request.Namespace,
-		Resource:       request.Resource,
-		Records:        util.ArrayPrepend(request.Records, request.Record),
-		IgnoreIfExists: request.IgnoreIfExists,
+		Namespace: request.Namespace,
+		Resource:  request.Resource,
+		Records:   util.ArrayPrepend(request.Records, request.Record),
 	})
 
 	return &stub.CreateRecordResponse{
@@ -126,10 +125,9 @@ func (r *recordServer) Create(ctx context.Context, request *stub.CreateRecordReq
 
 func (r *recordServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
 	records, err := r.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
-		Namespace:    request.Namespace,
-		Resource:     request.Resource,
-		Records:      util.ArrayPrepend(request.Records, request.Record),
-		CheckVersion: request.CheckVersion,
+		Namespace: request.Namespace,
+		Resource:  request.Resource,
+		Records:   util.ArrayPrepend(request.Records, request.Record),
 	})
 
 	return &stub.UpdateRecordResponse{
@@ -140,10 +138,9 @@ func (r *recordServer) Update(ctx context.Context, request *stub.UpdateRecordReq
 
 func (r *recordServer) Apply(ctx context.Context, request *stub.ApplyRecordRequest) (*stub.ApplyRecordResponse, error) {
 	records, err := r.service.Apply(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
-		Namespace:    request.Namespace,
-		Resource:     request.Resource,
-		Records:      util.ArrayPrepend(request.Records, request.Record),
-		CheckVersion: request.CheckVersion,
+		Namespace: request.Namespace,
+		Resource:  request.Resource,
+		Records:   util.ArrayPrepend(request.Records, request.Record),
 	})
 
 	return &stub.ApplyRecordResponse{

@@ -61,15 +61,13 @@ func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, reso
 }
 
 func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError {
-	records, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, abs.ListRecordParams{
-		Resource: resources.ResourceResource,
-		Limit:    1000000,
+	records, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourceResource, abs.ListRecordParams{
+		Limit: 1000000,
 		ResolveReferences: []string{
 			"dataSource",
 			"namespace",
 		},
-		Schema: &r.schema,
-	})
+	}, nil)
 
 	for _, record := range records {
 		util.DeNormalizeRecord(resources.ResourceResource, record)
@@ -93,15 +91,13 @@ func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError 
 		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
 	}
 
-	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, abs.ListRecordParams{
-		Resource: resources.ResourcePropertyResource,
+	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourcePropertyResource, abs.ListRecordParams{
 		ResolveReferences: []string{
 			"resource",
 			"reference_resource",
 		},
-		Schema: &r.schema,
-		Limit:  1000000,
-	})
+		Limit: 1000000,
+	}, nil)
 
 	for _, record := range propertyRecordList {
 		util.DeNormalizeRecord(resources.ResourcePropertyResource, record)
@@ -285,7 +281,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
 			MigrationPlan:  plan,
 			ForceMigration: forceMigration,
-			Schema:         &r.schema,
 		})
 
 		if err != nil {
@@ -296,7 +291,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 			err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
 				MigrationPlan:  util.HistoryPlan(plan),
 				ForceMigration: forceMigration,
-				Schema:         &r.schema,
 			})
 
 			if err != nil {
@@ -324,13 +318,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 				util.NormalizeRecord(resources.ResourceResource, record)
 			}
 
-			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
-				Resource:       resources.ResourceResource,
-				Records:        resourceRecords,
-				CheckVersion:   false,
-				IgnoreIfExists: false,
-				Schema:         r.GetSchema(),
-			})
+			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourceResource, resourceRecords)
 
 			if err != nil {
 				return err
@@ -343,13 +331,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 			util.InitRecord(ctx, resources.ResourcePropertyResource, propertyCreateRecord)
 			util.NormalizeRecord(resources.ResourcePropertyResource, propertyCreateRecord)
 
-			_, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, abs.BulkRecordsParams{
-				Resource:       resources.ResourcePropertyResource,
-				Records:        []*model.Record{propertyCreateRecord},
-				CheckVersion:   false,
-				IgnoreIfExists: false,
-				Schema:         r.GetSchema(),
-			})
+			_, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, resources.ResourcePropertyResource, []*model.Record{propertyCreateRecord})
 
 			if err != nil {
 				return err
@@ -374,13 +356,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 			util.PrepareUpdateForRecord(ctx, resources.ResourcePropertyResource, propertyRecord)
 			util.NormalizeRecord(resources.ResourcePropertyResource, propertyRecord)
 
-			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
-				Resource:       resources.ResourcePropertyResource,
-				Records:        []*model.Record{propertyRecord},
-				CheckVersion:   false,
-				IgnoreIfExists: false,
-				Schema:         r.GetSchema(),
-			})
+			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourcePropertyResource, []*model.Record{propertyRecord})
 
 			if err != nil {
 				return err
@@ -394,12 +370,10 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		return mapping.ResourcePropertyToRecord(property, resource)
 	})
 
-	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, abs.ListRecordParams{
-		Resource: resources.ResourcePropertyResource,
-		Query:    util.NewEqualExpression("resource", structpb.NewStringValue(resource.Id)),
-		Schema:   &r.schema,
-		Limit:    1000000,
-	})
+	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourcePropertyResource, abs.ListRecordParams{
+		Query: util.NewEqualExpression("resource", structpb.NewStringValue(resource.Id)),
+		Limit: 1000000,
+	}, nil)
 
 	if err != nil {
 		return err
@@ -416,13 +390,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 		util.NormalizeRecord(resources.ResourcePropertyResource, propRecord)
 	}
 
-	_, err = r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, abs.BulkRecordsParams{
-		Resource:       resources.ResourcePropertyResource,
-		Records:        propertyRecords,
-		CheckVersion:   false,
-		IgnoreIfExists: false,
-		Schema:         r.GetSchema(),
-	})
+	_, err = r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourcePropertyResource, propertyRecords)
 
 	if err != nil {
 		return err
@@ -500,13 +468,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	util.InitRecord(ctx, resources.ResourceResource, resourceRecord)
 	util.NormalizeRecord(resources.ResourceResource, resourceRecord)
 
-	result, _, err := systemBackend.AddRecords(txCtx, abs.BulkRecordsParams{
-		Resource:       resources.ResourceResource,
-		Records:        []*model.Record{resourceRecord},
-		CheckVersion:   false,
-		IgnoreIfExists: false,
-		Schema:         r.GetSchema(),
-	})
+	result, _, err := systemBackend.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
 
 	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
 		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exiss: " + resource.Name))
@@ -526,7 +488,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	// fetch inserted record
 
-	insertedRecord, err := systemBackend.GetRecord(txCtx, resources.ResourceResource, r.GetSchema(), result[0].Id)
+	insertedRecord, err := systemBackend.GetRecord(txCtx, resources.ResourceResource, result[0].Id)
 
 	if err != nil {
 		return nil, err
@@ -550,13 +512,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 			return record
 		})
 
-		_, _, err = systemBackend.AddRecords(txCtx, abs.BulkRecordsParams{
-			Resource:       resources.ResourcePropertyResource,
-			Records:        propertyRecords,
-			CheckVersion:   false,
-			IgnoreIfExists: false,
-			Schema:         r.GetSchema(),
-		})
+		_, _, err = systemBackend.AddRecords(txCtx, resources.ResourcePropertyResource, propertyRecords)
 
 		if err != nil {
 			return nil, err
@@ -599,7 +555,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
 			MigrationPlan:  plan,
 			ForceMigration: forceMigration,
-			Schema:         &r.schema,
 		})
 
 		if err != nil {
@@ -610,7 +565,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 			err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
 				MigrationPlan:  util.HistoryPlan(plan),
 				ForceMigration: forceMigration,
-				Schema:         &r.schema,
 			})
 
 			if err != nil {
@@ -875,7 +829,6 @@ func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.S
 	err = r.backendProviderService.GetSystemBackend(context.TODO()).UpgradeResource(context.TODO(), abs.UpgradeResourceParams{
 		MigrationPlan:  migrationPlan,
 		ForceMigration: true,
-		Schema:         &schema,
 	})
 
 	if err != nil {
@@ -921,7 +874,6 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			}
 			err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
 				ForceMigration: forceMigration,
-				Schema:         r.GetSchema(),
 				MigrationPlan:  plan,
 			})
 
@@ -933,7 +885,6 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 				err = bck.UpgradeResource(ctx, abs.UpgradeResourceParams{
 					MigrationPlan:  util.HistoryPlan(plan),
 					ForceMigration: forceMigration,
-					Schema:         &r.schema,
 				})
 
 				if err != nil {
@@ -977,8 +928,12 @@ func (r *resourceService) Get(_ context.Context, id string) *model.Resource {
 }
 
 func NewResourceService(backendProviderService abs.BackendProviderService, resourceMigrationService abs.ResourceMigrationService) abs.ResourceService {
-	return &resourceService{
+	service := &resourceService{
 		backendProviderService:   backendProviderService,
 		resourceMigrationService: resourceMigrationService,
 	}
+
+	backendProviderService.SetSchema(&service.schema)
+
+	return service
 }

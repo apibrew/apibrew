@@ -21,6 +21,7 @@ type BackendProviderService interface {
 	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	GetBackendByDataSourceName(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	DestroyBackend(ctx context.Context, id string) error
+	SetSchema(schema *Schema)
 }
 
 type DataSourceService interface {
@@ -142,34 +143,30 @@ func (p RecordListParams) ToRequest() proto.Message {
 }
 
 type RecordCreateParams struct {
-	Namespace      string
-	Resource       string
-	Records        []*model.Record
-	IgnoreIfExists bool
+	Namespace string
+	Resource  string
+	Records   []*model.Record
 }
 
 func (p RecordCreateParams) ToRequest() *stub.CreateRecordRequest {
 	return &stub.CreateRecordRequest{
-		Namespace:      p.Namespace,
-		Resource:       p.Resource,
-		Records:        p.Records,
-		IgnoreIfExists: p.IgnoreIfExists,
+		Namespace: p.Namespace,
+		Resource:  p.Resource,
+		Records:   p.Records,
 	}
 }
 
 type RecordUpdateParams struct {
-	Namespace    string
-	Resource     string
-	Records      []*model.Record
-	CheckVersion bool
+	Namespace string
+	Resource  string
+	Records   []*model.Record
 }
 
 func (p RecordUpdateParams) ToRequest() *stub.UpdateRecordRequest {
 	return &stub.UpdateRecordRequest{
-		Namespace:    p.Namespace,
-		Resource:     p.Resource,
-		Records:      p.Records,
-		CheckVersion: p.CheckVersion,
+		Namespace: p.Namespace,
+		Resource:  p.Resource,
+		Records:   p.Records,
 	}
 }
 

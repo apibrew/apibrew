@@ -23,3 +23,7 @@ const SpecialProperty = "SpecialProperty"
 // hcl
 const IsHclLabel = "IsHclLabel"
 const HclBlock = "HclBlock"
+
+// request annotations
+const IgnoreIfExists = "IgnoreIfExists"
+const CheckVersion = "CheckVersion"

@@ -253,9 +253,8 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 	return nil
 }
 
-func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
-	list, total, err := p.recordList(ctx, runner, abs.ListRecordParams{
-		Resource: resource,
+func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+	list, total, err := p.recordList(ctx, runner, resource, abs.ListRecordParams{
 		Query: &model.BooleanExpression{
 			Expression: &model.BooleanExpression_Equal{
 				Equal: &model.PairExpression{
@@ -267,8 +266,7 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, 
 		Limit:             1,
 		Offset:            0,
 		ResolveReferences: []string{"*"},
-		Schema:            schema,
-	})
+	}, nil)
 
 	if err != nil {
 		return nil, err

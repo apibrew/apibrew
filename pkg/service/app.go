@@ -73,7 +73,7 @@ func (app *App) Init() {
 	app.resourceMigrationService = NewResourceMigrationService()
 
 	app.resourceService = NewResourceService(app.backendProviderService, app.resourceMigrationService)
-	app.recordService = NewRecordService(app.resourceService, app.backendProviderService, app.genericHandler)
+	app.recordService = NewRecordService(app.resourceService, app.backendProviderService)
 
 	app.dataSourceService = NewDataSourceService(app.resourceService, app.recordService, app.backendProviderService)
 
