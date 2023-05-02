@@ -263,10 +263,6 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: checkVersion
-                  in: query
-                  schema:
-                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -310,10 +306,6 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: ignoreIfExists
-                  in: query
-                  schema:
-                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -400,10 +392,6 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: checkVersion
-                  in: query
-                  schema:
-                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -1948,68 +1936,40 @@ components:
                     type: string
                 resource:
                     type: string
-                before:
-                    $ref: '#/components/schemas/Extension_Before'
-                instead:
-                    $ref: '#/components/schemas/Extension_Instead'
-                after:
-                    $ref: '#/components/schemas/Extension_After'
+                operations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension_Operation'
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
                     type: integer
                     format: uint32
-        Extension_After:
+        Extension_Operation:
             type: object
             properties:
-                all:
-                    $ref: '#/components/schemas/ExternalCall'
-                create:
-                    $ref: '#/components/schemas/ExternalCall'
-                update:
-                    $ref: '#/components/schemas/ExternalCall'
-                delete:
-                    $ref: '#/components/schemas/ExternalCall'
-                get:
-                    $ref: '#/components/schemas/ExternalCall'
-                list:
-                    $ref: '#/components/schemas/ExternalCall'
-                sync:
-                    type: boolean
-        Extension_Before:
-            type: object
-            properties:
-                all:
-                    $ref: '#/components/schemas/ExternalCall'
-                create:
-                    $ref: '#/components/schemas/ExternalCall'
-                update:
-                    $ref: '#/components/schemas/ExternalCall'
-                delete:
-                    $ref: '#/components/schemas/ExternalCall'
-                get:
-                    $ref: '#/components/schemas/ExternalCall'
-                list:
-                    $ref: '#/components/schemas/ExternalCall'
-                sync:
-                    type: boolean
-        Extension_Instead:
-            type: object
-            properties:
-                all:
-                    $ref: '#/components/schemas/ExternalCall'
-                create:
-                    $ref: '#/components/schemas/ExternalCall'
-                update:
-                    $ref: '#/components/schemas/ExternalCall'
-                delete:
-                    $ref: '#/components/schemas/ExternalCall'
-                get:
-                    $ref: '#/components/schemas/ExternalCall'
-                list:
-                    $ref: '#/components/schemas/ExternalCall'
-                finalize:
-                    type: boolean
+                step:
+                    enum:
+                        - BEFORE
+                        - While
+                        - AFTER
+                        - ANY
+                    type: string
+                    format: enum
+                action:
+                    enum:
+                        - CREATE
+                        - UPDATE
+                        - DELETE
+                        - GET
+                        - LIST
+                        - ALL
+                        - CREATE_UPDATE
+                        - READ
+                    type: string
+                    format: enum
+                execution:
+                    $ref: '#/components/schemas/Operation_Execution'
         ExternalCall:
             type: object
             properties:
@@ -2178,6 +2138,13 @@ components:
                 version:
                     type: integer
                     format: uint32
+        Operation_Execution:
+            type: object
+            properties:
+                call:
+                    $ref: '#/components/schemas/ExternalCall'
+                script:
+                    $ref: '#/components/schemas/Script'
         PairExpression:
             type: object
             properties:
@@ -2538,6 +2505,10 @@ components:
                         $ref: '#/components/schemas/ResourceProperty'
                 subProperty:
                     $ref: '#/components/schemas/ResourceProperty'
+                extension:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension_Operation'
                 title:
                     type: string
                 description:
@@ -2557,6 +2528,15 @@ components:
                 entity:
                     type: string
             description: source config is to configure resource and bind it to data-source and an entity inside data source. An entity is like a table on sql databases or collection on mongodb etc.
+        Script:
+            type: object
+            properties:
+                language:
+                    type: string
+                code:
+                    type: string
+                file:
+                    type: string
         SearchRecordRequest:
             type: object
             properties:

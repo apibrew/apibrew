@@ -13,6 +13,7 @@ import (
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/resources"
 	"github.com/tislib/apibrew/pkg/resources/mapping"
+	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
 	backend_proxy "github.com/tislib/apibrew/pkg/service/backend-proxy"
 	"github.com/tislib/apibrew/pkg/service/security"
 	"github.com/tislib/apibrew/pkg/util"
@@ -22,6 +23,12 @@ type backendProviderService struct {
 	systemDataSource *model.DataSource
 	backendMap       map[string]abs.Backend
 	backendIdMap     map[string]string
+	schema           *abs.Schema
+	eventHandler     backend_event_handler.BackendEventHandler
+}
+
+func (b *backendProviderService) SetSchema(schema *abs.Schema) {
+	b.schema = schema
 }
 
 func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) error {
@@ -49,7 +56,7 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 		return b.GetSystemBackend(ctx), nil
 	} else {
 		systemCtx := security.WithSystemContext(context.TODO())
-		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, &abs.Schema{}, dataSourceId)
+		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, dataSourceId)
 		util.DeNormalizeRecord(resources.DataSourceResource, record)
 
 		if err != nil {
@@ -81,12 +88,10 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 			return nil, err
 		}
 
-		records, _, err := b.GetSystemBackend(ctx).ListRecords(systemCtx, abs.ListRecordParams{
-			Resource: resources.DataSourceResource,
-			Query:    query,
-			Limit:    1,
-			Schema:   &abs.Schema{},
-		})
+		records, _, err := b.GetSystemBackend(ctx).ListRecords(systemCtx, resources.DataSourceResource, abs.ListRecordParams{
+			Query: query,
+			Limit: 1,
+		}, nil)
 
 		if err != nil {
 			return nil, err
@@ -114,9 +119,10 @@ func (b *backendProviderService) GetBackend(dataSource *model.DataSource) abs.Ba
 
 	constructor := b.GetBackendConstructor(dataSource.GetBackend())
 	instance := constructor(dataSource)
+	instance.SetSchema(b.schema)
 
 	// apply proxy
-	proxy := backend_proxy.NewBackendProxy(instance)
+	proxy := backend_proxy.NewBackendProxy(instance, b.eventHandler)
 
 	instance = proxy
 
@@ -152,5 +158,6 @@ func NewBackendProviderService() abs.BackendProviderService {
 	return &backendProviderService{
 		backendMap:   make(map[string]abs.Backend),
 		backendIdMap: make(map[string]string),
+		eventHandler: backend_event_handler.NewBackendEventHandler(),
 	}
 }

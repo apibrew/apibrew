@@ -22,6 +22,7 @@ type resourceMigrationBuilder struct {
 	handleDbError  func(ctx context.Context, err error) errors.ServiceError
 	execs          []func() errors.ServiceError
 	tableName      string
+	schema         *abs.Schema
 }
 
 func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource) (string, errors.ServiceError) {
@@ -172,7 +173,7 @@ func (r *resourceMigrationBuilder) DeleteResource(resource *model.Resource) help
 
 func (r *resourceMigrationBuilder) AddProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
-		sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig), r.prepareResourceTableColumnDefinition(r.params.MigrationPlan.CurrentResource, prop, *r.params.Schema))
+		sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig), r.prepareResourceTableColumnDefinition(r.params.MigrationPlan.CurrentResource, prop, *r.schema))
 
 		_, err := r.runner.ExecContext(r.ctx, sql)
 
@@ -216,7 +217,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(prevProperty, property *model.
 
 		if property.Type == model.ResourceProperty_REFERENCE {
 			if prevProperty.Reference == nil && property.Reference != nil {
-				referencedResource := r.params.Schema.ResourceByNamespaceSlashName["default"+"/"+property.Reference.ReferencedResource]
+				referencedResource := r.schema.ResourceByNamespaceSlashName["default"+"/"+property.Reference.ReferencedResource]
 				var refClause = ""
 				if property.Reference.Cascade {
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"

@@ -177,10 +177,9 @@ func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.Ser
 func (d *dataSourceService) Init(data *model.InitData) {
 	if len(data.InitDataSources) > 0 {
 		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
-			Namespace:      resources.DataSourceResource.Namespace,
-			Resource:       resources.DataSourceResource.Name,
-			Records:        mapping2.MapToRecord(data.InitDataSources, mapping2.DataSourceToRecord),
-			IgnoreIfExists: true,
+			Namespace: resources.DataSourceResource.Namespace,
+			Resource:  resources.DataSourceResource.Name,
+			Records:   mapping2.MapToRecord(data.InitDataSources, mapping2.DataSourceToRecord),
 		})
 
 		if err != nil {

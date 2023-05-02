@@ -24,8 +24,8 @@ func (p *postgreSqlBackendOptions) UseDbHandleError(f func(ctx context.Context, 
 }
 
 func (p postgreSqlBackendOptions) GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor {
-	return func(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams, forceMigration bool) helper.ResourceMigrationBuilder {
-		return &resourceMigrationBuilder{handleDbError: p.handleDbError, options: p, ctx: ctx, runner: runner, params: params, forceMigration: forceMigration, tableName: p.GetFullTableName(params.MigrationPlan.CurrentResource.SourceConfig)}
+	return func(ctx context.Context, runner helper.QueryRunner, schema *abs.Schema, params abs.UpgradeResourceParams, forceMigration bool) helper.ResourceMigrationBuilder {
+		return &resourceMigrationBuilder{handleDbError: p.handleDbError, options: p, ctx: ctx, runner: runner, params: params, forceMigration: forceMigration, tableName: p.GetFullTableName(params.MigrationPlan.CurrentResource.SourceConfig), schema: schema}
 	}
 }
 
