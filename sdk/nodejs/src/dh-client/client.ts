@@ -97,17 +97,15 @@ export class DhClient {
     }
 }
 
-type ExternalFunctionData = { [key: string]: any }
-
-type ExternalFunction = (req: ExternalFunctionData) => Promise<ExternalFunctionData>;
+type ExternalFunction = (req: components["schemas"]["Event"]) => Promise<components["schemas"]["Event"]>;
 
 interface FunctionCallRequest {
     name: string;
-    request: ExternalFunctionData
+    event: components["schemas"]["Event"]
 }
 
 interface FunctionCallResponse {
-    response: ExternalFunctionData
+    response: components["schemas"]["Event"]
 }
 
 interface ExtensionService {
@@ -154,13 +152,8 @@ class ExtensionServiceImpl implements ExtensionService {
         app.post('/:name', async (req: any, res: any) => {
             const name = req.params.name
 
-            const request: FunctionCallRequest = {
-                name: name,
-                request: req.body.content
-            }
-
             try {
-                const response = await this.functions[name](request.request)
+                const response = await this.functions[name](req.body.content as any)
                 res.send({
                     content: response
                 })
@@ -276,7 +269,10 @@ export class RepositoryImpl<T extends Entity> implements Repository<T> {
             params.resolveReferences = ["*"];
         }
 
-        const result = await axios.get<{ total: number, content: { properties: T }[] }>(`http://${this.client.params.Addr}/records/${this.params.namespace}/${this.params.resource}`, {
+        const result = await axios.get<{
+            total: number,
+            content: { properties: T }[]
+        }>(`http://${this.client.params.Addr}/records/${this.params.namespace}/${this.params.resource}`, {
             headers: {
                 Authorization: `Bearer ${this.client.params.token}`
             }
@@ -321,24 +317,21 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
     async onCreate(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void> {
         const extensionName = this.getExtensionName("OnCreate");
 
-        this.extension.registerFunction(extensionName, async function (data: ExternalFunctionData) {
+        this.extension.registerFunction(extensionName, async function (data: components["schemas"]["Event"]) {
             const records = []
 
-            for (const record of data.request.records) {
-                const entity = await handler(record.properties)
-                records.push({
-                    properties: entity
-                })
-            }
-
-            const response: ExternalFunctionData = {
-                "response": {
-                    '@type': 'type.googleapis.com/stub.CreateRecordResponse',
-                    "records": records
+            if (data.records) {
+                for (const record of data.records) {
+                    const entity = await handler(record.properties as T)
+                    records.push({
+                        properties: entity
+                    })
                 }
             }
 
-            return response
+            data.records = records
+
+            return data
         });
 
         const ext = {
@@ -361,24 +354,21 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
     async onUpdate(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void> {
         const extensionName = this.getExtensionName("OnUpdate");
 
-        this.extension.registerFunction(extensionName, async function (data: ExternalFunctionData) {
+        this.extension.registerFunction(extensionName, async function (data: components["schemas"]["Event"]) {
             const records = []
 
-            for (const record of data.request.records) {
-                const entity = await handler(record.properties)
-                records.push({
-                    properties: entity
-                })
-            }
-
-            const response: ExternalFunctionData = {
-                "response": {
-                    '@type': 'type.googleapis.com/stub.UpdateRecordResponse',
-                    "records": records
+            if (data.records) {
+                for (const record of data.records) {
+                    const entity = await handler(record.properties as T)
+                    records.push({
+                        properties: entity
+                    })
                 }
             }
 
-            return response
+            data.records = records
+
+            return data
         });
 
         const ext = {
@@ -401,19 +391,14 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
     async onDelete(handler: (elem: T) => Promise<T>, finalize?: boolean): Promise<void> {
         const extensionName = this.getExtensionName("OnDelete");
 
-        this.extension.registerFunction(extensionName, async (data: ExternalFunctionData) => {
-
-            for (const id of data.request.ids) {
-                await handler(await this.repository.get(id))
-            }
-
-            const response: ExternalFunctionData = {
-                "response": {
-                    '@type': 'type.googleapis.com/stub.DeleteRecordResponse',
+        this.extension.registerFunction(extensionName, async (data: components["schemas"]["Event"]) => {
+            if (data.ids) {
+                for (const id of data.ids) {
+                    await handler(await this.repository.get(id))
                 }
             }
 
-            return response
+            return data
         });
 
         const ext = {
@@ -436,16 +421,13 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
     async onGet(handler: (id: string) => Promise<T>, finalize?: boolean): Promise<void> {
         const extensionName = this.getExtensionName("OnGet");
 
-        this.extension.registerFunction(extensionName, async (data: ExternalFunctionData) => {
-            await handler(data.request.id)
+        this.extension.registerFunction(extensionName, async (data: components["schemas"]["Event"]) => {
+            const id = (data.ids!)[0]
+            await handler(id)
 
-            const response: ExternalFunctionData = {
-                "response": {
-                    '@type': 'type.googleapis.com/stub.GetRecordResponse',
-                }
-            }
+            data.records = [await handler(id)]
 
-            return response
+            return data
         });
 
         const ext = {
@@ -468,17 +450,12 @@ export class RepositoryExtensionImpl<T extends Entity> implements RepositoryExte
     async onList(handler: () => Promise<{ properties: T }[]>, finalize?: boolean): Promise<void> {
         const extensionName = this.getExtensionName("OnList");
 
-        this.extension.registerFunction(extensionName, async function (data: ExternalFunctionData) {
+        this.extension.registerFunction(extensionName, async function (data: components["schemas"]["Event"]) {
             const records = await handler()
 
-            const response: ExternalFunctionData = {
-                "response": {
-                    '@type': 'type.googleapis.com/stub.UpdateRecordResponse',
-                    "records": records
-                }
-            }
+            data.records = records
 
-            return response
+            return data
         });
 
         const ext = {

@@ -2022,8 +2022,6 @@ components:
                 offset:
                     type: integer
                     format: uint64
-                useHistory:
-                    type: boolean
                 resolveReferences:
                     type: array
                     items:

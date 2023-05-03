@@ -222,14 +222,9 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	}
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
-		var historyRecords []*model.Record
 		historyResource := util.HistoryResource(resource)
 
-		for _, rec := range records {
-			historyRecords = append(historyRecords, rec)
-		}
-
-		_, err = bck.AddRecords(txCtx, historyResource, historyRecords)
+		_, err = bck.AddRecords(txCtx, historyResource, records)
 
 		if err != nil {
 			success = false

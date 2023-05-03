@@ -44,13 +44,13 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 
 	for _, handler := range handlers {
 		if !handler.Sync {
-			go func() {
-				_, err := handler.Fn(ctx, nextEvent)
+			go func(localHandler Handler) {
+				_, err := localHandler.Fn(ctx, nextEvent)
 
 				if err != nil {
 					log.Error("Error from async handler", err)
 				}
-			}()
+			}(handler)
 		} else {
 			result, err := handler.Fn(ctx, nextEvent)
 
@@ -166,9 +166,7 @@ func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *m
 
 	if selector.Annotations != nil {
 		for key, value := range selector.Annotations {
-			var found = false
 			if incoming.Resource.Annotations[key] == value {
-				found = true
 				break
 			}
 
@@ -178,16 +176,13 @@ func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *m
 				}
 			}
 
-			if !found {
-				return false
-			}
+			return false
 		}
-
 	}
 
-	if selector.RecordSelector != nil {
-		//TODO implement me
-	}
+	//if selector.RecordSelector != nil {
+	//TODO implement me
+	//}
 
 	return true
 }
