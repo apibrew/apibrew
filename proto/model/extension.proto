@@ -8,45 +8,36 @@ import 'model/audit.proto';
 import 'model/common.proto';
 import 'model/external.proto';
 import 'model/annotations.proto';
-import 'model/script.proto';
+import 'model/event.proto';
 
 message Extension {
   string id = 1;
   string name = 2 [(model.hcl_label) = "name"];
   string description = 3;
-  string namespace = 5;
-  string resource = 6;
 
-  message Operation {
-    enum Step {
-      BEFORE = 0;
-      While = 1;
-      AFTER = 2;
-      ANY = 3;
-    }
-    enum Action {
-      CREATE = 0;
-      UPDATE = 1;
-      DELETE = 2;
-      GET = 3;
-      LIST = 4;
-      ALL = 5;
-      CREATE_UPDATE = 6; // CREATE, UPDATE
-      READ = 7; // GET, LIST
-    }
+  EventSelector selector = 4;
 
-    message Execution {
-      ExternalCall call = 1 [(model.hcl_block) = "call"];
-      model.Script script = 2 [(model.hcl_block) = "script"];
-    }
+  int32 order = 5;
 
-    Step step = 1 [(model.hcl_block) = "step"];
-    Action action = 2 [(model.hcl_block) = "action"];
-    Execution execution = 3 [(model.hcl_block) = "execution"];
-  }
+  /*
+    If true, this will be last event on operation list
+   */
+  bool finalizes = 9;
 
-  repeated Operation operations = 7 [(model.hcl_block) = "operations"];
+  /*
+    If true, backend will wait for processing this event before sending next one on operation list
+   */
+  bool sync = 10;
+
+  /*
+    If true, extension will be required to respond to this event
+   */
+
+  bool responds = 11;
+
+  ExternalCall call = 7;
 
   AuditData auditData = 101;
   uint32 version = 102;
+  map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/resources"
 	"github.com/tislib/apibrew/pkg/resources/mapping"
-	"github.com/tislib/apibrew/pkg/service/handler"
+	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
 	"github.com/tislib/apibrew/pkg/service/security"
 	"time"
 )
@@ -19,9 +19,9 @@ type extensionService struct {
 	ServiceName            string
 	backendProviderService abs.BackendProviderService
 	extensionVersionMap    map[string]uint32
-	genericHandler         *handler.GenericHandler
-	extensionHandlerMap    map[*model.Extension]*handler.BaseHandler
+	extensionHandlerMap    map[*model.Extension]*backend_event_handler.Handler
 	externalService        abs.ExternalService
+	backendEventHandler    backend_event_handler.BackendEventHandler
 }
 
 func (d *extensionService) List(ctx context.Context) ([]*model.Extension, errors.ServiceError) {
@@ -147,8 +147,15 @@ func (d *extensionService) RegisterExtension(extension *model.Extension) {
 }
 
 func (d *extensionService) UnRegisterExtension(extension *model.Extension) {
-	d.genericHandler.Unregister(d.extensionHandlerMap[extension])
+	if d.extensionHandlerMap[extension] == nil {
+		log.Warn("Trying to unregister extension that is not registered")
+		return
+	}
+
+	d.backendEventHandler.UnRegisterHandler(*d.extensionHandlerMap[extension])
+
 	delete(d.extensionHandlerMap, extension)
+	delete(d.extensionVersionMap, extension.Name)
 }
 
 func (d *extensionService) configureExtension(extension *model.Extension) {
@@ -158,20 +165,34 @@ func (d *extensionService) configureExtension(extension *model.Extension) {
 
 	d.extensionVersionMap[extension.Name] = extension.Version
 
-	d.genericHandler.RegisterWithSelector(
-		d.prepareExtensionHandler(extension),
-		handler.ResourceSelector(&model.Resource{Namespace: extension.Namespace, Name: extension.Resource}),
-	)
+	extensionHandler := d.prepareExtensionHandler(extension)
+	d.extensionHandlerMap[extension] = &extensionHandler
+
+	d.backendEventHandler.RegisterHandler(*d.extensionHandlerMap[extension])
 }
 
-func NewExtensionService(recordService abs.RecordService, backendProviderService abs.BackendProviderService, genericHandler *handler.GenericHandler, externalService abs.ExternalService) abs.ExtensionService {
+func (d *extensionService) prepareExtensionHandler(extension *model.Extension) backend_event_handler.Handler {
+	return backend_event_handler.Handler{
+		Id:        "extension-" + extension.Id,
+		Selector:  extension.Selector,
+		Order:     int(extension.Order),
+		Finalizes: extension.Finalizes,
+		Sync:      extension.Sync,
+		Responds:  extension.Responds,
+		Fn: func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+			return d.externalService.Call(ctx, extension.Call, event)
+		},
+	}
+}
+
+func NewExtensionService(recordService abs.RecordService, backendProviderService abs.BackendProviderService, backendEventHandler backend_event_handler.BackendEventHandler, externalService abs.ExternalService) abs.ExtensionService {
 	return &extensionService{
 		ServiceName:            "ExtensionService",
 		extensionVersionMap:    make(map[string]uint32),
-		extensionHandlerMap:    make(map[*model.Extension]*handler.BaseHandler),
+		extensionHandlerMap:    make(map[*model.Extension]*backend_event_handler.Handler),
 		recordService:          recordService,
 		backendProviderService: backendProviderService,
-		genericHandler:         genericHandler,
+		backendEventHandler:    backendEventHandler,
 		externalService:        externalService,
 	}
 }

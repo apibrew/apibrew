@@ -5,7 +5,7 @@ import (
 	"github.com/tislib/apibrew/pkg/abs"
 	"github.com/tislib/apibrew/pkg/logging"
 	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/service/handler"
+	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
 	"github.com/tislib/apibrew/pkg/service/handlers"
 )
 
@@ -18,13 +18,12 @@ type App struct {
 	backendProviderService   abs.BackendProviderService
 	namespaceService         abs.NamespaceService
 	userService              abs.UserService
-	genericHandler           *handler.GenericHandler
-	stdHandler               handlers.StdHandler
+	stdHandler               handlers.StdHandlers
 	watchService             abs.WatchService
 	extensionService         abs.ExtensionService
-	pluginService            abs.PluginService
 	resourceMigrationService abs.ResourceMigrationService
 	externalService          abs.ExternalService
+	backendEventHandler      backend_event_handler.BackendEventHandler
 }
 
 func (app *App) GetWatchService() abs.WatchService {
@@ -63,13 +62,10 @@ func (app *App) GetDataSourceService() abs.DataSourceService {
 	return app.dataSourceService
 }
 
-func (app *App) GetPluginService() abs.PluginService {
-	return app.pluginService
-}
-
 func (app *App) Init() {
-	app.backendProviderService = NewBackendProviderService()
-	app.genericHandler = handler.NewGenericHandler()
+	app.backendEventHandler = backend_event_handler.NewBackendEventHandler()
+
+	app.backendProviderService = NewBackendProviderService(app.backendEventHandler)
 	app.resourceMigrationService = NewResourceMigrationService()
 
 	app.resourceService = NewResourceService(app.backendProviderService, app.resourceMigrationService)
@@ -79,11 +75,10 @@ func (app *App) Init() {
 
 	app.namespaceService = NewNamespaceService(app.resourceService, app.recordService, app.backendProviderService)
 	app.userService = NewUserService(app.resourceService, app.recordService, app.backendProviderService)
-	app.stdHandler = handlers.NewStdHandler(app.genericHandler)
-	app.watchService = NewWatchService(app.genericHandler)
+	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler)
+	app.watchService = NewWatchService(app.backendEventHandler)
 	app.externalService = NewExternalService()
-	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.genericHandler, app.externalService)
-	app.pluginService = NewPluginService()
+	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.backendEventHandler, app.externalService)
 	app.authenticationService = NewAuthenticationService(app.recordService)
 
 	app.initServices()
@@ -99,7 +94,6 @@ func (app *App) initServices() {
 	app.stdHandler.Init(app.initData)
 
 	app.extensionService.Init(app.initData)
-	app.pluginService.Init(app.initData)
 }
 
 func (app *App) SetInitData(data *model.InitData) {
