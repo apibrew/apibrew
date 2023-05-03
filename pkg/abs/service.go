@@ -36,10 +36,6 @@ type DataSourceService interface {
 	Delete(ctx context.Context, ids []string) errors.ServiceError
 }
 
-type PluginService interface {
-	Init(data *model.InitData)
-}
-
 type RecordService interface {
 	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
 	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
@@ -83,7 +79,7 @@ type UserService interface {
 }
 
 type WatchService interface {
-	Watch(ctx context.Context, params WatchParams) <-chan *model.WatchMessage
+	Watch(ctx context.Context, params WatchParams) <-chan *model.Event
 }
 
 type NamespaceService interface {
@@ -107,13 +103,11 @@ type ExtensionService interface {
 }
 
 type ExternalService interface {
-	Call(ctx context.Context, all *model.ExternalCall, in map[string]proto.Message, out map[string]proto.Message) errors.ServiceError
+	Call(ctx context.Context, all *model.ExternalCall, event *model.Event) (*model.Event, errors.ServiceError)
 }
 
 type WatchParams struct {
-	Namespace  string
-	Resource   string
-	Query      *model.BooleanExpression
+	Selector   *model.EventSelector
 	BufferSize int
 }
 

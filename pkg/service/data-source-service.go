@@ -9,6 +9,7 @@ import (
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/resources"
 	mapping2 "github.com/tislib/apibrew/pkg/resources/mapping"
+	"github.com/tislib/apibrew/pkg/service/annotations"
 	"github.com/tislib/apibrew/pkg/service/security"
 )
 
@@ -176,7 +177,7 @@ func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.Ser
 
 func (d *dataSourceService) Init(data *model.InitData) {
 	if len(data.InitDataSources) > 0 {
-		_, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
+		_, err := d.recordService.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordCreateParams{
 			Namespace: resources.DataSourceResource.Namespace,
 			Resource:  resources.DataSourceResource.Name,
 			Records:   mapping2.MapToRecord(data.InitDataSources, mapping2.DataSourceToRecord),

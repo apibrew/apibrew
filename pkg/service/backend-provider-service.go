@@ -154,10 +154,10 @@ func (b *backendProviderService) Init(data *model.InitData) {
 	b.systemDataSource.Name = "system"
 }
 
-func NewBackendProviderService() abs.BackendProviderService {
+func NewBackendProviderService(eventHandler backend_event_handler.BackendEventHandler) abs.BackendProviderService {
 	return &backendProviderService{
 		backendMap:   make(map[string]abs.Backend),
 		backendIdMap: make(map[string]string),
-		eventHandler: backend_event_handler.NewBackendEventHandler(),
+		eventHandler: eventHandler,
 	}
 }

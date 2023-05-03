@@ -30,25 +30,120 @@ func (b backendProxy) DestroyDataSource(ctx context.Context) {
 }
 
 func (b backendProxy) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
-	b.eventHandler.OnAddRecords(ctx, resource, records)
+	endEvent, err := b.eventHandler.HandleInternalOperation(ctx, b.eventHandler.PrepareInternalEvent(ctx, &model.Event{
+		Action:   model.Event_CREATE,
+		Resource: resource,
+		Records:  records,
+	}),
+		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
+			result, err := b.backend.AddRecords(ctx, resource, records)
 
-	return b.backend.AddRecords(ctx, resource, records)
+			passedEvent.Records = result
+
+			return passedEvent, err
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return endEvent.Records, nil
 }
 
 func (b backendProxy) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
-	return b.backend.UpdateRecords(ctx, resource, records)
+	endEvent, err := b.eventHandler.HandleInternalOperation(ctx, b.eventHandler.PrepareInternalEvent(ctx, &model.Event{
+		Action:   model.Event_UPDATE,
+		Resource: resource,
+		Records:  records,
+	}),
+		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
+			result, err := b.backend.UpdateRecords(ctx, resource, records)
+
+			passedEvent.Records = result
+
+			return passedEvent, err
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return endEvent.Records, nil
 }
 
 func (b backendProxy) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
-	return b.backend.GetRecord(ctx, resource, id)
+	endEvent, err := b.eventHandler.HandleInternalOperation(ctx, b.eventHandler.PrepareInternalEvent(ctx, &model.Event{
+		Action:   model.Event_GET,
+		Resource: resource,
+		Ids:      []string{id},
+	}),
+		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
+			result, err := b.backend.GetRecord(ctx, resource, id)
+
+			passedEvent.Records = []*model.Record{result}
+
+			return passedEvent, err
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(endEvent.Records) == 0 {
+		return nil, nil
+	}
+
+	return endEvent.Records[0], nil
 }
 
 func (b backendProxy) DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError {
-	return b.backend.DeleteRecords(ctx, resource, list)
+	_, err := b.eventHandler.HandleInternalOperation(ctx, b.eventHandler.PrepareInternalEvent(ctx, &model.Event{
+		Action:   model.Event_DELETE,
+		Resource: resource,
+		Ids:      list,
+	}),
+		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
+			err := b.backend.DeleteRecords(ctx, resource, list)
+
+			return passedEvent, err
+		})
+
+	return err
 }
 
 func (b backendProxy) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
-	return b.backend.ListRecords(ctx, resource, params, resultChan)
+	var total uint32
+	endEvent, err := b.eventHandler.HandleInternalOperation(ctx, b.eventHandler.PrepareInternalEvent(ctx, &model.Event{
+		Action:   model.Event_LIST,
+		Resource: resource,
+		RecordSearchParams: &model.Event_RecordSearchParams{
+			Query:             params.Query,
+			Limit:             params.Limit,
+			Offset:            params.Offset,
+			ResolveReferences: params.ResolveReferences,
+		},
+	}),
+		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
+			result, localTotal, err := b.backend.ListRecords(ctx, resource, params, resultChan)
+
+			if localTotal != 0 {
+				total = localTotal
+			}
+
+			passedEvent.Records = result
+
+			return passedEvent, err
+		})
+
+	if err != nil {
+		return nil, total, err
+	}
+
+	if total == 0 {
+		total = uint32(len(endEvent.Records))
+	}
+
+	return endEvent.Records, total, nil
 }
 
 func (b backendProxy) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError) {

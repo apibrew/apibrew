@@ -2,29 +2,28 @@ package handlers
 
 import (
 	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/resources"
-	"github.com/tislib/apibrew/pkg/service/handler"
+	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
 )
 
-type StdHandler interface {
+type StdHandlers interface {
 	Init(data *model.InitData)
 }
 
-type stdHandler struct {
-	genericHandler    *handler.GenericHandler
-	dataSourceHandler *dataSourceHandler
-	userHandler       *userHandler
+type stdHandlers struct {
+	backendEventHandler backend_event_handler.BackendEventHandler
+	dataSourceHandler   *dataSourceHandler
+	userHandler         *userHandler
 }
 
-func (s *stdHandler) Init(data *model.InitData) {
-	s.genericHandler.RegisterWithSelector(s.dataSourceHandler.prepareHandler(), handler.ResourceSelector(resources.DataSourceResource))
-	s.genericHandler.RegisterWithSelector(s.userHandler.prepareHandler(), handler.ResourceSelector(resources.UserResource))
+func (s *stdHandlers) Init(data *model.InitData) {
+	s.dataSourceHandler.Register(s.backendEventHandler)
+	s.userHandler.Register(s.backendEventHandler)
 }
 
-func NewStdHandler(genericHandler *handler.GenericHandler) StdHandler {
-	return &stdHandler{
-		genericHandler:    genericHandler,
-		dataSourceHandler: &dataSourceHandler{},
-		userHandler:       &userHandler{},
+func NewStdHandler(backendEventHandler backend_event_handler.BackendEventHandler) StdHandlers {
+	return &stdHandlers{
+		backendEventHandler: backendEventHandler,
+		dataSourceHandler:   &dataSourceHandler{},
+		userHandler:         &userHandler{},
 	}
 }

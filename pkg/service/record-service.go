@@ -48,10 +48,6 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, err
 	}
 
-	if resource.Virtual {
-		return nil, 0, virtualResourceBackendAccessError
-	}
-
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {

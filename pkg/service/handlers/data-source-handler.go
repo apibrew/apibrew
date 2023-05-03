@@ -5,11 +5,10 @@ import (
 	"github.com/tislib/apibrew/pkg/abs"
 	"github.com/tislib/apibrew/pkg/errors"
 	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/service/handler"
+	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
 )
 
 type dataSourceHandler struct {
-	handler.BaseHandler
 }
 
 func (h *dataSourceHandler) BeforeCreate(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams) errors.ServiceError {
@@ -28,9 +27,6 @@ func (h *dataSourceHandler) BeforeList(ctx context.Context, resource *model.Reso
 	return nil
 }
 
-func (h *dataSourceHandler) prepareHandler() *handler.BaseHandler {
-	return &handler.BaseHandler{
-		BeforeCreate: h.BeforeCreate,
-		BeforeList:   h.BeforeList,
-	}
+func (h *dataSourceHandler) Register(eventHandler backend_event_handler.BackendEventHandler) {
+
 }
