@@ -54,6 +54,10 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, err
 	}
 
+	if resource.Virtual {
+		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
+	}
+
 	if params.UseHistory {
 		if !annotations.IsEnabled(resource, annotations.KeepHistory) {
 			return nil, 0, errors.LogicalError.WithDetails("History is not enabled on resource")
@@ -463,14 +467,14 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	if resource.Virtual {
-		return nil, virtualResourceBackendAccessError
-	}
-
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		return nil, err
+	}
+
+	if resource.Virtual {
+		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
 	}
 
 	res, err := bck.GetRecord(ctx, resource, id)
@@ -566,14 +570,14 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 		return errors.RecordValidationError.WithMessage("Immutable resource cannot be modified or deleted: " + params.Resource)
 	}
 
-	if resource.Virtual {
-		return virtualResourceBackendAccessError
-	}
-
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		return err
+	}
+
+	if resource.Virtual {
+		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
 	}
 
 	if err = bck.DeleteRecords(ctx, resource, params.Ids); err != nil {
