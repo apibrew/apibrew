@@ -18,7 +18,7 @@ import (
 	"strings"
 )
 
-func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema) (bool, errors.ServiceError) {
+func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	query := fmt.Sprintf("INSERT INTO %s", p.getFullTableName(resource.SourceConfig))
@@ -44,7 +44,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 
 				val, serviceError := p.options.DbEncode(property, packedVal)
 				if serviceError != nil {
-					return false, serviceError
+					return serviceError
 				}
 
 				if property.Type == model.ResourceProperty_REFERENCE {
@@ -52,7 +52,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 					item, err := p.resolveReference(packedVal.GetStructValue().Fields, args.Add, referencedResource)
 
 					if err != nil {
-						return false, err
+						return err
 					}
 
 					row = append(row, item)
@@ -82,7 +82,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 		logger.Error(err)
 	}
 
-	return true, p.handleDbError(ctx, err)
+	return p.handleDbError(ctx, err)
 }
 
 func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, argPlaceHolder func(val interface{}) string, referencedResource *model.Resource) (string, errors.ServiceError) {

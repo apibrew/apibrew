@@ -331,7 +331,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 			util.InitRecord(ctx, resources.ResourcePropertyResource, propertyCreateRecord)
 			util.NormalizeRecord(resources.ResourcePropertyResource, propertyCreateRecord)
 
-			_, _, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, resources.ResourcePropertyResource, []*model.Record{propertyCreateRecord})
+			_, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, resources.ResourcePropertyResource, []*model.Record{propertyCreateRecord})
 
 			if err != nil {
 				return err
@@ -468,7 +468,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	util.InitRecord(ctx, resources.ResourceResource, resourceRecord)
 	util.NormalizeRecord(resources.ResourceResource, resourceRecord)
 
-	result, _, err := systemBackend.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
+	result, err := systemBackend.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
 
 	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
 		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exiss: " + resource.Name))
@@ -512,7 +512,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 			return record
 		})
 
-		_, _, err = systemBackend.AddRecords(txCtx, resources.ResourcePropertyResource, propertyRecords)
+		_, err = systemBackend.AddRecords(txCtx, resources.ResourcePropertyResource, propertyRecords)
 
 		if err != nil {
 			return nil, err

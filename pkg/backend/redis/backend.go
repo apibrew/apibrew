@@ -34,15 +34,14 @@ func (r redisBackend) DestroyDataSource(ctx context.Context) {
 
 }
 
-func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, []bool, errors.ServiceError) {
-	var inserted []bool
+func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
 	for _, record := range records {
 		data, err := proto.Marshal(record)
 
 		if err != nil {
 			log.Warn(err)
 
-			return nil, nil, r.handleError(err)
+			return nil, r.handleError(err)
 		}
 
 		_, err = r.rdb.Set(ctx, r.getKey(resource, record.Id), data, time.Hour*10000).Result()
@@ -50,12 +49,11 @@ func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, 
 		if err != nil {
 			log.Warn(err)
 
-			return nil, nil, r.handleError(err)
+			return nil, r.handleError(err)
 		}
-		inserted = append(inserted, true)
 	}
 
-	return records, inserted, nil
+	return records, nil
 }
 
 func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {

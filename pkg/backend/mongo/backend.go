@@ -54,23 +54,18 @@ func (r mongoBackend) DestroyDataSource(ctx context.Context) {
 	}
 }
 
-func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, []bool, errors.ServiceError) {
-	var inserted []bool
+func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
 	var documents []interface{}
 	for _, record := range records {
 		documents = append(documents, r.recordToDocument(resource, record))
 	}
-	res, err := r.getCollection(resource).InsertMany(ctx, documents)
+	_, err := r.getCollection(resource).InsertMany(ctx, documents)
 
 	if err != nil {
-		return nil, nil, r.handleError(err)
+		return nil, r.handleError(err)
 	}
 
-	for range res.InsertedIDs {
-		inserted = append(inserted, true)
-	}
-
-	return records, inserted, nil
+	return records, nil
 }
 
 func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.Record) bson.M {

@@ -48,7 +48,7 @@ func (d *extensionService) Create(ctx context.Context, extensions []*model.Exten
 
 	// insert records via resource service
 	records := mapping.MapToRecord(extensions, mapping.ExtensionToRecord)
-	result, _, err := d.recordService.Create(ctx, abs.RecordCreateParams{
+	result, err := d.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.ExtensionResource.Namespace,
 		Resource:  resources.ExtensionResource.Name,
 		Records:   records,

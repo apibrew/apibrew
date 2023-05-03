@@ -107,21 +107,21 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 	return records, total, nil
 }
 
-func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
+func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParams) ([]*model.Record, errors.ServiceError) {
 	if params.Resource == "" {
-		return nil, nil, errors.RecordValidationError.WithMessage("Resource name is empty")
+		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
 
 	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if resource == nil {
-		return nil, nil, errors.ResourceNotFoundError
+		return nil, errors.ResourceNotFoundError
 	}
 
 	return r.CreateWithResource(ctx, resource, params)
 }
 
-func (r *recordService) CreateWithResource(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError) {
+func (r *recordService) CreateWithResource(ctx context.Context, resource *model.Resource, params abs.RecordCreateParams) ([]*model.Record, errors.ServiceError) {
 	var result []*model.Record
 
 	var err errors.ServiceError
@@ -134,15 +134,15 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		Records:   &params.Records,
 		Operation: model.OperationType_OPERATION_TYPE_CREATE,
 	}); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if len(params.Records) == 0 {
-		return nil, nil, nil
+		return nil, nil
 	}
 
 	if isResourceRelatedResource(resource) {
-		return nil, nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
+		return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
 
 	for _, record := range params.Records {
@@ -152,7 +152,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	}
 
 	if err = validateRecords(resource, params.Records, false); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	// prepare default values
@@ -176,28 +176,27 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	}
 
 	var records []*model.Record
-	var inserted []bool
 
 	if resource.Virtual {
-		return nil, nil, virtualResourceBackendAccessError
+		return nil, virtualResourceBackendAccessError
 	}
 
 	if params.Records == nil {
-		return nil, nil, nil
+		return nil, nil
 	}
 
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
 
 	if err != nil {
 		success = false
-		return nil, []bool{}, err
+		return nil, err
 	}
 
 	tx, err := bck.BeginTransaction(ctx, false)
 
 	if err != nil {
 		success = false
-		return nil, []bool{}, err
+		return nil, err
 	}
 
 	txCtx = context.WithValue(ctx, abs.TransactionContextKey, tx)
@@ -219,34 +218,37 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		}
 	}()
 
-	records, inserted, err = bck.AddRecords(txCtx, resource, params.Records)
+	records, err = bck.AddRecords(txCtx, resource, params.Records)
+
+	if annotations.IsEnabled(resource, annotations.KeepHistory) && annotations.IsEnabledOnCtx(ctx, annotations.IgnoreIfExists) {
+		success = false
+		return nil, errors.RecordValidationError.WithMessage("IgnoreIfExists must be disabled if resource has keepHistory enabled")
+	}
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
 		var historyRecords []*model.Record
 		historyResource := util.HistoryResource(resource)
 
-		for index, rec := range inserted {
-			if rec {
-				historyRecords = append(historyRecords, records[index])
-			}
+		for _, rec := range records {
+			historyRecords = append(historyRecords, rec)
 		}
 
-		_, _, err = bck.AddRecords(txCtx, historyResource, historyRecords)
+		_, err = bck.AddRecords(txCtx, historyResource, historyRecords)
 
 		if err != nil {
 			success = false
-			return nil, nil, err
+			return nil, err
 		}
 	}
 
 	if err != nil {
 		success = false
-		return nil, nil, err
+		return nil, err
 	}
 
 	result = append(result, records...)
 
-	return result, inserted, nil
+	return result, nil
 }
 
 func isResourceRelatedResource(resource *model.Resource) bool {
@@ -295,7 +297,7 @@ func (r *recordService) Apply(ctx context.Context, params abs.RecordUpdateParams
 		}
 
 		if existingRecord == nil {
-			records, _, err := r.CreateWithResource(ctx, resource, abs.RecordCreateParams{
+			records, err := r.CreateWithResource(ctx, resource, abs.RecordCreateParams{
 				Namespace: resource.Namespace,
 				Resource:  resource.Name,
 				Records:   []*model.Record{record},
@@ -434,7 +436,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	}
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
-		_, _, err = bck.AddRecords(txCtx, util.HistoryResource(resource), records)
+		_, err = bck.AddRecords(txCtx, util.HistoryResource(resource), records)
 
 		if err != nil {
 			success = false
