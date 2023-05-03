@@ -17,400 +17,46 @@ export interface paths {
      */
     post: operations["authenticationAuthenticate"];
   };
-  "/city": {
-    /**
-     * city 
-     * @description Api for city - get list
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["list-city"];
-          };
-        };
-      };
-    };
-    /**
-     * city 
-     * @description Api for city - create item
-     */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/city.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/city.json"];
-          };
-        };
-      };
-    };
+  "/records/read_stream": {
+    /** ReadStream */
+    post: operations["Record_ReadStream"];
   };
-  "/city/{id}": {
-    /**
-     * city 
-     * @description Api for city - get item
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-city"];
-          };
-        };
-      };
-    };
-    /**
-     * city 
-     * @description Api for city - update item
-     */
-    put: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/city.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/city.json"];
-          };
-        };
-      };
-    };
-    /**
-     * city 
-     * @description Api for city - delete item
-     */
-    delete: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-city"];
-          };
-        };
-      };
-    };
+  "/records/{namespace}/{resource}": {
+    /** List */
+    get: operations["Record_List"];
+    /** Create */
+    post: operations["Record_Create"];
+    /** Apply */
+    patch: operations["Record_Apply"];
   };
-  "/country": {
-    /**
-     * country 
-     * @description Api for country - get list
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["list-country"];
-          };
-        };
-      };
-    };
-    /**
-     * country 
-     * @description Api for country - create item
-     */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/country.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/country.json"];
-          };
-        };
-      };
-    };
+  "/records/{namespace}/{resource}/_bulk": {
+    /** Update */
+    put: operations["Record_Update"];
+    /** Create */
+    post: operations["Record_Create"];
+    /** Delete */
+    delete: operations["Record_Delete"];
+    /** Apply */
+    patch: operations["Record_Apply"];
   };
-  "/country/{id}": {
+  "/records/{namespace}/{resource}/_multi": {
     /**
-     * country 
-     * @description Api for country - get item
+     * UpdateMulti 
+     * @description Not implemented yet
      */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-country"];
-          };
-        };
-      };
-    };
-    /**
-     * country 
-     * @description Api for country - update item
-     */
-    put: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/country.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/country.json"];
-          };
-        };
-      };
-    };
-    /**
-     * country 
-     * @description Api for country - delete item
-     */
-    delete: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-country"];
-          };
-        };
-      };
-    };
+    post: operations["Record_UpdateMulti"];
   };
-  "/country2": {
-    /**
-     * country2 
-     * @description Api for country2 - get list
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["list-country2"];
-          };
-        };
-      };
-    };
-    /**
-     * country2 
-     * @description Api for country2 - create item
-     */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/country2.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/country2.json"];
-          };
-        };
-      };
-    };
+  "/records/{namespace}/{resource}/_search": {
+    /** Search */
+    post: operations["Record_Search"];
   };
-  "/country2/{id}": {
-    /**
-     * country2 
-     * @description Api for country2 - get item
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-country2"];
-          };
-        };
-      };
-    };
-    /**
-     * country2 
-     * @description Api for country2 - update item
-     */
-    put: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/country2.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/country2.json"];
-          };
-        };
-      };
-    };
-    /**
-     * country2 
-     * @description Api for country2 - delete item
-     */
-    delete: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-country2"];
-          };
-        };
-      };
-    };
-  };
-  "/income": {
-    /**
-     * income 
-     * @description Api for income - get list
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["list-income"];
-          };
-        };
-      };
-    };
-    /**
-     * income 
-     * @description Api for income - create item
-     */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/income.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/income.json"];
-          };
-        };
-      };
-    };
-  };
-  "/income/{id}": {
-    /**
-     * income 
-     * @description Api for income - get item
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-income"];
-          };
-        };
-      };
-    };
-    /**
-     * income 
-     * @description Api for income - update item
-     */
-    put: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/income.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/income.json"];
-          };
-        };
-      };
-    };
-    /**
-     * income 
-     * @description Api for income - delete item
-     */
-    delete: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-income"];
-          };
-        };
-      };
-    };
-  };
-  "/rich-test-3995": {
-    /**
-     * rich-test-3995 
-     * @description Api for rich-test-3995 - get list
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["list-rich-test-3995"];
-          };
-        };
-      };
-    };
-    /**
-     * rich-test-3995 
-     * @description Api for rich-test-3995 - create item
-     */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/rich-test-3995.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/rich-test-3995.json"];
-          };
-        };
-      };
-    };
-  };
-  "/rich-test-3995/{id}": {
-    /**
-     * rich-test-3995 
-     * @description Api for rich-test-3995 - get item
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-rich-test-3995"];
-          };
-        };
-      };
-    };
-    /**
-     * rich-test-3995 
-     * @description Api for rich-test-3995 - update item
-     */
-    put: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/rich-test-3995.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/rich-test-3995.json"];
-          };
-        };
-      };
-    };
-    /**
-     * rich-test-3995 
-     * @description Api for rich-test-3995 - delete item
-     */
-    delete: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-rich-test-3995"];
-          };
-        };
-      };
-    };
+  "/records/{namespace}/{resource}/{id}": {
+    /** Get */
+    get: operations["Record_Get"];
+    /** Update */
+    put: operations["Record_Update"];
+    /** Delete */
+    delete: operations["Record_Delete"];
   };
   "/system/data-sources": {
     /** List */
@@ -427,15 +73,25 @@ export interface paths {
     get: operations["DataSource_Get"];
   };
   "/system/data-sources/{id}/_prepare_entity": {
-    /** PrepareResourceFromEntity */
+    /**
+     * PrepareResourceFromEntity 
+     * @description PrepareResourceFromEntity will return resource from data source based on entity.
+     *  It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
+     */
     post: operations["DataSource_PrepareResourceFromEntity"];
   };
   "/system/data-sources/{id}/_status": {
-    /** Status */
+    /**
+     * Status 
+     * @description Status will return connection status of data source
+     */
     get: operations["DataSource_Status"];
   };
   "/system/data-sources/{id}/entities": {
-    /** ListEntities */
+    /**
+     * ListEntities 
+     * @description List entities will return all entities from data source
+     */
     get: operations["DataSource_ListEntities"];
   };
   "/system/extensions": {
@@ -477,7 +133,10 @@ export interface paths {
     delete: operations["Resource_Delete"];
   };
   "/system/resources/_migrate": {
-    /** PrepareResourceMigrationPlan */
+    /**
+     * PrepareResourceMigrationPlan 
+     * @description PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration.
+     */
     post: operations["Resource_PrepareResourceMigrationPlan"];
   };
   "/system/resources/{id}": {
@@ -511,164 +170,6 @@ export interface paths {
      */
     post: operations["Watch_Watch"];
   };
-  "/tax_rate": {
-    /**
-     * tax_rate 
-     * @description Api for tax_rate - get list
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["list-tax_rate"];
-          };
-        };
-      };
-    };
-    /**
-     * tax_rate 
-     * @description Api for tax_rate - create item
-     */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/tax_rate.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/tax_rate.json"];
-          };
-        };
-      };
-    };
-  };
-  "/tax_rate/{id}": {
-    /**
-     * tax_rate 
-     * @description Api for tax_rate - get item
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-tax_rate"];
-          };
-        };
-      };
-    };
-    /**
-     * tax_rate 
-     * @description Api for tax_rate - update item
-     */
-    put: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/tax_rate.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/tax_rate.json"];
-          };
-        };
-      };
-    };
-    /**
-     * tax_rate 
-     * @description Api for tax_rate - delete item
-     */
-    delete: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-tax_rate"];
-          };
-        };
-      };
-    };
-  };
-  "/virtual-resource": {
-    /**
-     * virtualResource 
-     * @description Api for virtualResource - get list
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["list-virtual-resource"];
-          };
-        };
-      };
-    };
-    /**
-     * virtualResource 
-     * @description Api for virtualResource - create item
-     */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/virtualResource.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/virtualResource.json"];
-          };
-        };
-      };
-    };
-  };
-  "/virtual-resource/{id}": {
-    /**
-     * virtualResource 
-     * @description Api for virtualResource - get item
-     */
-    get: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-virtual-resource"];
-          };
-        };
-      };
-    };
-    /**
-     * virtualResource 
-     * @description Api for virtualResource - update item
-     */
-    put: {
-      requestBody: {
-        content: {
-          "application/json": external["resources/default/virtualResource.json"];
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": external["resources/default/virtualResource.json"];
-          };
-        };
-      };
-    };
-    /**
-     * virtualResource 
-     * @description Api for virtualResource - delete item
-     */
-    delete: {
-      responses: {
-        200: {
-          content: {
-            "application/json": components["schemas"]["item-virtual-resource"];
-          };
-        };
-      };
-    };
-  };
 }
 
 export type webhooks = Record<string, never>;
@@ -688,58 +189,60 @@ export interface components {
       records?: (components["schemas"]["Record"])[];
     };
     AuditData: {
-      createdBy?: string;
       /** Format: date-time */
       createdOn?: string;
-      updatedBy?: string;
       /** Format: date-time */
       updatedOn?: string;
+      createdBy?: string;
+      updatedBy?: string;
     };
+    /** @description AuthenticationRequest is the request for authentication */
     AuthenticationRequest: {
+      username?: string;
       password?: string;
       /**
        * Format: enum 
+       * @description Token Lifespan 
        * @enum {string}
        */
       term?: "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
-      username?: string;
     };
     AuthenticationResponse: {
       token?: components["schemas"]["Token"];
     };
     BooleanExpression: {
       and?: components["schemas"]["CompoundBooleanExpression"];
+      or?: components["schemas"]["CompoundBooleanExpression"];
+      not?: components["schemas"]["BooleanExpression"];
       equal?: components["schemas"]["PairExpression"];
+      lessThan?: components["schemas"]["PairExpression"];
       greaterThan?: components["schemas"]["PairExpression"];
+      lessThanOrEqual?: components["schemas"]["PairExpression"];
       greaterThanOrEqual?: components["schemas"]["PairExpression"];
       in?: components["schemas"]["PairExpression"];
       isNull?: components["schemas"]["Expression"];
-      lessThan?: components["schemas"]["PairExpression"];
-      lessThanOrEqual?: components["schemas"]["PairExpression"];
-      not?: components["schemas"]["BooleanExpression"];
-      or?: components["schemas"]["CompoundBooleanExpression"];
       regexMatch?: components["schemas"]["RegexMatchExpression"];
     };
     CompoundBooleanExpression: {
       expressions?: (components["schemas"]["BooleanExpression"])[];
     };
     CreateDataSourceRequest: {
-      dataSources?: (components["schemas"]["DataSource"])[];
       token?: string;
+      dataSources?: (components["schemas"]["DataSource"])[];
     };
     CreateDataSourceResponse: {
       dataSources?: (components["schemas"]["DataSource"])[];
     };
     CreateExtensionRequest: {
-      extensions?: (components["schemas"]["Extension"])[];
       token?: string;
+      extensions?: (components["schemas"]["Extension"])[];
     };
     CreateExtensionResponse: {
       extensions?: (components["schemas"]["Extension"])[];
     };
     CreateNamespaceRequest: {
-      Namespaces?: (components["schemas"]["Namespace"])[];
       token?: string;
+      Namespaces?: (components["schemas"]["Namespace"])[];
     };
     CreateNamespaceResponse: {
       Namespaces?: (components["schemas"]["Namespace"])[];
@@ -749,18 +252,20 @@ export interface components {
       value?: components["schemas"]["GoogleProtobufValue"];
     };
     CreateRecordResponse: {
-      inserted?: (boolean)[];
       record?: components["schemas"]["Record"];
       records?: (components["schemas"]["Record"])[];
+      inserted?: (boolean)[];
     };
     CreateResourceRequest: {
+      token?: string;
+      resources?: (components["schemas"]["Resource"])[];
+      /** @description if true, it will try to migrate the resource to the data source, if it is false, resource will be only created, backend will not be affected. */
+      doMigration?: boolean;
+      /** @description if true, it will force the migration, if it is false, it will not migrate if there is a conflict. Force migration will also do following things: - if column/index is deleted from resource, it will delete it from backend */
+      forceMigration?: boolean;
       annotations?: {
         [key: string]: string | undefined;
       };
-      doMigration?: boolean;
-      forceMigration?: boolean;
-      resources?: (components["schemas"]["Resource"])[];
-      token?: string;
     };
     CreateResourceResponse: {
       resources?: (components["schemas"]["Resource"])[];
@@ -770,109 +275,139 @@ export interface components {
       users?: (components["schemas"]["User"])[];
     };
     DataSource: {
-      auditData?: components["schemas"]["AuditData"];
+      id?: string;
       /**
        * Format: enum 
        * @enum {string}
        */
       backend?: "POSTGRESQL" | "VIRTUAL" | "MYSQL" | "ORACLE" | "MONGODB" | "REDIS";
-      description?: string;
-      id?: string;
-      mongoParams?: components["schemas"]["MongoParams"];
-      mysqlParams?: components["schemas"]["MysqlParams"];
       name?: string;
+      description?: string;
       postgresqlParams?: components["schemas"]["PostgresqlParams"];
+      mysqlParams?: components["schemas"]["MysqlParams"];
+      virtualParams?: components["schemas"]["VirtualParams"];
       redisParams?: components["schemas"]["RedisParams"];
+      mongoParams?: components["schemas"]["MongoParams"];
+      auditData?: components["schemas"]["AuditData"];
       /** Format: uint32 */
       version?: number;
-      virtualParams?: components["schemas"]["VirtualParams"];
     };
     DataSourceCatalog: {
-      entities?: (components["schemas"]["DataSourceEntity"])[];
       name?: string;
+      entities?: (components["schemas"]["DataSourceEntity"])[];
     };
     DataSourceEntity: {
       name?: string;
       readOnly?: boolean;
     };
     DeleteDataSourceRequest: {
-      ids?: (string)[];
       token?: string;
+      ids?: (string)[];
     };
     DeleteDataSourceResponse: Record<string, never>;
     DeleteExtensionRequest: {
-      ids?: (string)[];
       token?: string;
+      ids?: (string)[];
     };
     DeleteExtensionResponse: Record<string, never>;
     DeleteNamespaceRequest: {
-      ids?: (string)[];
       token?: string;
+      ids?: (string)[];
     };
     DeleteNamespaceResponse: {
       Namespaces?: (components["schemas"]["Namespace"])[];
     };
     DeleteRecordResponse: Record<string, never>;
     DeleteResourceRequest: {
+      token?: string;
+      ids?: (string)[];
+      /** @description See the comments on CreateResourceRequest.doMigration */
+      doMigration?: boolean;
+      /** @description See the comments on CreateResourceRequest.forceMigration */
+      forceMigration?: boolean;
       annotations?: {
         [key: string]: string | undefined;
       };
-      doMigration?: boolean;
-      forceMigration?: boolean;
-      ids?: (string)[];
-      token?: string;
     };
     DeleteResourceResponse: Record<string, never>;
     DeleteUserResponse: Record<string, never>;
+    Event: {
+      id?: string;
+      /**
+       * Format: enum 
+       * @enum {string}
+       */
+      action?: "CREATE" | "UPDATE" | "DELETE" | "GET" | "LIST" | "OPERATE";
+      actionSummary?: string;
+      actionDescription?: string;
+      resource?: components["schemas"]["Resource"];
+      /** @description CREATE,UPDATE - records are for incoming and outgoing records GET - there will be only one record LIST - result of the list operation */
+      records?: (components["schemas"]["Record"])[];
+      /** @description GET - there will be only one id, for getting record with id DELETE - there will be multiple ids, for deleting multiple records */
+      ids?: (string)[];
+      recordSearchParams?: components["schemas"]["Event_RecordSearchParams"];
+      /** @description If true, this will be last event on operation list */
+      finalizes?: boolean;
+      /** @description If true, backend will wait for processing this event before sending next one on operation list */
+      sync?: boolean;
+      /** Format: date-time */
+      time?: string;
+      /** @description Request annotations */
+      annotations?: {
+        [key: string]: string | undefined;
+      };
+    };
+    /** @description Events pass through selectors, if selector returns true, event will be processed Selector returns true if no selector fails. For example, if you passed empty selector, it will return true for all events. */
+    EventSelector: {
+      actions?: ("CREATE" | "UPDATE" | "DELETE" | "GET" | "LIST" | "OPERATE")[];
+      recordSelector?: components["schemas"]["BooleanExpression"];
+      namespaces?: (string)[];
+      resources?: (string)[];
+      /** @description star means all */
+      ids?: (string)[];
+      /** @description star means all, empty means proceed */
+      annotations?: {
+        [key: string]: string | undefined;
+      };
+    };
+    Event_RecordSearchParams: {
+      query?: components["schemas"]["BooleanExpression"];
+      /** Format: uint32 */
+      limit?: number;
+      /** Format: uint64 */
+      offset?: number;
+      resolveReferences?: (string)[];
+    };
     Expression: {
       additionalProperties?: (components["schemas"]["NamedAny"])[];
     };
     Extension: {
-      after?: components["schemas"]["Extension_After"];
-      auditData?: components["schemas"]["AuditData"];
-      before?: components["schemas"]["Extension_Before"];
-      description?: string;
       id?: string;
-      instead?: components["schemas"]["Extension_Instead"];
       name?: string;
-      namespace?: string;
-      resource?: string;
+      description?: string;
+      selector?: components["schemas"]["EventSelector"];
+      /** Format: int32 */
+      order?: number;
+      /** @description If true, this will be last event on operation list */
+      finalizes?: boolean;
+      /** @description If true, backend will wait for processing this event before sending next one on operation list */
+      sync?: boolean;
+      responds?: boolean;
+      call?: components["schemas"]["ExternalCall"];
+      auditData?: components["schemas"]["AuditData"];
       /** Format: uint32 */
       version?: number;
-    };
-    Extension_After: {
-      all?: components["schemas"]["ExternalCall"];
-      create?: components["schemas"]["ExternalCall"];
-      delete?: components["schemas"]["ExternalCall"];
-      get?: components["schemas"]["ExternalCall"];
-      list?: components["schemas"]["ExternalCall"];
-      sync?: boolean;
-      update?: components["schemas"]["ExternalCall"];
-    };
-    Extension_Before: {
-      all?: components["schemas"]["ExternalCall"];
-      create?: components["schemas"]["ExternalCall"];
-      delete?: components["schemas"]["ExternalCall"];
-      get?: components["schemas"]["ExternalCall"];
-      list?: components["schemas"]["ExternalCall"];
-      sync?: boolean;
-      update?: components["schemas"]["ExternalCall"];
-    };
-    Extension_Instead: {
-      all?: components["schemas"]["ExternalCall"];
-      create?: components["schemas"]["ExternalCall"];
-      delete?: components["schemas"]["ExternalCall"];
-      get?: components["schemas"]["ExternalCall"];
-      list?: components["schemas"]["ExternalCall"];
-      update?: components["schemas"]["ExternalCall"];
+      annotations?: {
+        [key: string]: string | undefined;
+      };
     };
     ExternalCall: {
       functionCall?: components["schemas"]["FunctionCall"];
       httpCall?: components["schemas"]["HttpCall"];
     };
     FunctionCall: {
-      functionName?: string;
       host?: string;
+      functionName?: string;
     };
     GetDataSourceResponse: {
       dataSource?: components["schemas"]["DataSource"];
@@ -904,8 +439,8 @@ export interface components {
     /** @description Represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values. */
     GoogleProtobufValue: Record<string, never>;
     HttpCall: {
-      method?: string;
       uri?: string;
+      method?: string;
     };
     ListDataSourceResponse: {
       content?: (components["schemas"]["DataSource"])[];
@@ -920,9 +455,9 @@ export interface components {
       content?: (components["schemas"]["Namespace"])[];
     };
     ListRecordResponse: {
-      content?: (components["schemas"]["Record"])[];
       /** Format: uint32 */
       total?: number;
+      content?: (components["schemas"]["Record"])[];
     };
     ListResourceResponse: {
       resources?: (components["schemas"]["Resource"])[];
@@ -931,17 +466,17 @@ export interface components {
       content?: (components["schemas"]["User"])[];
     };
     MongoParams: {
-      dbName?: string;
       uri?: string;
+      dbName?: string;
     };
     MysqlParams: {
-      dbName?: string;
-      defaultSchema?: string;
-      host?: string;
+      username?: string;
       password?: string;
+      host?: string;
       /** Format: uint32 */
       port?: number;
-      username?: string;
+      dbName?: string;
+      defaultSchema?: string;
     };
     /** @description Automatically-generated message used to represent maps of Any as ordered (name,value) pairs. */
     NamedAny: {
@@ -950,12 +485,12 @@ export interface components {
       value?: components["schemas"]["Any"];
     };
     Namespace: {
-      auditData?: components["schemas"]["AuditData"];
-      description?: string;
-      details?: Record<string, never>;
       id?: string;
       name?: string;
+      description?: string;
+      details?: Record<string, never>;
       securityContext?: components["schemas"]["SecurityContext"];
+      auditData?: components["schemas"]["AuditData"];
       /** Format: uint32 */
       version?: number;
     };
@@ -964,50 +499,53 @@ export interface components {
       right?: components["schemas"]["Expression"];
     };
     PostgresqlParams: {
-      dbName?: string;
-      defaultSchema?: string;
-      host?: string;
+      username?: string;
       password?: string;
+      host?: string;
       /** Format: uint32 */
       port?: number;
-      username?: string;
+      dbName?: string;
+      defaultSchema?: string;
     };
     PrepareResourceFromEntityRequest: {
-      catalog?: string;
-      entity?: string;
-      id?: string;
       token?: string;
+      /** @description data source id, required, It is for specifying that which database the operation will be performed */
+      id?: string;
+      /** @description catalog is optional, if not provided, default catalog will be used, catalog is like schema in database */
+      catalog?: string;
+      /** @description entity is required, it is like table in database, collection on mongodb, etc. */
+      entity?: string;
     };
     PrepareResourceFromEntityResponse: {
       resource?: components["schemas"]["Resource"];
     };
     PrepareResourceMigrationPlanRequest: {
+      token?: string;
+      prepareFromDataSource?: boolean;
+      resources?: (components["schemas"]["Resource"])[];
       annotations?: {
         [key: string]: string | undefined;
       };
-      prepareFromDataSource?: boolean;
-      resources?: (components["schemas"]["Resource"])[];
-      token?: string;
     };
     PrepareResourceMigrationPlanResponse: {
       plans?: (components["schemas"]["ResourceMigrationPlan"])[];
     };
     ReadStreamRequest: {
+      token?: string;
+      namespace?: string;
+      resource?: string;
+      query?: components["schemas"]["BooleanExpression"];
+      /** Format: uint32 */
+      limit?: number;
+      /** Format: uint64 */
+      offset?: number;
+      useHistory?: boolean;
+      resolveReferences?: (string)[];
+      useTransaction?: boolean;
+      packRecords?: boolean;
       annotations?: {
         [key: string]: string | undefined;
       };
-      /** Format: uint32 */
-      limit?: number;
-      namespace?: string;
-      /** Format: uint64 */
-      offset?: number;
-      packRecords?: boolean;
-      query?: components["schemas"]["BooleanExpression"];
-      resolveReferences?: (string)[];
-      resource?: string;
-      token?: string;
-      useHistory?: boolean;
-      useTransaction?: boolean;
     };
     Record: {
       id?: string;
@@ -1018,60 +556,60 @@ export interface components {
     };
     RedisParams: {
       addr?: string;
+      password?: string;
       /** Format: int32 */
       db?: number;
-      password?: string;
     };
     Reference: {
-      cascade?: boolean;
       referencedResource?: string;
+      cascade?: boolean;
     };
     RegexMatchExpression: {
-      expression?: components["schemas"]["Expression"];
       pattern?: string;
+      expression?: components["schemas"]["Expression"];
     };
     RenewTokenRequest: {
+      token?: string;
       /**
        * Format: enum 
        * @enum {string}
        */
       term?: "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
-      token?: string;
     };
     RenewTokenResponse: {
       token?: components["schemas"]["Token"];
     };
     Resource: {
-      abstract?: boolean;
-      annotations?: {
-        [key: string]: string | undefined;
-      };
-      auditData?: components["schemas"]["AuditData"];
-      description?: string;
       id?: string;
-      immutable?: boolean;
-      indexes?: (components["schemas"]["ResourceIndex"])[];
       name?: string;
       namespace?: string;
-      properties?: (components["schemas"]["ResourceProperty"])[];
-      securityContext?: components["schemas"]["SecurityContext"];
       sourceConfig?: components["schemas"]["ResourceSourceConfig"];
+      properties?: (components["schemas"]["ResourceProperty"])[];
+      indexes?: (components["schemas"]["ResourceIndex"])[];
+      securityContext?: components["schemas"]["SecurityContext"];
+      virtual?: boolean;
+      immutable?: boolean;
+      abstract?: boolean;
       title?: string;
+      description?: string;
+      auditData?: components["schemas"]["AuditData"];
       /** Format: uint32 */
       version?: number;
-      virtual?: boolean;
-    };
-    ResourceIndex: {
       annotations?: {
         [key: string]: string | undefined;
       };
+    };
+    ResourceIndex: {
+      properties?: (components["schemas"]["ResourceIndexProperty"])[];
       /**
        * Format: enum 
        * @enum {string}
        */
       indexType?: "BTREE" | "HASH";
-      properties?: (components["schemas"]["ResourceIndexProperty"])[];
       unique?: boolean;
+      annotations?: {
+        [key: string]: string | undefined;
+      };
     };
     ResourceIndexProperty: {
       name?: string;
@@ -1098,93 +636,98 @@ export interface components {
     };
     ResourceMigrationDeleteResource: Record<string, never>;
     ResourceMigrationPlan: {
-      currentResource?: components["schemas"]["Resource"];
       existingResource?: components["schemas"]["Resource"];
+      currentResource?: components["schemas"]["Resource"];
       steps?: (components["schemas"]["ResourceMigrationStep"])[];
     };
     ResourceMigrationStep: {
-      createIndex?: components["schemas"]["ResourceMigrationCreateIndex"];
-      createProperty?: components["schemas"]["ResourceMigrationCreateProperty"];
       createResource?: components["schemas"]["ResourceMigrationCreateResource"];
-      deleteIndex?: components["schemas"]["ResourceMigrationDeleteIndex"];
-      deleteProperty?: components["schemas"]["ResourceMigrationDeleteProperty"];
       deleteResource?: components["schemas"]["ResourceMigrationDeleteResource"];
-      updateProperty?: components["schemas"]["ResourceMigrationUpdateProperty"];
       updateResource?: components["schemas"]["ResourceMigrationUpdateResource"];
+      createProperty?: components["schemas"]["ResourceMigrationCreateProperty"];
+      deleteProperty?: components["schemas"]["ResourceMigrationDeleteProperty"];
+      updateProperty?: components["schemas"]["ResourceMigrationUpdateProperty"];
+      createIndex?: components["schemas"]["ResourceMigrationCreateIndex"];
+      deleteIndex?: components["schemas"]["ResourceMigrationDeleteIndex"];
     };
     ResourceMigrationUpdateProperty: {
-      changedFields?: (string)[];
       existingProperty?: string;
       property?: string;
+      changedFields?: (string)[];
     };
     ResourceMigrationUpdateResource: {
       changedFields?: (string)[];
     };
-    /** @description Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64 */
+    /** @description Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record and if you send 123.45 for int64 */
     ResourceProperty: {
+      id?: string;
+      /** @description property name */
+      name?: string;
+      /**
+       * Format: enum 
+       * @description type of property 
+       * @enum {string}
+       */
+      type?: "BOOL" | "STRING" | "FLOAT32" | "FLOAT64" | "INT32" | "INT64" | "BYTES" | "UUID" | "DATE" | "TIME" | "TIMESTAMP" | "OBJECT" | "MAP" | "LIST" | "REFERENCE" | "ENUM" | "STRUCT";
+      /** @description mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property */
+      mapping?: string;
+      /** @description this is to mark property as required */
+      required?: boolean;
+      primary?: boolean;
+      /** Format: uint32 */
+      length?: number;
+      unique?: boolean;
+      immutable?: boolean;
+      securityContext?: components["schemas"]["SecurityContext"];
+      defaultValue?: components["schemas"]["GoogleProtobufValue"];
+      exampleValue?: components["schemas"]["GoogleProtobufValue"];
+      enumValues?: (components["schemas"]["GoogleProtobufValue"])[];
+      reference?: components["schemas"]["Reference"];
+      properties?: (components["schemas"]["ResourceProperty"])[];
+      subProperty?: components["schemas"]["ResourceProperty"];
+      title?: string;
+      description?: string;
       annotations?: {
         [key: string]: string | undefined;
       };
-      defaultValue?: components["schemas"]["GoogleProtobufValue"];
-      description?: string;
-      enumValues?: (components["schemas"]["GoogleProtobufValue"])[];
-      exampleValue?: components["schemas"]["GoogleProtobufValue"];
-      id?: string;
-      immutable?: boolean;
-      /** Format: uint32 */
-      length?: number;
-      mapping?: string;
-      name?: string;
-      primary?: boolean;
-      reference?: components["schemas"]["Reference"];
-      required?: boolean;
-      securityContext?: components["schemas"]["SecurityContext"];
-      /**
-       * Format: enum 
-       * @enum {string}
-       */
-      subType?: "BOOL" | "STRING" | "FLOAT32" | "FLOAT64" | "INT32" | "INT64" | "BYTES" | "UUID" | "DATE" | "TIME" | "TIMESTAMP" | "OBJECT" | "MAP" | "LIST" | "REFERENCE" | "ENUM";
-      title?: string;
-      /**
-       * Format: enum 
-       * @enum {string}
-       */
-      type?: "BOOL" | "STRING" | "FLOAT32" | "FLOAT64" | "INT32" | "INT64" | "BYTES" | "UUID" | "DATE" | "TIME" | "TIMESTAMP" | "OBJECT" | "MAP" | "LIST" | "REFERENCE" | "ENUM";
-      unique?: boolean;
     };
     /** @description source config is to configure resource and bind it to data-source and an entity inside data source. An entity is like a table on sql databases or collection on mongodb etc. */
     ResourceSourceConfig: {
-      catalog?: string;
       dataSource?: string;
+      catalog?: string;
       entity?: string;
     };
     SearchRecordRequest: {
+      token?: string;
+      namespace?: string;
+      resource?: string;
+      query?: components["schemas"]["BooleanExpression"];
+      /** Format: uint32 */
+      limit?: number;
+      /** Format: uint64 */
+      offset?: number;
+      useHistory?: boolean;
+      resolveReferences?: (string)[];
       annotations?: {
         [key: string]: string | undefined;
       };
-      /** Format: uint32 */
-      limit?: number;
-      namespace?: string;
-      /** Format: uint64 */
-      offset?: number;
-      query?: components["schemas"]["BooleanExpression"];
-      resolveReferences?: (string)[];
-      resource?: string;
-      token?: string;
-      useHistory?: boolean;
     };
     SearchRecordResponse: {
-      content?: (components["schemas"]["Record"])[];
       /** Format: uint32 */
       total?: number;
+      content?: (components["schemas"]["Record"])[];
     };
     /** @description SecurityConstraint is a rule */
     SecurityConstraint: {
-      /** Format: date-time */
-      after?: string;
+      namespace?: string;
+      resource?: string;
+      property?: string;
       /** Format: date-time */
       before?: string;
-      namespace?: string;
+      /** Format: date-time */
+      after?: string;
+      principal?: string;
+      recordIds?: (string)[];
       /**
        * Format: enum 
        * @enum {string}
@@ -1195,10 +738,6 @@ export interface components {
        * @enum {string}
        */
       permit?: "PERMIT_TYPE_ALLOW" | "PERMIT_TYPE_REJECT" | "PERMIT_TYPE_UNKNOWN";
-      principal?: string;
-      property?: string;
-      recordIds?: (string)[];
-      resource?: string;
     };
     SecurityContext: {
       constraints?: (components["schemas"]["SecurityConstraint"])[];
@@ -1210,35 +749,35 @@ export interface components {
        * @description The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
        */
       code?: number;
-      /** @description A list of messages that carry the error details.  There is a common set of message types for APIs to use. */
-      details?: (components["schemas"]["GoogleProtobufAny"])[];
       /** @description A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client. */
       message?: string;
+      /** @description A list of messages that carry the error details.  There is a common set of message types for APIs to use. */
+      details?: (components["schemas"]["GoogleProtobufAny"])[];
     };
     StatusResponse: {
       connectionAlreadyInitiated?: boolean;
       testConnection?: boolean;
     };
     Token: {
-      content?: string;
-      /** Format: date-time */
-      expiration?: string;
       /**
        * Format: enum 
        * @enum {string}
        */
       term?: "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
+      content?: string;
+      /** Format: date-time */
+      expiration?: string;
     };
     UpdateDataSourceRequest: {
-      dataSources?: (components["schemas"]["DataSource"])[];
       token?: string;
+      dataSources?: (components["schemas"]["DataSource"])[];
     };
     UpdateDataSourceResponse: {
       dataSources?: (components["schemas"]["DataSource"])[];
     };
     UpdateExtensionRequest: {
-      extensions?: (components["schemas"]["Extension"])[];
       token?: string;
+      extensions?: (components["schemas"]["Extension"])[];
     };
     UpdateExtensionResponse: {
       extensions?: (components["schemas"]["Extension"])[];
@@ -1248,8 +787,8 @@ export interface components {
       records?: (components["schemas"]["Record"])[];
     };
     UpdateNamespaceRequest: {
-      Namespaces?: (components["schemas"]["Namespace"])[];
       token?: string;
+      Namespaces?: (components["schemas"]["Namespace"])[];
     };
     UpdateNamespaceResponse: {
       Namespaces?: (components["schemas"]["Namespace"])[];
@@ -1263,13 +802,15 @@ export interface components {
       records?: (components["schemas"]["Record"])[];
     };
     UpdateResourceRequest: {
+      token?: string;
+      resources?: (components["schemas"]["Resource"])[];
+      /** @description See the comments on CreateResourceRequest.doMigration */
+      doMigration?: boolean;
+      /** @description See the comments on CreateResourceRequest.forceMigration */
+      forceMigration?: boolean;
       annotations?: {
         [key: string]: string | undefined;
       };
-      doMigration?: boolean;
-      forceMigration?: boolean;
-      resources?: (components["schemas"]["Resource"])[];
-      token?: string;
     };
     UpdateResourceResponse: {
       resources?: (components["schemas"]["Resource"])[];
@@ -1279,13 +820,13 @@ export interface components {
       users?: (components["schemas"]["User"])[];
     };
     User: {
-      auditData?: components["schemas"]["AuditData"];
-      details?: Record<string, never>;
       id?: string;
+      username?: string;
       password?: string;
       securityContext?: components["schemas"]["SecurityContext"];
+      details?: Record<string, never>;
       signKey?: string;
-      username?: string;
+      auditData?: components["schemas"]["AuditData"];
       /** Format: uint32 */
       version?: number;
     };
@@ -1296,59 +837,6 @@ export interface components {
        */
       mode?: "DISCARD" | "ERROR";
     };
-    WatchMessage: {
-      changes?: Record<string, never>;
-      /**
-       * Format: enum 
-       * @enum {string}
-       */
-      event?: "CREATE" | "UPDATE" | "DELETE" | "GET" | "LIST";
-      /** Format: date-time */
-      eventOn?: string;
-      recordIds?: (string)[];
-    };
-    "item-city": {
-      content?: external["resources/default/city.json"];
-    };
-    "item-country": {
-      content?: external["resources/default/country.json"];
-    };
-    "item-country2": {
-      content?: external["resources/default/country2.json"];
-    };
-    "item-income": {
-      content?: external["resources/default/income.json"];
-    };
-    "item-rich-test-3995": {
-      content?: external["resources/default/rich-test-3995.json"];
-    };
-    "item-tax_rate": {
-      content?: external["resources/default/tax_rate.json"];
-    };
-    "item-virtual-resource": {
-      content?: external["resources/default/virtualResource.json"];
-    };
-    "list-city": {
-      content?: (external["resources/default/city.json"])[];
-    };
-    "list-country": {
-      content?: (external["resources/default/country.json"])[];
-    };
-    "list-country2": {
-      content?: (external["resources/default/country2.json"])[];
-    };
-    "list-income": {
-      content?: (external["resources/default/income.json"])[];
-    };
-    "list-rich-test-3995": {
-      content?: (external["resources/default/rich-test-3995.json"])[];
-    };
-    "list-tax_rate": {
-      content?: (external["resources/default/tax_rate.json"])[];
-    };
-    "list-virtual-resource": {
-      content?: (external["resources/default/virtualResource.json"])[];
-    };
   };
   responses: never;
   parameters: never;
@@ -1357,110 +845,7 @@ export interface components {
   pathItems: never;
 }
 
-export interface external {
-  "resources/default/city.json": {
-    country: Record<string, never>;
-    description?: string;
-    /** Format: uuid */
-    id: string;
-    name?: string;
-    /** Format: int32 */
-    version: number;
-  }
-  "resources/default/country.json": {
-    /** Format: int64 */
-    area?: number;
-    description?: string;
-    /** Format: uuid */
-    id: string;
-    name?: string;
-    /** Format: int64 */
-    population?: number;
-    /** Format: int32 */
-    version: number;
-  }
-  "resources/default/country2.json": {
-    description?: string;
-    /** Format: uuid */
-    id: string;
-    name: string;
-    /** Format: int32 */
-    version: number;
-  }
-  "resources/default/income.json": {
-    city: Record<string, never>;
-    country: Record<string, never>;
-    /** Format: int32 */
-    gross_income: number;
-    /** Format: uuid */
-    id: string;
-    /** Format: int32 */
-    net_income?: number;
-    /** Format: int32 */
-    tax?: number;
-    /** Format: int32 */
-    version: number;
-  }
-  "resources/default/rich-test-3995.json": {
-    bool: boolean;
-    /** Format: base64 */
-    bytes?: string;
-    createdBy: string;
-    /** Format: datetime */
-    createdOn: string;
-    /** Format: date */
-    date: string;
-    /** Format: float */
-    double: number;
-    /** Format: double */
-    float: number;
-    /** Format: uuid */
-    id: string;
-    /** Format: int32 */
-    int32: number;
-    /** Format: int32 */
-    int32_o?: number;
-    /** Format: int64 */
-    int64: number;
-    object: Record<string, never>;
-    string: string;
-    text: string;
-    /** Format: time */
-    time: string;
-    /** Format: datetime */
-    timestamp: string;
-    updatedBy?: string;
-    /** Format: datetime */
-    updatedOn?: string;
-    /** Format: uuid */
-    uuid: string;
-    /** Format: int32 */
-    version: number;
-  }
-  "resources/default/tax_rate.json": {
-    city?: Record<string, never>;
-    country: Record<string, never>;
-    /** Format: uuid */
-    id: string;
-    name: string;
-    /** Format: int32 */
-    order: number;
-    /** Format: double */
-    rate: number;
-    /** Format: int32 */
-    until: number;
-    /** Format: int32 */
-    version: number;
-  }
-  "resources/default/virtualResource.json": {
-    description?: string;
-    /** Format: uuid */
-    id: string;
-    name: string;
-    /** Format: int32 */
-    version: number;
-  }
-}
+export type external = Record<string, never>;
 
 export interface operations {
 
@@ -1504,6 +889,268 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["AuthenticationResponse"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /** ReadStream */
+  Record_ReadStream: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReadStreamRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Record"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /** List */
+  Record_List: {
+    parameters: {
+      query: {
+        token?: string;
+        limit?: number;
+        offset?: number;
+        useHistory?: boolean;
+        resolveReferences?: (string)[];
+      };
+      path: {
+        namespace: string;
+        resource: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ListRecordResponse"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /** Create */
+  Record_Create: {
+    parameters: {
+      query: {
+        token?: string;
+        "record.id"?: string;
+        "record.propertiesPacked"?: (components["schemas"]["GoogleProtobufValue"])[];
+      };
+      path: {
+        namespace: string;
+        resource: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["CreateRecordResponse"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /** Apply */
+  Record_Apply: {
+    parameters: {
+      query: {
+        token?: string;
+        "record.id"?: string;
+        "record.propertiesPacked"?: (components["schemas"]["GoogleProtobufValue"])[];
+      };
+      path: {
+        namespace: string;
+        resource: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApplyRecordResponse"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /** Update */
+  Record_Update: {
+    parameters: {
+      query: {
+        token?: string;
+        checkVersion?: boolean;
+      };
+      path: {
+        namespace: string;
+        resource: string;
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateRecordRequest_PropertiesEntry"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UpdateRecordResponse"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /** Delete */
+  Record_Delete: {
+    parameters: {
+      query: {
+        token?: string;
+      };
+      path: {
+        namespace: string;
+        resource: string;
+        id: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DeleteRecordResponse"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /**
+   * UpdateMulti 
+   * @description Not implemented yet
+   */
+  Record_UpdateMulti: {
+    parameters: {
+      query: {
+        token?: string;
+        "query.not.not.equal.left.property"?: string;
+        "query.not.not.equal.left.value"?: components["schemas"]["GoogleProtobufValue"];
+        "query.not.not.equal.left.refValue.namespace"?: string;
+        "query.not.not.equal.left.refValue.resource"?: string;
+        "query.not.not.equal.right.property"?: string;
+        "query.not.not.equal.right.value"?: components["schemas"]["GoogleProtobufValue"];
+        "query.not.not.equal.right.refValue.namespace"?: string;
+        "query.not.not.equal.right.refValue.resource"?: string;
+        "query.not.not.regexMatch.pattern"?: string;
+        "query.not.regexMatch.pattern"?: string;
+      };
+      path: {
+        namespace: string;
+        resource: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UpdateMultiRecordResponse"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /** Search */
+  Record_Search: {
+    parameters: {
+      path: {
+        namespace: string;
+        resource: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SearchRecordRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SearchRecordResponse"];
+        };
+      };
+      /** @description Default error response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["Status"];
+        };
+      };
+    };
+  };
+  /** Get */
+  Record_Get: {
+    parameters: {
+      query: {
+        token?: string;
+      };
+      path: {
+        namespace: string;
+        resource: string;
+        id: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["GetRecordResponse"];
         };
       };
       /** @description Default error response */
@@ -1627,10 +1274,15 @@ export interface operations {
       };
     };
   };
-  /** PrepareResourceFromEntity */
+  /**
+   * PrepareResourceFromEntity 
+   * @description PrepareResourceFromEntity will return resource from data source based on entity.
+   *  It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
+   */
   DataSource_PrepareResourceFromEntity: {
     parameters: {
       path: {
+        /** @description data source id, required, It is for specifying that which database the operation will be performed */
         id: string;
       };
     };
@@ -1654,7 +1306,10 @@ export interface operations {
       };
     };
   };
-  /** Status */
+  /**
+   * Status 
+   * @description Status will return connection status of data source
+   */
   DataSource_Status: {
     parameters: {
       query: {
@@ -1679,7 +1334,10 @@ export interface operations {
       };
     };
   };
-  /** ListEntities */
+  /**
+   * ListEntities 
+   * @description List entities will return all entities from data source
+   */
   DataSource_ListEntities: {
     parameters: {
       query: {
@@ -2018,7 +1676,10 @@ export interface operations {
       };
     };
   };
-  /** PrepareResourceMigrationPlan */
+  /**
+   * PrepareResourceMigrationPlan 
+   * @description PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration.
+   */
   Resource_PrepareResourceMigrationPlan: {
     requestBody: {
       content: {
@@ -2234,26 +1895,28 @@ export interface operations {
     parameters: {
       query: {
         token?: string;
-        namespace?: string;
-        resource?: string;
-        "query.not.not.equal.left.property"?: string;
-        "query.not.not.equal.left.value"?: components["schemas"]["GoogleProtobufValue"];
-        "query.not.not.equal.left.refValue.namespace"?: string;
-        "query.not.not.equal.left.refValue.resource"?: string;
-        "query.not.not.equal.right.property"?: string;
-        "query.not.not.equal.right.value"?: components["schemas"]["GoogleProtobufValue"];
-        "query.not.not.equal.right.refValue.namespace"?: string;
-        "query.not.not.equal.right.refValue.resource"?: string;
-        "query.not.not.regexMatch.pattern"?: string;
-        "query.not.regexMatch.pattern"?: string;
-        events?: ("CREATE" | "UPDATE" | "DELETE" | "GET" | "LIST")[];
+        "selector.actions"?: ("CREATE" | "UPDATE" | "DELETE" | "GET" | "LIST" | "OPERATE")[];
+        "selector.recordSelector.not.not.equal.left.property"?: string;
+        "selector.recordSelector.not.not.equal.left.value"?: components["schemas"]["GoogleProtobufValue"];
+        "selector.recordSelector.not.not.equal.left.refValue.namespace"?: string;
+        "selector.recordSelector.not.not.equal.left.refValue.resource"?: string;
+        "selector.recordSelector.not.not.equal.right.property"?: string;
+        "selector.recordSelector.not.not.equal.right.value"?: components["schemas"]["GoogleProtobufValue"];
+        "selector.recordSelector.not.not.equal.right.refValue.namespace"?: string;
+        "selector.recordSelector.not.not.equal.right.refValue.resource"?: string;
+        "selector.recordSelector.not.not.regexMatch.pattern"?: string;
+        "selector.recordSelector.not.regexMatch.pattern"?: string;
+        "selector.namespaces"?: (string)[];
+        "selector.resources"?: (string)[];
+        /** @description star means all */
+        "selector.ids"?: (string)[];
       };
     };
     responses: {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["WatchMessage"];
+          "application/json": components["schemas"]["Event"];
         };
       };
       /** @description Default error response */
