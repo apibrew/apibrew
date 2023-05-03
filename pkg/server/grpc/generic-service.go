@@ -28,7 +28,7 @@ func (g *genericServer) Create(ctx context.Context, request *stub.CreateRequest)
 		return nil, err
 	}
 
-	records, inserted, serviceErr := g.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
+	records, serviceErr := g.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records:   records,
@@ -41,8 +41,7 @@ func (g *genericServer) Create(ctx context.Context, request *stub.CreateRequest)
 	}
 
 	return &stub.CreateResponse{
-		Items:    items,
-		Inserted: inserted,
+		Items: items,
 	}, util.ToStatusError(serviceErr)
 }
 

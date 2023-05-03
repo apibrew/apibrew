@@ -29,7 +29,9 @@ func (b backendProxy) DestroyDataSource(ctx context.Context) {
 	b.backend.DestroyDataSource(ctx)
 }
 
-func (b backendProxy) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, []bool, errors.ServiceError) {
+func (b backendProxy) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+	b.eventHandler.OnAddRecords(ctx, resource, records)
+
 	return b.backend.AddRecords(ctx, resource, records)
 }
 

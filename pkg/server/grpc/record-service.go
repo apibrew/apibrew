@@ -110,16 +110,15 @@ func (r *recordServer) ReadStream(request *stub.ReadStreamRequest, resp stub.Rec
 }
 
 func (r *recordServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
-	records, inserted, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
+	records, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records:   util.ArrayPrepend(request.Records, request.Record),
 	})
 
 	return &stub.CreateRecordResponse{
-		Record:   util.ArrayFirst(records),
-		Records:  records,
-		Inserted: inserted,
+		Record:  util.ArrayFirst(records),
+		Records: records,
 	}, util.ToStatusError(err)
 }
 

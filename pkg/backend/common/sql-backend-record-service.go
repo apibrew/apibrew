@@ -27,10 +27,9 @@ func (p *sqlBackend) ListRecords(ctx context.Context, resource *model.Resource, 
 	return
 }
 
-func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, []bool, errors.ServiceError) {
+func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	var inserted []bool
 	var err errors.ServiceError
 
 	logger.Tracef("Begin creating: %s/%s", resource.Namespace, resource.Name)
@@ -50,11 +49,9 @@ func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, r
 				ei = len(records)
 			}
 
-			records := records[bi:ei]
+			batch := records[bi:ei]
 
-			id, err := p.recordInsert(ctx, tx, resource, records, annotations.IsEnabled(annotations.FromCtx(ctx), annotations.IgnoreIfExists), p.schema)
-
-			inserted = append(inserted, id)
+			err = p.recordInsert(ctx, tx, resource, batch, annotations.IsEnabled(annotations.FromCtx(ctx), annotations.IgnoreIfExists), p.schema)
 
 			if err != nil {
 				return err
@@ -65,12 +62,12 @@ func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, r
 	})
 
 	if err != nil {
-		return nil, inserted, err
+		return nil, err
 	}
 
 	logger.Tracef("Records created: %s/%s", resource.Namespace, resource.Name)
 
-	return records, inserted, nil
+	return records, nil
 }
 
 func (p *sqlBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
