@@ -28,11 +28,10 @@ func (g *genericServer) Create(ctx context.Context, request *stub.CreateRequest)
 		return nil, err
 	}
 
-	records, inserted, serviceErr := g.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
-		Namespace:      request.Namespace,
-		Resource:       request.Resource,
-		Records:        records,
-		IgnoreIfExists: request.IgnoreIfExists,
+	records, serviceErr := g.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
+		Namespace: request.Namespace,
+		Resource:  request.Resource,
+		Records:   records,
 	})
 
 	items, err := g.recordsToItems(request.Resource, request.Namespace, records)
@@ -42,8 +41,7 @@ func (g *genericServer) Create(ctx context.Context, request *stub.CreateRequest)
 	}
 
 	return &stub.CreateResponse{
-		Items:    items,
-		Inserted: inserted,
+		Items: items,
 	}, util.ToStatusError(serviceErr)
 }
 
@@ -55,10 +53,9 @@ func (g *genericServer) Update(ctx context.Context, request *stub.UpdateRequest)
 	}
 
 	records, serviceErr := g.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
-		Namespace:    request.Namespace,
-		Resource:     request.Resource,
-		Records:      records,
-		CheckVersion: request.CheckVersion,
+		Namespace: request.Namespace,
+		Resource:  request.Resource,
+		Records:   records,
 	})
 
 	items, err := g.recordsToItems(request.Resource, request.Namespace, records)

@@ -8,6 +8,7 @@ import (
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/resources"
 	mapping2 "github.com/tislib/apibrew/pkg/resources/mapping"
+	"github.com/tislib/apibrew/pkg/service/annotations"
 	"github.com/tislib/apibrew/pkg/service/security"
 )
 
@@ -22,7 +23,7 @@ func (d *namespaceService) Create(ctx context.Context, namespaces []*model.Names
 	// insert records via resource service
 	records := mapping2.MapToRecord(namespaces, mapping2.NamespaceToRecord)
 
-	result, _, err := d.recordService.Create(ctx, abs.RecordCreateParams{
+	result, err := d.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
 		Records:   records,
@@ -91,11 +92,10 @@ func (d *namespaceService) List(ctx context.Context) ([]*model.Namespace, errors
 
 func (d *namespaceService) Init(data *model.InitData) {
 	if len(data.InitNamespaces) > 0 {
-		_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
-			Namespace:      resources.NamespaceResource.Namespace,
-			Resource:       resources.NamespaceResource.Name,
-			Records:        mapping2.MapToRecord(data.InitNamespaces, mapping2.NamespaceToRecord),
-			IgnoreIfExists: true,
+		_, err := d.recordService.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordCreateParams{
+			Namespace: resources.NamespaceResource.Namespace,
+			Resource:  resources.NamespaceResource.Name,
+			Records:   mapping2.MapToRecord(data.InitNamespaces, mapping2.NamespaceToRecord),
 		})
 
 		if err != nil {
@@ -103,14 +103,13 @@ func (d *namespaceService) Init(data *model.InitData) {
 		}
 	}
 
-	_, _, err := d.recordService.Create(security.SystemContext, abs.RecordCreateParams{
+	_, err := d.recordService.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordCreateParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
 		Records: []*model.Record{mapping2.NamespaceToRecord(&model.Namespace{
 			Name:        "default",
 			Description: "default namespace",
 		})},
-		IgnoreIfExists: true,
 	})
 
 	if err != nil {

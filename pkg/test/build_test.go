@@ -1,7 +1,7 @@
 package test
 
 import (
-	dhctl "github.com/tislib/apibrew/pkg/dhctl"
+	apbr "github.com/tislib/apibrew/pkg/apbr"
 	"testing"
 )
 
@@ -10,6 +10,6 @@ import (
 func TestBuild(t *testing.T) {
 	// this is just to check if other parts of application is building
 
-	// dhctl
-	_ = dhctl.PrepareRootCmd()
+	// apbr
+	_ = apbr.PrepareRootCmd()
 }

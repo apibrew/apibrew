@@ -10,14 +10,14 @@ With help of API Brew, you can build API from your existing DB. In this article,
 ## Prerequisites
 
 * API Brew server is running and accessible
-* dhctl is installed
+* apbr is installed
 * You have existing DB
 
 For installing API Brew server, please refer to [Installation](/docs/installation#easy-install)
 
 ## Connect API Brew to your exising DB
 
-We need to prepare new Data Source for our DB. For this, we will use dhctl.
+We need to prepare new Data Source for our DB. For this, we will use apbr.
 
 ```yaml
 type: datasource
@@ -34,7 +34,7 @@ postgresqlParams:
 Now let's test connection to our DB
 
 ```bash
-dhctl data-source status --name=mydb
+apbr data-source status --name=mydb
 ```
 
 You will see following output
@@ -62,7 +62,7 @@ create table public.author
 Now, let's see what tables we have in our DB, We will get this information from API Brew client
 
 ```bash
-dhctl data-source list-entities --name=mydb
+apbr data-source list-entities --name=mydb
 ```
 
 You will see following output
@@ -73,7 +73,7 @@ public  author  editable
 ```
 
 ```bash
-dhctl data-source prepare --name=mydb > schema.yml
+apbr data-source prepare --name=mydb > schema.yml
 ```
 
 This command will generate schema.yml file, which contains all information about resources for our DB.
@@ -117,7 +117,7 @@ type: resource
 Now, let's apply our resources
 
 ```bash
-dhctl apply -f schema.yml -m=false
+apbr apply -f schema.yml -m=false
 ```
 
 ## Test API

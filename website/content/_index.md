@@ -40,7 +40,7 @@ Apibrew supports multiple databases, so you can define multiple databases and pe
 * ***Multi Database*** - You can define multiple databases and do operations on top of them
 * ***Scalable*** - API Brew is scalable. You can run it on multiple instances, and it will work as expected, as API Brew does not have any data internally, you can scale it.
 * ***Extensible*** - API Brew is extensible. You can extend your resources with extensions. You can also extend your APIs with extensions
-* ***CLI support*** - API Brew has a cli tool to manage your resources, dataSources, etc. It is called `dhctl`
+* ***CLI support*** - API Brew has a cli tool to manage your resources, dataSources, etc. It is called `apbr`
 * ***Docker*** - API Brew is dockerized. You can run it on docker
 * ***Docker Compose*** - API Brew is docker-compose ready. You can run it on docker-compose, see [docker-compose](https://github.com/tislib/apibrew/tree/master/deploy/docker-compose)
 * ***Kubernetes*** - API Brew is kubernetes ready. You can run it on kubernetes, see [kubernetes](https://github.com/tislib/apibrew/tree/master/deploy/kubernetes)

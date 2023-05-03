@@ -17,6 +17,11 @@ type sqlBackend struct {
 	transactionMap map[string]*txData
 	dataSourceName string
 	options        SqlBackendOptions
+	schema         *abs.Schema
+}
+
+func (p *sqlBackend) SetSchema(schema *abs.Schema) {
+	p.schema = schema
 }
 
 type SqlBackendOptions interface {
