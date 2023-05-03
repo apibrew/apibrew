@@ -17,6 +17,11 @@ type mongoBackend struct {
 	dataSource *model.DataSource
 	client     *mongo.Client
 	dbName     string
+	schema     *abs.Schema
+}
+
+func (r *mongoBackend) SetSchema(schema *abs.Schema) {
+	r.schema = schema
 }
 
 func (r mongoBackend) handleError(err error) errors.ServiceError {
@@ -49,23 +54,18 @@ func (r mongoBackend) DestroyDataSource(ctx context.Context) {
 	}
 }
 
-func (r mongoBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, []bool, errors.ServiceError) {
-	var inserted []bool
+func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
 	var documents []interface{}
-	for _, record := range params.Records {
-		documents = append(documents, r.recordToDocument(params.Resource, record))
+	for _, record := range records {
+		documents = append(documents, r.recordToDocument(resource, record))
 	}
-	res, err := r.getCollection(params.Resource).InsertMany(ctx, documents)
+	_, err := r.getCollection(resource).InsertMany(ctx, documents)
 
 	if err != nil {
-		return nil, nil, r.handleError(err)
+		return nil, r.handleError(err)
 	}
 
-	for range res.InsertedIDs {
-		inserted = append(inserted, true)
-	}
-
-	return params.Records, inserted, nil
+	return records, nil
 }
 
 func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.Record) bson.M {
@@ -82,14 +82,14 @@ func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.R
 	return data
 }
 
-func (r mongoBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
-	for _, record := range params.Records {
+func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+	for _, record := range records {
 		var filter = bson.M{}
 		var update = bson.M{}
 		var set = bson.M{}
 		update["$set"] = set
 
-		for _, prop := range params.Resource.Properties {
+		for _, prop := range resource.Properties {
 			if prop.Primary {
 				if record.Properties[prop.Name] == nil {
 					filter[prop.Mapping] = nil
@@ -105,17 +105,17 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsP
 			}
 		}
 
-		_, err := r.getCollection(params.Resource).UpdateOne(ctx, filter, update)
+		_, err := r.getCollection(resource).UpdateOne(ctx, filter, update)
 
 		if err != nil {
 			return nil, r.handleError(err)
 		}
 	}
 
-	return params.Records, nil
+	return records, nil
 }
 
-func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
+func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
 	res := r.getCollection(resource).FindOne(ctx, bson.M{
 		"id": id,
 	})
@@ -177,14 +177,14 @@ func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (r mongoBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) ([]*model.Record, uint32, errors.ServiceError) {
+func (r mongoBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, _ chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
 	var filter bson.M = nil
 
 	if params.Query != nil {
 		filter = r.expressionToMongoFilter(params.Query)
 	}
 
-	cursor, err := r.getCollection(params.Resource).Find(ctx, filter)
+	cursor, err := r.getCollection(resource).Find(ctx, filter)
 
 	if err != nil {
 		return nil, 0, r.handleError(err)
@@ -200,7 +200,7 @@ func (r mongoBackend) ListRecords(ctx context.Context, params abs.ListRecordPara
 			return nil, 0, r.handleError(err)
 		}
 
-		record, err := r.documentToRecord(params.Resource, *data)
+		record, err := r.documentToRecord(resource, *data)
 
 		if err != nil {
 			return nil, 0, r.handleError(err)

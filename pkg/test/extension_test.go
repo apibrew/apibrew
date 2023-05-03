@@ -7,10 +7,8 @@ import (
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/stub"
 	"github.com/tislib/apibrew/pkg/test/setup"
-	"github.com/tislib/apibrew/pkg/util"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/structpb"
 	"io"
 	"net"
@@ -43,20 +41,13 @@ type TestFunctionBackend struct {
 }
 
 func (t TestFunctionBackend) FunctionCall(ctx context.Context, request *ext.FunctionCallRequest) (*ext.FunctionCallResponse, error) {
-	res := util.FromAny[*model.Resource](request.Request["resource"], &model.Resource{})
-	req := util.FromAny[*stub.ListRecordRequest](request.Request["request"], &stub.ListRecordRequest{})
+	log.Println(request.Event)
 
-	log.Println(res, req)
-
-	result := &stub.ListRecordResponse{
-		Content: simpleVirtualResourceRecords,
-		Total:   2,
-	}
+	event := request.Event
+	event.Records = simpleVirtualResourceRecords
 
 	return &ext.FunctionCallResponse{
-		Response: map[string]*anypb.Any{
-			"response": util.ToAny(result),
-		},
+		Event: event,
 	}, nil
 }
 
@@ -67,29 +58,19 @@ func extensionHandler(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), 500)
 		return
 	}
-	var reqBody = &model.MapAnyWrap{}
+	var event = &model.Event{}
 
-	err = protojson.Unmarshal(bodyBytes, reqBody)
+	err = protojson.Unmarshal(bodyBytes, event)
 	if err != nil {
 		http.Error(writer, err.Error(), 500)
 		return
 	}
 
-	res := util.FromAny[*model.Resource](reqBody.Content["resource"], &model.Resource{})
-	req := util.FromAny[*stub.ListRecordRequest](reqBody.Content["request"], &stub.ListRecordRequest{})
+	log.Println(event)
 
-	log.Println(res, req)
+	event.Records = simpleVirtualResourceRecords
 
-	result := &stub.ListRecordResponse{
-		Content: simpleVirtualResourceRecords,
-		Total:   2,
-	}
-
-	respBody, err := protojson.Marshal(&model.MapAnyWrap{
-		Content: map[string]*anypb.Any{
-			"response": util.ToAny(result),
-		},
-	})
+	respBody, err := protojson.Marshal(event)
 
 	if err != nil {
 		http.Error(writer, err.Error(), 500)
@@ -134,24 +115,26 @@ func TestMain(m *testing.M) {
 
 func TestListResourceWithFunctionCallExtension(t *testing.T) {
 	var te = &model.Extension{
-		Name:      "test-extension",
-		Namespace: setup.SimpleVirtualResource1.Namespace,
-		Resource:  setup.SimpleVirtualResource1.Name,
-		Before:    nil,
-		Instead: &model.Extension_Instead{
-			List: &model.ExternalCall{
-				Kind: &model.ExternalCall_FunctionCall{
-					FunctionCall: &model.FunctionCall{
-						Host:         extensionGrpcHost,
-						FunctionName: "testFunc",
-					},
-				},
-			},
-			Finalize: true,
+		Id:   RandStringRunes(9),
+		Name: "test-extension",
+
+		Selector: &model.EventSelector{
+			Namespaces: []string{setup.SimpleVirtualResource1.Namespace},
+			Resources:  []string{setup.SimpleVirtualResource1.Name},
 		},
-		After:     nil,
-		AuditData: nil,
-		Version:   1,
+		Call: &model.ExternalCall{
+			FunctionCall: &model.FunctionCall{
+				Host:         extensionGrpcHost,
+				FunctionName: "testFunc",
+			},
+		},
+
+		Sync:      true,
+		Finalizes: true,
+		Responds:  true,
+
+		Version: 1,
+		Order:   91,
 	}
 
 	container.GetExtensionService().RegisterExtension(te)
@@ -206,23 +189,24 @@ func TestListResourceWithFunctionCallExtension(t *testing.T) {
 
 func TestListResourceWithHttpExtension(t *testing.T) {
 	var te = &model.Extension{
-		Name:      "test-extension",
-		Namespace: setup.SimpleVirtualResource1.Namespace,
-		Resource:  setup.SimpleVirtualResource1.Name,
-		Before:    nil,
-		Instead: &model.Extension_Instead{
-			List: &model.ExternalCall{
-				Kind: &model.ExternalCall_HttpCall{
-					HttpCall: &model.HttpCall{
-						Uri:    "http://" + extensionRestHost + "/path-1",
-						Method: "POST",
-					},
-				},
-			},
-			Finalize: true,
+		Id:   RandStringRunes(9),
+		Name: "test-extension",
+
+		Selector: &model.EventSelector{
+			Namespaces: []string{setup.SimpleVirtualResource1.Namespace},
+			Resources:  []string{setup.SimpleVirtualResource1.Name},
 		},
-		After:     nil,
-		AuditData: nil,
+		Call: &model.ExternalCall{
+			HttpCall: &model.HttpCall{
+				Uri:    "http://" + extensionRestHost + "/path-1",
+				Method: "POST",
+			},
+		},
+
+		Sync:      true,
+		Finalizes: true,
+		Responds:  true,
+		Order:     90,
 		Version:   1,
 	}
 
