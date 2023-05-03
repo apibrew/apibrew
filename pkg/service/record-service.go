@@ -173,10 +173,6 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 
 	var records []*model.Record
 
-	if resource.Virtual {
-		return nil, virtualResourceBackendAccessError
-	}
-
 	if params.Records == nil {
 		return nil, nil
 	}
@@ -186,6 +182,10 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	if err != nil {
 		success = false
 		return nil, err
+	}
+
+	if resource.Virtual {
+		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
 	}
 
 	tx, err := bck.BeginTransaction(ctx, false)
@@ -380,10 +380,6 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		return nil, err
 	}
 
-	if resource.Virtual {
-		return nil, virtualResourceBackendAccessError
-	}
-
 	var records []*model.Record
 
 	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
@@ -391,6 +387,10 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	if err != nil {
 		success = false
 		return nil, err
+	}
+
+	if resource.Virtual {
+		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
 	}
 
 	tx, err := bck.BeginTransaction(ctx, false)
