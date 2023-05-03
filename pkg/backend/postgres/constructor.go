@@ -1,10 +1,10 @@
 package postgres
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/backend/common"
+	"github.com/apibrew/apibrew/pkg/model"
 	_ "github.com/lib/pq"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/backend/common"
-	"github.com/tislib/apibrew/pkg/model"
 )
 
 func NewPostgresResourceServiceBackend(dataSource *model.DataSource) abs.Backend {

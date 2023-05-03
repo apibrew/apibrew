@@ -2,8 +2,8 @@ package client
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 type repositoryExtension[T abs.Entity[T]] struct {

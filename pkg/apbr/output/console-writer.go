@@ -2,11 +2,11 @@ package output
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/types"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/olekukonko/tablewriter"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/service/annotations"
-	"github.com/tislib/apibrew/pkg/types"
-	"github.com/tislib/apibrew/pkg/util"
 	"io"
 	"strconv"
 	"strings"

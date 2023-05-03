@@ -1,9 +1,9 @@
 package mysql
 
 import (
-	"github.com/tislib/apibrew/pkg/backend/common"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/types"
+	"github.com/apibrew/apibrew/pkg/backend/common"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )

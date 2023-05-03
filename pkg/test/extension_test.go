@@ -2,11 +2,11 @@ package test
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/ext"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/test/setup"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/ext"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/stub"
-	"github.com/tislib/apibrew/pkg/test/setup"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"

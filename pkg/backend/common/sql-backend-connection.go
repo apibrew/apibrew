@@ -3,9 +3,9 @@ package common
 import (
 	"context"
 	"database/sql"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/logging"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/logging"
 )
 
 func (p *sqlBackend) acquireConnection(ctx context.Context) (*sql.DB, errors.ServiceError) {

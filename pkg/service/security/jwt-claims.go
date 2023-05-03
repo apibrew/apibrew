@@ -2,8 +2,8 @@ package security
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/tislib/apibrew/pkg/model"
 	"time"
 )
 

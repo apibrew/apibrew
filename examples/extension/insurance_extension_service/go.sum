@@ -3,8 +3,8 @@ github.com/golang/protobuf v1.5.2 h1:ROPKBNFfQgOUMifHyP+KYbvpjbdoFNs+aK7DXlji0Tw
 github.com/golang/protobuf v1.5.2/go.mod h1:XVQd3VNwM+JqD3oG2Ue2ip4fOMUkwXdXDdiuN0vRsmY=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
-github.com/tislib/apibrew v1.0.6 h1:uSxYwdcCj9MA18DQYLlqVPi46gmqYkhvpy1uZlD7bog=
-github.com/tislib/apibrew v1.0.6/go.mod h1:FH0fqNylDdkesLq/U/QHFdCaky2rn8HJSo6dIdlPw8Y=
+github.com/apibrew/apibrew v1.0.6 h1:uSxYwdcCj9MA18DQYLlqVPi46gmqYkhvpy1uZlD7bog=
+github.com/apibrew/apibrew v1.0.6/go.mod h1:FH0fqNylDdkesLq/U/QHFdCaky2rn8HJSo6dIdlPw8Y=
 golang.org/x/net v0.7.0 h1:rJrUqqhjsgNp7KqAIc25s9pZnjU7TUcSY7HcVZjdn1g=
 golang.org/x/net v0.7.0/go.mod h1:2Tu9+aMcznHK/AK1HMvgo6xiTLG5rD5rZLDS+rp2Bjs=
 golang.org/x/sys v0.5.0 h1:MUK/U/4lj1t1oPg0HfuXDN/Z1wv31ZJ/YcPiGccS4DU=

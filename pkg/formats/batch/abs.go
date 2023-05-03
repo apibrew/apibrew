@@ -1,7 +1,7 @@
 package batch
 
 import (
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 type Writer interface {

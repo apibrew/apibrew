@@ -1,10 +1,10 @@
 package redis
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/model"
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/model"
 )
 
 func NewRedisResourceServiceBackend(dataSource *model.DataSource) abs.Backend {

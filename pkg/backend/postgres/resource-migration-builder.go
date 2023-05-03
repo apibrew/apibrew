@@ -3,13 +3,13 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/backend/helper"
-	"github.com/tislib/apibrew/pkg/backend/sqlbuilder"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/service/annotations"
-	"github.com/tislib/apibrew/pkg/types"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/backend/helper"
+	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/types"
 	"strings"
 )
 

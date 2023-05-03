@@ -18,7 +18,7 @@ services:
     ports:
       - 5432:5432
   apibrew:
-    image: tislib/apibrew:latest
+    image: apibrew/apibrew:latest
     restart: always
     volumes:
       - ./config.json:/app/config.json

@@ -36,7 +36,7 @@ else
 fi
 
 echo "Downloading ${PLATFORM} binary"
-curl -L -o "apbr${SUFFIX}" "https://github.com/tislib/apibrew/releases/download/v1.1.10/apbr-${PLATFORM}${SUFFIX}"
+curl -L -o "apbr${SUFFIX}" "https://github.com/apibrew/apibrew/releases/download/v1.1.10/apbr-${PLATFORM}${SUFFIX}"
 
 chmod +x apbr
 sudo mv apbr /usr/local/bin/apbr
@@ -46,12 +46,12 @@ echo "Configuring apbr"
 
 mkdir -p ~/.apbr
 cp ~/.apbr/config ~/.apbr/config.bak
-curl -L -o ~/.apbr/config "https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/config"
+curl -L -o ~/.apbr/config "https://raw.githubusercontent.com/apibrew/apibrew/master/deploy/easy-install/config"
 
 echo "Apbr configuration is done"
 
 echo "Run apibrew standalone mode"
 
-docker run --name apibrew-standalone -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data tislib/apibrew:full-latest
+docker run --name apibrew-standalone -d -p 9009:9009 -v ${PWD}/data:/var/lib/postgresql/data apibrew/apibrew:full-latest
 
 echo "Done!"

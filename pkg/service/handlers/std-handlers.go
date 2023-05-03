@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/tislib/apibrew/pkg/model"
-	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/model"
+	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 )
 
 type StdHandlers interface {
