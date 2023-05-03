@@ -32,8 +32,6 @@ func NewRecordService(resourceService abs.ResourceService, backendProviderServic
 	}
 }
 
-var virtualResourceBackendAccessError = errors.LogicalError.WithMessage("Virtual resource is trying to access real backend")
-
 func (r *recordService) List(ctx context.Context, params abs.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
 	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
@@ -48,14 +46,17 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, err
 	}
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-	if err != nil {
-		return nil, 0, err
-	}
+	var bck abs.Backend
+	var err errors.ServiceError
 
 	if resource.Virtual {
 		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
+	} else {
+		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
+
+		if err != nil {
+			return nil, 0, err
+		}
 	}
 
 	if params.UseHistory {
@@ -181,15 +182,16 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		return nil, nil
 	}
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-	if err != nil {
-		success = false
-		return nil, err
-	}
+	var bck abs.Backend
 
 	if resource.Virtual {
 		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
+	} else {
+		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	tx, err := bck.BeginTransaction(ctx, false)
@@ -386,15 +388,16 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 
 	var records []*model.Record
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-	if err != nil {
-		success = false
-		return nil, err
-	}
+	var bck abs.Backend
 
 	if resource.Virtual {
 		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
+	} else {
+		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	tx, err := bck.BeginTransaction(ctx, false)
@@ -467,14 +470,17 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-	if err != nil {
-		return nil, err
-	}
+	var bck abs.Backend
+	var err errors.ServiceError
 
 	if resource.Virtual {
 		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
+	} else {
+		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	res, err := bck.GetRecord(ctx, resource, id)
@@ -570,14 +576,17 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 		return errors.RecordValidationError.WithMessage("Immutable resource cannot be modified or deleted: " + params.Resource)
 	}
 
-	bck, err := r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-	if err != nil {
-		return err
-	}
+	var bck abs.Backend
+	var err errors.ServiceError
 
 	if resource.Virtual {
 		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
+	} else {
+		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	if err = bck.DeleteRecords(ctx, resource, params.Ids); err != nil {
