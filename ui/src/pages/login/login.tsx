@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -9,12 +9,21 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { authenticate } from '../../service/authentication'
+import { useNavigate } from 'react-router-dom'
 
 // eslint-disable-next-line
 export interface LoginProps {
 }
 
 export function Login(props: LoginProps): JSX.Element {
+    const isLoggedIn = localStorage.getItem('token')
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate('/dashboard/test')
+        }
+    }, [])
+
+    const navigate = useNavigate()
     const [show, setShow] = useState('password')
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -24,6 +33,7 @@ export function Login(props: LoginProps): JSX.Element {
             .then((result) => {
                 const token = result?.content ?? ''
                 localStorage.setItem('token', token)
+                navigate('/dashboard/test')
             }, err => {
                 console.error(err)
 
@@ -45,9 +55,9 @@ export function Login(props: LoginProps): JSX.Element {
                     }}
                 >
                     <Avatar sx={{ m: 1, bgcolor: 'black' }}>
-                        <LockOutlinedIcon/>
+                        <LockOutlinedIcon />
                     </Avatar>
-                    <Typography component="h1" variant="h5" style={{ color: 'white' }}>
+                    <Typography component="h1" variant="h5" style={{ color: 'white' }} >
                         Sign in
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
@@ -86,7 +96,7 @@ export function Login(props: LoginProps): JSX.Element {
                             zIndex: 1000,
                             background: ' none'
                         }}>
-                            <VisibilityIcon/>
+                            <VisibilityIcon />
                         </button>
                         <TextField
                             margin="normal"
@@ -103,8 +113,7 @@ export function Login(props: LoginProps): JSX.Element {
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            style={{ background: ' rgba(255, 255, 255, 0.15)' }}
-                        >
+                            style={{ background: ' rgba(255, 255, 255, 0.15)' }}>
                             Sign In
                         </Button>
                     </Box>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { alpha } from '@mui/material/styles'
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material'
-
+import { useNavigate } from 'react-router-dom'
 const MENU_OPTIONS = [
     {
         label: 'Home',
@@ -18,6 +18,7 @@ const MENU_OPTIONS = [
 ]
 
 export default function AccountPopover() {
+    const navigate = useNavigate()
     const [open, setOpen] = useState(false)
     const handleOpen = () => {
         setOpen(true)
@@ -81,7 +82,10 @@ export default function AccountPopover() {
                     ))}
                 </Stack>
                 <Divider sx={{ borderStyle: 'dashed' }} />
-                <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+                <MenuItem onClick={() => {
+                    localStorage.removeItem('token')
+                    navigate('/login')
+                }} sx={{ m: 1 }}>
                     Logout
                 </MenuItem>
             </Popover>
