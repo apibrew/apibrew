@@ -9,7 +9,7 @@ import {
 
 export interface MenuList {
     title?: string
-    items: Array<MenuItem>
+    items: MenuItem[]
 }
 
 export interface MenuItem {
@@ -30,12 +30,12 @@ export const menuLists: MenuList[] = [
                     {
                         icon: <TableRowsOutlined/>,
                         title: 'Designer',
-                        link: '/dashboard/resources/designer',
+                        link: '/dashboard/resources/designer'
                     },
                     {
                         icon: <TableRowsOutlined/>,
                         title: 'List',
-                        link: '/dashboard/resources',
+                        link: '/dashboard/resources'
                     }
                 ]
             },

@@ -21,7 +21,8 @@ module.exports = {
         "@typescript-eslint/indent": ["error", 4],
         "@typescript-eslint/explicit-function-return-type": "off",
         "react/display-name": "off",
-        "react/react-in-jsx-scope": "off"
+        "react/react-in-jsx-scope": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off"
     },
     settings: {
         "react": {
