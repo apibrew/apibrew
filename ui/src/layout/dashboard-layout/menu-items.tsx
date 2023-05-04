@@ -8,18 +8,15 @@ import {
 } from '@mui/icons-material'
 
 export interface MenuList {
-    title: string
-    items: Array<MenuItem | DividerItem>
+    title?: string
+    items: Array<MenuItem>
 }
 
 export interface MenuItem {
     title: string
-    link: string
-    icon?: JSX.Element
-}
-
-export interface DividerItem {
-    divider: true
+    link?: string
+    icon?: React.ReactNode
+    children?: MenuItem[]
 }
 
 export const menuLists: MenuList[] = [
@@ -28,8 +25,19 @@ export const menuLists: MenuList[] = [
         items: [
             {
                 title: 'Resources',
-                link: '/dashboard/resources',
-                icon: <TableRowsOutlined/>
+                icon: <TableRowsOutlined/>,
+                children: [
+                    {
+                        icon: <TableRowsOutlined/>,
+                        title: 'Designer',
+                        link: '/dashboard/resources/designer',
+                    },
+                    {
+                        icon: <TableRowsOutlined/>,
+                        title: 'List',
+                        link: '/dashboard/resources',
+                    }
+                ]
             },
             {
                 title: 'Namespaces',
@@ -47,9 +55,6 @@ export const menuLists: MenuList[] = [
                 icon: <PersonOutline/>
             },
             {
-                divider: true
-            },
-            {
                 title: 'Extensions',
                 link: '/dashboard/extensions',
                 icon: <ExtensionOutlined/>
@@ -57,6 +62,31 @@ export const menuLists: MenuList[] = [
             {
                 title: 'Records',
                 link: '/dashboard/records',
+                icon: <TableRowsOutlined/>
+            },
+            {
+                title: 'Action Designer',
+                link: '/dashboard/action-designer',
+                icon: <TableRowsOutlined/>
+            },
+            {
+                title: 'Python Extension',
+                link: '/dashboard/action-designer',
+                icon: <TableRowsOutlined/>
+            },
+            {
+                title: 'Nodejs Extension',
+                link: '/dashboard/action-designer',
+                icon: <TableRowsOutlined/>
+            },
+            {
+                title: 'Golang Extension',
+                link: '/dashboard/action-designer',
+                icon: <TableRowsOutlined/>
+            },
+            {
+                title: 'Java Extension',
+                link: '/dashboard/action-designer',
                 icon: <TableRowsOutlined/>
             }
         ]
