@@ -21,6 +21,7 @@ type BackendProviderService interface {
 	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	GetBackendByDataSourceName(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	DestroyBackend(ctx context.Context, id string) error
+	SetSchema(schema *Schema)
 }
 
 type DataSourceService interface {
@@ -35,19 +36,13 @@ type DataSourceService interface {
 	Delete(ctx context.Context, ids []string) errors.ServiceError
 }
 
-type PluginService interface {
-	Init(data *model.InitData)
-}
-
 type RecordService interface {
 	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
 	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
 	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
 
-	Init(data *model.InitData)
-
 	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
-	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, []bool, errors.ServiceError)
+	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, errors.ServiceError)
 	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
 	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
 	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
@@ -84,7 +79,7 @@ type UserService interface {
 }
 
 type WatchService interface {
-	Watch(ctx context.Context, params WatchParams) <-chan *model.WatchMessage
+	Watch(ctx context.Context, params WatchParams) <-chan *model.Event
 }
 
 type NamespaceService interface {
@@ -108,13 +103,11 @@ type ExtensionService interface {
 }
 
 type ExternalService interface {
-	Call(ctx context.Context, all *model.ExternalCall, in map[string]proto.Message, out map[string]proto.Message) errors.ServiceError
+	Call(ctx context.Context, all *model.ExternalCall, event *model.Event) (*model.Event, errors.ServiceError)
 }
 
 type WatchParams struct {
-	Namespace  string
-	Resource   string
-	Query      *model.BooleanExpression
+	Selector   *model.EventSelector
 	BufferSize int
 }
 
@@ -144,34 +137,30 @@ func (p RecordListParams) ToRequest() proto.Message {
 }
 
 type RecordCreateParams struct {
-	Namespace      string
-	Resource       string
-	Records        []*model.Record
-	IgnoreIfExists bool
+	Namespace string
+	Resource  string
+	Records   []*model.Record
 }
 
 func (p RecordCreateParams) ToRequest() *stub.CreateRecordRequest {
 	return &stub.CreateRecordRequest{
-		Namespace:      p.Namespace,
-		Resource:       p.Resource,
-		Records:        p.Records,
-		IgnoreIfExists: p.IgnoreIfExists,
+		Namespace: p.Namespace,
+		Resource:  p.Resource,
+		Records:   p.Records,
 	}
 }
 
 type RecordUpdateParams struct {
-	Namespace    string
-	Resource     string
-	Records      []*model.Record
-	CheckVersion bool
+	Namespace string
+	Resource  string
+	Records   []*model.Record
 }
 
 func (p RecordUpdateParams) ToRequest() *stub.UpdateRecordRequest {
 	return &stub.UpdateRecordRequest{
-		Namespace:    p.Namespace,
-		Resource:     p.Resource,
-		Records:      p.Records,
-		CheckVersion: p.CheckVersion,
+		Namespace: p.Namespace,
+		Resource:  p.Resource,
+		Records:   p.Records,
 	}
 }
 

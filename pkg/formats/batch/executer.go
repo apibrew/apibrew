@@ -6,6 +6,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tislib/apibrew/pkg/formats"
 	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/service/annotations"
+	"github.com/tislib/apibrew/pkg/service/security"
 	"github.com/tislib/apibrew/pkg/stub"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -108,13 +110,12 @@ func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 				records = append(records, record)
 			}
 
-			resp, err := e.params.RecordClient.Create(ctx, &stub.CreateRecordRequest{
-				Token:          e.params.Token,
-				Namespace:      res.Namespace,
-				Resource:       res.Resource,
-				Annotations:    batch.Header.Annotations,
-				Records:        records,
-				IgnoreIfExists: true,
+			resp, err := e.params.RecordClient.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), &stub.CreateRecordRequest{
+				Token:       e.params.Token,
+				Namespace:   res.Namespace,
+				Resource:    res.Resource,
+				Annotations: batch.Header.Annotations,
+				Records:     records,
 			})
 
 			if err != nil {

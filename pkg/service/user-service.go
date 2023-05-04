@@ -8,6 +8,7 @@ import (
 	"github.com/tislib/apibrew/pkg/model"
 	"github.com/tislib/apibrew/pkg/resources"
 	mapping2 "github.com/tislib/apibrew/pkg/resources/mapping"
+	"github.com/tislib/apibrew/pkg/service/annotations"
 	"github.com/tislib/apibrew/pkg/service/security"
 )
 
@@ -25,7 +26,7 @@ func (u *userService) Create(ctx context.Context, users []*model.User) ([]*model
 	// insert records via resource service
 	records := mapping2.MapToRecord(users, mapping2.UserToRecord)
 
-	result, _, err := u.recordService.Create(ctx, abs.RecordCreateParams{
+	result, err := u.recordService.Create(ctx, abs.RecordCreateParams{
 		Namespace: resources.UserResource.Namespace,
 		Resource:  resources.UserResource.Name,
 		Records:   records,
@@ -112,11 +113,10 @@ func (u *userService) Init(data *model.InitData) {
 
 			user.Password = hashStr
 		}
-		_, _, err := u.recordService.Create(security.SystemContext, abs.RecordCreateParams{
-			Namespace:      resources.UserResource.Namespace,
-			Resource:       resources.UserResource.Name,
-			Records:        mapping2.MapToRecord(data.InitUsers, mapping2.UserToRecord),
-			IgnoreIfExists: true,
+		_, err := u.recordService.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordCreateParams{
+			Namespace: resources.UserResource.Namespace,
+			Resource:  resources.UserResource.Name,
+			Records:   mapping2.MapToRecord(data.InitUsers, mapping2.UserToRecord),
 		})
 
 		if err != nil {

@@ -10,5 +10,4 @@ type Container interface {
 	GetNamespaceService() NamespaceService
 	GetUserService() UserService
 	GetExtensionService() ExtensionService
-	GetPluginService() PluginService
 }

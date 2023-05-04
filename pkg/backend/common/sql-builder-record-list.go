@@ -49,7 +49,6 @@ type recordLister struct {
 	Limit             uint32
 	Offset            uint64
 	ResolveReferences []string
-	Schema            abs.Schema
 	logger            *log.Entry
 	builder           *sqlbuilder.SelectBuilder
 	resultChan        chan<- *model.Record
@@ -195,7 +194,7 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 			}
 			if found {
 				// locating referenced resource
-				referencedResource := r.Schema.ResourceByNamespaceSlashName[r.resource.Namespace+"/"+prop.Reference.ReferencedResource]
+				referencedResource := r.backend.schema.ResourceByNamespaceSlashName[r.resource.Namespace+"/"+prop.Reference.ReferencedResource]
 				newPath := path + "__" + prop.Mapping
 
 				// add to joins
@@ -286,7 +285,7 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 						}
 					}
 
-					referencedResource := r.Schema.ResourceByNamespaceSlashName[r.resource.Namespace+"/"+prop.Reference.ReferencedResource]
+					referencedResource := r.backend.schema.ResourceByNamespaceSlashName[r.resource.Namespace+"/"+prop.Reference.ReferencedResource]
 
 					if referencedResource != nil && resolveReference {
 						nv, err := r.mapRecordProperties(recordId, referencedResource, pathPrefix+"_"+prop.Mapping+"_", propertyPointers)
@@ -481,7 +480,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 	}
 
 	if propEx, ok := query.Expression.(*model.Expression_RefValue); ok {
-		referencedResource := r.Schema.ResourceByNamespaceSlashName[propEx.RefValue.Namespace+"/"+propEx.RefValue.Resource]
+		referencedResource := r.backend.schema.ResourceByNamespaceSlashName[propEx.RefValue.Namespace+"/"+propEx.RefValue.Resource]
 
 		innerSql, err := r.backend.resolveReference(propEx.RefValue.Properties, r.builder.Var, referencedResource)
 
@@ -505,18 +504,16 @@ func (r *recordLister) prepareCols() []string {
 	return cols
 }
 
-func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, params abs.ListRecordParams) (result []*model.Record, total uint32, err errors.ServiceError) {
+func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) (result []*model.Record, total uint32, err errors.ServiceError) {
 	return (&recordLister{
 		ctx:               ctx,
 		runner:            runner,
-		resource:          params.Resource,
+		resource:          resource,
 		query:             params.Query,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
 		ResolveReferences: params.ResolveReferences,
-		Schema:            *params.Schema,
-		resultChan:        params.ResultChan,
-		packRecords:       params.PackRecords,
+		resultChan:        resultChan,
 		backend:           p,
 	}).Exec()
 }

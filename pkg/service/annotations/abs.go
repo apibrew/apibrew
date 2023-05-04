@@ -15,6 +15,15 @@ func WithContext(parent context.Context, annotated Annotated) context.Context {
 	return context.WithValue(parent, ctxValue, annotated)
 }
 
+func SetWithContext(parent context.Context, name, value string) context.Context {
+	val := FromCtx(parent).GetAnnotations()
+	val[name] = value
+
+	return WithContext(parent, &annotated{
+		annotations: val,
+	})
+}
+
 type annotated struct {
 	annotations map[string]string
 }
@@ -25,13 +34,21 @@ func (a *annotated) GetAnnotations() map[string]string {
 
 //goland:noinspection GoUnusedExportedFunction
 func FromCtx(ctx context.Context) Annotated {
+	if annotations, ok := ctx.Value(ctxValue).(Annotated); ok {
+		return annotations
+	}
+
 	return &annotated{
-		annotations: ctx.Value(ctxValue).(map[string]string),
+		annotations: make(map[string]string),
 	}
 }
 
 func IsEnabled(resource Annotated, name string) bool {
 	return resource.GetAnnotations() != nil && resource.GetAnnotations()[name] == "true"
+}
+
+func IsEnabledOnCtx(ctx context.Context, name string) bool {
+	return IsEnabled(FromCtx(ctx), name)
 }
 
 func Enable(resource Annotated, names ...string) {

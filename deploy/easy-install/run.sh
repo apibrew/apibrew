@@ -36,19 +36,19 @@ else
 fi
 
 echo "Downloading ${PLATFORM} binary"
-curl -L -o "dhctl${SUFFIX}" "https://github.com/tislib/apibrew/releases/download/v1.1.10/dhctl-${PLATFORM}${SUFFIX}"
+curl -L -o "apbr${SUFFIX}" "https://github.com/tislib/apibrew/releases/download/v1.1.10/apbr-${PLATFORM}${SUFFIX}"
 
-chmod +x dhctl
-sudo mv dhctl /usr/local/bin/dhctl
+chmod +x apbr
+sudo mv apbr /usr/local/bin/apbr
 
-echo "Dhctl installation is done"
-echo "Configuring dhctl"
+echo "Apbr installation is done"
+echo "Configuring apbr"
 
-mkdir -p ~/.dhctl
-cp ~/.dhctl/config ~/.dhctl/config.bak
-curl -L -o ~/.dhctl/config "https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/config"
+mkdir -p ~/.apbr
+cp ~/.apbr/config ~/.apbr/config.bak
+curl -L -o ~/.apbr/config "https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/config"
 
-echo "Dhctl configuration is done"
+echo "Apbr configuration is done"
 
 echo "Run apibrew standalone mode"
 
