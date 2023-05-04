@@ -21,17 +21,15 @@ func (r repositoryExtension[T]) OnCreate(handler func(ctx context.Context, elem 
 	r.extension.RegisterFunction(extensionName, CreateRecordTypedFunction(r.instanceProvider, handler))
 
 	ext := &model.Extension{
-		Name:      extensionName,
-		Namespace: r.namespace,
-		Resource:  r.resourceName,
-		Instead: &model.Extension_Instead{
-			Create: &model.ExternalCall{
-				Kind: &model.ExternalCall_FunctionCall{
-					FunctionCall: &model.FunctionCall{
-						Host:         r.extension.GetRemoteHost(),
-						FunctionName: extensionName,
-					},
-				},
+		Name: extensionName,
+		Selector: &model.EventSelector{
+			Namespaces: []string{r.namespace},
+			Resources:  []string{r.resourceName},
+		},
+		Call: &model.ExternalCall{
+			FunctionCall: &model.FunctionCall{
+				Host:         r.extension.GetRemoteHost(),
+				FunctionName: extensionName,
 			},
 		},
 	}

@@ -15,6 +15,11 @@ import (
 type redisBackend struct {
 	dataSource *model.DataSource
 	rdb        *redis.Client
+	schema     *abs.Schema
+}
+
+func (r *redisBackend) SetSchema(schema *abs.Schema) {
+	r.schema = schema
 }
 
 func (r redisBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
@@ -29,32 +34,8 @@ func (r redisBackend) DestroyDataSource(ctx context.Context) {
 
 }
 
-func (r redisBackend) AddRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, []bool, errors.ServiceError) {
-	var inserted []bool
-	for _, record := range params.Records {
-		data, err := proto.Marshal(record)
-
-		if err != nil {
-			log.Warn(err)
-
-			return nil, nil, r.handleError(err)
-		}
-
-		_, err = r.rdb.Set(ctx, r.getKey(params.Resource, record.Id), data, time.Hour*10000).Result()
-
-		if err != nil {
-			log.Warn(err)
-
-			return nil, nil, r.handleError(err)
-		}
-		inserted = append(inserted, true)
-	}
-
-	return params.Records, inserted, nil
-}
-
-func (r redisBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsParams) ([]*model.Record, errors.ServiceError) {
-	for _, record := range params.Records {
+func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+	for _, record := range records {
 		data, err := proto.Marshal(record)
 
 		if err != nil {
@@ -63,7 +44,7 @@ func (r redisBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsP
 			return nil, r.handleError(err)
 		}
 
-		_, err = r.rdb.Set(ctx, r.getKey(params.Resource, record.Id), data, time.Hour*10000).Result()
+		_, err = r.rdb.Set(ctx, r.getKey(resource, record.Id), data, time.Hour*10000).Result()
 
 		if err != nil {
 			log.Warn(err)
@@ -72,10 +53,32 @@ func (r redisBackend) UpdateRecords(ctx context.Context, params abs.BulkRecordsP
 		}
 	}
 
-	return params.Records, nil
+	return records, nil
 }
 
-func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
+func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+	for _, record := range records {
+		data, err := proto.Marshal(record)
+
+		if err != nil {
+			log.Warn(err)
+
+			return nil, r.handleError(err)
+		}
+
+		_, err = r.rdb.Set(ctx, r.getKey(resource, record.Id), data, time.Hour*10000).Result()
+
+		if err != nil {
+			log.Warn(err)
+
+			return nil, r.handleError(err)
+		}
+	}
+
+	return records, nil
+}
+
+func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
 	recData, err := r.rdb.Get(ctx, r.getKey(resource, id)).Bytes()
 
 	if err != nil {
@@ -107,7 +110,7 @@ func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (r redisBackend) ListRecords(ctx context.Context, params abs.ListRecordParams) ([]*model.Record, uint32, errors.ServiceError) {
+func (r redisBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
 	return nil, 0, errors.UnsupportedOperation
 }
 

@@ -14,7 +14,7 @@ import (
 )
 
 func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams) errors.ServiceError {
-	hp := p.options.GetResourceMigrationBuilderConstructor()(ctx, runner, params, params.ForceMigration)
+	hp := p.options.GetResourceMigrationBuilderConstructor()(ctx, runner, p.schema, params, params.ForceMigration)
 
 	return helper.ResourceMigrateTableViaResourceMigrationBuilder(hp, params.MigrationPlan, params.ForceMigration)
 }

@@ -80,7 +80,7 @@ properties:
 Now let's create country resource
 
 ```
-dhctl apply -f country.yml
+apbr apply -f country.yml
 ```
 
 city.yml
@@ -111,7 +111,7 @@ properties:
 Now let's create city resource
 
 ```
-dhctl apply -f city.yml
+apbr apply -f city.yml
 ```
 
 So, by this way, you will create both country and city resources
@@ -161,7 +161,7 @@ properties:
 Now let's create country resource
 
 ```
-dhctl apply -f country.yml
+apbr apply -f country.yml
 ```
 
 ## Data source

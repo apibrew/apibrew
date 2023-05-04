@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/tislib/apibrew/pkg/model";
+
+import "model/resource.proto";
+import "model/record.proto";
+import "model/query.proto";
+import 'google/protobuf/timestamp.proto';
+
+message Event {
+  string id = 1;
+  enum Action {
+    CREATE = 0;
+    UPDATE = 1;
+    DELETE = 2;
+    GET = 3;
+    LIST = 4;
+    OPERATE = 5; // for special cases
+  }
+  message RecordSearchParams {
+    model.BooleanExpression query = 4;
+    uint32 limit = 5;
+    uint64 offset = 6;
+    repeated string resolveReferences = 8;
+  }
+  Action action = 2;
+  string actionSummary = 3;
+  string actionDescription = 4;
+
+  model.Resource resource = 5;
+  /*
+    CREATE,UPDATE - records are for incoming and outgoing records
+    GET - there will be only one record
+    LIST - result of the list operation
+   */
+  repeated model.Record records = 6;
+  /*
+    GET - there will be only one id, for getting record with id
+    DELETE - there will be multiple ids, for deleting multiple records
+   */
+  repeated string ids = 7;
+  /*
+    LIST - search params for the list operation
+   */
+  RecordSearchParams recordSearchParams = 8;
+
+  /*
+    If true, this will be last event on operation list
+   */
+  bool finalizes = 9;
+
+  /*
+    If true, backend will wait for processing this event before sending next one on operation list
+   */
+  bool sync = 10;
+
+  google.protobuf.Timestamp time = 11;
+
+  /*
+    Request annotations
+   */
+  map<string, string> annotations = 103;
+}
+
+/*
+  Events pass through selectors, if selector returns true, event will be processed
+  Selector returns true if no selector fails.
+  For example, if you passed empty selector, it will return true for all events.
+ */
+message EventSelector {
+  repeated Event.Action actions = 1;
+  model.BooleanExpression recordSelector = 2;
+  repeated string namespaces = 3;
+  repeated string resources = 4;
+
+  /*
+    star means all
+   */
+  repeated string ids = 7;
+
+  /*
+    star means all, empty means proceed
+   */
+  map<string, string> annotations = 103;
+}

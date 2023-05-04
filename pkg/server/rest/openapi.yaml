@@ -263,10 +263,6 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: checkVersion
-                  in: query
-                  schema:
-                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -310,10 +306,6 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: ignoreIfExists
-                  in: query
-                  schema:
-                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -400,10 +392,6 @@ paths:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: checkVersion
-                  in: query
-                  schema:
-                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -1541,55 +1529,7 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: namespace
-                  in: query
-                  schema:
-                    type: string
-                - name: resource
-                  in: query
-                  schema:
-                    type: string
-                - name: query.not.not.equal.left.property
-                  in: query
-                  schema:
-                    type: string
-                - name: query.not.not.equal.left.value
-                  in: query
-                  schema:
-                    $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: query.not.not.equal.left.refValue.namespace
-                  in: query
-                  schema:
-                    type: string
-                - name: query.not.not.equal.left.refValue.resource
-                  in: query
-                  schema:
-                    type: string
-                - name: query.not.not.equal.right.property
-                  in: query
-                  schema:
-                    type: string
-                - name: query.not.not.equal.right.value
-                  in: query
-                  schema:
-                    $ref: '#/components/schemas/GoogleProtobufValue'
-                - name: query.not.not.equal.right.refValue.namespace
-                  in: query
-                  schema:
-                    type: string
-                - name: query.not.not.equal.right.refValue.resource
-                  in: query
-                  schema:
-                    type: string
-                - name: query.not.not.regexMatch.pattern
-                  in: query
-                  schema:
-                    type: string
-                - name: query.not.regexMatch.pattern
-                  in: query
-                  schema:
-                    type: string
-                - name: events
+                - name: selector.actions
                   in: query
                   schema:
                     type: array
@@ -1600,15 +1540,75 @@ paths:
                             - DELETE
                             - GET
                             - LIST
+                            - OPERATE
                         type: string
                         format: enum
+                - name: selector.recordSelector.not.not.equal.left.property
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.left.value
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: selector.recordSelector.not.not.equal.left.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.left.refValue.resource
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.right.property
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.right.value
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: selector.recordSelector.not.not.equal.right.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.right.refValue.resource
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.regexMatch.pattern
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.regexMatch.pattern
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.namespaces
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: selector.resources
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: selector.ids
+                  in: query
+                  description: star means all
+                  schema:
+                    type: array
+                    items:
+                        type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/WatchMessage'
+                                $ref: '#/components/schemas/Event'
                 default:
                     description: Default error response
                     content:
@@ -1928,6 +1928,104 @@ components:
         DeleteUserResponse:
             type: object
             properties: {}
+        Event:
+            type: object
+            properties:
+                id:
+                    type: string
+                action:
+                    enum:
+                        - CREATE
+                        - UPDATE
+                        - DELETE
+                        - GET
+                        - LIST
+                        - OPERATE
+                    type: string
+                    format: enum
+                actionSummary:
+                    type: string
+                actionDescription:
+                    type: string
+                resource:
+                    $ref: '#/components/schemas/Resource'
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+                    description: CREATE,UPDATE - records are for incoming and outgoing records GET - there will be only one record LIST - result of the list operation
+                ids:
+                    type: array
+                    items:
+                        type: string
+                    description: GET - there will be only one id, for getting record with id DELETE - there will be multiple ids, for deleting multiple records
+                recordSearchParams:
+                    $ref: '#/components/schemas/Event_RecordSearchParams'
+                finalizes:
+                    type: boolean
+                    description: If true, this will be last event on operation list
+                sync:
+                    type: boolean
+                    description: If true, backend will wait for processing this event before sending next one on operation list
+                time:
+                    type: string
+                    format: date-time
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: Request annotations
+        EventSelector:
+            type: object
+            properties:
+                actions:
+                    type: array
+                    items:
+                        enum:
+                            - CREATE
+                            - UPDATE
+                            - DELETE
+                            - GET
+                            - LIST
+                            - OPERATE
+                        type: string
+                        format: enum
+                recordSelector:
+                    $ref: '#/components/schemas/BooleanExpression'
+                namespaces:
+                    type: array
+                    items:
+                        type: string
+                resources:
+                    type: array
+                    items:
+                        type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
+                    description: star means all
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: star means all, empty means proceed
+            description: Events pass through selectors, if selector returns true, event will be processed Selector returns true if no selector fails. For example, if you passed empty selector, it will return true for all events.
+        Event_RecordSearchParams:
+            type: object
+            properties:
+                query:
+                    $ref: '#/components/schemas/BooleanExpression'
+                limit:
+                    type: integer
+                    format: uint32
+                offset:
+                    type: integer
+                    format: uint64
+                resolveReferences:
+                    type: array
+                    items:
+                        type: string
         Expression:
             type: object
             properties:
@@ -1944,72 +2042,30 @@ components:
                     type: string
                 description:
                     type: string
-                namespace:
-                    type: string
-                resource:
-                    type: string
-                before:
-                    $ref: '#/components/schemas/Extension_Before'
-                instead:
-                    $ref: '#/components/schemas/Extension_Instead'
-                after:
-                    $ref: '#/components/schemas/Extension_After'
+                selector:
+                    $ref: '#/components/schemas/EventSelector'
+                order:
+                    type: integer
+                    format: int32
+                finalizes:
+                    type: boolean
+                    description: If true, this will be last event on operation list
+                sync:
+                    type: boolean
+                    description: If true, backend will wait for processing this event before sending next one on operation list
+                responds:
+                    type: boolean
+                call:
+                    $ref: '#/components/schemas/ExternalCall'
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
                     type: integer
                     format: uint32
-        Extension_After:
-            type: object
-            properties:
-                all:
-                    $ref: '#/components/schemas/ExternalCall'
-                create:
-                    $ref: '#/components/schemas/ExternalCall'
-                update:
-                    $ref: '#/components/schemas/ExternalCall'
-                delete:
-                    $ref: '#/components/schemas/ExternalCall'
-                get:
-                    $ref: '#/components/schemas/ExternalCall'
-                list:
-                    $ref: '#/components/schemas/ExternalCall'
-                sync:
-                    type: boolean
-        Extension_Before:
-            type: object
-            properties:
-                all:
-                    $ref: '#/components/schemas/ExternalCall'
-                create:
-                    $ref: '#/components/schemas/ExternalCall'
-                update:
-                    $ref: '#/components/schemas/ExternalCall'
-                delete:
-                    $ref: '#/components/schemas/ExternalCall'
-                get:
-                    $ref: '#/components/schemas/ExternalCall'
-                list:
-                    $ref: '#/components/schemas/ExternalCall'
-                sync:
-                    type: boolean
-        Extension_Instead:
-            type: object
-            properties:
-                all:
-                    $ref: '#/components/schemas/ExternalCall'
-                create:
-                    $ref: '#/components/schemas/ExternalCall'
-                update:
-                    $ref: '#/components/schemas/ExternalCall'
-                delete:
-                    $ref: '#/components/schemas/ExternalCall'
-                get:
-                    $ref: '#/components/schemas/ExternalCall'
-                list:
-                    $ref: '#/components/schemas/ExternalCall'
-                finalize:
-                    type: boolean
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
         ExternalCall:
             type: object
             properties:
@@ -2815,27 +2871,6 @@ components:
                         - ERROR
                     type: string
                     format: enum
-        WatchMessage:
-            type: object
-            properties:
-                changes:
-                    type: object
-                recordIds:
-                    type: array
-                    items:
-                        type: string
-                event:
-                    enum:
-                        - CREATE
-                        - UPDATE
-                        - DELETE
-                        - GET
-                        - LIST
-                    type: string
-                    format: enum
-                eventOn:
-                    type: string
-                    format: date-time
     securitySchemes:
         bearerAuth:
             type: http

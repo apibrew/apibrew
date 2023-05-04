@@ -16,7 +16,7 @@ plugins:
   - name: openapi
     strategy: all
     out: ../pkg/server/rest
-  - name: doc
-    strategy: all
-    out: ../docs/content/
-    opt: ../docs/content/proto.tmpl,proto.md
+#  - name: doc
+#    strategy: all
+#    out: ../docs/content/
+#    opt: ../docs/content/proto.tmpl,proto.md

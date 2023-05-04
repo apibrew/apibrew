@@ -11,6 +11,8 @@ type Backend interface {
 	BackendRecordsInterface
 	BackendSchemaInterface
 	BackendTransactionInterface
+
+	SetSchema(schema *Schema)
 }
 
 type BackendGenericInterface interface {
@@ -19,11 +21,11 @@ type BackendGenericInterface interface {
 }
 
 type BackendRecordsInterface interface {
-	AddRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, []bool, errors.ServiceError)
-	UpdateRecords(ctx context.Context, params BulkRecordsParams) ([]*model.Record, errors.ServiceError)
-	GetRecord(ctx context.Context, resource *model.Resource, schema *Schema, id string) (*model.Record, errors.ServiceError)
-	DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError
-	ListRecords(ctx context.Context, params ListRecordParams) ([]*model.Record, uint32, errors.ServiceError)
+	AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError)
+	UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError)
+	GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError)
+	DeleteRecords(ctx context.Context, resource *model.Resource, ids []string) errors.ServiceError
+	ListRecords(ctx context.Context, resource *model.Resource, params ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError)
 }
 
 type BackendSchemaInterface interface {
@@ -39,28 +41,15 @@ type BackendTransactionInterface interface {
 	IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError errors.ServiceError)
 }
 
-type BulkRecordsParams struct {
-	Resource       *model.Resource
-	Records        []*model.Record
-	CheckVersion   bool
-	IgnoreIfExists bool
-	Schema         *Schema
-}
-
 type ListRecordParams struct {
-	Resource          *model.Resource
 	Query             *model.BooleanExpression
 	Limit             uint32
 	Offset            uint64
 	ResolveReferences []string
-	Schema            *Schema
-	ResultChan        chan<- *model.Record
-	PackRecords       bool
 }
 
 type UpgradeResourceParams struct {
 	ForceMigration bool
-	Schema         *Schema
 	MigrationPlan  *model.ResourceMigrationPlan
 }
 

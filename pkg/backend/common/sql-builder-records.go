@@ -18,7 +18,7 @@ import (
 	"strings"
 )
 
-func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema) (bool, errors.ServiceError) {
+func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	query := fmt.Sprintf("INSERT INTO %s", p.getFullTableName(resource.SourceConfig))
@@ -44,7 +44,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 
 				val, serviceError := p.options.DbEncode(property, packedVal)
 				if serviceError != nil {
-					return false, serviceError
+					return serviceError
 				}
 
 				if property.Type == model.ResourceProperty_REFERENCE {
@@ -52,7 +52,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 					item, err := p.resolveReference(packedVal.GetStructValue().Fields, args.Add, referencedResource)
 
 					if err != nil {
-						return false, err
+						return err
 					}
 
 					row = append(row, item)
@@ -82,7 +82,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 		logger.Error(err)
 	}
 
-	return true, p.handleDbError(ctx, err)
+	return p.handleDbError(ctx, err)
 }
 
 func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, argPlaceHolder func(val interface{}) string, referencedResource *model.Resource) (string, errors.ServiceError) {
@@ -253,9 +253,8 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 	return nil
 }
 
-func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, schema *abs.Schema, id string) (*model.Record, errors.ServiceError) {
-	list, total, err := p.recordList(ctx, runner, abs.ListRecordParams{
-		Resource: resource,
+func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+	list, total, err := p.recordList(ctx, runner, resource, abs.ListRecordParams{
 		Query: &model.BooleanExpression{
 			Expression: &model.BooleanExpression_Equal{
 				Equal: &model.PairExpression{
@@ -267,8 +266,7 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, 
 		Limit:             1,
 		Offset:            0,
 		ResolveReferences: []string{"*"},
-		Schema:            schema,
-	})
+	}, nil)
 
 	if err != nil {
 		return nil, err
