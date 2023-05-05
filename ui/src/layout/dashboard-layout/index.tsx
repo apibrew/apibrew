@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState } from 'react'
+import {Fragment, ReactNode, useState} from 'react'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
@@ -27,7 +27,7 @@ const drawerStyle = {
 }
 
 export interface DashboardLayoutProps {
-    children: JSX.Element | JSX.Element[]
+    children: ReactNode
 }
 
 export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
@@ -44,10 +44,10 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                     <img style={{ textAlign: 'center' }} src="/logo-small-white.svg"></img>
                 </Toolbar>
                 <Divider style={{ background: '#AAA' }}/>
-                {menuLists.map((menuList, index) => <>
-                    <NavList key={menuList.title} menuList={menuList}/>
+                {menuLists.map((menuList, index) => <Fragment key={menuList.title}>
+                    <NavList menuList={menuList}/>
                     <Divider style={{ background: '#FFF' }}/>
-                </>)}
+                </Fragment>)}
             </div>
             <div style={{ flexGrow: 1 }}/>
         </Box>
@@ -141,7 +141,7 @@ function NavList(props: NavListProps): JSX.Element {
     </Box>}>
         {props.menuList.items.map((menuItem, index) => {
             const key = `${menuItem.title}`
-            return <>
+            return <Fragment key={key}>
                 <ListItem key={menuItem.title} disablePadding>
                     {!menuItem.children && <ListItemButton component={Link} to={menuItem.link!}>
                         {(menuItem.icon != null) &&
@@ -162,7 +162,7 @@ function NavList(props: NavListProps): JSX.Element {
                         <NavList menuList={{ items: menuItem.children }}/>
                     </Box>
                 </Collapse>}
-            </>
+            </Fragment>
         })}
     </List>
 }
