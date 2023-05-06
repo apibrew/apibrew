@@ -1,16 +1,17 @@
 import {useEffect, useRef, useState} from "react";
+import {useGraph, usePaper} from "./context";
 
 export interface ComponentShapeProps {
-    paper: joint.dia.Paper
-    graph: joint.dia.Graph
     children: React.ReactNode
     element: joint.dia.Element
 }
 
-export function ComponentShape(props: ComponentShapeProps): JSX.Element {
-    const containerRef = useRef<HTMLDivElement>(null);
+export function ReactContainerShape(props: ComponentShapeProps): JSX.Element {
+    const graph = useGraph()
+    const paper = usePaper()
+    const element = props.element
 
-    const {paper, graph, children, element} = props
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const updatePosition = () => {
         const container = containerRef.current!

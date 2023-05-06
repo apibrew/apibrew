@@ -1,5 +1,5 @@
 import {PageLayout} from '../../layout/PageLayout'
-import {Designer} from "../../components/designer/Designer2";
+import {Designer} from "../../components/designer/Designer";
 
 export interface ResourcesDesignerProps {
 
