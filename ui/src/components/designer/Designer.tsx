@@ -4,9 +4,9 @@ import 'jquery'
 import 'lodash'
 import 'backbone'
 import * as joint from 'jointjs'
-import { Component, ReactNode, createRef, useEffect, useRef } from "react";
+import {Component, createRef, ReactNode} from "react";
 import Button from "@mui/material/Button";
-import { random } from "lodash";
+import {TheClass2} from "./def1";
 
 
 export interface DesignerProps {
@@ -18,8 +18,9 @@ function handleModelChange(changes: any) {
 }
 
 export class Designer extends Component {
-    readonly graph: joint.dia.Graph<joint.dia.Graph.Attributes, joint.dia.ModelSetOptions> = new joint.dia.Graph({}, { cellNamespace: joint.shapes })
+    readonly graph: joint.dia.Graph<joint.dia.Graph.Attributes, joint.dia.ModelSetOptions> = new joint.dia.Graph({}, {cellNamespace: joint.shapes})
     myRef: any;
+    private shape2?: TheClass2;
 
     constructor(props: {}) {
         super(props);
@@ -41,51 +42,57 @@ export class Designer extends Component {
             gridSize: 1,
         });
 
-        var rect = new joint.shapes.standard.Rectangle();
-        rect.position(100, 30);
-        rect.resize(100, 40);
-        rect.attr({
-            body: {
-                fill: 'blue'
-            },
-            label: {
-                text: 'Hello',
-                fill: 'white'
-            }
-        });
-        rect.addTo(this.graph);
+        var shape1 = new joint.shapes.standard.Rectangle()
 
-        var rect2 = rect.clone();
-        rect2.translate(300, 0);
-        rect2.attr('label/text', 'World!');
-        rect2.addTo(this.graph);
+        shape1.resize(200, 240)
+        shape1.position(200, 100)
 
-        var link = new joint.shapes.standard.Link();
-        link.source(rect);
-        link.target(rect2);
-        link.addTo(this.graph);
+        shape1.addTo(this.graph)
 
+        var shape2 = new TheClass2({
+            name: 'Class1',
+            properties: [
+                {
+                    name: 'attr-1',
+                    type: 'STRING',
+                    required: true,
+                },
+                {
+                    name: 'attr-1',
+                    type: 'STRING',
+                    required: true,
+                },
+                {
+                    name: 'attr-1',
+                    type: 'STRING',
+                    required: true,
+                },
+                {
+                    name: 'attr-1',
+                    type: 'STRING',
+                    required: true,
+                }
+            ]
+        })
 
+        shape2.resize(300, 440)
+        shape2.position(50, 20)
+
+        shape2.abc = 'tttt'
+
+        shape2.addTo(this.graph)
+
+        this.shape2 = shape2
+        this.shape2.redrawResource()
     }
 
     render(): ReactNode {
         return <Box>
             <Button variant="contained" onClick={() => {
-                var rect = new joint.shapes.standard.Rectangle();
-                rect.position(100, 300 * Math.random());
-                rect.resize(100, 40);
-                rect.attr({
-                    body: {
-                        fill: 'blue'
-                    },
-                    label: {
-                        text: 'Hello',
-                        fill: 'white'
-                    }
-                });
-                rect.addTo(this.graph);
+                this.shape2!.resource.properties = [(this.shape2!.resource.properties![0])];
+                this.shape2!.redrawResource()
             }}>Add New</Button>
             <div ref={this.myRef}></div>
-        </Box >
+        </Box>
     }
 }
