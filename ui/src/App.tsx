@@ -6,9 +6,10 @@ import { DashboardLayout } from './layout/dashboard-layout'
 import { useEffect } from 'react'
 import { BaseLayout } from './layout/BaseLayout'
 import { ResourcesDesigner } from './pages/resources/ResourcesDesigner'
+import {TokenService} from "./service/token";
 
 function Dashboard(): JSX.Element {
-    const isLoggedIn = localStorage.getItem('token')
+    const isLoggedIn = TokenService.isLoggedIn()
     const navigate = useNavigate()
 
     useEffect(() => {

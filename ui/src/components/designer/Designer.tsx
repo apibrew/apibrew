@@ -1,34 +1,57 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {JointPaper} from "../joint/JointPaper";
 import {JointGraph} from "../joint/JointGraph";
-import {RectContainer, RectContainerProps} from "../joint/RectContainer";
 import {Link} from "../joint/Link";
+import {Resource} from "../../model";
+import {ResourceService} from "../../service/resource";
+import {RectContainer} from "../joint/RectContainer";
 import Button from "@mui/material/Button";
+import {isAnnotationEnabled, SpecialProperty} from "../../model/annotations";
 
 // React component to render the diagram
 export const Designer: React.FC = () => {
-    const [rects, setRects] = React.useState<RectContainerProps[]>([])
+    const [resources, setResources] = React.useState<Resource[]>([])
+    console.log(resources)
+    useEffect(() => {
+        ResourceService.list().then(setResources)
+        console.log(resources)
+    }, [])
 
     return <div>
-        <Button onClick={() => {
-            setRects([...rects, {
-                name: 'item-' + rects.length,
-                position: {x: rects.length * 300, y: 10},
-                size: {width: 250, height: 300},
-                attr: {rect: {fill: '#EEEEEE', stroke: 'black', 'stroke-width': 0}},
-                children: <h6>Hello world</h6>,
-            }])
-        }} variant={'contained'}>Add</Button>
-        <Button onClick={() => {
-            setRects(rects.slice(0, rects.length - 1))
-        }} variant={'contained'}>Delete</Button>
         <JointGraph>
-            <JointPaper options={{
-                width: '100%',
-                height: '600px',
-                gridSize: 10,
-            }}>
-                {rects.map(item => <RectContainer key={item.name} {...item} children={item.children}/>)}
+            <JointPaper
+                preventCollision={true}
+                options={{
+                    width: '100%',
+                    height: '600px',
+                    gridSize: 10,
+                }}>
+                {resources.map((resource, index) => <RectContainer
+                    key={(resource.namespace ?? '') + resource.name}
+                    position={{x: index * 210, y: 10}}
+                    size={{width: 200, height: 205}}
+                    attrs={{
+                        rect: {
+                            cursor: 'crosshair',
+                            strokeWidth: 0,
+                            fill: '#DFDFDF',
+                            rx: 1,
+                        }
+                    }}
+                    name={(resource.namespace ?? '') + resource.name}>
+                    <div style={{margin: '10px', pointerEvents: 'auto', background: '#CFCFCF', textAlign: 'center'}}>
+                        <h3>{resource.name}</h3>
+                        {resource.properties?.filter(item => !isAnnotationEnabled(item.annotations, SpecialProperty))
+                            .slice(0, 4)
+                            .map((property, index) =>
+                                <>
+                                    <span key={index}>{property.name}:{property.type!.toLowerCase()}</span>
+                                    <br/>
+                                </>
+                            )}
+                        <Button variant='outlined' color='info' size='small'>Details</Button>
+                    </div>
+                </RectContainer>)}
                 <Link source={'item-1'} target={'item-2'}/>
             </JointPaper>
         </JointGraph>

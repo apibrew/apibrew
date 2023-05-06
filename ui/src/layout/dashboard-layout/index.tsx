@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Fragment, ReactNode, useState} from 'react'
-import AppBar from '@mui/material/AppBar'
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -17,7 +17,8 @@ import { Link } from 'react-router-dom'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import ListItem from '@mui/material/ListItem'
-import { ExpandLess, ExpandMore } from '@mui/icons-material'
+import {ChevronLeft, ExpandLess, ExpandMore} from '@mui/icons-material'
+import {styled} from "@mui/material/styles";
 
 const drawerWidth = 260
 
@@ -26,12 +27,35 @@ const drawerStyle = {
     color: 'rgba(238, 238, 238, 0.7)'
 }
 
+interface AppBarProps extends MuiAppBarProps {
+    open?: boolean;
+}
+
+const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+})<AppBarProps>(({ theme, open }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(open && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
+}));
+
+
 export interface DashboardLayoutProps {
     children: ReactNode
 }
 
 export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
     const [mobileOpen, setMobileOpen] = React.useState(false)
+    const [open, setOpen] = React.useState(true)
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen)
@@ -42,6 +66,11 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
             <div>
                 <Toolbar>
                     <img style={{ textAlign: 'center' }} src="/logo-small-white.svg"></img>
+                    <IconButton onClick={()=>{
+                        setOpen(false);
+                    }}>
+                        <ChevronLeft />
+                    </IconButton>
                 </Toolbar>
                 <Divider style={{ background: '#AAA' }}/>
                 {menuLists.map((menuList, index) => <Fragment key={menuList.title}>
@@ -57,6 +86,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
         <Box sx={{ display: 'flex' }}>
             <AppBar
                 position="fixed"
+                open={open}
                 sx={{
                     width: { sm: `calc(100% - ${drawerWidth}px)` },
                     ml: { sm: `${drawerWidth}px` }

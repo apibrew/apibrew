@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { alpha } from '@mui/material/styles'
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import {TokenService} from "../../service/token";
 const MENU_OPTIONS = [
     {
         label: 'Home',
@@ -83,7 +84,7 @@ export default function AccountPopover() {
                 </Stack>
                 <Divider sx={{ borderStyle: 'dashed' }} />
                 <MenuItem onClick={() => {
-                    localStorage.removeItem('token')
+                    TokenService.removeToken()
                     navigate('/login')
                 }} sx={{ m: 1 }}>
                     Logout

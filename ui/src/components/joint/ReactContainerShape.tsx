@@ -32,11 +32,11 @@ export function ReactContainerShape(props: ComponentShapeProps): JSX.Element {
             graph.attributes['cell_' + props.name] = element
         }
 
-        const cellView = paper.findViewByModel(element);
         container.style.position = 'absolute';
         container.style.pointerEvents = 'none'
         container.style.userSelect = 'none'
         container.style.boxSizing = 'border-box'
+        container.style.overflow = 'hidden'
         updatePosition()
 
         element.on('change:position', () => {
