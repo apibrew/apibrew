@@ -1,4 +1,4 @@
-import {useMemo} from "react";
+import {useMemo, useState} from "react";
 import {dia} from "jointjs";
 import {GraphContext} from "./context";
 
@@ -7,7 +7,7 @@ export interface JointGraphProps {
 }
 
 export function JointGraph(props: JointGraphProps) {
-    const graph = useMemo(() => new dia.Graph(), [])
+    const graph = useState(new dia.Graph())[0]
 
     return <GraphContext.Provider value={graph}>
         {props.children}

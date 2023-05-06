@@ -1,7 +1,8 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef} from "react";
 import {useGraph, usePaper} from "./context";
 
 export interface ComponentShapeProps {
+    name?: string
     children: React.ReactNode
     element: joint.dia.Element
 }
@@ -27,6 +28,10 @@ export function ReactContainerShape(props: ComponentShapeProps): JSX.Element {
         const container = containerRef.current!
         graph.addCell(element)
 
+        if (props.name) {
+            graph.attributes['cell_' + props.name] = element
+        }
+
         const cellView = paper.findViewByModel(element);
         container.style.position = 'absolute';
         container.style.pointerEvents = 'none'
@@ -37,6 +42,11 @@ export function ReactContainerShape(props: ComponentShapeProps): JSX.Element {
         element.on('change:position', () => {
             updatePosition()
         });
+
+        return () => {
+            element.remove()
+            container.remove()
+        }
     }, [])
 
     return <div ref={containerRef}>{props.children}</div>
