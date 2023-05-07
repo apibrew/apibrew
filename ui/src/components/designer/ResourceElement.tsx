@@ -11,13 +11,51 @@ export interface ResourceElementProps {
 export function ResourceElement(props: ResourceElementProps) {
     return <ReactMarkupContainer position={props.position}>
         <g>
-            <rect stroke="#000" id="svg_1" height="153.99999" width="190" y="9" x="5.32258" fill="#fff"/>
-            <text textAnchor="start" fontFamily="Noto Sans JP" fontSize="24" id="svg_2" y="38.5" x="107" strokeWidth="0"
-                  stroke="#000" fill="#000000">gdffdfdf
-            </text>
-            <rect stroke="#000" id="svg_3" height="13.22581" width="8.06452" y="46.77419" x="1.29032" fill="#fff"/>
-            <rect stroke="#000" id="svg_4" height="13.22581" width="8.06452" y="79.35484" x="1.29032" fill="#fff"/>
-            <rect stroke="#000" id="svg_5" height="13.22581" width="8.06452" y="63.22581" x="1.29032" fill="#fff"/>
+            <rect fill="#c3e0e0" x="1" y="1.76916" width="198" height="278" stroke="#000" rx="3"
+                  filter="url(#svg_1_blur)" strokeWidth="2"/>
+            <path fill="#c3e0e0" stroke="#000" strokeWidth="0.5"
+                  d="m-43.60906,46.10669l0.56913,0l0.17587,-0.54067l0.17587,0.54067l0.56913,0l-0.46044,0.33415l0.17588,0.54067l-0.46044,-0.33416l-0.46044,0.33416l0.17588,-0.54067l-0.46044,-0.33415z"
+            />
+            <g transform='translate(10, 10)'>
+                <g>
+                    <rect fill="#c3e0e0" width="177" height="32.68937" strokeWidth="0.5"
+                          stroke="#34a8a0"/>
+                    <text fill="#000000" stroke="#000" strokeWidth="0" x="10" y="21" fontSize="16"
+                          fontFamily="Noto Sans JP" textAnchor="start" fontWeight="normal" fontStyle="normal">
+                        {props.resource.name} {props.resource.namespace && <>({props.resource.namespace})</>}
+                    </text>
+                </g>
+                <g transform='translate(0, 50)'>
+                    <g>
+                        <rect fill="#c3e0e0" strokeWidth="0.5" width="177" y='10' height="198"
+                              stroke="#000"/>
+                        <text fill="#000000" stroke="#000" strokeWidth="0" x="4.23848" fontSize="10"
+                              fontFamily="Noto Sans JP" textAnchor="start">Properties:
+                        </text>
+                    </g>
+                    <g transform='translate(0, 10)'>
+                        {props.resource.properties?.map((property, index) => {
+                            return <g transform={`translate(0, ${25 * index})`}>
+                                <text fill="#000000" stroke="#000" strokeWidth="0" x="3.46932" y="12.28861"
+                                      fontSize="10" fontFamily="Noto Sans JP" textAnchor="start" fontWeight="normal">
+                                    <tspan fontWeight='bold'>{property.name}</tspan>
+                                    <tspan>&nbsp; </tspan>
+                                    <tspan fill='red'>[{property.type?.toLowerCase()}]</tspan>
+                                </text>
+                                <line strokeDasharray="2,2" stroke="#000" y2="17.51724" x2="176.55172" y1="17.51724"
+                                      x1="0" strokeWidth="0.5" fill="none"/>
+                                {property.type == 'REFERENCE' && <g>
+                                    <rect stroke="#000" height="7.71414" width="4.87209" y="6" x="-3.18594"
+                                          strokeWidth="0.5" fill="#137a7f"/>
+
+                                    <rect stroke="#000" height="7.71414" width="4.87209" y="6" x="174.00214"
+                                          strokeWidth="0.5" fill="#137a7f"/>
+                                </g>}
+                            </g>
+                        })}
+                    </g>
+                </g>
+            </g>
         </g>
     </ReactMarkupContainer>
 }

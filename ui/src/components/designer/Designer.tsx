@@ -12,7 +12,9 @@ export const Designer: React.FC = () => {
     const [zoomLevel, setZoomLevel] = React.useState<number>(1)
 
     useEffect(() => {
-        ResourceService.list().then(setResources)
+        ResourceService.list().then(list => {
+            setResources(list.filter(item => item.namespace !== 'system'))
+        })
     }, [])
 
     return <div>
