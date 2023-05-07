@@ -15,13 +15,32 @@ export function ReactContainerShape(props: ComponentShapeProps): JSX.Element {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const updatePosition = () => {
+        console.log('updatePosition triggered')
         const container = containerRef.current!
-        const cellView = paper.findViewByModel(element);
-        const bbox = cellView.getBBox();
-        container.style.top = `${bbox.y}px`;
-        container.style.left = `${bbox.x}px`;
+        const bbox = element.getBBox();
+        const paperArea = paper.getArea()
+        const pw = paperArea.width
+        const ph = paperArea.height
+
+        const xd = pw * paper.scale().sx * (1 - paper.scale().sx) / 2
+        const yd = ph * paper.scale().sy * (1 - paper.scale().sy) / 2
+        const t = bbox.y * paper.scale().sy + yd
+        const l = bbox.x * paper.scale().sx + xd
+
+        console.log('pw, ph', pw, ph)
+        console.log('xd, yd', xd, yd)
+        console.log('l, t', l, t)
+        console.log(paper.scale().sx)
+
+        container.style.transform = `scale(${paper.scale().sx})`
+        container.style.transformOrigin = 'top left'
+
+        container.style.left = `${l}px`;
+        container.style.top = `${t}px`;
         container.style.width = `${bbox.width}px`;
         container.style.height = `${bbox.height}px`;
+
+        console.log('container.style.top', container.style.top)
     }
 
     useEffect(() => {
@@ -43,11 +62,19 @@ export function ReactContainerShape(props: ComponentShapeProps): JSX.Element {
             updatePosition()
         });
 
+        paper.on('change:size change:scale', () => {
+            updatePosition()
+        });
+
         return () => {
             element.remove()
             container.remove()
         }
     }, [])
+
+    useEffect(() => {
+        updatePosition()
+    }, [paper && paper.scale().sx])
 
     return <div ref={containerRef}>{props.children}</div>
 }

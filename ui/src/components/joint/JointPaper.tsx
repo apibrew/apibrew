@@ -5,6 +5,7 @@ import {PaperContext, useGraph} from "./context";
 export interface JointPaperProps {
     options: joint.dia.Paper.Options
     children: ReactNode
+    zoomLevel: number
     preventCollision?: boolean
 }
 
@@ -26,38 +27,37 @@ export function JointPaper(props: JointPaperProps) {
     }, [graph]);
 
     useEffect(() => {
-        if (paper && props.preventCollision) {
-            paper.on({
-                'element:pointerdown': (elementView, evt) => {
-                    // store the position before the user starts dragging
-                    evt.data = { startPosition: elementView.model.position() };
-                },
-                'element:pointerup': (elementView, evt) => {
-                    const { model: element } = elementView;
-                    const { model: graph } = paper;
+        if (paper) {
+            console.log('zooming to: ', props.zoomLevel)
+            paper.translate(0, 0);
+            const size = paper.getComputedSize();
+            paper.scale(props.zoomLevel, props.zoomLevel, size.width / 2, size.height / 2);
+            paper.trigger('change:scale')
+            console.log('trigger change:scale')
+        }
+    }, [paper, props.zoomLevel])
 
-                    if (element.getBBox().x < 0) {
-                        // the element is dragged outside of the paper
-                        // move to left corner
-                        const { y } = evt.data.startPosition;
-                        element.position(0, y);
-                    }
+    useEffect(() => {
+        if (paper) {
+            if (props.preventCollision) {
+                paper.on({
+                    'element:pointerdown': (elementView, evt) => {
+                        // store the position before the user starts dragging
+                        evt.data = {startPosition: elementView.model.position()};
+                    },
+                    'element:pointerup': (elementView, evt) => {
+                        const {model: element} = elementView;
+                        const {model: graph} = paper;
 
-                    if (element.getBBox().y < 0) {
-                        // the element is dragged outside of the paper
-                        // move to left corner
-                        const { x } = evt.data.startPosition;
-                        element.position(x, 0);
+                        const elementsUnder = graph.findModelsInArea(element.getBBox()).filter(el => el !== element);
+                        if (elementsUnder.length > 0) {
+                            // an overlap found, revert the position
+                            const {x, y} = evt.data.startPosition;
+                            element.position(x, y);
+                        }
                     }
-
-                    const elementsUnder = graph.findModelsInArea(element.getBBox()).filter(el => el !== element);
-                    if (elementsUnder.length > 0) {
-                        // an overlap found, revert the position
-                        const { x, y } = evt.data.startPosition;
-                        element.position(x, y);
-                    }
-                }
-            });
+                });
+            }
         }
     }, [paper, props.preventCollision])
 
