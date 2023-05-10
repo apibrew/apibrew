@@ -62,7 +62,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
     }
 
     const drawer = (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', ...drawerStyle }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow:'auto', ...drawerStyle}}>
             <div>
                 <Toolbar>
                     <img style={{ textAlign: 'center' }} src="/logo-small-white.svg"></img>

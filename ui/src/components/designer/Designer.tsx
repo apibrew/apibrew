@@ -1,10 +1,9 @@
 import React, {useEffect} from 'react';
-import {JointPaper} from "../joint/JointPaper";
-import {JointGraph} from "../joint/JointGraph";
 import {Resource} from "../../model";
 import {ResourceService} from "../../service/resource";
 import Button from "@mui/material/Button";
 import {ResourceElement} from "./ResourceElement";
+import { Arrow } from './Arrow';
 
 // React component to render the diagram
 export const Designer: React.FC = () => {
@@ -13,6 +12,7 @@ export const Designer: React.FC = () => {
 
     useEffect(() => {
         ResourceService.list().then(list => {
+            console.log(list)
             setResources(list.filter(item => item.namespace !== 'system'))
         })
     }, [])
@@ -29,22 +29,21 @@ export const Designer: React.FC = () => {
         }}>Zoom out</Button> &nbsp;
 
         Zoom: {zoomLevel}
-        <JointGraph>
-            <JointPaper
-                preventCollision={true}
-                zoomLevel={zoomLevel}
-                options={{
-                    width: '100%',
-                    height: '600px',
-                    gridSize: 10,
-                }}>
-                {resources.map((resource, index) => {
-                    const x = 210 * index
-                    const y = 10
-                    return <ResourceElement position={{x: x, y: y}} key={(resource.namespace ?? '') + resource.name} resource={resource}/>
-                })}
-            </JointPaper>
-        </JointGraph>
+        <br/>
+        <svg style={{width: '100%', height: '600px'}}>
+            {resources.map((resource, index) => {
+                const x = 410 * index
+                const y = 10
+                return <g key={(resource.namespace ?? '') + resource.name} transform={`translate(${x}, ${y})`}>
+                    <ResourceElement resource={resource}/>
+                </g>
+            })}
+            <Arrow
+                isHighlighted={true}
+                startPoint={{x: 186, y: 191}}
+                endPoint={{x: 416, y: 41}}
+            />
+        </svg>
     </div>
 }
 

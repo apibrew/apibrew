@@ -21,23 +21,32 @@ export interface MenuItem {
 
 export const menuLists: MenuList[] = [
     {
+        title: 'User',
+        items: [
+            {
+                title: 'Country',
+                link: '/dashboard/country',
+                icon: <TableRowsOutlined/>
+            },
+            {
+                title: 'City',
+                link: '/dashboard/city',
+                icon: <TableRowsOutlined/>
+            }
+        ]
+    },
+    {
         title: 'Develop',
         items: [
             {
+                icon: <TableRowsOutlined/>,
+                title: 'App Designer',
+                link: '/dashboard/resources/designer'
+            },
+            {
                 title: 'Resources',
                 icon: <TableRowsOutlined/>,
-                children: [
-                    {
-                        icon: <TableRowsOutlined/>,
-                        title: 'Designer',
-                        link: '/dashboard/resources/designer'
-                    },
-                    {
-                        icon: <TableRowsOutlined/>,
-                        title: 'List',
-                        link: '/dashboard/resources'
-                    }
-                ]
+                link: '/dashboard/resources',
             },
             {
                 title: 'Namespaces',
@@ -55,55 +64,42 @@ export const menuLists: MenuList[] = [
                 icon: <PersonOutline/>
             },
             {
-                title: 'Extensions',
-                link: '/dashboard/extensions',
-                icon: <ExtensionOutlined/>
-            },
-            {
                 title: 'Records',
                 link: '/dashboard/records',
                 icon: <TableRowsOutlined/>
             },
             {
-                title: 'Action Designer',
-                link: '/dashboard/action-designer',
-                icon: <TableRowsOutlined/>
-            },
-            {
-                title: 'Python Extension',
-                link: '/dashboard/action-designer',
-                icon: <TableRowsOutlined/>
-            },
-            {
-                title: 'Nodejs Extension',
-                link: '/dashboard/action-designer',
-                icon: <TableRowsOutlined/>
-            },
-            {
-                title: 'Golang Extension',
-                link: '/dashboard/action-designer',
-                icon: <TableRowsOutlined/>
-            },
-            {
-                title: 'Java Extension',
-                link: '/dashboard/action-designer',
-                icon: <TableRowsOutlined/>
+                title: 'Logic',
+                icon: <ExtensionOutlined/>,
+                children: [
+                    {
+                        title: 'Functions',
+                        link: '/dashboard/functions',
+                        icon: <TableRowsOutlined/>
+                    },
+                    {
+                        title: 'Triggers',
+                        link: '/dashboard/triggers',
+                        icon: <TableRowsOutlined/>
+                    }, {
+                        title: 'Jobs',
+                        link: '/dashboard/jobs',
+                        icon: <TableRowsOutlined/>
+                    }, {
+                        title: 'Schedules',
+                        link: '/dashboard/schedules',
+                        icon: <TableRowsOutlined/>
+                    }, {
+                        title: 'Events',
+                        link: '/dashboard/events',
+                        icon: <TableRowsOutlined/>
+                    }, {
+                        title: 'Rules',
+                        link: '/dashboard/rules',
+                        icon: <TableRowsOutlined/>
+                    }
+                ]
             }
         ]
     },
-    {
-        title: 'User',
-        items: [
-            {
-                title: 'Country',
-                link: '/dashboard/country',
-                icon: <TableRowsOutlined/>
-            },
-            {
-                title: 'City',
-                link: '/dashboard/city',
-                icon: <TableRowsOutlined/>
-            }
-        ]
-    }
 ]
