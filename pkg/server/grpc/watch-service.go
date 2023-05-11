@@ -19,9 +19,7 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchSer
 	}()
 
 	out := w.watchService.Watch(localCtx, abs.WatchParams{
-		Namespace:  req.Namespace,
-		Resource:   req.Resource,
-		Query:      req.Query,
+		Selector:   req.Selector,
 		BufferSize: 500,
 	})
 

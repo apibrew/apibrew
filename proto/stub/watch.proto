@@ -4,7 +4,7 @@ package stub;
 
 option go_package = "github.com/tislib/apibrew/pkg/stub";
 
-import 'model/watch.proto';
+import 'model/event.proto';
 import 'model/query.proto';
 import "google/api/annotations.proto";
 import "gnostic/openapi/v3/annotations.proto";
@@ -12,7 +12,7 @@ import "gnostic/openapi/v3/annotations.proto";
 // Watch service watching operations on records
 service Watch {
   // Sends a greeting
-  rpc Watch (WatchRequest) returns (stream model.WatchMessage) {
+  rpc Watch (WatchRequest) returns (stream model.Event) {
     option (google.api.http) = {
       post: "/system/watch",
     };
@@ -21,8 +21,6 @@ service Watch {
 
 message WatchRequest {
   string token = 1;
-  string namespace = 2;
-  string resource = 3;
-  model.BooleanExpression query = 4;
-  repeated model.EventType events = 5;
+
+  model.EventSelector selector = 2;
 }

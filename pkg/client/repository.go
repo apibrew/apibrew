@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/tislib/apibrew/pkg/abs"
 	"github.com/tislib/apibrew/pkg/model"
+	"github.com/tislib/apibrew/pkg/service/annotations"
+	"github.com/tislib/apibrew/pkg/service/security"
 	"github.com/tislib/apibrew/pkg/stub"
 	"github.com/tislib/apibrew/pkg/util"
 )
@@ -31,12 +33,11 @@ func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
 }
 
 func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
-	resp, err := r.client.GetRecordClient().Update(ctx, &stub.UpdateRecordRequest{
-		Token:        r.client.GetToken(),
-		Namespace:    entity.GetNamespace(),
-		Resource:     entity.GetResourceName(),
-		Record:       entity.ToRecord(),
-		CheckVersion: r.params.UpdateCheckVersion,
+	resp, err := r.client.GetRecordClient().Update(annotations.SetWithContext(security.SystemContext, annotations.CheckVersion, annotations.Enabled), &stub.UpdateRecordRequest{
+		Token:     r.client.GetToken(),
+		Namespace: entity.GetNamespace(),
+		Resource:  entity.GetResourceName(),
+		Record:    entity.ToRecord(),
 	})
 
 	if err != nil {

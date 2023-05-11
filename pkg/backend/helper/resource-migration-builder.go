@@ -20,7 +20,7 @@ type ResourceMigrationBuilder interface {
 	Exec() errors.ServiceError
 }
 
-type ResourceMigrationBuilderConstructor func(ctx context.Context, runner QueryRunner, params abs.UpgradeResourceParams, forceMigration bool) ResourceMigrationBuilder
+type ResourceMigrationBuilderConstructor func(ctx context.Context, runner QueryRunner, schema *abs.Schema, params abs.UpgradeResourceParams, forceMigration bool) ResourceMigrationBuilder
 
 func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder, migrationPlan *model.ResourceMigrationPlan, forceMigration bool) errors.ServiceError {
 	var currentPropertyMap = util.GetNamedMap(migrationPlan.CurrentResource.Properties)

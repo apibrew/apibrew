@@ -17,8 +17,6 @@ message HttpCall {
 }
 
 message ExternalCall {
-  oneof kind {
-    FunctionCall functionCall = 1 [(model.hcl_block) = "function_call"];
-    HttpCall httpCall = 2 [(model.hcl_block) = "http_call"];
-  }
+  FunctionCall functionCall = 1 [(model.hcl_block) = "function_call"];
+  HttpCall httpCall = 2 [(model.hcl_block) = "http_call"];
 }

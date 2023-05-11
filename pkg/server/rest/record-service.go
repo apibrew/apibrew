@@ -15,7 +15,7 @@ type recordService struct {
 }
 
 func (r *recordService) Create(ctx context.Context, request *rest.CreateRecordRequest) (*rest.CreateRecordResponse, error) {
-	records, _, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
+	records, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records: []*model.Record{{

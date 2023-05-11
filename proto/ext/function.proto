@@ -11,6 +11,7 @@ import 'model/error.proto';
 import "google/api/annotations.proto";
 import "google/protobuf/any.proto";
 import 'google/protobuf/struct.proto';
+import "model/event.proto";
 
 service Function {
   rpc FunctionCall (FunctionCallRequest) returns (FunctionCallResponse) {}
@@ -18,9 +19,12 @@ service Function {
 
 message FunctionCallRequest {
   string name = 1;
-  map<string, google.protobuf.Any> request = 2;
+  model.Event event = 2;
 }
 
 message FunctionCallResponse {
-  map<string, google.protobuf.Any> response = 1;
+  /*
+     This event is only used/required if it is a sync event.
+   */
+  model.Event event = 1;
 }
