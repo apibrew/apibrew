@@ -10,7 +10,7 @@ import (
 func NewRedisResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
 	redisOptions := dataSource.Params.(*model.DataSource_RedisParams)
 
-	bck := redisBackend{
+	bck := &redisBackend{
 		dataSource: dataSource,
 		rdb: redis.NewClient(&redis.Options{
 			Addr:     redisOptions.RedisParams.Addr,

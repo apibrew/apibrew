@@ -67,9 +67,11 @@ func TestResourceCreateRecordWithHistory(t *testing.T) {
 	}
 
 	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
-		Resource:     "paper",
-		Records:      createResp.Records,
-		CheckVersion: true,
+		Resource: "paper",
+		Records:  createResp.Records,
+		Annotations: map[string]string{
+			annotations.CheckVersion: annotations.Enabled,
+		},
 	})
 
 	if err != nil {

@@ -6,7 +6,7 @@ Installation
 curl -L https://raw.githubusercontent.com/tislib/apibrew/master/deploy/easy-install/run.sh | bash
 ```
 
-It will install both API Brew and dhctl for you
+It will install both API Brew and apbr for you
 
 ## Docker [standalone]
 
@@ -56,20 +56,20 @@ docker run -d -p 9009:9009 -v ${PWD}/config.json:/app/config.json tislib/apibrew
 [see](https://github.com/tislib/apibrew/tree/master/deploy/kubernetes)
 
 ## Client 
-Let's install our client **dhctl**
+Let's install our client **apbr**
 
-You can download client binary from release page https://github.com/tislib/apibrew/releases/latest (download dhctl-OS-ARCH)
+You can download client binary from release page https://github.com/tislib/apibrew/releases/latest (download apbr-OS-ARCH)
 
 You can also use go install if you have go runtime on your local
 ```
-go install github.com/tislib/apibrew/cmd/dhctl@latest
+go install github.com/tislib/apibrew/cmd/apbr@latest
 ```
 
 Now let's configure our client to point to server
 
 ```
-mkdir -p ~/.dhctl
-nano  ~/.dhctl/config
+mkdir -p ~/.apbr
+nano  ~/.apbr/config
 ```
 
 Paste config to there

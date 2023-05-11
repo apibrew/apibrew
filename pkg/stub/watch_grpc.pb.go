@@ -51,7 +51,7 @@ func (c *watchClient) Watch(ctx context.Context, in *WatchRequest, opts ...grpc.
 }
 
 type Watch_WatchClient interface {
-	Recv() (*model.WatchMessage, error)
+	Recv() (*model.Event, error)
 	grpc.ClientStream
 }
 
@@ -59,8 +59,8 @@ type watchWatchClient struct {
 	grpc.ClientStream
 }
 
-func (x *watchWatchClient) Recv() (*model.WatchMessage, error) {
-	m := new(model.WatchMessage)
+func (x *watchWatchClient) Recv() (*model.Event, error) {
+	m := new(model.Event)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func _Watch_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
 }
 
 type Watch_WatchServer interface {
-	Send(*model.WatchMessage) error
+	Send(*model.Event) error
 	grpc.ServerStream
 }
 
@@ -113,7 +113,7 @@ type watchWatchServer struct {
 	grpc.ServerStream
 }
 
-func (x *watchWatchServer) Send(m *model.WatchMessage) error {
+func (x *watchWatchServer) Send(m *model.Event) error {
 	return x.ServerStream.SendMsg(m)
 }
 

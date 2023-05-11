@@ -8,48 +8,36 @@ import 'model/audit.proto';
 import 'model/common.proto';
 import 'model/external.proto';
 import 'model/annotations.proto';
+import 'model/event.proto';
 
 message Extension {
   string id = 1;
   string name = 2 [(model.hcl_label) = "name"];
   string description = 3;
-  string namespace = 5;
-  string resource = 6;
 
-  message After {
-    ExternalCall all = 1 [(model.hcl_block) = "all"];
-    ExternalCall create = 2 [(model.hcl_block) = "create"];
-    ExternalCall update = 3 [(model.hcl_block) = "update"];
-    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
-    ExternalCall get = 5 [(model.hcl_block) = "get"];
-    ExternalCall list = 6 [(model.hcl_block) = "list"];
-    bool sync = 7; // if true, it will wait
-  }
+  EventSelector selector = 4;
 
-  message Before {
-    ExternalCall all = 1 [(model.hcl_block) = "all"];
-    ExternalCall create = 2 [(model.hcl_block) = "create"];
-    ExternalCall update = 3 [(model.hcl_block) = "update"];
-    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
-    ExternalCall get = 5 [(model.hcl_block) = "get"];
-    ExternalCall list = 6 [(model.hcl_block) = "list"];
-    bool sync = 7; // if true, it will wait
-  }
+  int32 order = 5;
 
-  message Instead {
-    ExternalCall all = 1 [(model.hcl_block) = "all"];
-    ExternalCall create = 2 [(model.hcl_block) = "create"];
-    ExternalCall update = 3 [(model.hcl_block) = "update"];
-    ExternalCall delete = 4 [(model.hcl_block) = "delete"];
-    ExternalCall get = 5 [(model.hcl_block) = "get"];
-    ExternalCall list = 6 [(model.hcl_block) = "list"];
-    bool finalize = 7; // if true, it will respond with the result of the call, otherwise it will pass to backend
-  }
+  /*
+    If true, this will be last event on operation list
+   */
+  bool finalizes = 9;
 
-  Before before = 7 [(model.hcl_block) = "before"];
-  Instead instead = 8 [(model.hcl_block) = "instead"];
-  After after = 9 [(model.hcl_block) = "after"];
+  /*
+    If true, backend will wait for processing this event before sending next one on operation list
+   */
+  bool sync = 10;
+
+  /*
+    If true, extension will be required to respond to this event
+   */
+
+  bool responds = 11;
+
+  ExternalCall call = 7;
 
   AuditData auditData = 101;
   uint32 version = 102;
+  map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
