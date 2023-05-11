@@ -28,7 +28,7 @@ export function ResourceElement(props: ResourceElementProps) {
                     </g>
                     <g transform='translate(0, 10)'>
                         {props.resource.properties?.map((property, index) => {
-                            return <g transform={`translate(0, ${25 * index})`}>
+                            return <g key={property.name} transform={`translate(0, ${25 * index})`} className={`resource-property-${property.name}`}>
                                 <text fill="#000000" stroke="#000" strokeWidth="0" x="3.46932" y="12.28861"
                                       fontSize="10" fontFamily="Noto Sans JP" textAnchor="start" fontWeight="normal">
                                     <tspan fontWeight='bold'>{property.name}</tspan>
@@ -38,10 +38,10 @@ export function ResourceElement(props: ResourceElementProps) {
                                 <line strokeDasharray="2,2" stroke="#000" y2="17.51724" x2="176.55172" y1="17.51724"
                                       x1="0" strokeWidth="0.5" fill="none"/>
                                 {property.type == 'REFERENCE' && <g>
-                                    <rect className={'resource-left-ref'} stroke="#000" height="7.71414" width="4.87209" y="6" x="-3.18594"
+                                    <rect className={'left-ref'} stroke="#000" height="7.71414" width="4.87209" y="6" x="-3.18594"
                                           strokeWidth="0.5" fill="#137a7f"/>
 
-                                    <rect className={'resource-right-ref'} stroke="#000" height="7.71414" width="4.87209" y="6" x="174.00214"
+                                    <rect className={'right-ref'} stroke="#000" height="7.71414" width="4.87209" y="6" x="174.00214"
                                           strokeWidth="0.5" fill="#137a7f"/>
                                 </g>}
                             </g>

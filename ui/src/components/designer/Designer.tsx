@@ -1,9 +1,12 @@
-import React, {useEffect} from 'react';
+import React, {Fragment, useEffect} from 'react';
 import {Resource} from "../../model";
 import {ResourceService} from "../../service/resource";
 import Button from "@mui/material/Button";
 import {ResourceElement} from "./ResourceElement";
-import { Arrow } from './Arrow';
+import {Link} from "./Link";
+import {Scale} from "./Scale";
+import {Movable, MovableComponent} from "./Movable";
+import {SvgContainer} from "./SvgContainer";
 
 // React component to render the diagram
 export const Designer: React.FC = () => {
@@ -12,7 +15,6 @@ export const Designer: React.FC = () => {
 
     useEffect(() => {
         ResourceService.list().then(list => {
-            console.log(list)
             setResources(list.filter(item => item.namespace !== 'system'))
         })
     }, [])
@@ -28,21 +30,35 @@ export const Designer: React.FC = () => {
             setZoomLevel(Math.max(0.2, zoomLevel - 0.2))
         }}>Zoom out</Button> &nbsp;
 
-        Zoom: {zoomLevel}
+        Zoom: {Math.round(zoomLevel * 100)}% &nbsp;
         <br/>
-        <svg style={{width: '100%', height: '600px'}}>
-            {resources.map((resource, index) => {
-                const x = 410 * index
-                const y = 10
-                return <g key={(resource.namespace ?? '') + resource.name} transform={`translate(${x}, ${y})`}>
-                    <ResourceElement resource={resource}/>
-                </g>
-            })}
-            <Arrow
-                isHighlighted={true}
-                startPoint={{x: 186, y: 191}}
-                endPoint={{x: 416, y: 41}}
-            />
+        <svg className={'designer-parent'}
+             style={{width: '100%', height: '600px'}}>
+            <SvgContainer>
+                <Scale level={zoomLevel}>
+                    <Movable>
+                        {resources.map((resource, index) => {
+                            const x = 410 * index
+                            const y = 10
+                            return <MovableComponent key={(resource.namespace ?? '') + resource.name}>
+                                <g transform={`translate(${x}, ${y})`}>
+                                    <ResourceElement resource={resource}/>
+                                </g>
+                            </MovableComponent>
+                        })}
+
+                        {resources.map((resource, index) => {
+                            return <Fragment key={resource.name}>
+                                {resource.properties?.filter(item => item.type === 'REFERENCE').filter(item => item.reference && item.reference.referencedResource).map((property, index) => {
+                                    return <Link key={`${resource.name}-${property.name}`}
+                                                 sourceSelector={`.resource-${resource.name} .resource-property-${[property.name]} .right-ref`}
+                                                 targetSelector={`.resource-${property.reference!.referencedResource} .resource-head`}/>
+                                })}
+                            </Fragment>
+                        })}
+                    </Movable>
+                </Scale>
+            </SvgContainer>
         </svg>
     </div>
 }
