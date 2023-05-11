@@ -1,5 +1,5 @@
-import {AxiosError} from "axios";
-import {TokenService} from "./token";
+import { AxiosError } from 'axios'
+import { TokenService } from './token'
 
 export async function handleError<T>(e: unknown): Promise<T> {
     if (e instanceof AxiosError) {
@@ -9,5 +9,5 @@ export async function handleError<T>(e: unknown): Promise<T> {
         }
     }
 
-    return Promise.reject<T>(e)
+    return await Promise.reject<T>(e)
 }

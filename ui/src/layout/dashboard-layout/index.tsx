@@ -1,6 +1,6 @@
 import * as React from 'react'
-import {Fragment, ReactNode, useState} from 'react'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import { Fragment, type ReactNode, useState } from 'react'
+import MuiAppBar, { type AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -17,8 +17,8 @@ import { Link } from 'react-router-dom'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import ListItem from '@mui/material/ListItem'
-import {ChevronLeft, ExpandLess, ExpandMore} from '@mui/icons-material'
-import {styled} from "@mui/material/styles";
+import { ChevronLeft, ExpandLess, ExpandMore } from '@mui/icons-material'
+import { styled } from '@mui/material/styles'
 
 const drawerWidth = 260
 
@@ -28,26 +28,25 @@ const drawerStyle = {
 }
 
 interface AppBarProps extends MuiAppBarProps {
-    open?: boolean;
+    open?: boolean
 }
 
 const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
+    shouldForwardProp: (prop) => prop !== 'open'
 })<AppBarProps>(({ theme, open }) => ({
     transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
+        duration: theme.transitions.duration.leavingScreen
     }),
     ...(open && {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: `${drawerWidth}px`,
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    }),
-}));
-
+            duration: theme.transitions.duration.enteringScreen
+        })
+    })
+}))
 
 export interface DashboardLayoutProps {
     children: ReactNode
@@ -62,12 +61,12 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
     }
 
     const drawer = (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow:'auto', ...drawerStyle}}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'auto', ...drawerStyle }}>
             <div>
                 <Toolbar>
                     <img style={{ textAlign: 'center' }} src="/logo-small-white.svg"></img>
-                    <IconButton onClick={()=>{
-                        setOpen(false);
+                    <IconButton onClick={() => {
+                        setOpen(false)
                     }}>
                         <ChevronLeft />
                     </IconButton>
@@ -173,7 +172,7 @@ function NavList(props: NavListProps): JSX.Element {
             const key = `${menuItem.title}`
             return <Fragment key={key}>
                 <ListItem key={menuItem.title} disablePadding>
-                    {!menuItem.children && <ListItemButton component={Link} to={menuItem.link!}>
+                    {!menuItem.children && <ListItemButton component={Link} to={menuItem.link ?? ''}>
                         {(menuItem.icon != null) &&
                             <ListItemIcon style={drawerStyle}>{menuItem.icon} </ListItemIcon>}
                         <ListItemText primary={menuItem.title}/>

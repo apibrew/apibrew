@@ -1,5 +1,5 @@
-import {ReactNode, useState} from "react";
-import {Point} from "./point";
+import { type ReactNode, useState } from 'react'
+import { type Point } from './point'
 
 export interface SelectableProps {
     children: ReactNode
@@ -8,12 +8,15 @@ export interface SelectableProps {
 
 export function Selectable(props: SelectableProps) {
     const [selected, setSelected] = useState<boolean>(false)
-    const [loc, setLoc] = useState<Point>({x: 0, y: 0})
+    const [loc, setLoc] = useState<Point>({ x: 0, y: 0 })
     const [bBox, setBBox] = useState<DOMRect>()
 
-    const onClick = (e: React.MouseEvent<SVGGElement, MouseEvent>) => {
+    const onClick = () => {
         setSelected(!selected)
-        props.onSelected && props.onSelected(!selected)
+
+        if (props.onSelected) {
+            props.onSelected(!selected)
+        }
     }
 
     return <>
@@ -24,23 +27,23 @@ export function Selectable(props: SelectableProps) {
 
             setBBox(el.getBBox())
         }} onMouseDown={(e) => {
-            setLoc({x: e.clientX, y: e.clientY})
+            setLoc({ x: e.clientX, y: e.clientY })
         }}
-           onMouseUp={(e) => {
-               if (loc.x === e.clientX && loc.y === e.clientY) {
-                   onClick(e)
-               }
-           }}>
+        onMouseUp={(e) => {
+            if (loc.x === e.clientX && loc.y === e.clientY) {
+                onClick()
+            }
+        }}>
             {!selected && props.children}
             {selected && <g>
                 {bBox && <rect x={-3}
-                               y={-3}
-                               width={bBox?.width! + 8}
-                               height={bBox?.height! + 9}
-                               strokeWidth="3"
-                               stroke="rgb(20, 18, 230)"
-                               fill="#fff"
-                               strokeDasharray="5,2,2,2,2,2"
+                    y={-3}
+                    width={bBox?.width + 8}
+                    height={bBox?.height + 9}
+                    strokeWidth="3"
+                    stroke="rgb(20, 18, 230)"
+                    fill="#fff"
+                    strokeDasharray="5,2,2,2,2,2"
                 />}
                 {props.children}
             </g>}

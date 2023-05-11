@@ -46,7 +46,7 @@ export const menuLists: MenuList[] = [
             {
                 title: 'Resources',
                 icon: <TableRowsOutlined/>,
-                link: '/dashboard/resources',
+                link: '/dashboard/resources'
             },
             {
                 title: 'Namespaces',
@@ -101,5 +101,5 @@ export const menuLists: MenuList[] = [
                 ]
             }
         ]
-    },
+    }
 ]

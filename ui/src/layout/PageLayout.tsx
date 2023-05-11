@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import * as React from 'react'
 import Divider from '@mui/material/Divider'
-import {ReactNode} from "react";
+import { type ReactNode } from 'react'
 
 export interface PageLayoutProps {
     pageTitle: string

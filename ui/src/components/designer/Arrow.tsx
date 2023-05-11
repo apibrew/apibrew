@@ -2,110 +2,110 @@
  * Copyright (c) ProductBoard, Inc.
  * All rights reserved.
  */
-import React from "react";
+import React from 'react'
 
-import styled from "styled-components";
+import styled from 'styled-components'
 
 import {
     calculateDeltas,
     calculateCanvasDimensions,
-    calculateControlPoints,
-} from "./arrow-utils";
-import { Point } from "./point";
+    calculateControlPoints
+} from './arrow-utils'
+import { type Point } from './point'
 
-const CONTROL_POINTS_RADIUS = 5;
-const STRAIGHT_LINE_BEFORE_ARROW_HEAD = 5;
+const CONTROL_POINTS_RADIUS = 5
+const STRAIGHT_LINE_BEFORE_ARROW_HEAD = 5
 
-type ArrowConfig = {
-    arrowColor?: string;
-    arrowHighlightedColor?: string;
-    controlPointsColor?: string;
-    boundingBoxColor?: string;
-    dotEndingBackground?: string;
-    dotEndingRadius?: number;
-    arrowHeadEndingSize?: number;
-    hoverableLineWidth?: number;
-    strokeWidth?: number;
-};
+interface ArrowConfig {
+    arrowColor?: string
+    arrowHighlightedColor?: string
+    controlPointsColor?: string
+    boundingBoxColor?: string
+    dotEndingBackground?: string
+    dotEndingRadius?: number
+    arrowHeadEndingSize?: number
+    hoverableLineWidth?: number
+    strokeWidth?: number
+}
 
-type Props = {
-    startPoint: Point;
-    endPoint: Point;
-    isHighlighted?: boolean;
-    showDebugGuideLines?: boolean;
-    onMouseEnter?: (e: React.MouseEvent) => void;
-    onMouseLeave?: (e: React.MouseEvent) => void;
-    onClick?: (e: React.MouseEvent) => void;
-    config?: ArrowConfig;
-    tooltip?: string;
-};
+interface Props {
+    startPoint: Point
+    endPoint: Point
+    isHighlighted?: boolean
+    showDebugGuideLines?: boolean
+    onMouseEnter?: (e: React.MouseEvent) => void
+    onMouseLeave?: (e: React.MouseEvent) => void
+    onClick?: (e: React.MouseEvent) => void
+    config?: ArrowConfig
+    tooltip?: string
+}
 
-type TranslateProps = {
-    $xTranslate: number;
-    $yTranslate: number;
-};
+interface TranslateProps {
+    $xTranslate: number
+    $yTranslate: number
+}
 
 type LineProps = {
-    $isHighlighted: boolean;
-    $showDebugGuideLines?: boolean;
-    $boundingBoxColor?: string;
-} & TranslateProps;
+    $isHighlighted: boolean
+    $showDebugGuideLines?: boolean
+    $boundingBoxColor?: string
+} & TranslateProps
 
-// @ts-ignore
+// @ts-expect-error ignored error
 const Line = styled.g.attrs(({ $xTranslate, $yTranslate }: LineProps) => ({
-    style: { transform: `translate(${$xTranslate}px, ${$yTranslate}px)` },
-}))<LineProps>``;
+    style: { transform: `translate(${$xTranslate}px, ${$yTranslate}px)` }
+}))<LineProps>``
 
 const CurvedLine = styled(Line)`
-  border: ${({ $showDebugGuideLines, $boundingBoxColor = "black" }) =>
-    $showDebugGuideLines ? `dashed 1px ${$boundingBoxColor}` : "0"};
-`;
+  border: ${({ $showDebugGuideLines, $boundingBoxColor = 'black' }) =>
+        $showDebugGuideLines ? `dashed 1px ${$boundingBoxColor}` : '0'};
+`
 
 const RenderedLine = styled.path`
   transition: stroke 300ms;
-`;
+`
 
 const Endings = styled(Line)`
   pointer-events: none;
   z-index: ${({ $isHighlighted }) => ($isHighlighted ? 11 : 10)};
-`;
+`
 
-// @ts-ignore
+// @ts-expect-error ignored error
 const ArrowHeadEnding = styled.path.attrs(({ $xTranslate, $yTranslate }: TranslateProps) => ({
-        style: { transform: `translate(${$xTranslate}px, ${$yTranslate}px)` },
-    })
+    style: { transform: `translate(${$xTranslate}px, ${$yTranslate}px)` }
+})
 )<TranslateProps>`
   transition: stroke 300ms;
-`;
+`
 
 const DotEnding = styled.circle`
   transition: stroke 300ms;
-`;
+`
 
 const HoverableLine = styled.path`
   cursor: default;
-`;
+`
 
 const HoverableArrowHeadEnding = styled(ArrowHeadEnding)`
   cursor: default;
-`;
+`
 
 const HoverableDotEnding = styled.circle`
   cursor: default;
-`;
+`
 
 const ControlPoints = ({
-                           p1,
-                           p2,
-                           p3,
-                           p4,
-                           color,
-                       }: {
-    p1: Point;
-    p2: Point;
-    p3: Point;
-    p4: Point;
-    color: string;
+    p1,
+    p2,
+    p3,
+    p4,
+    color
+}: {
+    p1: Point
+    p2: Point
+    p3: Point
+    p4: Point
+    color: string
 }) => {
     return (
         <>
@@ -140,35 +140,35 @@ const ControlPoints = ({
                 y2={p4.y}
             />
         </>
-    );
-};
+    )
+}
 
 export const Arrow = ({
-                          startPoint,
-                          endPoint,
-                          isHighlighted = false,
-                          showDebugGuideLines = false,
-                          onMouseEnter,
-                          onMouseLeave,
-                          onClick,
-                          config,
-                          tooltip,
-                      }: Props) => {
+    startPoint,
+    endPoint,
+    isHighlighted = false,
+    showDebugGuideLines = false,
+    onMouseEnter,
+    onMouseLeave,
+    onClick,
+    config,
+    tooltip
+}: Props) => {
     const defaultConfig = {
-        arrowColor: "#bcc4cc",
-        arrowHighlightedColor: "#4da6ff",
-        controlPointsColor: "#ff4747",
-        boundingBoxColor: "#ffcccc",
-        dotEndingBackground: "#fff",
+        arrowColor: '#bcc4cc',
+        arrowHighlightedColor: '#4da6ff',
+        controlPointsColor: '#ff4747',
+        boundingBoxColor: '#ffcccc',
+        dotEndingBackground: '#fff',
         dotEndingRadius: 3,
         arrowHeadEndingSize: 9,
         hoverableLineWidth: 15,
-        strokeWidth: 1,
-    };
+        strokeWidth: 1
+    }
     const currentConfig = {
         ...defaultConfig,
-        ...config,
-    };
+        ...config
+    }
 
     const {
         arrowColor,
@@ -179,50 +179,50 @@ export const Arrow = ({
         strokeWidth,
         hoverableLineWidth,
         dotEndingBackground,
-        dotEndingRadius,
-    } = currentConfig;
+        dotEndingRadius
+    } = currentConfig
 
-    const arrowHeadOffset = arrowHeadEndingSize / 2;
+    const arrowHeadOffset = arrowHeadEndingSize / 2
     const boundingBoxElementsBuffer =
         strokeWidth +
         arrowHeadEndingSize / 2 +
         dotEndingRadius +
-        CONTROL_POINTS_RADIUS / 2;
+        CONTROL_POINTS_RADIUS / 2
 
-    const { absDx, absDy, dx, dy } = calculateDeltas(startPoint, endPoint);
+    const { absDx, absDy, dx, dy } = calculateDeltas(startPoint, endPoint)
     const { p1, p2, p3, p4, boundingBoxBuffer } = calculateControlPoints({
         boundingBoxElementsBuffer,
         dx,
         dy,
         absDx,
-        absDy,
-    });
+        absDy
+    })
 
     const { canvasWidth, canvasHeight } = calculateCanvasDimensions({
         absDx,
         absDy,
-        boundingBoxBuffer,
-    });
+        boundingBoxBuffer
+    })
 
     const canvasXOffset =
-        Math.min(startPoint.x, endPoint.x) - boundingBoxBuffer.horizontal;
+        Math.min(startPoint.x, endPoint.x) - boundingBoxBuffer.horizontal
     const canvasYOffset =
-        Math.min(startPoint.y, endPoint.y) - boundingBoxBuffer.vertical;
+        Math.min(startPoint.y, endPoint.y) - boundingBoxBuffer.vertical
 
     const curvedLinePath = `
     M ${p1.x} ${p1.y}
     C ${p2.x} ${p2.y},
     ${p3.x} ${p3.y},
     ${p4.x - STRAIGHT_LINE_BEFORE_ARROW_HEAD} ${p4.y}
-    L ${p4.x} ${p4.y}`;
+    L ${p4.x} ${p4.y}`
 
     const getStrokeColor = () => {
-        if (isHighlighted) return arrowHighlightedColor;
+        if (isHighlighted) return arrowHighlightedColor
 
-        return arrowColor;
-    };
+        return arrowColor
+    }
 
-    const strokeColor = getStrokeColor();
+    const strokeColor = getStrokeColor()
 
     return (
         <>
@@ -320,5 +320,5 @@ export const Arrow = ({
                 )}
             </Endings>
         </>
-    );
-};
+    )
+}

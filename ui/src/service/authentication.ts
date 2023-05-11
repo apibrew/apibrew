@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { BACKEND_URL } from '../config'
-import { type AuthenticationRequest, type AuthenticationResponse, type Token } from '../model'
-import {TokenService} from "./token";
+import { type AuthenticationRequest, type AuthenticationResponse } from '../model'
+import { TokenService } from './token'
 
 export async function authenticate(username: string, password: string): Promise<void> {
     const request: AuthenticationRequest = {

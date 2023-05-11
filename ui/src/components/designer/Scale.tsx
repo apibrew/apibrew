@@ -1,4 +1,4 @@
-import React, {ReactNode} from "react";
+import React, { type ReactNode } from 'react'
 
 export interface ScaleProps extends React.SVGProps<SVGGElement> {
     level: number
@@ -14,4 +14,3 @@ export function Scale(props: ScaleProps) {
         </ScaleContext.Provider>
     </g>
 }
-

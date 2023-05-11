@@ -1,9 +1,9 @@
-import {Arrow} from "./Arrow";
-import React, {useContext, useEffect, useState} from "react";
-import {Point} from "./point";
-import {SvgContainerContext} from "./SvgContainer";
-import {MovingContext} from "./Movable";
-import {ScaleContext} from "./Scale";
+import { Arrow } from './Arrow'
+import React, { useContext, useEffect, useState } from 'react'
+import { type Point } from './point'
+import { SvgContainerContext } from './SvgContainer'
+import { MovingContext } from './Movable'
+import { ScaleContext } from './Scale'
 
 export interface LinkProps {
     sourceSelector: string
@@ -13,8 +13,8 @@ export interface LinkProps {
 export function Link(props: LinkProps) {
     const scale = useContext(ScaleContext)
 
-    const [startPoint, setStartPoint] = useState<Point>({x: 0, y: 0})
-    const [endPoint, setEndPoint] = useState<Point>({x: 0, y: 0})
+    const [startPoint, setStartPoint] = useState<Point>({ x: 0, y: 0 })
+    const [endPoint, setEndPoint] = useState<Point>({ x: 0, y: 0 })
     const container = useContext(SvgContainerContext)
     const movingContext = useContext(MovingContext)
 
@@ -38,10 +38,9 @@ export function Link(props: LinkProps) {
             y: (sourceRect.top + sourceRect.height / 2 - container.y) * (1 / scale)
         })
         setEndPoint({
-            x: (targetRect.left  - container.x) * (1 / scale),
+            x: (targetRect.left - container.x) * (1 / scale),
             y: (targetRect.top + targetRect.height / 2 - container.y) * (1 / scale)
         })
-
     }, [props.sourceSelector, props.targetSelector, movingContext.movingIdx])
 
     return (

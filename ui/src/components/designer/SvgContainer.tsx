@@ -1,11 +1,14 @@
-import React, {ReactNode, useEffect, useRef, useState} from "react";
+import React, { type ReactNode, useEffect, useRef, useState } from 'react'
 
 export interface SvgContainerOps {
     x: number
     y: number
 }
 
-export const SvgContainerContext = React.createContext<SvgContainerOps>({} as SvgContainerOps)
+export const SvgContainerContext = React.createContext<SvgContainerOps>({
+    x: 0,
+    y: 0
+})
 
 export interface SvgContainerProps extends React.SVGProps<SVGGElement> {
     children: ReactNode
@@ -34,5 +37,4 @@ export function SvgContainer(props: SvgContainerProps) {
             {props.children}
         </SvgContainerContext.Provider>}
     </g>
-
 }

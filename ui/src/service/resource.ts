@@ -1,8 +1,8 @@
 import axios from 'axios'
-import {BACKEND_URL} from '../config'
-import {Resource} from "../model";
-import {TokenService} from "./token";
-import {handleError} from "./error-handler";
+import { BACKEND_URL } from '../config'
+import { type Resource } from '../model'
+import { TokenService } from './token'
+import { handleError } from './error-handler'
 
 export namespace ResourceService {
     interface ResourceListContainer {
@@ -19,7 +19,7 @@ export namespace ResourceService {
 
             return result.data.resources
         } catch (e) {
-            return handleError(e)
+            return await handleError(e)
         }
     }
 }
