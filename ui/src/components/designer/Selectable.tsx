@@ -3,6 +3,7 @@ import {Point} from "./point";
 
 export interface SelectableProps {
     children: ReactNode
+    onSelected?: (selected: boolean) => void
 }
 
 export function Selectable(props: SelectableProps) {
@@ -12,6 +13,7 @@ export function Selectable(props: SelectableProps) {
 
     const onClick = (e: React.MouseEvent<SVGGElement, MouseEvent>) => {
         setSelected(!selected)
+        props.onSelected && props.onSelected(!selected)
     }
 
     return <>

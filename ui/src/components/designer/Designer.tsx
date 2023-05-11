@@ -8,11 +8,21 @@ import {Movable, MovableComponent} from "./Movable";
 import {SvgContainer} from "./SvgContainer";
 import {ReferenceLink} from "./ReferanceLink";
 import {Selectable} from "./Selectable";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import {Search, ZoomIn, ZoomOut} from "@mui/icons-material";
+
+export interface Selection {
+    type: string
+    identifier: string
+    data: object
+}
 
 // React component to render the diagram
 export const Designer: React.FC = () => {
     const [resources, setResources] = React.useState<Resource[]>([])
     const [zoomLevel, setZoomLevel] = React.useState<number>(1)
+    const [selected, setSelected] = React.useState<Selection[]>([])
 
     useEffect(() => {
         ResourceService.list().then(list => {
@@ -20,19 +30,30 @@ export const Designer: React.FC = () => {
         })
     }, [])
 
-    return <div>
-        <Button variant='outlined' color='info' size='small' onClick={() => {
-            setZoomLevel(Math.min(3, zoomLevel + 0.2))
-        }}>Zoom in</Button> &nbsp;
-        <Button variant='outlined' color='info' size='small' onClick={() => {
-            setZoomLevel(1)
-        }}>Zoom Reset</Button> &nbsp;
-        <Button variant='outlined' color='info' size='small' onClick={() => {
-            setZoomLevel(Math.max(0.2, zoomLevel - 0.2))
-        }}>Zoom out</Button> &nbsp;
+    console.log('selected', selected)
 
-        Zoom: {Math.round(zoomLevel * 100)}% &nbsp;
-        <br/>
+    return <div>
+        {/*Action Panel*/}
+        <Box style={{display: 'flex'}}>
+            <div style={{flexGrow: 1}}/>
+            <IconButton onClick={() => {
+                setZoomLevel(Math.min(3, zoomLevel + 0.2))
+            }}>
+                <ZoomIn/>
+            </IconButton>
+            <IconButton onClick={() => {
+                setZoomLevel(1)
+            }}>
+                <Search/>
+            </IconButton>
+            <IconButton onClick={() => {
+                setZoomLevel(Math.max(0.2, zoomLevel - 0.2))
+            }}>
+                <ZoomOut/>
+            </IconButton>
+            {/*{Math.round(zoomLevel * 100)}% &nbsp;*/}
+        </Box>
+        {/*Designing Area*/}
         <svg className={'designer-parent'}
              style={{width: '100%', height: '600px'}}>
             <SvgContainer>
@@ -44,7 +65,17 @@ export const Designer: React.FC = () => {
                             return <g key={(resource.namespace ?? '') + resource.name}
                                       transform={`translate(${x}, ${y})`}>
                                 <MovableComponent>
-                                    <Selectable>
+                                    <Selectable onSelected={isSelected => {
+                                        if (isSelected) {
+                                            setSelected([...selected, {
+                                                type: 'resource',
+                                                identifier: resource.name!,
+                                                data: resource
+                                            }])
+                                        } else {
+                                            setSelected(selected.filter(item => item.type === 'resource' && item.identifier !== resource.name))
+                                        }
+                                    }}>
                                         <ResourceElement resource={resource}/>
                                     </Selectable>
                                 </MovableComponent>
