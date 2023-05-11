@@ -3,10 +3,11 @@ import {Resource} from "../../model";
 import {ResourceService} from "../../service/resource";
 import Button from "@mui/material/Button";
 import {ResourceElement} from "./ResourceElement";
-import {Link} from "./Link";
 import {Scale} from "./Scale";
 import {Movable, MovableComponent} from "./Movable";
 import {SvgContainer} from "./SvgContainer";
+import {ReferenceLink} from "./ReferanceLink";
+import {Selectable} from "./Selectable";
 
 // React component to render the diagram
 export const Designer: React.FC = () => {
@@ -38,21 +39,24 @@ export const Designer: React.FC = () => {
                 <Scale level={zoomLevel}>
                     <Movable>
                         {resources.map((resource, index) => {
-                            const x = 410 * index
-                            const y = 10
-                            return <MovableComponent key={(resource.namespace ?? '') + resource.name}>
-                                <g transform={`translate(${x}, ${y})`}>
-                                    <ResourceElement resource={resource}/>
-                                </g>
-                            </MovableComponent>
+                            const x = 20 + 410 * index
+                            const y = 20
+                            return <g key={(resource.namespace ?? '') + resource.name}
+                                      transform={`translate(${x}, ${y})`}>
+                                <MovableComponent>
+                                    <Selectable>
+                                        <ResourceElement resource={resource}/>
+                                    </Selectable>
+                                </MovableComponent>
+                            </g>
                         })}
 
                         {resources.map((resource, index) => {
                             return <Fragment key={resource.name}>
                                 {resource.properties?.filter(item => item.type === 'REFERENCE').filter(item => item.reference && item.reference.referencedResource).map((property, index) => {
-                                    return <Link key={`${resource.name}-${property.name}`}
-                                                 sourceSelector={`.resource-${resource.name} .resource-property-${[property.name]} .right-ref`}
-                                                 targetSelector={`.resource-${property.reference!.referencedResource} .resource-head`}/>
+                                    return <ReferenceLink key={`${resource.name}-${property.name}`}
+                                                          resource={resource}
+                                                          property={property}/>
                                 })}
                             </Fragment>
                         })}

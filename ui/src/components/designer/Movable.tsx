@@ -1,5 +1,6 @@
 import React, {ReactNode, useContext, useEffect, useState} from "react";
 import {Point} from "./point";
+import {ScaleContext} from "./Scale";
 
 export interface MovingOps {
     moving: boolean
@@ -14,41 +15,50 @@ export interface MovableProps extends React.SVGProps<SVGGElement> {
 }
 
 export function Movable(props: MovableProps) {
+    const scale = useContext(ScaleContext)
     const [moving, setMoving] = useState<boolean>(false)
     const [movingIdx, setMovingIdx] = useState<number>(0)
 
     const [moveLoc, setMoveLoc] = useState<Point | undefined>({x: 0, y: 0})
     const [beginLoc, setBeginLoc] = useState<Point>({x: 0, y: 0})
 
-    return <g {...props}>
-        <MovingContext.Provider value={{
-            moving: moving,
-            movingIdx: movingIdx,
-            moveLoc: moveLoc
-        }}>
-            <g onPointerDown={(e) => {
-                console.log('start moving')
-                setMoving(true)
-                setBeginLoc({x: e.clientX, y: e.clientY})
-                setMovingIdx(movingIdx + 1)
-            }}
-               onPointerMove={(e) => {
-                   if (moving) {
-                       setMoveLoc({x: e.clientX - beginLoc.x, y: e.clientY - beginLoc.y})
-                       setMovingIdx(movingIdx + 1)
-                   }
-               }}
-               onPointerUp={(e) => {
-                   console.log('stop moving')
+    return <MovingContext.Provider value={{
+        moving: moving,
+        movingIdx: movingIdx,
+        moveLoc: moveLoc
+    }}>
+        <g onPointerDown={(e) => {
+            setMoving(true)
+            setBeginLoc({x: e.clientX, y: e.clientY})
+            setMovingIdx(movingIdx + 1)
+        }}
+           onPointerMove={(e) => {
+               if (moving) {
+                   setMoveLoc({
+                       x: (e.clientX - beginLoc.x) * (1 / scale),
+                       y: (e.clientY - beginLoc.y) * (1 / scale)
+                   })
+                   setMovingIdx(movingIdx + 1)
+               }
+           }}
+           onPointerUp={(e) => {
+               if (moving) {
                    setMoveLoc(undefined)
                    setMoving(false)
                    setMovingIdx(movingIdx + 1)
-               }}
-            >
-                {props.children}
-            </g>
-        </MovingContext.Provider>
-    </g>
+               }
+           }}
+           onMouseLeave={(e) => {
+               if (moving) {
+                   setMoveLoc(undefined)
+                   setMoving(false)
+                   setMovingIdx(movingIdx + 1)
+               }
+           }}
+        >
+            {props.children}
+        </g>
+    </MovingContext.Provider>
 }
 
 export interface MovableComponentProps extends React.SVGProps<SVGGElement> {
@@ -70,9 +80,6 @@ export function MovableComponent(props: MovableComponentProps) {
                 setLoc({x: 0, y: 0})
             }
         }
-
-        console.log(hover, movingContext.movingIdx)
-
     }, [hover, movingContext.movingIdx])
 
     return <g {...props} transform={`translate(${loc.x + matLoc.x}, ${loc.y + matLoc.y})`}
