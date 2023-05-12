@@ -22,7 +22,8 @@ module.exports = {
         "@typescript-eslint/explicit-function-return-type": "off",
         "react/display-name": "off",
         "react/react-in-jsx-scope": "off",
-        "@typescript-eslint/strict-boolean-expressions": "off"
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/no-namespace": "off",
     },
     settings: {
         "react": {

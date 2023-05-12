@@ -5,11 +5,12 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import * as React from 'react'
 import Divider from '@mui/material/Divider'
+import { type ReactNode } from 'react'
 
 export interface PageLayoutProps {
     pageTitle: string
-    children: JSX.Element | JSX.Element[]
-    actions?: JSX.Element | JSX.Element[]
+    children: ReactNode
+    actions?: ReactNode
 }
 
 export function PageLayout(props: PageLayoutProps) {

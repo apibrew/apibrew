@@ -10,13 +10,14 @@ import Container from '@mui/material/Container'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { authenticate } from '../../service/authentication'
 import { useNavigate } from 'react-router-dom'
+import { TokenService } from '../../service/token'
 
 // eslint-disable-next-line
 export interface LoginProps {
 }
 
 export function Login(props: LoginProps): JSX.Element {
-    const isLoggedIn = localStorage.getItem('token')
+    const isLoggedIn = TokenService.isLoggedIn()
     useEffect(() => {
         if (isLoggedIn) {
             navigate('/dashboard/test')
@@ -31,8 +32,6 @@ export function Login(props: LoginProps): JSX.Element {
 
         authenticate(data.get('username') as string, data.get('password') as string)
             .then((result) => {
-                const token = result?.content ?? ''
-                localStorage.setItem('token', token)
                 navigate('/dashboard/test')
             }, err => {
                 console.error(err)
