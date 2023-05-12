@@ -1,12 +1,12 @@
-import React, {Fragment, ReactNode, useEffect} from 'react'
-import {type Resource} from '../../model'
-import {ResourceService} from '../../service/resource'
-import {ResourceElement} from './ResourceElement'
-import {Scale} from './Scale'
-import {Movable, MovableComponent} from './Movable'
-import {SvgContainer} from './SvgContainer'
-import {ReferenceLink} from './ReferanceLink'
-import {Selectable} from './Selectable'
+import React, { Fragment, ReactNode, useEffect } from 'react'
+import { type Resource } from '../../model'
+import { ResourceService } from '../../service/resource'
+import { ResourceElement } from './ResourceElement'
+import { Scale } from './Scale'
+import { Movable, MovableComponent } from './Movable'
+import { SvgContainer } from './SvgContainer'
+import { ReferenceLink } from './ReferanceLink'
+import { Selectable } from './Selectable'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import {
@@ -37,8 +37,9 @@ import {
     MenuItem,
     Tooltip
 } from "@mui/material";
-import {LayoutContext} from "../../context/layout-context";
+import { LayoutContext } from "../../context/layout-context";
 import Button from "@mui/material/Button";
+import { ResourceForm } from '../resource-form/ResourceForm'
 
 export interface Selection {
     type: string
@@ -68,10 +69,6 @@ export const Designer: React.FC = () => {
         })
     }, [])
 
-    const handleAdd = () => {
-
-    }
-
     const handleDelete = () => {
         if (selected.length == 0) {
             layoutOptions.showAlert({
@@ -95,7 +92,7 @@ export const Designer: React.FC = () => {
         }
     }
 
-    const actionPanel = <Box style={{display: 'flex'}}>
+    const actionPanel = <Box style={{ display: 'flex' }}>
         <Box>
             <Tooltip title={'Add New Item'}>
                 <IconButton onClick={(e) => {
@@ -107,23 +104,39 @@ export const Designer: React.FC = () => {
                         addMenuOpen: true
                     })
                 }}>
-                    <Add/>
+                    <Add />
                 </IconButton>
             </Tooltip>
             {addButtonRef && <Menu anchorEl={addButtonRef}
-                                   onClose={() => {
-                                       setFlags({
-                                           ...flags,
-                                           addMenuOpen: false
-                                       })
-                                   }}
-                                   open={flags.addMenuOpen}
-                                   id="hooks-menu"
+                onClose={() => {
+                    setFlags({
+                        ...flags,
+                        addMenuOpen: false
+                    })
+                }}
+                open={flags.addMenuOpen}
+                id="hooks-menu"
             >
                 <MenuItem onClick={() => {
                     setFlags({
                         ...flags,
                         addMenuOpen: false
+                    })
+
+                    const modal = layoutOptions.showModal({
+                        content: <Box sx={{
+                            position: 'absolute' as 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 800,
+                        }}>
+                            <ResourceForm initResource={{} as Resource}
+                                onSave={(newResource) => {
+                                    setResources([...resources, newResource])
+                                    modal.close()
+                                }} />
+                        </Box>
                     })
                 }}>Add Resource</MenuItem>
             </Menu>}
@@ -131,146 +144,140 @@ export const Designer: React.FC = () => {
                 <IconButton onClick={(e) => {
                     handleEdit()
                 }}>
-                    <Edit textAnchor={'asd'}/>
+                    <Edit textAnchor={'asd'} />
                 </IconButton>
             </Tooltip>
             <Tooltip title={'Delete Item'}>
                 <IconButton onClick={(e) => {
                     handleDelete()
                 }}>
-                    <Delete/>
-                    <Dialog
-                        open={flags.deleteDialog}
-                        onClose={() => {
-                            setFlags({
-                                ...flags,
-                                deleteDialog: false,
-                            })
-                        }}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                    >
-                        <DialogTitle id="alert-dialog-title">
-                            {"Use Google's location service?"}
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                Let Google help apps determine location. This means sending anonymous
-                                location data to Google, even when no apps are running.
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => {
-                                setFlags({
-                                    ...flags,
-                                    deleteDialog: false,
-                                })
-                            }}>Disagree</Button>
-                            <Button onClick={() => {
-                                setFlags({
-                                    ...flags,
-                                    deleteDialog: false,
-                                })
-                            }} autoFocus>
-                                Agree
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                    <Delete />
                 </IconButton>
             </Tooltip>
+            <Dialog
+                open={flags.deleteDialog}
+                onClose={() => {
+                    setFlags({
+                        ...flags,
+                        deleteDialog: false,
+                    })
+                }}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Are you sure, you want to delete this item?"}
+                </DialogTitle>
+                <DialogActions>
+                    <Button variant='contained' onClick={() => {
+                        setFlags({
+                            ...flags,
+                            deleteDialog: false,
+                        })
+                    }}>Disagree</Button>
+                    <Button variant='contained' onClick={() => {
+                        setFlags({
+                            ...flags,
+                            deleteDialog: false,
+                        })
+                    }} autoFocus>
+                        Agree
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <Tooltip title={'Load Existing'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <GetApp/>
+                    <GetApp />
                 </IconButton>
             </Tooltip>
         </Box>
-        <Box sx={{flexGrow: 5}}/>
-        <Box sx={{flexGrow: 1}}/><Box>
-        <IconButton value="wide" aria-label="left aligned">
-            <Tooltip title={'Wide elements'}>
-                <WidthWide/>
-            </Tooltip>
-        </IconButton>
-        <IconButton value="compact" aria-label="left aligned">
-            <Tooltip title={'Compact'}>
-                <ViewCompact/>
-            </Tooltip>
-        </IconButton>
-    </Box>
-        <Box sx={{flexGrow: 1}}/>
+        <Box sx={{ flexGrow: 5 }} />
+        <Box sx={{ flexGrow: 1 }} /><Box>
+            <IconButton value="wide" aria-label="left aligned">
+                <Tooltip title={'Wide elements'}>
+                    <WidthWide />
+                </Tooltip>
+            </IconButton>
+            <IconButton value="compact" aria-label="left aligned">
+                <Tooltip title={'Compact'}>
+                    <ViewCompact />
+                </Tooltip>
+            </IconButton>
+        </Box>
+        <Box sx={{ flexGrow: 1 }} />
         <Box>
             <Tooltip title={`${Math.round(zoomLevel * 100)}%`}>
                 <Box>
                     <IconButton onClick={() => {
                         setZoomLevel(Math.min(3, zoomLevel + 0.2))
                     }}>
-                        <ZoomIn/>
+                        <ZoomIn />
                     </IconButton>
                     <IconButton onClick={() => {
                         setZoomLevel(1)
                     }}>
-                        <Search/>
+                        <Search />
                     </IconButton>
                     <IconButton onClick={() => {
                         setZoomLevel(Math.max(0.2, zoomLevel - 0.2))
                     }}>
-                        <ZoomOut/>
+                        <ZoomOut />
                     </IconButton>
                 </Box>
             </Tooltip>
         </Box>
-        <Box sx={{flexGrow: 1}}/>
+        <Box sx={{ flexGrow: 1 }} />
         <Box>
             <IconButton value="wide" aria-label="left aligned">
                 <Tooltip title={'Rearrange elements'}>
-                    <FormatAlignCenter/>
+                    <FormatAlignCenter />
                 </Tooltip>
             </IconButton>
             <Tooltip title={'Reload'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <Replay/>
+                    <Replay />
                 </IconButton>
             </Tooltip>
             <Tooltip title={'Undo'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <Undo/>
+                    <Undo />
                 </IconButton>
             </Tooltip>
             <Tooltip title={'Redo'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <Redo/>
+                    <Redo />
                 </IconButton>
             </Tooltip>
             <Tooltip title={'Save'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <Save/>
+                    <Save />
                 </IconButton>
             </Tooltip>
         </Box>
-        <Box sx={{flexGrow: 1}}/>
+        <Box sx={{ flexGrow: 1 }} />
         <Box>
             <Tooltip title={'Settings'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <SettingsApplications/>
+                    <SettingsApplications />
                 </IconButton>
             </Tooltip>
         </Box>
     </Box>
 
     const designingArea = <svg className={'designer-parent'}
-                               style={{width: '100%', height: '90vh'}}>
+        style={{ width: '100%', height: '90vh' }}>
         <SvgContainer>
             <Scale level={zoomLevel}>
                 <Movable>
@@ -278,7 +285,7 @@ export const Designer: React.FC = () => {
                         const x = 20 + 410 * index
                         const y = 20
                         return <g key={`${(resource.namespace ?? '')}-${resource.name ?? ''}`}
-                                  transform={`translate(${x}, ${y})`}>
+                            transform={`translate(${x}, ${y})`}>
                             <MovableComponent>
                                 <Selectable onSelected={isSelected => {
                                     if (isSelected) {
@@ -291,7 +298,7 @@ export const Designer: React.FC = () => {
                                         setSelected(selected.filter(item => item.type === 'resource' && item.identifier !== resource.name))
                                     }
                                 }}>
-                                    <ResourceElement resource={resource}/>
+                                    <ResourceElement resource={resource} />
                                 </Selectable>
                             </MovableComponent>
                         </g>
@@ -301,8 +308,8 @@ export const Designer: React.FC = () => {
                         return <Fragment key={resource.name ?? ''}>
                             {resource.properties?.filter(item => item.type === 'REFERENCE')?.filter(item => item.reference?.referencedResource)?.map((property, index) => {
                                 return <ReferenceLink key={`${resource.name ?? ''}-${property.name ?? ''}`}
-                                                      resource={resource}
-                                                      property={property}/>
+                                    resource={resource}
+                                    property={property} />
                             })}
                         </Fragment>
                     })}

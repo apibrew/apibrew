@@ -1,6 +1,6 @@
 import * as React from 'react'
-import {Fragment, type ReactNode, useState} from 'react'
-import MuiAppBar, {type AppBarProps as MuiAppBarProps} from '@mui/material/AppBar'
+import { Fragment, type ReactNode, useState } from 'react'
+import MuiAppBar, { type AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -9,17 +9,17 @@ import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
-import {Alert, Collapse, Snackbar, Stack} from '@mui/material'
+import { Alert, Collapse, Modal, Snackbar, Stack } from '@mui/material'
 import AccountPopover from './AccountPopover'
-import {type MenuList, menuLists} from './menu-items'
+import { type MenuList, menuLists } from './menu-items'
 import ListItemButton from '@mui/material/ListItemButton'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import ListItem from '@mui/material/ListItem'
-import {ChevronLeft, ExpandLess, ExpandMore} from '@mui/icons-material'
-import {styled} from '@mui/material/styles'
-import {AlertOptions, LayoutContext, LayoutOptions} from "../../context/layout-context";
+import { ChevronLeft, ExpandLess, ExpandMore } from '@mui/icons-material'
+import { styled } from '@mui/material/styles'
+import { AlertOptions, LayoutContext, LayoutOptions, ModalOperations, ModalOptions } from "../../context/layout-context";
 
 const drawerWidth = 260
 
@@ -34,7 +34,7 @@ interface AppBarProps extends MuiAppBarProps {
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open'
-})<AppBarProps>(({theme, open}) => ({
+})<AppBarProps>(({ theme, open }) => ({
     transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen
@@ -58,6 +58,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
     const [open, setOpen] = React.useState(true)
     const [snackBarOpen, setSnackBarOpen] = React.useState(false)
     const [alert, setAlert] = React.useState<AlertOptions>()
+    const [modals, setModals] = React.useState<ModalOptions[]>([])
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen)
@@ -68,48 +69,83 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
             setAlert(alert)
             setSnackBarOpen(true)
         },
+        showModal(modal: ModalOptions): ModalOperations {
+            modal.id = Math.random().toString(36).substr(2, 9)
+
+            setModals([...modals, modal])
+
+            return {
+                id: modal.id,
+                close(): void {
+                    setModals(modals.filter(m => m.id !== modal.id))
+                    if (modal.onClose) {
+                        modal.onClose()
+                    }
+                }
+            }
+        }
     }
 
+    const modalContainer = (
+        <>
+            {modals.map(modal => <Fragment key={modal.id}>
+                <Modal {...modal.props}
+                    open={true}
+                    onClose={() => {
+                        setModals(modals.filter(m => m.id !== modal.id))
+                        if (modal.onClose) {
+                            modal.onClose()
+                        }
+                    }}>
+                    <>
+                        {modal.content}
+                    </>
+                </Modal>
+            </Fragment>)}
+        </>
+    )
+
     const drawer = (
-        <Box sx={{display: 'flex', flexDirection: 'column', height: '100%', overflow: 'auto', ...drawerStyle}}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'auto', ...drawerStyle }}>
             <div>
                 <Toolbar>
-                    <img style={{textAlign: 'center'}} src="/logo-small-white.svg"></img>
+                    <img style={{ textAlign: 'center' }} src="/logo-small-white.svg"></img>
                     <IconButton onClick={() => {
                         setOpen(false)
                     }}>
-                        <ChevronLeft/>
+                        <ChevronLeft />
                     </IconButton>
                 </Toolbar>
-                <Divider style={{background: '#AAA'}}/>
+                <Divider style={{ background: '#AAA' }} />
                 {menuLists.map((menuList, index) => <Fragment key={menuList.title}>
-                    <NavList menuList={menuList}/>
-                    <Divider style={{background: '#FFF'}}/>
+                    <NavList menuList={menuList} />
+                    <Divider style={{ background: '#FFF' }} />
                 </Fragment>)}
             </div>
-            <div style={{flexGrow: 1}}/>
+            <div style={{ flexGrow: 1 }} />
         </Box>
     )
 
     const snackBar = <Snackbar open={snackBarOpen}
-                               autoHideDuration={6000}
-                               onClose={() => {
-                                   setSnackBarOpen(false)
-                               }}>
+        autoHideDuration={6000}
+        onClose={() => {
+            setSnackBarOpen(false)
+        }}>
         <Alert onClose={() => {
             setSnackBarOpen(false)
-        }} severity={alert?.severity} sx={{width: '100%'}}>{alert?.message}</Alert>
+        }} severity={alert?.severity} sx={{ width: '100%' }}>{alert?.message}</Alert>
     </Snackbar>
 
     return <>
         <LayoutContext.Provider value={layoutOptions}>
-            <Box sx={{display: 'flex'}}>
+            {modalContainer}
+            <Box sx={{ display: 'flex' }}>
                 <AppBar
                     position="fixed"
                     open={open}
                     sx={{
-                        width: {sm: `calc(100% - ${drawerWidth}px)`},
-                        ml: {sm: `${drawerWidth}px`}
+                        width: { sm: `calc(100% - ${drawerWidth}px)` },
+                        ml: { sm: `${drawerWidth}px` }
                     }}
                 >
                     <Toolbar>
@@ -118,14 +154,14 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                             aria-label="open drawer"
                             edge="start"
                             onClick={handleDrawerToggle}
-                            sx={{mr: 2, display: {sm: 'none'}}}
+                            sx={{ mr: 2, display: { sm: 'none' } }}
                         >
-                            <MenuIcon/>
+                            <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" noWrap component="div">
 
                         </Typography>
-                        <Box sx={{flexGrow: 1}}/>
+                        <Box sx={{ flexGrow: 1 }} />
                         <Stack
                             direction="row"
                             alignItems="center"
@@ -133,13 +169,13 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                                 xs: 0.5,
                                 sm: 1
                             }}>
-                            <AccountPopover/>
+                            <AccountPopover />
                         </Stack>
                     </Toolbar>
                 </AppBar>
                 <Box
                     component="nav"
-                    sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
+                    sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
                     aria-label="mailbox folders"
                 >
                     {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -151,8 +187,8 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                             keepMounted: true // Better open performance on mobile.
                         }}
                         sx={{
-                            display: {xs: 'block', sm: 'none'},
-                            '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth}
+                            display: { xs: 'block', sm: 'none' },
+                            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
                         }}
                     >
                         {drawer}
@@ -160,8 +196,8 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                     <Drawer
                         variant="permanent"
                         sx={{
-                            display: {xs: 'none', sm: 'block'},
-                            '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth}
+                            display: { xs: 'none', sm: 'block' },
+                            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
                         }}
                         open
                     >
@@ -170,9 +206,9 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                 </Box>
                 <Box
                     component="main"
-                    sx={{flexGrow: 1, p: 3, width: {sm: `calc(100% - ${drawerWidth}px)`}}}
+                    sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
                 >
-                    <Toolbar/>
+                    <Toolbar />
                     {props.children}
                     {snackBar}
                 </Box>
@@ -188,7 +224,7 @@ export interface NavListProps {
 function NavList(props: NavListProps): JSX.Element {
     const [open, setOpen] = useState<Record<string, boolean>>({})
 
-    return <List subheader={props.menuList.title && <Box sx={{ml: 1, mt: 1}}>
+    return <List subheader={props.menuList.title && <Box sx={{ ml: 1, mt: 1 }}>
         <Typography>{props.menuList.title}</Typography>
     </Box>}>
         {props.menuList.items.map((menuItem, index) => {
@@ -198,20 +234,20 @@ function NavList(props: NavListProps): JSX.Element {
                     {!menuItem.children && <ListItemButton component={Link} to={menuItem.link ?? ''}>
                         {(menuItem.icon != null) &&
                             <ListItemIcon style={drawerStyle}>{menuItem.icon} </ListItemIcon>}
-                        <ListItemText primary={menuItem.title}/>
+                        <ListItemText primary={menuItem.title} />
                     </ListItemButton>}
                     {menuItem.children && <ListItemButton onClick={() => {
-                        setOpen({...open, [key]: !open[key]})
+                        setOpen({ ...open, [key]: !open[key] })
                     }}>
                         {(menuItem.icon != null) &&
                             <ListItemIcon style={drawerStyle}>{menuItem.icon} </ListItemIcon>}
-                        <ListItemText primary={menuItem.title}/>
-                        {open[key] ? <ExpandLess/> : <ExpandMore/>}
+                        <ListItemText primary={menuItem.title} />
+                        {open[key] ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>}
                 </ListItem>
                 {menuItem.children && <Collapse in={open[key]} timeout="auto" unmountOnExit>
-                    <Box sx={{ml: 3}}>
-                        <NavList menuList={{items: menuItem.children}}/>
+                    <Box sx={{ ml: 3 }}>
+                        <NavList menuList={{ items: menuItem.children }} />
                     </Box>
                 </Collapse>}
             </Fragment>
