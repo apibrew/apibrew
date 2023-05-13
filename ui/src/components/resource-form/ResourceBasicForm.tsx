@@ -95,22 +95,22 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                     )
                                                 }
                                             >
-                                                <MenuItem value="BOOL">BOOL</MenuItem>
-                                                <MenuItem value="STRING">STRING</MenuItem>
-                                                <MenuItem value="FLOAT32">FLOAT32</MenuItem>
-                                                <MenuItem value="FLOAT64">FLOAT64</MenuItem>
-                                                <MenuItem value="INT32">INT32</MenuItem>
-                                                <MenuItem value="INT64">INT64</MenuItem>
-                                                <MenuItem value="BYTES">BYTES</MenuItem>
-                                                <MenuItem value="UUID">UUID</MenuItem>
-                                                <MenuItem value="DATE">DATE</MenuItem>
-                                                <MenuItem value="TIME">TIME</MenuItem>
-                                                <MenuItem value="TIMESTAMP">TIMESTAMP</MenuItem>
-                                                <MenuItem value="OBJECT">OBJECT</MenuItem>
-                                                <MenuItem value="MAP">MAP</MenuItem>
-                                                <MenuItem value="LIST">LIST</MenuItem>
-                                                <MenuItem value="REFERENCE">REFERENCE</MenuItem>
-                                                <MenuItem value="ENUM">ENUM</MenuItem>
+                                                <MenuItem value="BOOL">bool</MenuItem>
+                                                <MenuItem value="STRING">string</MenuItem>
+                                                <MenuItem value="FLOAT32">float32</MenuItem>
+                                                <MenuItem value="FLOAT64">float64</MenuItem>
+                                                <MenuItem value="INT32">int32</MenuItem>
+                                                <MenuItem value="INT64">int64</MenuItem>
+                                                <MenuItem value="BYTES">bytes</MenuItem>
+                                                <MenuItem value="UUID">uuid</MenuItem>
+                                                <MenuItem value="DATE">date</MenuItem>
+                                                <MenuItem value="TIME">time</MenuItem>
+                                                <MenuItem value="TIMESTAMP">timestamp</MenuItem>
+                                                <MenuItem value="OBJECT">object</MenuItem>
+                                                <MenuItem value="MAP">map</MenuItem>
+                                                <MenuItem value="LIST">list</MenuItem>
+                                                <MenuItem value="REFERENCE">reference</MenuItem>
+                                                <MenuItem value="ENUM">enum</MenuItem>
                                             </Select>
                                         )}
                                     </TableCell>

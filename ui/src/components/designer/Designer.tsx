@@ -83,15 +83,6 @@ export const Designer: React.FC = () => {
         })
     }
 
-    const handleEdit = () => {
-        if (selected.length == 0) {
-            layoutOptions.showAlert({
-                severity: 'error',
-                message: 'Please select an item to edit'
-            })
-        }
-    }
-
     const actionPanel = <Box style={{ display: 'flex' }}>
         <Box>
             <Tooltip title={'Add New Item'}>
@@ -142,7 +133,29 @@ export const Designer: React.FC = () => {
             </Menu>}
             <Tooltip title={'Edit Item'}>
                 <IconButton onClick={(e) => {
-                    handleEdit()
+                    if (selected.length == 0) {
+                        layoutOptions.showAlert({
+                            severity: 'error',
+                            message: 'Please select an item to edit'
+                        })
+                    }
+
+
+                    const modal = layoutOptions.showModal({
+                        content: <Box sx={{
+                            position: 'absolute' as 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 800,
+                        }}>
+                            <ResourceForm initResource={selected[0].data}
+                                onSave={(updatedResource) => {
+                                    Object.assign(selected[0].data, updatedResource)
+                                    modal.close()
+                                }} />
+                        </Box>
+                    })
                 }}>
                     <Edit textAnchor={'asd'} />
                 </IconButton>
