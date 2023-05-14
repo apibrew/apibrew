@@ -46,6 +46,7 @@ import { ResourceVisualizer } from './ResourceVisualizer'
 import { RecordService } from '../../service/record'
 import { AppDesignerBoardResource } from '../../resources/app-designer'
 import { AppDesignerBoard } from '../../model/app-designer'
+import { Point } from './point'
 
 export interface Selection {
     type: string
@@ -74,6 +75,9 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
     }>({});
     const modules: ReactNode[] = []
     const layoutOptions = React.useContext(LayoutContext)
+    const [locationMap, setLocationMap] = React.useState<{
+        [key: string]: Point
+    }>({})
 
     const load = async () => {
         setSelected([])
@@ -83,14 +87,32 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
         setBoard(board)
 
         try {
-            const list = await ResourceService.list()
-            setResources(list.filter(item => item.namespace !== 'system'))
+            const list = (await ResourceService.list()).filter(item => item.namespace !== 'system')
+
+            let x = 10;
+            let y = 10;
+
+            for (let resource of list) {
+                setLocationMap({
+                    ...locationMap,
+                    [resource.name]: {
+                        x: x,
+                        y: y,
+                    }
+                })
+
+                x += 200
+
+                console.log('set 1')
+            }
+
+            setResources(list)
         } catch (error) {
             console.error(error)
         }
-
-        console.log(board)
     }
+
+    console.log(locationMap)
 
     useEffect(() => {
         load()
@@ -319,26 +341,28 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
             <Scale level={zoomLevel}>
                 <Movable>
                     {resources.map((resource, index) => {
-                        const x = 20 + 410 * index
-                        const y = 20
-                        return <g key={`${(resource.namespace ?? '')}-${resource.name}`}
-                            transform={`translate(${x}, ${y})`}>
-                            <MovableComponent>
-                                <Selectable onSelected={isSelected => {
-                                    if (isSelected) {
-                                        setSelected([...selected, {
-                                            type: 'resource',
-                                            identifier: resource.name,
-                                            data: resource
-                                        }])
-                                    } else {
-                                        setSelected(selected.filter(item => item.type === 'resource' && item.identifier !== resource.name))
-                                    }
-                                }}>
-                                    <ResourceElement resource={resource} />
-                                </Selectable>
-                            </MovableComponent>
-                        </g>
+                        return <MovableComponent location={locationMap[resource.name]}
+                            updateLocation={location => {
+                                setLocationMap({
+                                    ...locationMap,
+                                    [resource.name]: location
+                                })
+                                console.log('location updated: ', location)
+                            }}>
+                            <Selectable onSelected={isSelected => {
+                                if (isSelected) {
+                                    setSelected([...selected, {
+                                        type: 'resource',
+                                        identifier: resource.name,
+                                        data: resource
+                                    }])
+                                } else {
+                                    setSelected(selected.filter(item => item.type === 'resource' && item.identifier !== resource.name))
+                                }
+                            }}>
+                                <ResourceElement resource={resource} />
+                            </Selectable>
+                        </MovableComponent>
                     })}
 
                     {resources.map((resource, index) => {
@@ -360,7 +384,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
         {actionPanel}
         {/* Designing Area */}
         <Box sx={{ flexGrow: 1 }}>
-            {designingArea}
+            {board && designingArea}
         </Box>
         {modules}
     </Box>
