@@ -5,6 +5,7 @@ import { ResourceBasicForm } from "./ResourceBasicForm";
 import { ResourceAdvancedForm } from "./ResourceAdvancedForm";
 import { ResourceService } from "../../service/resource";
 import { LayoutContext } from "../../context/layout-context";
+import { AxiosError } from "axios";
 
 export type ResourceFormVariant = 'basic' | 'advanced'
 
@@ -56,13 +57,18 @@ export function ResourceForm(props: ResourceFormProps): JSX.Element {
                 </Box>
                 <Box m={0.5}>
                     <Button variant="contained" size="small" color="success" onClick={() => {
-                        ResourceService.apply(resource).then(() => {
+                        ResourceService.save(resource).then(() => {
                             layoutOptions.showAlert({ severity: 'success', message: 'Resource saved successfully' })
 
                             if (props.onSave) {
                                 props.onSave(resource)
                             }
                         }).catch((error) => {
+                            if (error instanceof AxiosError && error.response?.status === 400) {
+                                layoutOptions.showAlert({ severity: 'error', message: error.response.data.message })
+                                return
+                            }
+                            
                             layoutOptions.showAlert({ severity: 'error', message: error.message })
                         })
                     }}>Save</Button>

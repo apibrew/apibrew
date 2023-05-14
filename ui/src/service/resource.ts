@@ -103,26 +103,11 @@ export namespace ResourceService {
         }
     }
 
-    export async function apply(resource: Resource): Promise<Resource> {
+    export async function save(resource: Resource): Promise<Resource> {
         if (resource.id) {
             return update(resource)
-        }
-
-        try {
-            const existingResource = await getByName(resource.name, resource.namespace)
-            resource.id = existingResource.id
-
-            return update(resource)
-        } catch (e) {
-            if (e instanceof AxiosError) {
-                const axiosError = e as AxiosError
-
-                if (axiosError.response?.status === 404) {
-                    return create(resource)
-                }
-            }
-
-            return handleError<Resource>(e)
+        } else {
+            return create(resource)
         }
     }
 }

@@ -338,7 +338,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 			}
 
 			if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
-				return errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exiss: " + plan.CurrentResource.Name))
+				return errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exists: " + plan.CurrentResource.Name))
 			}
 
 			if err != nil {
@@ -471,7 +471,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	result, err := systemBackend.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
 
 	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
-		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exiss: " + resource.Name))
+		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exists: " + resource.Name))
 	}
 
 	if err != nil && err.Code() == model.ErrorCode_RECORD_VALIDATION_ERROR {
