@@ -59,9 +59,14 @@ export namespace ResourceService {
         }
     }
 
-    export async function remove(resource: Resource): Promise<void> {
+    export async function remove(resource: Resource, forceMigrate: boolean): Promise<void> {
         try {
-            await axios.delete<void>(`${BACKEND_URL}/system/resources/${resource.id}`, {
+            await axios.delete<void>(`${BACKEND_URL}/system/resources`, {
+                data: {
+                    doMigration: true,
+                    forceMigration: forceMigrate,
+                    ids: [resource.id]
+                },
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }

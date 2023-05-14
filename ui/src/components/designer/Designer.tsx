@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material'
 import {
     Alert,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -57,6 +58,7 @@ export const Designer: React.FC = () => {
     const [zoomLevel, setZoomLevel] = React.useState<number>(1)
     const [selected, setSelected] = React.useState<Selection[]>([])
     const [viewMode, setViewMode] = React.useState<ViewMode>('wide')
+    const [forceDelete, setForceDelete] = React.useState<boolean>(false)
 
     const [addButtonRef, setAddButtonRef] = React.useState<null | HTMLElement>(null);
     const [flags, setFlags] = React.useState<{
@@ -204,22 +206,41 @@ export const Designer: React.FC = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Are you sure, you want to delete this item?"}
+                    {"Are you sure, you want to delete this item?\n This operation is not reversible"}
                 </DialogTitle>
+                <DialogContent>
+                    Force Delete? <Checkbox value={forceDelete} onChange={e => {
+                        setForceDelete(e.target.checked)
+                    }}></Checkbox>
+                </DialogContent>
                 <DialogActions>
                     <Button variant='contained' onClick={() => {
                         setFlags({
                             ...flags,
                             deleteDialog: false,
                         })
-                    }}>Disagree</Button>
+                    }}>No</Button>
                     <Button variant='contained' onClick={() => {
                         setFlags({
                             ...flags,
                             deleteDialog: false,
                         })
+
+                        ResourceService.remove(selected[0].data as Resource, forceDelete).then(() => {
+                            layoutOptions.showAlert({
+                                severity: 'success',
+                                message: 'Item deleted successfully'
+                            })
+
+                            load()
+                        }).catch(error => {
+                            layoutOptions.showAlert({
+                                severity: 'error',
+                                message: error.message
+                            })
+                        })
                     }} autoFocus>
-                        Agree
+                        Yes
                     </Button>
                 </DialogActions>
             </Dialog>
