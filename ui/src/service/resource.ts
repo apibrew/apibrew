@@ -96,13 +96,13 @@ export namespace ResourceService {
         }
 
         try {
-            const result = await axios.get<Resource>(`${BACKEND_URL}/system/resources/${namespace}/${resourceName}`, {
+            const result = await axios.get<{resource: Resource}>(`${BACKEND_URL}/system/resources/${namespace}/${resourceName}`, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }
             })
 
-            return result.data
+            return result.data.resource
         } catch (e) {
             return await handleError(e)
         }
@@ -110,17 +110,19 @@ export namespace ResourceService {
 
     export async function save(resource: Resource): Promise<Resource> {
         if (resource.id) {
-            return update(resource)
+            return await update(resource)
         } else {
-            return create(resource)
+            return await create(resource)
         }
     }
 
     export async function migrate(resource: Resource): Promise<Resource> {
         try {
-            return create(resource)
+            return await create(resource)
         } catch (e) {
-            return update(resource)
+            const existingResource = await getByName(resource.name, resource.namespace)
+            resource.id = existingResource.id
+            return await update(resource)
         }
     }
 }

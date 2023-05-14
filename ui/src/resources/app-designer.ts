@@ -7,6 +7,7 @@ export const AppDesignerBoardResource: Resource = {
         {
             name: 'name',
             type: 'STRING',
+            immutable: true,
             unique: true,
             required: true,
             length: 255,
@@ -22,7 +23,48 @@ export const AppDesignerBoardResource: Resource = {
         {
             name: 'resourceSelector',
             type: 'LIST',
-            subType: 'STRING',
+            subProperty: {
+                name: '',
+                type: 'STRING',
+            }
+        },
+        {
+            name: 'resourceVisuals',
+            type: 'LIST',
+            subProperty: {
+                name: '',
+                type: 'STRUCT',
+                properties: [
+                    {
+                        name: 'resource',
+                        type: 'STRING',
+                        required: true,
+                        length: 255,
+                    },
+                    {
+                        name: 'allowRecordsOnBoard',
+                        type: 'BOOL',
+                        required: true,
+                    },
+                    {
+                        name: 'location',
+                        type: 'STRUCT',
+                        properties: [
+                            {
+                                name: 'x',
+                                type: 'INT32',
+                                required: true,
+                            },
+                            {
+                                name: 'y',
+                                type: 'INT32',
+                                required: true,
+                            },
+                        ],
+                    },
+                ],
+            }
+        }
     ],
     description: 'A board is a collection of widgets that are displayed together.',
     version: 1,

@@ -488,7 +488,7 @@ export interface components {
     };
     Namespace: {
       id?: string;
-      name?: string;
+      name: string;
       description?: string;
       details?: Record<string, never>;
       securityContext?: components["schemas"]["SecurityContext"];
@@ -583,10 +583,10 @@ export interface components {
     };
     Resource: {
       id?: string;
-      name?: string;
+      name: string;
       namespace?: string;
       sourceConfig?: components["schemas"]["ResourceSourceConfig"];
-      properties?: (components["schemas"]["ResourceProperty"])[];
+      properties: (components["schemas"]["ResourceProperty"])[];
       indexes?: (components["schemas"]["ResourceIndex"])[];
       securityContext?: components["schemas"]["SecurityContext"];
       virtual?: boolean;
@@ -664,13 +664,13 @@ export interface components {
     ResourceProperty: {
       id?: string;
       /** @description property name */
-      name?: string;
+      name: string;
       /**
        * Format: enum 
        * @description type of property 
        * @enum {string}
        */
-      type?: "BOOL" | "STRING" | "FLOAT32" | "FLOAT64" | "INT32" | "INT64" | "BYTES" | "UUID" | "DATE" | "TIME" | "TIMESTAMP" | "OBJECT" | "MAP" | "LIST" | "REFERENCE" | "ENUM" | "STRUCT";
+      type: "BOOL" | "STRING" | "FLOAT32" | "FLOAT64" | "INT32" | "INT64" | "BYTES" | "UUID" | "DATE" | "TIME" | "TIMESTAMP" | "OBJECT" | "MAP" | "LIST" | "REFERENCE" | "ENUM" | "STRUCT";
       /** @description mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property */
       mapping?: string;
       /** @description this is to mark property as required */

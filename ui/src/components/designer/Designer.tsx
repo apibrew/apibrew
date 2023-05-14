@@ -43,6 +43,9 @@ import { LayoutContext } from "../../context/layout-context";
 import Button from "@mui/material/Button";
 import { ResourceForm } from '../resource-form/ResourceForm'
 import { ResourceVisualizer } from './ResourceVisualizer'
+import { RecordService } from '../../service/record'
+import { AppDesignerBoardResource } from '../../resources/app-designer'
+import { AppDesignerBoard } from '../../model/app-designer'
 
 export interface Selection {
     type: string
@@ -52,13 +55,18 @@ export interface Selection {
 
 type ViewMode = 'wide' | 'compact'
 
+export interface DesignerProps {
+    id: string
+}
+
 // React component to render the diagram
-export const Designer: React.FC = () => {
+export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
     const [resources, setResources] = React.useState<Resource[]>([])
     const [zoomLevel, setZoomLevel] = React.useState<number>(1)
     const [selected, setSelected] = React.useState<Selection[]>([])
     const [viewMode, setViewMode] = React.useState<ViewMode>('wide')
     const [forceDelete, setForceDelete] = React.useState<boolean>(false)
+    const [board, setBoard] = React.useState<AppDesignerBoard>()
 
     const [addButtonRef, setAddButtonRef] = React.useState<null | HTMLElement>(null);
     const [flags, setFlags] = React.useState<{
@@ -69,12 +77,19 @@ export const Designer: React.FC = () => {
 
     const load = async () => {
         setSelected([])
+
+        const board = await RecordService.get<AppDesignerBoard>(AppDesignerBoardResource.namespace!, AppDesignerBoardResource.name, props.id)
+
+        setBoard(board)
+
         try {
             const list = await ResourceService.list()
             setResources(list.filter(item => item.namespace !== 'system'))
         } catch (error) {
             console.error(error)
         }
+
+        console.log(board)
     }
 
     useEffect(() => {
