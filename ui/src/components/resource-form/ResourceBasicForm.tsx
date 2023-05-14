@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { ResourceService } from "../../service/resource";
 
 export interface ResourceBasicFormProps {
-    resources: Resource[]; 
+    resources: Resource[];
     resource: Resource;
     onChange: (resource: Resource) => void;
 }
@@ -42,15 +42,22 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                 </FormControl>
                 <Box m={1}>
                     <IconButton onClick={() => {
+                        const propName = 'prop-' + ((props.resource.properties?.length ?? 0) + 1)
                         props.onChange({
                             ...props.resource,
                             properties: [...props.resource.properties ?? [], {
-                                name: 'prop-' + (props.resource.properties?.length ?? 0 + 1),
+                                name: propName,
                                 type: 'STRING',
                                 required: false,
                                 primary: false,
-                                unique: false
+                                unique: false,
+                                length: 255,
                             }]
+                        })
+
+                        setPropertyFlags({
+                            ...propertyFlags,
+                            [propName]: true
                         })
                     }}>
                         <Add />
@@ -114,7 +121,18 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                             <Select
                                                 size='small'
                                                 value={property.type}
-                                                onChange={(e) =>
+                                                onChange={(e) => {
+                                                    if (e.target.value === 'STRING' && (property.length ?? 0 <= 0)) {
+                                                        handlePropertyFieldOnChange(
+                                                            props.resource,
+                                                            props.onChange,
+                                                            index,
+                                                            "length",
+                                                            255
+                                                        )
+                                                    }
+
+
                                                     handlePropertyFieldOnChange(
                                                         props.resource,
                                                         props.onChange,
@@ -122,7 +140,7 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                         "type",
                                                         e.target.value as ResourceProperty["type"]
                                                     )
-                                                }
+                                                }}
                                             >
                                                 <MenuItem value="BOOL">bool</MenuItem>
                                                 <MenuItem value="STRING">string</MenuItem>

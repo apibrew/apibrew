@@ -124,8 +124,11 @@ export const Designer: React.FC = () => {
                                 version: 1,
                                 virtual: false,
                             }}
-                                onSave={(newResource) => {
-                                    setResources([...resources, newResource])
+                                onCancel={() => {
+                                    modal.close()
+                                }}
+                                onSave={() => {
+                                    load()
                                     modal.close()
                                 }} />
                         </Box>
@@ -163,7 +166,7 @@ export const Designer: React.FC = () => {
                                     modal.close()
                                 }}
                                 onSave={(updatedResource) => {
-                                    Object.assign(selected[0].data, updatedResource)
+                                    load()
                                     modal.close()
                                 }} />
                         </Box>

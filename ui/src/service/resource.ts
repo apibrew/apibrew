@@ -25,7 +25,11 @@ export namespace ResourceService {
 
     export async function create(resource: Resource): Promise<Resource> {
         try {
-            const result = await axios.post<Resource>(`${BACKEND_URL}/system/resources`, resource, {
+            const result = await axios.post<Resource>(`${BACKEND_URL}/system/resources`, {
+                resources: [resource],
+                doMigration: true,
+                forceMigration: true,
+            }, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }
@@ -39,7 +43,11 @@ export namespace ResourceService {
 
     export async function update(resource: Resource): Promise<Resource> {
         try {
-            const result = await axios.put<Resource>(`${BACKEND_URL}/system/resources`, resource, {
+            const result = await axios.put<Resource>(`${BACKEND_URL}/system/resources`, {
+                resources: [resource],
+                doMigration: true,
+                forceMigration: true,
+            }, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }
@@ -77,7 +85,11 @@ export namespace ResourceService {
         }
     }
 
-    export async function getByName(resourceName: string, namespace: string = 'default'): Promise<Resource> {
+    export async function getByName(resourceName: string, namespace?: string): Promise<Resource> {
+        if (!namespace) {
+            namespace = 'default'
+        }
+
         try {
             const result = await axios.get<Resource>(`${BACKEND_URL}/system/resources/${namespace}/${resourceName}`, {
                 headers: {
