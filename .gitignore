@@ -4,3 +4,4 @@ dev
 node_modules
 /dist
 .hugo_build.lock
+/vendor
