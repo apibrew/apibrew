@@ -1,9 +1,9 @@
 package apbr
 
 import (
+	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tislib/apibrew/pkg/stub"
 )
 
 var deleteCmd = &cobra.Command{

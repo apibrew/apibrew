@@ -1,6 +1,6 @@
 package backend
 
-import "github.com/tislib/apibrew/pkg/model"
+import "github.com/apibrew/apibrew/pkg/model"
 
 var dhTestMysql = &model.DataSource{
 	Backend:     model.DataSourceBackendType_MYSQL,

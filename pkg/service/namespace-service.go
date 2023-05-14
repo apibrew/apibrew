@@ -2,14 +2,14 @@ package service
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources"
+	mapping2 "github.com/apibrew/apibrew/pkg/resources/mapping"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/service/security"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/resources"
-	mapping2 "github.com/tislib/apibrew/pkg/resources/mapping"
-	"github.com/tislib/apibrew/pkg/service/annotations"
-	"github.com/tislib/apibrew/pkg/service/security"
 )
 
 type namespaceService struct {

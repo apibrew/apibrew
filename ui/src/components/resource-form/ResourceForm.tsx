@@ -1,19 +1,25 @@
 import { Box, Button, Card, CardActions, CardContent, CardHeader } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import { Resource } from "../../model";
 import { ResourceBasicForm } from "./ResourceBasicForm";
 import { ResourceAdvancedForm } from "./ResourceAdvancedForm";
+import { ResourceService } from "../../service/resource";
+import { LayoutContext } from "../../context/layout-context";
 
 export type ResourceFormVariant = 'basic' | 'advanced'
 
 export interface ResourceFormProps {
+    resources: Resource[];
     initResource: Resource;
-    onSave: (resource: Resource) => void;
+    onSave?: (resource: Resource) => void;
+    onCancel?: () => void;
 }
 
 export function ResourceForm(props: ResourceFormProps): JSX.Element {
     const [formVariant, setFormVariant] = React.useState<ResourceFormVariant>('basic')
     const [resource, setResource] = React.useState<Resource>(props.initResource)
+
+    const layoutOptions = useContext(LayoutContext)
 
     return <>
         <Card>
@@ -36,17 +42,29 @@ export function ResourceForm(props: ResourceFormProps): JSX.Element {
                 </Box>
             </Box>} />
             <CardContent>
-                {formVariant === 'basic' && <ResourceBasicForm resource={resource} onChange={setResource} />}
+                {formVariant === 'basic' && <ResourceBasicForm resources={props.resources} resource={resource} onChange={setResource} />}
                 {formVariant === 'advanced' && <ResourceAdvancedForm resource={resource} onChange={setResource} />}
             </CardContent>
             <CardActions sx={{ display: 'flex' }}>
                 <Box sx={{ flexGrow: 1 }} />
                 <Box m={0.5}>
-                    <Button variant="outlined" size="small" color="warning">Cancel</Button>
+                    {props.onCancel && <Button variant="outlined" size="small" color="warning" onClick={() => {
+                        if (props.onCancel) {
+                            props.onCancel()
+                        }
+                    }}>Cancel</Button>}
                 </Box>
                 <Box m={0.5}>
                     <Button variant="contained" size="small" color="success" onClick={() => {
-                        props.onSave(resource)
+                        ResourceService.apply(resource).then(() => {
+                            layoutOptions.showAlert({ severity: 'success', message: 'Resource saved successfully' })
+
+                            if (props.onSave) {
+                                props.onSave(resource)
+                            }
+                        }).catch((error) => {
+                            layoutOptions.showAlert({ severity: 'error', message: error.message })
+                        })
                     }}>Save</Button>
                 </Box>
             </CardActions>

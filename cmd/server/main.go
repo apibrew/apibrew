@@ -1,6 +1,6 @@
 package main
 
-import "github.com/tislib/apibrew/pkg/server"
+import "github.com/apibrew/apibrew/pkg/server"
 
 func main() {
 	server.Run()

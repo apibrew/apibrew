@@ -2,11 +2,11 @@ package rest
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/service/annotations"
-	"github.com/tislib/apibrew/pkg/stub/rest"
-	"github.com/tislib/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/stub/rest"
+	"github.com/apibrew/apibrew/pkg/util"
 )
 
 type recordService struct {

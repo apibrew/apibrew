@@ -6,7 +6,7 @@ export interface ResourceElementProps {
 }
 
 export function ResourceElement(props: ResourceElementProps) {
-    return <g className={`resource-${props.resource.name ?? ''}`}>
+    return <g className={`resource-${props.resource.name}`}>
         <rect fill="#c3e0e0" x="1" y="1.76916" width="198" height="278" stroke="#000" rx="3"
             filter="url(#svg_1_blur)" strokeWidth="2"/>
         <g transform='translate(10, 10)'>
@@ -29,7 +29,7 @@ export function ResourceElement(props: ResourceElementProps) {
                 <g transform='translate(0, 10)'>
                     {props.resource.properties?.map((property, index) => {
                         return <g key={property.name} transform={`translate(0, ${25 * index})`}
-                            className={`resource-property-${property.name ?? ''}`}>
+                            className={`resource-property-${property.name}`}>
                             <text fill="#000000" stroke="#000" strokeWidth="0" x="3.46932" y="12.28861"
                                 fontSize="10" fontFamily="Noto Sans JP" textAnchor="start"
                                 fontWeight="normal">

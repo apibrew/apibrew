@@ -1,8 +1,8 @@
 package postgres
 
 import (
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/types"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/types"
 	"strconv"
 )
 

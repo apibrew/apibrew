@@ -1,7 +1,7 @@
 package test
 
 import (
-	apbr "github.com/tislib/apibrew/pkg/apbr"
+	apbr "github.com/apibrew/apibrew/pkg/apbr"
 	"testing"
 )
 

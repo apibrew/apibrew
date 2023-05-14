@@ -1,4 +1,4 @@
-module github.com/tislib/apibrew
+module github.com/apibrew/apibrew
 
 go 1.19
 

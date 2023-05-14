@@ -2,12 +2,12 @@ package flags
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/client"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tislib/apibrew/pkg/client"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/service/annotations"
-	"github.com/tislib/apibrew/pkg/stub"
 	"io"
 	"strings"
 )

@@ -11,6 +11,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import {
     Add,
+    Brush,
     Delete,
     Edit,
     FormatAlignCenter,
@@ -40,6 +41,7 @@ import {
 import { LayoutContext } from "../../context/layout-context";
 import Button from "@mui/material/Button";
 import { ResourceForm } from '../resource-form/ResourceForm'
+import { ResourceVisualizer } from './ResourceVisualizer'
 
 export interface Selection {
     type: string
@@ -47,12 +49,14 @@ export interface Selection {
     data: object
 }
 
+type ViewMode = 'wide' | 'compact'
+
 // React component to render the diagram
 export const Designer: React.FC = () => {
     const [resources, setResources] = React.useState<Resource[]>([])
     const [zoomLevel, setZoomLevel] = React.useState<number>(1)
     const [selected, setSelected] = React.useState<Selection[]>([])
-    const [viewMode, setViewMode] = React.useState<'wide' | 'compact'>('wide')
+    const [viewMode, setViewMode] = React.useState<ViewMode>('wide')
 
     const [addButtonRef, setAddButtonRef] = React.useState<null | HTMLElement>(null);
     const [flags, setFlags] = React.useState<{
@@ -61,27 +65,18 @@ export const Designer: React.FC = () => {
     const modules: ReactNode[] = []
     const layoutOptions = React.useContext(LayoutContext)
 
-    useEffect(() => {
-        ResourceService.list().then(list => {
+    const load = async () => {
+        try {
+            const list = await ResourceService.list()
             setResources(list.filter(item => item.namespace !== 'system'))
-        }, error => {
+        } catch (error) {
             console.error(error)
-        })
-    }, [])
-
-    const handleDelete = () => {
-        if (selected.length == 0) {
-            layoutOptions.showAlert({
-                severity: 'error',
-                message: 'Please select an item to delete'
-            })
         }
-
-        setFlags({
-            ...flags,
-            deleteDialog: true,
-        })
     }
+
+    useEffect(() => {
+        load()
+    }, [])
 
     const actionPanel = <Box style={{ display: 'flex' }}>
         <Box>
@@ -122,7 +117,13 @@ export const Designer: React.FC = () => {
                             transform: 'translate(-50%, -50%)',
                             width: 800,
                         }}>
-                            <ResourceForm initResource={{} as Resource}
+                            <ResourceForm resources={resources} initResource={{
+                                name: '',
+                                namespace: '',
+                                properties: [],
+                                version: 1,
+                                virtual: false,
+                            }}
                                 onSave={(newResource) => {
                                     setResources([...resources, newResource])
                                     modal.close()
@@ -138,8 +139,16 @@ export const Designer: React.FC = () => {
                             severity: 'error',
                             message: 'Please select an item to edit'
                         })
+                        return
                     }
 
+                    if (selected.length > 1) {
+                        layoutOptions.showAlert({
+                            severity: 'error',
+                            message: 'You need to select only one item to edit'
+                        })
+                        return
+                    }
 
                     const modal = layoutOptions.showModal({
                         content: <Box sx={{
@@ -149,7 +158,10 @@ export const Designer: React.FC = () => {
                             transform: 'translate(-50%, -50%)',
                             width: 800,
                         }}>
-                            <ResourceForm initResource={selected[0].data}
+                            <ResourceForm resources={resources} initResource={selected[0].data as Resource}
+                                onCancel={() => {
+                                    modal.close()
+                                }}
                                 onSave={(updatedResource) => {
                                     Object.assign(selected[0].data, updatedResource)
                                     modal.close()
@@ -162,7 +174,17 @@ export const Designer: React.FC = () => {
             </Tooltip>
             <Tooltip title={'Delete Item'}>
                 <IconButton onClick={(e) => {
-                    handleDelete()
+                    if (selected.length == 0) {
+                        layoutOptions.showAlert({
+                            severity: 'error',
+                            message: 'Please select an item to delete'
+                        })
+                    }
+
+                    setFlags({
+                        ...flags,
+                        deleteDialog: true,
+                    })
                 }}>
                     <Delete />
                 </IconButton>
@@ -198,28 +220,17 @@ export const Designer: React.FC = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Tooltip title={'Load Existing'}>
+            <Tooltip title={'Update visualisation'}>
                 <IconButton onClick={(e) => {
-
+                    layoutOptions.showModal({
+                        content: <ResourceVisualizer />
+                    })
                 }}>
-                    <GetApp />
+                    <Brush />
                 </IconButton>
             </Tooltip>
         </Box>
         <Box sx={{ flexGrow: 5 }} />
-        <Box sx={{ flexGrow: 1 }} /><Box>
-            <IconButton value="wide" aria-label="left aligned">
-                <Tooltip title={'Wide elements'}>
-                    <WidthWide />
-                </Tooltip>
-            </IconButton>
-            <IconButton value="compact" aria-label="left aligned">
-                <Tooltip title={'Compact'}>
-                    <ViewCompact />
-                </Tooltip>
-            </IconButton>
-        </Box>
-        <Box sx={{ flexGrow: 1 }} />
         <Box>
             <Tooltip title={`${Math.round(zoomLevel * 100)}%`}>
                 <Box>
@@ -241,44 +252,17 @@ export const Designer: React.FC = () => {
                 </Box>
             </Tooltip>
         </Box>
-        <Box sx={{ flexGrow: 1 }} />
         <Box>
+            <IconButton aria-label="left aligned" onClick={() => load()}>
+                <Tooltip title={'Reload'}>
+                    <Replay />
+                </Tooltip>
+            </IconButton>
             <IconButton value="wide" aria-label="left aligned">
                 <Tooltip title={'Rearrange elements'}>
                     <FormatAlignCenter />
                 </Tooltip>
             </IconButton>
-            <Tooltip title={'Reload'}>
-                <IconButton onClick={(e) => {
-
-                }}>
-                    <Replay />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title={'Undo'}>
-                <IconButton onClick={(e) => {
-
-                }}>
-                    <Undo />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title={'Redo'}>
-                <IconButton onClick={(e) => {
-
-                }}>
-                    <Redo />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title={'Save'}>
-                <IconButton onClick={(e) => {
-
-                }}>
-                    <Save />
-                </IconButton>
-            </Tooltip>
-        </Box>
-        <Box sx={{ flexGrow: 1 }} />
-        <Box>
             <Tooltip title={'Settings'}>
                 <IconButton onClick={(e) => {
 
@@ -297,14 +281,14 @@ export const Designer: React.FC = () => {
                     {resources.map((resource, index) => {
                         const x = 20 + 410 * index
                         const y = 20
-                        return <g key={`${(resource.namespace ?? '')}-${resource.name ?? ''}`}
+                        return <g key={`${(resource.namespace ?? '')}-${resource.name}`}
                             transform={`translate(${x}, ${y})`}>
                             <MovableComponent>
                                 <Selectable onSelected={isSelected => {
                                     if (isSelected) {
                                         setSelected([...selected, {
                                             type: 'resource',
-                                            identifier: resource.name ?? '',
+                                            identifier: resource.name,
                                             data: resource
                                         }])
                                     } else {
@@ -318,9 +302,9 @@ export const Designer: React.FC = () => {
                     })}
 
                     {resources.map((resource, index) => {
-                        return <Fragment key={resource.name ?? ''}>
+                        return <Fragment key={resource.name}>
                             {resource.properties?.filter(item => item.type === 'REFERENCE')?.filter(item => item.reference?.referencedResource)?.map((property, index) => {
-                                return <ReferenceLink key={`${resource.name ?? ''}-${property.name ?? ''}`}
+                                return <ReferenceLink key={`${resource.name}-${property.name}`}
                                     resource={resource}
                                     property={property} />
                             })}

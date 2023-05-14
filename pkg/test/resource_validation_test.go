@@ -1,11 +1,11 @@
 package test
 
 import (
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/test/setup"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/stub"
-	"github.com/tislib/apibrew/pkg/test/setup"
-	"github.com/tislib/apibrew/pkg/util"
 	"strconv"
 	"testing"
 )

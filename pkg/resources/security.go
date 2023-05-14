@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 var securityContextProperty = &model.ResourceProperty{

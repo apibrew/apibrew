@@ -1053,15 +1053,15 @@ export interface components {
       id?: string;
       immutable?: boolean;
       indexes?: (components["schemas"]["ResourceIndex"])[];
-      name?: string;
+      name: string;
       namespace?: string;
-      properties?: (components["schemas"]["ResourceProperty"])[];
+      properties: (components["schemas"]["ResourceProperty"])[];
       securityContext?: components["schemas"]["SecurityContext"];
       sourceConfig?: components["schemas"]["ResourceSourceConfig"];
       title?: string;
       /** Format: uint32 */
-      version?: number;
-      virtual?: boolean;
+      version: number;
+      virtual: boolean;
     };
     ResourceIndex: {
       annotations?: {
@@ -1136,7 +1136,7 @@ export interface components {
       /** Format: uint32 */
       length?: number;
       mapping?: string;
-      name?: string;
+      name: string;
       primary?: boolean;
       reference?: components["schemas"]["Reference"];
       required?: boolean;

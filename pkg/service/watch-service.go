@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
-	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
-	"github.com/tislib/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
+	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/util"
 )
 
 type watchService struct {

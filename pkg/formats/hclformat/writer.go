@@ -3,9 +3,9 @@ package hclformat
 import (
 	"encoding/binary"
 	"errors"
+	"github.com/apibrew/apibrew/pkg/formats"
+	"github.com/apibrew/apibrew/pkg/model"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/formats"
-	"github.com/tislib/apibrew/pkg/model"
 	"google.golang.org/protobuf/proto"
 	"io"
 )

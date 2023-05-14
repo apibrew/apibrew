@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package model;
 
-option go_package = "github.com/tislib/apibrew/pkg/model";
+option go_package = "github.com/apibrew/apibrew/pkg/model";
 
 import 'google/protobuf/struct.proto';
 import 'model/audit.proto';

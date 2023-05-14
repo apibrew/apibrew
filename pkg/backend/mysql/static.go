@@ -1,9 +1,9 @@
 package mysql
 
 import (
+	_ "github.com/apibrew/apibrew/pkg/backend/mysql/sql/statik"
 	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
-	_ "github.com/tislib/apibrew/pkg/backend/mysql/sql/statik"
 	"io"
 	"net/http"
 )

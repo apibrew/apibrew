@@ -2,11 +2,11 @@ package test
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/test/setup"
+	util2 "github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/stub"
-	"github.com/tislib/apibrew/pkg/test/setup"
-	util2 "github.com/tislib/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"testing"
 )
