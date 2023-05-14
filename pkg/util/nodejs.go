@@ -1,8 +1,8 @@
 package util
 
 import (
+	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/tislib/apibrew/pkg/model"
 )
 
 func ResourcePropertyTypeToJsonSchemaType(resourcePropertyType model.ResourceProperty_Type) *openapi3.Schema {

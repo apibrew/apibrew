@@ -1,9 +1,9 @@
 package test
 
 import (
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/test/setup"
 	"github.com/google/uuid"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/test/setup"
 	"math/rand"
 	"time"
 )

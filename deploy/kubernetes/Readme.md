@@ -10,7 +10,7 @@ First you need to have a postgresql database on kubernetes.
 
 You can use the following deployment file to deploy API Brew on kubernetes.
 
-Download https://raw.githubusercontent.com/tislib/apibrew/master/deploy/kubernetes/apibrew.yaml
+Download https://raw.githubusercontent.com/apibrew/apibrew/master/deploy/kubernetes/apibrew.yaml
 
 you need to change the following values:
 

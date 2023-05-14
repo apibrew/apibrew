@@ -2,8 +2,8 @@ package backend_event_handler
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 const NaturalOrder = 100

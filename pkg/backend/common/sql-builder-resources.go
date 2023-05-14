@@ -2,9 +2,9 @@ package common
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/backend/helper"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/backend/helper"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 func (p *sqlBackend) resourceListEntities(ctx context.Context, runner helper.QueryRunner) (result []*model.DataSourceCatalog, err errors.ServiceError) {

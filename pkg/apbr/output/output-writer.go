@@ -1,8 +1,8 @@
 package output
 
 import (
-	"github.com/tislib/apibrew/pkg/formats/batch"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/formats/batch"
+	"github.com/apibrew/apibrew/pkg/model"
 	"io"
 	"log"
 )

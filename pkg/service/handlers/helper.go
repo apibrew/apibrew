@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"github.com/tislib/apibrew/pkg/model"
-	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
-	"github.com/tislib/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/model"
+	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/util"
 )
 
 func prepareStdHandler(order int, action model.Event_Action, handlerFunc backend_event_handler.HandlerFunc, resource *model.Resource) backend_event_handler.Handler {

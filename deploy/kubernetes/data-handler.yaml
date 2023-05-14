@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: apibrew-standalone
-      image: tislib/apibrew:latest
+      image: apibrew/apibrew:latest
       imagePullPolicy: Always
       ports:
         - containerPort: 9009

@@ -1,7 +1,7 @@
 ### Docker Compose - API Brew
 
 ```bash
-git clone git@github.com:tislib/apibrew.git
+git clone git@github.com:apibrew/apibrew.git
 
 cd apibrew/deploy/docker-compose
 

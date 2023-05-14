@@ -128,7 +128,7 @@ We will get following response
 
 # Tutorials
 
-- [Store app](https://github.com/tislib/apibrew/tree/master/examples/store-app/Readme.md)
+- [Store app](https://github.com/apibrew/apibrew/tree/master/examples/store-app/Readme.md)
 
 
 

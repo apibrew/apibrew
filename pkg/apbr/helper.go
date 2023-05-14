@@ -2,10 +2,10 @@ package apbr
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/stub"
 	"google.golang.org/grpc/status"
 )
 

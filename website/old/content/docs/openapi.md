@@ -25,7 +25,7 @@ headingLevel: 2
 
 OpenApi 3.0 definition for API Brew Rest API
 
-Email: <a href="mailto:talehsmail@gmail.com">Taleh Ibrahimli</a> Web: <a href="https://github.com/tislib/apibrew">Taleh Ibrahimli</a> 
+Email: <a href="mailto:talehsmail@gmail.com">Taleh Ibrahimli</a> Web: <a href="https://github.com/apibrew/apibrew">Taleh Ibrahimli</a> 
 License: <a href="https://github.com/google/gnostic/blob/master/LICENSE">Apache License</a>
 
 # Authentication

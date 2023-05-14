@@ -1,11 +1,11 @@
 package model
 
 import "reflect"
-import "github.com/tislib/apibrew/pkg/helper"
-import "github.com/tislib/apibrew/pkg/model"
-import "github.com/tislib/apibrew/pkg/client"
+import "github.com/apibrew/apibrew/pkg/helper"
+import "github.com/apibrew/apibrew/pkg/model"
+import "github.com/apibrew/apibrew/pkg/client"
 import "github.com/google/uuid"
-import "github.com/tislib/apibrew/pkg/types"
+import "github.com/apibrew/apibrew/pkg/types"
 import "google.golang.org/protobuf/types/known/structpb"
 
 type TaxRate struct {
