@@ -172,7 +172,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 			if existingPropertiesNamedMap[prop.Name] != nil {
 				prop.Mapping = existingPropertiesNamedMap[prop.Name].Mapping
 			} else {
-				prop.Mapping = util.ToDashCase(prop.Name)
+				prop.Mapping = util.ToSnakeCase(prop.Name)
 			}
 		}
 
@@ -413,12 +413,12 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	if resource.SourceConfig.Entity == "" {
-		resource.SourceConfig.Entity = util.ToDashCase(resource.Name)
+		resource.SourceConfig.Entity = util.ToSnakeCase(resource.Name)
 	}
 
 	for _, prop := range resource.Properties {
 		if prop.Mapping == "" {
-			prop.Mapping = util.ToDashCase(prop.Name)
+			prop.Mapping = util.ToSnakeCase(prop.Name)
 		}
 	}
 
