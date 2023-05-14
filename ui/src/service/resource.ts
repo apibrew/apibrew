@@ -115,4 +115,12 @@ export namespace ResourceService {
             return create(resource)
         }
     }
+
+    export async function migrate(resource: Resource): Promise<Resource> {
+        try {
+            return create(resource)
+        } catch (e) {
+            return update(resource)
+        }
+    }
 }

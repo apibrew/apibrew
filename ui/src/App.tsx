@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 import { BaseLayout } from './layout/BaseLayout'
 import { ResourcesDesigner } from './pages/resources/ResourcesDesigner'
 import { TokenService } from './service/token'
+import { Migrate } from './pages/migrate'
 
 function Dashboard(): JSX.Element {
     const isLoggedIn = TokenService.isLoggedIn()
@@ -26,6 +27,7 @@ function Dashboard(): JSX.Element {
             <Routes>
                 <Route path='test' element={<Test></Test>}/>
                 <Route path='resources/designer' element={<ResourcesDesigner/>}/>
+                <Route path='migrate' element={<Migrate/>}/>
             </Routes>
         </DashboardLayout>
     </>

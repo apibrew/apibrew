@@ -68,6 +68,7 @@ export const Designer: React.FC = () => {
     const layoutOptions = React.useContext(LayoutContext)
 
     const load = async () => {
+        setSelected([])
         try {
             const list = await ResourceService.list()
             setResources(list.filter(item => item.namespace !== 'system'))
@@ -298,7 +299,7 @@ export const Designer: React.FC = () => {
     </Box>
 
     const designingArea = <svg className={'designer-parent'}
-        style={{ width: '100%', height: '90vh' }}>
+        style={{ width: '100%', height: '100vh', overflow: 'auto' }}>
         <SvgContainer>
             <Scale level={zoomLevel}>
                 <Movable>
@@ -339,11 +340,13 @@ export const Designer: React.FC = () => {
         </SvgContainer>
     </svg>
 
-    return <Box>
+    return <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         {/* Action Panel */}
         {actionPanel}
         {/* Designing Area */}
-        {designingArea}
+        <Box sx={{ flexGrow: 1 }}>
+            {designingArea}
+        </Box>
         {modules}
     </Box>
 }

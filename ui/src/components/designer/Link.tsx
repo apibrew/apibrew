@@ -32,14 +32,15 @@ export function Link(props: LinkProps) {
 
         const sourceRect = sourceElem.getBoundingClientRect()
         const targetRect = targetElem.getBoundingClientRect()
+        const containerRect = document.querySelector('.designer-parent')!.getBoundingClientRect()
 
         setStartPoint({
-            x: (sourceRect.left + sourceRect.width - container.x) * (1 / scale),
-            y: (sourceRect.top + sourceRect.height / 2 - container.y) * (1 / scale)
+            x: (sourceRect.left + sourceRect.width - containerRect.x) * (1 / scale),
+            y: (sourceRect.top + sourceRect.height / 2 - containerRect.y) * (1 / scale)
         })
         setEndPoint({
-            x: (targetRect.left - container.x) * (1 / scale),
-            y: (targetRect.top + targetRect.height / 2 - container.y) * (1 / scale)
+            x: (targetRect.left - containerRect.x) * (1 / scale),
+            y: (targetRect.top + targetRect.height / 2 - containerRect.y) * (1 / scale)
         })
     }, [props.sourceSelector, props.targetSelector, movingContext.movingIdx])
 
