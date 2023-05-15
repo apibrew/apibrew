@@ -7,7 +7,6 @@
 package stub
 
 import (
-	
 	model "github.com/apibrew/apibrew/pkg/model"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
