@@ -1,4 +1,5 @@
 export interface AppDesignerBoard {
+    id?: string;
     name: string;
     description?: string;
     resourceSelector: string[];

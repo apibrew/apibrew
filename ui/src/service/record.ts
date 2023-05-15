@@ -4,6 +4,10 @@ import { type Resource } from '../model'
 import { TokenService } from './token'
 import { handleError } from './error-handler'
 
+export interface Record {
+    id?: string
+}
+
 export namespace RecordService {
     interface RecordListContainer<T> {
         content: T[]
@@ -37,9 +41,9 @@ export namespace RecordService {
         }
     }
 
-    export async function update<T>(namespace: string, resource: string, record: T): Promise<T> {
+    export async function update<T extends Record>(namespace: string, resource: string, record: T): Promise<T> {
         try {
-            const result = await axios.put<T>(`${BACKEND_URL}/records/${namespace}/${resource}`, record, {
+            const result = await axios.put<T>(`${BACKEND_URL}/records/${namespace}/${resource}/${record.id}`, record, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }

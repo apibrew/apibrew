@@ -93,6 +93,13 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
             let y = 10;
 
             for (let resource of list) {
+                const resourceVisual = board.resourceVisuals.find(item => item.resource == resource.name)
+
+                if (resourceVisual && resourceVisual.location) {
+                    x = resourceVisual.location.x
+                    y = resourceVisual.location.y
+                }
+
                 setLocationMap({
                     ...locationMap,
                     [resource.name]: {
@@ -112,7 +119,13 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
         }
     }
 
-    console.log(locationMap)
+    const save = async () => {
+        try {
+            await RecordService.update(AppDesignerBoardResource.namespace!, AppDesignerBoardResource.name, board!)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     useEffect(() => {
         load()
@@ -343,11 +356,28 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                     {resources.map((resource, index) => {
                         return <MovableComponent location={locationMap[resource.name]}
                             updateLocation={location => {
+                                if (location.x == locationMap[resource.name].x && location.y == locationMap[resource.name].y) {
+                                    return
+                                }
+
                                 setLocationMap({
                                     ...locationMap,
                                     [resource.name]: location
                                 })
-                                console.log('location updated: ', location)
+
+                                const resourceVisual = board?.resourceVisuals.find(item => item.resource == resource.name)
+
+                                if (resourceVisual) {
+                                    resourceVisual.location = location
+                                } else {
+                                    board?.resourceVisuals.push({
+                                        resource: resource.name,
+                                        allowRecordsOnBoard: false,
+                                        location: location
+                                    })
+                                }
+
+                                save()
                             }}>
                             <Selectable onSelected={isSelected => {
                                 if (isSelected) {

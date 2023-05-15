@@ -52,12 +52,12 @@ export const AppDesignerBoardResource: Resource = {
                         properties: [
                             {
                                 name: 'x',
-                                type: 'INT32',
+                                type: 'FLOAT32',
                                 required: true,
                             },
                             {
                                 name: 'y',
-                                type: 'INT32',
+                                type: 'FLOAT32',
                                 required: true,
                             },
                         ],
