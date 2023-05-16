@@ -3,14 +3,14 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/resources/mapping"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/resources"
-	"github.com/tislib/apibrew/pkg/resources/mapping"
-	"github.com/tislib/apibrew/pkg/service/annotations"
-	"github.com/tislib/apibrew/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
@@ -172,7 +172,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 			if existingPropertiesNamedMap[prop.Name] != nil {
 				prop.Mapping = existingPropertiesNamedMap[prop.Name].Mapping
 			} else {
-				prop.Mapping = util.ToDashCase(prop.Name)
+				prop.Mapping = util.ToSnakeCase(prop.Name)
 			}
 		}
 
@@ -338,7 +338,7 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 			}
 
 			if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
-				return errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exiss: " + plan.CurrentResource.Name))
+				return errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exists: " + plan.CurrentResource.Name))
 			}
 
 			if err != nil {
@@ -413,12 +413,12 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	if resource.SourceConfig.Entity == "" {
-		resource.SourceConfig.Entity = util.ToDashCase(resource.Name)
+		resource.SourceConfig.Entity = util.ToSnakeCase(resource.Name)
 	}
 
 	for _, prop := range resource.Properties {
 		if prop.Mapping == "" {
-			prop.Mapping = util.ToDashCase(prop.Name)
+			prop.Mapping = util.ToSnakeCase(prop.Name)
 		}
 	}
 
@@ -471,7 +471,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	result, err := systemBackend.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
 
 	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
-		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exiss: " + resource.Name))
+		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exists: " + resource.Name))
 	}
 
 	if err != nil && err.Code() == model.ErrorCode_RECORD_VALIDATION_ERROR {

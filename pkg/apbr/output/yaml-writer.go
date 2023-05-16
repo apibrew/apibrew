@@ -2,8 +2,8 @@ package output
 
 import (
 	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/model"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/model"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v2"
 	"io"

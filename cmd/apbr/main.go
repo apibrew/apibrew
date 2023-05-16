@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/apibrew/apibrew/pkg/apbr"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/apbr"
 )
 
 func main() {

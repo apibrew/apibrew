@@ -2,8 +2,8 @@ package logging
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/abs"
 )
 
 func WithLogFields(ctx context.Context, fields log.Fields) context.Context {

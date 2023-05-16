@@ -2,9 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/stub"
-	"github.com/tislib/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/util"
 )
 
 type UserGrpcService interface {

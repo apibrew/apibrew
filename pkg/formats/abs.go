@@ -2,7 +2,7 @@ package formats
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 type Writer interface {
