@@ -2,10 +2,10 @@ package helper
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/util"
 )
 
 type ResourceMigrationBuilder interface {
@@ -13,7 +13,7 @@ type ResourceMigrationBuilder interface {
 	UpdateResource(existing, updated *model.Resource) ResourceMigrationBuilder
 	DeleteResource(resource *model.Resource) ResourceMigrationBuilder
 	AddProperty(prop *model.ResourceProperty) ResourceMigrationBuilder
-	UpdateProperty(existing, updated *model.ResourceProperty) ResourceMigrationBuilder
+	UpdateProperty(resource *model.Resource, existing, updated *model.ResourceProperty) ResourceMigrationBuilder
 	DeleteProperty(prop *model.ResourceProperty) ResourceMigrationBuilder
 	AddIndex(prop *model.ResourceIndex) ResourceMigrationBuilder
 	DeleteIndex(prop *model.ResourceIndex) ResourceMigrationBuilder
@@ -41,7 +41,7 @@ func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder
 			}
 			hp.AddProperty(property)
 		case *model.ResourceMigrationStep_UpdateProperty:
-			hp.UpdateProperty(existingPropertyMap[sk.UpdateProperty.ExistingProperty], currentPropertyMap[sk.UpdateProperty.Property])
+			hp.UpdateProperty(migrationPlan.CurrentResource, existingPropertyMap[sk.UpdateProperty.ExistingProperty], currentPropertyMap[sk.UpdateProperty.Property])
 		case *model.ResourceMigrationStep_DeleteProperty:
 			if forceMigration {
 				hp.DeleteProperty(existingPropertyMap[sk.DeleteProperty.ExistingProperty])

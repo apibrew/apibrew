@@ -2,7 +2,7 @@ package common
 
 import (
 	"fmt"
-	"github.com/tislib/apibrew/pkg/types"
+	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

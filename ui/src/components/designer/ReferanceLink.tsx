@@ -9,7 +9,7 @@ export interface ReferenceLinkProps {
 
 export function ReferenceLink(props: ReferenceLinkProps) {
     return (
-        <Link sourceSelector={`.resource-${props.resource.name ?? ''} .resource-property-${props.property.name ?? ''} .right-ref`}
+        <Link sourceSelector={`.resource-${props.resource.name} .resource-property-${props.property.name} .right-ref`}
             targetSelector={`.resource-${props.property.reference?.referencedResource ?? ''} .resource-head`}/>
     )
 }

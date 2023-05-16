@@ -1,4 +1,4 @@
-name: buf.build/tislib/apibrew
+name: buf.build/apibrew/apibrew
 version: v1
 deps:
   - buf.build/googleapis/googleapis

@@ -3,13 +3,13 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/backend/helper"
-	"github.com/tislib/apibrew/pkg/backend/sqlbuilder"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/service/annotations"
-	"github.com/tislib/apibrew/pkg/types"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/backend/helper"
+	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/types"
 	"strings"
 )
 
@@ -194,7 +194,7 @@ func (r *resourceMigrationBuilder) AddProperty(prop *model.ResourceProperty) hel
 	return r
 }
 
-func (r *resourceMigrationBuilder) UpdateProperty(prevProperty, property *model.ResourceProperty) helper.ResourceMigrationBuilder {
+func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prevProperty, property *model.ResourceProperty) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
 		var sqlPrefix = fmt.Sprintf("ALTER TABLE %s ", r.tableName)
 		var sqlParts []string
@@ -215,7 +215,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(prevProperty, property *model.
 		}
 
 		if prevProperty.Unique && !property.Unique {
-			sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT %s", r.options.Quote(property.Mapping+"_uniq")))
+			sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT IF EXISTS %s", r.options.Quote(property.Mapping+"_uniq")))
 			changes++
 		}
 
@@ -228,7 +228,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(prevProperty, property *model.
 
 		if property.Type == model.ResourceProperty_REFERENCE {
 			if prevProperty.Reference == nil && property.Reference != nil {
-				referencedResource := r.schema.ResourceByNamespaceSlashName["default"+"/"+property.Reference.ReferencedResource]
+				referencedResource := r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
 				var refClause = ""
 				if property.Reference.Cascade {
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"

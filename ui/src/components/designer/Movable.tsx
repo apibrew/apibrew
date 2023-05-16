@@ -66,26 +66,27 @@ export function Movable(props: MovableProps) {
 
 export interface MovableComponentProps extends React.SVGProps<SVGGElement> {
     children: ReactNode
+    location: Point
+    updateLocation: (loc: Point) => void
 }
 
 export function MovableComponent(props: MovableComponentProps) {
     const movingContext = useContext(MovingContext)
     const [hover, setHover] = useState<boolean>(false)
     const [loc, setLoc] = useState<Point>({ x: 0, y: 0 })
-    const [matLoc, setMatLoc] = useState<Point>({ x: 0, y: 0 })
 
     useEffect(() => {
         if (hover) {
             if (movingContext.moveLoc) {
                 setLoc({ x: movingContext.moveLoc.x, y: movingContext.moveLoc.y })
             } else {
-                setMatLoc({ x: matLoc.x + loc.x, y: matLoc.y + loc.y })
+                props.updateLocation({ x: props.location.x + loc.x, y: props.location.y + loc.y })
                 setLoc({ x: 0, y: 0 })
             }
         }
     }, [hover, movingContext.movingIdx])
 
-    return <g {...props} transform={`translate(${loc.x + matLoc.x}, ${loc.y + matLoc.y})`}
+    return <g {...props} transform={`translate(${props.location.x + loc.x},${props.location.y + loc.y})`}
         className={'movable-component'}
         onMouseEnter={(e) => {
             setHover(true)

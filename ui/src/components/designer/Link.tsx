@@ -1,7 +1,6 @@
 import { Arrow } from './Arrow'
 import React, { useContext, useEffect, useState } from 'react'
 import { type Point } from './point'
-import { SvgContainerContext } from './SvgContainer'
 import { MovingContext } from './Movable'
 import { ScaleContext } from './Scale'
 
@@ -15,7 +14,6 @@ export function Link(props: LinkProps) {
 
     const [startPoint, setStartPoint] = useState<Point>({ x: 0, y: 0 })
     const [endPoint, setEndPoint] = useState<Point>({ x: 0, y: 0 })
-    const container = useContext(SvgContainerContext)
     const movingContext = useContext(MovingContext)
 
     useEffect(() => {
@@ -32,14 +30,15 @@ export function Link(props: LinkProps) {
 
         const sourceRect = sourceElem.getBoundingClientRect()
         const targetRect = targetElem.getBoundingClientRect()
+        const containerRect = document.querySelector('.designer-parent')!.getBoundingClientRect()
 
         setStartPoint({
-            x: (sourceRect.left + sourceRect.width - container.x) * (1 / scale),
-            y: (sourceRect.top + sourceRect.height / 2 - container.y) * (1 / scale)
+            x: (sourceRect.left + sourceRect.width - containerRect.x) * (1 / scale),
+            y: (sourceRect.top + sourceRect.height / 2 - containerRect.y) * (1 / scale)
         })
         setEndPoint({
-            x: (targetRect.left - container.x) * (1 / scale),
-            y: (targetRect.top + targetRect.height / 2 - container.y) * (1 / scale)
+            x: (targetRect.left - containerRect.x) * (1 / scale),
+            y: (targetRect.top + targetRect.height / 2 - containerRect.y) * (1 / scale)
         })
     }, [props.sourceSelector, props.targetSelector, movingContext.movingIdx])
 

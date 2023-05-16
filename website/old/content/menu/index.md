@@ -10,4 +10,4 @@ headless = true
 - [CLI]({{< relref "/docs/apbr" >}})
 - [Proto]({{< relref "/docs/proto" >}})
 - [SDK]({{< relref "/docs/sdk" >}})
-- [![](files/github.svg)](http://github.com/tislib/apibrew)
+- [![](files/github.svg)](http://github.com/apibrew/apibrew)

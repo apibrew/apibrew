@@ -1,9 +1,9 @@
 package helper
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/google/uuid"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/model"
 	"google.golang.org/protobuf/types/known/structpb"
 	"time"
 )

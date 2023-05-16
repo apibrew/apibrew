@@ -41,7 +41,7 @@ export const menuLists: MenuList[] = [
             {
                 icon: <TableRowsOutlined/>,
                 title: 'App Designer',
-                link: '/dashboard/resources/designer'
+                link: '/dashboard/app-designer'
             },
             {
                 title: 'Resources',

@@ -22,4 +22,107 @@ export namespace ResourceService {
             return await handleError(e)
         }
     }
+
+    export async function create(resource: Resource): Promise<Resource> {
+        try {
+            const result = await axios.post<Resource>(`${BACKEND_URL}/system/resources`, {
+                resources: [resource],
+                doMigration: true,
+                forceMigration: true
+            }, {
+                headers: {
+                    Authorization: `Bearer ${await TokenService.get()}`
+                }
+            })
+
+            return result.data
+        } catch (e) {
+            return await handleError(e)
+        }
+    }
+
+    export async function update(resource: Resource): Promise<Resource> {
+        try {
+            const result = await axios.put<Resource>(`${BACKEND_URL}/system/resources`, {
+                resources: [resource],
+                doMigration: true,
+                forceMigration: true
+            }, {
+                headers: {
+                    Authorization: `Bearer ${await TokenService.get()}`
+                }
+            })
+
+            return result.data
+        } catch (e) {
+            return await handleError(e)
+        }
+    }
+
+    export async function remove(resource: Resource, forceMigrate: boolean): Promise<void> {
+        try {
+            await axios.delete(`${BACKEND_URL}/system/resources`, {
+                data: {
+                    doMigration: true,
+                    forceMigration: forceMigrate,
+                    ids: [resource.id]
+                },
+                headers: {
+                    Authorization: `Bearer ${await TokenService.get()}`
+                }
+            })
+        } catch (e) {
+            await handleError(e)
+        }
+    }
+
+    export async function get(resourceId: string): Promise<Resource> {
+        try {
+            const result = await axios.get<Resource>(`${BACKEND_URL}/system/resources/${resourceId}`, {
+                headers: {
+                    Authorization: `Bearer ${await TokenService.get()}`
+                }
+            })
+
+            return result.data
+        } catch (e) {
+            return await handleError(e)
+        }
+    }
+
+    export async function getByName(resourceName: string, namespace?: string): Promise<Resource> {
+        if (!namespace) {
+            namespace = 'default'
+        }
+
+        try {
+            const result = await axios.get<{ resource: Resource }>(`${BACKEND_URL}/system/resources/${namespace}/${resourceName}`, {
+                headers: {
+                    Authorization: `Bearer ${await TokenService.get()}`
+                }
+            })
+
+            return result.data.resource
+        } catch (e) {
+            return await handleError(e)
+        }
+    }
+
+    export async function save(resource: Resource): Promise<Resource> {
+        if (resource.id) {
+            return await update(resource)
+        } else {
+            return await create(resource)
+        }
+    }
+
+    export async function migrate(resource: Resource): Promise<Resource> {
+        try {
+            return await create(resource)
+        } catch (e) {
+            const existingResource = await getByName(resource.name, resource.namespace)
+            resource.id = existingResource.id
+            return await update(resource)
+        }
+    }
 }

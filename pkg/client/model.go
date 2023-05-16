@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/tislib/apibrew/pkg/helper"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/helper"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 type property[GoType any, QueryBuilderType helper.PropertyTypeSpecificQueryBuilder[GoType]] struct {

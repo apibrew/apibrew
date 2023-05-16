@@ -2,4 +2,4 @@ syntax = "proto3";
 
 package model;
 
-option go_package = "github.com/tislib/apibrew/pkg/model";
+option go_package = "github.com/apibrew/apibrew/pkg/model";

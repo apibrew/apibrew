@@ -5,6 +5,7 @@ export interface SvgContainerOps {
     y: number
 }
 
+// eslint-disable-next-line no-undef
 export const SvgContainerContext = React.createContext<SvgContainerOps>({
     x: 0,
     y: 0
@@ -32,7 +33,7 @@ export function SvgContainer(props: SvgContainerProps) {
         })
     }, [ref.current])
 
-    return <g ref={ref} {...props}>
+    return <g className='designer-svg-container' ref={ref} {...props}>
         {container && <SvgContainerContext.Provider value={container}>
             {props.children}
         </SvgContainerContext.Provider>}
