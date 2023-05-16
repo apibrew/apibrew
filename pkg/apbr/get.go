@@ -1,10 +1,10 @@
 package apbr
 
 import (
+	"github.com/apibrew/apibrew/pkg/apbr/flags"
+	"github.com/apibrew/apibrew/pkg/apbr/output"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tislib/apibrew/pkg/apbr/flags"
-	"github.com/tislib/apibrew/pkg/apbr/output"
 	"io"
 	"os"
 	"strconv"

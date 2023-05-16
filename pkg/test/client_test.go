@@ -1,9 +1,9 @@
 package test
 
 import (
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/stub"
-	"github.com/tislib/apibrew/pkg/test/setup"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/test/setup"
 )
 
 var authenticationClient stub.AuthenticationClient

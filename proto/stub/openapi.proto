@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stub;
 
-option go_package = "github.com/tislib/apibrew/pkg/stub";
+option go_package = "github.com/apibrew/apibrew/pkg/stub";
 
 import 'model/error.proto';
 import 'model/token.proto';
@@ -16,7 +16,7 @@ option (gnostic.openapi.v3.document) = {
     description: "OpenApi 3.0 definition for API Brew Rest API";
     contact: {
       name: "Taleh Ibrahimli";
-      url: "https://github.com/tislib/apibrew";
+      url: "https://github.com/apibrew/apibrew";
       email: "talehsmail@gmail.com";
     }
     license: {

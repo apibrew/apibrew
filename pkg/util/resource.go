@@ -1,9 +1,9 @@
 package util
 
 import (
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/resources"
-	"github.com/tislib/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"google.golang.org/protobuf/proto"
 )
 

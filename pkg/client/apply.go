@@ -3,10 +3,10 @@ package client
 import (
 	"context"
 	"errors"
+	errors2 "github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
-	errors2 "github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/stub"
 	"google.golang.org/protobuf/proto"
 )
 

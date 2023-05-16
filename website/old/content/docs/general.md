@@ -36,7 +36,7 @@ But for all data sources and for different backends (sql, mongo, redis, etc.). E
 **. It is internal logic of apibrew how it is handling operation on which backend. At high level, end user expects
 that all data source backends are the same.
 
-See [definition](proto.md#resource), [resource.proto](https://github.com/tislib/apibrew/blob/master/proto/model/resource.proto)
+See [definition](proto.md#resource), [resource.proto](https://github.com/apibrew/apibrew/blob/master/proto/model/resource.proto)
 
 ### Special properties
 
@@ -125,7 +125,7 @@ collection, Record is an item, etc.
 
 ### Record definition
 
-Proto file: [resource.proto](https://github.com/tislib/apibrew/blob/master/proto/model/record.proto)
+Proto file: [resource.proto](https://github.com/apibrew/apibrew/blob/master/proto/model/record.proto)
 
 Record has the following properties:
 
@@ -175,7 +175,7 @@ Data source is also an abstraction point for various databases.
 
 ### Data source definition
 
-Proto file: [resource.proto](https://github.com/tislib/apibrew/blob/master/proto/model/data-source.proto)
+Proto file: [resource.proto](https://github.com/apibrew/apibrew/blob/master/proto/model/data-source.proto)
 
 ## Namespace
 
@@ -225,7 +225,7 @@ Inside request, you will get followings
 
 Depending on which action is executed, we will have different payload.
 For reference, you can take a look
-to [record service proto definition](https://github.com/tislib/apibrew/blob/master/proto/stub/record.proto)
+to [record service proto definition](https://github.com/apibrew/apibrew/blob/master/proto/stub/record.proto)
 
 For Http call you will have similar structure but in json format
 
@@ -330,7 +330,7 @@ Security context can be attached to following levels:
 
 ## Security Context definition
 
-Proto file: [security.proto](https://github.com/tislib/apibrew/blob/master/proto/model/security.proto)
+Proto file: [security.proto](https://github.com/apibrew/apibrew/blob/master/proto/model/security.proto)
 SecurityContext has the following properties:
 
 * **namespace** - namespace name where it will be applied

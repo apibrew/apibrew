@@ -2,8 +2,8 @@ package rest
 
 import (
 	"fmt"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/model"
 	"net/http"
 	"strings"
 )

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/tislib/apibrew/pkg/apbr"
+import "github.com/apibrew/apibrew/pkg/apbr"
 
 func main() {
 	apbr.GenerateDocs()

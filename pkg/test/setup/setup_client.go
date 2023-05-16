@@ -2,12 +2,12 @@ package setup
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/client"
+	grpc2 "github.com/apibrew/apibrew/pkg/server/grpc"
+	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/client"
-	grpc2 "github.com/tislib/apibrew/pkg/server/grpc"
-	"github.com/tislib/apibrew/pkg/service"
-	"github.com/tislib/apibrew/pkg/stub"
 	"net"
 	"time"
 )

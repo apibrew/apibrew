@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 func prepareInitData() *model.InitData {
