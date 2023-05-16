@@ -1,5 +1,4 @@
-name: deploy
-
+name: deploy ui
 on:
   push:
     tags:
@@ -23,7 +22,7 @@ jobs:
       - name: Build the Docker image
         uses: actions/checkout@v3
       - run: |
-          docker build ./ui --progress=plain --no-cache -t apibrew/apibrew-ui:${GITHUB_REF##*/}
-          docker tag apibrew/apibrew:${GITHUB_REF##*/} apibrew/apibrew-ui:latest
-          docker push apibrew/apibrew:${GITHUB_REF##*/}
-          docker push apibrew/apibrew:latest
+          docker build ./ui --progress=plain --no-cache -t tislib/apibrew-ui:${GITHUB_REF##*/}
+          docker tag tislib/apibrew:${GITHUB_REF##*/} tislib/apibrew-ui:latest
+          docker push tislib/apibrew:${GITHUB_REF##*/}
+          docker push tislib/apibrew:latest
