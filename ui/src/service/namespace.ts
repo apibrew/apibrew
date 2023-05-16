@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import { BACKEND_URL } from '../config'
 import { type Namespace } from '../model'
 import { TokenService } from './token'
@@ -26,7 +26,7 @@ export namespace NamespaceService {
     export async function create(namespace: Namespace): Promise<Namespace> {
         try {
             const result = await axios.post<Namespace>(`${BACKEND_URL}/system/namespaces`, {
-                Namespaces: [namespace],
+                Namespaces: [namespace]
             }, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
@@ -42,7 +42,7 @@ export namespace NamespaceService {
     export async function update(namespace: Namespace): Promise<Namespace> {
         try {
             const result = await axios.put<Namespace>(`${BACKEND_URL}/system/namespaces`, {
-                Namespaces: [namespace],
+                Namespaces: [namespace]
             }, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
@@ -57,7 +57,7 @@ export namespace NamespaceService {
 
     export async function remove(namespace: Namespace, forceMigrate: boolean): Promise<void> {
         try {
-            await axios.delete<void>(`${BACKEND_URL}/system/namespaces`, {
+            await axios.delete(`${BACKEND_URL}/system/namespaces`, {
                 data: {
                     ids: [namespace.id]
                 },
@@ -66,7 +66,7 @@ export namespace NamespaceService {
                 }
             })
         } catch (e) {
-            return await handleError(e)
+            await handleError(e)
         }
     }
 

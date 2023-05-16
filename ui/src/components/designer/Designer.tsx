@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode, useEffect } from 'react'
+import React, { Fragment, type ReactNode, useEffect } from 'react'
 import { type Resource } from '../../model'
 import { ResourceService } from '../../service/resource'
 import { ResourceElement } from './ResourceElement'
@@ -15,46 +15,27 @@ import {
     Delete,
     Edit,
     FormatAlignCenter,
-    GetApp,
-    Redo,
     Replay,
-    Save,
     Search,
     SettingsApplications,
-    Undo,
-    ViewCompact,
-    WidthWide,
     ZoomIn,
     ZoomOut
 } from '@mui/icons-material'
-import {
-    Alert,
-    Checkbox,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Menu,
-    MenuItem,
-    Tooltip
-} from "@mui/material";
-import { LayoutContext } from "../../context/layout-context";
-import Button from "@mui/material/Button";
+import { Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Menu, MenuItem, Tooltip } from '@mui/material'
+import { LayoutContext } from '../../context/layout-context'
+import Button from '@mui/material/Button'
 import { ResourceForm } from '../resource-form/ResourceForm'
 import { ResourceVisualizer } from './ResourceVisualizer'
 import { RecordService } from '../../service/record'
 import { AppDesignerBoardResource } from '../../resources/app-designer'
-import { AppDesignerBoard } from '../../model/app-designer'
-import { Point } from './point'
+import { type AppDesignerBoard } from '../../model/app-designer'
+import { type Point } from './point'
 
 export interface Selection {
     type: string
     identifier: string
     data: object
 }
-
-type ViewMode = 'wide' | 'compact'
 
 export interface DesignerProps {
     id: string
@@ -65,37 +46,32 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
     const [resources, setResources] = React.useState<Resource[]>([])
     const [zoomLevel, setZoomLevel] = React.useState<number>(1)
     const [selected, setSelected] = React.useState<Selection[]>([])
-    const [viewMode, setViewMode] = React.useState<ViewMode>('wide')
     const [forceDelete, setForceDelete] = React.useState<boolean>(false)
     const [board, setBoard] = React.useState<AppDesignerBoard>()
 
-    const [addButtonRef, setAddButtonRef] = React.useState<null | HTMLElement>(null);
-    const [flags, setFlags] = React.useState<{
-        [key: string]: boolean
-    }>({});
+    const [addButtonRef, setAddButtonRef] = React.useState<null | HTMLElement>(null)
+    const [flags, setFlags] = React.useState<Record<string, boolean>>({})
     const modules: ReactNode[] = []
     const layoutOptions = React.useContext(LayoutContext)
-    const [locationMap, setLocationMap] = React.useState<{
-        [key: string]: Point
-    }>({})
+    const [locationMap, setLocationMap] = React.useState<Record<string, Point>>({})
 
     const load = async () => {
         setSelected([])
 
-        const board = await RecordService.get<AppDesignerBoard>(AppDesignerBoardResource.namespace!, AppDesignerBoardResource.name, props.id)
+        const board = await RecordService.get<AppDesignerBoard>(AppDesignerBoardResource.namespace ?? 'default', AppDesignerBoardResource.name, props.id)
 
         setBoard(board)
 
         try {
             const list = (await ResourceService.list()).filter(item => item.namespace !== 'system')
 
-            let x = 10;
-            let y = 10;
+            let x = 10
+            let y = 10
 
-            for (let resource of list) {
-                const resourceVisual = board.resourceVisuals.find(item => item.resource == resource.name)
+            for (const resource of list) {
+                const resourceVisual = board.resourceVisuals.find(item => item.resource === resource.name)
 
-                if (resourceVisual && resourceVisual.location) {
+                if (resourceVisual?.location) {
                     x = resourceVisual.location.x
                     y = resourceVisual.location.y
                 }
@@ -103,8 +79,8 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                 setLocationMap({
                     ...locationMap,
                     [resource.name]: {
-                        x: x,
-                        y: y,
+                        x,
+                        y
                     }
                 })
 
@@ -143,7 +119,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                         addMenuOpen: true
                     })
                 }}>
-                    <Add />
+                    <Add/>
                 </IconButton>
             </Tooltip>
             {addButtonRef && <Menu anchorEl={addButtonRef}
@@ -168,29 +144,29 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            width: 800,
+                            width: 800
                         }}>
                             <ResourceForm resources={resources} initResource={{
                                 name: '',
                                 namespace: '',
                                 properties: [],
                                 version: 1,
-                                virtual: false,
+                                virtual: false
                             }}
-                                onCancel={() => {
-                                    modal.close()
-                                }}
-                                onSave={() => {
-                                    load()
-                                    modal.close()
-                                }} />
+                            onCancel={() => {
+                                modal.close()
+                            }}
+                            onSave={() => {
+                                load()
+                                modal.close()
+                            }}/>
                         </Box>
                     })
                 }}>Add Resource</MenuItem>
             </Menu>}
             <Tooltip title={'Edit Item'}>
                 <IconButton onClick={(e) => {
-                    if (selected.length == 0) {
+                    if (selected.length === 0) {
                         layoutOptions.showAlert({
                             severity: 'error',
                             message: 'Please select an item to edit'
@@ -212,7 +188,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            width: 800,
+                            width: 800
                         }}>
                             <ResourceForm resources={resources} initResource={selected[0].data as Resource}
                                 onCancel={() => {
@@ -221,16 +197,16 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                 onSave={(updatedResource) => {
                                     load()
                                     modal.close()
-                                }} />
+                                }}/>
                         </Box>
                     })
                 }}>
-                    <Edit textAnchor={'asd'} />
+                    <Edit textAnchor={'asd'}/>
                 </IconButton>
             </Tooltip>
             <Tooltip title={'Delete Item'}>
                 <IconButton onClick={(e) => {
-                    if (selected.length == 0) {
+                    if (selected.length === 0) {
                         layoutOptions.showAlert({
                             severity: 'error',
                             message: 'Please select an item to delete'
@@ -239,10 +215,10 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
 
                     setFlags({
                         ...flags,
-                        deleteDialog: true,
+                        deleteDialog: true
                     })
                 }}>
-                    <Delete />
+                    <Delete/>
                 </IconButton>
             </Tooltip>
             <Dialog
@@ -250,14 +226,14 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                 onClose={() => {
                     setFlags({
                         ...flags,
-                        deleteDialog: false,
+                        deleteDialog: false
                     })
                 }}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Are you sure, you want to delete this item?\n This operation is not reversible"}
+                    {'Are you sure, you want to delete this item?\n This operation is not reversible'}
                 </DialogTitle>
                 <DialogContent>
                     Force Delete? <Checkbox value={forceDelete} onChange={e => {
@@ -268,13 +244,13 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                     <Button variant='contained' onClick={() => {
                         setFlags({
                             ...flags,
-                            deleteDialog: false,
+                            deleteDialog: false
                         })
                     }}>No</Button>
                     <Button variant='contained' onClick={() => {
                         setFlags({
                             ...flags,
-                            deleteDialog: false,
+                            deleteDialog: false
                         })
 
                         ResourceService.remove(selected[0].data as Resource, forceDelete).then(() => {
@@ -298,51 +274,51 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
             <Tooltip title={'Update visualisation'}>
                 <IconButton onClick={(e) => {
                     layoutOptions.showModal({
-                        content: <ResourceVisualizer />
+                        content: <ResourceVisualizer/>
                     })
                 }}>
-                    <Brush />
+                    <Brush/>
                 </IconButton>
             </Tooltip>
         </Box>
-        <Box sx={{ flexGrow: 5 }} />
+        <Box sx={{ flexGrow: 5 }}/>
         <Box>
             <Tooltip title={`${Math.round(zoomLevel * 100)}%`}>
                 <Box>
                     <IconButton onClick={() => {
                         setZoomLevel(Math.min(3, zoomLevel + 0.2))
                     }}>
-                        <ZoomIn />
+                        <ZoomIn/>
                     </IconButton>
                     <IconButton onClick={() => {
                         setZoomLevel(1)
                     }}>
-                        <Search />
+                        <Search/>
                     </IconButton>
                     <IconButton onClick={() => {
                         setZoomLevel(Math.max(0.2, zoomLevel - 0.2))
                     }}>
-                        <ZoomOut />
+                        <ZoomOut/>
                     </IconButton>
                 </Box>
             </Tooltip>
         </Box>
         <Box>
-            <IconButton aria-label="left aligned" onClick={() => load()}>
+            <IconButton aria-label="left aligned" onClick={load}>
                 <Tooltip title={'Reload'}>
-                    <Replay />
+                    <Replay/>
                 </Tooltip>
             </IconButton>
             <IconButton value="wide" aria-label="left aligned">
                 <Tooltip title={'Rearrange elements'}>
-                    <FormatAlignCenter />
+                    <FormatAlignCenter/>
                 </Tooltip>
             </IconButton>
             <Tooltip title={'Settings'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <SettingsApplications />
+                    <SettingsApplications/>
                 </IconButton>
             </Tooltip>
         </Box>
@@ -354,9 +330,10 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
             <Scale level={zoomLevel}>
                 <Movable>
                     {resources.map((resource, index) => {
-                        return <MovableComponent location={locationMap[resource.name]}
+                        return <MovableComponent key={resource.name}
+                            location={locationMap[resource.name]}
                             updateLocation={location => {
-                                if (location.x == locationMap[resource.name].x && location.y == locationMap[resource.name].y) {
+                                if (location.x === locationMap[resource.name].x && location.y === locationMap[resource.name].y) {
                                     return
                                 }
 
@@ -365,7 +342,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                     [resource.name]: location
                                 })
 
-                                const resourceVisual = board?.resourceVisuals.find(item => item.resource == resource.name)
+                                const resourceVisual = board?.resourceVisuals.find(item => item.resource === resource.name)
 
                                 if (resourceVisual) {
                                     resourceVisual.location = location
@@ -373,7 +350,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                     board?.resourceVisuals.push({
                                         resource: resource.name,
                                         allowRecordsOnBoard: false,
-                                        location: location
+                                        location
                                     })
                                 }
 
@@ -390,7 +367,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                     setSelected(selected.filter(item => item.type === 'resource' && item.identifier !== resource.name))
                                 }
                             }}>
-                                <ResourceElement resource={resource} />
+                                <ResourceElement resource={resource}/>
                             </Selectable>
                         </MovableComponent>
                     })}
@@ -400,7 +377,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                             {resource.properties?.filter(item => item.type === 'REFERENCE')?.filter(item => item.reference?.referencedResource)?.map((property, index) => {
                                 return <ReferenceLink key={`${resource.name}-${property.name}`}
                                     resource={resource}
-                                    property={property} />
+                                    property={property}/>
                             })}
                         </Fragment>
                     })}

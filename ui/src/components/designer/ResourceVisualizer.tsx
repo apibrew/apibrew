@@ -1,11 +1,11 @@
-import { Card } from "@mui/material";
-import { Resource } from "../../model";
+import { Card } from '@mui/material'
+import { type Resource } from '../../model'
 
 export interface ResourceVisualizerProps {
     resource?: Resource
 }
 
-export const ResourceVisualizer: React.FC<ResourceVisualizerProps> = ({ resource }) => {
+export const ResourceVisualizer = ({ resource }: ResourceVisualizerProps) => {
     return (
         <Card>
             <h2>Resource Visualizer</h2>

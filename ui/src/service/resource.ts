@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import { BACKEND_URL } from '../config'
 import { type Resource } from '../model'
 import { TokenService } from './token'
@@ -28,7 +28,7 @@ export namespace ResourceService {
             const result = await axios.post<Resource>(`${BACKEND_URL}/system/resources`, {
                 resources: [resource],
                 doMigration: true,
-                forceMigration: true,
+                forceMigration: true
             }, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
@@ -46,7 +46,7 @@ export namespace ResourceService {
             const result = await axios.put<Resource>(`${BACKEND_URL}/system/resources`, {
                 resources: [resource],
                 doMigration: true,
-                forceMigration: true,
+                forceMigration: true
             }, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
@@ -61,7 +61,7 @@ export namespace ResourceService {
 
     export async function remove(resource: Resource, forceMigrate: boolean): Promise<void> {
         try {
-            await axios.delete<void>(`${BACKEND_URL}/system/resources`, {
+            await axios.delete(`${BACKEND_URL}/system/resources`, {
                 data: {
                     doMigration: true,
                     forceMigration: forceMigrate,
@@ -72,7 +72,7 @@ export namespace ResourceService {
                 }
             })
         } catch (e) {
-            return await handleError(e)
+            await handleError(e)
         }
     }
 
@@ -96,7 +96,7 @@ export namespace ResourceService {
         }
 
         try {
-            const result = await axios.get<{resource: Resource}>(`${BACKEND_URL}/system/resources/${namespace}/${resourceName}`, {
+            const result = await axios.get<{ resource: Resource }>(`${BACKEND_URL}/system/resources/${namespace}/${resourceName}`, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }

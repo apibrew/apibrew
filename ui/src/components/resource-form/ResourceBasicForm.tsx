@@ -1,13 +1,30 @@
-import { Box, Checkbox, FormControl, FormGroup, FormHelperText, FormLabel, IconButton, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, TextField, Toolbar, Typography } from "@mui/material";
-import { Resource, ResourceProperty } from "../../model";
-import { Add, Delete, Edit, Save, TableRows } from "@mui/icons-material";
-import React, { useEffect } from "react";
-import { ResourceService } from "../../service/resource";
+import {
+    Box,
+    Checkbox,
+    FormControl,
+    FormGroup,
+    FormHelperText,
+    FormLabel,
+    IconButton,
+    MenuItem,
+    Select,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableFooter,
+    TableHead,
+    TableRow,
+    TextField
+} from '@mui/material'
+import { type Resource, type ResourceProperty } from '../../model'
+import { Add, Delete, Edit, Save } from '@mui/icons-material'
+import React from 'react'
 
 export interface ResourceBasicFormProps {
-    resources: Resource[];
-    resource: Resource;
-    onChange: (resource: Resource) => void;
+    resources: Resource[]
+    resource: Resource
+    onChange: (resource: Resource) => void
 }
 
 const handlePropertyFieldOnChange = <K extends keyof ResourceProperty>(resource: Resource, onChange: (resource: Resource) => void, index: number, field: K, value: ResourceProperty[K]) => {
@@ -25,11 +42,8 @@ const handlePropertyFieldOnChange = <K extends keyof ResourceProperty>(resource:
     })
 }
 
-
 export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
-    const [propertyFlags, setPropertyFlags] = React.useState<{
-        [key: string]: boolean
-    }>({})
+    const [propertyFlags, setPropertyFlags] = React.useState<Record<string, boolean>>({})
 
     return <>
         <Box>
@@ -37,12 +51,14 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                 <FormControl>
                     <FormLabel>Resource Name</FormLabel>
                     <TextField value={props.resource.name}
-                        onChange={(e) => props.onChange({ ...props.resource, name: e.target.value })} />
+                        onChange={(e) => {
+                            props.onChange({ ...props.resource, name: e.target.value })
+                        }}/>
                     <FormHelperText>Resource name is required</FormHelperText>
                 </FormControl>
                 <Box m={1}>
                     <IconButton onClick={() => {
-                        const propName = 'prop-' + ((props.resource.properties?.length ?? 0) + 1)
+                        const propName = `prop-${((props.resource.properties?.length ?? 0) + 1)}`
                         props.onChange({
                             ...props.resource,
                             properties: [...props.resource.properties ?? [], {
@@ -51,7 +67,7 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                 required: false,
                                 primary: false,
                                 unique: false,
-                                length: 255,
+                                length: 255
                             }]
                         })
 
@@ -60,11 +76,11 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                             [propName]: true
                         })
                     }}>
-                        <Add />
+                        <Add/>
                     </IconButton>
                 </Box>
                 <TableContainer>
-                    <Table size='small' >
+                    <Table size='small'>
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={{ width: '230px' }}>Property Name</TableCell>
@@ -82,10 +98,14 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                         {!propertyFlags[property.name] && <span>{property.name}</span>}
                                         {propertyFlags[property.name] && <TextField size='small' value={property.name}
                                             onChange={(e) => {
-                                                propertyFlags[e.target.value ?? ''] = propertyFlags[property.name]
-                                                delete (propertyFlags[property.name])
+                                                setPropertyFlags({
+                                                    ...propertyFlags,
+                                                    [e.target.value ?? '']: propertyFlags[property.name],
+                                                    [property.name]: false
+                                                })
+
                                                 handlePropertyFieldOnChange(props.resource, props.onChange, index, 'name', e.target.value)
-                                            }} />}
+                                            }}/>}
 
                                         {property.type === 'REFERENCE' && <>
                                             &nbsp;
@@ -96,19 +116,21 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                 <Select
                                                     size='small'
                                                     value={property.reference?.referencedResource}
-                                                    onChange={(e) =>
+                                                    onChange={(e) => {
                                                         handlePropertyFieldOnChange(
                                                             props.resource,
                                                             props.onChange,
                                                             index,
-                                                            "reference",
+                                                            'reference',
                                                             {
-                                                                referencedResource: e.target.value as string,
+                                                                referencedResource: e.target.value
                                                             }
                                                         )
                                                     }
+                                                    }
                                                 >
-                                                    {props.resources.map(item => <MenuItem value={item.name}>{item.name}</MenuItem>)}
+                                                    {props.resources.map(item => <MenuItem key={item.name}
+                                                        value={item.name}>{item.name}</MenuItem>)}
                                                 </Select>
                                             )}
                                         </>}
@@ -122,23 +144,22 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                 size='small'
                                                 value={property.type}
                                                 onChange={(e) => {
-                                                    if (e.target.value === 'STRING' && (property.length ?? 0 <= 0)) {
+                                                    if (e.target.value === 'STRING' && ((property.length ?? 0) <= 0)) {
                                                         handlePropertyFieldOnChange(
                                                             props.resource,
                                                             props.onChange,
                                                             index,
-                                                            "length",
+                                                            'length',
                                                             255
                                                         )
                                                     }
-
 
                                                     handlePropertyFieldOnChange(
                                                         props.resource,
                                                         props.onChange,
                                                         index,
-                                                        "type",
-                                                        e.target.value as ResourceProperty["type"]
+                                                        'type',
+                                                        e.target.value as ResourceProperty['type']
                                                     )
                                                 }}
                                             >
@@ -163,60 +184,63 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                     </TableCell>
                                     <TableCell>
                                         {!propertyFlags[property.name] && (
-                                            <span>{property.required ? "Yes" : "No"}</span>
+                                            <span>{property.required ? 'Yes' : 'No'}</span>
                                         )}
                                         {propertyFlags[property.name] && (
                                             <Checkbox
                                                 size='small'
                                                 checked={property.required}
-                                                onChange={(e) =>
+                                                onChange={(e) => {
                                                     handlePropertyFieldOnChange(
                                                         props.resource,
                                                         props.onChange,
                                                         index,
-                                                        "required",
+                                                        'required',
                                                         e.target.checked
                                                     )
+                                                }
                                                 }
                                             />
                                         )}
                                     </TableCell>
                                     <TableCell>
                                         {!propertyFlags[property.name] && (
-                                            <span>{property.primary ? "Yes" : "No"}</span>
+                                            <span>{property.primary ? 'Yes' : 'No'}</span>
                                         )}
                                         {propertyFlags[property.name] && (
                                             <Checkbox
                                                 size='small'
                                                 checked={property.primary}
-                                                onChange={(e) =>
+                                                onChange={(e) => {
                                                     handlePropertyFieldOnChange(
                                                         props.resource,
                                                         props.onChange,
                                                         index,
-                                                        "primary",
+                                                        'primary',
                                                         e.target.checked
                                                     )
+                                                }
                                                 }
                                             />
                                         )}
                                     </TableCell>
                                     <TableCell>
                                         {!propertyFlags[property.name] && (
-                                            <span>{property.unique ? "Yes" : "No"}</span>
+                                            <span>{property.unique ? 'Yes' : 'No'}</span>
                                         )}
                                         {propertyFlags[property.name] && (
                                             <Checkbox
                                                 size='small'
                                                 checked={property.unique}
-                                                onChange={(e) =>
+                                                onChange={(e) => {
                                                     handlePropertyFieldOnChange(
                                                         props.resource,
                                                         props.onChange,
                                                         index,
-                                                        "unique",
+                                                        'unique',
                                                         e.target.checked
                                                     )
+                                                }
                                                 }
                                             />
                                         )}
@@ -228,7 +252,7 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                 [property.name]: true
                                             })
                                         }}>
-                                            <Edit />
+                                            <Edit/>
                                         </IconButton>}
                                         {propertyFlags[property.name] && <IconButton onClick={() => {
                                             setPropertyFlags({
@@ -236,7 +260,7 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                 [property.name]: false
                                             })
                                         }}>
-                                            <Save />
+                                            <Save/>
                                         </IconButton>}
                                         <IconButton onClick={() => {
                                             props.onChange({
@@ -244,7 +268,7 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                 properties: props.resource.properties?.filter((_, i) => i !== index)
                                             })
                                         }}>
-                                            <Delete />
+                                            <Delete/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>

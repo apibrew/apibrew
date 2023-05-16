@@ -5,6 +5,7 @@ export interface SvgContainerOps {
     y: number
 }
 
+// eslint-disable-next-line no-undef
 export const SvgContainerContext = React.createContext<SvgContainerOps>({
     x: 0,
     y: 0

@@ -1,19 +1,19 @@
-import { Box, Button, Card, CardActions, CardContent, CardHeader } from "@mui/material";
-import React, { useContext } from "react";
-import { Resource } from "../../model";
-import { ResourceBasicForm } from "./ResourceBasicForm";
-import { ResourceAdvancedForm } from "./ResourceAdvancedForm";
-import { ResourceService } from "../../service/resource";
-import { LayoutContext } from "../../context/layout-context";
-import { AxiosError } from "axios";
+import { Box, Button, Card, CardActions, CardContent, CardHeader } from '@mui/material'
+import React, { useContext } from 'react'
+import { type Resource } from '../../model'
+import { ResourceBasicForm } from './ResourceBasicForm'
+import { ResourceAdvancedForm } from './ResourceAdvancedForm'
+import { ResourceService } from '../../service/resource'
+import { LayoutContext } from '../../context/layout-context'
+import { AxiosError } from 'axios'
 
 export type ResourceFormVariant = 'basic' | 'advanced'
 
 export interface ResourceFormProps {
-    resources: Resource[];
-    initResource: Resource;
-    onSave?: (resource: Resource) => void;
-    onCancel?: () => void;
+    resources: Resource[]
+    initResource: Resource
+    onSave?: (resource: Resource) => void
+    onCancel?: () => void
 }
 
 export function ResourceForm(props: ResourceFormProps): JSX.Element {
@@ -32,13 +32,13 @@ export function ResourceForm(props: ResourceFormProps): JSX.Element {
                 <Box m={0.5}>
                     <Button variant={formVariant === 'basic' ? 'contained' : 'outlined'}
                         size="small"
-                        onClick={() => setFormVariant('basic')}
+                        onClick={() => { setFormVariant('basic') }}
                         color="primary">Basic</Button>
                 </Box>
                 <Box m={0.5}>
                     <Button variant={formVariant === 'advanced' ? 'contained' : 'outlined'}
                         size="small"
-                        onClick={() => setFormVariant('advanced')}
+                        onClick={() => { setFormVariant('advanced') }}
                         color="primary">Advanced</Button>
                 </Box>
             </Box>} />
@@ -68,7 +68,7 @@ export function ResourceForm(props: ResourceFormProps): JSX.Element {
                                 layoutOptions.showAlert({ severity: 'error', message: error.response.data.message })
                                 return
                             }
-                            
+
                             layoutOptions.showAlert({ severity: 'error', message: error.message })
                         })
                     }}>Save</Button>

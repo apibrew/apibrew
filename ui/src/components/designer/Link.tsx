@@ -1,7 +1,6 @@
 import { Arrow } from './Arrow'
 import React, { useContext, useEffect, useState } from 'react'
 import { type Point } from './point'
-import { SvgContainerContext } from './SvgContainer'
 import { MovingContext } from './Movable'
 import { ScaleContext } from './Scale'
 
@@ -15,7 +14,6 @@ export function Link(props: LinkProps) {
 
     const [startPoint, setStartPoint] = useState<Point>({ x: 0, y: 0 })
     const [endPoint, setEndPoint] = useState<Point>({ x: 0, y: 0 })
-    const container = useContext(SvgContainerContext)
     const movingContext = useContext(MovingContext)
 
     useEffect(() => {

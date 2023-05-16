@@ -1,4 +1,4 @@
-import { Resource } from "../model";
+import { type Resource } from '../model'
 
 export const AppDesignerBoardResource: Resource = {
     name: 'AppDesignerBoard',
@@ -25,7 +25,7 @@ export const AppDesignerBoardResource: Resource = {
             type: 'LIST',
             subProperty: {
                 name: '',
-                type: 'STRING',
+                type: 'STRING'
             }
         },
         {
@@ -39,12 +39,12 @@ export const AppDesignerBoardResource: Resource = {
                         name: 'resource',
                         type: 'STRING',
                         required: true,
-                        length: 255,
+                        length: 255
                     },
                     {
                         name: 'allowRecordsOnBoard',
                         type: 'BOOL',
-                        required: true,
+                        required: true
                     },
                     {
                         name: 'location',
@@ -53,20 +53,20 @@ export const AppDesignerBoardResource: Resource = {
                             {
                                 name: 'x',
                                 type: 'FLOAT32',
-                                required: true,
+                                required: true
                             },
                             {
                                 name: 'y',
                                 type: 'FLOAT32',
-                                required: true,
-                            },
-                        ],
-                    },
-                ],
+                                required: true
+                            }
+                        ]
+                    }
+                ]
             }
         }
     ],
     description: 'A board is a collection of widgets that are displayed together.',
     version: 1,
-    virtual: false,
+    virtual: false
 }

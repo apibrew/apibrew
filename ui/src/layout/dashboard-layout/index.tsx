@@ -19,7 +19,7 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItem from '@mui/material/ListItem'
 import { ChevronLeft, ExpandLess, ExpandMore } from '@mui/icons-material'
 import { styled } from '@mui/material/styles'
-import { AlertOptions, LayoutContext, LayoutOptions, ModalOperations, ModalOptions } from "../../context/layout-context";
+import { type AlertOptions, LayoutContext, type LayoutOptions, type ModalOperations, type ModalOptions } from '../../context/layout-context'
 
 const drawerWidth = 260
 

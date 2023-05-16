@@ -1,14 +1,14 @@
 export interface AppDesignerBoard {
-    id?: string;
-    name: string;
-    description?: string;
-    resourceSelector: string[];
-    resourceVisuals: {
-        resource: string;
-        allowRecordsOnBoard: boolean;
+    id?: string
+    name: string
+    description?: string
+    resourceSelector: string[]
+    resourceVisuals: Array<{
+        resource: string
+        allowRecordsOnBoard: boolean
         location: {
-            x: number;
-            y: number;
-        };
-    }[];
+            x: number
+            y: number
+        }
+    }>
 }

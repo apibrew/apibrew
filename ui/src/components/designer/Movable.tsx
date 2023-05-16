@@ -35,29 +35,29 @@ export function Movable(props: MovableProps) {
             setBeginLoc({ x: e.clientX, y: e.clientY })
             setMovingIdx(movingIdx + 1)
         }}
-            onPointerMove={(e) => {
-                if (moving) {
-                    setMoveLoc({
-                        x: (e.clientX - beginLoc.x) * (1 / scale),
-                        y: (e.clientY - beginLoc.y) * (1 / scale)
-                    })
-                    setMovingIdx(movingIdx + 1)
-                }
-            }}
-            onPointerUp={(e) => {
-                if (moving) {
-                    setMoveLoc(undefined)
-                    setMoving(false)
-                    setMovingIdx(movingIdx + 1)
-                }
-            }}
-            onMouseLeave={(e) => {
-                if (moving) {
-                    setMoveLoc(undefined)
-                    setMoving(false)
-                    setMovingIdx(movingIdx + 1)
-                }
-            }}
+        onPointerMove={(e) => {
+            if (moving) {
+                setMoveLoc({
+                    x: (e.clientX - beginLoc.x) * (1 / scale),
+                    y: (e.clientY - beginLoc.y) * (1 / scale)
+                })
+                setMovingIdx(movingIdx + 1)
+            }
+        }}
+        onPointerUp={(e) => {
+            if (moving) {
+                setMoveLoc(undefined)
+                setMoving(false)
+                setMovingIdx(movingIdx + 1)
+            }
+        }}
+        onMouseLeave={(e) => {
+            if (moving) {
+                setMoveLoc(undefined)
+                setMoving(false)
+                setMovingIdx(movingIdx + 1)
+            }
+        }}
         >
             {props.children}
         </g>

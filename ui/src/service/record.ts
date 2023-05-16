@@ -1,6 +1,5 @@
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import { BACKEND_URL } from '../config'
-import { type Resource } from '../model'
 import { TokenService } from './token'
 import { handleError } from './error-handler'
 
@@ -43,7 +42,7 @@ export namespace RecordService {
 
     export async function update<T extends Record>(namespace: string, resource: string, record: T): Promise<T> {
         try {
-            const result = await axios.put<T>(`${BACKEND_URL}/records/${namespace}/${resource}/${record.id}`, record, {
+            const result = await axios.put<T>(`${BACKEND_URL}/records/${namespace}/${resource}/${record.id!}`, record, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }
@@ -57,13 +56,13 @@ export namespace RecordService {
 
     export async function remove(namespace: string, resource: string, id: string): Promise<void> {
         try {
-            await axios.delete<void>(`${BACKEND_URL}/records/${namespace}/${resource}/${id}`, {
+            await axios.delete(`${BACKEND_URL}/records/${namespace}/${resource}/${id}`, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }
             })
         } catch (e) {
-            return await handleError(e)
+            await handleError(e)
         }
     }
 
