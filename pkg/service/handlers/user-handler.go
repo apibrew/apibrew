@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/resources"
-	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
-	"github.com/tislib/apibrew/pkg/service/security"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources"
+	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/service/security"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

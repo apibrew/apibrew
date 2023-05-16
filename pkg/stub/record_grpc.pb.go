@@ -8,7 +8,7 @@ package stub
 
 import (
 	context "context"
-	model "github.com/tislib/apibrew/pkg/model"
+	model "github.com/apibrew/apibrew/pkg/model"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

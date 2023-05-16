@@ -1,11 +1,11 @@
 package apbr
 
 import (
+	"github.com/apibrew/apibrew/pkg/generator/golang"
+	"github.com/apibrew/apibrew/pkg/generator/nodejs"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/spf13/cobra"
-	"github.com/tislib/apibrew/pkg/generator/golang"
-	"github.com/tislib/apibrew/pkg/generator/nodejs"
-	"github.com/tislib/apibrew/pkg/model"
-	"github.com/tislib/apibrew/pkg/stub"
 )
 
 var generatorCmd = &cobra.Command{

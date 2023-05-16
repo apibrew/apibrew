@@ -1,8 +1,8 @@
 package util
 
 import (
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )

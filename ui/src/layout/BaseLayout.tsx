@@ -9,9 +9,6 @@ export function BaseLayout(props: BaseLayoutProps): JSX.Element {
             mode: 'light',
             background: {
                 default: '#F7F9FC'
-            },
-            primary: {
-                main: '#FFF'
             }
         }
     })

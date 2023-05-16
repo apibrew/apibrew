@@ -1,12 +1,12 @@
 package service
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/logging"
+	"github.com/apibrew/apibrew/pkg/model"
+	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/service/handlers"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/abs"
-	"github.com/tislib/apibrew/pkg/logging"
-	"github.com/tislib/apibrew/pkg/model"
-	backend_event_handler "github.com/tislib/apibrew/pkg/service/backend-event-handler"
-	"github.com/tislib/apibrew/pkg/service/handlers"
 )
 
 type App struct {

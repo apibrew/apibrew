@@ -22,7 +22,11 @@ module.exports = {
         "@typescript-eslint/explicit-function-return-type": "off",
         "react/display-name": "off",
         "react/react-in-jsx-scope": "off",
-        "@typescript-eslint/strict-boolean-expressions": "off"
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/no-misused-promises": "off",
     },
     settings: {
         "react": {

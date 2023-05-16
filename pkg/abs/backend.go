@@ -2,8 +2,8 @@ package abs
 
 import (
 	"context"
-	"github.com/tislib/apibrew/pkg/errors"
-	"github.com/tislib/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/model"
 )
 
 type Backend interface {

@@ -1,7 +1,7 @@
 package yamlformat
 
 import (
-	"github.com/tislib/apibrew/pkg/formats"
+	"github.com/apibrew/apibrew/pkg/formats"
 	"io"
 )
 

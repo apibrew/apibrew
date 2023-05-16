@@ -7,7 +7,7 @@ info:
     description: OpenApi 3.0 definition for API Brew Rest API
     contact:
         name: Taleh Ibrahimli
-        url: https://github.com/tislib/apibrew
+        url: https://github.com/apibrew/apibrew
         email: talehsmail@gmail.com
     license:
         name: Apache License

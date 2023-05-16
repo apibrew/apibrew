@@ -1,9 +1,9 @@
 package apbr
 
 import (
+	"github.com/apibrew/apibrew/pkg/apbr/flags"
+	"github.com/apibrew/apibrew/pkg/client"
 	log "github.com/sirupsen/logrus"
-	"github.com/tislib/apibrew/pkg/apbr/flags"
-	"github.com/tislib/apibrew/pkg/client"
 )
 
 var selectorFlags = flags.NewSelectorFlags(GetDhClient)
