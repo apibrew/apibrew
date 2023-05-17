@@ -10,6 +10,16 @@ export function BaseLayout(props: BaseLayoutProps): JSX.Element {
             background: {
                 default: '#F7F9FC'
             }
+        },
+        components: {
+            MuiButton: {
+                defaultProps: {
+                    size: 'small',
+                    sx: {
+                        margin: 0.5
+                    }
+                },
+            },
         }
     })
     return <>

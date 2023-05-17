@@ -5,22 +5,25 @@ import { handleError } from './error-handler'
 
 export interface Record {
     id?: string
+    [key: string]: any
 }
 
 export namespace RecordService {
     interface RecordListContainer<T> {
-        content: T[]
+        content: {
+            properties: T
+        }[]
     }
 
     export async function list<T>(namespace: string, resource: string): Promise<T[]> {
         try {
-            const result = await axios.get<RecordListContainer<T>>(`${BACKEND_URL}/records/${namespace}/${resource}`, {
+            const result = await axios.get<RecordListContainer<T>>(`${BACKEND_URL}/records/${namespace}/${resource}?resolveReferences=*`, {
                 headers: {
                     Authorization: `Bearer ${await TokenService.get()}`
                 }
             })
 
-            return result.data.content
+            return result.data.content.map(record => record.properties)
         } catch (e) {
             return await handleError(e)
         }

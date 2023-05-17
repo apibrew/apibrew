@@ -8,6 +8,7 @@ import { BaseLayout } from './layout/BaseLayout'
 import { TokenService } from './service/token'
 import { Migrate } from './pages/migrate'
 import { AppDesigner } from './pages/app-designer'
+import { CrudPage } from './pages/crud-page/CrudPage'
 
 function Dashboard(): JSX.Element {
     const isLoggedIn = TokenService.isLoggedIn()
@@ -25,9 +26,12 @@ function Dashboard(): JSX.Element {
     return <>
         <DashboardLayout>
             <Routes>
-                <Route path='test' element={<Test></Test>}/>
-                <Route path='app-designer' element={<AppDesigner/>}/>
-                <Route path='migrate' element={<Migrate/>}/>
+                <Route path='test' element={<Test></Test>} />
+                <Route path='app-designer' element={<AppDesigner />} />
+                <Route path='migrate' element={<Migrate />} />
+                {/* Cruds */}
+                <Route path='country/*' element={<CrudPage namespace='default' resource='country' />} />
+                <Route path='city/*' element={<CrudPage namespace='default' resource='city' />} />
             </Routes>
         </DashboardLayout>
     </>
@@ -38,8 +42,8 @@ function App(): JSX.Element {
         <BaseLayout>
             <Router>
                 <Routes>
-                    <Route path='/dashboard/*' element={<Dashboard></Dashboard>}/>
-                    <Route path='/login' element={<Login></Login>}/>
+                    <Route path='/dashboard/*' element={<Dashboard></Dashboard>} />
+                    <Route path='/login' element={<Login></Login>} />
                 </Routes>
             </Router>
         </BaseLayout>

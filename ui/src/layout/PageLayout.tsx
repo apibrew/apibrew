@@ -1,4 +1,4 @@
-import { Breadcrumbs, Card, CardContent, CardHeader } from '@mui/material'
+import { Breadcrumbs, Card, CardActions, CardContent, CardHeader } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import { Link } from 'react-router-dom'
 import Typography from '@mui/material/Typography'
@@ -11,6 +11,7 @@ export interface PageLayoutProps {
     pageTitle: string
     children: ReactNode
     actions?: ReactNode
+
 }
 
 export function PageLayout(props: PageLayoutProps) {
@@ -22,27 +23,27 @@ export function PageLayout(props: PageLayoutProps) {
                         <Box>
                             {props.pageTitle}
 
-                            <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small"/>}>
+                            <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />}>
                                 <Link color="black"
                                     to="/"
                                     style={{ textDecoration: 'none', color: 'black' }}>
-                                   MUI
+                                    MUI
                                 </Link>
                                 <Link
                                     color="black"
                                     style={{ textDecoration: 'none', color: 'black' }}
                                     to="/material-ui/getting-started/installation/">
-                                   Core
+                                    Core
                                 </Link>
                                 <Typography color="text.primary">Breadcrumbs</Typography>
                             </Breadcrumbs>
                         </Box>
-                        <Box sx={{ flexGrow: 1 }}/>
+                        <Box sx={{ flexGrow: 1 }} />
                         {(props.actions != null) && <Box>{props.actions}</Box>}
                     </Box>
                 </Box>
             }></CardHeader>
-            <Divider/>
+            <Divider />
             <CardContent>
                 {props.children}
             </CardContent>

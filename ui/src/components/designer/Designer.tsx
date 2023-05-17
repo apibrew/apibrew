@@ -68,6 +68,8 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
             let x = 10
             let y = 10
 
+            let updateLocationMap: Record<string, Point> = {...locationMap}
+
             for (const resource of list) {
                 const resourceVisual = board.resourceVisuals.find(item => item.resource === resource.name)
 
@@ -76,19 +78,18 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                     y = resourceVisual.location.y
                 }
 
-                setLocationMap({
-                    ...locationMap,
+                updateLocationMap = {
+                    ...updateLocationMap,
                     [resource.name]: {
                         x,
                         y
                     }
-                })
+                }
 
                 x += 200
-
-                console.log('set 1')
             }
 
+            setLocationMap(updateLocationMap)
             setResources(list)
         } catch (error) {
             console.error(error)
@@ -106,6 +107,8 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
     useEffect(() => {
         load()
     }, [])
+
+    console.log(resources, locationMap)
 
     const actionPanel = <Box style={{ display: 'flex' }}>
         <Box>
