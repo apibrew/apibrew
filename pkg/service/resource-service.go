@@ -783,18 +783,20 @@ func (r *resourceService) Init(_ *model.InitData) {
 		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
 	}
 
-	r.MigrateResource(resources.NamespaceResource, r.schema)
-	r.MigrateResource(resources.DataSourceResource, r.schema)
+	go func() {
+		r.MigrateResource(resources.NamespaceResource, r.schema)
+		r.MigrateResource(resources.DataSourceResource, r.schema)
 
-	r.MigrateResource(resources.ResourceResource, r.schema)
-	r.MigrateResource(resources.ResourcePropertyResource, r.schema)
+		r.MigrateResource(resources.ResourceResource, r.schema)
+		r.MigrateResource(resources.ResourcePropertyResource, r.schema)
 
-	r.MigrateResource(resources.UserResource, r.schema)
-	r.MigrateResource(resources.ExtensionResource, r.schema)
+		r.MigrateResource(resources.UserResource, r.schema)
+		r.MigrateResource(resources.ExtensionResource, r.schema)
 
-	if err := r.ReloadSchema(context.TODO()); err != nil {
-		panic(err)
-	}
+		if err := r.ReloadSchema(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
 }
 
 func (r *resourceService) MigrateResource(resource *model.Resource, schema abs.Schema) {

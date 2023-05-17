@@ -1,4 +1,4 @@
-package rest
+package docs
 
 import (
 	"context"
@@ -26,7 +26,7 @@ type swaggerApi struct {
 }
 
 func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
-	swaggerFiles.Handler.Prefix = "/docs/"
+	swaggerFiles.Handler.Prefix = "/docs/swagger/"
 
 	file, err := statikFS.Open("/openapi.yaml")
 
@@ -36,7 +36,7 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 
 	openApiData, err := io.ReadAll(file)
 
-	r.HandleFunc("/docs/api.json", func(w http.ResponseWriter, req *http.Request) {
+	r.HandleFunc("/docs/openapi.json", func(w http.ResponseWriter, req *http.Request) {
 		doc, serviceErr := s.prepareDoc(req.Context(), openApiData)
 
 		if serviceErr != nil {
@@ -91,13 +91,8 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 
 	})
 
-	r.HandleFunc("/docs", func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("Location", "/docs/index.html")
-		writer.WriteHeader(301)
-	})
-
-	r.PathPrefix("/docs").HandlerFunc(httpSwagger.Handler(
-		httpSwagger.URL("/docs/api.json"), //The url pointing to API definition
+	r.PathPrefix("/docs/swagger/").HandlerFunc(httpSwagger.Handler(
+		httpSwagger.URL("/docs/openapi.json"), //The url pointing to API definition
 	))
 }
 
