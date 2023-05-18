@@ -8,7 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/server/grpc"
-	_ "github.com/apibrew/apibrew/pkg/server/rest/statik"
+	"github.com/apibrew/apibrew/pkg/server/rest/docs"
 	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/stub/rest"
@@ -35,12 +35,12 @@ type Server interface {
 }
 
 type server struct {
-	swaggerApi                  SwaggerApi
 	handler                     http.Handler
 	certFile                    string
 	keyFile                     string
 	recordsApiFiltersMiddleWare *recordsApiFiltersMiddleWare
 	container                   abs.Container
+	docsApi                     docs.Api
 }
 
 func (s *server) Init(*model.InitData) {
@@ -174,7 +174,7 @@ func (s *server) configureRoutes() {
 		log.Fatal(err)
 	}
 
-	s.swaggerApi.ConfigureRouter(r)
+	r.PathPrefix("/docs").Handler(s.docsApi.Handler())
 
 	s.handler = c.Handler(s.recordsApiFiltersMiddleWare.handler(r))
 }
@@ -197,7 +197,7 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 func NewServer(container abs.Container) Server {
 	return &server{
 		container:                   container,
-		swaggerApi:                  NewSwaggerApi(container.GetResourceService()),
+		docsApi:                     docs.NewApi(container.GetResourceService()),
 		recordsApiFiltersMiddleWare: newRecordsApiFiltersMiddleWare(container.GetResourceService()),
 	}
 }
