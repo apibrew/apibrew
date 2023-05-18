@@ -1,4 +1,4 @@
-import React, { Fragment, type ReactNode, useEffect } from 'react'
+import React, { Fragment, type ReactNode, useEffect, useState } from 'react'
 import { type Resource } from '../../model'
 import { ResourceService } from '../../service/resource'
 import { ResourceElement } from './ResourceElement'
@@ -11,6 +11,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import {
     Add,
+    Api,
     Brush,
     Delete,
     Edit,
@@ -30,6 +31,7 @@ import { RecordService } from '../../service/record'
 import { AppDesignerBoardResource } from '../../resources/app-designer'
 import { type AppDesignerBoard } from '../../model/app-designer'
 import { type Point } from './point'
+import { SdkDrawer } from '../sdk/SdkDrawer'
 
 export interface Selection {
     type: string
@@ -54,6 +56,8 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
     const modules: ReactNode[] = []
     const layoutOptions = React.useContext(LayoutContext)
     const [locationMap, setLocationMap] = React.useState<Record<string, Point>>({})
+    const [showSdk, setShowSdk] = useState(false)
+    const [sdkResource, setSdkResource] = useState<Resource>()
 
     const load = async () => {
         setSelected([])
@@ -68,7 +72,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
             let x = 10
             let y = 10
 
-            let updateLocationMap: Record<string, Point> = {...locationMap}
+            let updateLocationMap: Record<string, Point> = { ...locationMap }
 
             for (const resource of list) {
                 const resourceVisual = board.resourceVisuals.find(item => item.resource === resource.name)
@@ -122,7 +126,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                         addMenuOpen: true
                     })
                 }}>
-                    <Add/>
+                    <Add />
                 </IconButton>
             </Tooltip>
             {addButtonRef && <Menu anchorEl={addButtonRef}
@@ -156,13 +160,13 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                 version: 1,
                                 virtual: false
                             }}
-                            onCancel={() => {
-                                modal.close()
-                            }}
-                            onSave={() => {
-                                load()
-                                modal.close()
-                            }}/>
+                                onCancel={() => {
+                                    modal.close()
+                                }}
+                                onSave={() => {
+                                    load()
+                                    modal.close()
+                                }} />
                         </Box>
                     })
                 }}>Add Resource</MenuItem>
@@ -200,11 +204,11 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                 onSave={(updatedResource) => {
                                     load()
                                     modal.close()
-                                }}/>
+                                }} />
                         </Box>
                     })
                 }}>
-                    <Edit textAnchor={'asd'}/>
+                    <Edit textAnchor={'asd'} />
                 </IconButton>
             </Tooltip>
             <Tooltip title={'Delete Item'}>
@@ -221,7 +225,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                         deleteDialog: true
                     })
                 }}>
-                    <Delete/>
+                    <Delete />
                 </IconButton>
             </Tooltip>
             <Dialog
@@ -277,31 +281,55 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
             <Tooltip title={'Update visualisation'}>
                 <IconButton onClick={(e) => {
                     layoutOptions.showModal({
-                        content: <ResourceVisualizer/>
+                        content: <ResourceVisualizer />
                     })
                 }}>
-                    <Brush/>
+                    <Brush />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={'SDK for resource'}>
+                <IconButton onClick={(e) => {
+                    if (selected.length === 0) {
+                        layoutOptions.showAlert({
+                            severity: 'error',
+                            message: 'Please select an item to edit'
+                        })
+                        return
+                    }
+
+                    if (selected.length > 1) {
+                        layoutOptions.showAlert({
+                            severity: 'error',
+                            message: 'You need to select only one item to edit'
+                        })
+                        return
+                    }
+
+                    setShowSdk(true)
+                    setSdkResource(selected[0].data as Resource)
+                }}>
+                    <Api />
                 </IconButton>
             </Tooltip>
         </Box>
-        <Box sx={{ flexGrow: 5 }}/>
+        <Box sx={{ flexGrow: 5 }} />
         <Box>
             <Tooltip title={`${Math.round(zoomLevel * 100)}%`}>
                 <Box>
                     <IconButton onClick={() => {
                         setZoomLevel(Math.min(3, zoomLevel + 0.2))
                     }}>
-                        <ZoomIn/>
+                        <ZoomIn />
                     </IconButton>
                     <IconButton onClick={() => {
                         setZoomLevel(1)
                     }}>
-                        <Search/>
+                        <Search />
                     </IconButton>
                     <IconButton onClick={() => {
                         setZoomLevel(Math.max(0.2, zoomLevel - 0.2))
                     }}>
-                        <ZoomOut/>
+                        <ZoomOut />
                     </IconButton>
                 </Box>
             </Tooltip>
@@ -309,19 +337,19 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
         <Box>
             <IconButton aria-label="left aligned" onClick={load}>
                 <Tooltip title={'Reload'}>
-                    <Replay/>
+                    <Replay />
                 </Tooltip>
             </IconButton>
             <IconButton value="wide" aria-label="left aligned">
                 <Tooltip title={'Rearrange elements'}>
-                    <FormatAlignCenter/>
+                    <FormatAlignCenter />
                 </Tooltip>
             </IconButton>
             <Tooltip title={'Settings'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <SettingsApplications/>
+                    <SettingsApplications />
                 </IconButton>
             </Tooltip>
         </Box>
@@ -370,7 +398,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                     setSelected(selected.filter(item => item.type === 'resource' && item.identifier !== resource.name))
                                 }
                             }}>
-                                <ResourceElement resource={resource}/>
+                                <ResourceElement resource={resource} />
                             </Selectable>
                         </MovableComponent>
                     })}
@@ -380,7 +408,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                             {resource.properties?.filter(item => item.type === 'REFERENCE')?.filter(item => item.reference?.referencedResource)?.map((property, index) => {
                                 return <ReferenceLink key={`${resource.name}-${property.name}`}
                                     resource={resource}
-                                    property={property}/>
+                                    property={property} />
                             })}
                         </Fragment>
                     })}
@@ -396,6 +424,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
         <Box sx={{ flexGrow: 1 }}>
             {board && designingArea}
         </Box>
+        <SdkDrawer resource={sdkResource} open={showSdk} onClose={() => { setShowSdk(false) }} />
         {modules}
     </Box>
 }

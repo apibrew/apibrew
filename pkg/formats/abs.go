@@ -8,6 +8,8 @@ import (
 type Writer interface {
 	WriteResource(resource ...*model.Resource) error
 	WriteRecord(namespace string, resourceName string, record ...*model.Record) error
+	WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error
+	IsBinary() bool
 }
 
 type Reader interface {

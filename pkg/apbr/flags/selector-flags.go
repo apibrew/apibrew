@@ -31,11 +31,10 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 	limit, _ := cmd.PersistentFlags().GetInt64("limit")
 	offset, _ := cmd.PersistentFlags().GetInt64("offset")
 
-	if len(args) == 0 {
-		log.Fatal("type should be provided")
+	var getType = "resource"
+	if len(args) > 0 {
+		getType = args[0]
 	}
-
-	getType := args[0]
 
 	if getType == "all" || getType == "*" {
 		resp, err := s.client().GetResourceClient().List(cmd.Context(), &stub.ListResourceRequest{
@@ -78,19 +77,27 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 		if name != "" {
 			for _, item := range resp.Resources {
 				if item.Name == name {
-					filteredResources = append(filteredResources, item)
+					if namespace == "" || item.Namespace == namespace {
+						filteredResources = append(filteredResources, item)
+					}
 				}
 			}
 		} else if names != "" {
 			for _, ni := range strings.Split(names, ",") {
 				for _, item := range resp.Resources {
 					if item.Name == ni {
-						filteredResources = append(filteredResources, item)
+						if namespace == "" || item.Namespace == namespace {
+							filteredResources = append(filteredResources, item)
+						}
 					}
 				}
 			}
 		} else {
-			filteredResources = resp.Resources
+			for _, item := range resp.Resources {
+				if namespace == "" || item.Namespace == namespace {
+					filteredResources = append(filteredResources, item)
+				}
+			}
 		}
 
 		result.Resources = filteredResources

@@ -1,10 +1,10 @@
 package apbr
 
 import (
+	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/generator/golang"
-	"github.com/apibrew/apibrew/pkg/generator/nodejs"
-	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/generator/typescript"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -26,23 +26,11 @@ var generatorCmd = &cobra.Command{
 		platform, err := cmd.Flags().GetString("platform")
 		check(err)
 
-		resp, err := GetDhClient().GetResourceClient().List(cmd.Context(), &stub.ListResourceRequest{
-			Token: GetDhClient().GetToken(),
-		})
+		var selection = &flags.SelectedRecordsResult{}
+
+		selectorFlags.Parse(selection, cmd, args)
 
 		check(err)
-
-		var filteredResources []*model.Resource
-
-		if len(args) == 0 {
-			filteredResources = resp.Resources
-		} else {
-			for _, resource := range resp.Resources {
-				if contains(args, resource.Name) {
-					filteredResources = append(filteredResources, resource)
-				}
-			}
-		}
 
 		if pkg == "" {
 			pkg = "model"
@@ -53,16 +41,18 @@ var generatorCmd = &cobra.Command{
 			err = golang.GenerateGoResourceCode(golang.GenerateResourceCodeParams{
 				Namespace: namespace,
 				Package:   pkg,
-				Resources: filteredResources,
+				Resources: selection.Resources,
 				Path:      path,
 			})
-		case "nodejs":
-			err = nodejs.GenerateResourceCode(nodejs.GenerateResourceCodeParams{
+		case "typescript":
+			err = typescript.GenerateResourceCode(typescript.GenerateResourceCodeParams{
 				Namespace: namespace,
 				Package:   pkg,
-				Resources: resp.Resources,
+				Resources: selection.Resources,
 				Path:      path,
 			})
+		default:
+			log.Fatal("Unknown platform: " + platform)
 		}
 
 		check(err)
@@ -70,8 +60,8 @@ var generatorCmd = &cobra.Command{
 }
 
 func init() {
-	generatorCmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	generatorCmd.PersistentFlags().StringP("path", "p", ".", "Path")
 	generatorCmd.PersistentFlags().String("package", "", "Package")
 	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, nodejs]")
+	selectorFlags.Declare(generatorCmd)
 }

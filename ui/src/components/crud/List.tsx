@@ -1,11 +1,12 @@
 import { Box, Button, Drawer } from "@mui/material"
 import { PageLayout } from "../../layout/PageLayout"
-import { Delete, Edit, PlusOneOutlined, Search } from "@mui/icons-material"
+import { Api, Delete, Edit, PlusOneOutlined, Search, Title } from "@mui/icons-material"
 import { Resource } from "../../model"
 import { useNavigate } from "react-router-dom"
 import { DataGrid, GridColDef, GridRowParams, GridActionsCellItem, GridValueGetterParams } from '@mui/x-data-grid';
 import { Record, RecordService } from "../../service/record"
 import { useEffect, useState } from "react"
+import { SdkDrawer } from "../sdk/SdkDrawer"
 
 export interface ListProps {
     resource: Resource
@@ -14,6 +15,7 @@ export interface ListProps {
 export function List(props: ListProps) {
     const navigate = useNavigate()
     const [list, setList] = useState<Record[]>([])
+    const [showSdk, setShowSdk] = useState(false)
 
     const load = () => {
         RecordService.list<Record>(props.resource.namespace ?? 'default', props.resource.name).then((data) => {
@@ -66,17 +68,19 @@ export function List(props: ListProps) {
 
     const rows = list;
 
-    const [showSdk, setShowSdk] = useState(false)
-
     return (
         <PageLayout pageTitle={props.resource.name} actions={<>
             <Button variant={'contained'} color='success' onClick={() => {
                 navigate('new')
-            }} startIcon={<PlusOneOutlined />}>New Item</Button>
-            <Button variant={'contained'} color='success' onClick={() => {
-                setShowSdk(!showSdk)
-            }} startIcon={<PlusOneOutlined />}>sdk</Button>
+            }} startIcon={<PlusOneOutlined />}>New {props.resource.name}</Button>
+            <Button variant={'contained'} color='primary' onClick={() => {
+                setShowSdk(true)
+            }} startIcon={<Api />}>sdk</Button>
+            <Button variant={'contained'} color='secondary' onClick={() => {
+                setShowSdk(true)
+            }} startIcon={<Api />}>Crud Settings</Button>
         </>}>
+            <SdkDrawer resource={props.resource} open={showSdk} onClose={() => { setShowSdk(false) }} />
             <DataGrid
                 rows={rows}
                 columns={columns}
@@ -90,19 +94,7 @@ export function List(props: ListProps) {
                 pageSizeOptions={[5]}
                 disableRowSelectionOnClick
             />
-            <Drawer anchor={'right'}
-                BackdropProps={{ invisible: true }}
-                ModalProps={{ sx: { '& .MuiDrawer-paper': { width: '600px', top: '88px' } } }}
-                onClose={() => {
-                    setShowSdk(false)
-                }}
-                open={showSdk}
 
-            >
-                <Box>
-                    <h1>asdadas</h1>
-                </Box>
-            </Drawer>
         </PageLayout>
     )
 }

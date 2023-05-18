@@ -2,18 +2,19 @@ package output
 
 import (
 	"github.com/apibrew/apibrew/pkg/formats/batch"
+	yamlformat "github.com/apibrew/apibrew/pkg/formats/yaml"
 	"github.com/apibrew/apibrew/pkg/model"
 	"io"
 	"log"
 )
 
 type Writer interface {
-	WriteResources(resources []*model.Resource)
-	WriteRecords(resource *model.Resource, total uint32, recordsChan chan *model.Record)
+	WriteResource(resource ...*model.Resource) error
+	WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error
 	IsBinary() bool
 }
 
-func NewOutputWriter(format string, w io.Writer) Writer {
+func NewOutputWriter(format string, w io.Writer, annotations map[string]string) Writer {
 	switch format {
 	case "console":
 		return &consoleWriter{
@@ -25,14 +26,8 @@ func NewOutputWriter(format string, w io.Writer) Writer {
 			writer:   w,
 			describe: true,
 		}
-	case "yaml":
-		return &yamlWriter{
-			writer: w,
-		}
-	case "yml":
-		return &yamlWriter{
-			writer: w,
-		}
+	case "yaml", "yml":
+		return yamlformat.NewWriter(w, annotations)
 	case "pb":
 		return &protobufWriter{
 			batchWriter: batch.NewWriter(w),

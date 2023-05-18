@@ -1,9 +1,9 @@
-package nodejs
+package typescript
 
 import (
 	"bytes"
 	"github.com/Masterminds/sprig"
-	"github.com/apibrew/apibrew/pkg/generator/nodejs/statik"
+	"github.com/apibrew/apibrew/pkg/generator/typescript/statik"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -12,6 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"html/template"
 	"io"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -27,7 +28,7 @@ func GenerateResourceCode(params GenerateResourceCodeParams) error {
 	var b bytes.Buffer
 	br := io.Writer(&b)
 
-	err := tmpl.ExecuteTemplate(br, "resource", map[string]interface{}{
+	err := resourceTmpl.ExecuteTemplate(br, "resource", map[string]interface{}{
 		"params": params,
 	})
 
@@ -52,6 +53,26 @@ func PropNodejsType(prop *model.ResourceProperty) string {
 	if prop.Type == model.ResourceProperty_REFERENCE {
 		return strcase.ToCamel(prop.Reference.ReferencedResource)
 	}
+
+	if prop.Type == model.ResourceProperty_LIST {
+		return strings.TrimSpace(PropNodejsType(prop.SubProperty)) + "[]"
+	}
+
+	if prop.Type == model.ResourceProperty_STRUCT {
+		var b bytes.Buffer
+		br := io.Writer(&b)
+
+		err := structTmpl.ExecuteTemplate(br, "struct", map[string]interface{}{
+			"Properties": prop.Properties,
+		})
+
+		if err != nil {
+			panic(err)
+		}
+
+		return string(b.Bytes())
+	}
+
 	return util.ResourcePropertyTypeToJsonSchemaType(prop.Type).Type
 }
 
@@ -59,7 +80,8 @@ func IsNullable(prop *model.ResourceProperty) bool {
 	return !prop.Required || prop.Type == model.ResourceProperty_REFERENCE
 }
 
-var tmpl *template.Template
+var resourceTmpl *template.Template
+var structTmpl *template.Template
 
 func init() {
 	statikFS, err := fs.NewWithNamespace(statik.GeneratorNodejs)
@@ -68,21 +90,35 @@ func init() {
 		panic(err)
 	}
 
-	entityExistsFile, err := statikFS.Open("/resource.tmpl")
+	resourceTmpl, err = loadTemplate(statikFS, "resource")
 
 	if err != nil {
 		panic(err)
+	}
+
+	structTmpl, err = loadTemplate(statikFS, "struct")
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func loadTemplate(statikFS http.FileSystem, templateName string) (*template.Template, error) {
+	entityExistsFile, err := statikFS.Open("/" + templateName + ".tmpl")
+
+	if err != nil {
+		return nil, err
 	}
 
 	data, err := io.ReadAll(entityExistsFile)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	tmplData := string(data)
 
-	tmpl = template.Must(template.New("resource").
+	return template.Must(template.New(templateName).
 		Funcs(sprig.FuncMap()).
 		Funcs(map[string]any{
 			"ToLowerCamel":   strcase.ToLowerCamel,
@@ -92,5 +128,5 @@ func init() {
 			"IsNullable":     IsNullable,
 			"IsPrimitive":    types.IsPrimitive,
 		}).
-		Parse(tmplData))
+		Parse(tmplData)), nil
 }

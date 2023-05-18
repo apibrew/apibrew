@@ -1,0 +1,54 @@
+type: resource
+name: AppDesignerBoard
+namespace: ui
+description: A board is a collection of widgets that are displayed together.
+properties:
+  - name: resourceVisuals
+    subProperty:
+      properties:
+        - length: 255
+          name: resource
+          required: true
+          type: STRING
+        - name: allowRecordsOnBoard
+          required: true
+        - name: location
+          properties:
+            - name: x
+              required: true
+              type: FLOAT32
+            - name: "y"
+              required: true
+              type: FLOAT32
+          type: STRUCT
+      type: STRUCT
+    type: LIST
+  - name: resourceSelector
+    subProperty:
+      type: STRING
+    type: LIST
+  - description: The description of the board.
+    length: 255
+    name: description
+    type: STRING
+  - description: The unique identifier of the board.
+    immutable: true
+    length: 255
+    name: name
+    required: true
+    type: STRING
+    unique: true
+---
+type: resource
+name: Crud
+namespace: ui
+description: Crud
+properties:
+  - name: resource
+    type: STRING
+    length: 255
+    required: true
+  - name: namespace
+    type: STRING
+    length: 255
+    required: true

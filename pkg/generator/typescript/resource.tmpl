@@ -1,8 +1,5 @@
-import {Entity} from "apibrew-client";
-
 {{ range .params.Resources}}
-export interface {{ToCamel .Name}} extends Entity {
-
+export interface {{ToCamel .Name}} {
     {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType .}};
     {{end}}
 }
