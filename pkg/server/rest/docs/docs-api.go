@@ -19,6 +19,7 @@ func (a *api) Handler() *mux.Router {
 
 	a.swaggerApi.ConfigureRouter(r)
 	index(r)
+	yaml(a.resourceService)(r)
 
 	return r
 }

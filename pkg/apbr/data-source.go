@@ -163,7 +163,7 @@ var dataSourcePrepareCmd = &cobra.Command{
 
 		ch := prepareResourcesFromDataSource(cmd.Context(), dataSource)
 
-		var yamlWriter = yamlformat.NewWriter(os.Stdout)
+		var yamlWriter = yamlformat.NewWriter(os.Stdout, nil)
 
 		var overrideConfig = new(flags.OverrideConfig)
 		overrideFlags.Parse(overrideConfig, cmd, args)

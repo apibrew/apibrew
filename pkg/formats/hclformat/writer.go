@@ -15,6 +15,22 @@ type writer struct {
 	batch  *model.Batch
 }
 
+func (w *writer) WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error {
+	for record := range recordsChan {
+		err := w.WriteRecord(resource.Namespace, resource.Name, record)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (w *writer) IsBinary() bool {
+	return false
+}
+
 func (w *writer) StartBatch(header *model.BatchHeader) error {
 	if w.batch != nil {
 		return errors.New("batch is already started")

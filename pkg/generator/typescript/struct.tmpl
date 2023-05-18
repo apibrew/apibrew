@@ -1,6 +1,3 @@
-{{ range .params.Resources}}
-export interface {{ToCamel .Name}} {
-    {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType .}};
-    {{end}}
+{
+    {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType .}};{{end}}
 }
-{{end}}

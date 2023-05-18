@@ -1,23 +1,28 @@
 package apbr
 
 import (
+	"errors"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/apbr/output"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"io"
 	"os"
-	"strconv"
 )
 
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "get - get type",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		parseRootFlags(cmd)
 
 		f := getFlag(cmd, "format", true)
 		o := getFlag(cmd, "output", false)
+		forApply, err := cmd.Flags().GetBool("for-apply")
+
+		if err != nil {
+			return err
+		}
 
 		var selection = &flags.SelectedRecordsResult{}
 
@@ -46,27 +51,41 @@ var getCmd = &cobra.Command{
 			}()
 		}
 
-		writer := output.NewOutputWriter(f, w)
+		writer := output.NewOutputWriter(f, w, map[string]string{
+			"for-apply": boolToString(forApply),
+		})
 
 		if writer.IsBinary() && o == "" {
-			log.Fatal("format is binary but output is not specified")
+			return errors.New("format is binary but output is not specified")
 		}
 
 		if selection.Resources != nil {
-			writer.WriteResources(selection.Resources)
+			err := writer.WriteResource(selection.Resources...)
+
+			if err != nil {
+				return err
+			}
 		}
 
 		for _, recordProvider := range selection.RecordProviders {
-			log.Print("Before begin")
 			records := recordProvider()
-			log.Println("Begin " + records.Resource.Name + " " + strconv.Itoa(int(records.Total)))
-			writer.WriteRecords(records.Resource, records.Total, records.Records)
-			log.Println("End2 " + records.Resource.Name)
+			err := writer.WriteRecordsChan(records.Resource, records.Total, records.Records)
+
+			if err != nil {
+				return err
+			}
 		}
 
-		log.Println("DONE ALL")
-
+		return nil
 	},
+}
+
+func boolToString(apply bool) string {
+	if apply {
+		return "true"
+	} else {
+		return "false"
+	}
 }
 
 func initGetCmd() {
@@ -75,5 +94,6 @@ func initGetCmd() {
 	getCmd.PersistentFlags().Int64("limit", 100, "limit")
 	getCmd.PersistentFlags().Int64("offset", 0, "offset")
 	getCmd.PersistentFlags().Bool("backup", false, "backup")
+	getCmd.PersistentFlags().Bool("for-apply", false, "Prepare for apply")
 	selectorFlags.Declare(getCmd)
 }

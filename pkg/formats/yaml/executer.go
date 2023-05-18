@@ -78,6 +78,8 @@ func (e *executor) Restore(ctx context.Context) error {
 				return err
 			}
 
+			resource.Namespace = namespace
+
 			err = e.params.DhClient.ApplyResource(ctx, resource, e.params.DoMigration, e.params.ForceMigration)
 
 			if err != nil {

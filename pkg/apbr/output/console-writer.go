@@ -133,7 +133,7 @@ func (c consoleWriter) configureTable(table *tablewriter.Table) {
 	table.SetNoWhiteSpace(true)
 }
 
-func (c consoleWriter) WriteResources(resources []*model.Resource) {
+func (c consoleWriter) WriteResource(resources ...*model.Resource) error {
 	if c.describe {
 		for _, resource := range resources {
 			c.DescribeResource(resource)
@@ -141,6 +141,8 @@ func (c consoleWriter) WriteResources(resources []*model.Resource) {
 	} else {
 		c.ShowResourceTable(resources)
 	}
+
+	return nil
 }
 
 func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
@@ -168,7 +170,7 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	table.Render() // Send output
 }
 
-func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, recordsChan chan *model.Record) {
+func (c consoleWriter) WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error {
 	table := tablewriter.NewWriter(c.writer)
 	columns := []string{"Id"}
 
@@ -214,4 +216,6 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, reco
 	}
 
 	table.Render()
+
+	return nil
 }

@@ -10,6 +10,7 @@ import (
 
 type protobufWriter struct {
 	batchWriter batch.Writer
+	annotations map[string]string
 }
 
 func (c *protobufWriter) IsBinary() bool {
@@ -29,7 +30,7 @@ func (c *protobufWriter) nextBatch() {
 	}
 }
 
-func (c *protobufWriter) WriteResources(resources []*model.Resource) {
+func (c *protobufWriter) WriteResource(resources ...*model.Resource) error {
 	if err := c.batchWriter.StartBatch(&model.BatchHeader{
 		Mode:        model.BatchHeader_CREATE,
 		Annotations: nil,
@@ -44,9 +45,11 @@ func (c *protobufWriter) WriteResources(resources []*model.Resource) {
 	if err := c.batchWriter.EndBatch(); err != nil {
 		log.Fatal(err)
 	}
+
+	return nil
 }
 
-func (c *protobufWriter) WriteRecords(resource *model.Resource, total uint32, recordsChan chan *model.Record) {
+func (c *protobufWriter) WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error {
 	log.Printf("Total records to be written: %d \n", total)
 	if err := c.batchWriter.StartBatch(&model.BatchHeader{
 		Mode:        model.BatchHeader_CREATE,
@@ -113,4 +116,6 @@ func (c *protobufWriter) WriteRecords(resource *model.Resource, total uint32, re
 	}
 
 	log.Printf("Total records written: %d/%d", total, i)
+
+	return nil
 }
