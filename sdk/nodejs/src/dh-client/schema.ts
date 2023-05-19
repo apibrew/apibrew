@@ -684,7 +684,7 @@ export interface components {
       enumValues?: (components["schemas"]["GoogleProtobufValue"])[];
       reference?: components["schemas"]["Reference"];
       properties?: (components["schemas"]["ResourceProperty"])[];
-      subProperty?: components["schemas"]["ResourceProperty"];
+      Item?: components["schemas"]["ResourceProperty"];
       title?: string;
       description?: string;
       annotations?: {

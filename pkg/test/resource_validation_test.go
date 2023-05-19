@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/test/setup"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
 )
@@ -70,26 +71,17 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 
 	errorFields := util.GetErrorFields(err)
 
-	if len(errorFields) != 6 {
-		t.Error("There should be 6 errors; but " + strconv.Itoa(len(errorFields)))
+	if len(errorFields) != 5 {
+		t.Error("There should be 5 errors; but " + strconv.Itoa(len(errorFields)))
 		return
 	}
 
-	if errorFields[0].Property != "Name" {
-		t.Error("errorFields[0].Property should be Name: " + errorFields[0].Property)
-	}
+	assert.Equal(t, errorFields[0].Property, "Name")
+	assert.Equal(t, errorFields[1].Property, "SourceConfig.Entity")
+	assert.Equal(t, errorFields[2].Property, ".Name{index:1}")
+	assert.Equal(t, errorFields[3].Property, ".Mapping")
+	assert.Equal(t, errorFields[4].Property, "Type321.Reference")
 
-	if errorFields[1].Property != "SourceConfig.Entity" {
-		t.Error("errorFields[1].Property should be SourceConfig: " + errorFields[1].Property)
-	}
-
-	if errorFields[2].Property != "Properties[0].Length" {
-		t.Error("errorFields[3].Property should be Properties[0].Length: " + errorFields[3].Property)
-	}
-
-	if errorFields[3].Property != "Properties[1].Name" {
-		t.Error("errorFields[4].Property should be Properties[1].Name: " + errorFields[4].Property)
-	}
 }
 
 func TestCreateResourceWithSameName(t *testing.T) {

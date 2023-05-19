@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
+	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -24,7 +25,7 @@ func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
-				err := validatePropertyPackedValue(property, packedVal)
+				err := validatePropertyPackedValue(resource, property, packedVal)
 
 				if err != nil {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
@@ -95,7 +96,7 @@ func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
-func validatePropertyPackedValue(property *model.ResourceProperty, value *structpb.Value) error {
+func validatePropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, value *structpb.Value) error {
 	if value == nil {
 		return nil
 	}
@@ -138,7 +139,7 @@ func validatePropertyPackedValue(property *model.ResourceProperty, value *struct
 	case model.ResourceProperty_LIST:
 		if listValue, ok := value.Kind.(*structpb.Value_ListValue); ok {
 			for _, item := range listValue.ListValue.Values {
-				err := validatePropertyPackedValue(property.SubProperty, item)
+				err := validatePropertyPackedValue(resource, property.Item, item)
 
 				if err != nil {
 					return err
@@ -151,7 +152,7 @@ func validatePropertyPackedValue(property *model.ResourceProperty, value *struct
 	case model.ResourceProperty_MAP:
 		if listValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
 			for _, item := range listValue.StructValue.Fields {
-				err := validatePropertyPackedValue(property.SubProperty, item)
+				err := validatePropertyPackedValue(resource, property.Item, item)
 
 				if err != nil {
 					return err
@@ -179,48 +180,90 @@ func validatePropertyPackedValue(property *model.ResourceProperty, value *struct
 		return fmt.Errorf("value must be one of enum values: %v", value)
 	case model.ResourceProperty_STRUCT:
 		if structValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
-			for _, subProperty := range property.Properties {
-				subType := types.ByResourcePropertyType(subProperty.Type)
-				packedVal := structValue.StructValue.Fields[subProperty.Name]
+			if property.TypeRef != nil {
+				// locating type
+				typeDef := util.LocateArrayElement(resource.Types, func(elem *model.ResourceSubType) bool {
+					return elem.Name == *property.TypeRef
+				})
 
-				var val interface{}
-				var err error
-				if packedVal == nil {
-					val = nil
-				} else {
-					val, err = subType.UnPack(packedVal)
+				if typeDef == nil {
+					return fmt.Errorf("type %s not found", *property.TypeRef)
+				}
+
+				for _, Item := range typeDef.Properties {
+					subType := types.ByResourcePropertyType(Item.Type)
+					packedVal := structValue.StructValue.Fields[Item.Name]
+
+					var val interface{}
+					var err error
+					if packedVal == nil {
+						val = nil
+					} else {
+						val, err = subType.UnPack(packedVal)
+
+						if err != nil {
+							return err
+						}
+					}
+
+					if subType.IsEmpty(val) {
+						if Item.Required {
+							return fmt.Errorf("required field is empty: %v[%s]", property.Name, Item.Name)
+						} else {
+							continue
+						}
+					}
+
+					err = validatePropertyPackedValue(resource, Item, structValue.StructValue.Fields[Item.Name])
+
+					if err != nil {
+						return err
+					}
+				}
+			} else {
+				for _, Item := range property.Properties {
+					subType := types.ByResourcePropertyType(Item.Type)
+					packedVal := structValue.StructValue.Fields[Item.Name]
+
+					var val interface{}
+					var err error
+					if packedVal == nil {
+						val = nil
+					} else {
+						val, err = subType.UnPack(packedVal)
+
+						if err != nil {
+							return err
+						}
+					}
+
+					if subType.IsEmpty(val) {
+						if Item.Required {
+							return fmt.Errorf("required field is empty: %v[%s]", property.Name, Item.Name)
+						} else {
+							continue
+						}
+					}
+
+					err = validatePropertyPackedValue(resource, Item, structValue.StructValue.Fields[Item.Name])
 
 					if err != nil {
 						return err
 					}
 				}
 
-				if subType.IsEmpty(val) {
-					if subProperty.Required {
-						return fmt.Errorf("required field is empty: %v[%s]", property.Name, subProperty.Name)
-					} else {
-						continue
+				for key := range structValue.StructValue.Fields {
+					found := false
+					for _, Item := range property.Properties {
+						if Item.Name == key {
+							found = true
+							break
+						}
 					}
-				}
 
-				err = validatePropertyPackedValue(subProperty, structValue.StructValue.Fields[subProperty.Name])
-
-				if err != nil {
-					return err
-				}
-			}
-
-			for key := range structValue.StructValue.Fields {
-				found := false
-				for _, subProperty := range property.Properties {
-					if subProperty.Name == key {
-						found = true
-						break
+					if !found {
+						return fmt.Errorf("there are no such property: %v", key)
 					}
-				}
-
-				if !found {
-					return fmt.Errorf("there are no such property: %v", key)
 				}
 			}
 

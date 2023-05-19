@@ -374,11 +374,11 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 					structpb.NewStringValue("enum4"),
 				}
 			case model.ResourceProperty_MAP:
-				prop.SubProperty = &model.ResourceProperty{
+				prop.Item = &model.ResourceProperty{
 					Type: model.ResourceProperty_STRING,
 				}
 			case model.ResourceProperty_LIST:
-				prop.SubProperty = &model.ResourceProperty{
+				prop.Item = &model.ResourceProperty{
 					Type: model.ResourceProperty_STRING,
 				}
 			case model.ResourceProperty_STRUCT:

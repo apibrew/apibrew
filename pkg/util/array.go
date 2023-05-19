@@ -14,3 +14,13 @@ func ArrayFirst[T interface{}](arr []*T) *T {
 
 	return arr[0]
 }
+
+func LocateArrayElement[T interface{}](arr []*T, test func(elem *T) bool) *T {
+	for _, el := range arr {
+		if test(el) {
+			return el
+		}
+	}
+
+	return nil
+}

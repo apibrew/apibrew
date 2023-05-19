@@ -2592,7 +2592,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/ResourceProperty'
-                subProperty:
+                Item:
                     $ref: '#/components/schemas/ResourceProperty'
                 title:
                     type: string

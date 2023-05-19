@@ -16,7 +16,7 @@ properties:
     description: Name of Pet
   - name: tags # property name
     type: LIST
-    subProperty:
+    Item:
       type: STRING
   - name: status # property name
     type: ENUM

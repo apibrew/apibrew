@@ -24,7 +24,7 @@ properties:
     required: true
   - name: items
     type: LIST
-    subProperty:
+    Item:
       type: STRING
       length: 255
 ---
@@ -38,7 +38,7 @@ properties:
     required: true
   - name: status
     type: MAP
-    subProperty:
+    Item:
       type: STRING
       length: 255
 ---

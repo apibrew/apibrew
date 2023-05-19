@@ -81,7 +81,7 @@ var ResourcePropertyResource = &model.Resource{
 			},
 		},
 		{
-			Name:     "subProperty",
+			Name:     "Item",
 			Mapping:  "sub_property",
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,

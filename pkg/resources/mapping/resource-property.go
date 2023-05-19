@@ -19,14 +19,14 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["type"] = structpb.NewNumberValue(float64(property.Type.Number()))
 
 	if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
-		properties["subProperty"] = structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(property.SubProperty, resource).Properties})
+		properties["Item"] = structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(property.Item, resource).Properties})
 	}
 
 	if property.Type == model.ResourceProperty_STRUCT {
 		var propertyValues []*structpb.Value
 
-		for _, subProperty := range property.Properties {
-			propertyValues = append(propertyValues, structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(subProperty, resource).Properties}))
+		for _, Item := range property.Properties {
+			propertyValues = append(propertyValues, structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(Item, resource).Properties}))
 		}
 
 		properties["properties"] = structpb.NewListValue(&structpb.ListValue{Values: propertyValues})
@@ -124,8 +124,8 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_LIST || resourceProperty.Type == model.ResourceProperty_MAP {
-		resourceProperty.SubProperty = ResourcePropertyFromRecord(&model.Record{
-			Properties: record.Properties["subProperty"].GetStructValue().GetFields(),
+		resourceProperty.Item = ResourcePropertyFromRecord(&model.Record{
+			Properties: record.Properties["Item"].GetStructValue().GetFields(),
 		})
 	}
 

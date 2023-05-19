@@ -23,7 +23,7 @@ export const AppDesignerBoardResource: Resource = {
         {
             name: 'resourceSelector',
             type: 'LIST',
-            subProperty: {
+            Item: {
                 name: '',
                 type: 'STRING'
             }
@@ -31,7 +31,7 @@ export const AppDesignerBoardResource: Resource = {
         {
             name: 'resourceVisuals',
             type: 'LIST',
-            subProperty: {
+            Item: {
                 name: '',
                 type: 'STRUCT',
                 properties: [

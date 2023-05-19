@@ -4,7 +4,7 @@ namespace: ui
 description: A board is a collection of widgets that are displayed together.
 properties:
   - name: resourceVisuals
-    subProperty:
+    Item:
       properties:
         - length: 255
           name: resource
@@ -24,7 +24,7 @@ properties:
       type: STRUCT
     type: LIST
   - name: resourceSelector
-    subProperty:
+    Item:
       type: STRING
     type: LIST
   - description: The description of the board.
@@ -43,6 +43,82 @@ type: resource
 name: Crud
 namespace: ui
 description: Crud
+types:
+  - name: FormOptions
+    type: STRUCT
+    properties:
+      - name: label
+        type: STRING
+        length: 255
+      - name: value
+        type: STRING
+        length: 255
+      - name: selected
+        type: BOOL
+      - name: disabled
+        type: BOOL
+      - name: visible
+        type: BOOL
+      - name: readOnly
+        type: BOOL
+      - name: defaultValue
+        type: STRING
+        length: 255
+  - name: FormConfigFieldType
+    type: STRUCT
+    properties:
+      - name: name
+        type: STRING
+        length: 255
+      - name: label
+        type: STRING
+        length: 255
+      - name: type
+        type: STRING
+        length: 255
+      - name: required
+        type: BOOL
+      - name: readOnly
+        type: BOOL
+      - name: visible
+        type: BOOL
+      - name: defaultValue
+        type: STRING
+        length: 255
+      - name: options
+        type: LIST
+        Item:
+          typeRef: FormOptions
+  - name: FormConfig
+    type: STRUCT
+    properties:
+      - name: fields
+        type: LIST
+        Item:
+          typeRef: FormConfigFieldType
+  - name: GridColumnConfig
+    type: STRUCT
+    properties:
+      - name: header
+        type: STRING
+        length: 255
+      - name: visible
+        type: BOOL
+      - name: width
+        type: INT32
+      - name: sortable
+        type: BOOL
+      - name: filterable
+        type: BOOL
+  - name: GridConfig
+    type: STRUCT
+    properties:
+      - name: defaultColumnConfig
+        typeRef: GridColumnConfig
+      - name: columns
+        type: LIST
+        Item:
+          typeRef: GridColumnConfig
 properties:
   - name: resource
     type: STRING
@@ -52,3 +128,8 @@ properties:
     type: STRING
     length: 255
     required: true
+  - name: gridConfig
+    typeRef: GridConfig
+  - name: formConfig
+    typeRef: FormConfig
+

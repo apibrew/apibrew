@@ -2,6 +2,7 @@ package output
 
 import (
 	"github.com/apibrew/apibrew/pkg/formats/batch"
+	"github.com/apibrew/apibrew/pkg/formats/hclformat"
 	yamlformat "github.com/apibrew/apibrew/pkg/formats/yaml"
 	"github.com/apibrew/apibrew/pkg/model"
 	"io"
@@ -28,6 +29,8 @@ func NewOutputWriter(format string, w io.Writer, annotations map[string]string) 
 		}
 	case "yaml", "yml":
 		return yamlformat.NewWriter(w, annotations)
+	case "hcl":
+		return hclformat.NewWriter(w, annotations)
 	case "pb":
 		return &protobufWriter{
 			batchWriter: batch.NewWriter(w),
