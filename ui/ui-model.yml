@@ -1,3 +1,6 @@
+type: namespace
+name: ui
+---
 type: resource
 name: AppDesignerBoard
 namespace: ui
@@ -114,6 +117,7 @@ types:
       - name: columns
         type: LIST
         item:
+          type: STRUCT
           typeRef: GridColumnConfig
 properties:
   - name: resource

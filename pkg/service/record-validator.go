@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
+	"strconv"
 )
 
 func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
@@ -25,17 +26,7 @@ func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
-				err := validatePropertyPackedValue(resource, property, packedVal)
-
-				if err != nil {
-					fieldErrors = append(fieldErrors, &model.ErrorField{
-						RecordId: record.Id,
-						Property: property.Name,
-						Message:  err.Error(),
-						Value:    record.Properties[property.Name],
-					})
-					continue
-				}
+				fieldErrors = append(fieldErrors, validatePropertyPackedValue(resource, property, record.Id, "", packedVal)...)
 			}
 
 			var val interface{}
@@ -96,7 +87,7 @@ func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
-func validatePropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, value *structpb.Value) error {
+func validatePropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
 	if value == nil {
 		return nil
 	}
@@ -107,66 +98,93 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 
 	propertyType := types.ByResourcePropertyType(property.Type)
 
+	var err error
+
+	// validating simple fields:
+
 	switch property.Type {
 	case model.ResourceProperty_BOOL:
-		return canCast[bool]("bool", value.AsInterface())
-
+		err = canCast[bool]("bool", value.AsInterface())
 	case model.ResourceProperty_DATE, model.ResourceProperty_TIME, model.ResourceProperty_TIMESTAMP, model.ResourceProperty_BYTES, model.ResourceProperty_UUID:
 		// validation of string based types
-		err := canCast[string]("string", value.AsInterface())
+		err = canCast[string]("string", value.AsInterface())
 
 		if err != nil {
-			return err
+			break
 		}
 
 		_, err = propertyType.UnPack(value)
-
-		return err
 	case model.ResourceProperty_STRING:
-		return canCast[string]("string", value.AsInterface())
+		err = canCast[string]("string", value.AsInterface())
 	case model.ResourceProperty_FLOAT32:
-		return canCastNumber[float32]("float32", value.AsInterface())
+		err = canCastNumber[float32]("float32", value.AsInterface())
 	case model.ResourceProperty_FLOAT64:
-		return canCastNumber[float64]("float64", value.AsInterface())
+		err = canCastNumber[float64]("float64", value.AsInterface())
 	case model.ResourceProperty_INT32:
-		return canCastNumber[int32]("int32", value.AsInterface())
+		err = canCastNumber[int32]("int32", value.AsInterface())
 	case model.ResourceProperty_INT64:
-		return canCastNumber[int64]("int64", value.AsInterface())
+		err = canCastNumber[int64]("int64", value.AsInterface())
 	case model.ResourceProperty_REFERENCE:
-		return canCast[map[string]interface{}]("ReferenceType", value.AsInterface())
+		err = canCast[map[string]interface{}]("ReferenceType", value.AsInterface())
 	case model.ResourceProperty_OBJECT:
 		return nil
-	case model.ResourceProperty_LIST:
-		if listValue, ok := value.Kind.(*structpb.Value_ListValue); ok {
-			for _, item := range listValue.ListValue.Values {
-				err := validatePropertyPackedValue(resource, property.Item, item)
+	}
 
-				if err != nil {
-					return err
-				}
+	if err != nil {
+		return []*model.ErrorField{{
+			RecordId: recordId,
+			Property: propertyPath + property.Name,
+			Message:  err.Error(),
+			Value:    value,
+		}}
+	}
+
+	// validating complex fields:
+	switch property.Type {
+	case model.ResourceProperty_LIST:
+
+		if listValue, ok := value.Kind.(*structpb.Value_ListValue); ok {
+			var errorFields []*model.ErrorField
+
+			for i, item := range listValue.ListValue.Values {
+				errorFields = append(errorFields, validatePropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
 			}
-			return nil
+			return errorFields
 		} else {
-			return fmt.Errorf("value is not list: %v", value)
+			return []*model.ErrorField{{
+				RecordId: recordId,
+				Property: propertyPath + property.Name,
+				Message:  fmt.Sprintf("value is not list: %v", value),
+				Value:    value,
+			}}
 		}
 	case model.ResourceProperty_MAP:
 		if listValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
-			for _, item := range listValue.StructValue.Fields {
-				err := validatePropertyPackedValue(resource, property.Item, item)
+			var errorFields []*model.ErrorField
 
-				if err != nil {
-					return err
-				}
+			for key, item := range listValue.StructValue.Fields {
+				errorFields = append(errorFields, validatePropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
 			}
-			return nil
+
+			return errorFields
 		} else {
-			return fmt.Errorf("value is not map: %v", value)
+			return []*model.ErrorField{{
+				RecordId: recordId,
+				Property: propertyPath + property.Name,
+				Message:  fmt.Sprintf("value is not map: %v", value),
+				Value:    value,
+			}}
 		}
 	case model.ResourceProperty_ENUM:
-		err := canCast[string]("enum", value.AsInterface())
+		err = canCast[string]("enum", value.AsInterface())
 
 		if err != nil {
-			return err
+			return []*model.ErrorField{{
+				RecordId: recordId,
+				Property: propertyPath + property.Name,
+				Message:  err.Error(),
+				Value:    value,
+			}}
 		}
 
 		valStr := value.GetStringValue()
@@ -177,9 +195,16 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 			}
 		}
 
-		return fmt.Errorf("value must be one of enum values: %v", value)
+		return []*model.ErrorField{{
+			RecordId: recordId,
+			Property: propertyPath + property.Name,
+			Message:  fmt.Sprintf("value must be one of enum values: %v", value),
+			Value:    value,
+		}}
+
 	case model.ResourceProperty_STRUCT:
 		if structValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
+			var properties = property.Properties
 			if property.TypeRef != nil {
 				// locating type
 				typeDef := util.LocateArrayElement(resource.Types, func(elem *model.ResourceSubType) bool {
@@ -187,93 +212,84 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 				})
 
 				if typeDef == nil {
-					return fmt.Errorf("type %s not found", *property.TypeRef)
+					return []*model.ErrorField{{
+						RecordId: recordId,
+						Property: propertyPath + property.Name,
+						Message:  fmt.Sprintf("type %s not found", *property.TypeRef),
+						Value:    value,
+					}}
 				}
+				properties = typeDef.Properties
+			}
 
-				for _, Item := range typeDef.Properties {
-					subType := types.ByResourcePropertyType(Item.Type)
-					packedVal := structValue.StructValue.Fields[Item.Name]
+			for _, Item := range properties {
+				subType := types.ByResourcePropertyType(Item.Type)
+				packedVal := structValue.StructValue.Fields[Item.Name]
 
-					var val interface{}
-					var err error
-					if packedVal == nil {
-						val = nil
-					} else {
-						val, err = subType.UnPack(packedVal)
-
-						if err != nil {
-							return err
-						}
-					}
-
-					if subType.IsEmpty(val) {
-						if Item.Required {
-							return fmt.Errorf("required field is empty: %v[%s]", property.Name, Item.Name)
-						} else {
-							continue
-						}
-					}
-
-					err = validatePropertyPackedValue(resource, Item, structValue.StructValue.Fields[Item.Name])
+				var val interface{}
+				var err error
+				if packedVal == nil {
+					val = nil
+				} else {
+					val, err = subType.UnPack(packedVal)
 
 					if err != nil {
-						return err
+						return []*model.ErrorField{{
+							RecordId: recordId,
+							Property: propertyPath + property.Name,
+							Message:  err.Error(),
+							Value:    value,
+						}}
 					}
 				}
-			} else {
+
+				if subType.IsEmpty(val) {
+					if Item.Required {
+						return []*model.ErrorField{{
+							RecordId: recordId,
+							Property: propertyPath + property.Name,
+							Message:  fmt.Sprintf("required field is empty: %v[%s]", property.Name, Item.Name),
+							Value:    value,
+						}}
+					} else {
+						continue
+					}
+				}
+
+				return validatePropertyPackedValue(resource, Item, recordId, propertyPath+property.Name+".", structValue.StructValue.Fields[Item.Name])
+			}
+
+			for key := range structValue.StructValue.Fields {
+				found := false
 				for _, Item := range property.Properties {
-					subType := types.ByResourcePropertyType(Item.Type)
-					packedVal := structValue.StructValue.Fields[Item.Name]
-
-					var val interface{}
-					var err error
-					if packedVal == nil {
-						val = nil
-					} else {
-						val, err = subType.UnPack(packedVal)
-
-						if err != nil {
-							return err
-						}
-					}
-
-					if subType.IsEmpty(val) {
-						if Item.Required {
-							return fmt.Errorf("required field is empty: %v[%s]", property.Name, Item.Name)
-						} else {
-							continue
-						}
-					}
-
-					err = validatePropertyPackedValue(resource, Item, structValue.StructValue.Fields[Item.Name])
-
-					if err != nil {
-						return err
+					if Item.Name == key {
+						found = true
+						break
 					}
 				}
 
-				for key := range structValue.StructValue.Fields {
-					found := false
-					for _, Item := range property.Properties {
-						if Item.Name == key {
-							found = true
-							break
-						}
-					}
-
-					if !found {
-						return fmt.Errorf("there is no such property: %v", key)
-					}
+				if !found {
+					return []*model.ErrorField{{
+						RecordId: recordId,
+						Property: propertyPath + property.Name,
+						Message:  fmt.Sprintf("there is no such property: %v", key),
+						Value:    value,
+					}}
 				}
 			}
 
 			return nil
 		} else {
-			return fmt.Errorf("value is not struct: %v", value)
+			return []*model.ErrorField{{
+				RecordId: recordId,
+				Property: propertyPath + property.Name,
+				Message:  fmt.Sprintf("value is not struct: %v", value),
+				Value:    value,
+			}}
 		}
-	default:
-		panic("unknown property type: " + property.Type.String())
 	}
+
+	return nil
 }
 
 func canCast[T interface{}](typeName string, val interface{}) error {

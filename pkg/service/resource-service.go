@@ -744,26 +744,10 @@ func validateResourceProperties(resource *model.Resource, path string, depth int
 
 		// check for additional fields
 		if prop.DefaultValue != nil && prop.DefaultValue.AsInterface() != nil {
-			err := validatePropertyPackedValue(resource, prop, prop.DefaultValue)
-
-			if err != nil {
-				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix + "DefaultValue",
-					Message:  err.Error(),
-					Value:    prop.DefaultValue,
-				})
-			}
+			errorFields = append(errorFields, validatePropertyPackedValue(resource, prop, resource.Id, "", prop.DefaultValue)...)
 		}
 		if prop.ExampleValue != nil && prop.ExampleValue.AsInterface() != nil {
-			err := validatePropertyPackedValue(resource, prop, prop.ExampleValue)
-
-			if err != nil {
-				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix + "ExampleValue",
-					Message:  err.Error(),
-					Value:    prop.ExampleValue,
-				})
-			}
+			errorFields = append(errorFields, validatePropertyPackedValue(resource, prop, resource.Id, "", prop.ExampleValue)...)
 		}
 	}
 	return errorFields

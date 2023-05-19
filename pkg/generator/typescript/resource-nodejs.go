@@ -49,20 +49,25 @@ func GenerateResourceCode(params GenerateResourceCodeParams) error {
 	return nil
 }
 
-func PropNodejsType(prop *model.ResourceProperty) string {
+func PropNodejsType(resource *model.Resource, prop *model.ResourceProperty) string {
 	if prop.Type == model.ResourceProperty_REFERENCE {
 		return strcase.ToCamel(prop.Reference.ReferencedResource)
 	}
 
 	if prop.Type == model.ResourceProperty_LIST {
-		return strings.TrimSpace(PropNodejsType(prop.Item)) + "[]"
+		return strings.TrimSpace(PropNodejsType(resource, prop.Item)) + "[]"
 	}
 
 	if prop.Type == model.ResourceProperty_STRUCT {
+		if prop.TypeRef != nil {
+			return strcase.ToCamel(resource.Name + *prop.TypeRef)
+		}
+
 		var b bytes.Buffer
 		br := io.Writer(&b)
 
 		err := structTmpl.ExecuteTemplate(br, "struct", map[string]interface{}{
+			"Resource":   nil,
 			"Properties": prop.Properties,
 		})
 
