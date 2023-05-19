@@ -34,6 +34,14 @@ var ResourcePropertyResource = &model.Resource{
 			Required: true,
 		},
 		{
+			Name:     "typeRef",
+			Mapping:  "type_ref",
+			Primary:  false,
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: false,
+		},
+		{
 			Name:     "mapping",
 			Mapping:  "mapping",
 			Type:     model.ResourceProperty_STRING,
@@ -81,8 +89,8 @@ var ResourcePropertyResource = &model.Resource{
 			},
 		},
 		{
-			Name:     "Item",
-			Mapping:  "sub_property",
+			Name:     "item",
+			Mapping:  "item",
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},

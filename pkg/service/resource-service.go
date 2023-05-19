@@ -622,7 +622,7 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 	errorFields = append(errorFields, validateResourceProperties(resource, "", 0, resource.Properties, false)...)
 
 	for _, subType := range resource.Types {
-		errorFields = append(errorFields, validateResourceProperties(resource, subType.Name, 0, subType.Properties, false)...)
+		errorFields = append(errorFields, validateResourceProperties(resource, subType.Name+".", 1, subType.Properties, false)...)
 	}
 
 	if len(errorFields) > 0 {
@@ -704,7 +704,7 @@ func validateResourceProperties(resource *model.Resource, path string, depth int
 		if prop.Type == model.ResourceProperty_MAP {
 			if prop.Item == nil {
 				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix + "Item",
+					Property: propertyPrefix + "item",
 					Message:  "Item should not be empty for map type",
 					Value:    nil,
 				})
