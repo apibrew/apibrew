@@ -1975,7 +1975,7 @@ func main() {
         "properties": [
           {}
         ],
-        "subProperty": {},
+        "Item": {},
         "title": "string",
         "description": "string",
         "annotations": {
@@ -9190,7 +9190,7 @@ func main() {
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -9341,7 +9341,7 @@ const inputBody = '{
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -9596,7 +9596,7 @@ func main() {
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -9727,7 +9727,7 @@ func main() {
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -9878,7 +9878,7 @@ const inputBody = '{
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -10133,7 +10133,7 @@ func main() {
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -10264,7 +10264,7 @@ func main() {
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -10628,7 +10628,7 @@ const inputBody = '{
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -10882,7 +10882,7 @@ func main() {
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -11012,7 +11012,7 @@ func main() {
             "properties": [
               {}
             ],
-            "subProperty": {},
+            "Item": {},
             "title": "string",
             "description": "string",
             "annotations": {
@@ -11120,7 +11120,7 @@ func main() {
             "properties": [
               {}
             ],
-            "subProperty": {},
+            "Item": {},
             "title": "string",
             "description": "string",
             "annotations": {
@@ -11439,7 +11439,7 @@ func main() {
         "properties": [
           {}
         ],
-        "subProperty": {},
+        "Item": {},
         "title": "string",
         "description": "string",
         "annotations": {
@@ -11727,7 +11727,7 @@ func main() {
         "properties": [
           {}
         ],
-        "subProperty": {},
+        "Item": {},
         "title": "string",
         "description": "string",
         "annotations": {
@@ -15178,7 +15178,7 @@ bearerAuth
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -15318,7 +15318,7 @@ bearerAuth
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -16822,7 +16822,7 @@ bearerAuth
         "properties": [
           {}
         ],
-        "subProperty": {},
+        "Item": {},
         "title": "string",
         "description": "string",
         "annotations": {
@@ -16949,7 +16949,7 @@ bearerAuth
         "properties": [
           {}
         ],
-        "subProperty": {},
+        "Item": {},
         "title": "string",
         "description": "string",
         "annotations": {
@@ -17589,7 +17589,7 @@ Represents a dynamically typed value which can be either null, a number, a strin
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -18005,7 +18005,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
         "properties": [
           {}
         ],
-        "subProperty": {},
+        "Item": {},
         "title": "string",
         "description": "string",
         "annotations": {
@@ -18135,7 +18135,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -18273,7 +18273,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
             "properties": [
               {}
             ],
-            "subProperty": {},
+            "Item": {},
             "title": "string",
             "description": "string",
             "annotations": {
@@ -18381,7 +18381,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
             "properties": [
               {}
             ],
-            "subProperty": {},
+            "Item": {},
             "title": "string",
             "description": "string",
             "annotations": {
@@ -18959,7 +18959,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
       "properties": [
         {}
       ],
-      "subProperty": {},
+      "Item": {},
       "title": "string",
       "description": "string",
       "annotations": {
@@ -19284,7 +19284,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
         "properties": [
           {}
         ],
-        "subProperty": {},
+        "Item": {},
         "title": "string",
         "description": "string",
         "annotations": {
@@ -19392,7 +19392,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
         "properties": [
           {}
         ],
-        "subProperty": {},
+        "Item": {},
         "title": "string",
         "description": "string",
         "annotations": {
@@ -19675,7 +19675,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
         "cascade": true
       },
       "properties": [],
-      "subProperty": {},
+      "Item": {},
       "title": "string",
       "description": "string",
       "annotations": {
@@ -19684,7 +19684,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
       }
     }
   ],
-  "subProperty": {
+  "Item": {
     "id": "string",
     "name": "string",
     "type": "BOOL",
@@ -19723,7 +19723,7 @@ Automatically-generated message used to represent maps of Any as ordered (name,v
     "properties": [
       {}
     ],
-    "subProperty": {},
+    "Item": {},
     "title": "string",
     "description": "string",
     "annotations": {
@@ -19762,7 +19762,7 @@ Resource properties is used to describe its schema. Each resource property is co
 |enumValues|[[GoogleProtobufValue](#schemagoogleprotobufvalue)]|false|none|[Represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values.]|
 |reference|[Reference](#schemareference)|false|none|none|
 |properties|[[ResourceProperty](#schemaresourceproperty)]|false|none|[Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64]|
-|subProperty|[ResourceProperty](#schemaresourceproperty)|false|none|Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64|
+|Item|[ResourceProperty](#schemaresourceproperty)|false|none|Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64|
 |title|string|false|none|none|
 |description|string|false|none|none|
 |annotations|object|false|none|none|
@@ -21118,7 +21118,7 @@ The `Status` type defines a logical error model that is suitable for different p
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {
@@ -21258,7 +21258,7 @@ The `Status` type defines a logical error model that is suitable for different p
           "properties": [
             {}
           ],
-          "subProperty": {},
+          "Item": {},
           "title": "string",
           "description": "string",
           "annotations": {

@@ -55,7 +55,7 @@ func PropNodejsType(prop *model.ResourceProperty) string {
 	}
 
 	if prop.Type == model.ResourceProperty_LIST {
-		return strings.TrimSpace(PropNodejsType(prop.SubProperty)) + "[]"
+		return strings.TrimSpace(PropNodejsType(prop.Item)) + "[]"
 	}
 
 	if prop.Type == model.ResourceProperty_STRUCT {

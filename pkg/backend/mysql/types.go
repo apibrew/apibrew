@@ -31,6 +31,10 @@ func (p mysqlBackendOptions) TypeModifier(propertyType model.ResourceProperty_Ty
 }
 
 func (p mysqlBackendOptions) GetSqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
+	if length == 0 {
+		length = 255
+	}
+
 	switch propertyType {
 	case model.ResourceProperty_INT32:
 		return "INT"

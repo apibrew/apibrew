@@ -46,6 +46,9 @@ message ResourceProperty {
   // type of property
   Type type = 3;
 
+  // type ref
+  optional  string typeRef = 17; // type ref, is only applicable to Struct
+
   // mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
   string mapping = 4;
 
@@ -61,7 +64,8 @@ message ResourceProperty {
   repeated google.protobuf.Value enumValues = 13; // enumValues is used if property type is an enum
   optional Reference reference = 14 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
   repeated ResourceProperty properties = 15 [(model.hcl_block) = "property"]; // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
-  optional ResourceProperty subProperty = 16; // subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
+  optional ResourceProperty item = 16; // item is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
+
   optional string title = 18; // It is an informative column
   optional string description = 19; // It is an informative column
 
@@ -107,13 +111,19 @@ message ResourceIndex {
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
 
+message ResourceSubType {
+  string name = 1;
+  repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
+}
+
 message Resource {
   string id = 1 [(model.hcl_ignore) = true];  // unique resource id; read only
   string name = 2 [(model.hcl_label) = "name"]; // unique resource name, it is unique per namespace
   string namespace = 3; // each resource is kept inside a namespace. One namespace can have multiple resources
   ResourceSourceConfig sourceConfig = 5 [(model.hcl_block) = "sourceConfig"]; //
   repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
-  repeated ResourceIndex indexes = 7 [(model.hcl_block) = "index"]; // list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends.
+  repeated ResourceSubType types = 7 [(model.hcl_block) = "type"];
+  repeated ResourceIndex indexes = 8 [(model.hcl_block) = "index"]; // list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends.
   SecurityContext securityContext = 10; // security context is to apply ACL to resource property
   bool virtual = 11; // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.
   bool immutable = 12; // if true, delete and update will not be allowed on this resource

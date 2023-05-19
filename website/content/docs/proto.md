@@ -843,7 +843,7 @@ if you send 123.45 for int64
 | enumValues | [google.protobuf.Value](#google-protobuf-Value) | repeated | enumValues is used if property type is an enum |
 | reference | [Reference](#model-Reference) | optional | reference property is only valid and required for Reference types. |
 | properties | [ResourceProperty](#model-ResourceProperty) | repeated | list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself |
-| subProperty | [ResourceProperty](#model-ResourceProperty) | optional | subProperty is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string) |
+| Item | [ResourceProperty](#model-ResourceProperty) | optional | Item is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string) |
 | title | [string](#string) | optional | It is an informative column |
 | description | [string](#string) | optional | It is an informative column |
 | annotations | [ResourceProperty.AnnotationsEntry](#model-ResourceProperty-AnnotationsEntry) | repeated |  |
