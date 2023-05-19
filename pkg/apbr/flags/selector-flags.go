@@ -18,8 +18,8 @@ type selectorFlags struct {
 
 func (s selectorFlags) Declare(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
-	cmd.PersistentFlags().String("name", "", "Item name")
-	cmd.PersistentFlags().String("names", "", "Item names")
+	cmd.PersistentFlags().String("name", "", "item name")
+	cmd.PersistentFlags().String("names", "", "item names")
 }
 
 func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, args []string) {

@@ -49,6 +49,13 @@ var ResourceResource = &model.Resource{
 			Required: true,
 		},
 		{
+			Name:     "types",
+			Mapping:  "types",
+			Primary:  false,
+			Type:     model.ResourceProperty_OBJECT,
+			Required: false,
+		},
+		{
 			Name:     "immutable",
 			Mapping:  "immutable",
 			Primary:  false,

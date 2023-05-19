@@ -19,7 +19,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["type"] = structpb.NewNumberValue(float64(property.Type.Number()))
 
 	if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
-		properties["Item"] = structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(property.Item, resource).Properties})
+		properties["item"] = structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(property.Item, resource).Properties})
 	}
 
 	if property.Type == model.ResourceProperty_STRUCT {
@@ -30,6 +30,10 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 		}
 
 		properties["properties"] = structpb.NewListValue(&structpb.ListValue{Values: propertyValues})
+
+		if property.TypeRef != nil {
+			properties["typeRef"] = structpb.NewStringValue(*property.TypeRef)
+		}
 	}
 
 	if property.Type == model.ResourceProperty_ENUM {
@@ -125,7 +129,7 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 
 	if resourceProperty.Type == model.ResourceProperty_LIST || resourceProperty.Type == model.ResourceProperty_MAP {
 		resourceProperty.Item = ResourcePropertyFromRecord(&model.Record{
-			Properties: record.Properties["Item"].GetStructValue().GetFields(),
+			Properties: record.Properties["item"].GetStructValue().GetFields(),
 		})
 	}
 
@@ -139,6 +143,11 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		}
 
 		resourceProperty.Properties = properties
+
+		if record.Properties["typeRef"] != nil {
+			resourceProperty.TypeRef = new(string)
+			*resourceProperty.TypeRef = record.Properties["typeRef"].GetStringValue()
+		}
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_ENUM {

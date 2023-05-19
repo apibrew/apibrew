@@ -42,6 +42,16 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		properties["indexes"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
 	}
 
+	if resource.Types != nil {
+		var lv []*structpb.Value
+
+		for _, subType := range resource.Types {
+			lv = append(lv, ResourceTypeToValue(subType))
+		}
+
+		properties["types"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
+	}
+
 	mapSpecialColumnsToRecord(resource, &properties)
 
 	return &model.Record{
@@ -81,6 +91,14 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		}
 	}
 
+	if record.Properties["types"] != nil {
+		list := record.Properties["types"].GetListValue()
+
+		for _, val := range list.Values {
+			resource.Types = append(resource.Types, ResourceTypeFromValue(val))
+		}
+	}
+
 	if record.Properties["title"] != nil {
 		resource.Title = new(string)
 		*resource.Title = record.Properties["title"].GetStringValue()
@@ -115,6 +133,42 @@ func ResourceIndexFromValue(val *structpb.Value) *model.ResourceIndex {
 }
 
 func ResourceIndexToValue(index *model.ResourceIndex) *structpb.Value {
+	jData, err := json.Marshal(index)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var val = &structpb.Value{}
+
+	err = val.UnmarshalJSON(jData)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return val
+}
+
+func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
+	jData, err := val.MarshalJSON()
+
+	if err != nil {
+		panic(err)
+	}
+
+	var ri = new(model.ResourceSubType)
+
+	err = json.Unmarshal(jData, ri)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ri
+}
+
+func ResourceTypeToValue(index *model.ResourceSubType) *structpb.Value {
 	jData, err := json.Marshal(index)
 
 	if err != nil {

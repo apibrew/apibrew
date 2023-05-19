@@ -262,7 +262,7 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 					}
 
 					if !found {
-						return fmt.Errorf("there are no such property: %v", key)
+						return fmt.Errorf("there is no such property: %v", key)
 					}
 				}
 			}

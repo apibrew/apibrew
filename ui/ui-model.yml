@@ -4,7 +4,7 @@ namespace: ui
 description: A board is a collection of widgets that are displayed together.
 properties:
   - name: resourceVisuals
-    Item:
+    item:
       properties:
         - length: 255
           name: resource
@@ -24,7 +24,7 @@ properties:
       type: STRUCT
     type: LIST
   - name: resourceSelector
-    Item:
+    item:
       type: STRING
     type: LIST
   - description: The description of the board.
@@ -45,7 +45,6 @@ namespace: ui
 description: Crud
 types:
   - name: FormOptions
-    type: STRUCT
     properties:
       - name: label
         type: STRING
@@ -65,7 +64,6 @@ types:
         type: STRING
         length: 255
   - name: FormConfigFieldType
-    type: STRUCT
     properties:
       - name: name
         type: STRING
@@ -87,17 +85,15 @@ types:
         length: 255
       - name: options
         type: LIST
-        Item:
+        item:
           typeRef: FormOptions
   - name: FormConfig
-    type: STRUCT
     properties:
       - name: fields
         type: LIST
-        Item:
+        item:
           typeRef: FormConfigFieldType
   - name: GridColumnConfig
-    type: STRUCT
     properties:
       - name: header
         type: STRING
@@ -111,13 +107,13 @@ types:
       - name: filterable
         type: BOOL
   - name: GridConfig
-    type: STRUCT
     properties:
       - name: defaultColumnConfig
+        type: STRUCT
         typeRef: GridColumnConfig
       - name: columns
         type: LIST
-        Item:
+        item:
           typeRef: GridColumnConfig
 properties:
   - name: resource
@@ -129,7 +125,9 @@ properties:
     length: 255
     required: true
   - name: gridConfig
+    type: STRUCT
     typeRef: GridConfig
   - name: formConfig
+    type: STRUCT
     typeRef: FormConfig
 
