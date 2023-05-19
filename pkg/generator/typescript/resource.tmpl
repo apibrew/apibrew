@@ -1,6 +1,18 @@
 {{ range .params.Resources}}
-export interface {{ToCamel .Name}} {
-    {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType .}};
+    {{ with $resource := . }}
+        {{range $resource.Types}}
+            export interface {{ToCamel $resource.Name}}{{ToCamel .Name}} {
+            {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
+            {{end}}
+            }
+        {{end}}
     {{end}}
-}
+{{end}}
+{{ range .params.Resources}}
+    {{ with $resource := . }}
+        export interface {{ToCamel .Name}} {
+        {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
+        {{end}}
+        }
+    {{end}}
 {{end}}

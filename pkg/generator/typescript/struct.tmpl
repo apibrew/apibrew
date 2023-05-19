@@ -1,3 +1,9 @@
 {
-    {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType .}};{{end}}
+{{ with $resource := .Resource }}
+    {{ with $properties := .Properties }}
+        {{ range $properties.Properties }}
+            {{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
+        {{end}}
+    {{end}}
+{{end}}
 }

@@ -52,15 +52,15 @@ func (p postgreSqlBackendOptions) GetDefaultCatalog() string {
 func (p postgreSqlBackendOptions) handlePqErr(err *pq.Error) errors.ServiceError {
 	switch err.Code {
 	case "28000":
-		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
+		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message).WithDetails(err.Detail)
 	case "28P01":
-		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
+		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message).WithDetails(err.Detail)
 	case "23505":
-		return errors.UniqueViolation.WithDetails(err.Message)
+		return errors.UniqueViolation.WithDetails(err.Message).WithDetails(err.Detail)
 	case "23503":
-		return errors.ReferenceViolation.WithDetails(err.Message)
+		return errors.ReferenceViolation.WithDetails(err.Message).WithDetails(err.Detail)
 	default:
-		return errors.InternalError.WithMessage(err.Message)
+		return errors.InternalError.WithMessage(err.Message).WithDetails(err.Detail)
 	}
 }
 
