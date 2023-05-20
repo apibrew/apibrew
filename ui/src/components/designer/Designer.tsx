@@ -1,12 +1,12 @@
-import React, { Fragment, type ReactNode, useEffect, useState } from 'react'
-import { type Resource } from '../../model'
-import { ResourceService } from '../../service/resource'
-import { ResourceElement } from './ResourceElement'
-import { Scale } from './Scale'
-import { Movable, MovableComponent } from './Movable'
-import { SvgContainer } from './SvgContainer'
-import { ReferenceLink } from './ReferanceLink'
-import { Selectable } from './Selectable'
+import React, {Fragment, type ReactNode, useEffect, useState} from 'react'
+import {type Resource} from '../../model'
+import {ResourceService} from '../../service/resource'
+import {ResourceElement} from './ResourceElement'
+import {Scale} from './Scale'
+import {Movable, MovableComponent} from './Movable'
+import {SvgContainer} from './SvgContainer'
+import {ReferenceLink} from './ReferanceLink'
+import {Selectable} from './Selectable'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import {
@@ -22,15 +22,16 @@ import {
     ZoomIn,
     ZoomOut
 } from '@mui/icons-material'
-import { Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Menu, MenuItem, Tooltip } from '@mui/material'
-import { LayoutContext } from '../../context/layout-context'
+import {Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Menu, MenuItem, Tooltip} from '@mui/material'
+import {LayoutContext} from '../../context/layout-context'
 import Button from '@mui/material/Button'
-import { ResourceForm } from '../resource-form/ResourceForm'
-import { ResourceVisualizer } from './ResourceVisualizer'
-import { RecordService } from '../../service/record'
-import {type AppDesignerBoard, AppDesignerBoardName} from '../../model/schema'
-import { type Point } from './point'
-import { SdkDrawer } from '../sdk/SdkDrawer'
+import {ResourceForm} from '../resource-form/ResourceForm'
+import {ResourceVisualizer} from './ResourceVisualizer'
+import {RecordService} from '../../service/record'
+import {type AppDesignerBoard, AppDesignerBoardName, AppDesignerBoardNameName} from '../../model/schema'
+import {type Point} from './point'
+import {SdkDrawer} from '../sdk/SdkDrawer'
+import {checkResourceAllowedOnBoard} from "./util";
 
 export interface Selection {
     type: string
@@ -39,7 +40,8 @@ export interface Selection {
 }
 
 export interface DesignerProps {
-    id: string
+    id?: string
+    name?: string
 }
 
 // React component to render the diagram
@@ -61,17 +63,35 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
     const load = async () => {
         setSelected([])
 
-        const board = await RecordService.get<AppDesignerBoard>('ui', AppDesignerBoardName, props.id)
+        let board: AppDesignerBoard | undefined
+
+        if (props.id) {
+            board = await RecordService.get<AppDesignerBoard>('ui', AppDesignerBoardName, props.id)
+        } else if (props.name) {
+            board = await RecordService.findBy<AppDesignerBoard>('ui', AppDesignerBoardName, 'name', props.name)
+        } else {
+            throw new Error('Either id or name must be provided')
+        }
+
+        if (!board) {
+            throw new Error('Board not found')
+        }
+
+        if (!board.resourceVisuals) {
+            board.resourceVisuals = []
+        }
 
         setBoard(board)
 
+        console.log(board)
+
         try {
-            const list = (await ResourceService.list()).filter(item => item.namespace !== 'system')
+            const list = (await ResourceService.list()).filter(item => checkResourceAllowedOnBoard(board!, item))
 
             let x = 10
             let y = 10
 
-            let updateLocationMap: Record<string, Point> = { ...locationMap }
+            let updateLocationMap: Record<string, Point> = {...locationMap}
 
             for (const resource of list) {
                 const resourceVisual = board.resourceVisuals.find(item => item.resource === resource.name)
@@ -113,7 +133,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
 
     console.log(resources, locationMap)
 
-    const actionPanel = <Box style={{ display: 'flex' }}>
+    const actionPanel = <Box style={{display: 'flex'}}>
         <Box>
             <Tooltip title={'Add New Item'}>
                 <IconButton onClick={(e) => {
@@ -125,18 +145,18 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                         addMenuOpen: true
                     })
                 }}>
-                    <Add />
+                    <Add/>
                 </IconButton>
             </Tooltip>
             {addButtonRef && <Menu anchorEl={addButtonRef}
-                onClose={() => {
-                    setFlags({
-                        ...flags,
-                        addMenuOpen: false
-                    })
-                }}
-                open={flags.addMenuOpen}
-                id="hooks-menu"
+                                   onClose={() => {
+                                       setFlags({
+                                           ...flags,
+                                           addMenuOpen: false
+                                       })
+                                   }}
+                                   open={flags.addMenuOpen}
+                                   id="hooks-menu"
             >
                 <MenuItem onClick={() => {
                     setFlags({
@@ -159,13 +179,13 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                 version: 1,
                                 virtual: false
                             }}
-                                onCancel={() => {
-                                    modal.close()
-                                }}
-                                onSave={() => {
-                                    load()
-                                    modal.close()
-                                }} />
+                                          onCancel={() => {
+                                              modal.close()
+                                          }}
+                                          onSave={() => {
+                                              load()
+                                              modal.close()
+                                          }}/>
                         </Box>
                     })
                 }}>Add Resource</MenuItem>
@@ -197,17 +217,17 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                             width: 800
                         }}>
                             <ResourceForm resources={resources} initResource={selected[0].data as Resource}
-                                onCancel={() => {
-                                    modal.close()
-                                }}
-                                onSave={(updatedResource) => {
-                                    load()
-                                    modal.close()
-                                }} />
+                                          onCancel={() => {
+                                              modal.close()
+                                          }}
+                                          onSave={(updatedResource) => {
+                                              load()
+                                              modal.close()
+                                          }}/>
                         </Box>
                     })
                 }}>
-                    <Edit textAnchor={'asd'} />
+                    <Edit textAnchor={'asd'}/>
                 </IconButton>
             </Tooltip>
             <Tooltip title={'Delete Item'}>
@@ -224,7 +244,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                         deleteDialog: true
                     })
                 }}>
-                    <Delete />
+                    <Delete/>
                 </IconButton>
             </Tooltip>
             <Dialog
@@ -243,8 +263,8 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                 </DialogTitle>
                 <DialogContent>
                     Force Delete? <Checkbox value={forceDelete} onChange={e => {
-                        setForceDelete(e.target.checked)
-                    }}></Checkbox>
+                    setForceDelete(e.target.checked)
+                }}></Checkbox>
                 </DialogContent>
                 <DialogActions>
                     <Button variant='contained' onClick={() => {
@@ -280,10 +300,10 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
             <Tooltip title={'Update visualisation'}>
                 <IconButton onClick={(e) => {
                     layoutOptions.showModal({
-                        content: <ResourceVisualizer />
+                        content: <ResourceVisualizer/>
                     })
                 }}>
-                    <Brush />
+                    <Brush/>
                 </IconButton>
             </Tooltip>
             <Tooltip title={'SDK for resource'}>
@@ -307,28 +327,28 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                     setShowSdk(true)
                     setSdkResource(selected[0].data as Resource)
                 }}>
-                    <Api />
+                    <Api/>
                 </IconButton>
             </Tooltip>
         </Box>
-        <Box sx={{ flexGrow: 5 }} />
+        <Box sx={{flexGrow: 5}}/>
         <Box>
             <Tooltip title={`${Math.round(zoomLevel * 100)}%`}>
                 <Box>
                     <IconButton onClick={() => {
                         setZoomLevel(Math.min(3, zoomLevel + 0.2))
                     }}>
-                        <ZoomIn />
+                        <ZoomIn/>
                     </IconButton>
                     <IconButton onClick={() => {
                         setZoomLevel(1)
                     }}>
-                        <Search />
+                        <Search/>
                     </IconButton>
                     <IconButton onClick={() => {
                         setZoomLevel(Math.max(0.2, zoomLevel - 0.2))
                     }}>
-                        <ZoomOut />
+                        <ZoomOut/>
                     </IconButton>
                 </Box>
             </Tooltip>
@@ -336,56 +356,56 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
         <Box>
             <IconButton aria-label="left aligned" onClick={load}>
                 <Tooltip title={'Reload'}>
-                    <Replay />
+                    <Replay/>
                 </Tooltip>
             </IconButton>
             <IconButton value="wide" aria-label="left aligned">
                 <Tooltip title={'Rearrange elements'}>
-                    <FormatAlignCenter />
+                    <FormatAlignCenter/>
                 </Tooltip>
             </IconButton>
             <Tooltip title={'Settings'}>
                 <IconButton onClick={(e) => {
 
                 }}>
-                    <SettingsApplications />
+                    <SettingsApplications/>
                 </IconButton>
             </Tooltip>
         </Box>
     </Box>
 
     const designingArea = <svg className={'designer-parent'}
-        style={{ width: '100%', height: '100vh', overflow: 'auto' }}>
+                               style={{width: '100%', height: '100vh', overflow: 'auto'}}>
         <SvgContainer>
             <Scale level={zoomLevel}>
                 <Movable>
                     {resources.map((resource, index) => {
                         return <MovableComponent key={resource.name}
-                            location={locationMap[resource.name]}
-                            updateLocation={location => {
-                                if (location.x === locationMap[resource.name].x && location.y === locationMap[resource.name].y) {
-                                    return
-                                }
+                                                 location={locationMap[resource.name]}
+                                                 updateLocation={location => {
+                                                     if (location.x === locationMap[resource.name].x && location.y === locationMap[resource.name].y) {
+                                                         return
+                                                     }
 
-                                setLocationMap({
-                                    ...locationMap,
-                                    [resource.name]: location
-                                })
+                                                     setLocationMap({
+                                                         ...locationMap,
+                                                         [resource.name]: location
+                                                     })
 
-                                const resourceVisual = board?.resourceVisuals.find(item => item.resource === resource.name)
+                                                     const resourceVisual = board?.resourceVisuals.find(item => item.resource === resource.name)
 
-                                if (resourceVisual) {
-                                    resourceVisual.location = location
-                                } else {
-                                    board?.resourceVisuals.push({
-                                        resource: resource.name,
-                                        allowRecordsOnBoard: false,
-                                        location
-                                    })
-                                }
+                                                     if (resourceVisual) {
+                                                         resourceVisual.location = location
+                                                     } else {
+                                                         board?.resourceVisuals.push({
+                                                             resource: resource.name,
+                                                             allowRecordsOnBoard: false,
+                                                             location
+                                                         })
+                                                     }
 
-                                save()
-                            }}>
+                                                     save()
+                                                 }}>
                             <Selectable onSelected={isSelected => {
                                 if (isSelected) {
                                     setSelected([...selected, {
@@ -397,7 +417,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                                     setSelected(selected.filter(item => item.type === 'resource' && item.identifier !== resource.name))
                                 }
                             }}>
-                                <ResourceElement resource={resource} />
+                                <ResourceElement resource={resource}/>
                             </Selectable>
                         </MovableComponent>
                     })}
@@ -406,8 +426,8 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
                         return <Fragment key={resource.name}>
                             {resource.properties?.filter(item => item.type === 'REFERENCE')?.filter(item => item.reference?.referencedResource)?.map((property, index) => {
                                 return <ReferenceLink key={`${resource.name}-${property.name}`}
-                                    resource={resource}
-                                    property={property} />
+                                                      resource={resource}
+                                                      property={property}/>
                             })}
                         </Fragment>
                     })}
@@ -416,14 +436,16 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
         </SvgContainer>
     </svg>
 
-    return <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+    return <Box sx={{display: 'flex', flexDirection: 'column'}}>
         {/* Action Panel */}
         {actionPanel}
         {/* Designing Area */}
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{flexGrow: 1}}>
             {board && designingArea}
         </Box>
-        <SdkDrawer resource={sdkResource} open={showSdk} onClose={() => { setShowSdk(false) }} />
+        <SdkDrawer resource={sdkResource} open={showSdk} onClose={() => {
+            setShowSdk(false)
+        }}/>
         {modules}
     </Box>
 }

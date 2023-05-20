@@ -1,0 +1,16 @@
+type: record
+namespace: ui
+resource: AppDesignerBoard
+properties:
+  name: Default
+  description: 'The default board.'
+  resourceSelector: [ '*' ]
+  namespaceSelector: [ 'default' ]
+---
+type: record
+namespace: ui
+resource: Crud
+properties:
+  name: CrudSettings
+  namespace: ui
+  resource: Crud

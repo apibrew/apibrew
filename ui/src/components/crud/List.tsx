@@ -77,7 +77,7 @@ export function List(props: ListProps) {
                 setShowSdk(true)
             }} startIcon={<Api />}>sdk</Button>
             <Button variant={'contained'} color='secondary' onClick={() => {
-                setShowSdk(true)
+                navigate('settings')
             }} startIcon={<Api />}>Crud Settings</Button>
         </>}>
             <SdkDrawer resource={props.resource} open={showSdk} onClose={() => { setShowSdk(false) }} />

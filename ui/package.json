@@ -12,6 +12,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.1",
     "axios": "^1.3.6",
+    "nodemon": "^2.0.22",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.10.0",
@@ -28,7 +29,10 @@
     "eject": "react-scripts eject",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "build-ui-model": "apbr apply -f ui-model.yml; apbr generate --path=src/model --namespace=ui --platform=typescript"
+    "build-ui-model": "apbr apply -f ui-model.yml; apbr generate --path=src/model --namespace=ui --platform=typescript",
+    "build-ui-model:watch": "nodemon --watch ui-model.yml --exec \"yarn build-ui-model\"",
+    "build-ui-config": "apbr apply -f ui-config.yml",
+    "build-ui-config:watch": "nodemon --watch ui-config.yml --exec \"yarn build-ui-config\""
   },
   "browserslist": {
     "production": [

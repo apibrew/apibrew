@@ -44,6 +44,10 @@ properties:
     item:
       type: STRING
     type: LIST
+  - name: namespaceSelector
+    item:
+      type: STRING
+    type: LIST
 ---
 type: resource
 name: Crud
@@ -101,6 +105,10 @@ types:
           type: STRUCT
           typeRef: GridColumnConfig
 properties:
+  - name: name
+    type: STRING
+    length: 255
+    unique: true
   - name: resource
     type: STRING
     length: 255
@@ -115,11 +123,3 @@ properties:
   - name: formConfig
     type: STRUCT
     typeRef: FormConfig
----
-type: record
-namespace: ui
-resource: AppDesignerBoard
-properties:
-  name: Default
-  description: 'The default board.'
-  resourceSelector: [ '*' ]

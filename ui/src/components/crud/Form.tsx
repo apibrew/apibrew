@@ -4,12 +4,14 @@ import { Record } from "../../service/record"
 import { FormElement } from "./FormElement"
 import { isSpecialProperty } from "../../util/property"
 import { not } from "../../util/lambda"
+import {CrudFormConfig} from "../../model/schema";
 
 export interface FormProps {
     resource: Resource
     record: Record
     readOnly?: boolean
     setRecord: (record: Record) => void
+    formConfig?: CrudFormConfig
 }
 
 export function Form(props: FormProps) {

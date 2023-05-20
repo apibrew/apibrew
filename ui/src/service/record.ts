@@ -1,10 +1,12 @@
 import axios from 'axios'
-import { BACKEND_URL } from '../config'
-import { TokenService } from './token'
-import { handleError } from './error-handler'
+import {BACKEND_URL} from '../config'
+import {TokenService} from './token'
+import {handleError} from './error-handler'
+import {BooleanExpression, PairExpression} from "../model";
 
 export interface Record {
     id?: string
+
     [key: string]: any
 }
 
@@ -78,6 +80,34 @@ export namespace RecordService {
             })
 
             return result.data
+        } catch (e) {
+            return await handleError(e)
+        }
+    }
+
+    export async function findBy<T>(namespace: string, resource: string, property: string, value: any): Promise<T | undefined> {
+        try {
+            const query: BooleanExpression = {
+                equal: {
+                    left: {
+                        property: property
+                    },
+                    right: {
+                        value: value
+                    }
+                } as PairExpression
+            } as BooleanExpression
+            const result = await axios.post<RecordListContainer<T>>(`${BACKEND_URL}/records/${namespace}/${resource}/_search`, {
+                query: query
+            }, {
+                headers: {
+                    Authorization: `Bearer ${await TokenService.get()}`
+                }
+            })
+
+            if (result.data.content) {
+                return result.data.content[0].properties
+            }
         } catch (e) {
             return await handleError(e)
         }
