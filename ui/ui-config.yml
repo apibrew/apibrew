@@ -14,3 +14,11 @@ properties:
   name: CrudSettings
   namespace: ui
   resource: Crud
+  formConfig:
+    tabs:
+      - name: formConfig
+        label: Form Config
+      - name: gridConfig
+        label: Grid Config
+#        fields:
+#          -

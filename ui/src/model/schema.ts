@@ -24,11 +24,11 @@ y: number;
             readOnly: boolean;
             visible: boolean;
             defaultValue: string;
-            
-            }
-        
-            export interface CrudFormConfig {
-            fields: CrudFormConfigFieldType[];
+            tab: string;
+            rowWeight: number;
+            columnWeight: number;
+            rowSpan: number;
+            columnSpan: boolean;
             
             }
         
@@ -38,6 +38,18 @@ y: number;
             width: number;
             sortable: boolean;
             filterable: boolean;
+            
+            }
+        
+            export interface CrudFormTab {
+            name: string;
+            label: string;
+            
+            }
+        
+            export interface CrudFormConfig {
+            fields: CrudFormConfigFieldType[];
+            tabs: CrudFormTab[];
             
             }
         

@@ -6,7 +6,7 @@ import {useNavigate, useParams} from "react-router-dom"
 import {Form} from "./Form"
 import {Record, RecordService} from "../../service/record"
 import React, {useEffect} from "react"
-import {Crud, CrudName, CrudNameName} from "../../model/schema";
+import {Crud, CrudName} from "../../model/schema";
 import {ResourceService} from "../../service/resource";
 
 export interface SettingsProps {
@@ -16,7 +16,11 @@ export interface SettingsProps {
 export function Settings(props: SettingsProps): JSX.Element {
     const navigate = useNavigate()
     const [selfCrud, setSelfCrud] = React.useState<Crud>()
-    const [crudConfig, setCrudConfig] = React.useState<Record>({})
+    const [crudConfig, setCrudConfig] = React.useState<Record>({
+        name: `ResourceCrud-${props.resource.namespace}-${props.resource.name}`,
+        resource: props.resource.name,
+        namespace: props.resource.namespace,
+    })
     const [crudResource, setCrudResource] = React.useState<Resource>()
 
     const params = useParams<{ id: string }>()
@@ -27,7 +31,7 @@ export function Settings(props: SettingsProps): JSX.Element {
                 setSelfCrud(record)
             })
 
-        RecordService.findBy<Record>('ui', CrudName, 'name',`ResourceCrud-${props.resource.namespace}-${props.resource.name}`)
+        RecordService.findBy<Record>('ui', CrudName, 'name', crudConfig.name)
             .then((record) => {
                 if (record) {
                     setCrudConfig(record)
@@ -44,35 +48,39 @@ export function Settings(props: SettingsProps): JSX.Element {
     }
 
     return (
-        <PageLayout pageTitle={props.resource.name} actions={<>
-            <Box sx={{display: 'flex'}}>
-                <Box m={0.5}>
-                    <Button variant={'outlined'}
-                            color='primary'
-                            size='small'
-                            onClick={() => {
-                                navigate('../')
-                            }}
-                            startIcon={<Cancel/>}>Cancel</Button>
-                </Box>
-                <Box m={0.5}>
-                    <Button variant={'outlined'}
-                            color='success'
-                            size='small'
-                            onClick={() => {
-                                RecordService.update('ui', CrudName, crudConfig).then(() => {
-                                    navigate('../')
-                                })
-                            }}
-                            startIcon={<Save/>}>Save</Button>
-                </Box>
-            </Box>
-        </>}>
+        <PageLayout breadcrumbs={[
+                        {label: 'Country', to: '../'},
+                        {label: 'Crud Settings'}
+                    ]}
+                    actions={<>
+                        <Box sx={{display: 'flex'}}>
+                            <Box m={0.5}>
+                                <Button variant={'outlined'}
+                                        color='primary'
+                                        size='small'
+                                        onClick={() => {
+                                            navigate('../')
+                                        }}
+                                        startIcon={<Cancel/>}>Cancel</Button>
+                            </Box>
+                            <Box m={0.5}>
+                                <Button variant={'outlined'}
+                                        color='success'
+                                        size='small'
+                                        onClick={() => {
+                                            RecordService.apply('ui', CrudName, crudConfig).then(() => {
+                                                navigate('../')
+                                            })
+                                        }}
+                                        startIcon={<Save/>}>Save</Button>
+                            </Box>
+                        </Box>
+                    </>}>
             <>
                 {crudResource && <Form resource={crudResource}
-                      formConfig={selfCrud.formConfig}
-                      record={crudConfig}
-                      setRecord={setCrudConfig}/>}
+                                       formConfig={selfCrud.formConfig}
+                                       record={crudConfig}
+                                       setRecord={setCrudConfig}/>}
             </>
         </PageLayout>
     )

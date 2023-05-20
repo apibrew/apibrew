@@ -58,13 +58,10 @@ types:
     properties:
       - name: name
         type: STRING
-        length: 255
       - name: label
         type: STRING
-        length: 255
       - name: type
         type: STRING
-        length: 255
       - name: required
         type: BOOL
       - name: readOnly
@@ -73,19 +70,17 @@ types:
         type: BOOL
       - name: defaultValue
         type: STRING
-        length: 255
-  - name: FormConfig
-    properties:
-      - name: fields
-        type: LIST
-        item:
-          type: STRUCT
-          typeRef: FormConfigFieldType
+      - name: rowWeight
+        type: INT32
+      - name: columnWeight
+        type: INT32
+      - name: rowSpan
+        type: INT32
+      - name: columnSpan
   - name: GridColumnConfig
     properties:
       - name: header
         type: STRING
-        length: 255
       - name: visible
         type: BOOL
       - name: width
@@ -94,6 +89,29 @@ types:
         type: BOOL
       - name: filterable
         type: BOOL
+  - name: FormTab
+    properties:
+      - name: name
+        type: STRING
+      - name: label
+        type: STRING
+      - name: fields
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: FormConfigFieldType
+  - name: FormConfig
+    properties:
+      - name: fields
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: FormConfigFieldType
+      - name: tabs
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: FormTab
   - name: GridConfig
     properties:
       - name: defaultColumnConfig
