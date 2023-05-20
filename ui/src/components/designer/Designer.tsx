@@ -28,8 +28,7 @@ import Button from '@mui/material/Button'
 import { ResourceForm } from '../resource-form/ResourceForm'
 import { ResourceVisualizer } from './ResourceVisualizer'
 import { RecordService } from '../../service/record'
-import { AppDesignerBoardResource } from '../../resources/app-designer'
-import { type AppDesignerBoard } from '../../model/app-designer'
+import {type AppDesignerBoard, AppDesignerBoardName} from '../../model/schema'
 import { type Point } from './point'
 import { SdkDrawer } from '../sdk/SdkDrawer'
 
@@ -62,7 +61,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
     const load = async () => {
         setSelected([])
 
-        const board = await RecordService.get<AppDesignerBoard>(AppDesignerBoardResource.namespace ?? 'default', AppDesignerBoardResource.name, props.id)
+        const board = await RecordService.get<AppDesignerBoard>('ui', AppDesignerBoardName, props.id)
 
         setBoard(board)
 
@@ -102,7 +101,7 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
 
     const save = async () => {
         try {
-            await RecordService.update(AppDesignerBoardResource.namespace!, AppDesignerBoardResource.name, board!)
+            await RecordService.update('ui', AppDesignerBoardName, board!)
         } catch (error) {
             console.error(error)
         }

@@ -655,14 +655,6 @@ func validateResourceProperties(resource *model.Resource, path string, depth int
 			})
 		}
 
-		if depth == 0 && prop.Mapping == "" {
-			errorFields = append(errorFields, &model.ErrorField{
-				Property: propertyPrefix + "Mapping",
-				Message:  "Mapping should not be blank",
-				Value:    nil,
-			})
-		}
-
 		if prop.Type == model.ResourceProperty_ENUM {
 			if prop.EnumValues == nil || len(prop.EnumValues) == 0 {
 				errorFields = append(errorFields, &model.ErrorField{
@@ -671,6 +663,14 @@ func validateResourceProperties(resource *model.Resource, path string, depth int
 					Value:    nil,
 				})
 			}
+		}
+
+		if prop.TypeRef != nil && prop.Type != model.ResourceProperty_STRUCT {
+			errorFields = append(errorFields, &model.ErrorField{
+				Property: propertyPrefix + "TypeRef",
+				Message:  "TypeRef should be empty for non-struct type",
+				Value:    nil,
+			})
 		}
 
 		if prop.Type == model.ResourceProperty_REFERENCE {

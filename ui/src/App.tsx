@@ -3,10 +3,9 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import { Test } from './test/test'
 import { Login } from './pages/login/login'
 import { DashboardLayout } from './layout/dashboard-layout'
-import { useEffect } from 'react'
+import { useEffect, JSX } from 'react'
 import { BaseLayout } from './layout/BaseLayout'
 import { TokenService } from './service/token'
-import { Migrate } from './pages/migrate'
 import { AppDesigner } from './pages/app-designer'
 import { CrudPage } from './pages/crud-page/CrudPage'
 
@@ -28,7 +27,6 @@ function Dashboard(): JSX.Element {
             <Routes>
                 <Route path='test' element={<Test></Test>} />
                 <Route path='app-designer' element={<AppDesigner />} />
-                <Route path='migrate' element={<Migrate />} />
                 {/* Cruds */}
                 <Route path='country/*' element={<CrudPage namespace='default' resource='country' />} />
                 <Route path='city/*' element={<CrudPage namespace='default' resource='city' />} />

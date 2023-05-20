@@ -10,6 +10,10 @@
 {{end}}
 {{ range .params.Resources}}
     {{ with $resource := . }}
+        export const {{ToCamel $resource.Name}}Name = "{{ToCamel $resource.Name}}";
+        {{range $resource.Properties}}
+            export const {{ToCamel $resource.Name}}{{ToCamel .Name}}Name = "{{ToCamel .Name}}";
+        {{end}}
         export interface {{ToCamel .Name}} {
         {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
         {{end}}

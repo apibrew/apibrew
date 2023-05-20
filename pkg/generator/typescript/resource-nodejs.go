@@ -67,7 +67,6 @@ func PropNodejsType(resource *model.Resource, prop *model.ResourceProperty) stri
 		br := io.Writer(&b)
 
 		err := structTmpl.ExecuteTemplate(br, "struct", map[string]interface{}{
-			"Resource":   nil,
 			"Properties": prop.Properties,
 		})
 

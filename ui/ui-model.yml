@@ -5,31 +5,25 @@ type: resource
 name: AppDesignerBoard
 namespace: ui
 description: A board is a collection of widgets that are displayed together.
+types:
+  - name: ResourceVisual
+    properties:
+      - length: 255
+        name: resource
+        required: true
+        type: STRING
+      - name: allowRecordsOnBoard
+        required: true
+      - name: location
+        type: STRUCT
+        properties:
+          - name: "x"
+            required: true
+            type: FLOAT32
+          - name: "y"
+            required: true
+            type: FLOAT32
 properties:
-  - name: resourceVisuals
-    item:
-      properties:
-        - length: 255
-          name: resource
-          required: true
-          type: STRING
-        - name: allowRecordsOnBoard
-          required: true
-        - name: location
-          properties:
-            - name: x
-              required: true
-              type: FLOAT32
-            - name: "y"
-              required: true
-              type: FLOAT32
-          type: STRUCT
-      type: STRUCT
-    type: LIST
-  - name: resourceSelector
-    item:
-      type: STRING
-    type: LIST
   - description: The description of the board.
     length: 255
     name: description
@@ -41,31 +35,21 @@ properties:
     required: true
     type: STRING
     unique: true
+  - name: resourceVisuals
+    item:
+      type: STRUCT
+      typeRef: ResourceVisual
+    type: LIST
+  - name: resourceSelector
+    item:
+      type: STRING
+    type: LIST
 ---
 type: resource
 name: Crud
 namespace: ui
 description: Crud
 types:
-  - name: FormOptions
-    properties:
-      - name: label
-        type: STRING
-        length: 255
-      - name: value
-        type: STRING
-        length: 255
-      - name: selected
-        type: BOOL
-      - name: disabled
-        type: BOOL
-      - name: visible
-        type: BOOL
-      - name: readOnly
-        type: BOOL
-      - name: defaultValue
-        type: STRING
-        length: 255
   - name: FormConfigFieldType
     properties:
       - name: name
@@ -86,15 +70,12 @@ types:
       - name: defaultValue
         type: STRING
         length: 255
-      - name: options
-        type: LIST
-        item:
-          typeRef: FormOptions
   - name: FormConfig
     properties:
       - name: fields
         type: LIST
         item:
+          type: STRUCT
           typeRef: FormConfigFieldType
   - name: GridColumnConfig
     properties:
@@ -134,4 +115,11 @@ properties:
   - name: formConfig
     type: STRUCT
     typeRef: FormConfig
-
+---
+type: record
+namespace: ui
+resource: AppDesignerBoard
+properties:
+  name: Default
+  description: 'The default board.'
+  resourceSelector: [ '*' ]
