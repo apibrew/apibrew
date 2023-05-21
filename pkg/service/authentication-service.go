@@ -25,7 +25,18 @@ type authenticationService struct {
 	DisableAuthentication bool
 }
 
+func (s *authenticationService) AuthenticationDisabled() bool {
+	return s.DisableAuthentication
+}
+
 func (s *authenticationService) Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
+	if s.DisableAuthentication {
+		return &model.Token{
+			Term:       term,
+			Content:    "",
+			Expiration: timestamppb.New(time.Now().Add(time.Minute)),
+		}, nil
+	}
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Debug("Begin Authenticate")

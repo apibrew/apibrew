@@ -7,9 +7,11 @@ import { DataGrid, GridColDef, GridRowParams, GridActionsCellItem, GridValueGett
 import { Record, RecordService } from "../../service/record"
 import { useEffect, useState } from "react"
 import { SdkDrawer } from "../sdk/SdkDrawer"
+import {Crud} from "../../model/schema";
 
 export interface ListProps {
     resource: Resource
+    crudConfig: Crud
 }
 
 export function List(props: ListProps) {

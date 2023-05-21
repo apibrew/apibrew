@@ -49,6 +49,12 @@ func (s *server) Init(*model.InitData) {
 
 func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if s.container.GetAuthenticationService().AuthenticationDisabled() {
+			req = req.WithContext(security.WithSystemContext(req.Context()))
+
+			next.ServeHTTP(w, req)
+			return
+		}
 		authorizationHeader := req.Header.Get("Authorization")
 
 		if authorizationHeader != "" {

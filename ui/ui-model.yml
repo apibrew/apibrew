@@ -54,74 +54,41 @@ name: Crud
 namespace: ui
 description: Crud
 types:
-  - name: FormConfigFieldType
+  - name: FormItem
     properties:
-      - name: name
+      - name: kind
+        type: ENUM
+        enumValues:
+          - property
+          - input
+          - tab
+          - section
+          - group
+          - custom
+      - name: propertyPath
         type: STRING
-      - name: label
+      - name: title
         type: STRING
-      - name: type
+      - name: component
         type: STRING
-      - name: required
-        type: BOOL
-      - name: readOnly
-        type: BOOL
-      - name: visible
-        type: BOOL
-      - name: defaultValue
-        type: STRING
-      - name: rowWeight
-        type: INT32
-      - name: columnWeight
-        type: INT32
-      - name: rowSpan
-        type: INT32
-      - name: columnSpan
-  - name: GridColumnConfig
-    properties:
-      - name: header
-        type: STRING
-      - name: visible
-        type: BOOL
-      - name: width
-        type: INT32
-      - name: sortable
-        type: BOOL
-      - name: filterable
-        type: BOOL
-  - name: FormTab
-    properties:
-      - name: name
-        type: STRING
-      - name: label
-        type: STRING
-      - name: fields
+      - name: children
         type: LIST
         item:
           type: STRUCT
-          typeRef: FormConfigFieldType
+          typeRef: FormItem
+      - name: params
+        type: MAP
+        item:
+          type: STRING
   - name: FormConfig
     properties:
-      - name: fields
+      - name: children
         type: LIST
         item:
           type: STRUCT
-          typeRef: FormConfigFieldType
-      - name: tabs
-        type: LIST
-        item:
-          type: STRUCT
-          typeRef: FormTab
+          typeRef: FormItem
   - name: GridConfig
     properties:
-      - name: defaultColumnConfig
-        type: STRUCT
-        typeRef: GridColumnConfig
-      - name: columns
-        type: LIST
-        item:
-          type: STRUCT
-          typeRef: GridColumnConfig
 properties:
   - name: name
     type: STRING
@@ -141,3 +108,93 @@ properties:
   - name: formConfig
     type: STRUCT
     typeRef: FormConfig
+---
+type: namespace
+name: extensions
+---
+type: resource
+name: FunctionExecutionEngine
+namespace: extensions
+description: FunctionExecutionEngine
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: handlerAddr
+    type: STRING
+    length: 255
+    required: true
+---
+type: resource
+name: Function
+namespace: extensions
+description: Function
+types:
+  - name: Options
+    properties:
+      - name: namedParams
+        description: If True, function input and output arguments will be named args
+        type: BOOL
+  - name: Argument
+    properties:
+      - name: property
+        type: REFERENCE
+        required: true
+        reference:
+          referencedResource: ResourceProperty
+      - name: direction
+        type: ENUM
+        enumValues:
+          - input
+          - output
+        defaultValue: input
+properties:
+  - name: package
+    type: STRING
+    length: 255
+    required: true
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+  - name: script
+    type: STRING
+    length: 64000
+    required: true
+  - name: engine
+    type: REFERENCE
+    required: true
+    reference:
+      referencedResource: FunctionExecutionEngine
+  - name: options
+    type: STRUCT
+    typeRef: Options
+  - name: args
+    type: LIST
+    item:
+      type: STRUCT
+      typeRef: Argument
+indexes:
+  - unique: true
+    properties:
+    - name: package
+    - name: name
+---
+type: resource
+name: FunctionExecution
+namespace: extensions
+description: FunctionExecution
+immutable: true
+properties:
+  - name: function
+    type: REFERENCE
+    required: true
+    reference:
+      referencedResource: Function
+  - name: input
+    type: OBJECT
+  - name: output
+    type: OBJECT
+

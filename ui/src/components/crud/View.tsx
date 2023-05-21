@@ -6,9 +6,11 @@ import { useNavigate, useParams } from "react-router-dom"
 import { Form } from "./Form"
 import { Record, RecordService } from "../../service/record"
 import React, { useEffect } from "react"
+import {Crud, CrudName} from "../../model/schema";
 
 export interface ViewProps {
     resource: Resource
+    crudConfig: Crud
 }
 
 export function View(props: ViewProps): JSX.Element {
@@ -43,7 +45,7 @@ export function View(props: ViewProps): JSX.Element {
             </Box>
         </>}>
             <>
-                <Form resource={props.resource} record={record} readOnly={true} setRecord={setRecord} />
+                <Form resource={props.resource} readOnly={true} record={record} setRecord={setRecord} formConfig={props.crudConfig.formConfig} />
             </>
         </PageLayout>
     )

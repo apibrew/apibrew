@@ -16,46 +16,22 @@ y: number;
 
     
         
-            export interface CrudFormConfigFieldType {
-            name: string;
-            label: string;
-            type: string;
-            required: boolean;
-            readOnly: boolean;
-            visible: boolean;
-            defaultValue: string;
-            tab: string;
-            rowWeight: number;
-            columnWeight: number;
-            rowSpan: number;
-            columnSpan: boolean;
-            
-            }
-        
-            export interface CrudGridColumnConfig {
-            header: string;
-            visible: boolean;
-            width: number;
-            sortable: boolean;
-            filterable: boolean;
-            
-            }
-        
-            export interface CrudFormTab {
-            name: string;
-            label: string;
+            export interface CrudFormItem {
+            kind: string;
+            propertyPath: string;
+            title: string;
+            component: string;
+            children: CrudFormItem[];
+            params: object;
             
             }
         
             export interface CrudFormConfig {
-            fields: CrudFormConfigFieldType[];
-            tabs: CrudFormTab[];
+            children: CrudFormItem[];
             
             }
         
             export interface CrudGridConfig {
-            defaultColumnConfig: CrudGridColumnConfig;
-            columns: CrudGridColumnConfig[];
             
             }
         

@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v3"
 	"io"
+	"strings"
 )
 
 type executor struct {
@@ -62,7 +63,7 @@ func (e *executor) Restore(ctx context.Context) error {
 		delete(body, "resource")
 		delete(body, "namespace")
 
-		jsonData, err := json.Marshal(body)
+		jsonData, err := json.MarshalIndent(body, "", "    ")
 
 		if err != nil {
 			return err
@@ -74,7 +75,9 @@ func (e *executor) Restore(ctx context.Context) error {
 			err = jsonUMo.Unmarshal(jsonData, resource)
 
 			if err != nil {
-				log.Print(string(jsonData))
+				for index, line := range strings.Split(strings.TrimSuffix(string(jsonData), "\n"), "\n") {
+					fmt.Printf("%d: %s\n", index+1, line)
+				}
 				return err
 			}
 

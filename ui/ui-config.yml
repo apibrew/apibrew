@@ -15,10 +15,25 @@ properties:
   namespace: ui
   resource: Crud
   formConfig:
-    tabs:
-      - name: formConfig
-        label: Form Config
-      - name: gridConfig
-        label: Grid Config
-#        fields:
-#          -
+    children:
+      - kind: tab
+        title: Details
+        children:
+      - kind: tab
+        title: Form Config
+        children:
+          - kind: property
+            propertyPath: formConfig
+            children:
+              - kind: custom
+                component: CrudSettingsFormConfig
+      - kind: tab
+        title: Grid Config
+        children:
+          - kind: property
+            propertyPath: gridConfig
+            children:
+              - kind: custom
+                component: CrudSettingsGridConfig
+      - kind: tab
+        title: Advanced

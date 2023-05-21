@@ -6,9 +6,11 @@ import { useNavigate, useParams } from "react-router-dom"
 import { Form } from "./Form"
 import { Record, RecordService } from "../../service/record"
 import React, { useEffect } from "react"
+import {Crud, CrudName} from "../../model/schema";
 
 export interface UpdateProps {
     resource: Resource
+    crudConfig: Crud
 }
 
 export function Update(props: UpdateProps): JSX.Element {
@@ -54,7 +56,7 @@ export function Update(props: UpdateProps): JSX.Element {
             </Box>
         </>}>
             <>
-                <Form resource={props.resource} record={record} setRecord={setRecord} />
+                <Form resource={props.resource} record={record} setRecord={setRecord} formConfig={props.crudConfig.formConfig} />
             </>
         </PageLayout>
     )

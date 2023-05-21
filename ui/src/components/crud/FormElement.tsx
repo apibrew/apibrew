@@ -85,6 +85,8 @@ export function FormElement(props: FormElementProps) {
     const resource = props.resource
     const referencedResourceName = props.property.reference?.referencedResource ?? ''
 
+    console.log('props.readOnly', props.readOnly)
+
     let Field: FieldComponent = useMemo(() => {
         switch (props.property.type) {
             case 'STRING':

@@ -5,10 +5,13 @@ import { Resource } from "../../model"
 import { useNavigate } from "react-router-dom"
 import { Form } from "./Form"
 import { Record, RecordService } from "../../service/record"
-import React from "react"
+import React, {useEffect} from "react"
+import {Crud, CrudName} from "../../model/schema";
+import {ResourceService} from "../../service/resource";
 
 export interface NewProps {
     resource: Resource
+    crudConfig: Crud
 }
 
 export function New(props: NewProps) {
@@ -41,7 +44,7 @@ export function New(props: NewProps) {
             </Box>
         </>}>
             <>
-                <Form resource={props.resource} record={record} setRecord={setRecord} />
+                <Form resource={props.resource} record={record} setRecord={setRecord} formConfig={props.crudConfig.formConfig} />
             </>
         </PageLayout>
     )

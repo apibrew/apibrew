@@ -8,9 +8,11 @@ import {Record, RecordService} from "../../service/record"
 import React, {useEffect} from "react"
 import {Crud, CrudName} from "../../model/schema";
 import {ResourceService} from "../../service/resource";
+import {resetCrudForm} from "./helper";
 
 export interface SettingsProps {
     resource: Resource
+    updateCrud: (crud: Crud) => void
 }
 
 export function Settings(props: SettingsProps): JSX.Element {
@@ -49,9 +51,9 @@ export function Settings(props: SettingsProps): JSX.Element {
 
     return (
         <PageLayout breadcrumbs={[
-                        {label: 'Country', to: '../'},
-                        {label: 'Crud Settings'}
-                    ]}
+            {label: 'Country', to: '../'},
+            {label: 'Crud Settings'}
+        ]}
                     actions={<>
                         <Box sx={{display: 'flex'}}>
                             <Box m={0.5}>
@@ -69,10 +71,23 @@ export function Settings(props: SettingsProps): JSX.Element {
                                         size='small'
                                         onClick={() => {
                                             RecordService.apply('ui', CrudName, crudConfig).then(() => {
+                                                props.updateCrud(crudConfig as Crud)
                                                 navigate('../')
                                             })
                                         }}
                                         startIcon={<Save/>}>Save</Button>
+                            </Box>
+                            <Box m={0.5}>
+                                <Button variant={'outlined'}
+                                        color='success'
+                                        size='small'
+                                        onClick={() => {
+                                            resetCrudForm(props.resource).then((newCrudConfig) => {
+                                                props.updateCrud(newCrudConfig)
+                                                navigate('../')
+                                            })
+                                        }}
+                                        startIcon={<Save/>}>Reset to Defaults</Button>
                             </Box>
                         </Box>
                     </>}>

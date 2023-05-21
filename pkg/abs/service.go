@@ -13,6 +13,7 @@ type AuthenticationService interface {
 	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	ParseAndVerifyToken(token string) (*UserDetails, errors.ServiceError)
+	AuthenticationDisabled() bool
 }
 
 type BackendProviderService interface {
