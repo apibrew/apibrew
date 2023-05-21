@@ -1,0 +1,2915 @@
+# Generated with protoc-gen-openapi
+# https://github.com/kollalabs/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: API Brew
+    description: OpenApi 3.0 definition for API Brew Rest API
+    contact:
+        name: Taleh Ibrahimli
+        url: https://github.com/apibrew/apibrew
+        email: talehsmail@gmail.com
+    license:
+        name: Apache License
+        url: https://github.com/google/gnostic/blob/master/LICENSE
+    version: "1.0"
+paths:
+    /authentication/token:
+        put:
+            tags:
+                - Authentication
+                - Authentication
+            summary: Renew token
+            description: Renew token with existing token
+            operationId: authenticationRenewToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RenewTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RenewTokenResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Authentication
+                - Authentication
+            summary: Authentication with username/password
+            description: Authentication with username/password and create new token
+            operationId: authenticationAuthenticate
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AuthenticationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AuthenticationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/read_stream:
+        post:
+            tags:
+                - Record
+            summary: ReadStream
+            operationId: Record_ReadStream
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReadStreamRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Record'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/{namespace}/{resource}:
+        get:
+            tags:
+                - Record
+            summary: List
+            operationId: Record_List
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint64
+                - name: useHistory
+                  in: query
+                  schema:
+                    type: boolean
+                - name: resolveReferences
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Record
+            summary: Create
+            operationId: Record_Create
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateRecordRequest_PropertiesEntry'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - Record
+            summary: Apply
+            operationId: Record_Apply
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+                - name: checkVersion
+                  in: query
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ApplyRecordRequest_PropertiesEntry'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplyRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/{namespace}/{resource}/_bulk:
+        put:
+            tags:
+                - Record
+            summary: Update
+            operationId: Record_Update
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: record.id
+                  in: query
+                  schema:
+                    type: string
+                - name: record.propertiesPacked
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Record
+            summary: Create
+            operationId: Record_Create
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: record.id
+                  in: query
+                  schema:
+                    type: string
+                - name: record.propertiesPacked
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Record
+            summary: Delete
+            operationId: Record_Delete
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+                - name: ids
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - Record
+            summary: Apply
+            operationId: Record_Apply
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: record.id
+                  in: query
+                  schema:
+                    type: string
+                - name: record.propertiesPacked
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplyRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/{namespace}/{resource}/_multi:
+        post:
+            tags:
+                - Record
+            summary: UpdateMulti
+            description: Not implemented yet
+            operationId: Record_UpdateMulti
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.property
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.value
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: query.not.not.equal.left.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.left.refValue.resource
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.right.property
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.right.value
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: query.not.not.equal.right.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.equal.right.refValue.resource
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.not.regexMatch.pattern
+                  in: query
+                  schema:
+                    type: string
+                - name: query.not.regexMatch.pattern
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateMultiRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/{namespace}/{resource}/_search:
+        post:
+            tags:
+                - Record
+            summary: Search
+            operationId: Record_Search
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SearchRecordRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SearchRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /records/{namespace}/{resource}/{id}:
+        get:
+            tags:
+                - Record
+            summary: Get
+            operationId: Record_Get
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Record
+            summary: Update
+            operationId: Record_Update
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: checkVersion
+                  in: query
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateRecordRequest_PropertiesEntry'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Record
+            summary: Delete
+            operationId: Record_Delete
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: resource
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteRecordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/data-sources:
+        get:
+            tags:
+                - DataSource
+            summary: List
+            operationId: DataSource_List
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListDataSourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - DataSource
+            summary: Update
+            operationId: DataSource_Update
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateDataSourceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateDataSourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - DataSource
+            summary: Create
+            operationId: DataSource_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateDataSourceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateDataSourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - DataSource
+            summary: Delete
+            operationId: DataSource_Delete
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteDataSourceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteDataSourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/data-sources/{id}:
+        get:
+            tags:
+                - DataSource
+            summary: Get
+            operationId: DataSource_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetDataSourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/data-sources/{id}/_prepare_entity:
+        post:
+            tags:
+                - DataSource
+            summary: PrepareResourceFromEntity
+            description: |-
+                PrepareResourceFromEntity will return resource from data source based on entity.
+                 It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
+            operationId: DataSource_PrepareResourceFromEntity
+            parameters:
+                - name: id
+                  in: path
+                  description: data source id, required, It is for specifying that which database the operation will be performed
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PrepareResourceFromEntityRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PrepareResourceFromEntityResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/data-sources/{id}/_status:
+        get:
+            tags:
+                - DataSource
+            summary: Status
+            description: Status will return connection status of data source
+            operationId: DataSource_Status
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StatusResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/data-sources/{id}/entities:
+        get:
+            tags:
+                - DataSource
+            summary: ListEntities
+            description: List entities will return all entities from data source
+            operationId: DataSource_ListEntities
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListEntitiesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/extensions:
+        get:
+            tags:
+                - Extension
+            summary: List
+            operationId: Extension_List
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Extension
+            summary: Update
+            operationId: Extension_Update
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateExtensionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Extension
+            summary: Create
+            operationId: Extension_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateExtensionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Extension
+            summary: Delete
+            operationId: Extension_Delete
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteExtensionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/extensions/{id}:
+        get:
+            tags:
+                - Extension
+            summary: Get
+            operationId: Extension_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/namespaces:
+        get:
+            tags:
+                - Namespace
+            summary: List
+            operationId: Namespace_List
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Namespace
+            summary: Update
+            operationId: Namespace_Update
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateNamespaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Namespace
+            summary: Create
+            operationId: Namespace_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateNamespaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Namespace
+            summary: Delete
+            operationId: Namespace_Delete
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteNamespaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/namespaces/{id}:
+        get:
+            tags:
+                - Namespace
+            summary: Get
+            operationId: Namespace_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/resources:
+        get:
+            tags:
+                - Resource
+            summary: List
+            operationId: Resource_List
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListResourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Resource
+            summary: Update
+            operationId: Resource_Update
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateResourceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateResourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Resource
+            summary: Create
+            operationId: Resource_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateResourceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateResourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Resource
+            summary: Delete
+            operationId: Resource_Delete
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteResourceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteResourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/resources/_migrate:
+        post:
+            tags:
+                - Resource
+            summary: PrepareResourceMigrationPlan
+            description: PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration.
+            operationId: Resource_PrepareResourceMigrationPlan
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PrepareResourceMigrationPlanRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PrepareResourceMigrationPlanResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/resources/{id}:
+        get:
+            tags:
+                - Resource
+            summary: Get
+            operationId: Resource_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetResourceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/resources/{namespace}/{name}:
+        get:
+            tags:
+                - Resource
+            summary: GetByName
+            operationId: Resource_GetByName
+            parameters:
+                - name: namespace
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetResourceByNameResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/users:
+        get:
+            tags:
+                - User
+            summary: List
+            operationId: User_List
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUserResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/users/_bulk:
+        put:
+            tags:
+                - User
+            summary: Update
+            operationId: User_Update
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: user.id
+                  in: query
+                  schema:
+                    type: string
+                - name: user.username
+                  in: query
+                  schema:
+                    type: string
+                - name: user.password
+                  in: query
+                  schema:
+                    type: string
+                - name: user.signKey
+                  in: query
+                  schema:
+                    type: string
+                - name: user.auditData.createdOn
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: user.auditData.updatedOn
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: user.auditData.createdBy
+                  in: query
+                  schema:
+                    type: string
+                - name: user.auditData.updatedBy
+                  in: query
+                  schema:
+                    type: string
+                - name: user.version
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateUserResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - User
+            summary: Create
+            operationId: User_Create
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: user.id
+                  in: query
+                  schema:
+                    type: string
+                - name: user.username
+                  in: query
+                  schema:
+                    type: string
+                - name: user.password
+                  in: query
+                  schema:
+                    type: string
+                - name: user.signKey
+                  in: query
+                  schema:
+                    type: string
+                - name: user.auditData.createdOn
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: user.auditData.updatedOn
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: user.auditData.createdBy
+                  in: query
+                  schema:
+                    type: string
+                - name: user.auditData.updatedBy
+                  in: query
+                  schema:
+                    type: string
+                - name: user.version
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateUserResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - User
+            summary: Delete
+            operationId: User_Delete
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+                - name: ids
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteUserResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/users/{id}:
+        get:
+            tags:
+                - User
+            summary: Get
+            operationId: User_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUserResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /system/watch:
+        post:
+            tags:
+                - Watch
+            summary: Watch
+            description: Sends a greeting
+            operationId: Watch_Watch
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.actions
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        enum:
+                            - CREATE
+                            - UPDATE
+                            - DELETE
+                            - GET
+                            - LIST
+                            - OPERATE
+                        type: string
+                        format: enum
+                - name: selector.recordSelector.not.not.equal.left.property
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.left.value
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: selector.recordSelector.not.not.equal.left.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.left.refValue.resource
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.right.property
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.right.value
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                - name: selector.recordSelector.not.not.equal.right.refValue.namespace
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.equal.right.refValue.resource
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.not.regexMatch.pattern
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.recordSelector.not.regexMatch.pattern
+                  in: query
+                  schema:
+                    type: string
+                - name: selector.namespaces
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: selector.resources
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: selector.ids
+                  in: query
+                  description: star means all
+                  schema:
+                    type: array
+                    items:
+                        type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Event'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+components:
+    schemas:
+        Any:
+            type: object
+            properties:
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufAny'
+                yaml:
+                    type: string
+        ApplyRecordRequest_PropertiesEntry:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+        ApplyRecordResponse:
+            type: object
+            properties:
+                record:
+                    $ref: '#/components/schemas/Record'
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+        AuditData:
+            type: object
+            properties:
+                createdOn:
+                    type: string
+                    format: date-time
+                updatedOn:
+                    type: string
+                    format: date-time
+                createdBy:
+                    type: string
+                updatedBy:
+                    type: string
+        AuthenticationRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+                term:
+                    enum:
+                        - SHORT
+                        - MIDDLE
+                        - LONG
+                        - VERY_LONG
+                    type: string
+                    description: Token Lifespan
+                    format: enum
+            description: AuthenticationRequest is the request for authentication
+        AuthenticationResponse:
+            type: object
+            properties:
+                token:
+                    $ref: '#/components/schemas/Token'
+        BooleanExpression:
+            type: object
+            properties:
+                and:
+                    $ref: '#/components/schemas/CompoundBooleanExpression'
+                or:
+                    $ref: '#/components/schemas/CompoundBooleanExpression'
+                not:
+                    $ref: '#/components/schemas/BooleanExpression'
+                equal:
+                    $ref: '#/components/schemas/PairExpression'
+                lessThan:
+                    $ref: '#/components/schemas/PairExpression'
+                greaterThan:
+                    $ref: '#/components/schemas/PairExpression'
+                lessThanOrEqual:
+                    $ref: '#/components/schemas/PairExpression'
+                greaterThanOrEqual:
+                    $ref: '#/components/schemas/PairExpression'
+                in:
+                    $ref: '#/components/schemas/PairExpression'
+                isNull:
+                    $ref: '#/components/schemas/Expression'
+                regexMatch:
+                    $ref: '#/components/schemas/RegexMatchExpression'
+        CompoundBooleanExpression:
+            type: object
+            properties:
+                expressions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/BooleanExpression'
+        CreateDataSourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                dataSources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSource'
+        CreateDataSourceResponse:
+            type: object
+            properties:
+                dataSources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSource'
+        CreateExtensionRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
+        CreateExtensionResponse:
+            type: object
+            properties:
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
+        CreateNamespaceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                Namespaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Namespace'
+        CreateNamespaceResponse:
+            type: object
+            properties:
+                Namespaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Namespace'
+        CreateRecordRequest_PropertiesEntry:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+        CreateRecordResponse:
+            type: object
+            properties:
+                record:
+                    $ref: '#/components/schemas/Record'
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+                inserted:
+                    type: array
+                    items:
+                        type: boolean
+        CreateResourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+                doMigration:
+                    type: boolean
+                    description: if true, it will try to migrate the resource to the data source, if it is false, resource will be only created, backend will not be affected.
+                forceMigration:
+                    type: boolean
+                    description: 'if true, it will force the migration, if it is false, it will not migrate if there is a conflict. Force migration will also do following things: - if column/index is deleted from resource, it will delete it from backend'
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        CreateResourceResponse:
+            type: object
+            properties:
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+        CreateUserResponse:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/User'
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
+        DataSource:
+            type: object
+            properties:
+                id:
+                    type: string
+                backend:
+                    enum:
+                        - POSTGRESQL
+                        - VIRTUAL
+                        - MYSQL
+                        - ORACLE
+                        - MONGODB
+                        - REDIS
+                    type: string
+                    format: enum
+                name:
+                    type: string
+                description:
+                    type: string
+                postgresqlParams:
+                    $ref: '#/components/schemas/PostgresqlParams'
+                mysqlParams:
+                    $ref: '#/components/schemas/MysqlParams'
+                virtualParams:
+                    $ref: '#/components/schemas/VirtualParams'
+                redisParams:
+                    $ref: '#/components/schemas/RedisParams'
+                mongoParams:
+                    $ref: '#/components/schemas/MongoParams'
+                auditData:
+                    $ref: '#/components/schemas/AuditData'
+                version:
+                    type: integer
+                    format: uint32
+        DataSourceCatalog:
+            type: object
+            properties:
+                name:
+                    type: string
+                entities:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSourceEntity'
+        DataSourceEntity:
+            type: object
+            properties:
+                name:
+                    type: string
+                readOnly:
+                    type: boolean
+        DeleteDataSourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
+        DeleteDataSourceResponse:
+            type: object
+            properties: {}
+        DeleteExtensionRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
+        DeleteExtensionResponse:
+            type: object
+            properties: {}
+        DeleteNamespaceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
+        DeleteNamespaceResponse:
+            type: object
+            properties:
+                Namespaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Namespace'
+        DeleteRecordResponse:
+            type: object
+            properties: {}
+        DeleteResourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
+                doMigration:
+                    type: boolean
+                    description: See the comments on CreateResourceRequest.doMigration
+                forceMigration:
+                    type: boolean
+                    description: See the comments on CreateResourceRequest.forceMigration
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        DeleteResourceResponse:
+            type: object
+            properties: {}
+        DeleteUserResponse:
+            type: object
+            properties: {}
+        Event:
+            type: object
+            properties:
+                id:
+                    type: string
+                action:
+                    enum:
+                        - CREATE
+                        - UPDATE
+                        - DELETE
+                        - GET
+                        - LIST
+                        - OPERATE
+                    type: string
+                    format: enum
+                actionSummary:
+                    type: string
+                actionDescription:
+                    type: string
+                resource:
+                    $ref: '#/components/schemas/Resource'
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+                    description: CREATE,UPDATE - records are for incoming and outgoing records GET - there will be only one record LIST - result of the list operation
+                ids:
+                    type: array
+                    items:
+                        type: string
+                    description: GET - there will be only one id, for getting record with id DELETE - there will be multiple ids, for deleting multiple records
+                recordSearchParams:
+                    $ref: '#/components/schemas/Event_RecordSearchParams'
+                finalizes:
+                    type: boolean
+                    description: If true, this will be last event on operation list
+                sync:
+                    type: boolean
+                    description: If true, backend will wait for processing this event before sending next one on operation list
+                time:
+                    type: string
+                    format: date-time
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: Request annotations
+        EventSelector:
+            type: object
+            properties:
+                actions:
+                    type: array
+                    items:
+                        enum:
+                            - CREATE
+                            - UPDATE
+                            - DELETE
+                            - GET
+                            - LIST
+                            - OPERATE
+                        type: string
+                        format: enum
+                recordSelector:
+                    $ref: '#/components/schemas/BooleanExpression'
+                namespaces:
+                    type: array
+                    items:
+                        type: string
+                resources:
+                    type: array
+                    items:
+                        type: string
+                ids:
+                    type: array
+                    items:
+                        type: string
+                    description: star means all
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: star means all, empty means proceed
+            description: Events pass through selectors, if selector returns true, event will be processed Selector returns true if no selector fails. For example, if you passed empty selector, it will return true for all events.
+        Event_RecordSearchParams:
+            type: object
+            properties:
+                query:
+                    $ref: '#/components/schemas/BooleanExpression'
+                limit:
+                    type: integer
+                    format: uint32
+                offset:
+                    type: integer
+                    format: uint64
+                resolveReferences:
+                    type: array
+                    items:
+                        type: string
+        Expression:
+            type: object
+            properties:
+                additionalProperties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/NamedAny'
+        Extension:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                selector:
+                    $ref: '#/components/schemas/EventSelector'
+                order:
+                    type: integer
+                    format: int32
+                finalizes:
+                    type: boolean
+                    description: If true, this will be last event on operation list
+                sync:
+                    type: boolean
+                    description: If true, backend will wait for processing this event before sending next one on operation list
+                responds:
+                    type: boolean
+                call:
+                    $ref: '#/components/schemas/ExternalCall'
+                auditData:
+                    $ref: '#/components/schemas/AuditData'
+                version:
+                    type: integer
+                    format: uint32
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        ExternalCall:
+            type: object
+            properties:
+                functionCall:
+                    $ref: '#/components/schemas/FunctionCall'
+                httpCall:
+                    $ref: '#/components/schemas/HttpCall'
+        FunctionCall:
+            type: object
+            properties:
+                host:
+                    type: string
+                functionName:
+                    type: string
+        GetDataSourceResponse:
+            type: object
+            properties:
+                dataSource:
+                    $ref: '#/components/schemas/DataSource'
+        GetExtensionResponse:
+            type: object
+            properties:
+                extension:
+                    $ref: '#/components/schemas/Extension'
+        GetNamespaceResponse:
+            type: object
+            properties:
+                Namespace:
+                    $ref: '#/components/schemas/Namespace'
+        GetRecordResponse:
+            type: object
+            properties:
+                record:
+                    $ref: '#/components/schemas/Record'
+        GetResourceByNameResponse:
+            type: object
+            properties:
+                resource:
+                    $ref: '#/components/schemas/Resource'
+        GetResourceResponse:
+            type: object
+            properties:
+                resource:
+                    $ref: '#/components/schemas/Resource'
+        GetUserResponse:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/User'
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        GoogleProtobufValue:
+            description: Represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values.
+        HttpCall:
+            type: object
+            properties:
+                uri:
+                    type: string
+                method:
+                    type: string
+        ListDataSourceResponse:
+            type: object
+            properties:
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSource'
+        ListEntitiesResponse:
+            type: object
+            properties:
+                catalogs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSourceCatalog'
+        ListExtensionResponse:
+            type: object
+            properties:
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
+        ListNamespaceResponse:
+            type: object
+            properties:
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Namespace'
+        ListRecordResponse:
+            type: object
+            properties:
+                total:
+                    type: integer
+                    format: uint32
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+        ListResourceResponse:
+            type: object
+            properties:
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+        ListUserResponse:
+            type: object
+            properties:
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
+        MongoParams:
+            type: object
+            properties:
+                uri:
+                    type: string
+                dbName:
+                    type: string
+        MysqlParams:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+                host:
+                    type: string
+                port:
+                    type: integer
+                    format: uint32
+                dbName:
+                    type: string
+                defaultSchema:
+                    type: string
+        NamedAny:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Map key
+                value:
+                    $ref: '#/components/schemas/Any'
+            description: Automatically-generated message used to represent maps of Any as ordered (name,value) pairs.
+        Namespace:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                details:
+                    type: object
+                securityContext:
+                    $ref: '#/components/schemas/SecurityContext'
+                auditData:
+                    $ref: '#/components/schemas/AuditData'
+                version:
+                    type: integer
+                    format: uint32
+        PairExpression:
+            type: object
+            properties:
+                left:
+                    $ref: '#/components/schemas/Expression'
+                right:
+                    $ref: '#/components/schemas/Expression'
+        PostgresqlParams:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+                host:
+                    type: string
+                port:
+                    type: integer
+                    format: uint32
+                dbName:
+                    type: string
+                defaultSchema:
+                    type: string
+        PrepareResourceFromEntityRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                id:
+                    type: string
+                    description: data source id, required, It is for specifying that which database the operation will be performed
+                catalog:
+                    type: string
+                    description: catalog is optional, if not provided, default catalog will be used, catalog is like schema in database
+                entity:
+                    type: string
+                    description: entity is required, it is like table in database, collection on mongodb, etc.
+        PrepareResourceFromEntityResponse:
+            type: object
+            properties:
+                resource:
+                    $ref: '#/components/schemas/Resource'
+        PrepareResourceMigrationPlanRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                prepareFromDataSource:
+                    type: boolean
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        PrepareResourceMigrationPlanResponse:
+            type: object
+            properties:
+                plans:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ResourceMigrationPlan'
+        ReadStreamRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                namespace:
+                    type: string
+                resource:
+                    type: string
+                query:
+                    $ref: '#/components/schemas/BooleanExpression'
+                limit:
+                    type: integer
+                    format: uint32
+                offset:
+                    type: integer
+                    format: uint64
+                useHistory:
+                    type: boolean
+                resolveReferences:
+                    type: array
+                    items:
+                        type: string
+                useTransaction:
+                    type: boolean
+                packRecords:
+                    type: boolean
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        Record:
+            type: object
+            properties:
+                id:
+                    type: string
+                properties:
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
+                propertiesPacked:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
+        RedisParams:
+            type: object
+            properties:
+                addr:
+                    type: string
+                password:
+                    type: string
+                db:
+                    type: integer
+                    format: int32
+        Reference:
+            type: object
+            properties:
+                referencedResource:
+                    type: string
+                cascade:
+                    type: boolean
+        RegexMatchExpression:
+            type: object
+            properties:
+                pattern:
+                    type: string
+                expression:
+                    $ref: '#/components/schemas/Expression'
+        RenewTokenRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                term:
+                    enum:
+                        - SHORT
+                        - MIDDLE
+                        - LONG
+                        - VERY_LONG
+                    type: string
+                    format: enum
+        RenewTokenResponse:
+            type: object
+            properties:
+                token:
+                    $ref: '#/components/schemas/Token'
+        Resource:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                namespace:
+                    type: string
+                sourceConfig:
+                    $ref: '#/components/schemas/ResourceSourceConfig'
+                properties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ResourceProperty'
+                types:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ResourceSubType'
+                indexes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ResourceIndex'
+                securityContext:
+                    $ref: '#/components/schemas/SecurityContext'
+                virtual:
+                    type: boolean
+                immutable:
+                    type: boolean
+                abstract:
+                    type: boolean
+                title:
+                    type: string
+                description:
+                    type: string
+                auditData:
+                    $ref: '#/components/schemas/AuditData'
+                version:
+                    type: integer
+                    format: uint32
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        ResourceIndex:
+            type: object
+            properties:
+                properties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ResourceIndexProperty'
+                indexType:
+                    enum:
+                        - BTREE
+                        - HASH
+                    type: string
+                    format: enum
+                unique:
+                    type: boolean
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        ResourceIndexProperty:
+            type: object
+            properties:
+                name:
+                    type: string
+                order:
+                    enum:
+                        - ORDER_UNKNOWN
+                        - ORDER_ASC
+                        - ORDER_DESC
+                    type: string
+                    format: enum
+        ResourceMigrationCreateIndex:
+            type: object
+            properties:
+                index:
+                    type: integer
+                    format: uint32
+        ResourceMigrationCreateProperty:
+            type: object
+            properties:
+                property:
+                    type: string
+        ResourceMigrationCreateResource:
+            type: object
+            properties: {}
+        ResourceMigrationDeleteIndex:
+            type: object
+            properties:
+                existingIndex:
+                    type: integer
+                    format: uint32
+        ResourceMigrationDeleteProperty:
+            type: object
+            properties:
+                existingProperty:
+                    type: string
+        ResourceMigrationDeleteResource:
+            type: object
+            properties: {}
+        ResourceMigrationPlan:
+            type: object
+            properties:
+                existingResource:
+                    $ref: '#/components/schemas/Resource'
+                currentResource:
+                    $ref: '#/components/schemas/Resource'
+                steps:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ResourceMigrationStep'
+        ResourceMigrationStep:
+            type: object
+            properties:
+                createResource:
+                    $ref: '#/components/schemas/ResourceMigrationCreateResource'
+                deleteResource:
+                    $ref: '#/components/schemas/ResourceMigrationDeleteResource'
+                updateResource:
+                    $ref: '#/components/schemas/ResourceMigrationUpdateResource'
+                createProperty:
+                    $ref: '#/components/schemas/ResourceMigrationCreateProperty'
+                deleteProperty:
+                    $ref: '#/components/schemas/ResourceMigrationDeleteProperty'
+                updateProperty:
+                    $ref: '#/components/schemas/ResourceMigrationUpdateProperty'
+                createIndex:
+                    $ref: '#/components/schemas/ResourceMigrationCreateIndex'
+                deleteIndex:
+                    $ref: '#/components/schemas/ResourceMigrationDeleteIndex'
+        ResourceMigrationUpdateProperty:
+            type: object
+            properties:
+                existingProperty:
+                    type: string
+                property:
+                    type: string
+                changedFields:
+                    type: array
+                    items:
+                        type: string
+        ResourceMigrationUpdateResource:
+            type: object
+            properties:
+                changedFields:
+                    type: array
+                    items:
+                        type: string
+        ResourceProperty:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                    description: property name
+                type:
+                    enum:
+                        - BOOL
+                        - STRING
+                        - FLOAT32
+                        - FLOAT64
+                        - INT32
+                        - INT64
+                        - BYTES
+                        - UUID
+                        - DATE
+                        - TIME
+                        - TIMESTAMP
+                        - OBJECT
+                        - MAP
+                        - LIST
+                        - REFERENCE
+                        - ENUM
+                        - STRUCT
+                    type: string
+                    description: type of property
+                    format: enum
+                typeRef:
+                    type: string
+                    description: type ref
+                mapping:
+                    type: string
+                    description: mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
+                required:
+                    type: boolean
+                    description: this is to mark property as required
+                primary:
+                    type: boolean
+                length:
+                    type: integer
+                    format: uint32
+                unique:
+                    type: boolean
+                immutable:
+                    type: boolean
+                securityContext:
+                    $ref: '#/components/schemas/SecurityContext'
+                defaultValue:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                exampleValue:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+                enumValues:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufValue'
+                reference:
+                    $ref: '#/components/schemas/Reference'
+                properties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ResourceProperty'
+                item:
+                    $ref: '#/components/schemas/ResourceProperty'
+                title:
+                    type: string
+                description:
+                    type: string
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+            description: Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record and if you send 123.45 for int64
+        ResourceSourceConfig:
+            type: object
+            properties:
+                dataSource:
+                    type: string
+                catalog:
+                    type: string
+                entity:
+                    type: string
+            description: source config is to configure resource and bind it to data-source and an entity inside data source. An entity is like a table on sql databases or collection on mongodb etc.
+        ResourceSubType:
+            type: object
+            properties:
+                name:
+                    type: string
+                properties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ResourceProperty'
+        SearchRecordRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                namespace:
+                    type: string
+                resource:
+                    type: string
+                query:
+                    $ref: '#/components/schemas/BooleanExpression'
+                limit:
+                    type: integer
+                    format: uint32
+                offset:
+                    type: integer
+                    format: uint64
+                useHistory:
+                    type: boolean
+                resolveReferences:
+                    type: array
+                    items:
+                        type: string
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        SearchRecordResponse:
+            type: object
+            properties:
+                total:
+                    type: integer
+                    format: uint32
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+        SecurityConstraint:
+            type: object
+            properties:
+                namespace:
+                    type: string
+                resource:
+                    type: string
+                property:
+                    type: string
+                before:
+                    type: string
+                    format: date-time
+                after:
+                    type: string
+                    format: date-time
+                principal:
+                    type: string
+                recordIds:
+                    type: array
+                    items:
+                        type: string
+                operation:
+                    enum:
+                        - OPERATION_TYPE_READ
+                        - OPERATION_TYPE_CREATE
+                        - OPERATION_TYPE_UPDATE
+                        - OPERATION_TYPE_DELETE
+                        - FULL
+                    type: string
+                    format: enum
+                permit:
+                    enum:
+                        - PERMIT_TYPE_ALLOW
+                        - PERMIT_TYPE_REJECT
+                        - PERMIT_TYPE_UNKNOWN
+                    type: string
+                    format: enum
+            description: SecurityConstraint is a rule
+        SecurityContext:
+            type: object
+            properties:
+                constraints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SecurityConstraint'
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        StatusResponse:
+            type: object
+            properties:
+                connectionAlreadyInitiated:
+                    type: boolean
+                testConnection:
+                    type: boolean
+        Token:
+            type: object
+            properties:
+                term:
+                    enum:
+                        - SHORT
+                        - MIDDLE
+                        - LONG
+                        - VERY_LONG
+                    type: string
+                    format: enum
+                content:
+                    type: string
+                expiration:
+                    type: string
+                    format: date-time
+        UpdateDataSourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                dataSources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSource'
+        UpdateDataSourceResponse:
+            type: object
+            properties:
+                dataSources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSource'
+        UpdateExtensionRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
+        UpdateExtensionResponse:
+            type: object
+            properties:
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
+        UpdateMultiRecordResponse:
+            type: object
+            properties:
+                record:
+                    $ref: '#/components/schemas/Record'
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+        UpdateNamespaceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                Namespaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Namespace'
+        UpdateNamespaceResponse:
+            type: object
+            properties:
+                Namespaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Namespace'
+        UpdateRecordRequest_PropertiesEntry:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
+        UpdateRecordResponse:
+            type: object
+            properties:
+                record:
+                    $ref: '#/components/schemas/Record'
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Record'
+        UpdateResourceRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+                doMigration:
+                    type: boolean
+                    description: See the comments on CreateResourceRequest.doMigration
+                forceMigration:
+                    type: boolean
+                    description: See the comments on CreateResourceRequest.forceMigration
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
+        UpdateResourceResponse:
+            type: object
+            properties:
+                resources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resource'
+        UpdateUserResponse:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/User'
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
+        User:
+            type: object
+            properties:
+                id:
+                    type: string
+                username:
+                    type: string
+                password:
+                    type: string
+                securityContext:
+                    $ref: '#/components/schemas/SecurityContext'
+                details:
+                    type: object
+                signKey:
+                    type: string
+                auditData:
+                    $ref: '#/components/schemas/AuditData'
+                version:
+                    type: integer
+                    format: uint32
+        VirtualParams:
+            type: object
+            properties:
+                mode:
+                    enum:
+                        - DISCARD
+                        - ERROR
+                    type: string
+                    format: enum
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+security:
+    - bearerAuth: []
+tags:
+    - name: Authentication
+      description: Authentication Service is for authentication related operations
+    - name: DataSource
+      description: DataSource Service is for managing data sources
+    - name: Extension
+      description: Extension Service is for managing extensions
+    - name: Namespace
+      description: Namespace Service is for managing namespaces
+    - name: Record
+      description: Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
+    - name: Record
+      description: Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
+    - name: Resource
+      description: Resource service is for managing resources
+    - name: User
+      description: User service is for managing users
+    - name: Watch
+      description: Watch service watching operations on records

@@ -105,7 +105,9 @@ func interceptRequest(authenticationService abs.AuthenticationService, ctx conte
 		}
 	}
 
-	if token != "" {
+	if authenticationService.AuthenticationDisabled() {
+		ctx = security.WithSystemContext(ctx)
+	} else if token != "" {
 		userDetails, err := authenticationService.ParseAndVerifyToken(token)
 
 		if err != nil {
