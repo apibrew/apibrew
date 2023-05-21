@@ -139,11 +139,8 @@ types:
         type: BOOL
   - name: Argument
     properties:
-      - name: property
-        type: REFERENCE
-        required: true
-        reference:
-          referencedResource: ResourceProperty
+      - name: name
+        type: STRING
       - name: direction
         type: ENUM
         enumValues:
@@ -179,8 +176,8 @@ properties:
 indexes:
   - unique: true
     properties:
-    - name: package
-    - name: name
+      - name: package
+      - name: name
 ---
 type: resource
 name: FunctionExecution
