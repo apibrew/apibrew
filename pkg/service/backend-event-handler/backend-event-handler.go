@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
 )
@@ -180,11 +181,69 @@ func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *m
 		}
 	}
 
-	//if selector.RecordSelector != nil {
-	//TODO implement me
-	//}
+	if selector.RecordSelector != nil {
+		return recordSelectorMatches(incoming, selector.RecordSelector)
+	}
 
 	return true
+}
+
+func recordSelectorMatches(incoming *model.Event, selector *model.BooleanExpression) bool {
+	if selector == nil {
+		return true
+	}
+
+	if selector.GetAnd() != nil {
+		for _, child := range selector.GetAnd().Expressions {
+			if !recordSelectorMatches(incoming, child) {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	if selector.GetOr() != nil {
+		for _, child := range selector.GetOr().Expressions {
+			if recordSelectorMatches(incoming, child) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	if selector.GetNot() != nil {
+		return !recordSelectorMatches(incoming, selector.GetNot())
+	}
+
+	if selector.GetEqual() != nil {
+		left := resolve(incoming, selector.GetEqual().Left)
+		right := resolve(incoming, selector.GetEqual().Right)
+
+		return proto.Equal(left, right)
+	}
+
+	return true
+}
+
+func resolve(incoming *model.Event, left *model.Expression) proto.Message {
+	if left.GetProperty() != "" {
+		if len(incoming.Records) == 0 {
+			return nil
+		}
+		return incoming.Records[0].Properties[left.GetProperty()]
+	}
+
+	if left.GetRefValue() != nil {
+		return left.GetRefValue()
+	}
+
+	if left.GetValue() != nil {
+		return left.GetValue()
+	}
+
+	return nil
 }
 
 func NewBackendEventHandler() BackendEventHandler {
