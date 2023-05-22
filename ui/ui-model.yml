@@ -122,10 +122,6 @@ properties:
     length: 255
     required: true
     unique: true
-  - name: handlerAddr
-    type: STRING
-    length: 255
-    required: true
 ---
 type: resource
 name: Function
