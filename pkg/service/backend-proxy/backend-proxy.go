@@ -36,7 +36,7 @@ func (b backendProxy) AddRecords(ctx context.Context, resource *model.Resource, 
 		Records:  records,
 	}),
 		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
-			result, err := b.backend.AddRecords(ctx, resource, records)
+			result, err := b.backend.AddRecords(ctx, resource, passedEvent.Records)
 
 			passedEvent.Records = result
 
@@ -57,7 +57,7 @@ func (b backendProxy) UpdateRecords(ctx context.Context, resource *model.Resourc
 		Records:  records,
 	}),
 		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
-			result, err := b.backend.UpdateRecords(ctx, resource, records)
+			result, err := b.backend.UpdateRecords(ctx, resource, passedEvent.Records)
 
 			passedEvent.Records = result
 
@@ -78,7 +78,7 @@ func (b backendProxy) GetRecord(ctx context.Context, resource *model.Resource, i
 		Ids:      []string{id},
 	}),
 		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
-			result, err := b.backend.GetRecord(ctx, resource, id)
+			result, err := b.backend.GetRecord(ctx, resource, passedEvent.Id)
 
 			passedEvent.Records = []*model.Record{result}
 
@@ -103,7 +103,7 @@ func (b backendProxy) DeleteRecords(ctx context.Context, resource *model.Resourc
 		Ids:      list,
 	}),
 		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
-			err := b.backend.DeleteRecords(ctx, resource, list)
+			err := b.backend.DeleteRecords(ctx, resource, passedEvent.Ids)
 
 			return passedEvent, err
 		})

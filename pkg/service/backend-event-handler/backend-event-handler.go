@@ -63,6 +63,10 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 				nextEvent = result
 			}
 
+			if result == nil {
+				return nil, nil
+			}
+
 			if handler.Finalizes {
 				break
 			}

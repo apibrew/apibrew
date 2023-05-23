@@ -1,15 +1,23 @@
 import {ExtensionClient} from "./proto/stub/extension_grpc_pb";
 import {credentials} from "@grpc/grpc-js";
-import {CreateExtensionRequest, ListExtensionRequest, UpdateExtensionRequest} from "./proto/stub/extension_pb";
+import {
+    CreateExtensionRequest,
+    ListExtensionRequest,
+    ListExtensionResponse,
+    UpdateExtensionRequest
+} from "./proto/stub/extension_pb";
 import {toPromise} from "./util";
 import {Extension} from "./proto/model/extension_pb";
 import {ExternalCall, FunctionCall} from "./proto/model/external_pb";
 import {EXTENSION_NAME, HOST, PORT} from "./config";
 import {EventSelector} from "./proto/model/event_pb";
 import {RecordClient} from "./proto/stub/record_grpc_pb";
-import {ApplyRecordRequest, CreateRecordRequest} from "./proto/stub/record_pb";
+import {ApplyRecordRequest, ApplyRecordResponse} from "./proto/stub/record_pb";
 import {Record} from "./proto/model/record_pb";
 import * as google_protobuf_struct_pb from "google-protobuf/google/protobuf/struct_pb";
+import {initFunctionRegistry} from "./function-registry";
+
+export let engineId: string
 
 async function updateExtension(client: ExtensionClient, extension: Extension) {
     const request = new UpdateExtensionRequest()
@@ -30,7 +38,11 @@ async function registerFunctionEngine(recordClient: RecordClient) {
     const record = new Record()
     record.getPropertiesMap().set('name', new google_protobuf_struct_pb.Value().setStringValue(EXTENSION_NAME))
     applyFunctionEngineRequest.setRecord(record)
-    await toPromise(recordClient.apply.bind(recordClient))(applyFunctionEngineRequest)
+    const result = await toPromise<ApplyRecordRequest, ApplyRecordResponse>(recordClient.apply.bind(recordClient))(applyFunctionEngineRequest)
+    engineId = result.getRecord().getId()
+
+    console.log('Engine registration Id:', engineId)
+    await initFunctionRegistry(engineId)
 }
 
 export async function registerExtension() {
@@ -38,7 +50,7 @@ export async function registerExtension() {
     const recordClient = new RecordClient('localhost:9009', credentials.createInsecure(), null)
     await registerFunctionEngine(recordClient);
 
-    const extensionList = await toPromise(extensionClient.list.bind(extensionClient))(new ListExtensionRequest())
+    const extensionList = await toPromise<ListExtensionRequest, ListExtensionResponse>(extensionClient.list.bind(extensionClient))(new ListExtensionRequest())
 
     const extension = prepareExtension()
     if (extensionList.getContentList()) {
