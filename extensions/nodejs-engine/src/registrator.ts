@@ -9,8 +9,8 @@ import {
 import {toPromise} from "./util";
 import {Extension} from "./proto/model/extension_pb";
 import {ExternalCall, FunctionCall} from "./proto/model/external_pb";
-import {EXTENSION_NAME, HOST, PORT} from "./config";
-import {EventSelector} from "./proto/model/event_pb";
+import {APBR_HOST, APBR_PORT, ENGINE_REMOTE_ADDR, EXTENSION_NAME, TOKEN} from "./config";
+import {Event, EventSelector} from "./proto/model/event_pb";
 import {RecordClient} from "./proto/stub/record_grpc_pb";
 import {ApplyRecordRequest, ApplyRecordResponse} from "./proto/stub/record_pb";
 import {Record} from "./proto/model/record_pb";
@@ -35,6 +35,7 @@ async function registerFunctionEngine(recordClient: RecordClient) {
     const applyFunctionEngineRequest = new ApplyRecordRequest()
     applyFunctionEngineRequest.setNamespace('extensions')
     applyFunctionEngineRequest.setResource('FunctionExecutionEngine')
+    applyFunctionEngineRequest.setToken(TOKEN)
     const record = new Record()
     record.getPropertiesMap().set('name', new google_protobuf_struct_pb.Value().setStringValue(EXTENSION_NAME))
     applyFunctionEngineRequest.setRecord(record)
@@ -46,41 +47,82 @@ async function registerFunctionEngine(recordClient: RecordClient) {
 }
 
 export async function registerExtension() {
-    const extensionClient = new ExtensionClient('localhost:9009', credentials.createInsecure(), null)
-    const recordClient = new RecordClient('localhost:9009', credentials.createInsecure(), null)
+    const extensionClient = new ExtensionClient(`${APBR_HOST}:${APBR_PORT}`, credentials.createInsecure(), null)
+    const recordClient = new RecordClient(`${APBR_HOST}:${APBR_PORT}`, credentials.createInsecure(), null)
     await registerFunctionEngine(recordClient);
+    const listRequest = new ListExtensionRequest()
+    listRequest.setToken(TOKEN)
 
-    const extensionList = await toPromise<ListExtensionRequest, ListExtensionResponse>(extensionClient.list.bind(extensionClient))(new ListExtensionRequest())
+    const extensionList = await toPromise<ListExtensionRequest, ListExtensionResponse>(extensionClient.list.bind(extensionClient))(listRequest)
 
-    const extension = prepareExtension()
+    const functionExtension = prepareFunctionExtension()
+    const functionExecutionExtension = prepareFunctionExecutionExtension()
+    let functionExtensionExists = false
+    let functionExecutionExtensionExists = false
+
     if (extensionList.getContentList()) {
         for (const existing of extensionList.getContentList()) {
-            if (existing.getName() === extension.getName()) {
-                console.log('updating extension')
-                return await updateExtension(extensionClient, extension)
+            if (existing.getName() === functionExtension.getName()) {
+                console.log('updating function extension')
+                await updateExtension(extensionClient, functionExtension)
+                functionExtensionExists = true
+            }
+
+            if (existing.getName() === functionExecutionExtension.getName()) {
+                console.log('updating function extension')
+                await updateExtension(extensionClient, functionExecutionExtension)
+                functionExecutionExtensionExists = true
             }
         }
     }
 
-    console.log('creating extension')
-    return await createExtension(extensionClient, extension)
+    if (!functionExtensionExists) {
+        console.log('creating extension')
+        await createExtension(extensionClient, functionExtension)
+    }
 
+    if (!functionExecutionExtensionExists) {
+        console.log('creating extension')
+        await createExtension(extensionClient, functionExecutionExtension)
+    }
 }
 
-function prepareExtension(): Extension {
+function prepareFunctionExtension(): Extension {
     const extension = new Extension()
     extension.setName(EXTENSION_NAME)
     extension.setSync(true)
     const call = new ExternalCall()
     const fCall = new FunctionCall()
     fCall.setFunctionname('external-call')
-    fCall.setHost(`${HOST}:${PORT}`)
+    fCall.setHost(ENGINE_REMOTE_ADDR)
     call.setFunctioncall(fCall)
     extension.setCall(call)
     extension.setOrder(10)
     extension.setResponds(true)
     const eventSelector = new EventSelector()
-    eventSelector.setResourcesList(['Function', 'FunctionExecution'])
+    eventSelector.setResourcesList(['Function'])
+    eventSelector.setNamespacesList(['extensions'])
+    eventSelector.setActionsList([Event.Action.CREATE, Event.Action.UPDATE, Event.Action.DELETE])
+    extension.setSelector(eventSelector)
+
+    return extension
+}
+
+function prepareFunctionExecutionExtension(): Extension {
+    const extension = new Extension()
+    extension.setName(`${EXTENSION_NAME}-execution`)
+    extension.setSync(true)
+    const call = new ExternalCall()
+    const fCall = new FunctionCall()
+    fCall.setFunctionname('external-call')
+    fCall.setHost(ENGINE_REMOTE_ADDR)
+    call.setFunctioncall(fCall)
+    extension.setCall(call)
+    extension.setOrder(10)
+    extension.setResponds(true)
+    extension.setFinalizes(true)
+    const eventSelector = new EventSelector()
+    eventSelector.setResourcesList(['FunctionExecution'])
     eventSelector.setNamespacesList(['extensions'])
     extension.setSelector(eventSelector)
 

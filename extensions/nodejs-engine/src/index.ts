@@ -5,9 +5,9 @@ import {ListResourceRequest} from "./proto/stub/resource_pb";
 import {FunctionService, IFunctionServer} from "./proto/ext/function_grpc_pb";
 import {FunctionCallResponse} from "./proto/ext/function_pb";
 import {registerExtension} from "./registrator";
-import {HOST, PORT} from "./config";
 import {handle} from "./handler";
 import {initFunctionRegistry} from "./function-registry";
+import {APBR_HOST, APBR_PORT, ENGINE_HOST, ENGINE_PORT} from "./config";
 
 const resource = new Resource()
 
@@ -32,6 +32,6 @@ server.addService(FunctionService, {
     functionCall: functionCallHandler
 })
 
-server.bindAsync(`${HOST}:${PORT}`, ServerCredentials.createInsecure(), () => {
+server.bindAsync(`${ENGINE_HOST}:${ENGINE_PORT}`, ServerCredentials.createInsecure(), () => {
     server.start();
 });
