@@ -49,20 +49,20 @@ y: number;
         
             export const AppDesignerBoardNamespaceSelectorName = "NamespaceSelector";
         
+            export const AppDesignerBoardVersionName = "Version";
+        
             export const AppDesignerBoardResourceVisualsName = "ResourceVisuals";
         
             export const AppDesignerBoardResourceSelectorName = "ResourceSelector";
-        
-            export const AppDesignerBoardVersionName = "Version";
         
         export interface AppDesignerBoard {
         id: string;
         description: string;
         name: string;
         namespaceSelector: string[];
+        version: number;
         resourceVisuals: AppDesignerBoardResourceVisual[];
         resourceSelector: string[];
-        version: number;
         
         }
     

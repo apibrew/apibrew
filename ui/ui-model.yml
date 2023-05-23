@@ -190,4 +190,12 @@ properties:
     type: OBJECT
   - name: output
     type: OBJECT
+  - name: error
+    type: OBJECT
+  - name: status
+    type: ENUM
+    enumValues:
+      - pending
+      - success
+      - error
 

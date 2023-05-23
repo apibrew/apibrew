@@ -4,9 +4,10 @@ import {credentials, Server, ServerCredentials} from "@grpc/grpc-js";
 import {ListResourceRequest} from "./proto/stub/resource_pb";
 import {FunctionService, IFunctionServer} from "./proto/ext/function_grpc_pb";
 import {FunctionCallResponse} from "./proto/ext/function_pb";
-import {ExtensionClient} from "./proto/stub/extension_grpc_pb";
 import {registerExtension} from "./registrator";
 import {HOST, PORT} from "./config";
+import {handle} from "./handler";
+import {initFunctionRegistry} from "./function-registry";
 
 const resource = new Resource()
 
@@ -19,16 +20,12 @@ registerExtension()
 const server = new Server();
 
 const functionCallHandler: IFunctionServer['functionCall'] = (call, callback) => {
-    console.log(call.request.getName())
-    console.log(call.request.getEvent())
+    handle(call.request.getEvent()).then(processedEvent => {
+        const response = new FunctionCallResponse()
+        response.setEvent(processedEvent)
 
-    const response = new FunctionCallResponse()
-
-    response.setEvent(call.request.getEvent())
-
-    console.log(response.getEvent())
-
-    callback(null, response)
+        callback(null, response)
+    })
 }
 
 server.addService(FunctionService, {

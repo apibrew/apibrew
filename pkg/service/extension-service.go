@@ -19,7 +19,7 @@ type extensionService struct {
 	ServiceName            string
 	backendProviderService abs.BackendProviderService
 	extensionVersionMap    map[string]uint32
-	extensionHandlerMap    map[*model.Extension]*backend_event_handler.Handler
+	extensionHandlerMap    map[string]*backend_event_handler.Handler
 	externalService        abs.ExternalService
 	backendEventHandler    backend_event_handler.BackendEventHandler
 }
@@ -119,7 +119,7 @@ func (d *extensionService) Init(data *model.InitData) {
 
 func (d *extensionService) keepExtensionsRunning() {
 	for {
-		time.Sleep(10 * time.Second)
+		time.Sleep(10 * time.Minute)
 
 		d.runConfigureExtensions()
 	}
@@ -147,28 +147,31 @@ func (d *extensionService) RegisterExtension(extension *model.Extension) {
 }
 
 func (d *extensionService) UnRegisterExtension(extension *model.Extension) {
-	if d.extensionHandlerMap[extension] == nil {
+	if d.extensionHandlerMap[extension.Id] == nil {
 		log.Warn("Trying to unregister extension that is not registered")
 		return
 	}
 
-	d.backendEventHandler.UnRegisterHandler(*d.extensionHandlerMap[extension])
+	d.backendEventHandler.UnRegisterHandler(*d.extensionHandlerMap[extension.Id])
 
-	delete(d.extensionHandlerMap, extension)
-	delete(d.extensionVersionMap, extension.Name)
+	delete(d.extensionHandlerMap, extension.Id)
+	delete(d.extensionVersionMap, extension.Id)
 }
 
 func (d *extensionService) configureExtension(extension *model.Extension) {
-	if d.extensionVersionMap[extension.Name] == extension.Version {
+	if d.extensionVersionMap[extension.Id] == extension.Version {
 		return
 	}
 
-	d.extensionVersionMap[extension.Name] = extension.Version
+	d.extensionVersionMap[extension.Id] = extension.Version
 
 	extensionHandler := d.prepareExtensionHandler(extension)
-	d.extensionHandlerMap[extension] = &extensionHandler
+	if d.extensionHandlerMap[extension.Id] != nil {
+		d.backendEventHandler.UnRegisterHandler(*d.extensionHandlerMap[extension.Id])
+	}
+	d.extensionHandlerMap[extension.Id] = &extensionHandler
 
-	d.backendEventHandler.RegisterHandler(*d.extensionHandlerMap[extension])
+	d.backendEventHandler.RegisterHandler(*d.extensionHandlerMap[extension.Id])
 }
 
 func (d *extensionService) prepareExtensionHandler(extension *model.Extension) backend_event_handler.Handler {
@@ -189,7 +192,7 @@ func NewExtensionService(recordService abs.RecordService, backendProviderService
 	return &extensionService{
 		ServiceName:            "ExtensionService",
 		extensionVersionMap:    make(map[string]uint32),
-		extensionHandlerMap:    make(map[*model.Extension]*backend_event_handler.Handler),
+		extensionHandlerMap:    make(map[string]*backend_event_handler.Handler),
 		recordService:          recordService,
 		backendProviderService: backendProviderService,
 		backendEventHandler:    backendEventHandler,
