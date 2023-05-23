@@ -1,0 +1,175 @@
+type: namespace
+name: extensions
+---
+type: resource
+name: FunctionExecutionEngine
+namespace: extensions
+description: FunctionExecutionEngine
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+---
+type: resource
+name: Function
+namespace: extensions
+description: Function
+types:
+  - name: Options
+    properties:
+      - name: namedParams
+        description: If True, function input and output arguments will be named args
+        type: BOOL
+  - name: Argument
+    properties:
+      - name: name
+        type: STRING
+      - name: direction
+        type: ENUM
+        enumValues:
+          - input
+          - output
+        defaultValue: input
+properties:
+  - name: package
+    type: STRING
+    length: 255
+    required: true
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+  - name: script
+    type: STRING
+    length: 64000
+    required: true
+  - name: engine
+    type: REFERENCE
+    required: true
+    reference:
+      referencedResource: FunctionExecutionEngine
+  - name: options
+    type: STRUCT
+    typeRef: Options
+  - name: args
+    type: LIST
+    item:
+      type: STRUCT
+      typeRef: Argument
+indexes:
+  - unique: true
+    properties:
+      - name: package
+      - name: name
+---
+type: resource
+name: FunctionExecution
+namespace: extensions
+description: FunctionExecution
+immutable: true
+properties:
+  - name: function
+    type: REFERENCE
+    required: true
+    reference:
+      referencedResource: Function
+  - name: input
+    type: OBJECT
+  - name: output
+    type: OBJECT
+  - name: error
+    type: OBJECT
+  - name: status
+    type: ENUM
+    enumValues:
+      - pending
+      - success
+      - error
+---
+type: resource
+name: FunctionTrigger
+namespace: extensions
+description: FunctionTrigger
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: resource
+    type: STRING
+    length: 255
+    required: true
+  - name: namespace
+    type: STRING
+    length: 255
+    required: true
+  - name: action
+    type: ENUM
+    enumValues:
+        - create
+        - update
+        - delete
+        - list
+        - get
+    required: true
+  - name: order
+    type: ENUM
+    enumValues:
+        - before
+        - after
+        - instead
+  - name: async
+    type: BOOL
+    required: true
+  - name: function
+    type: REFERENCE
+    required: true
+    reference:
+      referencedResource: Function
+---
+type: resource
+name: ResourceRule
+namespace: extensions
+description: ResourceRule
+properties:
+    - name: name
+      type: STRING
+      length: 255
+      required: true
+      unique: true
+    - name: resource
+      type: STRING
+      length: 255
+      required: true
+    - name: namespace
+      type: STRING
+      length: 255
+      required: true
+    - name: conditionFunction
+      type: REFERENCE
+      required: true
+      reference:
+        referencedResource: Function
+---
+type: resource
+name: Schedule
+namespace: extensions
+description: Schedule
+properties:
+    - name: name
+      type: STRING
+      length: 255
+      required: true
+      unique: true
+    - name: schedule
+      type: STRING
+      length: 255
+      required: true
+    - name: function
+      type: REFERENCE
+      required: true
+      reference:
+        referencedResource: Function

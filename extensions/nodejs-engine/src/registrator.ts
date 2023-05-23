@@ -9,7 +9,7 @@ import {
 import {toPromise} from "./util";
 import {Extension} from "./proto/model/extension_pb";
 import {ExternalCall, FunctionCall} from "./proto/model/external_pb";
-import {APBR_HOST, APBR_PORT, ENGINE_REMOTE_ADDR, EXTENSION_NAME, TOKEN} from "./config";
+import {APBR_ADDR, ENGINE_REMOTE_ADDR, EXTENSION_NAME, TOKEN} from "./config";
 import {Event, EventSelector} from "./proto/model/event_pb";
 import {RecordClient} from "./proto/stub/record_grpc_pb";
 import {ApplyRecordRequest, ApplyRecordResponse} from "./proto/stub/record_pb";
@@ -47,8 +47,8 @@ async function registerFunctionEngine(recordClient: RecordClient) {
 }
 
 export async function registerExtension() {
-    const extensionClient = new ExtensionClient(`${APBR_HOST}:${APBR_PORT}`, credentials.createInsecure(), null)
-    const recordClient = new RecordClient(`${APBR_HOST}:${APBR_PORT}`, credentials.createInsecure(), null)
+    const extensionClient = new ExtensionClient(APBR_ADDR, credentials.createInsecure(), null)
+    const recordClient = new RecordClient(APBR_ADDR, credentials.createInsecure(), null)
     await registerFunctionEngine(recordClient);
     const listRequest = new ListExtensionRequest()
     listRequest.setToken(TOKEN)

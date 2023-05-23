@@ -7,7 +7,7 @@ import {FunctionCallResponse} from "./proto/ext/function_pb";
 import {registerExtension} from "./registrator";
 import {handle} from "./handler";
 import {initFunctionRegistry} from "./function-registry";
-import {APBR_HOST, APBR_PORT, ENGINE_HOST, ENGINE_PORT} from "./config";
+import {ENGINE_ADDR} from "./config";
 
 const resource = new Resource()
 
@@ -32,6 +32,6 @@ server.addService(FunctionService, {
     functionCall: functionCallHandler
 })
 
-server.bindAsync(`${ENGINE_HOST}:${ENGINE_PORT}`, ServerCredentials.createInsecure(), () => {
+server.bindAsync(ENGINE_ADDR, ServerCredentials.createInsecure(), () => {
     server.start();
 });
