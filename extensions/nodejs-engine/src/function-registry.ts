@@ -3,10 +3,11 @@ import {credentials} from "@grpc/grpc-js";
 import {RecordClient} from "./proto/stub/record_grpc_pb";
 import {ListRecordRequest, ListRecordResponse} from "./proto/stub/record_pb";
 import {toPromise} from "./util";
+import {APBR_HOST, APBR_PORT, TOKEN} from "./config";
 
 let engineId: string
 
-const recordClient = new RecordClient('localhost:9009', credentials.createInsecure(), null)
+const recordClient = new RecordClient(`${APBR_HOST}:${APBR_PORT}`, credentials.createInsecure(), null)
 
 export interface Function {
     name: string
@@ -18,9 +19,11 @@ export let functionMap: { [key: string]: Function } = {}
 
 export async function reloadFunctions() {
     console.log('Reloading Functions')
+    console.log('`${APBR_HOST}:${APBR_PORT}`', `${APBR_HOST}:${APBR_PORT}`)
     const request = new ListRecordRequest()
     request.setNamespace('extensions')
     request.setResource('Function')
+    request.setToken(TOKEN)
     const functions = await toPromise<ListRecordRequest, ListRecordResponse>(recordClient.list.bind(recordClient))(request)
 
     functionMap = {}

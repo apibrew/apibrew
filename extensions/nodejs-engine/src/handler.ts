@@ -18,6 +18,8 @@ async function handleFunctionExecutionCall(event: Event) {
 
             const fn = locateFunction(packageName, name)
 
+            console.log('running', fn)
+
             const output = new VM({
                 sandbox: {
                     ...input

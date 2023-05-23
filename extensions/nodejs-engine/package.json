@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prebuild": "mkdir -p dist; cp -r src/proto dist/proto",
     "build": "npx tsc",
     "start": "node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
