@@ -22,7 +22,7 @@ export function ResourceForm(props: ResourceFormProps): JSX.Element {
 
     const layoutOptions = useContext(LayoutContext)
 
-    return <>
+    return <React.Fragment>
         <Card>
             <CardHeader title={<Box sx={{ display: 'flex' }}>
                 <Box>
@@ -75,5 +75,5 @@ export function ResourceForm(props: ResourceFormProps): JSX.Element {
                 </Box>
             </CardActions>
         </Card>
-    </>
+    </React.Fragment>
 }

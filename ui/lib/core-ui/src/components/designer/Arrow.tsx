@@ -108,7 +108,7 @@ const ControlPoints = ({
     color: string
 }) => {
     return (
-        <>
+        <React.Fragment>
             <circle
                 cx={p2.x}
                 cy={p2.y}
@@ -139,7 +139,7 @@ const ControlPoints = ({
                 x2={p4.x}
                 y2={p4.y}
             />
-        </>
+        </React.Fragment>
     )
 }
 
@@ -225,7 +225,7 @@ export const Arrow = ({
     const strokeColor = getStrokeColor()
 
     return (
-        <>
+        <React.Fragment>
             <CurvedLine
                 width={canvasWidth}
                 height={canvasHeight}
@@ -319,6 +319,6 @@ export const Arrow = ({
                     />
                 )}
             </Endings>
-        </>
+        </React.Fragment>
     )
 }

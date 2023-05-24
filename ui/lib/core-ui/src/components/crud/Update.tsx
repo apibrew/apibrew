@@ -27,11 +27,11 @@ export function Update(props: UpdateProps): JSX.Element {
     }, [params.id])
 
     if (!record) {
-        return <>Loading...</>
+        return <span>Loading...</span>
     }
 
     return (
-        <PageLayout pageTitle={props.resource.name} actions={<>
+        <PageLayout pageTitle={props.resource.name} actions={<React.Fragment>
             <Box sx={{ display: 'flex' }}>
                 <Box m={0.5}>
                     <Button variant={'outlined'}
@@ -54,10 +54,10 @@ export function Update(props: UpdateProps): JSX.Element {
                         startIcon={<Save />}>Save</Button>
                 </Box>
             </Box>
-        </>}>
-            <>
+        </React.Fragment>}>
+            <React.Fragment>
                 <Form resource={props.resource} record={record} setRecord={setRecord} formConfig={props.crudConfig.formConfig} />
-            </>
+            </React.Fragment>
         </PageLayout>
     )
 }

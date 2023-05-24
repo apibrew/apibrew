@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Fragment, type ReactNode, useState } from 'react'
+import { Fragment, ReactNode, useState } from 'react'
 import MuiAppBar, { type AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
@@ -87,7 +87,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
     }
 
     const modalContainer = (
-        <>
+        <React.Fragment>
             {modals.map(modal => <Fragment key={modal.id}>
                 <Modal {...modal.props}
                     open={true}
@@ -97,12 +97,12 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                             modal.onClose()
                         }
                     }}>
-                    <>
+                    <React.Fragment>
                         {modal.content}
-                    </>
+                    </React.Fragment>
                 </Modal>
             </Fragment>)}
-        </>
+        </React.Fragment>
     )
 
     const drawer = (
@@ -117,7 +117,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                     </IconButton>
                 </Toolbar>
                 <Divider style={{ background: '#AAA' }} />
-                {menuLists.map((menuList, index) => <Fragment key={menuList.title}>
+                {menuLists.map((menuList) => <Fragment key={menuList.title}>
                     <NavList menuList={menuList} />
                     <Divider style={{ background: '#FFF' }} />
                 </Fragment>)}
@@ -136,7 +136,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
         }} severity={alert?.severity} sx={{ width: '100%' }}>{alert?.message}</Alert>
     </Snackbar>
 
-    return <>
+    return <React.Fragment>
         <LayoutContext.Provider value={layoutOptions}>
             {modalContainer}
             <Box sx={{ display: 'flex' }}>
@@ -214,7 +214,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                 </Box>
             </Box>
         </LayoutContext.Provider>
-    </>
+    </React.Fragment>
 }
 
 export interface NavListProps {
@@ -227,7 +227,7 @@ function NavList(props: NavListProps): JSX.Element {
     return <List subheader={props.menuList.title && <Box sx={{ ml: 1, mt: 1 }}>
         <Typography>{props.menuList.title}</Typography>
     </Box>}>
-        {props.menuList.items.map((menuItem, index) => {
+        {props.menuList.items.map((menuItem) => {
             const key = `${menuItem.title}`
             return <Fragment key={key}>
                 <ListItem key={menuItem.title} disablePadding>

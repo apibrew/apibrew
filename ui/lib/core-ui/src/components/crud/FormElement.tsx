@@ -107,7 +107,7 @@ export function FormElement(props: FormElementProps) {
     }, [])
 
     return (
-        <>
+        <React.Fragment>
             <FormControl>
                 <FormLabel>{title}</FormLabel>
                 <Field required={props.property.required}
@@ -118,6 +118,6 @@ export function FormElement(props: FormElementProps) {
                     }} />
                 {props.property.description && <FormHelperText>{props.property.description}</FormHelperText>}
             </FormControl>
-        </>
+        </React.Fragment>
     )
 }

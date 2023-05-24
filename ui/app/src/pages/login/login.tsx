@@ -8,9 +8,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import { authenticate } from '../../service/authentication'
 import { useNavigate } from 'react-router-dom'
-import { TokenService } from '../../service/token'
+import { TokenService, authenticate } from 'core-ui'
 
 // eslint-disable-next-line
 export interface LoginProps {

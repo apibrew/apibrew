@@ -1,1 +1,1 @@
-export const BACKEND_URL = (window as any).BACKEND_URL as string
+export const BACKEND_URL = 'http://localhost:9009'

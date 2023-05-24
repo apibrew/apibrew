@@ -13,15 +13,15 @@ export interface CrudSettingsFormConfigProps {
 
 export function CrudSettingsFormConfig(props: CrudSettingsFormConfigProps) {
     return (
-        <>
+        <React.Fragment>
             <Box sx={{flexGrow: 1}} m={2}>
                 <Grid container spacing={2}>
                     <Grid xs={2}>
                         <Box m={1}>
                             <Card sx={{height: '600px'}}>
-                                <CardHeader title={<>
+                                <CardHeader title={<React.Fragment>
                                     <center>Toolbox</center>
-                                </>}/>
+                                </React.Fragment>}/>
                                <CardContent>
                                    <List disablePadding={true}>
                                        <ListItem disablePadding={true}>
@@ -50,9 +50,9 @@ export function CrudSettingsFormConfig(props: CrudSettingsFormConfigProps) {
                     <Grid xs={10}>
                         <Box m={1}>
                             <Card sx={{height: '600px'}}>
-                                <CardHeader title={<>
+                                <CardHeader title={<React.Fragment>
                                     <center>Form</center>
-                                </>}/>
+                                </React.Fragment>}/>
                                 <CardContent>
                                     <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
                                         <Tabs>
@@ -64,6 +64,6 @@ export function CrudSettingsFormConfig(props: CrudSettingsFormConfigProps) {
                     </Grid>
                 </Grid>
             </Box>
-        </>
+        </React.Fragment>
     )
 }

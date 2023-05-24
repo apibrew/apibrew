@@ -46,7 +46,7 @@ export function Settings(props: SettingsProps): JSX.Element {
     }, [params.id])
 
     if (!selfCrud) {
-        return <>Loading...</>
+        return <span>Loading...</span>
     }
 
     return (
@@ -54,7 +54,7 @@ export function Settings(props: SettingsProps): JSX.Element {
             {label: 'Country', to: '../'},
             {label: 'Crud Settings'}
         ]}
-                    actions={<>
+                    actions={<React.Fragment>
                         <Box sx={{display: 'flex'}}>
                             <Box m={0.5}>
                                 <Button variant={'outlined'}
@@ -90,13 +90,13 @@ export function Settings(props: SettingsProps): JSX.Element {
                                         startIcon={<Save/>}>Reset to Defaults</Button>
                             </Box>
                         </Box>
-                    </>}>
-            <>
+                    </React.Fragment>}>
+            <React.Fragment>
                 {crudResource && <Form resource={crudResource}
                                        formConfig={selfCrud.formConfig}
                                        record={crudConfig}
                                        setRecord={setCrudConfig}/>}
-            </>
+            </React.Fragment>
         </PageLayout>
     )
 }

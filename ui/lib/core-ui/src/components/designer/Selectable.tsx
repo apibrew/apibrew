@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react'
+import React, { type ReactNode, useState } from 'react'
 import { type Point } from './point'
 
 export interface SelectableProps {
@@ -19,7 +19,7 @@ export function Selectable(props: SelectableProps) {
         }
     }
 
-    return <>
+    return <React.Fragment>
         <g ref={el => {
             if (!el || bBox) {
                 return
@@ -48,5 +48,5 @@ export function Selectable(props: SelectableProps) {
                 {props.children}
             </g>}
         </g>
-    </>
+    </React.Fragment>
 }

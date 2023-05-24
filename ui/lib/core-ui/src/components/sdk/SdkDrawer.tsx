@@ -1,5 +1,5 @@
 import { Box, Drawer, IconButton, Select, Typography } from "@mui/material"
-import { useState } from "react"
+import React, { useState } from "react"
 import { Resource } from "../../model"
 import { ArrowRight, Close, KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
 import { Sdk } from "./Sdk"
@@ -18,7 +18,7 @@ export function SdkDrawer(props: SdkDrawerProps): JSX.Element {
 
     const width = size === 'small' ? 400 : size === 'medium' ? 600 : 800
 
-    return <>
+    return <React.Fragment>
         <Drawer anchor={'right'}
             BackdropProps={{ invisible: true }}
             ModalProps={{ sx: { '& .MuiDrawer-paper': { width: `${width}px`, top: '88px' } } }}
@@ -50,5 +50,5 @@ export function SdkDrawer(props: SdkDrawerProps): JSX.Element {
                 </Box>
             </Box>
         </Drawer>
-    </>
+    </React.Fragment>
 }

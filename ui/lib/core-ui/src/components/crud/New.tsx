@@ -19,7 +19,7 @@ export function New(props: NewProps) {
     const [record, setRecord] = React.useState<Record>({})
 
     return (
-        <PageLayout pageTitle={props.resource.name} actions={<>
+        <PageLayout pageTitle={props.resource.name} actions={<React.Fragment>
             <Box sx={{ display: 'flex' }}>
                 <Box m={0.5}>
                     <Button variant={'outlined'}
@@ -42,10 +42,10 @@ export function New(props: NewProps) {
                         startIcon={<Save />}>Save</Button>
                 </Box>
             </Box>
-        </>}>
-            <>
+        </React.Fragment>}>
+            <React.Fragment>
                 <Form resource={props.resource} record={record} setRecord={setRecord} formConfig={props.crudConfig.formConfig} />
-            </>
+            </React.Fragment>
         </PageLayout>
     )
 }

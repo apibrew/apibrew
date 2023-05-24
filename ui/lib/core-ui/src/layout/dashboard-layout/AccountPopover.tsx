@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { alpha } from '@mui/material/styles'
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
@@ -30,7 +30,7 @@ export default function AccountPopover() {
     }
 
     return (
-        <>
+        <React.Fragment>
             <IconButton
                 onClick={handleOpen}
                 sx={{
@@ -90,6 +90,6 @@ export default function AccountPopover() {
                     Logout
                 </MenuItem>
             </Popover>
-        </>
+        </React.Fragment>
     )
 }

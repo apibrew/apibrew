@@ -1,5 +1,5 @@
 import {Box} from "@mui/material"
-import React, {JSX, useEffect} from "react"
+import React, {JSX, useEffect, Fragment} from "react"
 import {Resource} from "../../model"
 import {ResourceService} from "../../service/resource"
 import {Route, Routes} from "react-router-dom"
@@ -46,7 +46,7 @@ export function Crud(props: CrudProps): JSX.Element {
     }, [resource])
 
     return (
-        <>
+        <Fragment>
             {resource && crudConfig && <Box>
                 <Routes>
                     <Route path="new" element={<New crudConfig={crudConfig} resource={resource}/>}/>
@@ -58,6 +58,6 @@ export function Crud(props: CrudProps): JSX.Element {
                     <Route path="" element={<List crudConfig={crudConfig} resource={resource}/>}/>
                 </Routes>
             </Box>}
-        </>
+        </Fragment>
     )
 }

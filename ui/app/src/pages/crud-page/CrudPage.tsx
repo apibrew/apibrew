@@ -1,12 +1,12 @@
-import { Crud } from "../../components/crud/Crud"
+import { Crud } from 'core-ui'
 
 export interface CrudPageProps {
-    namespace: string
-    resource: string
+  namespace: string
+  resource: string
 }
 
-export function CrudPage(props: CrudPageProps) {
-    return (
-        <Crud namespace={props.namespace} resource={props.resource} />
-    )
+export function CrudPage (props: CrudPageProps) {
+  return (
+    <Crud namespace={props.namespace} resource={props.resource}/>
+  )
 }

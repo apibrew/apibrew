@@ -45,7 +45,7 @@ const handlePropertyFieldOnChange = <K extends keyof ResourceProperty>(resource:
 export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
     const [propertyFlags, setPropertyFlags] = React.useState<Record<string, boolean>>({})
 
-    return <>
+    return <React.Fragment>
         <Box>
             <FormGroup>
                 <FormControl>
@@ -107,7 +107,7 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                 handlePropertyFieldOnChange(props.resource, props.onChange, index, 'name', e.target.value)
                                             }}/>}
 
-                                        {property.type === 'REFERENCE' && <>
+                                        {property.type === 'REFERENCE' && <React.Fragment>
                                             &nbsp;
                                             {!propertyFlags[property.name] && (
                                                 <span>[{property.reference?.referencedResource}]</span>
@@ -133,7 +133,7 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                         value={item.name}>{item.name}</MenuItem>)}
                                                 </Select>
                                             )}
-                                        </>}
+                                        </React.Fragment>}
                                     </TableCell>
                                     <TableCell>
                                         {!propertyFlags[property.name] && (
@@ -281,5 +281,5 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                 </TableContainer>
             </FormGroup>
         </Box>
-    </>
+    </React.Fragment>
 }

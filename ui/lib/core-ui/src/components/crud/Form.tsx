@@ -44,21 +44,21 @@ export function FormItemCollection(props: FormItemCollectionProps) {
 
     const [value, setValue] = React.useState(0);
 
-    return <>
-        {tabs.length > 0 && <>
+    return <React.Fragment>
+        {tabs.length > 0 && <React.Fragment>
             <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
                 <Tabs value={value} onChange={(_, value) => setValue(value)} aria-label="basic tabs example">
                     {tabs.map((tab, index) => <Tab key={index} value={index} label={tab.title}/>)}
                 </Tabs>
             </Box>
             {tabs[value].children && <FormItemCollection items={tabs[value].children}/>}
-        </>}
+        </React.Fragment>}
         <Box display='flex' flexDirection='column'>
             {other.map((child) => (
                 <FormItem config={child}/>
             ))}
         </Box>
-    </>
+    </React.Fragment>
 }
 
 export function FormItem(props: FormItemProps) {
@@ -73,7 +73,7 @@ export function FormItem(props: FormItemProps) {
             throw new Error(`Property ${props.config.propertyPath} not found`)
         }
 
-        return <>
+        return <React.Fragment>
             <ResourcePropertyContext.Provider value={property}>
                 <ValueContext.Provider value={{
                     value: value.value[property.name],
@@ -87,7 +87,7 @@ export function FormItem(props: FormItemProps) {
                     {props.config.children && <FormItemCollection items={props.config.children}/>}
                 </ValueContext.Provider>
             </ResourcePropertyContext.Provider>
-        </>
+        </React.Fragment>
     } else if (props.config.kind === 'input') {
         return <FormElement resource={resource}
                             property={property!}
@@ -98,16 +98,16 @@ export function FormItem(props: FormItemProps) {
                                 value.onChange(val)
                             }}/>
     } else if (props.config.kind === 'section') {
-        return <>
+        return <React.Fragment>
             <h3>{props.config.title}</h3>
             {props.config.children && <FormItemCollection items={props.config.children}/>}
             <hr/>
-        </>
+        </React.Fragment>
     } else if (props.config.kind === 'group') {
-        return <>
+        return <React.Fragment>
             <h1>Group: {props.config.title}</h1>
             {props.config.children && <FormItemCollection items={props.config.children}/>}
-        </>
+        </React.Fragment>
     } else if (props.config.kind === 'custom') {
         switch (props.config.component) {
             case 'CrudSettingsFormConfig':
@@ -117,9 +117,9 @@ export function FormItem(props: FormItemProps) {
         }
     }
 
-    return <>
+    return <React.Fragment>
         Unknown form item kind {props.config.kind} {props.config.component}
-    </>
+    </React.Fragment>
 }
 
 export function Form(props: FormProps) {

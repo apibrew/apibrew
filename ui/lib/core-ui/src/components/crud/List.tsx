@@ -5,7 +5,7 @@ import { Resource } from "../../model"
 import { useNavigate } from "react-router-dom"
 import { DataGrid, GridColDef, GridRowParams, GridActionsCellItem, GridValueGetterParams } from '@mui/x-data-grid';
 import { Record, RecordService } from "../../service/record"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SdkDrawer } from "../sdk/SdkDrawer"
 import {Crud} from "../../model/schema";
 
@@ -71,7 +71,7 @@ export function List(props: ListProps) {
     const rows = list;
 
     return (
-        <PageLayout pageTitle={props.resource.name} actions={<>
+        <PageLayout pageTitle={props.resource.name} actions={<React.Fragment>
             <Button variant={'contained'} color='success' onClick={() => {
                 navigate('new')
             }} startIcon={<PlusOneOutlined />}>New {props.resource.name}</Button>
@@ -81,8 +81,11 @@ export function List(props: ListProps) {
             <Button variant={'contained'} color='secondary' onClick={() => {
                 navigate('settings')
             }} startIcon={<Api />}>Crud Settings</Button>
-        </>}>
+        </React.Fragment>}>
             <SdkDrawer resource={props.resource} open={showSdk} onClose={() => { setShowSdk(false) }} />
+            <div>
+                Hello world3!
+            </div>
             <DataGrid
                 rows={rows}
                 columns={columns}
