@@ -1,6 +1,6 @@
 import { Box, MenuItem, Select, Typography } from "@mui/material";
 import { Resource } from "../../model";
-import { Swagger } from "./Swagger";
+
 import React from "react";
 
 export interface SdkProps {
@@ -19,7 +19,11 @@ export interface SdkPlatform {
 export const SdkPlatforms: SdkPlatform[] = [
     {
         name: 'Swagger',
-        component: Swagger
+        component: React.lazy(() => {
+            const imported = import("./Swagger");
+
+            return imported.then((module) => ({ default: module.Swagger }));
+        }) as any
     }
 ]
 
