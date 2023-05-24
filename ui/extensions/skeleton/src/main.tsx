@@ -2,13 +2,12 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 
-import { PageLayout } from '.'
-import {Test} from "./test.tsx";
+import { PageLayout } from 'core-ui'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <PageLayout>
-        <Test/>
+        asdasdasd
     </PageLayout>
   </React.StrictMode>,
 )
