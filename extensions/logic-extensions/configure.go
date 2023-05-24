@@ -2,69 +2,18 @@ package main
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
-var dhClient client.DhClient
-var config *Config
-
-func main() {
-	config = NewConfig()
-
-	var err error
-	dhClient, err = client.NewDhClient(client.DhClientParams{
-		Addr:     config.ApbrAddr,
-		Insecure: true,
-		Token:    config.Token,
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ext := dhClient.NewExtension(config.EngineAddr)
-
-	ext.RegisterFunction("before", func(ctx context.Context, entity *model.Event) (*model.Event, error) {
-		return entity, nil
-	})
-
-	ext.RegisterFunction("after", func(ctx context.Context, entity *model.Event) (*model.Event, error) {
-		switch entity.Resource.Name {
-		case "Function":
-			reloadFunctions()
-		case "FunctionTrigger":
-			reloadFunctionTriggers()
-		case "ResourceRules":
-			reloadResourceRules()
-		case "Schedule":
-			reloadSchedules()
-		}
-		return entity, nil
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	applyExtensions(dhClient, config)
-
-	log.Print("Started")
-
-	go reloadAll()
-
-	err = ext.Run(context.TODO())
-}
-
-func applyExtensions(dhClient client.DhClient, config *Config) {
+func reconfigureResourceExtensions() {
 	var err error
 
 	err = dhClient.ApplyExtension(context.TODO(), &model.Extension{
 		Name: config.ExtensionName + "-before",
 		Selector: &model.EventSelector{
 			Namespaces: []string{"extensions"},
-			Resources:  []string{"Function", "FunctionExecutionEngine", "FunctionExecution", "FunctionTrigger", "ResourceRule", "Schedule"},
+			Resources:  []string{"ForceCheck"},
 		},
 		Order:     90,
 		Finalizes: false,
