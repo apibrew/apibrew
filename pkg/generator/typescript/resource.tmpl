@@ -1,22 +1,23 @@
-{{ range .params.Resources}}
-    {{ with $resource := . }}
-        {{range $resource.Types}}
-            export interface {{ToCamel $resource.Name}}{{ToCamel .Name}} {
-            {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
-            {{end}}
-            }
-        {{end}}
-    {{end}}
+{{ with $resource := .resource }}
+{{ range ReferenceProps $resource }}
+import { {{ToCamel .Reference.ReferencedResource}} } from "./{{ToDash .Reference.ReferencedResource}}";
+{{ end }}
+
+// Sub Types
+{{range $resource.Types}}
+export interface {{ToCamel .Name}} {
+{{ range .Properties }}     {{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
 {{end}}
-{{ range .params.Resources}}
-    {{ with $resource := . }}
-        export const {{ToCamel $resource.Name}}Name = "{{ToCamel $resource.Name}}";
-        {{range $resource.Properties}}
-            export const {{ToCamel $resource.Name}}{{ToCamel .Name}}Name = "{{ToCamel .Name}}";
-        {{end}}
-        export interface {{ToCamel .Name}} {
-        {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
-        {{end}}
-        }
-    {{end}}
+}
+{{end}}
+// Resource Type
+export interface {{ToCamel .Name}} {
+    {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
+{{end}}
+}
+// Resource and Property Names
+export const {{ToCamel $resource.Name}}Name = "{{ToCamel $resource.Name}}";
+{{range $resource.Properties}}
+export const {{ToCamel $resource.Name}}{{ToCamel .Name}}Name = "{{ToCamel .Name}}";
+{{end}}
 {{end}}

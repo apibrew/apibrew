@@ -1,4 +1,4 @@
 {
-{{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType nil .}};
-{{end}}
+{{ range .Properties }}
+     {{ToLowerCamel .Name}}: {{PropNodejsType nil .}};{{end}}
 }
