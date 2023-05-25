@@ -62,6 +62,6 @@ var generatorCmd = &cobra.Command{
 func init() {
 	generatorCmd.PersistentFlags().StringP("path", "p", ".", "Path")
 	generatorCmd.PersistentFlags().String("package", "", "Package")
-	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, nodejs]")
+	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, nodejs, typescript]")
 	selectorFlags.Declare(generatorCmd)
 }

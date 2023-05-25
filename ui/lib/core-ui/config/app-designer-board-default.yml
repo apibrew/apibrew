@@ -1,0 +1,8 @@
+type: record
+namespace: ui
+resource: AppDesignerBoard
+properties:
+  name: Default
+  description: 'The default board.'
+  resourceSelector: [ '*' ]
+  namespaceSelector: [ 'default' ]

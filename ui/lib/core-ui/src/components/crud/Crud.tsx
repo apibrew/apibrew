@@ -9,7 +9,7 @@ import {View} from "./View"
 import {Update} from "./Update"
 import {Settings} from "./Settings";
 import {RecordService} from "../../service/record";
-import {Crud as CrudModel, CrudName} from "../../model/schema";
+import {Crud as CrudModel, CrudName} from "../../model/ui/crud.ts";
 import {resetCrudForm} from "./helper";
 
 export interface CrudProps {
@@ -31,16 +31,18 @@ export function Crud(props: CrudProps): JSX.Element {
     useEffect(() => {
         if (resource) {
             const name = `ResourceCrud-${resource.namespace}-${resource.name}`
+            console.log(name)
             RecordService.findBy<CrudModel>('ui', CrudName, 'name', name)
                 .then((record) => {
                     if (record) {
                         setCrudConfig(record)
+                    } else {
+                        resetCrudForm(resource).then((newCrudConfig) => {
+                            setCrudConfig(newCrudConfig)
+                        })
                     }
                 }, (e) => {
                     console.warn(e)
-                    resetCrudForm(resource).then((newCrudConfig) => {
-                        setCrudConfig(newCrudConfig)
-                    })
                 })
         }
     }, [resource])

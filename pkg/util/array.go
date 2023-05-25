@@ -15,6 +15,18 @@ func ArrayFirst[T interface{}](arr []*T) *T {
 	return arr[0]
 }
 
+func ArrayFilter[T interface{}](arr []T, predicate func(elem T) bool) []T {
+	var result []T
+
+	for _, el := range arr {
+		if predicate(el) {
+			result = append(result, el)
+		}
+	}
+
+	return result
+}
+
 func LocateArrayElement[T interface{}](arr []*T, test func(elem *T) bool) *T {
 	for _, el := range arr {
 		if test(el) {

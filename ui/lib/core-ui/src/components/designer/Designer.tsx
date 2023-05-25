@@ -28,7 +28,7 @@ import Button from '@mui/material/Button'
 import {ResourceForm} from '../resource-form/ResourceForm'
 import {ResourceVisualizer} from './ResourceVisualizer'
 import {RecordService} from '../../service/record'
-import {type AppDesignerBoard, AppDesignerBoardName, AppDesignerBoardNameName} from '../../model/schema'
+import {type AppDesignerBoard, AppDesignerBoardName, AppDesignerBoardNameName} from '../../model/ui/app-designer-board'
 import {type Point} from './point'
 import {SdkDrawer} from '../sdk/SdkDrawer'
 import {checkResourceAllowedOnBoard} from "./util";

@@ -1,4 +1,3 @@
-
 type Annotations = Record<string, string | undefined> | undefined
 
 export function isAnnotationEnabled(annotations: Annotations, annotationName: string): boolean {

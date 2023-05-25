@@ -83,9 +83,6 @@ export function List(props: ListProps) {
             }} startIcon={<Api />}>Crud Settings</Button>
         </React.Fragment>}>
             <SdkDrawer resource={props.resource} open={showSdk} onClose={() => { setShowSdk(false) }} />
-            <div>
-                Hello world3!
-            </div>
             <DataGrid
                 rows={rows}
                 columns={columns}

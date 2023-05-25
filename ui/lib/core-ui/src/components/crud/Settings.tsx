@@ -6,7 +6,7 @@ import {useNavigate, useParams} from "react-router-dom"
 import {Form} from "./Form"
 import {Record, RecordService} from "../../service/record"
 import React, {useEffect} from "react"
-import {Crud, CrudName} from "../../model/schema";
+import {Crud, CrudName} from "../../model/ui/crud";
 import {ResourceService} from "../../service/resource";
 import {resetCrudForm} from "./helper";
 

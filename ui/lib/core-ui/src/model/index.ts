@@ -1,4 +1,4 @@
-import type { components } from './base-schema'
+import type {components} from './base-schema'
 
 export type AuthenticationRequest = components['schemas']['AuthenticationRequest']
 export type AuthenticationResponse = components['schemas']['AuthenticationResponse']

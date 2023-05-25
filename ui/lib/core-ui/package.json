@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "build-ui-model": "apbr apply -f ui-model.yml; apbr generate --path=src/model --namespace=ui --platform=typescript",
+    "build-ui-model": "find schema/*.yml | xargs -I {} apbr apply -f {}; apbr generate --path=src/model/ui --namespace=ui --platform=typescript; apbr generate --path=src/model/extensions --namespace=extensions --platform=typescript",
     "build-ui-model:watch": "nodemon --watch ui-model.yml --exec \"yarn build-ui-model\"",
     "build-ui-config": "apbr apply -f ui-config.yml",
     "build-ui-config:watch": "nodemon --watch ui-config.yml --exec \"yarn build-ui-config\""
@@ -19,6 +19,7 @@
     "@mui/material": "^5.12.2",
     "@mui/x-data-grid": "^6.4.0",
     "axios": "^1.4.0",
+    "nodemon": "^2.0.22",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.10.0",

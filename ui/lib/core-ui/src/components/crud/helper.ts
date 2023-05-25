@@ -1,4 +1,4 @@
-import {Crud as CrudModel, CrudFormItem, CrudName} from "../../model/schema";
+import {Crud as CrudModel, FormItem, CrudName} from "../../model/ui/crud";
 import {RecordService} from "../../service/record";
 import {Resource} from "../../model";
 import {isSpecialProperty} from "../../util/property";
@@ -13,7 +13,11 @@ export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
         name: name,
         resource: resource.name,
         namespace: resource.namespace ?? 'default',
-        gridConfig: {},
+        gridConfig: {
+            columns: [],
+            actions: [],
+            disableDefaultActions: false
+        },
         formConfig: {
             children: [
                 {
@@ -28,9 +32,9 @@ export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
                                     kind: 'input',
                                 }
                             ]
-                        } as CrudFormItem
+                        } as FormItem
                     })
-                } as CrudFormItem,
+                } as FormItem,
                 {
                     kind: 'section',
                     title: 'System Properties',
@@ -46,9 +50,9 @@ export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
                                     },
                                 }
                             ]
-                        } as CrudFormItem
+                        } as FormItem
                     })
-                } as CrudFormItem
+                } as FormItem
             ]
         }
     }

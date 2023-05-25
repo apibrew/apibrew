@@ -1,0 +1,111 @@
+type: resource
+name: Crud
+namespace: ui
+description: Crud
+types:
+  - name: FormItem
+    properties:
+      - name: kind
+        type: ENUM
+        enumValues:
+          - property
+          - input
+          - tab
+          - section
+          - group
+          - custom
+      - name: propertyPath
+        type: STRING
+      - name: title
+        type: STRING
+      - name: component
+        type: STRING
+      - name: children
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: FormItem
+      - name: params
+        type: MAP
+        item:
+          type: STRING
+  - name: FormConfig
+    properties:
+      - name: children
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: FormItem
+  - name: GridConfig
+    properties:
+      - name: columns
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: GridColumnConfig
+      - name: disableDefaultActions
+        type: BOOL
+      - name: actions
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: GridActionConfig
+  - name: GridActionConfig
+    properties:
+      - name: name
+        type: STRING
+        required: true
+      - name: title
+        type: STRING
+      - name: icon
+        type: STRING
+      - name: component
+        type: STRUCT
+        typeRef: Component
+  - name: GridColumnConfig
+    properties:
+      - name: name
+        type: STRING
+        required: true
+      - name: title
+        type: STRING
+      - name: width
+        type: INT32
+      - name: sortable
+        type: BOOL
+      - name: filterable
+        type: BOOL
+      - name: hidden
+        type: BOOL
+      - name: component
+        type: STRUCT
+        typeRef: Component
+  - name: Component
+    properties:
+      - name: package
+        type: STRING
+      - name: name
+        type: STRING
+      - name: componentName
+        type: STRING
+      - name: params
+        type: OBJECT
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    unique: true
+  - name: resource
+    type: STRING
+    length: 255
+    required: true
+  - name: namespace
+    type: STRING
+    length: 255
+    required: true
+  - name: gridConfig
+    type: STRUCT
+    typeRef: GridConfig
+  - name: formConfig
+    type: STRUCT
+    typeRef: FormConfig
