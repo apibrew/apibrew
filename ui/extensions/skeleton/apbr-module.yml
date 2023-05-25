@@ -1,0 +1,11 @@
+type: record
+namespace: ui
+resource: Module
+properties:
+  name: Skeleton
+  package: Test
+  description: 'A skeleton module.'
+  source:
+    include: "dist/skeleton.cjs.js"
+  components:
+    - Component1

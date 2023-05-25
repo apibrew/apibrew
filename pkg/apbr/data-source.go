@@ -3,7 +3,7 @@ package apbr
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
-	yamlformat "github.com/apibrew/apibrew/pkg/formats/yaml"
+	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"

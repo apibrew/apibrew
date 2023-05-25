@@ -2,7 +2,7 @@ import axios from 'axios'
 import {BACKEND_URL} from '../config'
 import {TokenService} from './token'
 import {handleError} from './error-handler'
-import {BooleanExpression, PairExpression} from "../model";
+import {BooleanExpression} from "../model";
 
 export interface Record {
     id?: string
@@ -86,16 +86,30 @@ export namespace RecordService {
     }
 
     export async function findBy<T>(namespace: string, resource: string, property: string, value: any): Promise<T | undefined> {
+        return findByMulti(namespace, resource, [{
+            property: property,
+            value: value
+        }])
+    }
+
+    export async function findByMulti<T>(namespace: string, resource: string, conditions: {
+        property: string,
+        value: any
+    }[]): Promise<T | undefined> {
         try {
             const query: BooleanExpression = {
-                equal: {
-                    left: {
-                        property: property
-                    },
-                    right: {
-                        value: value
-                    }
-                } as PairExpression
+                and: {
+                    expressions: conditions.map(condition => ({
+                        equal: {
+                            left: {
+                                property: condition.property
+                            },
+                            right: {
+                                value: condition.value
+                            }
+                        }
+                    }))
+                }
             } as BooleanExpression
             const result = await axios.post<RecordListContainer<T>>(`${BACKEND_URL}/records/${namespace}/${resource}/_search`, {
                 query: query
@@ -105,8 +119,10 @@ export namespace RecordService {
                 }
             })
 
-            if (result.data.content) {
+            if (result.data.content && result.data.content.length > 0) {
                 return result.data.content[0].properties
+            } else {
+                return undefined
             }
         } catch (e) {
             return await handleError(e)

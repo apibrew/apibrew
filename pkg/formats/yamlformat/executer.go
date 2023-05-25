@@ -10,15 +10,18 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 	"gopkg.in/yaml.v3"
 	"io"
+	"os"
 	"strings"
 )
 
 type executor struct {
-	params          ExecutorParams
-	resources       []*model.Resource
-	resourceNameMap map[string]*model.Resource
+	params              ExecutorParams
+	resources           []*model.Resource
+	resourceNameMap     map[string]*model.Resource
+	resourcePropertyMap map[string]*model.ResourceProperty
 }
 
 func (e *executor) Restore(ctx context.Context) error {
@@ -108,6 +111,37 @@ func (e *executor) Restore(ctx context.Context) error {
 				return err
 			}
 
+			// fix type BYTES
+			for key, value := range record.Properties {
+				var property = e.resourcePropertyMap[namespace+"/"+resourceName+"/"+key]
+
+				if property == nil {
+					return errors.New("Property not found: " + namespace + "/" + resourceName + "/" + key)
+				}
+
+				if property.Type == model.ResourceProperty_BYTES {
+					if value.GetStructValue() != nil {
+						if value.GetStructValue().Fields["include"] != nil {
+							if value.GetStructValue().Fields["include"].GetStringValue() != "" {
+								fileContent, err := os.ReadFile(value.GetStructValue().Fields["include"].GetStringValue())
+
+								if err != nil {
+									return err
+								}
+
+								fileContentStr, err := structpb.NewValue(fileContent)
+
+								if err != nil {
+									return err
+								}
+
+								record.Properties[key] = fileContentStr
+							}
+						}
+					}
+				}
+			}
+
 			err = e.params.DhClient.ApplyRecord(ctx, resource, record)
 
 			if err != nil {
@@ -186,9 +220,14 @@ func (e *executor) init() error {
 
 	e.resources = resp.Resources
 	e.resourceNameMap = make(map[string]*model.Resource)
+	e.resourcePropertyMap = make(map[string]*model.ResourceProperty)
 
 	for _, item := range e.resources {
 		e.resourceNameMap[item.Namespace+"/"+item.Name] = item
+
+		for _, field := range item.Properties {
+			e.resourcePropertyMap[item.Namespace+"/"+item.Name+"/"+field.Name] = field
+		}
 	}
 
 	return nil

@@ -1,0 +1,140 @@
+type: namespace
+name: ui
+---
+type: resource
+name: AppDesignerBoard
+namespace: ui
+description: A board is a collection of widgets that are displayed together.
+types:
+  - name: ResourceVisual
+    properties:
+      - length: 255
+        name: resource
+        required: true
+        type: STRING
+      - name: allowRecordsOnBoard
+        required: true
+      - name: location
+        type: STRUCT
+        properties:
+          - name: "x"
+            required: true
+            type: FLOAT32
+          - name: "y"
+            required: true
+            type: FLOAT32
+properties:
+  - description: The description of the board.
+    length: 255
+    name: description
+    type: STRING
+  - description: The unique identifier of the board.
+    immutable: true
+    length: 255
+    name: name
+    required: true
+    type: STRING
+    unique: true
+  - name: resourceVisuals
+    item:
+      type: STRUCT
+      typeRef: ResourceVisual
+    type: LIST
+  - name: resourceSelector
+    item:
+      type: STRING
+    type: LIST
+  - name: namespaceSelector
+    item:
+      type: STRING
+    type: LIST
+---
+type: resource
+name: Crud
+namespace: ui
+description: Crud
+types:
+  - name: FormItem
+    properties:
+      - name: kind
+        type: ENUM
+        enumValues:
+          - property
+          - input
+          - tab
+          - section
+          - group
+          - custom
+      - name: propertyPath
+        type: STRING
+      - name: title
+        type: STRING
+      - name: component
+        type: STRING
+      - name: children
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: FormItem
+      - name: params
+        type: MAP
+        item:
+          type: STRING
+  - name: FormConfig
+    properties:
+      - name: children
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: FormItem
+  - name: GridConfig
+    properties:
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    unique: true
+  - name: resource
+    type: STRING
+    length: 255
+    required: true
+  - name: namespace
+    type: STRING
+    length: 255
+    required: true
+  - name: gridConfig
+    type: STRUCT
+    typeRef: GridConfig
+  - name: formConfig
+    type: STRUCT
+    typeRef: FormConfig
+---
+type: resource
+name: Module
+namespace: ui
+description: A module is a collection of components
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+  - name: package
+    type: STRING
+    length: 255
+    required: true
+  - name: description
+    type: STRING
+    length: 255
+  - name: source
+    type: BYTES
+    required: true
+  - name: components
+    type: LIST
+    required: true
+    item:
+      type: STRING
+indexes:
+  - unique: true
+    properties:
+      - name: package
+      - name: name
