@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/formats"
-	yamlformat "github.com/apibrew/apibrew/pkg/formats/yaml"
+	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"os"
 	"strings"
 

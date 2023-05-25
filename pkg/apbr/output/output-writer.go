@@ -3,7 +3,7 @@ package output
 import (
 	"github.com/apibrew/apibrew/pkg/formats/batch"
 	"github.com/apibrew/apibrew/pkg/formats/hclformat"
-	yamlformat "github.com/apibrew/apibrew/pkg/formats/yaml"
+	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"github.com/apibrew/apibrew/pkg/model"
 	"io"
 	"log"
