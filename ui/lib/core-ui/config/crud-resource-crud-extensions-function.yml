@@ -7,6 +7,16 @@ properties:
   resource: Crud
   gridConfig:
     columns:
+      - name: id
+        title: Id
+        width: 300
+      - name: package
+        title: Package
+      - name: name
+        title: Name
+      - name: engine
+        title: Engine
+        propertyPath: engine.name
   formConfig:
     children:
       - kind: tab

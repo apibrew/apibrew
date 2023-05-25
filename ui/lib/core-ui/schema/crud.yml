@@ -69,6 +69,10 @@ types:
         required: true
       - name: title
         type: STRING
+      - name: type
+        type: STRING
+      - name: propertyPath
+        type: STRING
       - name: width
         type: INT32
       - name: sortable
