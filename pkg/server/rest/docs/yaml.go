@@ -2,7 +2,7 @@ package docs
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
-	yamlformat "github.com/apibrew/apibrew/pkg/formats/yaml"
+	yamlformat "github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strings"

@@ -8,6 +8,8 @@ import {Record, RecordService} from "../../service/record"
 import React, {useEffect, useState} from "react"
 import {SdkDrawer} from "../sdk/SdkDrawer"
 import {Crud} from "../../model/ui/crud.ts";
+import {Icon} from "../Icon.tsx";
+import {ModuleService} from "../../service/module.ts";
 
 export interface ListProps {
     resource: Resource
@@ -84,19 +86,38 @@ export function List(props: ListProps) {
         type: 'actions',
         width: 150,
         headerName: 'Actions',
-        getActions: (params: GridRowParams) => [
-            <GridActionsCellItem label='Edit' icon={<Edit/>} onClick={() => {
-                navigate(`${params.id}/edit`)
-            }}/>,
-            <GridActionsCellItem label='Delete' icon={<Delete/>} onClick={() => {
-                RecordService.remove(props.resource.namespace ?? 'default', props.resource.name, params.id as string).then(() => {
-                    load()
+        getActions: (params: GridRowParams) => {
+            const actions = [
+                <GridActionsCellItem label='Edit' icon={<Edit/>} onClick={() => {
+                    navigate(`${params.id}/edit`)
+                }}/>,
+                <GridActionsCellItem label='Delete' icon={<Delete/>} onClick={() => {
+                    RecordService.remove(props.resource.namespace ?? 'default', props.resource.name, params.id as string).then(() => {
+                        load()
+                    })
+                }}/>,
+                <GridActionsCellItem label='Delete' icon={<Search/>} onClick={() => {
+                    navigate(`${params.id}/view`)
+                }}/>,
+            ]
+
+            if (props.crudConfig?.gridConfig?.disableDefaultActions) {
+                actions.length = 0
+            }
+
+            if (props.crudConfig?.gridConfig?.actions) {
+                props.crudConfig.gridConfig.actions.forEach((action) => {
+                    actions.push(<GridActionsCellItem
+                        label={action.title}
+                        icon={<Icon name={action.icon}/>}
+                        onClick={() => {
+                            ModuleService.executeActionComponent(action.component.name, action.component.package, action.component.componentName, params.id as string).then()
+                        }}/>)
                 })
-            }}/>,
-            <GridActionsCellItem label='Delete' icon={<Search/>} onClick={() => {
-                navigate(`${params.id}/view`)
-            }}/>,
-        ],
+            }
+
+            return actions
+        }
     })
 
     const rows = list;

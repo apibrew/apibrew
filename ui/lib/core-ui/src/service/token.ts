@@ -15,7 +15,6 @@ export namespace TokenService {
     }
 
     export async function get(): Promise<string> {
-        console.log(_token)
         if (!(_token)) {
             return await Promise.reject(new Error('No token available'))
         }

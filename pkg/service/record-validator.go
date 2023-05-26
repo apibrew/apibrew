@@ -133,7 +133,7 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 	if err != nil {
 		return []*model.ErrorField{{
 			RecordId: recordId,
-			Property: propertyPath + property.Name,
+			Property: propertyPath,
 			Message:  err.Error(),
 			Value:    value,
 		}}
@@ -153,7 +153,7 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 		} else {
 			return []*model.ErrorField{{
 				RecordId: recordId,
-				Property: propertyPath + property.Name,
+				Property: propertyPath,
 				Message:  fmt.Sprintf("value is not list: %v", value),
 				Value:    value,
 			}}
@@ -170,7 +170,7 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 		} else {
 			return []*model.ErrorField{{
 				RecordId: recordId,
-				Property: propertyPath + property.Name,
+				Property: propertyPath,
 				Message:  fmt.Sprintf("value is not map: %v", value),
 				Value:    value,
 			}}
@@ -181,7 +181,7 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 		if err != nil {
 			return []*model.ErrorField{{
 				RecordId: recordId,
-				Property: propertyPath + property.Name,
+				Property: propertyPath,
 				Message:  err.Error(),
 				Value:    value,
 			}}
@@ -197,12 +197,14 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 
 		return []*model.ErrorField{{
 			RecordId: recordId,
-			Property: propertyPath + property.Name,
+			Property: propertyPath,
 			Message:  fmt.Sprintf("value must be one of enum values: %v", value),
 			Value:    value,
 		}}
 
 	case model.ResourceProperty_STRUCT:
+		var errorFields []*model.ErrorField
+
 		if structValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
 			var properties = property.Properties
 			if property.TypeRef != nil {
@@ -212,14 +214,15 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 				})
 
 				if typeDef == nil {
-					return []*model.ErrorField{{
+					errorFields = append(errorFields, &model.ErrorField{
 						RecordId: recordId,
-						Property: propertyPath + property.Name,
+						Property: propertyPath,
 						Message:  fmt.Sprintf("type %s not found", *property.TypeRef),
 						Value:    value,
-					}}
+					})
+				} else {
+					properties = typeDef.Properties
 				}
-				properties = typeDef.Properties
 			}
 
 			for _, Item := range properties {
@@ -234,34 +237,34 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 					val, err = subType.UnPack(packedVal)
 
 					if err != nil {
-						return []*model.ErrorField{{
+						errorFields = append(errorFields, &model.ErrorField{
 							RecordId: recordId,
-							Property: propertyPath + property.Name,
+							Property: propertyPath + Item.Name,
 							Message:  err.Error(),
 							Value:    value,
-						}}
+						})
+						continue
 					}
 				}
 
 				if subType.IsEmpty(val) {
 					if Item.Required {
-						return []*model.ErrorField{{
+						errorFields = append(errorFields, &model.ErrorField{
 							RecordId: recordId,
-							Property: propertyPath + property.Name,
-							Message:  fmt.Sprintf("required field is empty: %v[%s]", property.Name, Item.Name),
+							Property: propertyPath + Item.Name,
+							Message:  fmt.Sprintf("required field is empty: %v[%s]", Item.Name, Item.Name),
 							Value:    value,
-						}}
-					} else {
+						})
 						continue
 					}
 				}
 
-				return validatePropertyPackedValue(resource, Item, recordId, propertyPath+property.Name+".", structValue.StructValue.Fields[Item.Name])
+				errorFields = append(errorFields, validatePropertyPackedValue(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
 			}
 
 			for key := range structValue.StructValue.Fields {
 				found := false
-				for _, Item := range property.Properties {
+				for _, Item := range properties {
 					if Item.Name == key {
 						found = true
 						break
@@ -269,24 +272,24 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 				}
 
 				if !found {
-					return []*model.ErrorField{{
+					errorFields = append(errorFields, &model.ErrorField{
 						RecordId: recordId,
-						Property: propertyPath + property.Name,
+						Property: propertyPath,
 						Message:  fmt.Sprintf("there is no such property: %v", key),
 						Value:    value,
-					}}
+					})
 				}
 			}
-
-			return nil
 		} else {
-			return []*model.ErrorField{{
+			errorFields = append(errorFields, &model.ErrorField{
 				RecordId: recordId,
-				Property: propertyPath + property.Name,
+				Property: propertyPath,
 				Message:  fmt.Sprintf("value is not struct: %v", value),
 				Value:    value,
-			}}
+			})
 		}
+
+		return errorFields
 	}
 
 	return nil
