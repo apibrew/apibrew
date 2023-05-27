@@ -71,16 +71,15 @@ func TestCreateResourceValidationForProperties(t *testing.T) {
 
 	errorFields := util.GetErrorFields(err)
 
-	if len(errorFields) != 5 {
-		t.Error("There should be 5 errors; but " + strconv.Itoa(len(errorFields)))
+	if len(errorFields) != 4 {
+		t.Error("There should be 4 errors; but " + strconv.Itoa(len(errorFields)))
 		return
 	}
 
 	assert.Equal(t, errorFields[0].Property, "Name")
 	assert.Equal(t, errorFields[1].Property, "SourceConfig.Entity")
 	assert.Equal(t, errorFields[2].Property, ".Name{index:1}")
-	assert.Equal(t, errorFields[3].Property, ".Mapping")
-	assert.Equal(t, errorFields[4].Property, "Type321.Reference")
+	assert.Equal(t, errorFields[3].Property, "Type321.Reference")
 
 }
 

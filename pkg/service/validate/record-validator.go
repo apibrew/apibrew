@@ -1,4 +1,4 @@
-package service
+package validate
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
+func ValidateRecords(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)
@@ -26,7 +26,7 @@ func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
-				fieldErrors = append(fieldErrors, validatePropertyPackedValue(resource, property, record.Id, "", packedVal)...)
+				fieldErrors = append(fieldErrors, ValidatePropertyPackedValue(resource, property, record.Id, "", packedVal)...)
 			}
 
 			var val interface{}
@@ -50,22 +50,24 @@ func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 
 			isEmpty := propertyType.IsEmpty(val)
 
-			if property.Primary && isEmpty && isUpdate {
-				fieldErrors = append(fieldErrors, &model.ErrorField{
-					RecordId: record.Id,
-					Property: property.Name,
-					Message:  "required",
-					Value:    record.Properties[property.Name],
-				})
-			}
+			if isEmpty {
+				if property.Primary && isUpdate {
+					fieldErrors = append(fieldErrors, &model.ErrorField{
+						RecordId: record.Id,
+						Property: property.Name,
+						Message:  "required",
+						Value:    record.Properties[property.Name],
+					})
+				}
 
-			if !property.Primary && property.Required && isEmpty && (exists || !isUpdate) {
-				fieldErrors = append(fieldErrors, &model.ErrorField{
-					RecordId: record.Id,
-					Property: property.Name,
-					Message:  "required",
-					Value:    record.Properties[property.Name],
-				})
+				if !property.Primary && property.Required && (exists || !isUpdate) {
+					fieldErrors = append(fieldErrors, &model.ErrorField{
+						RecordId: record.Id,
+						Property: property.Name,
+						Message:  "required",
+						Value:    record.Properties[property.Name],
+					})
+				}
 			}
 		}
 
@@ -87,7 +89,7 @@ func validateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
-func validatePropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
+func ValidatePropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
 	if value == nil {
 		return nil
 	}
@@ -147,7 +149,7 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 			var errorFields []*model.ErrorField
 
 			for i, item := range listValue.ListValue.Values {
-				errorFields = append(errorFields, validatePropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
+				errorFields = append(errorFields, ValidatePropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
 			}
 			return errorFields
 		} else {
@@ -163,7 +165,7 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 			var errorFields []*model.ErrorField
 
 			for key, item := range listValue.StructValue.Fields {
-				errorFields = append(errorFields, validatePropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
+				errorFields = append(errorFields, ValidatePropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
 			}
 
 			return errorFields
@@ -259,7 +261,7 @@ func validatePropertyPackedValue(resource *model.Resource, property *model.Resou
 					}
 				}
 
-				errorFields = append(errorFields, validatePropertyPackedValue(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
+				errorFields = append(errorFields, ValidatePropertyPackedValue(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
 			}
 
 			for key := range structValue.StructValue.Fields {
