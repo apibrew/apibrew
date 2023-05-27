@@ -1,0 +1,59 @@
+{
+  "params": [
+    {
+      "name": "hello",
+      "type": "STRING",
+      "label": "Hello",
+      "length": 255,
+      "default": "World",
+      "required": true
+    }
+  ],
+  "$syntax": {
+    "properties": [
+      {
+        "item": {
+          "type": "STRUCT",
+          "properties": [
+            {
+              "name": "name",
+              "type": "STRING",
+              "unique": true,
+              "required": true
+            },
+            {
+              "name": "label",
+              "type": "STRING",
+              "required": true
+            },
+            {
+              "name": "type",
+              "type": "STRING",
+              "required": true
+            },
+            {
+              "name": "required",
+              "type": "BOOL"
+            },
+            {
+              "name": "length",
+              "type": "INT32"
+            },
+            {
+              "name": "default",
+              "type": "STRING"
+            }
+          ]
+        },
+        "name": "params",
+        "type": "LIST"
+      },
+      {
+        "name": "component",
+        "type": "STRING",
+        "required": true
+      }
+    ]
+  },
+  "component": "CoreUI/Form"
+}
