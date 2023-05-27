@@ -132,7 +132,7 @@ func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error
 		return un, err
 	}
 
-	un.MergeInto(recordUn)
+	un.MergeOut(recordUn, true)
 
 	if ref != "" {
 		updatedUn, err := ParseRef(un, ref)
@@ -166,7 +166,8 @@ func reportError(un Unstructured, err error) {
 func (p *preprocessor) runPreprocessOverride(un Unstructured) (Unstructured, error) {
 	override := un["$override"].(Unstructured)
 	selectParam := override["$select"].(string)
-	set := override["$set"].(Unstructured)
+	merge, _ := override["$merge"].(Unstructured)
+	set, _ := override["$set"].(Unstructured)
 
 	reUn, err := ParseRef(un, selectParam)
 
@@ -174,8 +175,13 @@ func (p *preprocessor) runPreprocessOverride(un Unstructured) (Unstructured, err
 		return nil, err
 	}
 
+	if merge != nil {
+		reUn.MergeInto(merge, true)
+		un.DeleteKey("$merge")
+	}
+
 	if set != nil {
-		reUn.MergeInto(set)
+		reUn.MergeInto(set, false)
 		un.DeleteKey("$set")
 	}
 
@@ -218,7 +224,7 @@ func (p *preprocessor) checkSyntax(un Unstructured) error {
 }
 
 var preprocessKeywords = []string{
-	"$extend", "$override", "$select", "$syntax", "$ref", "$set", "$clear", "$append", "$include", "$expression",
+	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression",
 }
 
 func isPreprocessorKey(key string) bool {

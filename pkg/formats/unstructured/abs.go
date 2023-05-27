@@ -12,9 +12,35 @@ import (
 
 type Unstructured map[string]interface{}
 
-func (u Unstructured) MergeInto(un Unstructured) {
+func (u Unstructured) MergeInto(un Unstructured, nested bool) {
 	for key, value := range un {
-		u[key] = value
+		if !nested || u[key] == nil {
+			u[key] = value
+		} else {
+			if subU, ok := u[key].(Unstructured); ok {
+				subU.MergeInto(value.(Unstructured), nested)
+			} else if subU, ok := u[key].([]interface{}); ok {
+				subU = append(subU, value.([]interface{})...)
+				u[key] = subU
+			} else {
+				u[key] = value
+			}
+		}
+	}
+}
+
+func (u Unstructured) MergeOut(un Unstructured, nested bool) {
+	for key, value := range un {
+		if !nested || u[key] == nil {
+			u[key] = value
+		} else {
+			if subU, ok := u[key].(Unstructured); ok {
+				subU.MergeOut(value.(Unstructured), nested)
+			} else if subU, ok := u[key].([]interface{}); ok {
+				subU = append(subU, value.([]interface{})...)
+				u[key] = subU
+			}
+		}
 	}
 }
 
