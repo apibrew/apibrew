@@ -1,17 +1,19 @@
+
+
+
 // Sub Types
 
 // Resource Type
 export interface Module {
     id: string;
-    name: string;
-    package: string;
-    description: string;
-    source: string;
-    components: string[];
-    version: number;
+name: string;
+package: string;
+description?: string;
+source: string;
+components: string[];
+version: number;
 
 }
-
 // Resource and Property Names
 export const ModuleName = "Module";
 

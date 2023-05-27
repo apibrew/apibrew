@@ -1,4 +1,6 @@
-import {Function} from "./function";
+
+
+import { Function } from "./function";
 
 
 // Sub Types
@@ -6,17 +8,16 @@ import {Function} from "./function";
 // Resource Type
 export interface FunctionTrigger {
     id: string;
-    name: string;
-    resource: string;
-    namespace: string;
-    action: string;
-    order: string;
-    async: boolean;
-    function: Function;
-    version: number;
+name: string;
+resource: string;
+namespace: string;
+action: string;
+order?: string;
+async: boolean;
+function: Function;
+version: number;
 
 }
-
 // Resource and Property Names
 export const FunctionTriggerName = "FunctionTrigger";
 

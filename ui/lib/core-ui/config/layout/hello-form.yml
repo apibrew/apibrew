@@ -1,0 +1,22 @@
+type: record
+resource: Layout
+namespace: ui
+properties:
+  name: HelloForm
+  layoutComponent:
+    $extend:
+      $namespace: ui
+      $resource: Layout
+      $match:
+        name: Form
+      $ref: $.properties.layoutComponent
+    $override:
+      $select: $
+      $set:
+        params:
+          - name: hello
+            label: Hello
+            type: STRING
+            required: true
+            length: 255
+            default: World

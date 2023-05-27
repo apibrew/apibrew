@@ -5,11 +5,12 @@ import {Resource, ResourceProperty} from "../../model"
 import {useNavigate} from "react-router-dom"
 import {DataGrid, GridActionsCellItem, GridColDef, GridRowParams, GridValueGetterParams} from '@mui/x-data-grid';
 import {Record, RecordService} from "../../service/record"
-import React, {useEffect, useState} from "react"
+import React, {useContext, useEffect, useState} from "react"
 import {SdkDrawer} from "../sdk/SdkDrawer"
 import {Crud} from "../../model/ui/crud.ts";
 import {Icon} from "../Icon.tsx";
 import {ModuleService} from "../../service/module.ts";
+import {LayoutContext} from "../../context/layout-context.ts";
 
 export interface ListProps {
     resource: Resource
@@ -20,6 +21,7 @@ export function List(props: ListProps) {
     const navigate = useNavigate()
     const [list, setList] = useState<Record[]>([])
     const [showSdk, setShowSdk] = useState(false)
+    const layoutContext = useContext(LayoutContext)
 
     const load = () => {
         RecordService.list<Record>(props.resource.namespace ?? 'default', props.resource.name).then((data) => {
@@ -111,7 +113,8 @@ export function List(props: ListProps) {
                         label={action.title}
                         icon={<Icon name={action.icon}/>}
                         onClick={() => {
-                            ModuleService.executeActionComponent(action.component.name, action.component.package, action.component.componentName, params.id as string).then()
+                            console.log(layoutContext)
+                            ModuleService.executeActionComponent(action.component.name, action.component.package, action.component.componentName, params.id as string, layoutContext).then()
                         }}/>)
                 })
             }

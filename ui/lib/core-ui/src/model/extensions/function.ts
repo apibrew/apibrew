@@ -4,20 +4,20 @@ import {FunctionExecutionEngine} from "./function-execution-engine";
 // Sub Types
 
 export interface Options {
-    namedParams: boolean;
+    namedParams?: boolean;
 
 }
 
 export interface Argument {
-    name: string;
-    direction: string;
+    name?: string;
+    direction?: string;
 
 }
 
 // Resource Type
 export interface Function {
-    options: Options;
-    args: Argument[];
+    options?: Options;
+    args?: Argument[];
     id: string;
     version: number;
     package: string;

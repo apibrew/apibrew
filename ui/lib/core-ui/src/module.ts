@@ -1,6 +1,6 @@
 import {ModuleData} from "./model/module-data.ts";
 import {ModuleService} from "./service/module.ts";
-import {ActionExecuteFunction} from "./components/logic/function/action-execute-function.ts";
+import {ActionExecuteFunction} from "./components/logic/function/action-execute-function";
 
 const moduleData: ModuleData = {
     exports: {

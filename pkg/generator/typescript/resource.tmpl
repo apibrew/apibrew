@@ -6,13 +6,13 @@ import { {{ToCamel .Reference.ReferencedResource}} } from "./{{ToDash .Reference
 // Sub Types
 {{range $resource.Types}}
 export interface {{ToCamel .Name}} {
-{{ range .Properties }}     {{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
+{{ range .Properties }}     {{ToLowerCamel .Name}}{{IfRequired .}}: {{PropNodejsType $resource .}};
 {{end}}
 }
 {{end}}
 // Resource Type
 export interface {{ToCamel .Name}} {
-    {{ range .Properties }}{{ToLowerCamel .Name}}: {{PropNodejsType $resource .}};
+    {{ range .Properties }}{{ToLowerCamel .Name}}{{IfRequired .}}: {{PropNodejsType $resource .}};
 {{end}}
 }
 // Resource and Property Names

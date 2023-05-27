@@ -1,28 +1,31 @@
+
+
+
 // Sub Types
 
 export interface ResourceVisual {
-    resource: string;
-    allowRecordsOnBoard: boolean;
-    location: {
+     resource: string;
+     allowRecordsOnBoard: boolean;
+     location?: {
 
-        x: number;
-        y: number;
-    };
+     x: number;
+     y: number;
+}
+;
 
 }
 
 // Resource Type
 export interface AppDesignerBoard {
     id: string;
-    description: string;
-    name: string;
-    namespaceSelector: string[];
-    version: number;
-    resourceVisuals: ResourceVisual[];
-    resourceSelector: string[];
+description?: string;
+name: string;
+namespaceSelector?: string[];
+version: number;
+resourceVisuals?: ResourceVisual[];
+resourceSelector?: string[];
 
 }
-
 // Resource and Property Names
 export const AppDesignerBoardName = "AppDesignerBoard";
 

@@ -1,3 +1,3 @@
 export interface ActionComponent<R> {
-    execute: (...args: any) => R
+    execute: (...args: any) => Promise<R>;
 }
