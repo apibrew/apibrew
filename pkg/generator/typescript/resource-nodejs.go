@@ -70,6 +70,14 @@ func generateResource(params GenerateResourceCodeParams, resource *model.Resourc
 	return nil
 }
 
+func IfRequired(prop *model.ResourceProperty) string {
+	if prop.Required {
+		return ""
+	}
+
+	return "?"
+}
+
 func PropNodejsType(resource *model.Resource, prop *model.ResourceProperty) string {
 	if prop.Type == model.ResourceProperty_REFERENCE {
 		return strcase.ToCamel(prop.Reference.ReferencedResource)
@@ -160,6 +168,7 @@ func loadTemplate(statikFS http.FileSystem, templateName string) (*template.Temp
 			"IsPrimitive":    types.IsPrimitive,
 			"ReferenceProps": ReferenceProps,
 			"ToDash":         util.ToDashCase,
+			"IfRequired":     IfRequired,
 		}).
 		Parse(tmplData)), nil
 }

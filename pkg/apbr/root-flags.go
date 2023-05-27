@@ -9,15 +9,21 @@ var server = ""
 
 func defineRootFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String("server", "", "")
+	cmd.PersistentFlags().Bool("debug", false, "Enable Debug Logging")
 	cmd.PersistentFlags().Bool("verbose", false, "")
 }
 
 func parseRootFlags(cmd *cobra.Command) {
-	server, _ = cmd.PersistentFlags().GetString("server")
-	verbose, _ := cmd.PersistentFlags().GetBool("verbose")
+	server, _ = cmd.Flags().GetString("server")
+	verbose, _ := cmd.Flags().GetBool("verbose")
+	debug, _ := cmd.Flags().GetBool("debug")
 
 	if verbose {
 		log.SetLevel(log.TraceLevel)
 		log.SetReportCaller(true)
+	} else if debug {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
 	}
 }
