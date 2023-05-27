@@ -6,7 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/client"
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -37,23 +40,52 @@ func (p *preprocessor) preprocess(body Unstructured) (Unstructured, error) {
 
 func (p *preprocessor) runPreprocess(un Unstructured) (interface{}, error) {
 	var err error
-	for key := range un {
-		if key == "$extend" {
-			un, err = p.runPreprocessExtend(un)
+	var keys = un.Keys()
 
-			if err != nil {
-				return nil, err
-			}
-		}
-		if key == "$override" {
-			un, err = p.runPreprocessOverride(un)
+	if util.ArrayContains(keys, "$extend") {
+		un, err = p.runPreprocessExtend(un)
 
-			if err != nil {
-				return nil, err
-			}
+		if err != nil {
+			return nil, err
 		}
+
+		return p.runPreprocess(un)
 	}
 
+	if util.ArrayContains(keys, "$include") {
+		un, err = p.runPreprocessInclude(un)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return p.runPreprocess(un)
+	}
+
+	if util.ArrayContains(keys, "$override") {
+		un, err = p.runPreprocessOverride(un)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return p.runPreprocess(un)
+	}
+
+	if util.ArrayContains(keys, "$syntax") {
+		err = p.checkSyntax(un)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return un, nil
+	}
+
+	return un, nil
+}
+
+func (p *preprocessor) runPreprocessInclude(un Unstructured) (Unstructured, error) {
 	return un, nil
 }
 
@@ -120,7 +152,7 @@ func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error
 		un = updatedUn
 	}
 
-	delete(un, "$extend")
+	un.DeleteKey("$extend")
 
 	return un, nil
 }
@@ -144,16 +176,49 @@ func (p *preprocessor) runPreprocessOverride(un Unstructured) (Unstructured, err
 
 	if set != nil {
 		reUn.MergeInto(set)
-		delete(un, "$set")
+		un.DeleteKey("$set")
 	}
 
-	delete(un, "$override")
+	un.DeleteKey("$override")
 
 	return un, nil
 }
 
+func (p *preprocessor) checkSyntax(un Unstructured) error {
+	if un["$syntax"] != nil {
+		syntax := un["$syntax"].(Unstructured)
+
+		un.DeleteKey("$syntax")
+
+		var subType = &model.Resource{}
+
+		err := syntax.ToProtoMessage(subType)
+
+		if err != nil {
+			return err
+		}
+
+		record, err := un.ToRecord()
+
+		if err != nil {
+			return err
+		}
+
+		err = validate.ValidateRecords(subType, []*model.Record{record}, false)
+
+		// recover syntax as it needs to be persisted
+		un["$syntax"] = syntax
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 var preprocessKeywords = []string{
-	"$extend", "$override", "$select", "$syntax", "$ref", "$set", "$clear", "$append",
+	"$extend", "$override", "$select", "$syntax", "$ref", "$set", "$clear", "$append", "$include", "$expression",
 }
 
 func isPreprocessorKey(key string) bool {

@@ -33,6 +33,8 @@ func WalkUnstructured(body interface{}, fn func(value interface{}) (interface{},
 		}
 	case interface{}:
 		return fn(x)
+	case nil:
+		return nil, nil
 	default:
 		fmt.Print(reflect.TypeOf(x))
 		panic("unknown type: ")

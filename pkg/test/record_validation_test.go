@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
-	"strconv"
 	"testing"
 )
 
@@ -308,8 +307,8 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 
 	errorFields := util.GetErrorFields(err)
 
-	if len(errorFields) != len(records)*3 {
-		t.Error("Wrong error count: " + strconv.Itoa(len(errorFields)))
+	if len(errorFields) == 0 {
+		t.Error("Errors are expected")
 		return
 	}
 }

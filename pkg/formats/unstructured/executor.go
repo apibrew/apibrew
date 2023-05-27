@@ -9,7 +9,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gopkg.in/yaml.v3"
 	"io"
@@ -24,12 +23,6 @@ type Executor struct {
 	resourcePropertyMap map[string]*model.ResourceProperty
 	parser              Parser
 	preprocessor        preprocessor
-}
-
-var jsonUMo = protojson.UnmarshalOptions{
-	AllowPartial:   false,
-	DiscardUnknown: false,
-	Resolver:       nil,
 }
 
 func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
@@ -64,8 +57,6 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 	delete(body, "resource")
 	delete(body, "namespace")
 
-	jsonData, err := json.MarshalIndent(body, "", "    ")
-
 	if err != nil {
 		return err
 	}
@@ -73,9 +64,10 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 	switch elemType {
 	case "resource":
 		var resource = new(model.Resource)
-		err = jsonUMo.Unmarshal(jsonData, resource)
+		err = body.ToProtoMessage(resource)
 
 		if err != nil {
+			jsonData, _ := json.MarshalIndent(body, " ", "  ")
 			for index, line := range strings.Split(strings.TrimSuffix(string(jsonData), "\n"), "\n") {
 				fmt.Printf("%d: %s\n", index+1, line)
 			}
@@ -103,7 +95,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		// locating resource
 
 		var record = new(model.Record)
-		err = jsonUMo.Unmarshal(jsonData, record)
+		err = body.ToProtoMessage(record)
 
 		if err != nil {
 			return err
@@ -148,7 +140,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 	case "datasource", "data-source", "dataSource":
 		var dataSource = new(model.DataSource)
 
-		err = jsonUMo.Unmarshal(jsonData, dataSource)
+		err = body.ToProtoMessage(dataSource)
 
 		if err != nil {
 			return err
@@ -160,15 +152,15 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 			return err
 		}
 	case "namespace":
-		var dataSource = new(model.Namespace)
+		var namespace = new(model.Namespace)
 
-		err = jsonUMo.Unmarshal(jsonData, dataSource)
+		err = body.ToProtoMessage(namespace)
 
 		if err != nil {
 			return err
 		}
 
-		err = e.Params.DhClient.Apply(ctx, dataSource)
+		err = e.Params.DhClient.Apply(ctx, namespace)
 
 		if err != nil {
 			return err
@@ -176,7 +168,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 	case "extension":
 		var dataSource = new(model.Extension)
 
-		err = jsonUMo.Unmarshal(jsonData, dataSource)
+		err = body.ToProtoMessage(dataSource)
 
 		if err != nil {
 			return err
@@ -188,15 +180,15 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 			return err
 		}
 	case "user":
-		var dataSource = new(model.User)
+		var user = new(model.User)
 
-		err = jsonUMo.Unmarshal(jsonData, dataSource)
+		err = body.ToProtoMessage(user)
 
 		if err != nil {
 			return err
 		}
 
-		err = e.Params.DhClient.Apply(ctx, dataSource)
+		err = e.Params.DhClient.Apply(ctx, user)
 
 		if err != nil {
 			return err

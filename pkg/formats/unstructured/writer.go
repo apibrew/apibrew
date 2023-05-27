@@ -1,10 +1,8 @@
 package unstructured
 
 import (
-	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/formats"
 	"github.com/apibrew/apibrew/pkg/model"
-	"google.golang.org/protobuf/encoding/protojson"
 	"reflect"
 	"sort"
 )
@@ -13,25 +11,14 @@ type Writer struct {
 	Annotations map[string]string
 }
 
-var jsonMo = protojson.MarshalOptions{
-	Multiline:       true,
-	EmitUnpopulated: false,
-}
-
 func (w *Writer) isForApply() bool {
 	return w.Annotations != nil && w.Annotations["for-apply"] == "true"
 }
 
 func (w *Writer) WriteRecord(namespace string, resourceName string, record *model.Record) (Unstructured, error) {
-	body, err := jsonMo.Marshal(record)
+	var data = Unstructured{}
 
-	if err != nil {
-		return nil, err
-	}
-
-	var data Unstructured
-
-	err = json.Unmarshal(body, &data)
+	err := data.FromProtoMessage(record)
 
 	if err != nil {
 		return nil, err
@@ -53,15 +40,9 @@ func (w *Writer) WriteResource(resource *model.Resource) (Unstructured, error) {
 		resource = formats.FixResourceForApply(resource)
 	}
 
-	body, err := jsonMo.Marshal(resource)
+	var data = Unstructured{}
 
-	if err != nil {
-		return nil, err
-	}
-
-	var data Unstructured
-
-	err = json.Unmarshal(body, &data)
+	err := Unstructured{}.FromProtoMessage(resource)
 
 	if err != nil {
 		return nil, err

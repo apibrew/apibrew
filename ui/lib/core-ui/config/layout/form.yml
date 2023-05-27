@@ -5,10 +5,9 @@ properties:
   name: Form
   layoutComponent:
     $syntax:
-      type: STRUCT
       properties:
         - name: params
-          type: ARRAY
+          type: LIST
           item:
             type: STRUCT
             properties:
@@ -23,10 +22,13 @@ properties:
                 type: STRING
                 required: true
               - name: required
-                type: BOOLEAN
+                type: BOOL
               - name: length
-                type: INTEGER
+                type: INT32
               - name: default
                 type: STRING
+        - name: component
+          type: STRING
+          required: true
     component: CoreUI/Form
     params:

@@ -9,6 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -152,7 +153,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		log.Print("Normalized record: " + record.Id)
 	}
 
-	if err = validateRecords(resource, params.Records, false); err != nil {
+	if err = validate.ValidateRecords(resource, params.Records, false); err != nil {
 		return nil, err
 	}
 
@@ -379,7 +380,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		util.NormalizeRecord(resource, record)
 	}
 
-	err = validateRecords(resource, params.Records, true)
+	err = validate.ValidateRecords(resource, params.Records, true)
 
 	if err != nil {
 		success = false
