@@ -62,6 +62,7 @@ type ExecutorParams struct {
 	DoMigration    bool
 	ForceMigration bool
 	DataOnly       bool
+	Recursive      bool
 }
 
 func NewExecutor(params ExecutorParams) (formats.Executor, error) {

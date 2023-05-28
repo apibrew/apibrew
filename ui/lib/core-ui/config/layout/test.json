@@ -1,39 +1,20 @@
 {
-  "params": [
-    {
-      "name": "hello",
-      "type": "STRING",
-      "label": "Hello",
-      "length": 255,
-      "default": "World",
-      "required": true
-    }
-  ],
+  "params": null,
   "$syntax": {
     "properties": [
       {
         "item": {
-          "type": "STRUCT",
           "properties": [
             {
-              "name": "name",
-              "type": "STRING",
-              "unique": true,
-              "required": true
-            },
-            {
               "name": "label",
-              "type": "STRING",
-              "required": true
+              "type": "STRING"
             },
             {
               "name": "type",
-              "type": "STRING",
-              "required": true
+              "type": "STRING"
             },
             {
-              "name": "required",
-              "type": "BOOL"
+              "name": "required"
             },
             {
               "name": "length",
@@ -42,6 +23,11 @@
             {
               "name": "default",
               "type": "STRING"
+            },
+            {
+              "name": "name",
+              "type": "STRING",
+              "required": true
             }
           ]
         },
@@ -50,8 +36,7 @@
       },
       {
         "name": "component",
-        "type": "STRING",
-        "required": true
+        "type": "STRING"
       }
     ]
   },

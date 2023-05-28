@@ -5,30 +5,18 @@ properties:
   name: Form
   layoutComponent:
     $syntax:
-      properties:
-        - name: params
+      $properties:
+        params:
           type: LIST
           item:
             type: STRUCT
-            properties:
-              - name: name
-                type: STRING
-                required: true
-                unique: true
-              - name: label
-                type: STRING
-                required: true
-              - name: type
-                type: STRING
-                required: true
-              - name: required
-                type: BOOL
-              - name: length
-                type: INT32
-              - name: default
-                type: STRING
-        - name: component
-          type: STRING
-          required: true
+            $properties:
+              name!: string
+              label: string
+              type: string
+              required: bool
+              length: int32
+              default: string
+        component: string
     component: CoreUI/Form
     params:
