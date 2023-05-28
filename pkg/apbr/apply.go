@@ -44,12 +44,36 @@ var applyCmd = &cobra.Command{
 			return fmt.Errorf("failed to get force flag: %w", err)
 		}
 
+		recursive, err := cmd.Flags().GetBool("recursive")
+
+		if err != nil {
+			return fmt.Errorf("failed to get recursive flag: %w", err)
+		}
+
+		format, err := cmd.Flags().GetString("format")
+
+		if err != nil {
+			return fmt.Errorf("failed to get format flag: %w", err)
+		}
+
+		if strings.HasSuffix(inputFilePath, ".hcl") {
+			format = "hcl"
+		} else if strings.HasSuffix(inputFilePath, ".pbe") {
+			format = "pbe"
+		} else if strings.HasSuffix(inputFilePath, ".yaml") || strings.HasSuffix(inputFilePath, ".yml") {
+			format = "yaml"
+		}
+
+		if format == "yml" {
+			format = "yaml"
+		}
+
 		overrideConfig := new(flags.OverrideConfig)
 		overrideFlags.Parse(overrideConfig, cmd, args)
 
 		var executor formats.Executor
 		switch {
-		case strings.HasSuffix(inputFilePath, ".hcl"):
+		case format == "hcl":
 			in, err := os.Open(inputFilePath)
 			if err != nil {
 				return fmt.Errorf("failed to open HCL file: %w", err)
@@ -71,7 +95,7 @@ var applyCmd = &cobra.Command{
 				return fmt.Errorf("failed to create HCL executor: %w", err)
 			}
 
-		case strings.HasSuffix(inputFilePath, ".pbe"):
+		case format == "pbe":
 			in, err := os.Open(inputFilePath)
 			if err != nil {
 				return fmt.Errorf("failed to open PBE file: %w", err)
@@ -84,6 +108,7 @@ var applyCmd = &cobra.Command{
 				ResourceClient: GetDhClient().GetResourceClient(),
 				RecordClient:   GetDhClient().GetRecordClient(),
 				DataOnly:       dataOnly,
+				Recursive:      recursive,
 				OverrideConfig: batch.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,
@@ -93,7 +118,7 @@ var applyCmd = &cobra.Command{
 				return fmt.Errorf("failed to create PBE executor: %w", err)
 			}
 
-		case strings.HasSuffix(inputFilePath, ".yml"), strings.HasSuffix(inputFilePath, ".yaml"):
+		case format == "yaml":
 			in, err := os.Open(inputFilePath)
 			if err != nil {
 				return fmt.Errorf("failed to open YAML file: %w", err)
@@ -106,6 +131,7 @@ var applyCmd = &cobra.Command{
 				DhClient:       GetDhClient(),
 				DoMigration:    doMigration,
 				ForceMigration: force,
+				Recursive:      recursive,
 				OverrideConfig: yamlformat.OverrideConfig{
 					Namespace:  overrideConfig.Namespace,
 					DataSource: overrideConfig.DataSource,
@@ -133,6 +159,8 @@ func init() {
 	applyCmd.PersistentFlags().BoolP("migrate", "m", true, "Migrate")
 	applyCmd.PersistentFlags().Bool("force", false, "Force")
 	applyCmd.PersistentFlags().Bool("data-only", false, "Data Only")
+	applyCmd.PersistentFlags().BoolP("recursive", "r", false, "Recursive")
+	applyCmd.PersistentFlags().String("format", "yaml", "[yaml, yml, hcl, pbe]")
 
 	overrideFlags.Declare(applyCmd)
 }

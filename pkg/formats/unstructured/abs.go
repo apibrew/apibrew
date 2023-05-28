@@ -59,7 +59,13 @@ func (u Unstructured) FromProtoMessage(msg proto.Message) error {
 		return err
 	}
 
-	return json.Unmarshal(b, &u)
+	err = json.Unmarshal(b, &u)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 var jsonMo = protojson.MarshalOptions{

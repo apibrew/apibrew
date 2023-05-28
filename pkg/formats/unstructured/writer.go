@@ -88,5 +88,10 @@ func IsZeroOfUnderlyingType(x interface{}) bool {
 	if x == nil {
 		return true
 	}
+
+	if _, ok := x.(*model.ResourceProperty_Type); ok {
+		return false
+	}
+
 	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
 }

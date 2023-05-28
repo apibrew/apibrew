@@ -11,6 +11,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
 type preprocessor struct {
@@ -54,6 +55,16 @@ func (p *preprocessor) runPreprocess(un Unstructured) (interface{}, error) {
 
 	if util.ArrayContains(keys, "$include") {
 		un, err = p.runPreprocessInclude(un)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return p.runPreprocess(un)
+	}
+
+	if util.ArrayContains(keys, "$properties") {
+		un, err = p.runPreprocessProperties(un)
 
 		if err != nil {
 			return nil, err
@@ -192,13 +203,17 @@ func (p *preprocessor) runPreprocessOverride(un Unstructured) (Unstructured, err
 
 func (p *preprocessor) checkSyntax(un Unstructured) error {
 	if un["$syntax"] != nil {
-		syntax := un["$syntax"].(Unstructured)
+		syntax, err := p.runPreprocess(un["$syntax"].(Unstructured))
+
+		if err != nil {
+			return err
+		}
 
 		un.DeleteKey("$syntax")
 
 		var subType = &model.Resource{}
 
-		err := syntax.ToProtoMessage(subType)
+		err = syntax.(Unstructured).ToProtoMessage(subType)
 
 		if err != nil {
 			return err
@@ -223,8 +238,49 @@ func (p *preprocessor) checkSyntax(un Unstructured) error {
 	return nil
 }
 
+func (p *preprocessor) runPreprocessProperties(un Unstructured) (Unstructured, error) {
+	propertiesDirective := un["$properties"].(Unstructured)
+	var properties []Unstructured
+
+	for key, value := range propertiesDirective {
+		var propertyUn = make(Unstructured)
+
+		if typeStr, ok := value.(string); ok {
+			var property = new(model.ResourceProperty)
+
+			if typeId, ok := model.ResourceProperty_Type_value[strings.ToUpper(typeStr)]; ok {
+				property.Type = model.ResourceProperty_Type(typeId)
+			} else {
+				return nil, errors.New(fmt.Sprintf("invalid property type %s", typeStr))
+			}
+			err := propertyUn.FromProtoMessage(property)
+
+			if err != nil {
+				return nil, err
+			}
+		} else if valueUn, ok := value.(Unstructured); ok {
+			propertyUn = valueUn
+		} else {
+			return nil, errors.New(fmt.Sprintf("invalid property type %s", value))
+		}
+
+		propertyUn["name"] = key
+
+		if strings.HasSuffix(key, "!") {
+			propertyUn["name"] = key[:len(key)-1]
+			propertyUn["required"] = true
+		}
+
+		properties = append(properties, propertyUn)
+	}
+
+	un.DeleteKey("$properties")
+	un["properties"] = properties
+	return un, nil
+}
+
 var preprocessKeywords = []string{
-	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression",
+	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties",
 }
 
 func isPreprocessorKey(key string) bool {
