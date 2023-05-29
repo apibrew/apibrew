@@ -39,4 +39,5 @@ properties:
       typeRef: InputParameter
   - name: layoutComponent
     type: STRUCT
+    required: true
     typeRef: LayoutComponent

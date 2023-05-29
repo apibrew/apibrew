@@ -7,6 +7,7 @@ import {ActionComponent} from "../model/component-interfaces.ts";
 
 export namespace ModuleService {
     const modules: ModuleData[] = []
+    const awaitedModules: Promise<ModuleData>[] = []
 
     function require(path: string) {
         switch (path) {
@@ -17,8 +18,10 @@ export namespace ModuleService {
         }
     }
 
-    export async function loadModule(name: string, pkg: string): Promise<ModuleData> {
-        const existingModule = modules.find(m => m.name === name && m.package === pkg)
+    export async function loadModule(name: string): Promise<ModuleData> {
+        await Promise.all(awaitedModules)
+
+        const existingModule = modules.find(m => m.name === name)
 
         if (existingModule) {
             return existingModule
@@ -26,17 +29,15 @@ export namespace ModuleService {
 
         const module = await RecordService.findByMulti<Module>('ui', 'Module', [
             {property: 'name', value: name},
-            {property: 'package', value: pkg},
         ])
 
         if (!module) {
-            throw new Error(`Module ${pkg}/${name} not found`)
+            throw new Error(`Module ${name} not found`)
         }
 
         const moduleData: ModuleData = {
             exports: {},
             name: module.name,
-            package: module.package,
         }
 
         const code = atob(module.source)
@@ -54,14 +55,22 @@ export namespace ModuleService {
         modules.push(moduleData)
     }
 
+    export function registerLocalModuleAwait(moduleData: Promise<ModuleData>) {
+        moduleData.then(md => {
+            registerLocalModule(md)
+        })
+
+        awaitedModules.push(moduleData)
+    }
+
     export async function loadModuleComponent<T>(name: string, pkg: string, componentName: string): Promise<T> {
-        const module = await loadModule(name, pkg)
+        const module = await loadModule(name)
 
         return module.exports[componentName]
     }
 
     export function getModuleComponent<T>(name: string, pkg: string, componentName: string): T {
-        const module = modules.find(m => m.name === name && m.package === pkg)
+        const module = modules.find(m => m.name === name)
 
         if (!module) {
             throw new Error(`Module ${pkg}/${name} not found`)

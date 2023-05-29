@@ -7,10 +7,6 @@ properties:
     type: STRING
     length: 255
     required: true
-  - name: package
-    type: STRING
-    length: 255
-    required: true
   - name: description
     type: STRING
     length: 255

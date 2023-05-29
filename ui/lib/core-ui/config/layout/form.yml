@@ -4,19 +4,9 @@ namespace: ui
 properties:
   name: Form
   layoutComponent:
-    $syntax:
-      $properties:
-        params:
-          type: LIST
-          item:
-            type: STRUCT
-            $properties:
-              name!: string
-              label: string
-              type: string
-              required: bool
-              length: int32
-              default: string
-        component: string
     component: CoreUI/Form
     params:
+      $syntax:
+        $properties:
+          isNew: bool
+          viewOnly: bool

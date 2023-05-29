@@ -1,0 +1,11 @@
+type: record
+resource: Layout
+namespace: ui
+properties:
+  name: CrudFunction
+  layoutComponent:
+    component: Layout/Crud
+    params:
+      namespace: extensions
+      resource: Function
+#      debug: true

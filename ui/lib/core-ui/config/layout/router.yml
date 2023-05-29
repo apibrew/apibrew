@@ -1,0 +1,14 @@
+type: record
+resource: Layout
+namespace: ui
+properties:
+  name: Router
+  layoutComponent:
+    component: CoreUI/Router
+    $syntax:
+      $properties:
+        component: STRING
+        params:
+          type: LIST
+          item:
+              type: STRING

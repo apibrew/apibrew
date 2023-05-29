@@ -7,7 +7,6 @@
 export interface Module {
     id: string;
 name: string;
-package: string;
 description?: string;
 source: string;
 components: string[];
@@ -20,8 +19,6 @@ export const ModuleName = "Module";
 export const ModuleIdName = "Id";
 
 export const ModuleNameName = "Name";
-
-export const ModulePackageName = "Package";
 
 export const ModuleDescriptionName = "Description";
 
