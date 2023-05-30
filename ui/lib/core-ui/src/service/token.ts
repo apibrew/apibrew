@@ -16,7 +16,9 @@ export namespace TokenService {
 
     export async function get(): Promise<string> {
         if (!(_token)) {
-            return await Promise.reject(new Error('No token available'))
+            // return await Promise.reject(new Error('No token available'))
+            console.error('No token available')
+            return ''
         }
 
         // implement refresh token logic here

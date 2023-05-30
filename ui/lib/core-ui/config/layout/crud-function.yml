@@ -4,8 +4,18 @@ namespace: ui
 properties:
   name: CrudFunction
   layoutComponent:
-    component: Layout/Crud
-    params:
-      namespace: extensions
-      resource: Function
-#      debug: true
+    $import: Layout/crud
+    namespace: extensions
+    resource: Function
+    debug: false
+    $override:
+      $select: $.properties.defs.form.children.children
+      $set:
+        component: Box
+        label: Properties
+        children:
+          - $import: Input/TextField
+          - $import: Input/TextField
+          - $import: Input/FunctionExecField
+            algorithm: field1.algorithm
+          - $import: Input/TextField

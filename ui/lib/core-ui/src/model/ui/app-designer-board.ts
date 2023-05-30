@@ -20,10 +20,10 @@ export interface AppDesignerBoard {
     id: string;
 description?: string;
 name: string;
-namespaceSelector?: string[];
-version: number;
 resourceVisuals?: ResourceVisual[];
 resourceSelector?: string[];
+namespaceSelector?: string[];
+version: number;
 
 }
 // Resource and Property Names
@@ -35,12 +35,12 @@ export const AppDesignerBoardDescriptionName = "Description";
 
 export const AppDesignerBoardNameName = "Name";
 
-export const AppDesignerBoardNamespaceSelectorName = "NamespaceSelector";
-
-export const AppDesignerBoardVersionName = "Version";
-
 export const AppDesignerBoardResourceVisualsName = "ResourceVisuals";
 
 export const AppDesignerBoardResourceSelectorName = "ResourceSelector";
+
+export const AppDesignerBoardNamespaceSelectorName = "NamespaceSelector";
+
+export const AppDesignerBoardVersionName = "Version";
 
 

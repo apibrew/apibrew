@@ -10,11 +10,13 @@ export interface RouterComponentProps {
 
 export function RouterComponent(props: RouterComponentProps) {
     return <Routes>
-        {props.children.map((item, index) => (
-            <Route key={props[index]} path={props[index]} element={<>
-                {props.debug && <h4>Route: {props[index]}</h4>}
-                {item}
-            </>}/>
-        ))}
+        {props.children.map((item, index) => {
+            return (
+                <Route key={props[index]} path={props[index]} element={<>
+                    {props.debug && <h4>Route: {props[index]}</h4>}
+                    {item}
+                </>}/>
+            )
+        })}
     </Routes>
 }
