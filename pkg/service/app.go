@@ -81,7 +81,7 @@ func (app *App) Init() {
 	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.backendEventHandler, app.externalService)
 	app.authenticationService = NewAuthenticationService(app.recordService)
 
-	app.initServices()
+	go app.initServices()
 }
 
 func (app *App) initServices() {
