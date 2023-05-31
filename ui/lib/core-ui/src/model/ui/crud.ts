@@ -45,23 +45,31 @@ export interface GridColumnConfig {
      sortable?: boolean;
      filterable?: boolean;
      hidden?: boolean;
+     disabled?: boolean;
      component?: string;
 
 }
 
 // Resource Type
 export interface Crud {
-    namespace: string;
-gridConfig?: GridConfig;
-formConfig?: FormConfig;
-version: number;
-id: string;
+    id: string;
 name?: string;
 resource: string;
+namespace: string;
+gridConfig?: GridConfig;
+formConfig?: FormConfig;
+hideSettings?: boolean;
+version: number;
 
 }
 // Resource and Property Names
 export const CrudName = "Crud";
+
+export const CrudIdName = "Id";
+
+export const CrudNameName = "Name";
+
+export const CrudResourceName = "Resource";
 
 export const CrudNamespaceName = "Namespace";
 
@@ -69,12 +77,8 @@ export const CrudGridConfigName = "GridConfig";
 
 export const CrudFormConfigName = "FormConfig";
 
+export const CrudHideSettingsName = "HideSettings";
+
 export const CrudVersionName = "Version";
-
-export const CrudIdName = "Id";
-
-export const CrudNameName = "Name";
-
-export const CrudResourceName = "Resource";
 
 

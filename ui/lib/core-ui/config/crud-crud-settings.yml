@@ -17,7 +17,7 @@ properties:
             propertyPath: formConfig
             children:
               - kind: custom
-                component: CrudSettingsFormConfig
+                component: CoreUI/CrudSettingsFormConfig
       - kind: tab
         title: Grid Config
         children:
@@ -25,6 +25,6 @@ properties:
             propertyPath: gridConfig
             children:
               - kind: custom
-                component: CrudSettingsGridConfig
+                component: CoreUI/CrudSettingsGridConfig
       - kind: tab
         title: Advanced

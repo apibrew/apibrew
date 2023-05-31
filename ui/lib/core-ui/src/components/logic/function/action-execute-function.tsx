@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import {FunctionExecution} from "../../../model/extensions/function-execution.ts";
 import {useState} from "react";
 import {Form} from "../../crud/Form.tsx";
-import {useResource} from "../../../hooks/resource.ts";
+import {useResourceByName} from "../../../hooks/resource.ts";
 import {FormConfig} from "../../../model/ui/crud.ts";
 
 export interface ExecuteFunctionFormProps {
@@ -31,7 +31,7 @@ export function ExecuteFunctionForm(props: ExecuteFunctionFormProps) {
         input: defaultInput
     })
 
-    const resource = useResource('FunctionExecution', 'extensions')
+    const resource = useResourceByName('FunctionExecution', 'extensions')
 
     const formConfig: FormConfig = {
         children: [{

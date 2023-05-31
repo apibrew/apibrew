@@ -51,9 +51,10 @@ export function Crud(props: CrudProps): JSX.Element {
             {resource && crudConfig && <Box>
                 <Routes>
                     <Route path="new" element={<New crudConfig={crudConfig} resource={resource}/>}/>
-                    <Route path="settings" element={<Settings resource={resource} updateCrud={updatedCrudConfig => {
-                        setCrudConfig(updatedCrudConfig)
-                    }}/>}/>
+                    {!crudConfig.hideSettings &&
+                        <Route path="settings" element={<Settings resource={resource} updateCrud={updatedCrudConfig => {
+                            setCrudConfig(updatedCrudConfig)
+                        }}/>}/>}
                     <Route path=":id/edit" element={<Update crudConfig={crudConfig} resource={resource}/>}/>
                     <Route path=":id/view" element={<View crudConfig={crudConfig} resource={resource}/>}/>
                     <Route path="" element={<List crudConfig={crudConfig} resource={resource}/>}/>

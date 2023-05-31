@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {Resource} from "../model";
 import {ResourceService} from "../service";
 
-export function useResource(resourceName: string, namespace = 'default'): Resource | undefined {
+export function useResourceByName(resourceName: string, namespace = 'default'): Resource | undefined {
     const [resource, setResource] = useState<Resource>()
 
     useEffect(() => {

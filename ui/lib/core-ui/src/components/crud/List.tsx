@@ -59,13 +59,15 @@ export function List(props: ListProps) {
     })
 
     if (props.crudConfig?.gridConfig?.columns) {
-        columns = props.crudConfig.gridConfig.columns.map((column) => {
+        columns = props.crudConfig.gridConfig.columns.filter(item => !item.disabled).map((column) => {
             return {
                 field: column.name,
                 type: column.type ?? 'string',
                 headerName: column.title,
-                width: column.width ?? 150,
+                width: (((column.width ?? 0) > 0) ? column.width : 150),
                 flex: column.flex,
+                sortable: column.sortable,
+                filterable: column.filterable,
                 editable: false,
                 valueGetter: (params: GridValueGetterParams<any, any>) => {
                     const prop = resourcePropertyMap.get(column.name)

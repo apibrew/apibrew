@@ -8,6 +8,8 @@ import {Form} from "./components/form/Form.tsx";
 import {ResourceContextComponent} from "./components/context/ResourceContextComponent.tsx";
 import {RouterComponent} from "./components/basic/RouterComponent.tsx";
 import {FunctionScriptInput} from "./components/custom-inputs/FunctionScriptInput.tsx";
+import {CrudSettingsFormConfig} from "./components/custom-inputs/CrudSettingsFormConfig.tsx";
+import {CrudSettingsGridConfig} from "./components/custom-inputs/CrudSettingsGridConfig.tsx";
 
 ModuleService.registerLocalModuleAwait(RecordService.list<Layout>('ui', 'Layout').then(layouts => {
     const exports: ExportOptions = {}
@@ -28,6 +30,8 @@ ModuleService.registerLocalModule({
         FunctionScriptInput: FunctionScriptInput,
         Form: Form,
         Router: RouterComponent,
+        CrudSettingsFormConfig: CrudSettingsFormConfig,
+        CrudSettingsGridConfig: CrudSettingsGridConfig,
     },
     name: 'CoreUI',
 })

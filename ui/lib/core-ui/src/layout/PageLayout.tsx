@@ -8,47 +8,47 @@ import {ReactNode} from 'react'
 import Divider from '@mui/material/Divider'
 
 export interface Breadcrumb {
-  label: string
-  to?: string
+    label: string
+    to?: string
 }
 
 export interface PageLayoutProps {
-  pageTitle?: ReactNode
-  children: ReactNode
-  actions?: ReactNode
-  breadcrumbs?: Breadcrumb[]
+    pageTitle?: ReactNode
+    children: ReactNode
+    actions?: ReactNode
+    breadcrumbs?: Breadcrumb[]
 }
 
 export function PageLayout(props: PageLayoutProps) {
-  return <React.Fragment>
-    <Card>
-      <CardHeader title={
-        <Box>
-          <Box sx={{display: 'flex'}}>
-            <Box>
-              {props.pageTitle}
+    return <React.Fragment>
+        <Card>
+            <CardHeader title={
+                <Box>
+                    <Box sx={{display: 'flex'}}>
+                        <Box>
+                            {props.pageTitle}
 
-              {props.breadcrumbs &&
-                <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small"/>}>
-                  {props.breadcrumbs.map(item => <React.Fragment>
-                    {item.to && <Link color="black"
-                                      to={item.to}
-                                      style={{textDecoration: 'none', color: 'black'}}>
-                      {item.label}
-                    </Link>}
-                    {!item.to && <Typography color="text.primary">{item.label}</Typography>}
-                  </React.Fragment>)}
-                </Breadcrumbs>}
-            </Box>
-            <Box sx={{flexGrow: 1}}/>
-            {(props.actions != null) && <Box>{props.actions}</Box>}
-          </Box>
-        </Box>
-      }></CardHeader>
-      <Divider/>
-      <CardContent>
-        {props.children}
-      </CardContent>
-    </Card>
-  </React.Fragment>
+                            {props.breadcrumbs &&
+                                <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small"/>}>
+                                    {props.breadcrumbs.map(item => {
+                                        if (item.to) {
+                                            return <Link key={item.label} to={item.to}>{item.label}</Link>
+                                        } else {
+                                            return <Typography key={item.label}
+                                                               color="text.primary">{item.label}</Typography>
+                                        }
+                                    })}
+                                </Breadcrumbs>}
+                        </Box>
+                        <Box sx={{flexGrow: 1}}/>
+                        {(props.actions != null) && <Box>{props.actions}</Box>}
+                    </Box>
+                </Box>
+            }></CardHeader>
+            <Divider/>
+            <CardContent>
+                {props.children}
+            </CardContent>
+        </Card>
+    </React.Fragment>
 }

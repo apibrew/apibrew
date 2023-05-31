@@ -9,6 +9,8 @@ import React, {useEffect} from "react"
 import {Crud, CrudName} from "../../model/ui/crud";
 import {ResourceService} from "../../service/resource";
 import {resetCrudForm} from "./helper";
+import {useResourceByName} from "../../hooks/resource.ts";
+import {useRecordByName} from "../../hooks/record.ts";
 
 export interface SettingsProps {
     resource: Resource
@@ -17,32 +19,23 @@ export interface SettingsProps {
 
 export function Settings(props: SettingsProps): JSX.Element {
     const navigate = useNavigate()
-    const [selfCrud, setSelfCrud] = React.useState<Crud>()
     const [crudConfig, setCrudConfig] = React.useState<Record>({
         name: `ResourceCrud-${props.resource.namespace}-${props.resource.name}`,
         resource: props.resource.name,
         namespace: props.resource.namespace,
     })
-    const [crudResource, setCrudResource] = React.useState<Resource>()
+    const crudResource = useResourceByName(CrudName, 'ui')
+    const selfCrud = useRecordByName<Crud>(CrudName, 'ui', 'CrudSettings')
 
     const params = useParams<{ id: string }>()
 
     useEffect(() => {
-        RecordService.findBy<Crud>('ui', CrudName, 'name', 'CrudSettings')
-            .then((record) => {
-                setSelfCrud(record)
-            })
-
         RecordService.findBy<Record>('ui', CrudName, 'name', crudConfig.name)
             .then((record) => {
                 if (record) {
                     setCrudConfig(record)
                 }
             }, console.warn)
-
-        ResourceService.getByName(CrudName, 'ui').then((resource) => {
-            setCrudResource(resource)
-        })
     }, [params.id])
 
     if (!selfCrud) {
@@ -72,7 +65,7 @@ export function Settings(props: SettingsProps): JSX.Element {
                                         onClick={() => {
                                             RecordService.apply('ui', CrudName, crudConfig).then(() => {
                                                 props.updateCrud(crudConfig as Crud)
-                                                navigate('../')
+                                                // navigate('../')
                                             })
                                         }}
                                         startIcon={<Save/>}>Save</Button>

@@ -90,6 +90,8 @@ types:
         type: BOOL
       - name: hidden
         type: BOOL
+      - name: disabled
+        type: BOOL
       - name: component
         type: STRING
 properties:
@@ -111,3 +113,5 @@ properties:
   - name: formConfig
     type: STRUCT
     typeRef: FormConfig
+  - name: hideSettings
+    type: BOOL

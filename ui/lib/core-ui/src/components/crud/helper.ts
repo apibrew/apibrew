@@ -19,7 +19,6 @@ export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
                 title: item.title,
                 sortable: true,
                 filterable: true,
-                flex: 1,
             } as GridColumnConfig
         }))
     ]
