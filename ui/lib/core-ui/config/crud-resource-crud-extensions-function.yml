@@ -45,6 +45,32 @@ properties:
             propertyPath: engine
             children:
               - kind: input
+          - kind: section
+            title: Arguments
+            children:
+              - kind: property
+                propertyPath: args
+                children:
+                  - kind: input
+                    params:
+                      hideLabel: true
+                    children:
+                      - kind: container
+                        children:
+                          - kind: property
+                            propertyPath: name
+                            children:
+                              - kind: input
+          - kind: section
+            title: Options
+            children:
+              - kind: property
+                propertyPath: options
+                children:
+                  - kind: property
+                    propertyPath: namedParams
+                    children:
+                      - kind: input
       - kind: tab
         title: Script
         children:

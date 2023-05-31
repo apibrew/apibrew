@@ -113,7 +113,6 @@ export function List(props: ListProps) {
                         label={action.title}
                         icon={<Icon name={action.icon}/>}
                         onClick={() => {
-                            console.log(layoutContext)
                             ModuleService.executeActionComponent(action.component.name, action.component.package, action.component.componentName, params.id as string, layoutContext).then()
                         }}/>)
                 })

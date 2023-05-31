@@ -11,8 +11,8 @@ export interface Options {
 }
 
 export interface Argument {
-     name?: string;
-     direction?: string;
+     name: string;
+     label?: string;
 
 }
 

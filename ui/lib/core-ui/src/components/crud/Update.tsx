@@ -1,12 +1,13 @@
-import { Box, Button } from "@mui/material"
-import { PageLayout } from "../../layout/PageLayout"
-import { Cancel, PlusOneOutlined, Save } from "@mui/icons-material"
-import { Resource } from "../../model"
-import { useNavigate, useParams } from "react-router-dom"
-import { Form } from "./Form"
-import { Record, RecordService } from "../../service/record"
-import React, { useEffect } from "react"
-import {Crud, CrudName} from "../../model/schema";
+import {Box, Button} from "@mui/material"
+import {PageLayout} from "../../layout/PageLayout"
+import {Cancel, Save} from "@mui/icons-material"
+import {Resource} from "../../model"
+import {useNavigate, useParams} from "react-router-dom"
+import {Form} from "./Form"
+import {Record, RecordService} from "../../service/record"
+import React, {useContext, useEffect, useState} from "react"
+import {Crud} from "../../model/ui/crud.ts";
+import {LayoutContext} from "../../context/layout-context.ts";
 
 export interface UpdateProps {
     resource: Resource
@@ -16,14 +17,26 @@ export interface UpdateProps {
 export function Update(props: UpdateProps): JSX.Element {
     const navigate = useNavigate()
     const [record, setRecord] = React.useState<Record>()
+    const layoutContext = useContext(LayoutContext)
+    const [loading, setLoading] = useState(true)
 
     const params = useParams<{ id: string }>()
 
-    useEffect(() => {
+    const load = () => {
+        setLoading(true)
         RecordService.get<Record>(props.resource.namespace ?? 'default', props.resource.name, params.id!)
             .then((record) => {
                 setRecord(record)
+                layoutContext.showAlert({
+                    severity: 'success',
+                    message: 'Form reloaded'
+                })
+                setLoading(false)
             })
+    }
+
+    useEffect(() => {
+        load()
     }, [params.id])
 
     if (!record) {
@@ -32,31 +45,41 @@ export function Update(props: UpdateProps): JSX.Element {
 
     return (
         <PageLayout pageTitle={props.resource.name} actions={<React.Fragment>
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{display: 'flex'}}>
                 <Box m={0.5}>
                     <Button variant={'outlined'}
-                        color='primary'
-                        size='small'
-                        onClick={() => {
-                            navigate('../')
-                        }}
-                        startIcon={<Cancel />}>Cancel</Button>
+                            color='warning'
+                            size='small'
+                            onClick={() => {
+                                load()
+                            }}
+                            startIcon={<Cancel/>}>Reset</Button>
                 </Box>
                 <Box m={0.5}>
                     <Button variant={'outlined'}
-                        color='success'
-                        size='small'
-                        onClick={() => {
-                            RecordService.update(props.resource.namespace ?? 'default', props.resource.name, record).then(() => {
+                            color='primary'
+                            size='small'
+                            onClick={() => {
                                 navigate('../')
-                            })
-                        }}
-                        startIcon={<Save />}>Save</Button>
+                            }}
+                            startIcon={<Cancel/>}>Cancel</Button>
+                </Box>
+                <Box m={0.5}>
+                    <Button variant={'outlined'}
+                            color='success'
+                            size='small'
+                            onClick={() => {
+                                RecordService.update(props.resource.namespace ?? 'default', props.resource.name, record).then(() => {
+                                    navigate('../')
+                                })
+                            }}
+                            startIcon={<Save/>}>Save</Button>
                 </Box>
             </Box>
         </React.Fragment>}>
             <React.Fragment>
-                <Form resource={props.resource} record={record} setRecord={setRecord} formConfig={props.crudConfig.formConfig} />
+                {!loading && <Form resource={props.resource} record={record} setRecord={setRecord}
+                      formConfig={props.crudConfig.formConfig}/>}
             </React.Fragment>
         </PageLayout>
     )

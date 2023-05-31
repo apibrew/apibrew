@@ -14,6 +14,7 @@ types:
           - section
           - group
           - custom
+          - container
       - name: propertyPath
         type: STRING
       - name: title

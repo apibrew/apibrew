@@ -8,8 +8,7 @@ import {FunctionExecution} from "../../../model/extensions/function-execution.ts
 import {useState} from "react";
 import {Form} from "../../crud/Form.tsx";
 import {useResource} from "../../../hooks/resource.ts";
-import {useRecordByName} from "../../../hooks/record.ts";
-import {Crud} from "../../../model/ui/crud.ts";
+import {FormConfig} from "../../../model/ui/crud.ts";
 
 export interface ExecuteFunctionFormProps {
     functionRecord: Function$
@@ -17,23 +16,49 @@ export interface ExecuteFunctionFormProps {
     execute: (execution: FunctionExecution) => void
 }
 
-function ExecuteFunctionForm(props: ExecuteFunctionFormProps) {
+export function ExecuteFunctionForm(props: ExecuteFunctionFormProps) {
+    const defaultInput = {}
+    const args = props.functionRecord.args ?? []
+
+    args.forEach(arg => {
+        defaultInput[arg.name] = ''
+    })
+
     const [execution, setExecution] = useState<FunctionExecution>({
         function: props.functionRecord,
         id: '',
         version: 1,
+        input: defaultInput
     })
 
     const resource = useResource('FunctionExecution', 'extensions')
-    const formConfig = useRecordByName<Crud>('Crud', 'ui', 'ResourceCrud-extensions-FunctionExecution')
+
+    const formConfig: FormConfig = {
+        children: [{
+            kind: 'property',
+            propertyPath: 'input',
+            children: args.map(arg => {
+                return {
+                    kind: 'property',
+                    propertyPath: arg.name,
+                    children: [
+                        {
+                            kind: 'input',
+                            title: arg.label ?? arg.name,
+                        }
+                    ]
+                }
+            })
+        }]
+    }
 
     return <Card>
         <CardHeader title={'Execute function ' + props.functionRecord.name}/>
         <CardContent>
-            {formConfig && <Form resource={resource}
-                                 record={execution}
-                                 setRecord={setExecution}
-                                 formConfig={formConfig.formConfig}></Form>}
+            {resource && formConfig && <Form resource={resource}
+                                             record={execution}
+                                             setRecord={setExecution}
+                                             formConfig={formConfig}></Form>}
         </CardContent>
         <CardActions>
             <Button onClick={() => {
@@ -56,12 +81,13 @@ export class ActionExecuteFunction implements ActionComponent<any> {
 
         async function runFunction(execution: FunctionExecution) {
             await RecordService.create<FunctionExecution>('extensions', 'FunctionExecution', execution).then(resp => {
-                if (resp.error) {
+                if (resp.status == 'error') {
                     layoutContext.showAlert({
                         severity: 'error',
                         message: JSON.stringify(resp.error)
                     })
-                } if (resp.output) {
+                }
+                if (resp.status == 'success') {
                     layoutContext.showAlert({
                         severity: 'success',
                         message: JSON.stringify(resp.output)

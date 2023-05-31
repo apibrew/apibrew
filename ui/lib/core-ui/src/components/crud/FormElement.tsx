@@ -8,13 +8,14 @@ import {
     TextField,
     TextFieldProps
 } from "@mui/material"
-import {Resource, ResourceProperty} from "../../model"
-import React, {useEffect, useMemo} from "react"
+import {ResourceProperty} from "../../model"
+import React, {useEffect, useMemo, useState} from "react"
 import {Record, RecordService} from "../../service/record"
 import {FormItem} from "../../model/ui/crud.ts";
+import {useResource} from "../../context/resource.ts";
+import {ListFormElements} from "./form-elements/ListFormElement.tsx";
 
 export interface FormElementProps {
-    resource: Resource
     property: ResourceProperty
     readOnly?: boolean
     config: FormItem
@@ -91,8 +92,9 @@ const FieldValueConvertWrapper = (Field: FieldComponent, converter: (val: any) =
 export function FormElement(props: FormElementProps) {
     const title = props.property.title || props.property.name
 
-    const resource = props.resource
+    const resource = useResource()
     const referencedResourceName = props.property.reference?.referencedResource ?? ''
+    const [value, setValue] = useState(props.value)
 
     const Field = useMemo(() => {
         switch (props.property.type) {
@@ -112,6 +114,8 @@ export function FormElement(props: FormElementProps) {
             case 'REFERENCE':
                 return (props: FieldProps) => <ReferenceField namespace={resource.namespace ?? 'default'}
                                                               referencedResourceName={referencedResourceName} {...props} />
+            case 'LIST':
+                return (_props: FieldProps) => <ListFormElements config={props.config} {..._props}/>
         }
 
         return TextField
@@ -120,12 +124,13 @@ export function FormElement(props: FormElementProps) {
     return (
         <React.Fragment>
             <FormControl style={{width: '100%'}}>
-                <FormLabel>{title}</FormLabel>
+                {!(props.config.params && props.config.params['hideLabel']) && <FormLabel>{title}</FormLabel>}
                 <Field required={props.property.required}
                        disabled={props.readOnly}
                        {...props.config.params}
-                       value={props.value ?? ''}
+                       value={value}
                        onChange={(e) => {
+                           setValue(e.target.value)
                            props.setValue(e.target.value)
                        }}/>
                 {props.property.description && <FormHelperText>{props.property.description}</FormHelperText>}
