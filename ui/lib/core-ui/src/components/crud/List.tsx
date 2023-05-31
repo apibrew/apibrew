@@ -65,6 +65,7 @@ export function List(props: ListProps) {
                 type: column.type ?? 'string',
                 headerName: column.title,
                 width: column.width ?? 150,
+                flex: column.flex,
                 editable: false,
                 valueGetter: (params: GridValueGetterParams<any, any>) => {
                     const prop = resourcePropertyMap.get(column.name)
@@ -83,10 +84,12 @@ export function List(props: ListProps) {
         })
     }
 
-    columns.push({
+    const actionColumn: GridColDef = {
         field: 'actions',
         type: 'actions',
-        width: 150,
+        maxWidth: 200,
+        minWidth: 200,
+        align: 'right',
         headerName: 'Actions',
         getActions: (params: GridRowParams) => {
             const actions = [
@@ -113,16 +116,22 @@ export function List(props: ListProps) {
                         label={action.title}
                         icon={<Icon name={action.icon}/>}
                         onClick={() => {
-                            ModuleService.executeActionComponent(action.component.name, action.component.package, action.component.componentName, params.id as string, layoutContext).then()
+                            ModuleService.executeActionComponent(action.component, params.id as string, layoutContext).then()
                         }}/>)
                 })
             }
 
             return actions
         }
-    })
+    }
 
-    const rows = list;
+    if (!columns.some(item => item.flex)) {
+        actionColumn.maxWidth = undefined
+        actionColumn.flex = 1
+    }
+
+    columns.push(actionColumn)
+
 
     return (
         <PageLayout pageTitle={props.resource.name} actions={<React.Fragment>
@@ -140,7 +149,7 @@ export function List(props: ListProps) {
                 setShowSdk(false)
             }}/>
             <DataGrid
-                rows={rows}
+                rows={list}
                 columns={columns}
                 initialState={{
                     pagination: {

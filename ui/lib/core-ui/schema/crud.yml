@@ -46,11 +46,20 @@ types:
           typeRef: GridColumnConfig
       - name: disableDefaultActions
         type: BOOL
+      - name: disablePagination
+        type: INT32
+      - name: defaultPageSize
+        type: BOOL
       - name: actions
         type: LIST
         item:
           type: STRUCT
           typeRef: GridActionConfig
+      - name: sizeMode
+        type: ENUM
+        enumValues:
+          - compact
+          - normal
   - name: GridActionConfig
     properties:
       - name: name
@@ -61,8 +70,7 @@ types:
       - name: icon
         type: STRING
       - name: component
-        type: STRUCT
-        typeRef: Component
+        type: STRING
   - name: GridColumnConfig
     properties:
       - name: name
@@ -72,9 +80,9 @@ types:
         type: STRING
       - name: type
         type: STRING
-      - name: propertyPath
-        type: STRING
       - name: width
+        type: INT32
+      - name: flex
         type: INT32
       - name: sortable
         type: BOOL
@@ -83,18 +91,7 @@ types:
       - name: hidden
         type: BOOL
       - name: component
-        type: STRUCT
-        typeRef: Component
-  - name: Component
-    properties:
-      - name: package
         type: STRING
-      - name: name
-        type: STRING
-      - name: componentName
-        type: STRING
-      - name: params
-        type: OBJECT
 properties:
   - name: name
     type: STRING

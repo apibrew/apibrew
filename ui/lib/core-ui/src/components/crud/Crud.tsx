@@ -31,7 +31,6 @@ export function Crud(props: CrudProps): JSX.Element {
     useEffect(() => {
         if (resource) {
             const name = `ResourceCrud-${resource.namespace}-${resource.name}`
-            console.log(name)
             RecordService.findBy<CrudModel>('ui', CrudName, 'name', name)
                 .then((record) => {
                     if (record) {

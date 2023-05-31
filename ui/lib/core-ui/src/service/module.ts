@@ -63,24 +63,33 @@ export namespace ModuleService {
         awaitedModules.push(moduleData)
     }
 
-    export async function loadModuleComponent<T>(name: string, pkg: string, componentName: string): Promise<T> {
+    export async function loadModuleComponent<T>(name: string, componentName: string): Promise<T> {
         const module = await loadModule(name)
 
         return module.exports[componentName]
     }
 
-    export function getModuleComponent<T>(name: string, pkg: string, componentName: string): T {
+    export function getModuleComponent<T>(name: string, componentName: string): T {
         const module = modules.find(m => m.name === name)
 
         if (!module) {
-            throw new Error(`Module ${pkg}/${name} not found`)
+            throw new Error(`Module ${name} not found`)
         }
 
         return module.exports[componentName]
     }
 
-    export async function executeActionComponent<R>(name: string, pkg: string, componentName: string, ...args: any) {
-        const component = await loadModuleComponent<ActionComponent<R>>(name, pkg, componentName)
+    export async function executeActionComponent<R>(componentFQN: string, ...args: any) {
+        const parts = componentFQN.split('/')
+
+        if (parts.length !== 2) {
+            throw new Error(`DynamicComponent component should module/componentName`)
+        }
+
+        const moduleName = parts[0]
+        const componentName = parts[1]
+
+        const component = await loadModuleComponent<ActionComponent<R>>(moduleName, componentName)
 
         return component.execute(...args)
     }

@@ -22,15 +22,11 @@ export function Update(props: UpdateProps): JSX.Element {
 
     const params = useParams<{ id: string }>()
 
-    const load = () => {
+    const load = async () => {
         setLoading(true)
-        RecordService.get<Record>(props.resource.namespace ?? 'default', props.resource.name, params.id!)
+        return RecordService.get<Record>(props.resource.namespace ?? 'default', props.resource.name, params.id!)
             .then((record) => {
                 setRecord(record)
-                layoutContext.showAlert({
-                    severity: 'success',
-                    message: 'Form reloaded'
-                })
                 setLoading(false)
             })
     }
@@ -51,7 +47,12 @@ export function Update(props: UpdateProps): JSX.Element {
                             color='warning'
                             size='small'
                             onClick={() => {
-                                load()
+                                load().then(() => {
+                                    layoutContext.showAlert({
+                                        severity: 'success',
+                                        message: 'Form reloaded'
+                                    })
+                                })
                             }}
                             startIcon={<Cancel/>}>Reset</Button>
                 </Box>
@@ -79,7 +80,7 @@ export function Update(props: UpdateProps): JSX.Element {
         </React.Fragment>}>
             <React.Fragment>
                 {!loading && <Form resource={props.resource} record={record} setRecord={setRecord}
-                      formConfig={props.crudConfig.formConfig}/>}
+                                   formConfig={props.crudConfig.formConfig}/>}
             </React.Fragment>
         </PageLayout>
     )

@@ -1,11 +1,28 @@
-import {Crud as CrudModel, FormItem, CrudName} from "../../model/ui/crud";
+import {Crud as CrudModel, FormItem, CrudName, GridColumnConfig} from "../../model/ui/crud";
 import {RecordService} from "../../service/record";
 import {Resource} from "../../model";
-import {isSpecialProperty} from "../../util/property";
+import {isSimpleProperty, isSpecialProperty} from "../../util/property";
 import {not} from "../../util/lambda";
 
 export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
     const name = `ResourceCrud-${resource.namespace}-${resource.name}`
+
+    const gridColumns: GridColumnConfig[] = [
+        {
+            name: 'id',
+            title: 'ID',
+            width: 300,
+        },
+        ...(resource.properties.filter(not(isSpecialProperty)).filter(isSimpleProperty).map(item => {
+            return {
+                name: item.name,
+                title: item.title,
+                sortable: true,
+                filterable: true,
+                flex: 1,
+            } as GridColumnConfig
+        }))
+    ]
 
     const newCrudConfig: CrudModel = {
         id: '',
@@ -14,7 +31,7 @@ export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
         resource: resource.name,
         namespace: resource.namespace ?? 'default',
         gridConfig: {
-            columns: [],
+            columns: gridColumns,
             actions: [],
             disableDefaultActions: false
         },

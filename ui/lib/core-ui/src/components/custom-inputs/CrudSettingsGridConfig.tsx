@@ -1,6 +1,6 @@
 import {CrudGridConfig} from "../../../model/schema";
 import {Checkbox, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
-import {useResource} from "../../../context/resource";
+import {useResource} from "../../context/resource.ts";
 import React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";

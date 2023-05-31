@@ -8,12 +8,12 @@ import {
     TextField,
     TextFieldProps
 } from "@mui/material"
-import {ResourceProperty} from "../../model"
+import {ResourceProperty} from "../../../model"
 import React, {useEffect, useMemo, useState} from "react"
-import {Record, RecordService} from "../../service/record"
-import {FormItem} from "../../model/ui/crud.ts";
-import {useResource} from "../../context/resource.ts";
-import {ListFormElements} from "./form-elements/ListFormElement.tsx";
+import {Record, RecordService} from "../../../service/record.ts"
+import {FormItem} from "../../../model/ui/crud.ts";
+import {useResource} from "../../../context/resource.ts";
+import {ListElement} from "./ListElement.tsx";
 
 export interface FormElementProps {
     property: ResourceProperty
@@ -48,14 +48,15 @@ const ReferenceField = (props: FieldProps & { namespace: string, referencedResou
     const [records, setRecords] = React.useState<Record[]>([])
 
     useEffect(() => {
-        console.log('loading records');
-
         (async () => {
             const list = (await RecordService.list<Record>(props.namespace, props.referencedResourceName))
             setRecords(list)
         })();
     }, [])
 
+    if (records.length == 0) {
+        return <></>
+    }
 
     return (
         <Select
@@ -71,7 +72,7 @@ const ReferenceField = (props: FieldProps & { namespace: string, referencedResou
                 })
             }}>
             {records.map(item => {
-                return <MenuItem value={item.id}>{item.name}</MenuItem>
+                return <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
             })}
         </Select>
     )
@@ -89,7 +90,7 @@ const FieldValueConvertWrapper = (Field: FieldComponent, converter: (val: any) =
     }}/>
 }
 
-export function FormElement(props: FormElementProps) {
+export function FormInput(props: FormElementProps) {
     const title = props.property.title || props.property.name
 
     const resource = useResource()
@@ -115,7 +116,7 @@ export function FormElement(props: FormElementProps) {
                 return (props: FieldProps) => <ReferenceField namespace={resource.namespace ?? 'default'}
                                                               referencedResourceName={referencedResourceName} {...props} />
             case 'LIST':
-                return (_props: FieldProps) => <ListFormElements config={props.config} {..._props}/>
+                return (_props: FieldProps) => <ListElement config={props.config} {..._props}/>
         }
 
         return TextField

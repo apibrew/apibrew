@@ -13,8 +13,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <BaseLayout>
             <Router>
                 <Routes>
-                    <Route path='/crud/designer/*' element={(
-                        <Designer/>
+                    <Route path='/designer/*' element={(
+                        <Designer name='Default' />
                     )}/>
                     <Route path='/crud/function/*' element={(
                         <Crud namespace={'extensions'} resource={'Function'}/>

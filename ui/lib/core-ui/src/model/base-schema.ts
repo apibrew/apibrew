@@ -587,7 +587,7 @@ export interface components {
             namespace?: string;
             sourceConfig?: components["schemas"]["ResourceSourceConfig"];
             properties: (components["schemas"]["ResourceProperty"])[];
-            types: (components["schemas"]["SubType"])[];
+            types?: (components["schemas"]["SubType"])[];
             indexes?: (components["schemas"]["ResourceIndex"])[];
             securityContext?: components["schemas"]["SecurityContext"];
             virtual?: boolean;
@@ -664,7 +664,7 @@ export interface components {
         /** @description Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record and if you send 123.45 for int64 */
         SubType: {
             name: string
-            properties: components["schemas"]["ResourceProperty"]
+            properties: components["schemas"]["ResourceProperty"][]
         }
         ResourceProperty: {
             id?: string;
