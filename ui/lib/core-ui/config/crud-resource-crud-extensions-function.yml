@@ -30,21 +30,29 @@ properties:
       - kind: tab
         title: Details
         children:
+          - kind: group
+            title: Main
+            children:
+              - kind: property
+                propertyPath: package
+                children:
+                  - kind: input
+              - kind: property
+                propertyPath: name
+                children:
+                  - kind: input
+          - kind: property
+            propertyPath: engine
+            children:
+              - kind: input
       - kind: tab
-        title: Form Config
+        title: Script
         children:
           - kind: property
-            propertyPath: formConfig
+            propertyPath: script
             children:
-              - kind: custom
-                component: CrudSettingsFormConfig
-      - kind: tab
-        title: Grid Config
-        children:
-          - kind: property
-            propertyPath: gridConfig
-            children:
-              - kind: custom
-                component: CrudSettingsGridConfig
-      - kind: tab
-        title: Advanced
+              - kind: input
+                params:
+                  multiline: true
+                  rows: 20
+#                component: CoreUI/FunctionScriptInput

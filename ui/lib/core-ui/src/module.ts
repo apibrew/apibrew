@@ -7,6 +7,7 @@ import {prepareLayoutComponent} from "./components/dynamic/Layout.tsx";
 import {Form} from "./components/form/Form.tsx";
 import {ResourceContextComponent} from "./components/context/ResourceContextComponent.tsx";
 import {RouterComponent} from "./components/basic/RouterComponent.tsx";
+import {FunctionScriptInput} from "./components/custom-inputs/FunctionScriptInput.tsx";
 
 ModuleService.registerLocalModuleAwait(RecordService.list<Layout>('ui', 'Layout').then(layouts => {
     const exports: ExportOptions = {}
@@ -24,6 +25,7 @@ ModuleService.registerLocalModuleAwait(RecordService.list<Layout>('ui', 'Layout'
 ModuleService.registerLocalModule({
     exports: {
         ActionExecuteFunction: new ActionExecuteFunction(),
+        FunctionScriptInput: FunctionScriptInput,
         Form: Form,
         Router: RouterComponent,
     },

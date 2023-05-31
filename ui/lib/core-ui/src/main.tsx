@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom/client'
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 
 
-import {DashboardLayout, TokenService} from '.'
-import {DynamicComponent} from "./components/dynamic/DynamicComponent.tsx";
+import {BaseLayout, Crud, TokenService} from '.'
 
 TokenService.setToken({
     content: 'sample-token',
@@ -12,14 +11,14 @@ TokenService.setToken({
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-        <Router>
-            <Routes>
-                <Route path='/crud/function/*' element={(
-                    <DashboardLayout>
-                        <DynamicComponent component={'Layout/CrudFunction'}/>
-                    </DashboardLayout>
-                )}/>
-            </Routes>
-        </Router>
+        <BaseLayout>
+            <Router>
+                <Routes>
+                    <Route path='/crud/function/*' element={(
+                        <Crud namespace={'extensions'} resource={'Function'}/>
+                    )}/>
+                </Routes>
+            </Router>
+        </BaseLayout>
     </React.StrictMode>,
 )

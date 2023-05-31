@@ -1,6 +1,6 @@
 import {Resource} from "../../model"
 import {Record} from "../../service/record"
-import {CrudFormConfig, CrudFormItem} from "../../model/schema";
+import {FormConfig as CrudFormConfig, FormItem as CrudFormItem} from "../../model/ui/crud.ts";
 import {ResourceContext, useResource} from "../../context/resource";
 import {useValue, ValueContext} from "../../context/value";
 import {RecordContext} from "../../context/record";
@@ -9,8 +9,7 @@ import {ResourcePropertyContext, useResourceProperty} from "../../context/proper
 import {FormElement} from "./FormElement";
 import Box from "@mui/material/Box";
 import {Tab, Tabs} from "@mui/material";
-import {CrudSettingsFormConfig} from "./form-elements/CrudSettingsFormConfig";
-import {CrudSettingsGridConfig} from "./form-elements/CrudSettingsGridConfig";
+import {DynamicComponent} from "../dynamic/DynamicComponent.tsx";
 
 export interface FormProps {
     resource: Resource
@@ -23,15 +22,6 @@ export interface FormProps {
 export interface FormItemProps {
     config: CrudFormItem
 }
-
-/*
-          - property
-          - input
-          - tab
-          - section
-          - group
-          - custom
- */
 
 export interface FormItemCollectionProps {
     items: CrudFormItem[]
@@ -53,11 +43,11 @@ export function FormItemCollection(props: FormItemCollectionProps) {
             </Box>
             {tabs[value].children && <FormItemCollection items={tabs[value].children}/>}
         </React.Fragment>}
-        <Box display='flex' flexDirection='column'>
-            {other.map((child) => (
+        {other.map((child, index) => (
+            <Box key={index} flex={1} style={{width: '100%', margin: '5px'}}>
                 <FormItem config={child}/>
-            ))}
-        </Box>
+            </Box>
+        ))}
     </React.Fragment>
 }
 
@@ -77,6 +67,7 @@ export function FormItem(props: FormItemProps) {
             <ResourcePropertyContext.Provider value={property}>
                 <ValueContext.Provider value={{
                     value: value.value[property.name],
+                    readOnly: value.readOnly,
                     onChange: (val) => {
                         value.onChange({
                             ...value.value,
@@ -90,9 +81,9 @@ export function FormItem(props: FormItemProps) {
         </React.Fragment>
     } else if (props.config.kind === 'input') {
         return <FormElement resource={resource}
-                            property={property!}
+                            property={property}
                             readOnly={value.readOnly}
-                            {...props.config.params}
+                            config={props.config}
                             value={value.value}
                             setValue={val => {
                                 value.onChange(val)
@@ -105,21 +96,17 @@ export function FormItem(props: FormItemProps) {
         </React.Fragment>
     } else if (props.config.kind === 'group') {
         return <React.Fragment>
-            <h1>Group: {props.config.title}</h1>
-            {props.config.children && <FormItemCollection items={props.config.children}/>}
+            <Box sx={{display: 'flex', width: '100%'}} flexDirection='row' letterSpacing='10px'>
+                {props.config.children && <FormItemCollection items={props.config.children}/>}
+            </Box>
         </React.Fragment>
     } else if (props.config.kind === 'custom') {
-        switch (props.config.component) {
-            case 'CrudSettingsFormConfig':
-                return <CrudSettingsFormConfig config={props.config}/>
-            case 'CrudSettingsGridConfig':
-                return <CrudSettingsGridConfig config={props.config}/>
-        }
+        return <DynamicComponent component={props.config.component}>
+            {props.config.children && <FormItemCollection items={props.config.children}/>}
+        </DynamicComponent>
     }
 
-    return <React.Fragment>
-        Unknown form item kind {props.config.kind} {props.config.component}
-    </React.Fragment>
+
 }
 
 export function Form(props: FormProps) {
@@ -131,45 +118,9 @@ export function Form(props: FormProps) {
                     onChange: props.setRecord,
                     readOnly: props.readOnly,
                 }}>
-                    <FormItemCollection items={props.formConfig.children}/>
+                    {props.formConfig.children && <FormItemCollection items={props.formConfig.children}/>}
                 </ValueContext.Provider>
             </RecordContext.Provider>
         </ResourceContext.Provider>
     );
-    // const isNew = props.record.id === undefined
-    //
-    // return (
-    //     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-    //         {props.resource.properties.filter(not(isSpecialProperty)).map(property => (
-    //             <Box m={1}>
-    //                 <FormElement resource={props.resource}
-    //                     property={property}
-    //                     value={props.record[property.name]}
-    //                     readOnly={props.readOnly}
-    //                     setValue={value => {
-    //                         props.setRecord({
-    //                             ...props.record,
-    //                             [property.name]: value
-    //                         })
-    //                     }} />
-    //             </Box>
-    //         ))}
-    //         {!isNew && <Box>
-    //             <Typography variant='h6'>System Properties</Typography>
-    //             {props.resource.properties.filter(isSpecialProperty).map(property => (
-    //                 <Box m={1}>
-    //                     <FormElement resource={props.resource}
-    //                         property={property}
-    //                         readOnly={true}
-    //                         value={props.record[property.name]}
-    //                         setValue={value => {
-    //                             props.setRecord({
-    //                                 ...props.record,
-    //                                 [property.name]: value
-    //                             })
-    //                         }} />
-    //                 </Box>
-    //             ))}
-    //         </Box>}
-    //     </Box>
 }

@@ -1,14 +1,23 @@
-import { Button, Checkbox, FormControl, FormHelperText, FormLabel, MenuItem, Select, TextField, TextFieldProps, TextFieldVariants } from "@mui/material"
-import { Resource, ResourceProperty } from "../../model"
-import React, { ReactNode, useEffect, useMemo } from "react"
-import { Variant } from "@mui/material/styles/createTypography"
-import { ResourceService } from "../../service/resource"
-import { Record, RecordService } from "../../service/record"
+import {
+    Checkbox,
+    FormControl,
+    FormHelperText,
+    FormLabel,
+    MenuItem,
+    Select,
+    TextField,
+    TextFieldProps
+} from "@mui/material"
+import {Resource, ResourceProperty} from "../../model"
+import React, {useEffect, useMemo} from "react"
+import {Record, RecordService} from "../../service/record"
+import {FormItem} from "../../model/ui/crud.ts";
 
 export interface FormElementProps {
     resource: Resource
     property: ResourceProperty
     readOnly?: boolean
+    config: FormItem
     value: any
     setValue: (value: any) => void
 }
@@ -31,7 +40,7 @@ const RegexTextField = (props: TextFieldProps & { pattern: RegExp | string }) =>
                 props.onChange(e)
             }
         }
-    }} />
+    }}/>
 }
 
 const ReferenceField = (props: FieldProps & { namespace: string, referencedResourceName: string }) => {
@@ -45,7 +54,6 @@ const ReferenceField = (props: FieldProps & { namespace: string, referencedResou
             setRecords(list)
         })();
     }, [])
-
 
 
     return (
@@ -77,45 +85,49 @@ const FieldValueConvertWrapper = (Field: FieldComponent, converter: (val: any) =
                 }
             })
         }
-    }} />
+    }}/>
 }
 
 export function FormElement(props: FormElementProps) {
-    let title = props.property.title || props.property.name
+    const title = props.property.title || props.property.name
+
     const resource = props.resource
     const referencedResourceName = props.property.reference?.referencedResource ?? ''
 
-    console.log('props.readOnly', props.readOnly)
-
-    let Field: FieldComponent = useMemo(() => {
+    const Field = useMemo(() => {
         switch (props.property.type) {
             case 'STRING':
                 return TextField
             case 'INT32':
             case 'INT64':
-                return FieldValueConvertWrapper((props: FieldProps) => <RegexTextField type='number' pattern={/\d+/} {...props} />, (e) => parseInt(e.target.value))
+                return FieldValueConvertWrapper((props: FieldProps) => <RegexTextField type='number'
+                                                                                       pattern={/\d+/} {...props} />, (e) => parseInt(e.target.value))
             case 'FLOAT32':
             case 'FLOAT64':
-                return FieldValueConvertWrapper((props: FieldProps) => <TextField type='number' {...props} />, (e) => parseFloat(e.target.value))
+                return FieldValueConvertWrapper((props: FieldProps) => <TextField
+                    type='number' {...props} />, (e) => parseFloat(e.target.value))
             case 'BOOL':
-                return FieldValueConvertWrapper((props: FieldProps) => <Checkbox {...props} checked={props.value} />, (e) => e.target.checked)
+                return FieldValueConvertWrapper((props: FieldProps) => <Checkbox {...props}
+                                                                                 checked={props.value}/>, (e) => e.target.checked)
             case 'REFERENCE':
-                return (props: FieldProps) => <ReferenceField namespace={resource.namespace ?? 'default'} referencedResourceName={referencedResourceName} {...props} />
+                return (props: FieldProps) => <ReferenceField namespace={resource.namespace ?? 'default'}
+                                                              referencedResourceName={referencedResourceName} {...props} />
         }
 
         return TextField
-    }, [])
+    }, [props.property.type, referencedResourceName, resource.namespace])
 
     return (
         <React.Fragment>
-            <FormControl>
+            <FormControl style={{width: '100%'}}>
                 <FormLabel>{title}</FormLabel>
                 <Field required={props.property.required}
-                    disabled={props.readOnly}
-                    value={props.value}
-                    onChange={(e) => {
-                        props.setValue(e.target.value)
-                    }} />
+                       disabled={props.readOnly}
+                       {...props.config.params}
+                       value={props.value ?? ''}
+                       onChange={(e) => {
+                           props.setValue(e.target.value)
+                       }}/>
                 {props.property.description && <FormHelperText>{props.property.description}</FormHelperText>}
             </FormControl>
         </React.Fragment>

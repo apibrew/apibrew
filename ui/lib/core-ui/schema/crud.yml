@@ -28,7 +28,7 @@ types:
       - name: params
         type: MAP
         item:
-          type: STRING
+          type: OBJECT
   - name: FormConfig
     properties:
       - name: children
