@@ -14,7 +14,7 @@ async function handleFunctionExecutionCall(event: Event) {
             const fnFields = record.getPropertiesMap().get('function').getStructValue().getFieldsMap()
             const packageName = fnFields.get('package').getStringValue()
             const name = fnFields.get('name').getStringValue()
-            const input = record.getPropertiesMap().get('input').getStructValue().toJavaScript()
+            const input = record.getPropertiesMap().get('input')?.getStructValue()?.toJavaScript()
 
             const fn = locateFunction(packageName, name)
 
@@ -28,7 +28,7 @@ async function handleFunctionExecutionCall(event: Event) {
                 ${fn.script}
             })()`, {
                 timeout: 1000,
-            });
+            }) ?? {ok: true};
 
             record.getPropertiesMap().set('output', Value.fromJavaScript(output))
             record.getPropertiesMap().set('status', Value.fromJavaScript('success'))
