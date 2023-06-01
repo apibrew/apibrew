@@ -61,7 +61,7 @@ message ResourceProperty {
   optional SecurityContext securityContext = 10; // security context is to apply ACL to resource property
   optional google.protobuf.Value defaultValue = 11; // defaultValue is default value.
   optional google.protobuf.Value exampleValue = 12; // exampleValue is example value. It is an informative column
-  repeated google.protobuf.Value enumValues = 13; // enumValues is used if property type is an enum
+  repeated string enumValues = 13; // enumValues is used if property type is an enum
   optional Reference reference = 14 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
   repeated ResourceProperty properties = 15 [(model.hcl_block) = "property"]; // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
   optional ResourceProperty item = 16; // item is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)

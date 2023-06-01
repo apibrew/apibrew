@@ -773,7 +773,7 @@ paths:
             summary: PrepareResourceFromEntity
             description: |-
                 PrepareResourceFromEntity will return resource from data source based on entity.
-                 It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
+                It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
             operationId: DataSource_PrepareResourceFromEntity
             parameters:
                 - name: id
@@ -1789,7 +1789,7 @@ components:
                     description: if true, it will try to migrate the resource to the data source, if it is false, resource will be only created, backend will not be affected.
                 forceMigration:
                     type: boolean
-                    description: 'if true, it will force the migration, if it is false, it will not migrate if there is a conflict. Force migration will also do following things: - if column/index is deleted from resource, it will delete it from backend'
+                    description: if true, it will force the migration, if it is false, it will not migrate if there is a conflict.Force migration will also do following things:- if column/index is deleted from resource, it will delete it from backend
                 annotations:
                     type: object
                     additionalProperties:
@@ -1953,12 +1953,12 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
-                    description: CREATE,UPDATE - records are for incoming and outgoing records GET - there will be only one record LIST - result of the list operation
+                    description: CREATE,UPDATE - records are for incoming and outgoing recordsGET - there will be only one recordLIST - result of the list operation
                 ids:
                     type: array
                     items:
                         type: string
-                    description: GET - there will be only one id, for getting record with id DELETE - there will be multiple ids, for deleting multiple records
+                    description: GET - there will be only one id, for getting record with idDELETE - there will be multiple ids, for deleting multiple records
                 recordSearchParams:
                     $ref: '#/components/schemas/Event_RecordSearchParams'
                 finalizes:
@@ -2010,7 +2010,7 @@ components:
                     additionalProperties:
                         type: string
                     description: star means all, empty means proceed
-            description: Events pass through selectors, if selector returns true, event will be processed Selector returns true if no selector fails. For example, if you passed empty selector, it will return true for all events.
+            description: Events pass through selectors, if selector returns true, event will be processedSelector returns true if no selector fails.For example, if you passed empty selector, it will return true for all events.
         Event_RecordSearchParams:
             type: object
             properties:
@@ -2592,7 +2592,7 @@ components:
                 enumValues:
                     type: array
                     items:
-                        $ref: '#/components/schemas/GoogleProtobufValue'
+                        type: string
                 reference:
                     $ref: '#/components/schemas/Reference'
                 properties:
@@ -2609,7 +2609,7 @@ components:
                     type: object
                     additionalProperties:
                         type: string
-            description: Resource properties is used to describe its schema. Each resource property is corresponding to a field in a record API Brew is responsible to validate data according to property types. For example, when you call create record and if you send 123.45 for int64
+            description: Resource properties is used to describe its schema. Each resource property is corresponding to a field in a recordAPI Brew is responsible to validate data according to property types. For example, when you call create record andif you send 123.45 for int64
         ResourceSourceConfig:
             type: object
             properties:
@@ -2619,7 +2619,7 @@ components:
                     type: string
                 entity:
                     type: string
-            description: source config is to configure resource and bind it to data-source and an entity inside data source. An entity is like a table on sql databases or collection on mongodb etc.
+            description: source config is to configure resource and bind it to data-source and an entity inside data source.An entity is like a table on sql databases or collection on mongodb etc.
         ResourceSubType:
             type: object
             properties:

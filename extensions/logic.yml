@@ -1,9 +1,9 @@
 type: namespace
-name: extensions
+name: logic
 ---
 type: resource
 name: FunctionExecutionEngine
-namespace: extensions
+namespace: logic
 description: FunctionExecutionEngine
 properties:
   - name: name
@@ -14,7 +14,7 @@ properties:
 ---
 type: resource
 name: Function
-namespace: extensions
+namespace: logic
 description: Function
 types:
   - name: Options
@@ -63,9 +63,10 @@ indexes:
 ---
 type: resource
 name: FunctionExecution
-namespace: extensions
+namespace: logic
 description: FunctionExecution
 immutable: true
+virtual: true
 properties:
   - name: function
     type: REFERENCE
@@ -87,7 +88,7 @@ properties:
 ---
 type: resource
 name: FunctionTrigger
-namespace: extensions
+namespace: logic
 description: FunctionTrigger
 properties:
   - name: name
@@ -129,7 +130,7 @@ properties:
 ---
 type: resource
 name: ResourceRule
-namespace: extensions
+namespace: logic
 description: ResourceRule
 properties:
   - name: name
@@ -153,7 +154,7 @@ properties:
 ---
 type: resource
 name: Schedule
-namespace: extensions
+namespace: logic
 description: Schedule
 properties:
   - name: name
