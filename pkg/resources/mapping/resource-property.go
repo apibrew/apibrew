@@ -37,7 +37,9 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	}
 
 	if property.Type == model.ResourceProperty_ENUM {
-		properties["enumValues"] = structpb.NewListValue(&structpb.ListValue{Values: property.EnumValues})
+		properties["enumValues"] = structpb.NewListValue(&structpb.ListValue{Values: util.ArrayMap(property.EnumValues, func(v string) *structpb.Value {
+			return structpb.NewStringValue(v)
+		})})
 	}
 
 	properties["resource"] = util.StructKv("id", resource.Id)
@@ -151,7 +153,9 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_ENUM {
-		resourceProperty.EnumValues = record.Properties["enumValues"].GetListValue().GetValues()
+		resourceProperty.EnumValues = util.ArrayMap(record.Properties["enumValues"].GetListValue().GetValues(), func(v *structpb.Value) string {
+			return v.GetStringValue()
+		})
 	}
 
 	mapSpecialColumnsFromRecord(resourceProperty, &record.Properties)

@@ -1,4 +1,6 @@
-import {Function} from "./function";
+
+
+import { Function } from "./function";
 
 
 // Sub Types
@@ -6,13 +8,12 @@ import {Function} from "./function";
 // Resource Type
 export interface Schedule {
     id: string;
-    name: string;
-    schedule: string;
-    function: Function;
-    version: number;
+name: string;
+schedule: string;
+function: Function;
+version: number;
 
 }
-
 // Resource and Property Names
 export const ScheduleName = "Schedule";
 

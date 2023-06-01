@@ -1,6 +1,11 @@
 import {Event} from "./proto/model/event_pb";
-import {Function, functionMap, handleFunctionCall} from "./function-registry";
+import {functionIdMap, functionMap} from "./function-registry";
 import {Value} from "google-protobuf/google/protobuf/struct_pb";
+import {load, read} from "./store";
+import {ExecuteFunction, ResourceOperation, WatchLogicResources} from "./const";
+import {Function} from './model/function'
+import {ResourceRule} from "./model/resource-rule";
+import Action = Event.Action;
 
 const {VM} = require('vm2');
 
@@ -17,8 +22,6 @@ async function handleFunctionExecutionCall(event: Event) {
             const input = record.getPropertiesMap().get('input')?.getStructValue()?.toJavaScript()
 
             const fn = locateFunction(packageName, name)
-
-            console.log('running', fn)
 
             const output = new VM({
                 sandbox: {
@@ -43,16 +46,70 @@ async function handleFunctionExecutionCall(event: Event) {
     return event;
 }
 
-export async function handle(event: Event): Promise<Event> {
+function locateRulesListeningToEvent(event: Event): ResourceRule[] {
+    if (event.getAction() != Action.CREATE && event.getAction() != Action.UPDATE) {
+        return []
+    }
+    const rules = read<ResourceRule>('logic', 'ResourceRule')
+
+    return rules.filter(rule => rule.namespace == event.getResource().getNamespace() && rule.resource == event.getResource().getName())
+}
+
+async function handleResourceOperation(event: Event): Promise<Event> {
+    const rules = locateRulesListeningToEvent(event)
+
+    for (const record of event.getRecordsList()) {
+        for (const rule of rules) {
+            const fn = functionIdMap[rule.conditionFunction.id]
+
+            const entity = {}
+
+            record.getPropertiesMap().forEach((entry, key) => {
+                entity[key] = entry.toJavaScript()
+            })
+
+            console.log(fn)
+
+            const output = new VM({
+                sandbox: {
+                    entity: entity
+                },
+            }).run(`(function () {
+                ${fn.script}
+            })()`, {
+                timeout: 1000,
+            })
+
+            console.log('e', output)
+
+            if (output === false) {
+                throw new Error(`Rule condition failed: ${rule.name}`)
+            }
+        }
+    }
+
+    return event
+}
+
+export async function handle(fnName: string, event: Event): Promise<Event> {
     if (!event) {
         return event
     }
-    switch (event.getResource().getName()) {
-        case "Function":
-            return handleFunctionCall(event)
-        case "FunctionExecution":
+
+    console.log('Handling event: ' + fnName)
+
+    switch (fnName) {
+        case WatchLogicResources:
+            if (event.getResource().getNamespace() != 'logic') {
+                throw new Error('WatchLogicResources can only be called for logic namespace')
+            }
+            load('logic', event.getResource().getName())
+            return
+        case ExecuteFunction:
             return handleFunctionExecutionCall(event)
+        case ResourceOperation:
+            return handleResourceOperation(event)
         default:
-            throw new Error("Unknown resource: " + event.getResource().getName())
+            throw new Error('Unknown function name: ' + fnName)
     }
 }

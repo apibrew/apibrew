@@ -1,10 +1,10 @@
 import {ActionComponent} from "../../../model/component-interfaces";
 import {RecordService} from "../../../service";
-import {Function as Function$} from "../../../model/extensions/function";
+import {Function as Function$} from "../../../model/logic/function";
 import {LayoutOptions} from "../../../context/layout-context.ts";
 import {Button, Card, CardActions, CardContent, CardHeader} from "@mui/material";
 import Box from "@mui/material/Box";
-import {FunctionExecution} from "../../../model/extensions/function-execution.ts";
+import {FunctionExecution} from "../../../model/logic/function-execution.ts";
 import {useState} from "react";
 import {Form} from "../../crud/Form.tsx";
 import {useResourceByName} from "../../../hooks/resource.ts";
@@ -31,7 +31,7 @@ export function ExecuteFunctionForm(props: ExecuteFunctionFormProps) {
         input: defaultInput
     })
 
-    const resource = useResourceByName('FunctionExecution', 'extensions')
+    const resource = useResourceByName('FunctionExecution', 'logic')
 
     const formConfig: FormConfig = {
         children: [{
@@ -73,26 +73,26 @@ export function ExecuteFunctionForm(props: ExecuteFunctionFormProps) {
 
 export class ActionExecuteFunction implements ActionComponent<any> {
     async execute(functionId: string, layoutContext: LayoutOptions): Promise<any> {
-        const functionRecord = await RecordService.get<Function$>('extensions', 'Function', functionId)
+        const functionRecord = await RecordService.get<Function$>('logic', 'Function', functionId)
 
         if (!functionRecord) {
             throw new Error(`Function ${functionId} not found`)
         }
 
         async function runFunction(execution: FunctionExecution) {
-            await RecordService.create<FunctionExecution>('extensions', 'FunctionExecution', execution).then(resp => {
+            await RecordService.create<FunctionExecution>('logic', 'FunctionExecution', execution).then(resp => {
                 if (resp.status == 'error') {
                     layoutContext.showAlert({
                         severity: 'error',
                         message: JSON.stringify(resp.error)
                     })
-                }
-                if (resp.status == 'success') {
+                } else if (resp.status == 'success') {
                     layoutContext.showAlert({
                         severity: 'success',
                         message: JSON.stringify(resp.output)
                     })
                 } else {
+                    console.log(resp.status == 'error')
                     layoutContext.showAlert({
                         severity: 'error',
                         message: `Function is not executed by engine`

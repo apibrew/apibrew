@@ -192,7 +192,7 @@ func ValidatePropertyPackedValue(resource *model.Resource, property *model.Resou
 		valStr := value.GetStringValue()
 
 		for _, enumValue := range property.EnumValues {
-			if enumValue.GetStringValue() == valStr {
+			if enumValue == valStr {
 				return nil
 			}
 		}

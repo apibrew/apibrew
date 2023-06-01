@@ -2,7 +2,7 @@ type: record
 namespace: ui
 resource: Crud
 properties:
-  name: ResourceCrud-extensions-Function
+  name: ResourceCrud-logic-Function
   namespace: ui
   resource: Crud
   gridConfig:
@@ -18,7 +18,6 @@ properties:
         flex: 1
       - name: engine
         title: Engine
-        propertyPath: engine.name
     actions:
       - name: Execute
         title: Execute

@@ -2,6 +2,7 @@ package typescript
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/Masterminds/sprig"
 	"github.com/apibrew/apibrew/pkg/generator/typescript/statik"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -10,11 +11,11 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
-	"html/template"
 	"io"
 	"net/http"
 	"os"
 	"strings"
+	"text/template"
 )
 
 type GenerateResourceCodeParams struct {
@@ -104,6 +105,16 @@ func PropNodejsType(resource *model.Resource, prop *model.ResourceProperty) stri
 		}
 
 		return string(b.Bytes())
+	}
+
+	if prop.Type == model.ResourceProperty_ENUM {
+		var enumValues []string
+
+		for _, enumValue := range prop.EnumValues {
+			enumValues = append(enumValues, fmt.Sprintf("'%s'", util.ToDashCase(enumValue)))
+		}
+
+		return strings.Join(enumValues, " | ")
 	}
 
 	return util.ResourcePropertyTypeToJsonSchemaType(prop.Type).Type

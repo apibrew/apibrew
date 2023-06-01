@@ -65,7 +65,7 @@ export function Settings(props: SettingsProps): JSX.Element {
                                         onClick={() => {
                                             RecordService.apply('ui', CrudName, crudConfig).then(() => {
                                                 props.updateCrud(crudConfig as Crud)
-                                                // navigate('../')
+                                                navigate('../')
                                             })
                                         }}
                                         startIcon={<Save/>}>Save</Button>

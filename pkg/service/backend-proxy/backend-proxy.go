@@ -68,6 +68,10 @@ func (b backendProxy) UpdateRecords(ctx context.Context, resource *model.Resourc
 		return nil, err
 	}
 
+	if endEvent == nil {
+		return nil, errors.ExternalBackendCommunicationError.WithMessage("backend returned nil event")
+	}
+
 	return endEvent.Records, nil
 }
 

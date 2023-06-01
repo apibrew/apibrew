@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "build-model": "apbr generate --path=src/model --namespace=logic --platform=typescript"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +15,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.8.14",
     "@types/google-protobuf": "^3.15.6",
+    "axios": "^1.4.0",
     "dotenv": "^16.0.3",
     "google-protobuf": "^3.21.2",
     "proto3-json-serializer": "^1.1.1",

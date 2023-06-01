@@ -7,6 +7,7 @@ import {Form} from "./Form"
 import {Record, RecordService} from "../../service/record"
 import React from "react"
 import {Crud} from "../../model/ui/crud.ts";
+import {useErrorHandler} from "../../hooks/error-handler.tsx";
 
 export interface NewProps {
     resource: Resource
@@ -16,6 +17,7 @@ export interface NewProps {
 export function New(props: NewProps) {
     const navigate = useNavigate()
     const [record, setRecord] = React.useState<Record>({})
+    const errorHandler = useErrorHandler()
 
     return (
         <PageLayout actions={<React.Fragment>
@@ -36,7 +38,7 @@ export function New(props: NewProps) {
                             onClick={() => {
                                 RecordService.create(props.resource.namespace ?? 'default', props.resource.name, record).then(() => {
                                     navigate('../')
-                                })
+                                }, errorHandler)
                             }}
                             startIcon={<Save/>}>Save</Button>
                 </Box>

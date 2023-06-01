@@ -10,3 +10,5 @@ export type User = components['schemas']['User']
 export type Resource = components['schemas']['Resource']
 export type ResourceProperty = components['schemas']['ResourceProperty']
 export type Namespace = components['schemas']['Namespace']
+
+export type Status = components['schemas']['Status']

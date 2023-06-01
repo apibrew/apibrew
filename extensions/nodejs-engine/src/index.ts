@@ -1,30 +1,37 @@
 import {Resource} from "./proto/model/resource_pb";
-import {ResourceClient} from "./proto/stub/resource_grpc_pb";
-import {credentials, Server, ServerCredentials} from "@grpc/grpc-js";
-import {ListResourceRequest} from "./proto/stub/resource_pb";
+import {Server, ServerCredentials} from "@grpc/grpc-js";
 import {FunctionService, IFunctionServer} from "./proto/ext/function_grpc_pb";
 import {FunctionCallResponse} from "./proto/ext/function_pb";
-import {registerExtension} from "./registrator";
+import {initExtensions} from "./registrator";
 import {handle} from "./handler";
-import {initFunctionRegistry} from "./function-registry";
 import {ENGINE_ADDR} from "./config";
+import {load} from "./store";
+import {reloadInternal} from "./function-registry";
 
-const resource = new Resource()
+const promises = [
+    initExtensions(),
+    load('logic', 'Function'),
+    load('logic', 'FunctionTrigger'),
+    load('logic', 'ResourceRule'),
+]
 
-resource.setName('Taleh123')
-
-console.log(resource.getName())
-
-registerExtension()
+Promise.all(promises).then(() => {
+    console.log('All resources loaded')
+    reloadInternal()
+})
 
 const server = new Server();
 
 const functionCallHandler: IFunctionServer['functionCall'] = (call, callback) => {
-    handle(call.request.getEvent()).then(processedEvent => {
+    console.log('Function call:', call.request.getName())
+
+
+    handle(call.request.getName(), call.request.getEvent()).then(processedEvent => {
         const response = new FunctionCallResponse()
         response.setEvent(processedEvent)
-
         callback(null, response)
+    }, err => {
+        callback(err, null)
     })
 }
 

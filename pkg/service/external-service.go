@@ -39,7 +39,7 @@ func (e *externalService) CallFunction(ctx context.Context, call *model.Function
 
 		if err != nil {
 			log.Error(err)
-			return nil, errors.ExternalBackendCommunicationError.WithDetails(err.Error())
+			return nil, errors.ExternalBackendCommunicationError.WithMessage(err.Error())
 		}
 
 		e.functionClientMap[call.Host+"/"+call.FunctionName] = ext.NewFunctionClient(conn)
@@ -56,9 +56,9 @@ func (e *externalService) CallFunction(ctx context.Context, call *model.Function
 		log.Warn(err.Error())
 
 		if sterr, ok := status.FromError(err); ok {
-			return nil, errors.ExternalBackendError.WithDetails(sterr.Message())
+			return nil, errors.ExternalBackendError.WithMessage(sterr.Message())
 		} else {
-			return nil, errors.ExternalBackendError.WithDetails(err.Error())
+			return nil, errors.ExternalBackendError.WithMessage(err.Error())
 		}
 	}
 
@@ -85,14 +85,14 @@ func (e *externalService) CallHttp(ctx context.Context, call *model.HttpCall, ev
 
 	if err != nil {
 		log.Error(err)
-		return nil, errors.ExternalBackendCommunicationError.WithDetails(err.Error())
+		return nil, errors.ExternalBackendCommunicationError.WithMessage(err.Error())
 	}
 
 	responseData, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		log.Error(err)
-		return nil, errors.ExternalBackendCommunicationError.WithDetails(err.Error())
+		return nil, errors.ExternalBackendCommunicationError.WithMessage(err.Error())
 	}
 
 	var result = new(model.Event)
@@ -105,7 +105,7 @@ func (e *externalService) CallHttp(ctx context.Context, call *model.HttpCall, ev
 		err = protojson.Unmarshal(responseData, responseError)
 
 		if err != nil {
-			return nil, errors.ExternalBackendCommunicationError.WithDetails(err.Error())
+			return nil, errors.ExternalBackendCommunicationError.WithMessage(err.Error())
 		}
 
 		return nil, errors.RecordValidationError.WithDetails(responseError.Message)

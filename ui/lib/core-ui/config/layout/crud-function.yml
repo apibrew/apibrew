@@ -5,7 +5,7 @@ properties:
   name: CrudFunction
   layoutComponent:
     $import: Layout/crud
-    namespace: extensions
+    namespace: logic
     resource: Function
     debug: false
     $override:

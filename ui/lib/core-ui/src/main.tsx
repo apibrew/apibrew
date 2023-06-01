@@ -17,10 +17,19 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         <Designer name='Default' />
                     )}/>
                     <Route path='/crud/function/*' element={(
-                        <Crud namespace={'extensions'} resource={'Function'}/>
+                        <Crud namespace={'logic'} resource={'Function'}/>
+                    )}/>
+                    <Route path='/crud/resource-rule/*' element={(
+                        <Crud namespace={'logic'} resource={'ResourceRule'}/>
+                    )}/>
+                    <Route path='/crud/resource-trigger/*' element={(
+                        <Crud namespace={'logic'} resource={'FunctionTrigger'}/>
                     )}/>
                     <Route path='/crud/country/*' element={(
                         <Crud namespace={'default'} resource={'country'}/>
+                    )}/>
+                    <Route path='/crud/person/*' element={(
+                        <Crud namespace={'default'} resource={'person'}/>
                     )}/>
                 </Routes>
             </Router>
