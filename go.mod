@@ -8,6 +8,7 @@ require (
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/google/gnostic v0.6.9
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gosimple/slug v1.13.1
@@ -27,6 +28,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/http-swagger v1.3.3
+	github.com/yargevad/filepathx v1.0.0
 	github.com/zclconf/go-cty v1.13.1
 	go.mongodb.org/mongo-driver v1.11.4
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
@@ -54,7 +56,6 @@ require (
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/gnostic v0.6.9 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.6 // indirect

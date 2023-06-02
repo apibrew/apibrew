@@ -19,6 +19,7 @@ services:
     restart: always
     build:
       context: ../../
+      target: app
     volumes:
       - ./config.json:/app/config.json
     ports:
@@ -28,6 +29,26 @@ services:
         condition: service_healthy
     links:
       - db
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9009/health || exit 1" ]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+  init-apibrew:
+    build:
+      context: ../../
+      target: apbr
+    volumes:
+      - ./apbr.conf:/app/config
+      - ../../extensions/logic.yml:/app/schema/logic.yml
+      - ../../ui/lib/core-ui/schema/:/app/schema/ui
+      - ../../ui/lib/core-ui/config/:/app/schema/ui-config
+    command: ["apply", "-f", "/app/schema/logic.yml", "-f", "/app/schema/ui/ui-namespace.yml", "-f", "/app/schema/ui/*.yml", "-f", "/app/schema/ui-config/*.yml"]
+    depends_on:
+      apibrew:
+        condition: service_healthy
+    links:
+      - apibrew
   apibrew-ui:
     restart: always
     build:

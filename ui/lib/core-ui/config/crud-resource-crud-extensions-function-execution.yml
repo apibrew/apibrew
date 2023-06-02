@@ -16,14 +16,10 @@ properties:
         title: Name
       - name: engine
         title: Engine
-        propertyPath: engine.name
     actions:
       - name: Execute
         title: Execute
         icon: play_arrow
-        component:
-          package: self
-          name: CoreUI
-          componentName: ActionExecuteFunction
+        component: CoreUI/ActionExecuteFunction
   formConfig:
     children:

@@ -182,6 +182,9 @@ func (s *server) configureRoutes() {
 
 	r.PathPrefix("/docs").Handler(s.docsApi.Handler())
 
+	healthEndpoint := new(HealthEndpoint)
+	r.PathPrefix("/health").Handler(healthEndpoint.Handler())
+
 	s.handler = c.Handler(s.recordsApiFiltersMiddleWare.handler(r))
 }
 
