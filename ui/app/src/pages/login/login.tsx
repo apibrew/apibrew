@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import {useState, useEffect} from 'react'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -8,14 +8,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import { useNavigate } from 'react-router-dom'
-import { TokenService, authenticate } from 'core-ui'
+import {useNavigate} from 'react-router-dom'
+import {TokenService, authenticate} from '@apibrew/core-ui'
 
-// eslint-disable-next-line
-export interface LoginProps {
-}
-
-export function Login(props: LoginProps): JSX.Element {
+export function Login(): JSX.Element {
     const isLoggedIn = TokenService.isLoggedIn()
     useEffect(() => {
         if (isLoggedIn) {
@@ -30,9 +26,9 @@ export function Login(props: LoginProps): JSX.Element {
         const data = new FormData(event.currentTarget)
 
         authenticate(data.get('username') as string, data.get('password') as string)
-            .then((result) => {
+            .then(() => {
                 navigate('/dashboard/test')
-            }, err => {
+            }, (err: Error) => {
                 console.error(err)
 
                 alert('username or password is incorrect')
@@ -41,9 +37,9 @@ export function Login(props: LoginProps): JSX.Element {
 
     return (
         <main
-            style={{ width: '450px', height: '500px', margin: '100px auto', borderRadius: '50px', textAlign: 'center' }}>
+            style={{width: '450px', height: '500px', margin: '100px auto', borderRadius: '50px', textAlign: 'center'}}>
             <Container component="main" maxWidth="xs"
-                style={{ borderRadius: '50px', height: '500px', width: '450px', background: 'none' }}>
+                       style={{borderRadius: '50px', height: '500px', width: '450px', background: 'none'}}>
                 <Box
                     sx={{
                         marginTop: 2,
@@ -52,13 +48,13 @@ export function Login(props: LoginProps): JSX.Element {
                         alignItems: 'center'
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'black' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{m: 1, bgcolor: 'black'}}>
+                        <LockOutlinedIcon/>
                     </Avatar>
-                    <Typography component="h1" variant="h5" style={{ color: 'white' }} >
+                    <Typography component="h1" variant="h5" style={{color: 'white'}}>
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                         <TextField
                             margin="normal"
                             required
@@ -81,20 +77,20 @@ export function Login(props: LoginProps): JSX.Element {
 
                             return false
                         }}
-                        style={{
-                            cursor: 'hand',
-                            position: 'relative',
-                            top: 60,
-                            marginLeft: 350,
-                            border: 0,
-                            borderRadius: 38,
-                            color: 'grey',
-                            width: '40px',
-                            height: '30px',
-                            zIndex: 1000,
-                            background: ' none'
-                        }}>
-                            <VisibilityIcon />
+                                style={{
+                                    cursor: 'hand',
+                                    position: 'relative',
+                                    top: 60,
+                                    marginLeft: 350,
+                                    border: 0,
+                                    borderRadius: 38,
+                                    color: 'grey',
+                                    width: '40px',
+                                    height: '30px',
+                                    zIndex: 1000,
+                                    background: ' none'
+                                }}>
+                            <VisibilityIcon/>
                         </button>
                         <TextField
                             margin="normal"
@@ -110,8 +106,8 @@ export function Login(props: LoginProps): JSX.Element {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                            style={{ background: ' rgba(255, 255, 255, 0.15)' }}>
+                            sx={{mt: 3, mb: 2}}
+                            style={{background: ' rgba(255, 255, 255, 0.15)'}}>
                             Sign In
                         </Button>
                     </Box>

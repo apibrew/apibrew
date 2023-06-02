@@ -2,7 +2,7 @@ import { BACKEND_URL } from '../config'
 import Button from '@mui/material/Button'
 import { PlusOneOutlined } from '@mui/icons-material'
 import React, { JSX } from 'react'
-import { PageLayout } from 'core-ui'
+import { PageLayout } from '@apibrew/core-ui'
 
 export function Test (): JSX.Element {
   const code = `

@@ -12,6 +12,7 @@ type HandlerFunc func(ctx context.Context, event *model.Event) (*model.Event, er
 
 type Handler struct {
 	Id        string
+	Name      string
 	Fn        HandlerFunc
 	Selector  *model.EventSelector
 	Order     int

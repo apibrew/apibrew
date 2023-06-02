@@ -6,7 +6,7 @@ import {useNavigate, useParams} from "react-router-dom"
 import {Form} from "./Form"
 import {Record, RecordService} from "../../service/record"
 import React, {useEffect} from "react"
-import {Crud} from "../../model/schema";
+import {Crud} from "../../model/ui/crud.ts";
 
 export interface ViewProps {
   resource: Resource

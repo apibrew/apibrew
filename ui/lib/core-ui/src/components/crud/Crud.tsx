@@ -1,4 +1,4 @@
-import {Box} from "@mui/material"
+import {Box, CircularProgress, LinearProgress} from "@mui/material"
 import React, {JSX, useEffect, Fragment, useContext} from "react"
 import {Resource} from "../../model"
 import {ResourceService} from "../../service/resource"
@@ -11,6 +11,8 @@ import {Settings} from "./Settings";
 import {RecordService} from "../../service/record";
 import {Crud as CrudModel, CrudName} from "../../model/ui/crud.ts";
 import {resetCrudForm} from "./helper";
+import {useResourceByName} from "../../hooks/resource.ts";
+import {Loading} from "../basic/Loading.tsx";
 
 export interface CrudProps {
     namespace: string
@@ -18,13 +20,8 @@ export interface CrudProps {
 }
 
 export function Crud(props: CrudProps): JSX.Element {
-    const [resource, setResource] = React.useState<Resource>()
+    const resource = useResourceByName(props.resource, props.namespace)
 
-    useEffect(() => {
-        ResourceService.getByName(props.resource, props.namespace).then((resource) => {
-            setResource(resource)
-        })
-    }, [props.namespace, props.resource])
 
     const [crudConfig, setCrudConfig] = React.useState<CrudModel>()
 
@@ -46,20 +43,22 @@ export function Crud(props: CrudProps): JSX.Element {
         }
     }, [resource])
 
+    if (!resource || !crudConfig) {
+        return <Loading/>
+    }
+
     return (
-        <Fragment>
-            {resource && crudConfig && <Box>
-                <Routes>
-                    <Route path="new" element={<New crudConfig={crudConfig} resource={resource}/>}/>
-                    {!crudConfig.hideSettings &&
-                        <Route path="settings" element={<Settings resource={resource} updateCrud={updatedCrudConfig => {
-                            setCrudConfig(updatedCrudConfig)
-                        }}/>}/>}
-                    <Route path=":id/edit" element={<Update crudConfig={crudConfig} resource={resource}/>}/>
-                    <Route path=":id/view" element={<View crudConfig={crudConfig} resource={resource}/>}/>
-                    <Route path="" element={<List crudConfig={crudConfig} resource={resource}/>}/>
-                </Routes>
-            </Box>}
-        </Fragment>
+        <Box>
+            <Routes>
+                <Route path="new" element={<New crudConfig={crudConfig} resource={resource}/>}/>
+                {!crudConfig.hideSettings &&
+                    <Route path="settings" element={<Settings resource={resource} updateCrud={updatedCrudConfig => {
+                        setCrudConfig(updatedCrudConfig)
+                    }}/>}/>}
+                <Route path=":id/edit" element={<Update crudConfig={crudConfig} resource={resource}/>}/>
+                <Route path=":id/view" element={<View crudConfig={crudConfig} resource={resource}/>}/>
+                <Route path="" element={<List crudConfig={crudConfig} resource={resource}/>}/>
+            </Routes>
+        </Box>
     )
 }

@@ -5,7 +5,7 @@ import { Login } from './pages/login/login'
 import { JSX, useEffect } from 'react'
 import { AppDesigner } from './pages/app-designer'
 import { CrudPage } from './pages/crud-page/CrudPage'
-import { BaseLayout, DashboardLayout, TokenService } from 'core-ui'
+import { BaseLayout, DashboardLayout, TokenService } from '@apibrew/core-ui'
 
 function Dashboard (): JSX.Element {
   const isLoggedIn = TokenService.isLoggedIn()

@@ -1,4 +1,4 @@
-import { Crud } from 'core-ui'
+import { Crud } from '@apibrew/core-ui'
 
 export interface CrudPageProps {
   namespace: string

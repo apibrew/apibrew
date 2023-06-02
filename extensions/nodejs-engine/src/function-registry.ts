@@ -5,9 +5,9 @@ import {ResourceRule, ResourceRuleName} from "./model/resource-rule";
 import {Extension} from "./proto/model/extension_pb";
 import {ENGINE_REMOTE_ADDR, EXTENSION_NAME} from "./config";
 import {ExternalCall, FunctionCall} from "./proto/model/external_pb";
-import {ResourceOperation, WatchLogicResources} from "./const";
 import {Event, EventSelector} from "./proto/model/event_pb";
 import {registerExtensions} from "./registrator";
+import {ResourceOperationRule, ResourceOperationTrigger} from "./const";
 
 let engineId: string
 
@@ -46,8 +46,7 @@ export async function reloadInternal() {
 
     await registerExtensions(extensions)
 
-    console.log('Configuring extensions: ', extensions)
-
+    console.log('Configuring extensions: ', extensions.map(item => item.getName()))
 }
 
 function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
@@ -56,22 +55,23 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
     extension.setSync(!trigger.async)
     const call = new ExternalCall()
     const fCall = new FunctionCall()
-    fCall.setFunctionname('trigger')
+    fCall.setFunctionname(ResourceOperationTrigger)
     fCall.setHost(ENGINE_REMOTE_ADDR)
     call.setFunctioncall(fCall)
     extension.setCall(call)
+    extension.setResponds(true)
 
     if (trigger.order) {
         switch (trigger.order) {
             case 'before':
                 extension.setOrder(10)
+
                 break
             case 'after':
                 extension.setOrder(200)
                 break
             case 'instead':
                 extension.setOrder(80)
-                extension.setResponds(true)
                 extension.setFinalizes(true)
                 break
         }
@@ -106,7 +106,7 @@ function prepareExtensionFromRule(rule: ResourceRule): Extension {
     extension.setSync(true)
     const call = new ExternalCall()
     const fCall = new FunctionCall()
-    fCall.setFunctionname(ResourceOperation)
+    fCall.setFunctionname(ResourceOperationRule)
     fCall.setHost(ENGINE_REMOTE_ADDR)
     call.setFunctioncall(fCall)
     extension.setCall(call)

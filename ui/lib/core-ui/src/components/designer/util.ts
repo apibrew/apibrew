@@ -1,5 +1,5 @@
-import {AppDesignerBoard} from "../../model/schema";
 import {Resource} from "../../model";
+import {AppDesignerBoard} from "../../model/ui/app-designer-board.ts";
 
 export function checkResourceAllowedOnBoard(board: AppDesignerBoard, resource: Resource): boolean {
     console.log(board.resourceSelector, board.name, resource.name, resource.namespace)

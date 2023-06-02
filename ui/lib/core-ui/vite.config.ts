@@ -24,7 +24,6 @@ export default defineConfig({
             external: [/react/, 'react-dom', 'styled-components', /^@mui\//, 'axios', ],
             output: {
                 globals: (name) => {
-                    console.log(name);
                     return name
                 },
             },

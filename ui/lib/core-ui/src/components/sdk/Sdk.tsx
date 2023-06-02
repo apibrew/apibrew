@@ -17,20 +17,13 @@ export interface SdkPlatform {
 }
 
 export const SdkPlatforms: SdkPlatform[] = [
-    {
-        name: 'Swagger',
-        component: React.lazy(() => {
-            const imported = import("./Swagger");
 
-            return imported.then((module) => ({ default: module.Swagger }));
-        }) as any
-    }
 ]
 
 export function Sdk(props: SdkProps): JSX.Element {
     const [platform, setPlatform] = React.useState<string>(SdkPlatforms[0].name)
 
-    const Component = (SdkPlatforms.find(p => p.name === platform)?.component)!
+    const Component = (SdkPlatforms.find(p => p.name === platform)?.component)
 
     return <Box display={'flex'} flexDirection={'column'}>
         <Box display={'flex'} m={1}>

@@ -177,6 +177,7 @@ func (d *extensionService) configureExtension(extension *model.Extension) {
 func (d *extensionService) prepareExtensionHandler(extension *model.Extension) backend_event_handler.Handler {
 	return backend_event_handler.Handler{
 		Id:        "extension-" + extension.Id,
+		Name:      "extension-" + extension.Name,
 		Selector:  extension.Selector,
 		Order:     int(extension.Order),
 		Finalizes: extension.Finalizes,

@@ -34,6 +34,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 
 	handlers = append(handlers, Handler{
 		Id:        "actualHandler",
+		Name:      "actualHandler",
 		Fn:        actualHandler,
 		Order:     NaturalOrder,
 		Finalizes: false,
@@ -43,8 +44,11 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 
 	sort.Sort(ByOrder(handlers))
 
+	log.Debugf("Starting handler chain")
 	for _, handler := range handlers {
+		log.Debugf("Calling handler: %s", handler.Name)
 		if !handler.Sync {
+			nextEvent.Sync = false
 			go func(localHandler Handler) {
 				_, err := localHandler.Fn(ctx, nextEvent)
 
@@ -53,22 +57,28 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 				}
 			}(handler)
 		} else {
+			nextEvent.Sync = true
 			result, err := handler.Fn(ctx, nextEvent)
+			log.Debugf("Handler responded: %s", handler.Name)
 
 			if err != nil {
+				log.Debugf("Handler [%s] responded with error: %v", handler.Name, err)
 				return nil, err
 			}
 
 			if handler.Responds {
+				log.Debugf("Handler [%s] responded with result", handler.Name)
 				nextEvent = result
 			}
 
 			if handler.Finalizes {
+				log.Debugf("Handler [%s] finalizes", handler.Name)
 				break
 			}
 
 		}
 	}
+	log.Debugf("Finished handler chain")
 
 	return nextEvent, nil
 }
