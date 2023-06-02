@@ -19,8 +19,10 @@ func (w watchService) Watch(ctx context.Context, p abs.WatchParams) <-chan *mode
 	}
 
 	out := make(chan *model.Event, p.BufferSize)
+	watchHandlerId := util.RandomHex(6)
 	watchHandler := backend_event_handler.Handler{
-		Id: "watch-handler-" + util.RandomHex(6),
+		Id:   "watch-handler-" + watchHandlerId,
+		Name: "watch-handler-" + watchHandlerId,
 		Fn: func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
 			out <- event
 

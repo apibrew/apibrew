@@ -7,9 +7,11 @@ import (
 )
 
 func prepareStdHandler(order int, action model.Event_Action, handlerFunc backend_event_handler.HandlerFunc, resource *model.Resource) backend_event_handler.Handler {
+	handlerId := "std-handler-" + resource.Namespace + "-" + resource.Name + "-" + util.RandomHex(6)
 	return backend_event_handler.Handler{
-		Id: "std-handler-" + resource.Namespace + "-" + resource.Name + "-" + util.RandomHex(6),
-		Fn: handlerFunc,
+		Id:   handlerId,
+		Name: handlerId,
+		Fn:   handlerFunc,
 		Selector: &model.EventSelector{
 			Actions:    []model.Event_Action{action},
 			Namespaces: []string{resource.Namespace},

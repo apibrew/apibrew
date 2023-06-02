@@ -16,7 +16,6 @@ export async function load<T>(namespace: string, resourceName: string) {
     store[namespace + '/' + resourceName] = response.data.content.map(record => record.properties)
 
     console.log('loaded:', namespace, resourceName)
-    console.debug(store[namespace + '/' + resourceName])
 }
 
 export function read<T>(namespace: string, resourceName: string): T[] {
