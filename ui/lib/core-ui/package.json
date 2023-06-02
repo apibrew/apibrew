@@ -1,7 +1,7 @@
 {
-  "name": "core-ui",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@apibrew/core-ui",
+  "private": false,
+  "version": "1.0.1",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -46,6 +46,7 @@
   "main": "./dist/core-ui.umd.js",
   "module": "./dist/core-ui.es.js",
   "types": "./dist/index.d.ts",
+  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/core-ui.es.js",
