@@ -17,7 +17,8 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   apibrew:
     restart: always
-    image: apibrew/apibrew:latest
+    build:
+      context: ../../
     volumes:
       - ./config.json:/app/config.json
     ports:
@@ -29,7 +30,8 @@ services:
       - db
   apibrew-ui:
     restart: always
-    image: apibrew/apibrew-ui:latest
+    build:
+      context: ../../ui/app
     volumes:
       - ./config.js:/usr/share/nginx/html/config.js
     ports:

@@ -1,1 +1,1 @@
-export const BACKEND_URL = 'http://localhost:9009'
+export const BACKEND_URL = window['BACKEND_URL']
