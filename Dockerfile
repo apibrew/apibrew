@@ -7,7 +7,6 @@ COPY go.mod go.mod
 COPY go.sum go.sum
 RUN go mod download
 
-COPY proto proto
 COPY cmd cmd
 COPY pkg pkg
 
@@ -31,6 +30,7 @@ WORKDIR /
 RUN apk add postgresql
 RUN mkdir /run/postgresql
 RUN chown postgres:postgres /run/postgresql/
+RUN apk --update --no-cache add curl
 VOLUME /var/lib/postgresql/data
 
 COPY --from=builder /app/apibrew /bin/apibrew
@@ -44,9 +44,16 @@ RUN ls -alsh /app
 
 CMD ["/bin/sh", "/app/run.sh"]
 
+FROM buildenv as apbr
+
+RUN go build -o apbr cmd/apbr/main.go
+
+ENTRYPOINT ["/app/apbr"]
+
 FROM golang:1.19-alpine as app
 WORKDIR /
 
+RUN apk --update --no-cache add curl
 COPY --from=builder /app/apibrew /bin/apibrew
 
 EXPOSE 9009

@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+  db:
+    deploy:
+      replicas: 0
+  apibrew:
+    volumes:
+      - ./config.json:/app/config.json
