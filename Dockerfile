@@ -10,19 +10,25 @@ RUN go mod download
 COPY cmd cmd
 COPY pkg pkg
 
-FROM buildenv as test
-WORKDIR /app/
+FROM buildenv as apbr
 
-# setup database
-RUN apk add postgresql
-RUN mkdir /run/postgresql
-RUN chown postgres:postgres /run/postgresql/
+RUN go build -o apbr cmd/apbr/main.go
 
-RUN sh /app/pkg/test/run-tests.sh
+ENTRYPOINT ["/app/apbr"]
 
 FROM buildenv as builder
 
 RUN go build -o apibrew cmd/server/main.go
+
+FROM golang:1.19-alpine as app
+WORKDIR /
+
+RUN apk --update --no-cache add curl
+COPY --from=builder /app/apibrew /bin/apibrew
+
+EXPOSE 9009
+
+CMD ["/bin/apibrew", "-init", "/app/config.json"]
 
 FROM golang:1.19-alpine as app-full
 WORKDIR /
@@ -44,18 +50,12 @@ RUN ls -alsh /app
 
 CMD ["/bin/sh", "/app/run.sh"]
 
-FROM buildenv as apbr
+FROM buildenv as test
+WORKDIR /app/
 
-RUN go build -o apbr cmd/apbr/main.go
+# setup database
+RUN apk add postgresql
+RUN mkdir /run/postgresql
+RUN chown postgres:postgres /run/postgresql/
 
-ENTRYPOINT ["/app/apbr"]
-
-FROM golang:1.19-alpine as app
-WORKDIR /
-
-RUN apk --update --no-cache add curl
-COPY --from=builder /app/apibrew /bin/apibrew
-
-EXPOSE 9009
-
-CMD ["/bin/apibrew", "-init", "/app/config.json"]
+RUN sh /app/pkg/test/run-tests.sh
