@@ -3,7 +3,6 @@ import {useValue} from "../../context/value.ts";
 import {TextField} from "@mui/material";
 
 export function FunctionScriptInput() {
-    const resource = useResource()
     const valueProvider = useValue()
 
     return <>

@@ -1,7 +1,6 @@
 import 'react'
 import './module'
 
-export * from './layout'
 export * from './service'
-export * from './components'
 export * from './App'
+export * from './module'

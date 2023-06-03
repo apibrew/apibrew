@@ -4,14 +4,9 @@ import {ActionExecuteFunction} from "./components/logic/function/action-execute-
 import {RecordService} from "./service";
 import {Layout} from "./model/ui/layout.ts";
 import {prepareLayoutComponent} from "./components/dynamic/Layout.tsx";
-import {Form} from "./components/form/Form.tsx";
 import {ResourceContextComponent} from "./components/context/ResourceContextComponent.tsx";
-import {FunctionScriptInput} from "./components/custom-inputs/FunctionScriptInput.tsx";
-import {CrudSettingsFormConfig} from "./components/custom-inputs/CrudSettingsFormConfig.tsx";
-import {CrudSettingsGridConfig} from "./components/custom-inputs/CrudSettingsGridConfig.tsx";
 import {DashboardLayout} from "./layout";
-import {Test} from "./test/test.tsx";
-import {CrudPage} from "./pages/crud-page/CrudPage.tsx";
+import React, {ComponentType} from "react";
 
 ModuleService.registerLocalModuleAwait(RecordService.list<Layout>('ui', 'Layout').then(layouts => {
     const exports: ExportOptions = {}
@@ -26,16 +21,25 @@ ModuleService.registerLocalModuleAwait(RecordService.list<Layout>('ui', 'Layout'
     }
 }))
 
+export function lazyComponent<T, C extends ComponentType<any>>(func: () => Promise<T>, componentName: keyof T) {
+    const lazyCom: () => Promise<{ default: C }> = () => func().then(imp => {
+        return {
+            default: imp[componentName] as C
+        }
+    })
+
+    return React.lazy<C>(lazyCom)
+}
+
 ModuleService.registerLocalModule({
     exports: {
-        ActionExecuteFunction: new ActionExecuteFunction(),
-        FunctionScriptInput: FunctionScriptInput,
-        Form: Form,
-        CrudSettingsFormConfig: CrudSettingsFormConfig,
-        CrudSettingsGridConfig: CrudSettingsGridConfig,
         DashboardLayout: DashboardLayout,
-        Test: Test,
-        CrudPage: CrudPage
+        ActionExecuteFunction: new ActionExecuteFunction(),
+        FunctionScriptInput: lazyComponent(() => import("./components/custom-inputs/FunctionScriptInput"), 'FunctionScriptInput'),
+        CrudSettingsFormConfig: lazyComponent(() => import("./components/custom-inputs/CrudSettingsFormConfig"), 'CrudSettingsFormConfig'),
+        CrudSettingsGridConfig: lazyComponent(() => import("./components/custom-inputs/CrudSettingsGridConfig"), 'CrudSettingsGridConfig'),
+        Test: lazyComponent(() => import("./test/test"), 'Test'),
+        CrudPage: lazyComponent(() => import("./pages/crud-page/CrudPage"), 'CrudPage'),
     },
     name: 'CoreUI',
 })

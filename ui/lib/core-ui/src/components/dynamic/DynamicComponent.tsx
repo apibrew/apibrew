@@ -1,7 +1,8 @@
-import React from "react";
+import React, {Suspense} from "react";
 import {ModuleData} from '../../model/module-data'
 import {ModuleService} from "../../service/module";
 import Box from "@mui/material/Box";
+import {Loading} from "../basic/Loading.tsx";
 
 export interface DynamicComponentProps {
     component: string
@@ -32,7 +33,7 @@ export function DynamicComponent(props: DynamicComponentProps) {
     })
 
     if (!loaded) {
-        return <div>Loading...</div>
+        return <Loading/>
     }
 
     if (!moduleData) {
@@ -54,7 +55,9 @@ export function DynamicComponent(props: DynamicComponentProps) {
         </Box>
     }
 
-    return <Component {...props.componentProps}>
-        {props.children}
-    </Component>
+    return <Suspense fallback={<Loading/>}>
+        <Component {...props.componentProps}>
+            {props.children}
+        </Component>
+    </Suspense>
 }
