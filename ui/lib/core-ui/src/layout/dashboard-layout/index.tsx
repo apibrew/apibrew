@@ -19,6 +19,8 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItem from '@mui/material/ListItem'
 import {ChevronLeft, ExpandLess, ExpandMore} from '@mui/icons-material'
 import {styled} from '@mui/material/styles'
+import {useRecordByName} from "../../hooks/record.ts";
+import {Menu, MenuItem, MenuName} from "../../model/ui/menu.ts";
 
 const drawerWidth = 260
 
@@ -55,6 +57,8 @@ export interface DashboardLayoutProps {
 export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
     const [mobileOpen, setMobileOpen] = React.useState(false)
     const [open, setOpen] = React.useState(true)
+    const systemMenu = useRecordByName<Menu>(MenuName, 'ui', 'backend-system-menu')
+    const userMenu = useRecordByName<Menu>(MenuName, 'ui', 'backend-user-menu')
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen)
@@ -72,10 +76,12 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                     </IconButton>
                 </Toolbar>
                 <Divider style={{background: '#AAA'}}/>
-                {menuLists.map((menuList) => <Fragment key={menuList.title}>
-                    <NavList menuList={menuList}/>
-                    <Divider style={{background: '#FFF'}}/>
-                </Fragment>)}
+                {/*{menuLists.map((menuList) => <Fragment key={menuList.title}>*/}
+                {/*    <NavList menuList={menuList}/>*/}
+                {/*    <Divider style={{background: '#FFF'}}/>*/}
+                {/*</Fragment>)}*/}
+                {userMenu && <NavList title={userMenu.name} items={userMenu.children}/>}
+                {systemMenu && <NavList title={systemMenu.name} items={systemMenu.children}/>}
             </div>
             <div style={{flexGrow: 1}}/>
         </Box>
@@ -160,16 +166,17 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
 }
 
 export interface NavListProps {
-    menuList: MenuList
+    title?: string
+    items: MenuItem[]
 }
 
 function NavList(props: NavListProps): JSX.Element {
     const [open, setOpen] = useState<Record<string, boolean>>({})
 
-    return <List subheader={props.menuList.title && <Box sx={{ml: 1, mt: 1}}>
-        <Typography>{props.menuList.title}</Typography>
+    return <List subheader={props.title && <Box sx={{ml: 1, mt: 1}}>
+        <Typography>{props.title}</Typography>
     </Box>}>
-        {props.menuList.items.map((menuItem) => {
+        {props.items.map((menuItem) => {
             const key = `${menuItem.title}`
             return <Fragment key={key}>
                 <ListItem key={menuItem.title} disablePadding>
@@ -189,7 +196,7 @@ function NavList(props: NavListProps): JSX.Element {
                 </ListItem>
                 {menuItem.children && <Collapse in={open[key]} timeout="auto" unmountOnExit>
                     <Box sx={{ml: 3}}>
-                        <NavList menuList={{items: menuItem.children}}/>
+                        <NavList items={menuItem.children}/>
                     </Box>
                 </Collapse>}
             </Fragment>

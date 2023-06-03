@@ -53,7 +53,7 @@ var applyCmd = &cobra.Command{
 		}
 
 		for _, inputFilePath := range inputFilePathArr {
-			log.Info("Apply: ", inputFilePath, " ...")
+			log.Info("Apply pattern: ", inputFilePath, " ...")
 			if strings.Contains(inputFilePath, "*") {
 				filenames, err := filepathx.Glob(inputFilePath)
 
@@ -62,6 +62,7 @@ var applyCmd = &cobra.Command{
 				}
 
 				for _, filename := range filenames {
+					log.Info("Apply file: ", filename)
 					err = applyLocal(filename, doMigration, dataOnly, force, format, cmd, args)
 
 					if err != nil {
@@ -69,6 +70,7 @@ var applyCmd = &cobra.Command{
 					}
 				}
 			} else {
+				log.Info("Apply file: ", inputFilePath)
 				err := applyLocal(inputFilePath, doMigration, dataOnly, force, format, cmd, args)
 
 				if err != nil {

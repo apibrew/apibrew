@@ -11,8 +11,8 @@ export interface FunctionTrigger {
 name: string;
 resource: string;
 namespace: string;
-action: string;
-order?: string;
+action: 'create' | 'update' | 'delete' | 'list' | 'get';
+order?: 'before' | 'after' | 'instead';
 async: boolean;
 function: Function;
 version: number;

@@ -12,7 +12,7 @@ function: Function;
 input?: object;
 output?: object;
 error?: object;
-status?: string;
+status?: 'pending' | 'success' | 'error';
 version: number;
 
 }

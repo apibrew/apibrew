@@ -4,7 +4,7 @@
 // Sub Types
 
 export interface FormItem {
-     kind?: string;
+     kind?: 'property' | 'input' | 'tab' | 'section' | 'group' | 'custom' | 'container';
      propertyPath?: string;
      title?: string;
      component?: string;
@@ -24,7 +24,7 @@ export interface GridConfig {
      disablePagination?: number;
      defaultPageSize?: boolean;
      actions?: GridActionConfig[];
-     sizeMode?: string;
+     sizeMode?: 'compact' | 'normal';
 
 }
 
