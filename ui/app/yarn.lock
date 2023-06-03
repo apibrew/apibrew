@@ -10,10 +10,10 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@apibrew/core-ui@1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@apibrew/core-ui/-/core-ui-1.0.5.tgz#c3037cdcc06f8ef47589022f0232a8b3249d7664"
-  integrity sha512-yBZcKA4xKB+c0xicHj7EQJ3HaPDUxU6+itJcWIsBTpLVkrQ6ynyNPc1lesH1sk5vgdLnkDSweKoICa7MiRc3yQ==
+"@apibrew/core-ui@1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@apibrew/core-ui/-/core-ui-1.0.12.tgz#f95734b59088dd979fe6cf1b0634fd7c9114c042"
+  integrity sha512-s8GqsFw/M/V0BsdwaN/X6QYfEeN5czN0OfnfTpS/QHXE+3zOzJE0Y9vIwr7b2q9VSUOozyjZmzDiKf5O1BtEng==
   dependencies:
     "@emotion/react" "^11.10.6"
     "@emotion/styled" "^11.10.6"

@@ -1,11 +1,11 @@
-import './App.css'
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom'
 import { Test } from './test/test'
 import { Login } from './pages/login/login'
-import { JSX, useEffect } from 'react'
+import React, { JSX, useEffect } from 'react'
 import { AppDesigner } from './pages/app-designer'
 import { CrudPage } from './pages/crud-page/CrudPage'
-import { BaseLayout, DashboardLayout, TokenService } from '@apibrew/core-ui'
+import {TokenService} from "./service";
+import {BaseLayout, DashboardLayout} from "./layout";
 
 function Dashboard (): JSX.Element {
   const isLoggedIn = TokenService.isLoggedIn()
@@ -34,7 +34,7 @@ function Dashboard (): JSX.Element {
   </>
 }
 
-function App (): JSX.Element {
+export function App (): JSX.Element {
   return (
     <BaseLayout>
       <Router>
@@ -47,4 +47,3 @@ function App (): JSX.Element {
   )
 }
 
-export default App

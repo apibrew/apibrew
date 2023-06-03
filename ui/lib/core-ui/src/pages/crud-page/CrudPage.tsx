@@ -1,5 +1,5 @@
-import { Crud } from '@apibrew/core-ui'
 import {useParams} from "react-router-dom";
+import {Crud} from "../../components";
 
 export function CrudPage () {
   const params = useParams()

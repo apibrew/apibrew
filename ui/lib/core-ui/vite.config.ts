@@ -22,7 +22,11 @@ export default defineConfig({
         },
         rollupOptions: {
             external: [/react/, 'react-dom', 'styled-components', /^@mui\//, 'axios', ],
+            input: [
+                './src/'
+            ],
             output: {
+                preserveModules: false,
                 globals: (name) => {
                     return name
                 },
