@@ -4,28 +4,28 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc",
+    "build": "tsc",
     "start": "node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
-    "build-model": "apbr generate --path=src/model --namespace=logic --platform=typescript"
+    "protoc": "cp ../../proto/ext .; cp ../../proto/ext .; "
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grpc/grpc-js": "^1.8.14",
-    "@types/google-protobuf": "^3.15.6",
+    "@bufbuild/connect": "^0.9.1",
+    "@bufbuild/connect-node": "^0.9.1",
+    "@bufbuild/protobuf": "^1.2.1",
+    "@bufbuild/protoc-gen-connect-es": "^0.9.1",
+    "@bufbuild/protoc-gen-es": "^1.2.1",
     "axios": "^1.4.0",
     "dotenv": "^16.0.3",
-    "google-protobuf": "^3.21.2",
-    "proto3-json-serializer": "^1.1.1",
-    "ts-proto": "^1.147.3",
     "vm2": "^3.9.19"
   },
   "devDependencies": {
-    "@types/node": "^20.2.3",
+    "@types/node": "^20.2.5",
     "concurrently": "^8.0.1",
     "nodemon": "^2.0.22",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.3"
   }
 }

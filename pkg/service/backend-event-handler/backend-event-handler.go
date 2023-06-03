@@ -62,7 +62,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 			log.Debugf("Handler responded: %s", handler.Name)
 
 			if err != nil {
-				log.Debugf("Handler [%s] responded with error: %v", handler.Name, err)
+				log.Warnf("Handler [%s] responded with error: %v", handler.Name, err)
 				return nil, err
 			}
 

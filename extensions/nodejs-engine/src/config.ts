@@ -1,3 +1,4 @@
+console.log(process.env)
 export const APBR_ADDR = process.env.APBR_HOST || 'localhost:9009'
 export const ENGINE_ADDR = process.env.ENGINE_HOST || 'localhost:23619'
 export const ENGINE_REMOTE_ADDR = process.env.ENGINE_REMOTE_ADDR || `${ENGINE_ADDR}`

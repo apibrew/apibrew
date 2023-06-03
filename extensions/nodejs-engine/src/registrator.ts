@@ -1,76 +1,70 @@
-import {ExtensionClient} from "./proto/stub/extension_grpc_pb";
-import {credentials} from "@grpc/grpc-js";
+import {ENGINE_REMOTE_ADDR, EXTENSION_NAME, TOKEN} from "./config";
+import {initFunctionRegistry} from "./function-registry";
+import {ExecuteFunction, WatchLogicResources} from "./const";
+import {Event_Action, EventSelector} from "./gen/model/event_pb";
+import {Extension} from "./gen/model/extension_pb";
 import {
     CreateExtensionRequest,
     ListExtensionRequest,
     ListExtensionResponse,
     UpdateExtensionRequest
-} from "./proto/stub/extension_pb";
-import {toPromise} from "./util";
-import {Extension} from "./proto/model/extension_pb";
-import {ExternalCall, FunctionCall} from "./proto/model/external_pb";
-import {APBR_ADDR, ENGINE_REMOTE_ADDR, EXTENSION_NAME, TOKEN} from "./config";
-import {Event, EventSelector} from "./proto/model/event_pb";
-import {RecordClient} from "./proto/stub/record_grpc_pb";
-import {ApplyRecordRequest, ApplyRecordResponse} from "./proto/stub/record_pb";
-import {Record} from "./proto/model/record_pb";
-import * as google_protobuf_struct_pb from "google-protobuf/google/protobuf/struct_pb";
-import {initFunctionRegistry} from "./function-registry";
-import {ExecuteFunction, WatchLogicResources} from "./const";
+} from "./gen/stub/extension_pb";
+import {extensionClient, recordClient} from "./client";
+import {ApplyRecordRequest} from "./gen/stub/record_pb";
+import {Record} from "./gen/model/record_pb";
+import {Value} from "@bufbuild/protobuf";
+import {ApplyRecordResponse} from "./gen/stub/record_pb";
+import {ExternalCall, FunctionCall} from "./gen/model/external_pb";
 
 export let engineId: string
 
-async function updateExtension(client: ExtensionClient, extension: Extension) {
-    const request = new UpdateExtensionRequest()
-    request.setExtensionsList([extension])
-    await toPromise(client.update.bind(client))(request)
-}
-
-async function createExtension(client: ExtensionClient, extension: Extension) {
-    const request = new CreateExtensionRequest()
-    request.setExtensionsList([extension])
-    await toPromise(client.create.bind(client))(request)
-}
-
 async function registerFunctionEngine() {
-    const recordClient = new RecordClient(APBR_ADDR, credentials.createInsecure(), null)
     const applyFunctionEngineRequest = new ApplyRecordRequest()
-    applyFunctionEngineRequest.setNamespace('logic')
-    applyFunctionEngineRequest.setResource('FunctionExecutionEngine')
-    applyFunctionEngineRequest.setToken(TOKEN)
+    applyFunctionEngineRequest.namespace = ('logic')
+    applyFunctionEngineRequest.resource = ('FunctionExecutionEngine')
+    applyFunctionEngineRequest.token = (TOKEN)
     const record = new Record()
-    record.getPropertiesMap().set('name', new google_protobuf_struct_pb.Value().setStringValue(EXTENSION_NAME))
-    applyFunctionEngineRequest.setRecord(record)
-    const result = await toPromise<ApplyRecordRequest, ApplyRecordResponse>(recordClient.apply.bind(recordClient))(applyFunctionEngineRequest)
-    engineId = result.getRecord().getId()
+    record.properties.name = Value.fromJson(EXTENSION_NAME)
+    applyFunctionEngineRequest.record = record
+    const Apply = recordClient.apply as any
+    const result = (await Apply(applyFunctionEngineRequest)) as ApplyRecordResponse
+    engineId = result.record.id
 
     console.log('Engine registration Id:', engineId)
     await initFunctionRegistry(engineId)
 }
 
 export async function registerExtensions(extensions: Extension[]) {
-    const extensionClient = new ExtensionClient(APBR_ADDR, credentials.createInsecure(), null)
+
     const listRequest = new ListExtensionRequest()
 
-    listRequest.setToken(TOKEN)
-    const existingExtensionResponse$ = await toPromise<ListExtensionRequest, ListExtensionResponse>(extensionClient.list.bind(extensionClient))(listRequest)
+    listRequest.token = TOKEN
+    const existingExtensionResponse$ = await extensionClient.list(listRequest) as ListExtensionResponse
 
-    const existingExtensions = (await existingExtensionResponse$).getContentList()
+    const existingExtensions = existingExtensionResponse$.content
 
     for (const extension of extensions) {
         let found = false
 
         for (const existing of existingExtensions) {
-            if (existing.getName() === extension.getName()) {
+            if (existing.name === extension.name) {
                 console.log('updating extension')
-                await updateExtension(extensionClient, extension)
+                await extensionClient.update(new UpdateExtensionRequest({
+                    extensions: [{
+                        ...extension,
+                    }]
+                }))
                 found = true
             }
         }
 
         if (!found) {
             console.log('creating extension')
-            await createExtension(extensionClient, extension)
+            await extensionClient.create(new CreateExtensionRequest({
+                extensions: [{
+                    ...extension,
+                }]
+            }))
         }
     }
 }
@@ -92,42 +86,42 @@ function prepareExtensions(): Extension[] {
 
 function prepareFunctionExtension(): Extension {
     const extension = new Extension()
-    extension.setName(EXTENSION_NAME)
-    extension.setSync(true)
+    extension.name = (EXTENSION_NAME)
+    extension.sync = (true)
     const call = new ExternalCall()
     const fCall = new FunctionCall()
-    fCall.setFunctionname(WatchLogicResources)
-    fCall.setHost(ENGINE_REMOTE_ADDR)
-    call.setFunctioncall(fCall)
-    extension.setCall(call)
-    extension.setOrder(10000)
-    extension.setResponds(false)
-    extension.setSync(false)
+    fCall.functionName = (WatchLogicResources)
+    fCall.host = (ENGINE_REMOTE_ADDR)
+    call.functionCall = (fCall)
+    extension.call = (call)
+    extension.order = (10000)
+    extension.responds = (false)
+    extension.sync = (false)
     const eventSelector = new EventSelector()
-    eventSelector.setNamespacesList(['logic'])
-    eventSelector.setActionsList([Event.Action.CREATE, Event.Action.UPDATE, Event.Action.DELETE])
-    extension.setSelector(eventSelector)
+    eventSelector.namespaces = (['logic'])
+    eventSelector.actions = ([Event_Action.CREATE, Event_Action.UPDATE, Event_Action.DELETE])
+    extension.selector = (eventSelector)
 
     return extension
 }
 
 function prepareFunctionExecutionExtension(): Extension {
     const extension = new Extension()
-    extension.setName(`${EXTENSION_NAME}-execution`)
-    extension.setSync(true)
+    extension.name = (`${EXTENSION_NAME}-execution`)
+    extension.sync = (true)
     const call = new ExternalCall()
     const fCall = new FunctionCall()
-    fCall.setFunctionname(ExecuteFunction)
-    fCall.setHost(ENGINE_REMOTE_ADDR)
-    call.setFunctioncall(fCall)
-    extension.setCall(call)
-    extension.setOrder(10)
-    extension.setResponds(true)
-    extension.setFinalizes(true)
+    fCall.functionName = (ExecuteFunction)
+    fCall.host = (ENGINE_REMOTE_ADDR)
+    call.functionCall = (fCall)
+    extension.call = (call)
+    extension.order = (10)
+    extension.responds = (true)
+    extension.finalizes = (true)
     const eventSelector = new EventSelector()
-    eventSelector.setResourcesList(['FunctionExecution'])
-    eventSelector.setNamespacesList(['logic'])
-    extension.setSelector(eventSelector)
+    eventSelector.resources = (['FunctionExecution'])
+    eventSelector.namespaces = (['logic'])
+    extension.selector = (eventSelector)
 
     return extension
 }

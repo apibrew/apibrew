@@ -20,13 +20,7 @@ plugins:
 #    strategy: all
 #    out: ../docs/content/
 #    opt: ../docs/content/proto.tmpl,proto.md
-#  - name: ts
+#  - name: es
 #    out: ../extensions/nodejs-engine/src/proto
+#    opt: target=ts
 #    strategy: all
-#  - name: js
-#    out: ../extensions/nodejs-engine/src/proto
-#    opt: import_style=commonjs,binary
-#  - name: grpc
-#    out: ../extensions/nodejs-engine/src/proto
-#    opt: grpc_js
-#    path: grpc_tools_node_protoc_plugin

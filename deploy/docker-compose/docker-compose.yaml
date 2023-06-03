@@ -49,6 +49,18 @@ services:
         condition: service_healthy
     links:
       - apibrew
+  nodejs-engine:
+    restart: always
+    build:
+      context: ../../extensions/nodejs-engine
+    environment:
+      APBR_HOST: apibrew:9009
+      ENGINE_HOST: nodejs-engine:23619
+    depends_on:
+      apibrew:
+        condition: service_healthy
+    links:
+      - apibrew
   apibrew-ui:
     restart: always
     build:
