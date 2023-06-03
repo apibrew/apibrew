@@ -7,6 +7,7 @@ export interface MenuItem {
      title: string;
      link?: string;
      icon?: string;
+     target?: 'internal' | 'external' | 'external-redirect';
      children?: MenuItem[];
 
 }

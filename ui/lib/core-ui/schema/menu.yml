@@ -15,6 +15,13 @@ types:
       - name: icon
         type: STRING
         length: 255
+      - name: target
+        type: ENUM
+        defaultValue: internal
+        enumValues:
+          - internal
+          - external
+          - externalRedirect
       - name: children
         type: LIST
         item:

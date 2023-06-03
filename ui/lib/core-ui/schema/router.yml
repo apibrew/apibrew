@@ -1,0 +1,36 @@
+type: resource
+name: Router
+namespace: ui
+description: A module is a collection of components
+types:
+  - name: Route
+    properties:
+      - name: path
+        type: STRING
+        length: 255
+        required: true
+      - name: component
+        type: STRING
+        length: 255
+        required: true
+      - name: params
+        type: LIST
+        item:
+          type: OBJECT
+      - name: routes
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: Route
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: routes
+    type: LIST
+    required: true
+    item:
+      type: STRUCT
+      typeRef: Route

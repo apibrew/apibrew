@@ -1,0 +1,17 @@
+type: record
+namespace: ui
+resource: Router
+properties:
+  name: main
+  routes:
+    - path: /dashboard/*
+      component: CoreUI/DashboardLayout
+      routes:
+        - path: test
+          component: CoreUI/Test
+        - path: app-designer
+          component: CoreUI/AppDesigner
+        - path: /crud/:namespace/:resource/*
+          component: CoreUI/CrudPage
+    - path: /login
+      component: CoreUI/Login

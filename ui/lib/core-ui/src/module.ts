@@ -6,10 +6,12 @@ import {Layout} from "./model/ui/layout.ts";
 import {prepareLayoutComponent} from "./components/dynamic/Layout.tsx";
 import {Form} from "./components/form/Form.tsx";
 import {ResourceContextComponent} from "./components/context/ResourceContextComponent.tsx";
-import {RouterComponent} from "./components/basic/RouterComponent.tsx";
 import {FunctionScriptInput} from "./components/custom-inputs/FunctionScriptInput.tsx";
 import {CrudSettingsFormConfig} from "./components/custom-inputs/CrudSettingsFormConfig.tsx";
 import {CrudSettingsGridConfig} from "./components/custom-inputs/CrudSettingsGridConfig.tsx";
+import {DashboardLayout} from "./layout";
+import {Test} from "./test/test.tsx";
+import {CrudPage} from "./pages/crud-page/CrudPage.tsx";
 
 ModuleService.registerLocalModuleAwait(RecordService.list<Layout>('ui', 'Layout').then(layouts => {
     const exports: ExportOptions = {}
@@ -29,9 +31,11 @@ ModuleService.registerLocalModule({
         ActionExecuteFunction: new ActionExecuteFunction(),
         FunctionScriptInput: FunctionScriptInput,
         Form: Form,
-        Router: RouterComponent,
         CrudSettingsFormConfig: CrudSettingsFormConfig,
         CrudSettingsGridConfig: CrudSettingsGridConfig,
+        DashboardLayout: DashboardLayout,
+        Test: Test,
+        CrudPage: CrudPage
     },
     name: 'CoreUI',
 })

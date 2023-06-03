@@ -1,49 +1,54 @@
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom'
-import { Test } from './test/test'
-import { Login } from './pages/login/login'
-import React, { JSX, useEffect } from 'react'
-import { AppDesigner } from './pages/app-designer'
-import { CrudPage } from './pages/crud-page/CrudPage'
-import {TokenService} from "./service";
-import {BaseLayout, DashboardLayout} from "./layout";
+import {BrowserRouter as Router, Route, Routes, useParams} from 'react-router-dom'
+import React, {JSX} from 'react'
+import {BaseLayout} from "./layout";
+import {useRecordByName} from "./hooks/record.ts";
+import {Route as RouteItem, Router as RouterModel, RouterName} from "./model/ui/router.ts";
+import {DynamicComponent} from "./components/dynamic/DynamicComponent.tsx";
 
-function Dashboard (): JSX.Element {
-  const isLoggedIn = TokenService.isLoggedIn()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login')
-    }
-  })
-  if (!isLoggedIn) {
-    return <></>
-  }
-
-  return <>
-    <DashboardLayout>
-      <Routes>
-        <Route path="test" element={<Test></Test>}/>
-        <Route path="app-designer" element={<AppDesigner/>}/>
-        {/* Cruds */}
-        <Route path='/crud/:namespace/:resource/*' element={(
-            <CrudPage/>
-        )}/>
-      </Routes>
-    </DashboardLayout>
-  </>
+export interface RouteElementComponentProps {
+    route: RouteItem
 }
 
-export function App (): JSX.Element {
-  return (
-    <BaseLayout>
-      <Router>
-        <Routes>
-          <Route path="/dashboard/*" element={<Dashboard></Dashboard>}/>
-          <Route path="/login" element={<Login></Login>}/>
-        </Routes>
-      </Router>
-    </BaseLayout>
-  )
+export function RouteElementComponent(props: RouteElementComponentProps) {
+    const params = useParams()
+
+    const route = props.route
+
+    const componentProps = {
+        ...params,
+        ...route.params,
+    }
+
+    if (route.routes) {
+        return <DynamicComponent component={route.component} componentProps={componentProps}>
+            <RouterComponent routes={route.routes}/>
+        </DynamicComponent>
+    } else {
+        return <DynamicComponent component={route.component} componentProps={componentProps}></DynamicComponent>
+    }
+}
+
+export interface RouterComponentProps {
+    routes: RouteItem[]
+}
+
+function RouterComponent(props: RouterComponentProps) {
+    return <Routes>
+        {props.routes.map(route => {
+            return <Route key={route.path} path={route.path} element={<RouteElementComponent route={route}/>}></Route>
+        })}
+    </Routes>
+}
+
+export function App(): JSX.Element {
+    const router = useRecordByName<RouterModel>(RouterName, 'ui', 'main')
+
+    return (
+        <BaseLayout>
+            <Router>
+                {router && <RouterComponent routes={router.routes}/>}
+            </Router>
+        </BaseLayout>
+    )
 }
 
