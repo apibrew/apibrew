@@ -1,0 +1,43 @@
+type: resource
+name: Layout
+namespace: ui
+description: Layout is a collection of components
+types:
+  - name: LayoutComponent
+    properties:
+      - name: component
+        type: STRING
+        required: true
+      - name: $syntax
+        type: OBJECT
+      - name: params
+        type: OBJECT
+      - name: children
+        type: LIST
+        item:
+          type: STRUCT
+          typeRef: LayoutComponent
+  - name: InputParameter
+    properties:
+      - name: name
+        type: STRING
+        required: true
+        unique: true
+      - name: type
+        type: STRING
+        required: true
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: input
+    type: LIST
+    item:
+      type: STRUCT
+      typeRef: InputParameter
+  - name: layoutComponent
+    type: STRUCT
+    required: true
+    typeRef: LayoutComponent
