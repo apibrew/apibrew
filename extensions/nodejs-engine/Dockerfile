@@ -1,4 +1,4 @@
-FROM node
+FROM node:20-alpine
 
 ENV NODE_ENV production
 
@@ -6,14 +6,15 @@ ENV NODE_ENV production
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package.json ./
+COPY package.json .
+COPY yarn.lock .
+COPY tsconfig.json .
 
-RUN npm install --production --frozen-lockfile
+RUN yarn
 
 COPY . .
-COPY src/proto ./dist/proto
 
-RUN npm run build
+RUN yarn build
 
 USER node
 EXPOSE 23619

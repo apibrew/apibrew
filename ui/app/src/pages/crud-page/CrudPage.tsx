@@ -1,12 +1,10 @@
 import { Crud } from '@apibrew/core-ui'
+import {useParams} from "react-router-dom";
 
-export interface CrudPageProps {
-  namespace: string
-  resource: string
-}
+export function CrudPage () {
+  const params = useParams()
 
-export function CrudPage (props: CrudPageProps) {
   return (
-    <Crud namespace={props.namespace} resource={props.resource}/>
+    <Crud namespace={params.namespace as string} resource={params.resource as string}/>
   )
 }

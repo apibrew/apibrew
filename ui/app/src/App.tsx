@@ -26,8 +26,9 @@ function Dashboard (): JSX.Element {
         <Route path="test" element={<Test></Test>}/>
         <Route path="app-designer" element={<AppDesigner/>}/>
         {/* Cruds */}
-        <Route path="country/*" element={<CrudPage namespace="default" resource="country"/>}/>
-        <Route path="city/*" element={<CrudPage namespace="default" resource="city"/>}/>
+        <Route path='/crud/:namespace/:resource/*' element={(
+            <CrudPage/>
+        )}/>
       </Routes>
     </DashboardLayout>
   </>

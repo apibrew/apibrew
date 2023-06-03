@@ -1,12 +1,12 @@
-import {Resource} from "./proto/model/resource_pb";
-import {Server, ServerCredentials} from "@grpc/grpc-js";
-import {FunctionService, IFunctionServer} from "./proto/ext/function_grpc_pb";
-import {FunctionCallResponse} from "./proto/ext/function_pb";
 import {initExtensions} from "./registrator";
 import {handle} from "./handler";
-import {ENGINE_ADDR} from "./config";
 import {load} from "./store";
 import {reloadInternal} from "./function-registry";
+import * as http2 from "http2";
+import {connectNodeAdapter} from "@bufbuild/connect-node";
+import {ConnectRouter} from "@bufbuild/connect";
+import {Function} from "./gen/ext/function_connect";
+import {FunctionCallRequest, FunctionCallResponse} from "./gen/ext/function_pb";
 
 const promises = [
     initExtensions(),
@@ -20,25 +20,21 @@ Promise.all(promises).then(() => {
     reloadInternal()
 })
 
-const server = new Server();
+const routes = (router: ConnectRouter) =>
+    router.service(Function, {
+        // implements rpc Say
+        async functionCall(req: FunctionCallRequest) {
+            const response = new FunctionCallResponse()
+            response.event = await handle(req.name, req.event)
+            return response
+        },
+    });
 
-const functionCallHandler: IFunctionServer['functionCall'] = (call, callback) => {
-    console.log('Function call:', call.request.getName())
-
-
-    handle(call.request.getName(), call.request.getEvent()).then(processedEvent => {
-        const response = new FunctionCallResponse()
-        response.setEvent(processedEvent)
-        callback(null, response)
-    }, err => {
-        callback(err, null)
-    })
-}
-
-server.addService(FunctionService, {
-    functionCall: functionCallHandler
-})
-
-server.bindAsync(ENGINE_ADDR, ServerCredentials.createInsecure(), () => {
-    server.start();
-});
+http2.createServer(
+    connectNodeAdapter({
+        routes,
+        grpc: true,
+        grpcWeb: false,
+        connect: false,
+    }) // responds with 404 for other requests
+).listen(23619);

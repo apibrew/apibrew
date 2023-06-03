@@ -1,7 +1,4 @@
-import {Event} from "./proto/model/event_pb";
-import {functionIdMap, functionMap} from "./function-registry";
-import {Value} from "google-protobuf/google/protobuf/struct_pb";
-import {Record} from './proto/model/record_pb'
+import {functionIdMap, functionMap, reloadInternal} from "./function-registry";
 import {load, read} from "./store";
 import {
     ExecuteFunction,
@@ -11,8 +8,10 @@ import {
 } from "./const";
 import {Function} from './model/function'
 import {ResourceRule, ResourceRuleName} from "./model/resource-rule";
-import Action = Event.Action;
 import {FunctionTrigger, FunctionTriggerName} from "./model/function-trigger";
+import {Event_Action, Event} from "./gen/model/event_pb";
+import {JsonValue, Struct, Value} from "@bufbuild/protobuf";
+import {Record} from './gen/model/record_pb'
 
 const {VM} = require('vm2');
 
@@ -34,24 +33,24 @@ export async function executeFunction<R>(fn: Function, params: object): Promise<
 }
 
 async function handleFunctionExecutionCall(event: Event) {
-    for (const record of event.getRecordsList()) {
+    for (const record of event.records) {
         try {
-            const fnFields = record.getPropertiesMap().get('function').getStructValue().getFieldsMap()
-            const packageName = fnFields.get('package').getStringValue()
-            const name = fnFields.get('name').getStringValue()
-            const input = record.getPropertiesMap().get('input')?.getStructValue()?.toJavaScript()
-
+            const fnParams = (record.properties.function.kind.value as Struct).fields
+            const packageName = fnParams.package.toJson() as string
+            const name =  fnParams.name.toJson() as string
+            const input = record.properties.input.toJson() as object
             const fn = locateFunction(packageName, name)
 
             const output = (await executeFunction(fn, input) ?? {ok: true});
 
-            record.getPropertiesMap().set('output', Value.fromJavaScript(output))
-            record.getPropertiesMap().set('status', Value.fromJavaScript('success'))
-        } catch (e) {
-            console.log(e)
+            record.properties.output = Value.fromJson(output as JsonValue)
 
-            record.getPropertiesMap().set('error', Value.fromJavaScript(e.message))
-            record.getPropertiesMap().set('status', Value.fromJavaScript('error'))
+            record.properties.status = Value.fromJson('success')
+        } catch (e) {
+            console.error(e)
+
+            record.properties.error = Value.fromJson(e.message)
+            record.properties.status = Value.fromJson('error')
         }
     }
 
@@ -59,38 +58,38 @@ async function handleFunctionExecutionCall(event: Event) {
 }
 
 function locateRulesListeningToEvent(event: Event): ResourceRule[] {
-    if (event.getAction() != Action.CREATE && event.getAction() != Action.UPDATE) {
+    if (event.action != Event_Action.CREATE && event.action != Event_Action.UPDATE) {
         return []
     }
     const rules = read<ResourceRule>('logic', ResourceRuleName)
 
-    return rules.filter(rule => rule.namespace == event.getResource().getNamespace() && rule.resource == event.getResource().getName())
+    return rules.filter(rule => rule.namespace == event.resource.namespace && rule.resource == event.resource.name)
 }
 
 function locateTriggersListeningToEvent(event: Event): FunctionTrigger[] {
-    if (event.getAction() != Action.CREATE && event.getAction() != Action.UPDATE) {
+    if (event.action != Event_Action.CREATE && event.action != Event_Action.UPDATE) {
         return []
     }
     const triggers = read<FunctionTrigger>('logic', FunctionTriggerName)
 
     return triggers.filter(trigger => {
-        if (trigger.async == event.getSync()) {
-            console.log('trigger async mismatch', trigger.async, event.getSync())
+        if (trigger.async == event.sync) {
+            console.log('trigger async mismatch', trigger.async, event.sync)
             return false
         }
 
-        if (trigger.resource != '*' && trigger.resource != event.getResource().getName()) {
-            console.log('trigger resource mismatch', trigger.resource, event.getResource().getName())
+        if (trigger.resource != '*' && trigger.resource != event.resource.name) {
+            console.log('trigger resource mismatch', trigger.resource, event.resource.name)
             return false
         }
 
-        if (trigger.namespace != '*' && trigger.namespace != event.getResource().getNamespace()) {
-            console.log('trigger namespace mismatch', trigger.namespace, event.getResource().getNamespace())
+        if (trigger.namespace != '*' && trigger.namespace != event.resource.namespace) {
+            console.log('trigger namespace mismatch', trigger.namespace, event.resource.namespace)
             return false
         }
 
-        if (trigger.action != eventActionToString(event.getAction())) {
-            console.log('trigger action mismatch', trigger.action, event.getAction().toString().toLowerCase())
+        if (trigger.action != eventActionToString(event.action)) {
+            console.log('trigger action mismatch', trigger.action, event.action.toString().toLowerCase())
             return false
         }
 
@@ -98,17 +97,17 @@ function locateTriggersListeningToEvent(event: Event): FunctionTrigger[] {
     })
 }
 
-export function eventActionToString(action: Event.Action) {
+export function eventActionToString(action: Event_Action) {
     switch (action) {
-        case Event.Action.CREATE:
+        case Event_Action.CREATE:
             return 'create'
-        case Event.Action.UPDATE:
+        case Event_Action.UPDATE:
             return 'update'
-        case Event.Action.DELETE:
+        case Event_Action.DELETE:
             return 'delete'
-        case Event.Action.LIST:
+        case Event_Action.LIST:
             return 'list'
-        case Event.Action.GET:
+        case Event_Action.GET:
             return 'get'
         default:
             return 'unknown'
@@ -118,18 +117,21 @@ export function eventActionToString(action: Event.Action) {
 function recordToEntity(record: Record) {
     const entity = {}
 
-    record.getPropertiesMap().forEach((entry, key) => {
-        entity[key] = entry.toJavaScript()
-    })
+    for (const key of Object.keys(record.properties)) {
+        const entry = record.properties[key]
+
+        entity[key] = entry.toJson()
+    }
+
     return entity;
 }
 
 async function handleResourceOperationTrigger(event: Event): Promise<Event> {
-    console.log('Handling resource operation trigger', eventActionToString(event.getAction()))
+    console.log('Handling resource operation trigger', eventActionToString(event.action))
 
     const triggers = locateTriggersListeningToEvent(event)
 
-    for (const record of event.getRecordsList()) {
+    for (const record of event.records) {
         for (const trigger of triggers) {
             console.log('Handling trigger', trigger.name)
             const fn = functionIdMap[trigger.function.id]
@@ -147,11 +149,11 @@ async function handleResourceOperationTrigger(event: Event): Promise<Event> {
 
             }
 
-            for (const property of event.getResource().getPropertiesList()) {
-                if (output[property.getName()] === record.getPropertiesMap().get(property.getName())) {
+            for (const property of event.resource.properties) {
+                if (output[property.name] === record.properties[property.name]) {
                     continue
                 }
-                record.getPropertiesMap().set(property.getName(), Value.fromJavaScript(output[property.getName()]))
+                record.properties[property.name] = Value.fromJson(output[property.name])
             }
         }
     }
@@ -160,11 +162,11 @@ async function handleResourceOperationTrigger(event: Event): Promise<Event> {
 }
 
 async function handleResourceOperationRule(event: Event): Promise<Event> {
-    console.log('Handling resource operation rule', eventActionToString(event.getAction()))
+    console.log('Handling resource operation rule', eventActionToString(event.action))
 
     const rules = locateRulesListeningToEvent(event)
 
-    for (const record of event.getRecordsList()) {
+    for (const record of event.records) {
         for (const rule of rules) {
             console.log('Handling rule', rule.name)
             const fn = functionIdMap[rule.conditionFunction.id]
@@ -174,6 +176,8 @@ async function handleResourceOperationRule(event: Event): Promise<Event> {
             const output = await executeFunction(fn, {
                 entity: entity
             })
+
+            console.log('output', output)
 
             if (output === false) {
                 throw new Error(`Rule condition failed: ${rule.name}`)
@@ -193,10 +197,12 @@ export async function handle(fnName: string, event: Event): Promise<Event> {
 
     switch (fnName) {
         case WatchLogicResources:
-            if (event.getResource().getNamespace() != 'logic') {
+            if (event.resource.namespace != 'logic') {
                 throw new Error('WatchLogicResources can only be called for logic namespace')
             }
-            load('logic', event.getResource().getName())
+            load('logic', event.resource.name).then(() => {
+                reloadInternal()
+            })
             return
         case ExecuteFunction:
             return handleFunctionExecutionCall(event)
