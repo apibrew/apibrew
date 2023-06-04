@@ -2,10 +2,12 @@ package apbr
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/formats"
 	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"github.com/yargevad/filepathx"
 	"os"
@@ -58,7 +60,8 @@ var applyCmd = &cobra.Command{
 				filenames, err := filepathx.Glob(inputFilePath)
 
 				if err != nil {
-					return fmt.Errorf("failed to get files: %w", err)
+					log.Fatalf("failed to get files: %s", err)
+					return nil
 				}
 
 				for _, filename := range filenames {
@@ -66,7 +69,8 @@ var applyCmd = &cobra.Command{
 					err = applyLocal(filename, doMigration, dataOnly, force, format, cmd, args)
 
 					if err != nil {
-						return fmt.Errorf("failed to apply file: %w", err)
+						log.Fatalf("failed to apply file: %s", err)
+						return nil
 					}
 				}
 			} else {
@@ -74,7 +78,8 @@ var applyCmd = &cobra.Command{
 				err := applyLocal(inputFilePath, doMigration, dataOnly, force, format, cmd, args)
 
 				if err != nil {
-					return fmt.Errorf("failed to apply file: %w", err)
+					log.Fatalf("failed to apply file: %s", err)
+					return nil
 				}
 			}
 		}
@@ -174,7 +179,18 @@ func applyLocal(inputFilePath string, doMigration bool, dataOnly bool, force boo
 	}
 
 	if err := executor.Restore(context.Background()); err != nil {
-		return fmt.Errorf("failed to restore resources: %w", err)
+		errorCode := util.GetErrorCode(err)
+		errorFields := util.GetErrorFields(err)
+
+		errorFieldsJson, err := json.MarshalIndent(errorFields, "", "  ")
+
+		if err != nil {
+			return fmt.Errorf("failed to marshal error fields: %w", err)
+		}
+
+		errorStr := fmt.Sprintf("errorCode: %s, errorFields: \n%s", errorCode, string(errorFieldsJson))
+
+		return errors.New(errorStr)
 	}
 
 	return nil
