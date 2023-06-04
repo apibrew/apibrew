@@ -22,6 +22,23 @@ var SystemDataSource = &model.DataSource{
 	},
 }
 
+var DefaultDataSource = &model.DataSource{
+	Id:          "default",
+	Backend:     model.DataSourceBackendType_POSTGRESQL,
+	Name:        "default",
+	Description: "default",
+	Params: &model.DataSource_PostgresqlParams{
+		PostgresqlParams: &model.PostgresqlParams{
+			Username:      "dh_test",
+			Password:      "dh_test",
+			Host:          "127.0.0.1",
+			Port:          5432,
+			DbName:        "dh_test",
+			DefaultSchema: "public",
+		},
+	},
+}
+
 var DhTest = &model.DataSource{
 	Backend:     model.DataSourceBackendType_POSTGRESQL,
 	Name:        "dh-test",
