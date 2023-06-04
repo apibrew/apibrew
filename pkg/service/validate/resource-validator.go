@@ -112,10 +112,10 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 
 		// check for additional fields
 		if prop.DefaultValue != nil && prop.DefaultValue.AsInterface() != nil {
-			errorFields = append(errorFields, ValidatePropertyPackedValue(resource, prop, resource.Id, "", prop.DefaultValue)...)
+			errorFields = append(errorFields, PropertyPackedValue(resource, prop, resource.Id, "", prop.DefaultValue)...)
 		}
 		if prop.ExampleValue != nil && prop.ExampleValue.AsInterface() != nil {
-			errorFields = append(errorFields, ValidatePropertyPackedValue(resource, prop, resource.Id, "", prop.ExampleValue)...)
+			errorFields = append(errorFields, PropertyPackedValue(resource, prop, resource.Id, "", prop.ExampleValue)...)
 		}
 	}
 	return errorFields

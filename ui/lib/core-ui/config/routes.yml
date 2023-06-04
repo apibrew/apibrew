@@ -2,16 +2,27 @@ type: record
 namespace: ui
 resource: Router
 properties:
-  name: main
+  name: system
   routes:
     - path: /dashboard/*
       component: CoreUI/DashboardLayout
+      system: false
       routes:
-        - path: test
-          component: CoreUI/Test
         - path: app-designer
           component: CoreUI/AppDesigner
-        - path: /crud/:namespace/:resource/*
+          system: true
+        - path: crud/:namespace/:resource/*
           component: CoreUI/CrudPage
+          system: true
+        - path: test
+          system: false
+          component: CoreUI/Test
     - path: /login
       component: CoreUI/Login
+      system: true
+    - path: /
+      component: Router/Forward
+      system: true
+      params:
+        to: /dashboard
+        system: true

@@ -12,11 +12,11 @@ var SystemDataSource = &model.DataSource{
 	Description: "system",
 	Params: &model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "root",
-			Password:      "root",
+			Username:      "dh_test",
+			Password:      "dh_test",
 			Host:          "127.0.0.1",
 			Port:          5432,
-			DbName:        "dh_system",
+			DbName:        "dh_test",
 			DefaultSchema: "public",
 		},
 	},

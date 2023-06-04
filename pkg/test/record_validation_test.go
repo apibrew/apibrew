@@ -366,12 +366,7 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 		for _, prop := range resource.Properties {
 			switch typ {
 			case model.ResourceProperty_ENUM:
-				prop.EnumValues = []*structpb.Value{
-					structpb.NewStringValue("enum1"),
-					structpb.NewStringValue("enum2"),
-					structpb.NewStringValue("enum3"),
-					structpb.NewStringValue("enum4"),
-				}
+				prop.EnumValues = []string{"enum1", "enum2", "enum3", "enum4"}
 			case model.ResourceProperty_MAP:
 				prop.Item = &model.ResourceProperty{
 					Type: model.ResourceProperty_STRING,

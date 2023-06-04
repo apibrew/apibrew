@@ -13,10 +13,12 @@ types:
         type: STRING
         length: 255
         required: true
+      - name: system
+        type: BOOL
+        required: false
+        defaultValue: false
       - name: params
-        type: LIST
-        item:
-          type: OBJECT
+        type: OBJECT
       - name: routes
         type: LIST
         item:

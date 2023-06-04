@@ -40,6 +40,7 @@ ModuleService.registerLocalModule({
         CrudSettingsGridConfig: lazyComponent(() => import("./components/custom-inputs/CrudSettingsGridConfig"), 'CrudSettingsGridConfig'),
         Test: lazyComponent(() => import("./test/test"), 'Test'),
         CrudPage: lazyComponent(() => import("./pages/crud-page/CrudPage"), 'CrudPage'),
+        AppDesigner: lazyComponent(() => import("./pages/app-designer/index.tsx"), 'AppDesigner'),
     },
     name: 'CoreUI',
 })

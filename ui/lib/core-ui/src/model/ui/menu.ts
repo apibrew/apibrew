@@ -5,6 +5,7 @@
 
 export interface MenuItem {
      title: string;
+     system?: boolean;
      link?: string;
      icon?: string;
      target?: 'internal' | 'external' | 'external-redirect';
@@ -16,7 +17,6 @@ export interface MenuItem {
 export interface Menu {
     id: string;
 name: string;
-title: string;
 children: MenuItem[];
 version: number;
 
@@ -27,8 +27,6 @@ export const MenuName = "Menu";
 export const MenuIdName = "Id";
 
 export const MenuNameName = "Name";
-
-export const MenuTitleName = "Title";
 
 export const MenuChildrenName = "Children";
 

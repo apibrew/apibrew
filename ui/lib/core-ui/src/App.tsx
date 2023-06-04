@@ -1,9 +1,10 @@
-import {BrowserRouter as Router, Route, Routes, useParams} from 'react-router-dom'
-import React, {JSX} from 'react'
+import {BrowserRouter as Router, Route, Routes, useNavigate, useParams} from 'react-router-dom'
+import React, {JSX, useEffect} from 'react'
 import {BaseLayout} from "./layout";
 import {useRecordByName} from "./hooks/record.ts";
 import {Route as RouteItem, Router as RouterModel, RouterName} from "./model/ui/router.ts";
 import {DynamicComponent} from "./components/dynamic/DynamicComponent.tsx";
+import {Loading} from "./components/basic/Loading.tsx";
 
 export interface RouteElementComponentProps {
     route: RouteItem
@@ -11,12 +12,23 @@ export interface RouteElementComponentProps {
 
 export function RouteElementComponent(props: RouteElementComponentProps) {
     const params = useParams()
+    const navigate = useNavigate()
 
     const route = props.route
 
     const componentProps = {
         ...params,
         ...route.params,
+    }
+
+    useEffect(() => {
+        if (route.component === 'Router/Forward') {
+            navigate((route.params as any)?.to)
+        }
+    }, [route])
+
+    if (route.component === 'Router/Forward') {
+        return <Loading/>
     }
 
     if (route.routes) {
@@ -41,12 +53,14 @@ function RouterComponent(props: RouterComponentProps) {
 }
 
 export function App(): JSX.Element {
-    const router = useRecordByName<RouterModel>(RouterName, 'ui', 'main')
+    const systemRouter = useRecordByName<RouterModel>(RouterName, 'ui', 'system')
+    const userRouter = useRecordByName<RouterModel>(RouterName, 'ui', 'user')
 
     return (
         <BaseLayout>
             <Router>
-                {router && <RouterComponent routes={router.routes}/>}
+                {systemRouter && <RouterComponent routes={systemRouter.routes}/>}
+                {userRouter && <RouterComponent routes={userRouter.routes}/>}
             </Router>
         </BaseLayout>
     )

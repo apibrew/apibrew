@@ -28,7 +28,13 @@ func GetContainer() abs.Container {
 	return container
 }
 
+func initDb() {
+
+}
+
 func initClient() {
+	initDb()
+
 	log.SetLevel(log.DebugLevel)
 	log.SetReportCaller(false)
 
@@ -40,7 +46,7 @@ func initClient() {
 
 	application.SetInitData(initData)
 
-	application.Init()
+	<-application.Init()
 
 	grpcServer := grpc2.NewGrpcServer(application)
 	grpcServer.Init(initData)

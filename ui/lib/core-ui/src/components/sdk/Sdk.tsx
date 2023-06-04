@@ -1,7 +1,8 @@
-import { Box, MenuItem, Select, Typography } from "@mui/material";
-import { Resource } from "../../model";
+import {Box, MenuItem, Select, Typography} from "@mui/material";
+import {Resource} from "../../model";
 
-import React from "react";
+import React, {JSX} from "react";
+import CurdSdkPlatform from "./CurlSdkPlatform.tsx";
 
 export interface SdkProps {
     resource?: Resource
@@ -17,7 +18,7 @@ export interface SdkPlatform {
 }
 
 export const SdkPlatforms: SdkPlatform[] = [
-
+    CurdSdkPlatform,
 ]
 
 export function Sdk(props: SdkProps): JSX.Element {
@@ -28,9 +29,9 @@ export function Sdk(props: SdkProps): JSX.Element {
     return <Box display={'flex'} flexDirection={'column'}>
         <Box display={'flex'} m={1}>
             <h2>Platform: </h2>
-            <Select sx={{ width: '400px', m: 1 }}
-                value={platform}
-                onChange={e => setPlatform(e.target.value)}>
+            <Select sx={{width: '400px', m: 1}}
+                    value={platform}
+                    onChange={e => setPlatform(e.target.value)}>
                 {SdkPlatforms.map((platform) => {
                     return <MenuItem value={platform.name}>{platform.name}</MenuItem>
                 })}
@@ -38,7 +39,7 @@ export function Sdk(props: SdkProps): JSX.Element {
         </Box>
 
         <Box display={'flex'} m={1}>
-            <Component resource={props.resource} />
+            <Component resource={props.resource}/>
         </Box>
     </Box>
 }

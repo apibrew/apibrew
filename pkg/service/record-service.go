@@ -153,7 +153,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		log.Print("Normalized record: " + record.Id)
 	}
 
-	if err = validate.ValidateRecords(resource, params.Records, false); err != nil {
+	if err = validate.Records(resource, params.Records, false); err != nil {
 		return nil, err
 	}
 
@@ -302,7 +302,7 @@ func (r *recordService) Apply(ctx context.Context, params abs.RecordUpdateParams
 			})
 
 			if err != nil {
-				return nil, errors.RecordValidationError.WithMessage(err.Error())
+				return nil, err
 			}
 
 			result = append(result, records...)
@@ -380,7 +380,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		util.NormalizeRecord(resource, record)
 	}
 
-	err = validate.ValidateRecords(resource, params.Records, true)
+	err = validate.Records(resource, params.Records, true)
 
 	if err != nil {
 		success = false

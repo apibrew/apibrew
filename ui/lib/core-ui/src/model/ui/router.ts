@@ -6,7 +6,8 @@
 export interface Route {
      path: string;
      component: string;
-     params?: object[];
+     system?: boolean;
+     params?: object;
      routes?: Route[];
 
 }

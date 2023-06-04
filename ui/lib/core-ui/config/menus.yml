@@ -2,30 +2,28 @@ type: record
 resource: Menu
 namespace: ui
 properties:
-  name: backend-system-menu
-  title: User
+  name: main
   children:
-    - title: App Designer
-      link: /dashboard/app-designer
-    - title: Logic
+    - title: User
       children:
-        - title: Function
-          link: /dashboard/crud/logic/Function
-        - title: Trigger
-          link: /dashboard/crud/logic/FunctionTrigger
-        - title: Rule
-          link: /dashboard/crud/logic/ResourceRule
-        - title: FunctionExecution
-          link: /dashboard/crud/logic/FunctionExecution
----
-type: record
-resource: Menu
-namespace: ui
-properties:
-  name: backend-user-menu
-  title: Develop
-  children:
-    - title: Country
-      link: /dashboard/crud/default/country
-    - title: City
-      link: /dashboard/crud/default/city
+        - title: App Designer
+          link: /dashboard/app-designer
+        - title: Logic
+          children:
+            - title: Function
+              link: /dashboard/crud/logic/Function
+            - title: Trigger
+              link: /dashboard/crud/logic/FunctionTrigger
+            - title: Rule
+              link: /dashboard/crud/logic/ResourceRule
+            - title: FunctionExecution
+              link: /dashboard/crud/logic/FunctionExecution
+    - title: Develop
+      system: true
+      children:
+        - title: Country
+          system: true
+          link: /dashboard/crud/default/country
+        - title: City
+          system: true
+          link: /dashboard/crud/default/city

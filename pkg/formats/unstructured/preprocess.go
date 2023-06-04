@@ -225,7 +225,7 @@ func (p *preprocessor) checkSyntax(un Unstructured) error {
 			return err
 		}
 
-		err = validate.ValidateRecords(subType, []*model.Record{record}, false)
+		err = validate.Records(subType, []*model.Record{record}, false)
 
 		// recover syntax as it needs to be persisted
 		un["$syntax"] = syntax

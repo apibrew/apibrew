@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func ValidateRecords(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
+func Records(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)
@@ -26,7 +26,7 @@ func ValidateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
-				fieldErrors = append(fieldErrors, ValidatePropertyPackedValue(resource, property, record.Id, "", packedVal)...)
+				fieldErrors = append(fieldErrors, PropertyPackedValue(resource, property, record.Id, "", packedVal)...)
 			}
 
 			var val interface{}
@@ -89,7 +89,7 @@ func ValidateRecords(resource *model.Resource, list []*model.Record, isUpdate bo
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
-func ValidatePropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
+func PropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
 	if value == nil {
 		return nil
 	}
@@ -149,7 +149,7 @@ func ValidatePropertyPackedValue(resource *model.Resource, property *model.Resou
 			var errorFields []*model.ErrorField
 
 			for i, item := range listValue.ListValue.Values {
-				errorFields = append(errorFields, ValidatePropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
+				errorFields = append(errorFields, PropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
 			}
 			return errorFields
 		} else {
@@ -165,7 +165,7 @@ func ValidatePropertyPackedValue(resource *model.Resource, property *model.Resou
 			var errorFields []*model.ErrorField
 
 			for key, item := range listValue.StructValue.Fields {
-				errorFields = append(errorFields, ValidatePropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
+				errorFields = append(errorFields, PropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
 			}
 
 			return errorFields
@@ -261,7 +261,7 @@ func ValidatePropertyPackedValue(resource *model.Resource, property *model.Resou
 					}
 				}
 
-				errorFields = append(errorFields, ValidatePropertyPackedValue(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
+				errorFields = append(errorFields, PropertyPackedValue(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
 			}
 
 			for key := range structValue.StructValue.Fields {

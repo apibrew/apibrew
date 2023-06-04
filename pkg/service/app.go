@@ -62,7 +62,7 @@ func (app *App) GetDataSourceService() abs.DataSourceService {
 	return app.dataSourceService
 }
 
-func (app *App) Init() {
+func (app *App) Init() <-chan interface{} {
 	app.backendEventHandler = backend_event_handler.NewBackendEventHandler()
 
 	app.backendProviderService = NewBackendProviderService(app.backendEventHandler)
@@ -81,7 +81,13 @@ func (app *App) Init() {
 	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.backendEventHandler, app.externalService)
 	app.authenticationService = NewAuthenticationService(app.recordService)
 
-	go app.initServices()
+	initSignal := make(chan interface{})
+	go func() {
+		app.initServices()
+		initSignal <- nil
+	}()
+
+	return initSignal
 }
 
 func (app *App) initServices() {
