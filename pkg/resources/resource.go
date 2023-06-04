@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 )
 
@@ -13,12 +14,12 @@ var ResourceResource = &model.Resource{
 		Entity:     "resource",
 	},
 	Properties: []*model.ResourceProperty{
-		IdProperty,
-		VersionProperty,
-		AuditProperties[0],
-		AuditProperties[1],
-		AuditProperties[2],
-		AuditProperties[3],
+		special.IdProperty,
+		special.VersionProperty,
+		special.AuditProperties[0],
+		special.AuditProperties[1],
+		special.AuditProperties[2],
+		special.AuditProperties[3],
 		{
 			Name:     "name",
 			Mapping:  "name",
@@ -105,7 +106,7 @@ var ResourceResource = &model.Resource{
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},
-		securityContextProperty,
+		special.SecurityContextProperty,
 		{
 			Name:     "title",
 			Mapping:  "title",
@@ -136,7 +137,7 @@ var ResourceResource = &model.Resource{
 			Unique: true,
 		},
 	},
-	SecurityContext: securityContextDisallowAll,
+	SecurityContext: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

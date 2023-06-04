@@ -32,8 +32,8 @@ message SecurityConstraint {
   google.protobuf.Timestamp before = 5; // before it is valid
   google.protobuf.Timestamp after = 6; // after it is valid
 
-  repeated string principal = 7; // usernames which it is applied to
-  repeated string role = 8; // roles which it is applied to
+  string principal = 7; // usernames which it is applied to
+//  repeated string role = 8; // roles which it is applied to
   repeated string recordIds = 9; // list of record ids which it is applied to
 
   OperationType operation = 13; // operation name which it is applied to

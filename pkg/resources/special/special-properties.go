@@ -1,4 +1,4 @@
-package resources
+package special
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"

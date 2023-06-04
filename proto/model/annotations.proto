@@ -29,7 +29,13 @@ option java_package = "org.openapi_v3";
 // the future. 'GPB' is reserved for the protocol buffer implementation itself.
 option objc_class_prefix = "OAS";
 
+message Annotation {
+  string name = 1;
+  string value = 2;
+}
+
 extend google.protobuf.MessageOptions {
+  string resourceName = 1012; // create only?
   string resourceNamespace = 1003; // create only?
 
   string resourceDataSource = 1004;
@@ -41,6 +47,8 @@ extend google.protobuf.MessageOptions {
   bool resourceVirtual = 1009;
   bool resourceImmutable = 1010;
   uint32 resourceVersion = 1011;
+  repeated Annotation resourceAnnotations = 1013;
+  bool securityContextDisallowAll = 1014;
 }
 
 extend google.protobuf.FieldOptions {
@@ -50,6 +58,7 @@ extend google.protobuf.FieldOptions {
   bool propertyUnique = 2004;
   SecurityContext propertySecurityContext = 2005;
   Reference propertyReference = 2006;
-  ResourceProperty.Type propertySubType = 2007;
   bool propertyImmutable = 2008;
+  ResourceProperty.Type propertyType = 2009;
+  repeated Annotation propertyAnnotations = 2010;
 }

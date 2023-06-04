@@ -2,7 +2,7 @@ package util
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"google.golang.org/protobuf/proto"
 )
@@ -74,7 +74,7 @@ func RemarkResource(resource *model.Resource) {
 
 	if !annotations.IsEnabled(resource, annotations.EnableAudit) {
 		auditPropertyCount := 0
-		for _, prop := range resources.AuditProperties {
+		for _, prop := range special.AuditProperties {
 			if propertyNameMap[prop.Name] != nil && propertyNameMap[prop.Name].Type == prop.Type {
 				auditPropertyCount++
 			}
@@ -86,7 +86,7 @@ func RemarkResource(resource *model.Resource) {
 	}
 
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		if propertyNameMap[resources.VersionProperty.Name] == nil || propertyNameMap[resources.VersionProperty.Name].Type != resources.VersionProperty.Type {
+		if propertyNameMap[special.VersionProperty.Name] == nil || propertyNameMap[special.VersionProperty.Name].Type != special.VersionProperty.Type {
 			annotations.Enable(resource, annotations.DisableVersion)
 		}
 	}
@@ -101,23 +101,23 @@ func NormalizeResource(resource *model.Resource) {
 
 	if annotations.IsEnabled(resource, annotations.EnableAudit) {
 		exists := false
-		for _, prop := range resources.AuditProperties {
+		for _, prop := range special.AuditProperties {
 			if propertyNameMap[prop.Name] != nil {
 				exists = true
 				break
 			}
 		}
 		if !exists {
-			resource.Properties = append(resource.Properties, resources.AuditProperties...)
+			resource.Properties = append(resource.Properties, special.AuditProperties...)
 		}
 	}
 
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) && propertyNameMap[resources.VersionProperty.Name] == nil {
-		resource.Properties = append(resource.Properties, resources.VersionProperty)
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) && propertyNameMap[special.VersionProperty.Name] == nil {
+		resource.Properties = append(resource.Properties, special.VersionProperty)
 	}
 
-	if !HasResourcePrimaryProp(resource) && propertyNameMap[resources.IdProperty.Name] == nil {
-		resource.Properties = append([]*model.ResourceProperty{resources.IdProperty}, resource.Properties...)
+	if !HasResourcePrimaryProp(resource) && propertyNameMap[special.IdProperty.Name] == nil {
+		resource.Properties = append([]*model.ResourceProperty{special.IdProperty}, resource.Properties...)
 	}
 
 	annotations.Enable(resource, annotations.NormalizedResource)

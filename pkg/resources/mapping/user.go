@@ -14,7 +14,7 @@ func UserToRecord(user *model.User) *model.Record {
 		properties["details"] = structpb.NewStructValue(user.Details)
 	}
 
-	properties["securityContext"] = SecurityContextToValue(user.SecurityContext)
+	//properties["securityContext"] = SecurityContextToValue(user.SecurityContext)
 
 	mapSpecialColumnsToRecord(user, &properties)
 
@@ -41,7 +41,7 @@ func UserFromRecord(record *model.Record) *model.User {
 		user.Password = record.Properties["password"].GetStringValue()
 	}
 
-	user.SecurityContext = SecurityContextFromValue(record.Properties["securityContext"])
+	//user.SecurityContext = SecurityContextFromValue(record.Properties["securityContext"])
 
 	if record.Properties["details"] != nil {
 		user.Details = record.Properties["details"].GetStructValue()
