@@ -3,3 +3,12 @@ syntax = "proto3";
 package model;
 
 option go_package = "github.com/apibrew/apibrew/pkg/model";
+
+import "google/protobuf/descriptor.proto";
+
+
+extend google.protobuf.FieldOptions {
+  string hcl_block = 1144;
+  string hcl_label = 1145;
+  bool hcl_ignore = 1146;
+}

@@ -8,7 +8,7 @@ import 'google/protobuf/struct.proto';
 import 'model/audit.proto';
 import 'model/common.proto';
 import 'model/security.proto';
-import 'model/annotations.proto';
+import 'model/hcl.proto';
 
 message User {
   string id = 1 [(model.hcl_ignore) = true];

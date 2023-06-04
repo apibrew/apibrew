@@ -1,17 +1,3 @@
-// Copyright 2022 Google LLC. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 syntax = "proto3";
 
 package model;
@@ -19,6 +5,8 @@ package model;
 option go_package = "github.com/apibrew/apibrew/pkg/model";
 
 import "google/protobuf/descriptor.proto";
+import "model/security.proto";
+import "model/resource.proto";
 
 // This option lets the proto compiler generate Java code inside the package
 // name (see below) instead of inside an outer class. It creates a simpler
@@ -41,9 +29,27 @@ option java_package = "org.openapi_v3";
 // the future. 'GPB' is reserved for the protocol buffer implementation itself.
 option objc_class_prefix = "OAS";
 
+extend google.protobuf.MessageOptions {
+  string resourceNamespace = 1003; // create only?
+
+  string resourceDataSource = 1004;
+  string resourceCatalog = 1005;
+  string resourceEntity = 1006;
+
+  repeated ResourceIndex resourceIndexes = 1007;
+  SecurityContext resourceSecurityContext = 1008;
+  bool resourceVirtual = 1009;
+  bool resourceImmutable = 1010;
+  uint32 resourceVersion = 1011;
+}
 
 extend google.protobuf.FieldOptions {
-  string hcl_block = 1144;
-  string hcl_label = 1145;
-  bool hcl_ignore = 1146;
+  string propertyMapping = 2001;
+  bool propertyPrimary = 2002;
+  uint32 propertyLength = 2003;
+  bool propertyUnique = 2004;
+  SecurityContext propertySecurityContext = 2005;
+  Reference propertyReference = 2006;
+  ResourceProperty.Type propertySubType = 2007;
+  bool propertyImmutable = 2008;
 }

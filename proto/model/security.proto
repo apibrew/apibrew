@@ -5,7 +5,7 @@ package model;
 option go_package = "github.com/apibrew/apibrew/pkg/model";
 
 import 'google/protobuf/timestamp.proto';
-import 'model/annotations.proto';
+import 'model/hcl.proto';
 
 enum OperationType {
   OPERATION_TYPE_READ = 0;

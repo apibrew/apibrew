@@ -7,7 +7,7 @@ option go_package = "github.com/apibrew/apibrew/pkg/model";
 import 'model/audit.proto';
 import 'model/common.proto';
 import 'model/external.proto';
-import 'model/annotations.proto';
+import 'model/hcl.proto';
 import 'model/event.proto';
 
 message Extension {
