@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package model;
 
-import "model/annotations.proto";
+import "model/hcl.proto";
 
 option go_package = "github.com/apibrew/apibrew/pkg/model";
 

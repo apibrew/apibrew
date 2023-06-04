@@ -20,7 +20,3 @@ plugins:
 #    strategy: all
 #    out: ../docs/content/
 #    opt: ../docs/content/proto.tmpl,proto.md
-#  - name: es
-#    out: ../extensions/nodejs-engine/src/proto
-#    opt: target=ts
-#    strategy: all

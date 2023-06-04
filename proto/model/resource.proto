@@ -8,7 +8,7 @@ import 'model/audit.proto';
 import 'model/query.proto';
 import 'model/common.proto';
 import 'model/security.proto';
-import 'model/annotations.proto';
+import 'model/hcl.proto';
 import 'google/protobuf/struct.proto';
 import "google/protobuf/descriptor.proto";
 
