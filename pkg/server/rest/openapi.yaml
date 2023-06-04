@@ -1357,6 +1357,12 @@ paths:
                   in: query
                   schema:
                     type: string
+                - name: user.roles
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
                 - name: user.auditData.createdOn
                   in: query
                   schema:
@@ -1419,6 +1425,12 @@ paths:
                   in: query
                   schema:
                     type: string
+                - name: user.roles
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
                 - name: user.auditData.createdOn
                   in: query
                   schema:
@@ -2682,7 +2694,13 @@ components:
                     type: string
                     format: date-time
                 principal:
-                    type: string
+                    type: array
+                    items:
+                        type: string
+                role:
+                    type: array
+                    items:
+                        type: string
                 recordIds:
                     type: array
                     items:
@@ -2867,12 +2885,14 @@ components:
                     type: string
                 password:
                     type: string
-                securityContext:
-                    $ref: '#/components/schemas/SecurityContext'
                 details:
                     type: object
                 signKey:
                     type: string
+                roles:
+                    type: array
+                    items:
+                        type: string
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:

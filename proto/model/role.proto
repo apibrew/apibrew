@@ -10,13 +10,11 @@ import 'model/common.proto';
 import 'model/security.proto';
 import 'model/annotations.proto';
 
-message User {
+message Role {
   string id = 1 [(model.hcl_ignore) = true];
-  string username = 3 [(model.hcl_label) = "name"]; // principal
-  string password = 4;
+  string name = 2;
+  SecurityContext securityContext = 5 [(model.hcl_block) = "securityContext"];
   google.protobuf.Struct details = 6;
-  string signKey = 7; // rsa pub key to create tokens
-  repeated string roles = 8;
 
   AuditData auditData = 101;
   uint32 version = 102;
