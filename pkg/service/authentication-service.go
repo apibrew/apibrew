@@ -55,8 +55,8 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: abs.UserDetails{
-			Username:        user.Username,
-			SecurityContext: user.SecurityContext,
+			Username: user.Username,
+			//SecurityContext: user.SecurityContext,
 		},
 		ExpiresAt: expiration,
 		Issuer:    "github.com/apibrew/apibrew",
@@ -95,8 +95,8 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 	newToken, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: abs.UserDetails{
-			Username:        user.Username,
-			SecurityContext: user.SecurityContext,
+			Username: user.Username,
+			//SecurityContext: user.SecurityContext,
 		},
 		ExpiresAt: expiration,
 		Issuer:    "github.com/apibrew/apibrew",

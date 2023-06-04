@@ -35,37 +35,37 @@ func prepareInitUsers() []*model.User {
 		{
 			Username: "admin",
 			Password: "admin",
-			SecurityContext: &model.SecurityContext{
-				Constraints: []*model.SecurityConstraint{
-					{
-						Operation: model.OperationType_FULL,
-						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-					},
-				},
-			},
+			//SecurityContext: &model.SecurityContext{
+			//	Constraints: []*model.SecurityConstraint{
+			//		{
+			//			Operation: model.OperationType_FULL,
+			//			Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+			//		},
+			//	},
+			//},
 		},
 		{
 			Username: "dh_test",
 			Password: "dh_test",
-			SecurityContext: &model.SecurityContext{
-				Constraints: []*model.SecurityConstraint{
-					{
-						Resource:  "user",
-						Operation: model.OperationType_OPERATION_TYPE_READ,
-						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-					},
-					{
-						Resource:  "namespace",
-						Operation: model.OperationType_OPERATION_TYPE_CREATE,
-						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-					},
-					{
-						Resource:  "namespace",
-						Operation: model.OperationType_OPERATION_TYPE_READ,
-						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-					},
-				},
-			},
+			//SecurityContext: &model.SecurityContext{
+			//	Constraints: []*model.SecurityConstraint{
+			//		{
+			//			Resource:  "user",
+			//			Operation: model.OperationType_OPERATION_TYPE_READ,
+			//			Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+			//		},
+			//		{
+			//			Resource:  "namespace",
+			//			Operation: model.OperationType_OPERATION_TYPE_CREATE,
+			//			Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+			//		},
+			//		{
+			//			Resource:  "namespace",
+			//			Operation: model.OperationType_OPERATION_TYPE_READ,
+			//			Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+			//		},
+			//	},
+			//},
 		},
 	}
 }

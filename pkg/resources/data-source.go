@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 )
 
@@ -13,12 +14,12 @@ var DataSourceResource = &model.Resource{
 		Entity:     "data_source",
 	},
 	Properties: []*model.ResourceProperty{
-		IdProperty,
-		VersionProperty,
-		AuditProperties[0],
-		AuditProperties[1],
-		AuditProperties[2],
-		AuditProperties[3],
+		special.IdProperty,
+		special.VersionProperty,
+		special.AuditProperties[0],
+		special.AuditProperties[1],
+		special.AuditProperties[2],
+		special.AuditProperties[3],
 		{
 			Name:     "name",
 			Mapping:  "name",
@@ -180,7 +181,7 @@ var DataSourceResource = &model.Resource{
 			Required: false,
 		},
 	},
-	SecurityContext: securityContextDisallowAll,
+	SecurityContext: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

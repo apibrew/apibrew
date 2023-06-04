@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/google/uuid"
@@ -30,7 +30,7 @@ func GetResourceSpecialProperties(resource *model.Resource) []PropertyAccessor {
 
 	if idProp != nil && idProp.Name == "id" && idProp.Type == model.ResourceProperty_UUID {
 		specialProps = append(specialProps, PropertyAccessor{
-			Property: resources.IdProperty,
+			Property: special.IdProperty,
 			Get: func(record *model.Record) interface{} {
 				val, err := uuid.Parse(record.Id)
 

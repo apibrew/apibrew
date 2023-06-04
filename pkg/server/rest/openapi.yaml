@@ -1345,24 +1345,11 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.username
+                - name: user.version
                   in: query
                   schema:
-                    type: string
-                - name: user.password
-                  in: query
-                  schema:
-                    type: string
-                - name: user.signKey
-                  in: query
-                  schema:
-                    type: string
-                - name: user.roles
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: string
+                    type: integer
+                    format: uint32
                 - name: user.auditData.createdOn
                   in: query
                   schema:
@@ -1381,11 +1368,21 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.version
+                - name: user.username
                   in: query
                   schema:
-                    type: integer
-                    format: uint32
+                    type: string
+                - name: user.password
+                  in: query
+                  schema:
+                    type: string
+                - name: user.roles
+                  in: query
+                  description: string signKey = 7; // rsa pub key to create tokens
+                  schema:
+                    type: array
+                    items:
+                        type: string
             responses:
                 "200":
                     description: OK
@@ -1413,24 +1410,11 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.username
+                - name: user.version
                   in: query
                   schema:
-                    type: string
-                - name: user.password
-                  in: query
-                  schema:
-                    type: string
-                - name: user.signKey
-                  in: query
-                  schema:
-                    type: string
-                - name: user.roles
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: string
+                    type: integer
+                    format: uint32
                 - name: user.auditData.createdOn
                   in: query
                   schema:
@@ -1449,11 +1433,21 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: user.version
+                - name: user.username
                   in: query
                   schema:
-                    type: integer
-                    format: uint32
+                    type: string
+                - name: user.password
+                  in: query
+                  schema:
+                    type: string
+                - name: user.roles
+                  in: query
+                  description: string signKey = 7; // rsa pub key to create tokens
+                  schema:
+                    type: array
+                    items:
+                        type: string
             responses:
                 "200":
                     description: OK
@@ -2694,17 +2688,12 @@ components:
                     type: string
                     format: date-time
                 principal:
-                    type: array
-                    items:
-                        type: string
-                role:
-                    type: array
-                    items:
-                        type: string
+                    type: string
                 recordIds:
                     type: array
                     items:
                         type: string
+                    description: repeated string role = 8; // roles which it is applied to
                 operation:
                     enum:
                         - OPERATION_TYPE_READ
@@ -2881,23 +2870,22 @@ components:
             properties:
                 id:
                     type: string
+                version:
+                    type: integer
+                    format: uint32
+                auditData:
+                    $ref: '#/components/schemas/AuditData'
                 username:
                     type: string
                 password:
                     type: string
                 details:
                     type: object
-                signKey:
-                    type: string
                 roles:
                     type: array
                     items:
                         type: string
-                auditData:
-                    $ref: '#/components/schemas/AuditData'
-                version:
-                    type: integer
-                    format: uint32
+                    description: string signKey = 7; // rsa pub key to create tokens
         VirtualParams:
             type: object
             properties:
