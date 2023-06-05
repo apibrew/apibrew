@@ -33,6 +33,25 @@ func (q QueryBuilder) Not(condition *model.BooleanExpression) *model.BooleanExpr
 	}}
 }
 
+func (q QueryBuilder) In(property string, values []interface{}) *model.BooleanExpression {
+	lval, err := structpb.NewList(values)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return &model.BooleanExpression{Expression: &model.BooleanExpression_In{
+		In: &model.PairExpression{
+			Left: &model.Expression{
+				Expression: &model.Expression_Property{Property: property},
+			},
+			Right: &model.Expression{
+				Expression: &model.Expression_Value{Value: structpb.NewListValue(lval)},
+			},
+		},
+	}}
+}
+
 func (q QueryBuilder) Equal(property string, value *structpb.Value) *model.BooleanExpression {
 	return &model.BooleanExpression{
 		Expression: &model.BooleanExpression_Equal{

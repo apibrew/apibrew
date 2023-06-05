@@ -9,12 +9,19 @@ import 'model/audit.proto';
 import 'model/common.proto';
 import 'model/security.proto';
 import 'model/hcl.proto';
+import 'model/annotations.proto';
 
 message Role {
-  string id = 1 [(model.hcl_ignore) = true];
-  string name = 2;
-  SecurityContext securityContext = 5 [(model.hcl_block) = "securityContext"];
-  google.protobuf.Struct details = 6;
+  option(resourceName) = "role";
+  option(resourceNamespace) = "system";
+  option(resourceDataSource) = "system";
+  option(resourceEntity) = "role";
+  option(securityContextDisallowAll) = true;
+
+  string id = 1 [(hcl_ignore) = true, (propertyType) = UUID];
+  string name = 2[(propertyUnique) = true];
+  SecurityContext securityContext = 5 [(hcl_block) = "securityContext"];
+  optional google.protobuf.Struct details = 6;
 
   AuditData auditData = 101;
   uint32 version = 102;

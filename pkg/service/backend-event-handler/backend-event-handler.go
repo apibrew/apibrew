@@ -44,7 +44,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 
 	sort.Sort(ByOrder(handlers))
 
-	log.Debugf("Starting handler chain")
+	log.Debugf("Starting handler chain: %d", len(handlers))
 	for _, handler := range handlers {
 		log.Debugf("Calling handler: %s", handler.Name)
 		if !handler.Sync {

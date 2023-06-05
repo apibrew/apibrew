@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
@@ -37,7 +38,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if resource == nil {
-		return nil, 0, errors.ResourceNotFoundError
+		return nil, 0, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
 	}
 
 	if err := checkAccess(ctx, checkAccessParams{
@@ -117,7 +118,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if resource == nil {
-		return nil, errors.ResourceNotFoundError
+		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
 	}
 
 	return r.CreateWithResource(ctx, resource, params)
@@ -452,7 +453,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	resource := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
 
 	if resource == nil {
-		return nil, errors.ResourceNotFoundError
+		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
 	}
 
 	if isResourceRelatedResource(resource) {
@@ -504,7 +505,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	resource := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
 
 	if resource == nil {
-		return nil, errors.ResourceNotFoundError
+		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
 	}
 
 	queryMap := make(map[string]interface{})
@@ -552,7 +553,7 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
 
 	if resource == nil {
-		return errors.ResourceNotFoundError
+		return errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
 	}
 
 	var recordForCheck = util.ArrayMap(params.Ids, func(t string) *model.Record {

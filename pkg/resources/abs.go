@@ -16,6 +16,7 @@ var resourceTypeMap = map[*model.Resource]proto.Message{
 func GetAllSystemResources() []*model.Resource {
 	return []*model.Resource{
 		NamespaceResource, UserResource, DataSourceResource, ExtensionResource, ResourceResource,
+		RoleResource,
 	}
 }
 

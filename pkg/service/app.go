@@ -4,6 +4,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/service/handlers"
 	log "github.com/sirupsen/logrus"
@@ -17,7 +18,8 @@ type App struct {
 	recordService            abs.RecordService
 	backendProviderService   abs.BackendProviderService
 	namespaceService         abs.NamespaceService
-	userService              abs.UserService
+	userService              abs.GenericRecordService[*model.User]
+	roleService              abs.GenericRecordService[*model.Role]
 	stdHandler               handlers.StdHandlers
 	watchService             abs.WatchService
 	extensionService         abs.ExtensionService
@@ -42,7 +44,7 @@ func (app *App) GetExtensionService() abs.ExtensionService {
 	return app.extensionService
 }
 
-func (app *App) GetUserService() abs.UserService {
+func (app *App) GetUserService() abs.GenericRecordService[*model.User] {
 	return app.userService
 }
 
@@ -74,7 +76,15 @@ func (app *App) Init() <-chan interface{} {
 	app.dataSourceService = NewDataSourceService(app.resourceService, app.recordService, app.backendProviderService)
 
 	app.namespaceService = NewNamespaceService(app.resourceService, app.recordService, app.backendProviderService)
-	app.userService = NewUserService(app.resourceService, app.recordService, app.backendProviderService)
+
+	app.userService = NewGenericRecordService[*model.User](app.recordService, resources.UserResource, func() *model.User {
+		return &model.User{}
+	})
+
+	app.roleService = NewGenericRecordService[*model.Role](app.recordService, resources.RoleResource, func() *model.Role {
+		return &model.Role{}
+	})
+
 	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler)
 	app.watchService = NewWatchService(app.backendEventHandler)
 	app.externalService = NewExternalService()
@@ -92,12 +102,23 @@ func (app *App) Init() <-chan interface{} {
 
 func (app *App) initServices() {
 	app.backendProviderService.Init(app.initData)
+	app.stdHandler.Init(app.initData)
 	app.resourceService.Init(app.initData)
 	app.dataSourceService.Init(app.initData)
 	app.namespaceService.Init(app.initData)
-	app.userService.Init(app.initData)
+	app.userService.Init(app.initData.InitUsers)
+	app.roleService.Init(append(app.initData.InitRoles, &model.Role{
+		Name: "root",
+		SecurityContext: &model.SecurityContext{
+			Constraints: []*model.SecurityConstraint{
+				{
+					Operation: model.OperationType_FULL,
+					Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+				},
+			},
+		},
+	}))
 	app.authenticationService.Init(app.initData)
-	app.stdHandler.Init(app.initData)
 
 	app.extensionService.Init(app.initData)
 }

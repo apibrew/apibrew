@@ -98,3 +98,23 @@ func checkAccess(ctx context.Context, params checkAccessParams) errors.ServiceEr
 
 	return nil
 }
+
+func CombineSecurityContext(list ...*model.SecurityContext) *model.SecurityContext {
+	securityContext := &model.SecurityContext{}
+
+	for _, item := range list {
+		if item == nil {
+			continue
+		}
+
+		if item.Constraints != nil {
+			if securityContext.Constraints == nil {
+				securityContext.Constraints = make([]*model.SecurityConstraint, 0)
+			}
+
+			securityContext.Constraints = append(securityContext.Constraints, item.Constraints...)
+		}
+	}
+
+	return securityContext
+}

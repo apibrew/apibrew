@@ -1,4 +1,4 @@
-package proto
+package protohelper
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"

@@ -69,7 +69,7 @@ func Run() {
 	httpl := tcpm.Match(cmux.HTTP1Fast("PATCH"))
 	grpcl := tcpm.MatchWithWriters(
 		cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"),
-		cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc+proto"),
+		cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc+protohelper"),
 	)
 	http2 := tcpm.Match(cmux.HTTP2())
 	http2Tls := tcpm.Match(cmux.TLS())

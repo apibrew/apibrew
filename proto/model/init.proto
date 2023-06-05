@@ -9,6 +9,7 @@ import 'model/user.proto';
 import 'model/resource.proto';
 import 'model/record.proto';
 import 'model/namespace.proto';
+import 'model/role.proto';
 
 message AppConfig {
   string host = 1;
@@ -27,6 +28,7 @@ message InitData {
   repeated DataSource initDataSources = 4;
   repeated Namespace initNamespaces = 5;
   repeated User initUsers = 6;
-  repeated Resource initResources = 7;
-  repeated Record initRecords = 8;
+  repeated Role initRoles = 7;
+  repeated Resource initResources = 8;
+  repeated Record initRecords = 9;
 }

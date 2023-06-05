@@ -142,7 +142,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	existingResource := r.Get(ctx, resource.Id)
 
 	if existingResource == nil {
-		return errors.ResourceNotFoundError
+		return errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", resource.Namespace, resource.Name))
 	}
 
 	if resource.Namespace == "" {
@@ -675,6 +675,7 @@ func (r *resourceService) Init(_ *model.InitData) {
 	r.MigrateResource(resources.ResourcePropertyResource)
 
 	r.MigrateResource(resources.UserResource)
+	r.MigrateResource(resources.RoleResource)
 	r.MigrateResource(resources.ExtensionResource)
 
 	if err := r.ReloadSchema(context.TODO()); err != nil {

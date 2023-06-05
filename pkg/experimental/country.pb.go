@@ -84,7 +84,7 @@ var file_experimental_country_proto_extTypes = []protoimpl.ExtensionInfo{
 		Field:         1003,
 		Name:          "model.property2",
 		Tag:           "bytes,1003,opt,name=property2",
-		Filename:      "experimental/country.proto",
+		Filename:      "experimental/country.protohelper",
 	},
 }
 

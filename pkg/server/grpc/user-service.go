@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 )
@@ -13,7 +14,7 @@ type UserGrpcService interface {
 
 type userServer struct {
 	stub.UserServer
-	service abs.UserService
+	service abs.GenericRecordService[*model.User]
 }
 
 func (u *userServer) Create(ctx context.Context, request *stub.CreateUserRequest) (*stub.CreateUserResponse, error) {
@@ -56,6 +57,6 @@ func (u *userServer) List(ctx context.Context, request *stub.ListUserRequest) (*
 	}, util.ToStatusError(err)
 }
 
-func NewUserServer(service abs.UserService) stub.UserServer {
+func NewUserServer(service abs.GenericRecordService[*model.User]) stub.UserServer {
 	return &userServer{service: service}
 }
