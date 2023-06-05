@@ -21,7 +21,7 @@ func ExtensionToRecord(extension *model.Extension) *model.Record {
 
 	properties["call"] = ExternalCallToStruct(extension.Call)
 
-	mapSpecialColumnsToRecord(extension, &properties)
+	MapSpecialColumnsToRecord(extension, &properties)
 
 	return &model.Record{
 		Id:         extension.Id,
@@ -126,7 +126,7 @@ func ExtensionFromRecord(record *model.Record) *model.Extension {
 		result.Description = record.Properties["description"].GetStringValue()
 	}
 
-	mapSpecialColumnsFromRecord(result, &record.Properties)
+	MapSpecialColumnsFromRecord(result, &record.Properties)
 
 	return result
 }

@@ -16,7 +16,7 @@ func NamespaceToRecord(namespace *model.Namespace) *model.Record {
 
 	properties["securityContext"] = SecurityContextToValue(namespace.SecurityContext)
 
-	mapSpecialColumnsToRecord(namespace, &properties)
+	MapSpecialColumnsToRecord(namespace, &properties)
 
 	return &model.Record{
 		Id:         namespace.Id,
@@ -47,7 +47,7 @@ func NamespaceFromRecord(record *model.Record) *model.Namespace {
 
 	result.SecurityContext = SecurityContextFromValue(record.Properties["securityContext"])
 
-	mapSpecialColumnsFromRecord(result, &record.Properties)
+	MapSpecialColumnsFromRecord(result, &record.Properties)
 
 	return result
 }

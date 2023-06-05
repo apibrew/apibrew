@@ -17,6 +17,7 @@ func prepareInitData() *model.InitData {
 		InitDataSources:  prepareInitDataSources(),
 		InitNamespaces:   prepareInitNamespaces(),
 		InitUsers:        prepareInitUsers(),
+		InitRoles:        prepareInitRoles(),
 		InitResources:    prepareInitResources(),
 		InitRecords:      prepareInitRecords(),
 	}
@@ -30,42 +31,44 @@ func prepareInitResources() []*model.Resource {
 	return nil
 }
 
+func prepareInitRoles() []*model.Role {
+	return []*model.Role{
+		{
+			Name: "test_user",
+			SecurityContext: &model.SecurityContext{
+				Constraints: []*model.SecurityConstraint{
+					{
+						Resource:  "user",
+						Operation: model.OperationType_OPERATION_TYPE_READ,
+						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+					},
+					{
+						Resource:  "namespace",
+						Operation: model.OperationType_OPERATION_TYPE_CREATE,
+						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+					},
+					{
+						Resource:  "namespace",
+						Operation: model.OperationType_OPERATION_TYPE_READ,
+						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+					},
+				},
+			},
+		},
+	}
+}
+
 func prepareInitUsers() []*model.User {
 	return []*model.User{
 		{
 			Username: "admin",
 			Password: "admin",
-			//SecurityContext: &model.SecurityContext{
-			//	Constraints: []*model.SecurityConstraint{
-			//		{
-			//			Operation: model.OperationType_FULL,
-			//			Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-			//		},
-			//	},
-			//},
+			Roles:    []string{"root"},
 		},
 		{
 			Username: "dh_test",
 			Password: "dh_test",
-			//SecurityContext: &model.SecurityContext{
-			//	Constraints: []*model.SecurityConstraint{
-			//		{
-			//			Resource:  "user",
-			//			Operation: model.OperationType_OPERATION_TYPE_READ,
-			//			Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-			//		},
-			//		{
-			//			Resource:  "namespace",
-			//			Operation: model.OperationType_OPERATION_TYPE_CREATE,
-			//			Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-			//		},
-			//		{
-			//			Resource:  "namespace",
-			//			Operation: model.OperationType_OPERATION_TYPE_READ,
-			//			Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-			//		},
-			//	},
-			//},
+			Roles:    []string{"test_user"},
 		},
 	}
 }

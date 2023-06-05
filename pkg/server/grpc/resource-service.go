@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -70,7 +71,7 @@ func (r resourceGrpcService) Get(ctx context.Context, request *stub.GetResourceR
 
 	var err errors.ServiceError
 	if resource == nil {
-		err = errors.ResourceNotFoundError
+		err = errors.ResourceNotFoundError.WithDetails(request.Id)
 	}
 
 	return &stub.GetResourceResponse{
@@ -83,7 +84,7 @@ func (r resourceGrpcService) GetByName(ctx context.Context, request *stub.GetRes
 
 	var err errors.ServiceError
 	if resource == nil {
-		err = errors.ResourceNotFoundError
+		err = errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", request.Namespace, request.Name))
 	}
 
 	return &stub.GetResourceByNameResponse{
@@ -96,7 +97,7 @@ func (r resourceGrpcService) GetSystemResource(ctx context.Context, request *stu
 
 	var err errors.ServiceError
 	if resource == nil {
-		err = errors.ResourceNotFoundError
+		err = errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("system/%s", request.Name))
 	}
 
 	return &stub.GetSystemResourceResponse{

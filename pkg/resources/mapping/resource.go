@@ -52,7 +52,7 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		properties["types"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
 	}
 
-	mapSpecialColumnsToRecord(resource, &properties)
+	MapSpecialColumnsToRecord(resource, &properties)
 
 	return &model.Record{
 		Id:         resource.Id,
@@ -109,7 +109,7 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		*resource.Description = record.Properties["description"].GetStringValue()
 	}
 
-	mapSpecialColumnsFromRecord(resource, &record.Properties)
+	MapSpecialColumnsFromRecord(resource, &record.Properties)
 
 	return resource
 }

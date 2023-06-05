@@ -27,24 +27,10 @@ func MapFromRecord[T proto.Message](list []*model.Record, mapper func(*model.Rec
 }
 
 func MessageToRecord(message proto.Message) *model.Record {
-	fullName := string(message.ProtoReflect().Type().Descriptor().FullName())
-
-	if fullName == "model.User" {
-		return UserToRecord(message.(*model.User))
-	}
-
 	return nil
 }
 
 func MessageFromRecord(resource, namespace string, record *model.Record) proto.Message {
-	if namespace == "" {
-		namespace = "default"
-	}
-
-	if resource == "user" && namespace == "default" {
-		return UserFromRecord(record)
-	}
-
 	return nil
 }
 

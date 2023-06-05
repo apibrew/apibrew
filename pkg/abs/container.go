@@ -1,5 +1,7 @@
 package abs
 
+import "github.com/apibrew/apibrew/pkg/model"
+
 type Container interface {
 	GetRecordService() RecordService
 	GetAuthenticationService() AuthenticationService
@@ -8,6 +10,6 @@ type Container interface {
 	GetDataSourceService() DataSourceService
 	GetWatchService() WatchService
 	GetNamespaceService() NamespaceService
-	GetUserService() UserService
+	GetUserService() GenericRecordService[*model.User]
 	GetExtensionService() ExtensionService
 }

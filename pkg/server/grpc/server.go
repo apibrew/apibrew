@@ -30,7 +30,7 @@ type grpcServer struct {
 	authenticationService    abs.AuthenticationService
 	dataSourceService        abs.DataSourceService
 	namespaceService         abs.NamespaceService
-	userService              abs.UserService
+	userService              abs.GenericRecordService[*model.User]
 	initData                 *model.InitData
 	watchService             abs.WatchService
 	extensionService         abs.ExtensionService

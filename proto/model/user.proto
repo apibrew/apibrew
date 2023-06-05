@@ -19,7 +19,7 @@ message User {
   option(model.resourceEntity) = "user";
   option(model.securityContextDisallowAll) = true;
 
-  string id = 1 [(model.hcl_ignore) = true, (propertyType) = UUID];
+  string id = 1 [(hcl_ignore) = true, (propertyType) = UUID];
 
   uint32 version = 102;
   AuditData auditData = 101;

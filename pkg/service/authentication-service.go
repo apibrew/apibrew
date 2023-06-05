@@ -6,11 +6,14 @@ import (
 	"crypto/rsa"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/helper"
+	"github.com/apibrew/apibrew/pkg/helper/protohelper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service/security"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -52,11 +55,17 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 
 	// Prepare token
 	expiration := s.ExpirationFromTerm(term)
+	roles, err := s.LocateRoles(ctx, user.Roles)
+
+	if err != nil {
+		return nil, err
+	}
+
 	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: abs.UserDetails{
-			Username: user.Username,
-			//SecurityContext: user.SecurityContext,
+			Username:        user.Username,
+			SecurityContext: CombineSecurityContext(util.ArrayMap(roles, func(role *model.Role) *model.SecurityContext { return role.SecurityContext })...),
 		},
 		ExpiresAt: expiration,
 		Issuer:    "github.com/apibrew/apibrew",
@@ -152,7 +161,42 @@ func (s *authenticationService) FindUser(ctx context.Context, username string) (
 		return nil, err
 	}
 
-	return mapping.UserFromRecord(res), nil
+	var mappingHelper = &protohelper.MappingHelper[*model.User]{
+		Resource: resources.UserResource,
+		Instance: func() *model.User {
+			return &model.User{}
+		},
+	}
+	return mappingHelper.MapFrom(res), nil
+}
+
+func (s *authenticationService) LocateRoles(ctx context.Context, names []string) ([]*model.Role, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debug("Locating role by names: ", names)
+
+	if len(names) == 0 {
+		return []*model.Role{}, nil
+	}
+
+	res, _, err := s.recordService.List(security.SystemContext, abs.RecordListParams{
+		Namespace: resources.RoleResource.Namespace,
+		Resource:  resources.RoleResource.Name,
+		Query:     helper.NewQueryBuilder().In("name", util.ArrayMap(names, func(s string) interface{} { return s })),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var roleMappingHelper = &protohelper.MappingHelper[*model.Role]{
+		Resource: resources.RoleResource,
+		Instance: func() *model.Role {
+			return &model.Role{}
+		},
+	}
+
+	return mapping.MapFromRecord(res, roleMappingHelper.MapFrom), nil
 }
 
 func (s *authenticationService) Init(data *model.InitData) {

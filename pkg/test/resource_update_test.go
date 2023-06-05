@@ -103,7 +103,7 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 	}
 
 	assert.Len(t, res.Plans, 1)
-	assert.Len(t, res.Plans[0].Steps, 4)
+	assert.Len(t, res.Plans[0].Steps, 3)
 
 	if t.Failed() {
 		return
@@ -113,16 +113,13 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 
 	assert.IsType(t, steps[0].Kind, &model.ResourceMigrationStep_UpdateProperty{})
 	assert.IsType(t, steps[1].Kind, &model.ResourceMigrationStep_DeleteProperty{})
-	assert.IsType(t, steps[2].Kind, &model.ResourceMigrationStep_UpdateProperty{})
-	assert.IsType(t, steps[3].Kind, &model.ResourceMigrationStep_CreateProperty{})
+	assert.IsType(t, steps[2].Kind, &model.ResourceMigrationStep_CreateProperty{})
 
 	if t.Failed() {
 		return
 	}
 
 	assert.Equal(t, steps[0].Kind.(*model.ResourceMigrationStep_UpdateProperty).UpdateProperty.ChangedFields, []string{"name", "type", "required"})
-	assert.Equal(t, steps[2].Kind.(*model.ResourceMigrationStep_UpdateProperty).UpdateProperty.ChangedFields, []string{"name", "type", "required"})
-
 }
 
 func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
