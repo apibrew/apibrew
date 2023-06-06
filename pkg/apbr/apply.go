@@ -10,6 +10,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"github.com/yargevad/filepathx"
+	"google.golang.org/grpc/status"
 	"os"
 	"strings"
 
@@ -179,18 +180,18 @@ func applyLocal(inputFilePath string, doMigration bool, dataOnly bool, force boo
 	}
 
 	if err := executor.Restore(context.Background()); err != nil {
-		errorCode := util.GetErrorCode(err)
-		errorFields := util.GetErrorFields(err)
+		if _, found := status.FromError(err); found {
+			errorCode := util.GetErrorCode(err)
+			errorFields := util.GetErrorFields(err)
 
-		errorFieldsJson, err := json.MarshalIndent(errorFields, "", "  ")
+			errorFieldsJson, _ := json.MarshalIndent(errorFields, "", "  ")
 
-		if err != nil {
-			return fmt.Errorf("failed to marshal error fields: %w", err)
+			errorStr := fmt.Sprintf("errorCode: %s, errorFields: \n%s", errorCode, string(errorFieldsJson))
+
+			return errors.New(errorStr)
+		} else {
+			return err
 		}
-
-		errorStr := fmt.Sprintf("errorCode: %s, errorFields: \n%s", errorCode, string(errorFieldsJson))
-
-		return errors.New(errorStr)
 	}
 
 	return nil

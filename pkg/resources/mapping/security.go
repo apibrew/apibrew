@@ -8,14 +8,10 @@ import (
 	"time"
 )
 
-func SecurityContextToValue(securityContext *model.SecurityContext) *structpb.Value {
-	if securityContext == nil {
-		return nil
-	}
-
+func SecurityContextToValue(securityConstraints []*model.SecurityConstraint) *structpb.Value {
 	var list []interface{}
 
-	for _, item := range securityContext.Constraints {
+	for _, item := range securityConstraints {
 		var properties = make(map[string]interface{})
 
 		properties["namespace"] = item.Namespace
@@ -24,7 +20,7 @@ func SecurityContextToValue(securityContext *model.SecurityContext) *structpb.Va
 		properties["property"] = item.Property
 		properties["before"] = item.Before.AsTime().UnixMilli()
 		properties["after"] = item.After.AsTime().UnixMilli()
-		properties["principal"] = item.Principal
+		properties["username"] = item.Username
 		properties["operation"] = int32(item.Operation.Number())
 		properties["permit"] = int32(item.Permit.Number())
 		properties["recordIds"] = util.ArrayMap(item.GetRecordIds(), func(t string) interface{} {
@@ -34,16 +30,16 @@ func SecurityContextToValue(securityContext *model.SecurityContext) *structpb.Va
 		list = append(list, properties)
 	}
 
-	result, err := structpb.NewValue(list)
+	listVal, err := structpb.NewList(list)
 
 	if err != nil {
 		panic(err)
 	}
 
-	return result
+	return structpb.NewListValue(listVal)
 }
 
-func SecurityContextFromValue(value *structpb.Value) *model.SecurityContext {
+func SecurityContextFromValue(value *structpb.Value) []*model.SecurityConstraint {
 	if value == nil {
 		return nil
 	}
@@ -64,7 +60,7 @@ func SecurityContextFromValue(value *structpb.Value) *model.SecurityContext {
 		securityConstraint.Property = obj.Fields["property"].GetStringValue()
 		securityConstraint.Before = timestamppb.New(time.UnixMilli(int64(obj.Fields["before"].GetNumberValue())))
 		securityConstraint.After = timestamppb.New(time.UnixMilli(int64(obj.Fields["after"].GetNumberValue())))
-		securityConstraint.Principal = obj.Fields["principal"].GetStringValue()
+		securityConstraint.Username = obj.Fields["username"].GetStringValue()
 		securityConstraint.Operation = model.OperationType(obj.Fields["operation"].GetNumberValue())
 		securityConstraint.Permit = model.PermitType(obj.Fields["permit"].GetNumberValue())
 
@@ -77,5 +73,5 @@ func SecurityContextFromValue(value *structpb.Value) *model.SecurityContext {
 		securityContext.Constraints = append(securityContext.Constraints, securityConstraint)
 	}
 
-	return securityContext
+	return securityContext.Constraints
 }

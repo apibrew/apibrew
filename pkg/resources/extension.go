@@ -81,7 +81,7 @@ var ExtensionResource = &model.Resource{
 			Required: true,
 		},
 	},
-	SecurityContext: special.SecurityContextDisallowAll,
+	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

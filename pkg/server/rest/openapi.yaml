@@ -2233,8 +2233,10 @@ components:
                     type: string
                 details:
                     type: object
-                securityContext:
-                    $ref: '#/components/schemas/SecurityContext'
+                securityConstraints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SecurityConstraint'
                 auditData:
                     $ref: '#/components/schemas/AuditData'
                 version:
@@ -2413,8 +2415,10 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/ResourceIndex'
-                securityContext:
-                    $ref: '#/components/schemas/SecurityContext'
+                securityConstraints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SecurityConstraint'
                 virtual:
                     type: boolean
                 immutable:
@@ -2589,8 +2593,10 @@ components:
                     type: boolean
                 immutable:
                     type: boolean
-                securityContext:
-                    $ref: '#/components/schemas/SecurityContext'
+                securityConstraints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SecurityConstraint'
                 defaultValue:
                     $ref: '#/components/schemas/GoogleProtobufValue'
                 exampleValue:
@@ -2677,23 +2683,13 @@ components:
             properties:
                 namespace:
                     type: string
+                    description: match part
                 resource:
                     type: string
                 property:
                     type: string
-                before:
+                propertyValue:
                     type: string
-                    format: date-time
-                after:
-                    type: string
-                    format: date-time
-                principal:
-                    type: string
-                recordIds:
-                    type: array
-                    items:
-                        type: string
-                    description: repeated string role = 8; // roles which it is applied to
                 operation:
                     enum:
                         - OPERATION_TYPE_READ
@@ -2703,21 +2699,31 @@ components:
                         - FULL
                     type: string
                     format: enum
+                before:
+                    type: string
+                    description: time part
+                    format: date-time
+                after:
+                    type: string
+                    format: date-time
+                username:
+                    type: string
+                    description: user part
+                role:
+                    type: string
+                recordIds:
+                    type: array
+                    items:
+                        type: string
+                requirePass:
+                    type: boolean
                 permit:
                     enum:
                         - PERMIT_TYPE_ALLOW
                         - PERMIT_TYPE_REJECT
-                        - PERMIT_TYPE_UNKNOWN
                     type: string
                     format: enum
             description: SecurityConstraint is a rule
-        SecurityContext:
-            type: object
-            properties:
-                constraints:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/SecurityConstraint'
         Status:
             type: object
             properties:

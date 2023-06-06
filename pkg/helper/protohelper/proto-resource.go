@@ -29,10 +29,6 @@ func (h ResourceHelper) ProtoToResource(reflect protoreflect.Message) *model.Res
 
 	resource.Annotations = make(map[string]string)
 
-	if proto.GetExtension(messageOptions, model.E_SecurityContextDisallowAll).(bool) {
-		resource.SecurityContext = special.SecurityContextDisallowAll
-	}
-
 	fields := reflect.Descriptor().Fields()
 
 	for i := 0; i < fields.Len(); i++ {

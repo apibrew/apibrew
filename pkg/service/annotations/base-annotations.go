@@ -27,3 +27,6 @@ const HclBlock = "HclBlock"
 // request annotations
 const IgnoreIfExists = "IgnoreIfExists"
 const CheckVersion = "CheckVersion"
+
+// security
+const AllowPublicAccess = "AllowPublicAccess"

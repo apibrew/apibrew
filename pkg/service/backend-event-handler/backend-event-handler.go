@@ -3,6 +3,7 @@ package backend_event_handler
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -44,41 +45,43 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 
 	sort.Sort(ByOrder(handlers))
 
-	log.Debugf("Starting handler chain: %d", len(handlers))
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debugf("Starting handler chain: %d", len(handlers))
 	for _, handler := range handlers {
-		log.Debugf("Calling handler: %s", handler.Name)
+		logger.Debugf("Calling handler: %s", handler.Name)
 		if !handler.Sync {
 			nextEvent.Sync = false
 			go func(localHandler Handler) {
 				_, err := localHandler.Fn(ctx, nextEvent)
 
 				if err != nil {
-					log.Error("Error from async handler", err)
+					logger.Error("Error from async handler", err)
 				}
 			}(handler)
 		} else {
 			nextEvent.Sync = true
 			result, err := handler.Fn(ctx, nextEvent)
-			log.Debugf("Handler responded: %s", handler.Name)
+			logger.Debugf("Handler responded: %s", handler.Name)
 
 			if err != nil {
-				log.Warnf("Handler [%s] responded with error: %v", handler.Name, err)
+				logger.Warnf("Handler [%s] responded with error: %v", handler.Name, err)
 				return nil, err
 			}
 
 			if handler.Responds {
-				log.Debugf("Handler [%s] responded with result", handler.Name)
+				logger.Debugf("Handler [%s] responded with result", handler.Name)
 				nextEvent = result
 			}
 
 			if handler.Finalizes {
-				log.Debugf("Handler [%s] finalizes", handler.Name)
+				logger.Debugf("Handler [%s] finalizes", handler.Name)
 				break
 			}
 
 		}
 	}
-	log.Debugf("Finished handler chain")
+	logger.Debugf("Finished handler chain")
 
 	return nextEvent, nil
 }

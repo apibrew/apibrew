@@ -20,17 +20,19 @@ type recordService struct {
 	ServiceName            string
 	resourceService        abs.ResourceService
 	backendServiceProvider abs.BackendProviderService
+	authorizationService   abs.AuthorizationService
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
 	return util.PrepareQuery(resource, queryMap)
 }
 
-func NewRecordService(resourceService abs.ResourceService, backendProviderService abs.BackendProviderService) abs.RecordService {
+func NewRecordService(resourceService abs.ResourceService, backendProviderService abs.BackendProviderService, authorizationService abs.AuthorizationService) abs.RecordService {
 	return &recordService{
 		ServiceName:            "RecordService",
 		resourceService:        resourceService,
 		backendServiceProvider: backendProviderService,
+		authorizationService:   authorizationService,
 	}
 }
 
@@ -41,7 +43,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		return nil, 0, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
 	}
 
-	if err := checkAccess(ctx, checkAccessParams{
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
 		Resource:  resource,
 		Operation: model.OperationType_OPERATION_TYPE_READ,
 	}); err != nil {
@@ -99,7 +101,7 @@ func (r *recordService) List(ctx context.Context, params abs.RecordListParams) (
 		util.DeNormalizeRecord(resource, record)
 	}
 
-	if err = checkAccess(ctx, checkAccessParams{
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &records,
 		Operation: model.OperationType_OPERATION_TYPE_READ,
@@ -132,7 +134,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	var success = true
 	var txCtx context.Context
 
-	if err = checkAccess(ctx, checkAccessParams{
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &params.Records,
 		Operation: model.OperationType_OPERATION_TYPE_CREATE,
@@ -355,7 +357,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
 
-	if err = checkAccess(ctx, checkAccessParams{
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &params.Records,
 		Operation: model.OperationType_OPERATION_TYPE_UPDATE,
@@ -460,7 +462,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
 
-	if err := checkAccess(ctx, checkAccessParams{
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
 		Resource: resource,
 		Records: &[]*model.Record{
 			{
@@ -562,7 +564,7 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 		}
 	})
 
-	if err := checkAccess(ctx, checkAccessParams{
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &recordForCheck,
 		Operation: model.OperationType_OPERATION_TYPE_DELETE,

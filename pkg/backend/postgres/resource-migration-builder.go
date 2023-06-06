@@ -255,7 +255,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 
 func (r *resourceMigrationBuilder) DeleteProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
-		sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", r.tableName, prop.Mapping)
+		sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN \"%s\"", r.tableName, prop.Mapping)
 
 		_, sqlError := r.runner.ExecContext(r.ctx, sql)
 

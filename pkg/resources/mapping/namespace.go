@@ -14,7 +14,7 @@ func NamespaceToRecord(namespace *model.Namespace) *model.Record {
 		properties["details"] = structpb.NewStructValue(namespace.Details)
 	}
 
-	properties["securityContext"] = SecurityContextToValue(namespace.SecurityContext)
+	properties["securityConstraints"] = SecurityContextToValue(namespace.SecurityConstraints)
 
 	MapSpecialColumnsToRecord(namespace, &properties)
 
@@ -45,7 +45,7 @@ func NamespaceFromRecord(record *model.Record) *model.Namespace {
 		result.Details = record.Properties["details"].GetStructValue()
 	}
 
-	result.SecurityContext = SecurityContextFromValue(record.Properties["securityContext"])
+	result.SecurityConstraints = SecurityContextFromValue(record.Properties["securityContext"])
 
 	MapSpecialColumnsFromRecord(result, &record.Properties)
 

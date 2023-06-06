@@ -13,6 +13,7 @@ import (
 type App struct {
 	initData                 *model.InitData
 	authenticationService    abs.AuthenticationService
+	authorizationService     abs.AuthorizationService
 	dataSourceService        abs.DataSourceService
 	resourceService          abs.ResourceService
 	recordService            abs.RecordService
@@ -67,11 +68,12 @@ func (app *App) GetDataSourceService() abs.DataSourceService {
 func (app *App) Init() <-chan interface{} {
 	app.backendEventHandler = backend_event_handler.NewBackendEventHandler()
 
+	app.authorizationService = NewAuthorizationService()
 	app.backendProviderService = NewBackendProviderService(app.backendEventHandler)
 	app.resourceMigrationService = NewResourceMigrationService()
 
-	app.resourceService = NewResourceService(app.backendProviderService, app.resourceMigrationService)
-	app.recordService = NewRecordService(app.resourceService, app.backendProviderService)
+	app.resourceService = NewResourceService(app.backendProviderService, app.resourceMigrationService, app.authorizationService)
+	app.recordService = NewRecordService(app.resourceService, app.backendProviderService, app.authorizationService)
 
 	app.dataSourceService = NewDataSourceService(app.resourceService, app.recordService, app.backendProviderService)
 
@@ -86,10 +88,10 @@ func (app *App) Init() <-chan interface{} {
 	})
 
 	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler)
-	app.watchService = NewWatchService(app.backendEventHandler)
+	app.watchService = NewWatchService(app.backendEventHandler, app.authorizationService)
 	app.externalService = NewExternalService()
 	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.backendEventHandler, app.externalService)
-	app.authenticationService = NewAuthenticationService(app.recordService)
+	app.authenticationService = NewAuthenticationService(app.recordService, app.authorizationService)
 
 	initSignal := make(chan interface{})
 	go func() {
@@ -109,12 +111,10 @@ func (app *App) initServices() {
 	app.userService.Init(app.initData.InitUsers)
 	app.roleService.Init(append(app.initData.InitRoles, &model.Role{
 		Name: "root",
-		SecurityContext: &model.SecurityContext{
-			Constraints: []*model.SecurityConstraint{
-				{
-					Operation: model.OperationType_FULL,
-					Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-				},
+		SecurityConstraints: []*model.SecurityConstraint{
+			{
+				Operation: model.OperationType_FULL,
+				Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
 			},
 		},
 	}))

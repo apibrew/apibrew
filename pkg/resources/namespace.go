@@ -50,9 +50,9 @@ var NamespaceResource = &model.Resource{
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},
-		special.SecurityContextProperty,
+		special.SecurityConstraintsProperty,
 	},
-	SecurityContext: special.SecurityContextDisallowAll,
+	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

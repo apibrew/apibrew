@@ -23,7 +23,7 @@ type genericRecordService[T proto.Message] struct {
 
 func (g genericRecordService[T]) Init(records []T) {
 	if len(records) > 0 {
-		_, err := g.recordService.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordCreateParams{
+		_, err := g.recordService.Apply(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordUpdateParams{
 			Namespace: g.namespace,
 			Resource:  g.resource,
 			Records:   mapping.MapToRecord(records, g.mapTo),

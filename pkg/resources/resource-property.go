@@ -117,7 +117,7 @@ var ResourcePropertyResource = &model.Resource{
 			Type:     model.ResourceProperty_BOOL,
 			Required: false,
 		},
-		special.SecurityContextProperty,
+		special.SecurityConstraintsProperty,
 		{
 			Name:     "defaultValue",
 			Mapping:  "default_value",
@@ -171,7 +171,7 @@ var ResourcePropertyResource = &model.Resource{
 			Unique: true,
 		},
 	},
-	SecurityContext: special.SecurityContextDisallowAll,
+	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},
