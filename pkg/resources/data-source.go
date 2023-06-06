@@ -181,7 +181,7 @@ var DataSourceResource = &model.Resource{
 			Required: false,
 		},
 	},
-	SecurityContext: special.SecurityContextDisallowAll,
+	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

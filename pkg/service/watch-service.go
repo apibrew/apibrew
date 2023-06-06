@@ -44,6 +44,6 @@ func (w watchService) Watch(ctx context.Context, p abs.WatchParams) <-chan *mode
 	return out
 }
 
-func NewWatchService(backendEventHandler backend_event_handler.BackendEventHandler) abs.WatchService {
+func NewWatchService(backendEventHandler backend_event_handler.BackendEventHandler, service abs.AuthorizationService) abs.WatchService {
 	return &watchService{backendEventHandler: backendEventHandler}
 }

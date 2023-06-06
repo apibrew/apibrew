@@ -17,6 +17,11 @@ properties:
         - path: test
           system: false
           component: CoreUI/Test
+        - path: "*"
+          component: CoreUI/Error
+          params:
+            code: 404
+            message: Page not found
     - path: /login
       component: CoreUI/Login
       system: true
@@ -26,3 +31,8 @@ properties:
       params:
         to: /dashboard
         system: true
+    - path: "*"
+      component: CoreUI/Error
+      params:
+        code: 404
+        message: Page not found

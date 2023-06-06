@@ -30,10 +30,12 @@ type JwtUserClaims struct {
 	ID string `json:"jti,omitempty"`
 
 	// securityContext
-	SecurityContext *model.SecurityContext `json:"securityContext,omitempty"`
+	SecurityConstraints []*model.SecurityConstraint `json:"securityConstraints,omitempty"`
 
 	// username
 	Username string `json:"username,omitempty"`
+
+	Roles []string `json:"roles,omitempty"`
 }
 
 func (c *JwtUserClaims) Valid() error {

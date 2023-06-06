@@ -7,6 +7,7 @@ import {prepareLayoutComponent} from "./components/dynamic/Layout.tsx";
 import {ResourceContextComponent} from "./components/context/ResourceContextComponent.tsx";
 import {DashboardLayout} from "./layout";
 import React, {ComponentType} from "react";
+import {Error} from "./pages/error/Error.tsx";
 
 ModuleService.registerLocalModuleAwait(RecordService.list<Layout>('ui', 'Layout').then(layouts => {
     const exports: ExportOptions = {}
@@ -41,6 +42,7 @@ ModuleService.registerLocalModule({
         Test: lazyComponent(() => import("./test/test"), 'Test'),
         CrudPage: lazyComponent(() => import("./pages/crud-page/CrudPage"), 'CrudPage'),
         AppDesigner: lazyComponent(() => import("./pages/app-designer/index.tsx"), 'AppDesigner'),
+        Error: lazyComponent(() => import("./pages/error/Error.tsx"), 'Error'),
     },
     name: 'CoreUI',
 })

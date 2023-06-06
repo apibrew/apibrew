@@ -35,23 +35,21 @@ func prepareInitRoles() []*model.Role {
 	return []*model.Role{
 		{
 			Name: "test_user",
-			SecurityContext: &model.SecurityContext{
-				Constraints: []*model.SecurityConstraint{
-					{
-						Resource:  "user",
-						Operation: model.OperationType_OPERATION_TYPE_READ,
-						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-					},
-					{
-						Resource:  "namespace",
-						Operation: model.OperationType_OPERATION_TYPE_CREATE,
-						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-					},
-					{
-						Resource:  "namespace",
-						Operation: model.OperationType_OPERATION_TYPE_READ,
-						Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
-					},
+			SecurityConstraints: []*model.SecurityConstraint{
+				{
+					Resource:  "user",
+					Operation: model.OperationType_OPERATION_TYPE_READ,
+					Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+				},
+				{
+					Resource:  "namespace",
+					Operation: model.OperationType_OPERATION_TYPE_CREATE,
+					Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
+				},
+				{
+					Resource:  "namespace",
+					Operation: model.OperationType_OPERATION_TYPE_READ,
+					Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
 				},
 			},
 		},

@@ -23,6 +23,7 @@ type resourceService struct {
 	schema                   abs.Schema
 	resourceMigrationService abs.ResourceMigrationService
 	mu                       sync.Mutex
+	authorizationService     abs.AuthorizationService
 }
 
 func (r *resourceService) GetSchema() *abs.Schema {
@@ -196,7 +197,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 
 	resourceRecords := []*model.Record{mapping.ResourceToRecord(resource)}
 
-	if err := checkAccess(ctx, checkAccessParams{
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &resourceRecords,
 		Operation: model.OperationType_OPERATION_TYPE_UPDATE,
@@ -813,10 +814,11 @@ func (r *resourceService) Get(_ context.Context, id string) *model.Resource {
 	return nil
 }
 
-func NewResourceService(backendProviderService abs.BackendProviderService, resourceMigrationService abs.ResourceMigrationService) abs.ResourceService {
+func NewResourceService(backendProviderService abs.BackendProviderService, resourceMigrationService abs.ResourceMigrationService, authorizationService abs.AuthorizationService) abs.ResourceService {
 	service := &resourceService{
 		backendProviderService:   backendProviderService,
 		resourceMigrationService: resourceMigrationService,
+		authorizationService:     authorizationService,
 	}
 
 	backendProviderService.SetSchema(&service.schema)

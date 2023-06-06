@@ -57,8 +57,7 @@ export interface DashboardLayoutProps {
 export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
     const [mobileOpen, setMobileOpen] = React.useState(false)
     const [open, setOpen] = React.useState(true)
-    const systemMenu = useRecordByName<Menu>(MenuName, 'ui', 'backend-system-menu')
-    const userMenu = useRecordByName<Menu>(MenuName, 'ui', 'backend-user-menu')
+    const menu = useRecordByName<Menu>(MenuName, 'ui', 'main')
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen)
@@ -76,12 +75,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                     </IconButton>
                 </Toolbar>
                 <Divider style={{background: '#AAA'}}/>
-                {/*{menuLists.map((menuList) => <Fragment key={menuList.title}>*/}
-                {/*    <NavList menuList={menuList}/>*/}
-                {/*    <Divider style={{background: '#FFF'}}/>*/}
-                {/*</Fragment>)}*/}
-                {userMenu && <NavList title={userMenu.name} items={userMenu.children}/>}
-                {systemMenu && <NavList title={systemMenu.name} items={systemMenu.children}/>}
+                {menu && menu.children.map(item => <NavList title={item.title} items={item.children}/>)}
             </div>
             <div style={{flexGrow: 1}}/>
         </Box>

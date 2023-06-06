@@ -18,29 +18,30 @@ enum OperationType {
 enum PermitType {
   PERMIT_TYPE_ALLOW = 0;
   PERMIT_TYPE_REJECT = 1;
-  PERMIT_TYPE_UNKNOWN = 2;
 }
 
 /*
 SecurityConstraint is a rule
  */
 message SecurityConstraint {
+  // match part
   string namespace = 1; //  namespace name where it will be applied
   string resource = 2; // resource name where it will be applied
   string property = 3; // property name where it will be applied
+  string propertyValue = 4; // property value where it will be applied
+  OperationType operation = 13; // operation name which it is applied to
+  repeated string recordIds = 9; // list of record ids which it is applied to
 
+  // time part
   google.protobuf.Timestamp before = 5; // before it is valid
   google.protobuf.Timestamp after = 6; // after it is valid
 
-  string principal = 7; // usernames which it is applied to
-//  repeated string role = 8; // roles which it is applied to
-  repeated string recordIds = 9; // list of record ids which it is applied to
+  // user part
+  string username = 7; // username which it is applied to
+  string role = 8; // role which it is applied to
 
-  OperationType operation = 13; // operation name which it is applied to
+
+  bool requirePass = 10; // if yes, if this rule passes match part, it will be required to match remaining parts also, if not, it will cause rejection
+
   PermitType permit = 14; // permission
-}
-
-
-message SecurityContext {
-  repeated SecurityConstraint constraints = 1 [(model.hcl_block) = "constraint"];
 }

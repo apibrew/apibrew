@@ -43,7 +43,6 @@ extend google.protobuf.MessageOptions {
   string resourceEntity = 1006;
 
   repeated ResourceIndex resourceIndexes = 1007;
-  SecurityContext resourceSecurityContext = 1008;
   bool resourceVirtual = 1009;
   bool resourceImmutable = 1010;
   uint32 resourceVersion = 1011;
@@ -56,7 +55,6 @@ extend google.protobuf.FieldOptions {
   bool propertyPrimary = 2002;
   uint32 propertyLength = 2003;
   bool propertyUnique = 2004;
-  SecurityContext propertySecurityContext = 2005;
   Reference propertyReference = 2006;
   bool propertyImmutable = 2008;
   ResourceProperty.Type propertyType = 2009;

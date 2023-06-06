@@ -5,9 +5,24 @@ properties:
   name: main
   children:
     - title: User
+      system: true
+      children:
+        - title: Country
+          system: true
+          link: /dashboard/crud/default/country
+        - title: City
+          system: true
+          link: /dashboard/crud/default/city
+    - title: Develop
       children:
         - title: App Designer
           link: /dashboard/app-designer
+        - title: User & Roles
+          children:
+            - title: User
+              link: /dashboard/crud/system/user
+            - title: Role
+              link: /dashboard/crud/system/role
         - title: Logic
           children:
             - title: Function
@@ -18,12 +33,3 @@ properties:
               link: /dashboard/crud/logic/ResourceRule
             - title: FunctionExecution
               link: /dashboard/crud/logic/FunctionExecution
-    - title: Develop
-      system: true
-      children:
-        - title: Country
-          system: true
-          link: /dashboard/crud/default/country
-        - title: City
-          system: true
-          link: /dashboard/crud/default/city

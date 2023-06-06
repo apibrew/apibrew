@@ -4,6 +4,16 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 )
 
+func FlatMap[T interface{}](arr ...[]T) []T {
+	var list []T
+
+	for _, item := range arr {
+		list = append(list, item...)
+	}
+
+	return list
+}
+
 func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
 	var list []R
 

@@ -16,6 +16,10 @@ type AuthenticationService interface {
 	AuthenticationDisabled() bool
 }
 
+type AuthorizationService interface {
+	CheckRecordAccess(ctx context.Context, params CheckRecordAccessParams) errors.ServiceError
+}
+
 type BackendProviderService interface {
 	Init(data *model.InitData)
 	GetSystemBackend(ctx context.Context) Backend
@@ -106,6 +110,12 @@ type ExternalService interface {
 	Call(ctx context.Context, all *model.ExternalCall, event *model.Event) (*model.Event, errors.ServiceError)
 }
 
+type CheckRecordAccessParams struct {
+	Resource  *model.Resource
+	Records   *[]*model.Record
+	Operation model.OperationType
+}
+
 type WatchParams struct {
 	Selector   *model.EventSelector
 	BufferSize int
@@ -185,6 +195,7 @@ func (p RecordDeleteParams) ToRequest() *stub.DeleteRecordRequest {
 }
 
 type UserDetails struct {
-	Username        string
-	SecurityContext *model.SecurityContext
+	Username            string
+	Roles               []string
+	SecurityConstraints []*model.SecurityConstraint
 }

@@ -53,6 +53,11 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 		return nil, errors.AuthenticationFailedError
 	}
 
+	return s.prepareToken(ctx, term, user)
+}
+
+func (s *authenticationService) prepareToken(ctx context.Context, term model.TokenTerm, user *model.User) (*model.Token, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
 	// Prepare token
 	expiration := s.ExpirationFromTerm(term)
 	roles, err := s.LocateRoles(ctx, user.Roles)
@@ -61,11 +66,21 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 		return nil, err
 	}
 
+	var constraints []*model.SecurityConstraint
+
+	for _, role := range roles {
+		for _, constraint := range role.SecurityConstraints {
+			constraint.Role = role.Name
+			constraints = append(constraints, constraint)
+		}
+	}
+
 	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: abs.UserDetails{
-			Username:        user.Username,
-			SecurityContext: CombineSecurityContext(util.ArrayMap(roles, func(role *model.Role) *model.SecurityContext { return role.SecurityContext })...),
+			Username:            user.Username,
+			Roles:               user.Roles,
+			SecurityConstraints: constraints,
 		},
 		ExpiresAt: expiration,
 		Issuer:    "github.com/apibrew/apibrew",
@@ -98,28 +113,7 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 		return nil, err
 	}
 
-	// Prepare token
-	expiration := s.ExpirationFromTerm(term)
-
-	newToken, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
-		Key: *s.privateKey,
-		UserDetails: abs.UserDetails{
-			Username: user.Username,
-			//SecurityContext: user.SecurityContext,
-		},
-		ExpiresAt: expiration,
-		Issuer:    "github.com/apibrew/apibrew",
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.Token{
-		Term:       term,
-		Content:    newToken,
-		Expiration: timestamppb.New(expiration),
-	}, nil
+	return s.prepareToken(ctx, term, user)
 }
 
 func (s *authenticationService) ParseAndVerifyToken(token string) (*abs.UserDetails, errors.ServiceError) {
@@ -254,7 +248,7 @@ func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Ti
 	}
 }
 
-func NewAuthenticationService(recordService abs.RecordService) abs.AuthenticationService {
+func NewAuthenticationService(recordService abs.RecordService, service abs.AuthorizationService) abs.AuthenticationService {
 	return &authenticationService{
 		recordService: recordService,
 	}
