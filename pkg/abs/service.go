@@ -195,6 +195,7 @@ func (p RecordDeleteParams) ToRequest() *stub.DeleteRecordRequest {
 }
 
 type UserDetails struct {
+	UserId              string
 	Username            string
 	Roles               []string
 	SecurityConstraints []*model.SecurityConstraint

@@ -28,7 +28,8 @@ message User {
     name: "IsHclLabel"
     value: "true"
   }]; // principal
-  string password = 4;
+  optional string password = 4;
+  repeated SecurityConstraint securityConstraints = 5 [(model.hcl_block) = "constraint"];
   optional google.protobuf.Struct details = 6;
   //  string signKey = 7; // rsa pub key to create tokens
   repeated string roles = 8;

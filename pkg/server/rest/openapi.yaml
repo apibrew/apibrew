@@ -1668,6 +1668,7 @@ components:
                     type: string
                 term:
                     enum:
+                        - VERY_SHORT
                         - SHORT
                         - MIDDLE
                         - LONG
@@ -2381,6 +2382,7 @@ components:
                     type: string
                 term:
                     enum:
+                        - VERY_SHORT
                         - SHORT
                         - MIDDLE
                         - LONG
@@ -2699,6 +2701,10 @@ components:
                         - FULL
                     type: string
                     format: enum
+                recordIds:
+                    type: array
+                    items:
+                        type: string
                 before:
                     type: string
                     description: time part
@@ -2711,10 +2717,6 @@ components:
                     description: user part
                 role:
                     type: string
-                recordIds:
-                    type: array
-                    items:
-                        type: string
                 requirePass:
                     type: boolean
                 permit:
@@ -2752,6 +2754,7 @@ components:
             properties:
                 term:
                     enum:
+                        - VERY_SHORT
                         - SHORT
                         - MIDDLE
                         - LONG
@@ -2885,6 +2888,10 @@ components:
                     type: string
                 password:
                     type: string
+                securityConstraints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SecurityConstraint'
                 details:
                     type: object
                 roles:
