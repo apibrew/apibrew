@@ -12,6 +12,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
+	jwt2 "github.com/apibrew/apibrew/pkg/service/jwt"
 	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/golang-jwt/jwt/v4"
@@ -37,7 +38,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 		return &model.Token{
 			Term:       term,
 			Content:    "",
-			Expiration: timestamppb.New(time.Now().Add(time.Minute)),
+			Expiration: timestamppb.New(time.Now().Add(time.Minute).UTC()),
 		}, nil
 	}
 	logger := log.WithFields(logging.CtxFields(ctx))
@@ -46,14 +47,16 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 
 	defer logger.Debug("End Authenticate")
 
+	systemCtx := security.WithSystemContext(ctx)
+
 	// locate user
-	user, err := s.LocateUser(security.WithSystemContext(ctx), username, password)
+	user, err := s.LocateUser(systemCtx, username, password)
 
 	if err != nil {
 		return nil, errors.AuthenticationFailedError
 	}
 
-	return s.prepareToken(ctx, term, user)
+	return s.prepareToken(systemCtx, term, user)
 }
 
 func (s *authenticationService) prepareToken(ctx context.Context, term model.TokenTerm, user *model.User) (*model.Token, errors.ServiceError) {
@@ -75,9 +78,12 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 		}
 	}
 
-	token, err := security.JwtUserDetailsSign(security.JwtUserDetailsSignParams{
+	constraints = append(constraints, user.SecurityConstraints...)
+
+	token, err := jwt2.JwtUserDetailsSign(jwt2.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: abs.UserDetails{
+			UserId:              user.Id,
 			Username:            user.Username,
 			Roles:               user.Roles,
 			SecurityConstraints: constraints,
@@ -96,28 +102,30 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 	return &model.Token{
 		Term:       term,
 		Content:    token,
-		Expiration: timestamppb.New(expiration),
+		Expiration: timestamppb.New(expiration.UTC()),
 	}, nil
 }
 
 func (s *authenticationService) RenewToken(ctx context.Context, oldToken string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
-	userDetails, err := security.JwtVerifyAndUnpackUserDetails(*s.publicKey, oldToken)
+	userDetails, err := jwt2.JwtVerifyAndUnpackUserDetails(*s.publicKey, oldToken)
 
 	if err != nil {
 		return nil, err
 	}
 
-	user, err := s.FindUser(ctx, userDetails.Username)
+	systemCtx := security.WithSystemContext(ctx)
+
+	user, err := s.FindUser(systemCtx, userDetails.Username)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return s.prepareToken(ctx, term, user)
+	return s.prepareToken(systemCtx, term, user)
 }
 
 func (s *authenticationService) ParseAndVerifyToken(token string) (*abs.UserDetails, errors.ServiceError) {
-	return security.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
+	return jwt2.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
 }
 
 type RequestWithToken interface {
@@ -136,7 +144,7 @@ func (s *authenticationService) LocateUser(ctx context.Context, username, passwo
 	}
 
 	logger.Debugf("Checking password: %s", username)
-	if security.VerifyKey(user.Password, password) != nil {
+	if user.Password == nil || security.VerifyKey(*user.Password, password) != nil {
 		logger.Debugf("Password is wrong: %s", username)
 		return nil, errors.AuthenticationFailedError
 	}
@@ -173,7 +181,7 @@ func (s *authenticationService) LocateRoles(ctx context.Context, names []string)
 		return []*model.Role{}, nil
 	}
 
-	res, _, err := s.recordService.List(security.SystemContext, abs.RecordListParams{
+	res, _, err := s.recordService.List(ctx, abs.RecordListParams{
 		Namespace: resources.RoleResource.Namespace,
 		Resource:  resources.RoleResource.Name,
 		Query:     helper.NewQueryBuilder().In("name", util.ArrayMap(names, func(s string) interface{} { return s })),
@@ -235,12 +243,14 @@ func (s *authenticationService) Init(data *model.InitData) {
 
 func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Time {
 	switch term {
-	case model.TokenTerm_SHORT:
+	case model.TokenTerm_VERY_SHORT:
 		return time.Now().Add(time.Minute)
+	case model.TokenTerm_SHORT:
+		return time.Now().Add(20 * time.Minute)
 	case model.TokenTerm_MIDDLE:
-		return time.Now().Add(2 * time.Hour)
-	case model.TokenTerm_LONG:
 		return time.Now().Add(2 * 24 * time.Hour)
+	case model.TokenTerm_LONG:
+		return time.Now().Add(2 * 30 * 24 * time.Hour)
 	case model.TokenTerm_VERY_LONG:
 		return time.Now().Add(2 * 365 * 24 * time.Hour)
 	default:

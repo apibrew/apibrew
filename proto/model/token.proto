@@ -8,13 +8,15 @@ import 'google/protobuf/timestamp.proto';
 
 enum TokenTerm {
   // 1 minute
-  SHORT = 0;
-  // 2 hours
-  MIDDLE = 1;
+  VERY_SHORT = 0;
+  // 20 minutes
+  SHORT = 1;
   // 2 days
-  LONG = 2;
+  MIDDLE = 2;
+  // 60 days
+  LONG = 3;
   // 2 years
-  VERY_LONG = 3;
+  VERY_LONG = 4;
 }
 
 message Token {

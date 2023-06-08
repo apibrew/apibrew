@@ -79,6 +79,14 @@ export function BaseLayout(props: BaseLayoutProps): JSX.Element {
                     }
                 },
             },
+            MuiInputBase: {
+                defaultProps: {
+                    size: 'small',
+                    sx: {
+                        margin: 0.5
+                    }
+                }
+            }
         }
     })
     return <React.Fragment>

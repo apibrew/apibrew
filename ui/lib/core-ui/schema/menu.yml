@@ -3,6 +3,19 @@ name: Menu
 namespace: ui
 description: A module is a collection of components
 types:
+  - name: RequireSecurityConstraintParams
+    properties:
+      - name: resource
+        type: STRING
+      - name: namespace
+        type: STRING
+      - name: operation
+        type: ENUM
+        enumValues:
+          - READ
+          - WRITE
+          - CREATE
+          - DELETE
   - name: MenuItem
     properties:
       - name: title
@@ -26,6 +39,9 @@ types:
           - internal
           - external
           - externalRedirect
+      - name: securityConstraint
+        type: STRUCT
+        typeRef: RequireSecurityConstraintParams
       - name: children
         type: LIST
         item:

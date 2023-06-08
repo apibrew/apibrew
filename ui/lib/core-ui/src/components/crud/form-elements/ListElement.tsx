@@ -1,4 +1,4 @@
-import {useResourceProperty} from "../../../context/property.ts";
+import {ResourcePropertyContext, useResourceProperty} from "../../../context/property.ts";
 import IconButton from "@mui/material/IconButton";
 import {Icon} from "../../Icon.tsx";
 import Box from "@mui/material/Box";
@@ -29,24 +29,26 @@ export function ListElement(props: ListElementProps) {
 
     const items = props.value ?? []
 
-    const children = props.config.children ?? []
-
-    if (children.length !== 1) {
-        throw new Error('ListFormElements can only have one child')
-    }
-
-    const subConfig = children[0]
-
     return <>
         <Paper>
             <Box m={1}>
                 <IconButton onClick={() => {
+                    let newItem = {}
+
+                    if (property.item.type === 'STRUCT') {
+                        newItem = {}
+                    } else {
+                        newItem = ''
+                    }
+
                     props.onChange({
                         target: {
-                            value: [...items, {}]
+                            value: [...items, newItem]
                         }
                     })
-                }}><Icon name={'add'}/></IconButton>
+                }}>
+                    <Icon name={'add'}/>
+                </IconButton>
                 {items.map((item, index) => {
                     return <ValueContext.Provider key={index} value={{
                         value: item,
@@ -63,7 +65,9 @@ export function ListElement(props: ListElementProps) {
                     }}>
                         <Box display='flex'>
                             <Box flex={1}>
-                                <FormItem property={property.item} config={subConfig}/>
+                                <ResourcePropertyContext.Provider value={property.item}>
+                                    <FormItem config={props.config}/>
+                                </ResourcePropertyContext.Provider>
                             </Box>
                             <IconButton onClick={() => {
                                 const newItems = [...items]

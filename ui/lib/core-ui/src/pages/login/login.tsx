@@ -9,11 +9,13 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import {useNavigate} from 'react-router-dom'
-import {authenticate, TokenService} from "../../service";
+import * as TokenService from "../../service/token.ts";
+import {authenticate} from "../../service";
 
 export function Login(): JSX.Element {
     const isLoggedIn = TokenService.isLoggedIn()
     useEffect(() => {
+        console.log(isLoggedIn)
         if (isLoggedIn) {
             navigate('/dashboard/test')
         }

@@ -1,6 +1,6 @@
 import React, {Suspense} from "react";
 import {ModuleData} from '../../model/module-data'
-import {ModuleService} from "../../service/module";
+import * as ModuleService from "../../service/module";
 import Box from "@mui/material/Box";
 import {Loading} from "../basic/Loading.tsx";
 

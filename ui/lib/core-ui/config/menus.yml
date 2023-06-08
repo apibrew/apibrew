@@ -8,11 +8,15 @@ properties:
       system: true
       children:
         - title: Country
-          system: true
           link: /dashboard/crud/default/country
+          securityConstraint:
+            resource: country
+            namespace: default
         - title: City
-          system: true
           link: /dashboard/crud/default/city
+          securityConstraint:
+            resource: city
+            namespace: default
     - title: Develop
       children:
         - title: App Designer

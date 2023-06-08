@@ -19,6 +19,8 @@
     "@mui/material": "^5.12.2",
     "@mui/x-data-grid": "^6.4.0",
     "axios": "^1.4.0",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
     "nodemon": "^2.0.22",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

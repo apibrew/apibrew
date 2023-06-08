@@ -1,11 +1,25 @@
-package security
+package jwt
 
 import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/golang-jwt/jwt/v4"
+	"google.golang.org/protobuf/encoding/protojson"
 	"time"
 )
+
+type SecurityConstraintWrapper struct {
+	SecurityConstraint *model.SecurityConstraint
+}
+
+func (s *SecurityConstraintWrapper) MarshalJSON() ([]byte, error) {
+	return protojson.Marshal(s.SecurityConstraint)
+}
+
+func (s *SecurityConstraintWrapper) UnmarshalJSON(data []byte) error {
+	s.SecurityConstraint = new(model.SecurityConstraint)
+	return protojson.Unmarshal(data, s.SecurityConstraint)
+}
 
 type JwtUserClaims struct {
 	// the `iss` (Issuer) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1
@@ -30,12 +44,13 @@ type JwtUserClaims struct {
 	ID string `json:"jti,omitempty"`
 
 	// securityContext
-	SecurityConstraints []*model.SecurityConstraint `json:"securityConstraints,omitempty"`
+	SecurityConstraints []*SecurityConstraintWrapper `json:"securityConstraints,omitempty"`
 
 	// username
 	Username string `json:"username,omitempty"`
 
-	Roles []string `json:"roles,omitempty"`
+	Roles  []string `json:"roles,omitempty"`
+	UserId string   `json:"uid,omitempty"`
 }
 
 func (c *JwtUserClaims) Valid() error {

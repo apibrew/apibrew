@@ -13,6 +13,7 @@ import {Crud as CrudModel, CrudName} from "../../model/ui/crud.ts";
 import {resetCrudForm} from "./helper";
 import {useResourceByName} from "../../hooks/resource.ts";
 import {Loading} from "../basic/Loading.tsx";
+import {ResourceContext} from "../../context/resource.ts";
 
 export interface CrudProps {
     namespace: string
@@ -49,16 +50,18 @@ export function Crud(props: CrudProps): JSX.Element {
 
     return (
         <Box>
-            <Routes>
-                <Route path="new" element={<New crudConfig={crudConfig} resource={resource}/>}/>
-                {!crudConfig.hideSettings &&
-                    <Route path="settings" element={<Settings resource={resource} updateCrud={updatedCrudConfig => {
-                        setCrudConfig(updatedCrudConfig)
-                    }}/>}/>}
-                <Route path=":id/edit" element={<Update crudConfig={crudConfig} resource={resource}/>}/>
-                <Route path=":id/view" element={<View crudConfig={crudConfig} resource={resource}/>}/>
-                <Route path="" element={<List crudConfig={crudConfig} resource={resource}/>}/>
-            </Routes>
+            <ResourceContext.Provider value={resource}>
+                <Routes>
+                    <Route path="new/*" element={<New crudConfig={crudConfig} resource={resource}/>}/>
+                    {!crudConfig.hideSettings &&
+                        <Route path="settings" element={<Settings resource={resource} updateCrud={updatedCrudConfig => {
+                            setCrudConfig(updatedCrudConfig)
+                        }}/>}/>}
+                    <Route path=":id/edit/*" element={<Update crudConfig={crudConfig} resource={resource}/>}/>
+                    <Route path=":id/view/*" element={<View crudConfig={crudConfig} resource={resource}/>}/>
+                    <Route path="" element={<List crudConfig={crudConfig} resource={resource}/>}/>
+                </Routes>
+            </ResourceContext.Provider>
         </Box>
     )
 }

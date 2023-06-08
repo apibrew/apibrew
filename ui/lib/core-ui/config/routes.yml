@@ -2,7 +2,7 @@ type: record
 namespace: ui
 resource: Router
 properties:
-  name: system
+  name: main
   routes:
     - path: /dashboard/*
       component: CoreUI/DashboardLayout
@@ -22,9 +22,9 @@ properties:
           params:
             code: 404
             message: Page not found
-    - path: /login
-      component: CoreUI/Login
-      system: true
+        - path: /user/profile/*
+          component: CoreUI/UserProfile
+          system: true
     - path: /
       component: Router/Forward
       system: true

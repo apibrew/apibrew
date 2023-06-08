@@ -207,7 +207,7 @@ export interface components {
              * @description Token Lifespan
              * @enum {string}
              */
-            term?: "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
+            term?: "VERY_SHORT" | "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
         };
         AuthenticationResponse: {
             token?: components["schemas"]["Token"];
@@ -576,7 +576,7 @@ export interface components {
              * Format: enum
              * @enum {string}
              */
-            term?: "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
+            term?: "VERY_SHORT" | "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
         };
         RenewTokenResponse: {
             token?: components["schemas"]["Token"];
@@ -771,7 +771,7 @@ export interface components {
              * Format: enum
              * @enum {string}
              */
-            term?: "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
+            term?: "VERY_SHORT" | "SHORT" | "MIDDLE" | "LONG" | "VERY_LONG";
             content?: string;
             /** Format: date-time */
             expiration?: string;

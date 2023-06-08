@@ -50,15 +50,15 @@ properties:
                 propertyPath: args
                 children:
                   - kind: input
-                    params:
-                      hideLabel: true
                     children:
-                      - kind: container
+                      - kind: section
                         children:
                           - kind: property
                             propertyPath: name
                             children:
                               - kind: input
+                                params:
+                                  hideLabel: true
           - kind: section
             title: Options
             children:

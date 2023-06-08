@@ -14,6 +14,7 @@ import {Record, RecordService} from "../../../service/record.ts"
 import {FormItem} from "../../../model/ui/crud.ts";
 import {useResource} from "../../../context/resource.ts";
 import {ListElement} from "./ListElement.tsx";
+import {StructElement} from "./StructElement.tsx";
 
 export interface FormElementProps {
     property: ResourceProperty
@@ -92,8 +93,8 @@ const FieldValueConvertWrapper = (Field: FieldComponent, converter: (val: any) =
 
 export function FormInput(props: FormElementProps) {
     const title = props.property.title || props.property.name
-
     const resource = useResource()
+
     const referencedResourceName = props.property.reference?.referencedResource ?? ''
     const [value, setValue] = useState(props.value)
 
@@ -117,25 +118,43 @@ export function FormInput(props: FormElementProps) {
                                                               referencedResourceName={referencedResourceName} {...props} />
             case 'LIST':
                 return (_props: FieldProps) => <ListElement config={props.config} {..._props}/>
+            case 'STRUCT':
+                let properties = props.property.properties
+
+                if (props.property.typeRef) {
+                    const type = resource.types.find(item => item.name == props.property.typeRef)
+                    properties = type?.properties || []
+                }
+
+                return (_props: FieldProps) => <StructElement properties={props.property.properties}
+                                                              config={props.config}/>
         }
 
         return TextField
     }, [props.property.type, referencedResourceName, resource.namespace])
 
+    const field = <Field required={props.property.required}
+                         disabled={props.readOnly}
+                         {...props.config.params}
+                         value={value}
+                         onChange={(e) => {
+                             setValue(e.target.value)
+                             props.setValue(e.target.value)
+                         }}/>
+
+    const hideLabel = (props.config.params && props.config.params['hideLabel'])
+
+    if (hideLabel) {
+        return <FormControl style={{width: '100%'}}>
+            {field}
+        </FormControl>
+    }
+
     return (
-        <React.Fragment>
-            <FormControl style={{width: '100%'}}>
-                {!(props.config.params && props.config.params['hideLabel']) && <FormLabel>{title}</FormLabel>}
-                <Field required={props.property.required}
-                       disabled={props.readOnly}
-                       {...props.config.params}
-                       value={value}
-                       onChange={(e) => {
-                           setValue(e.target.value)
-                           props.setValue(e.target.value)
-                       }}/>
-                {props.property.description && <FormHelperText>{props.property.description}</FormHelperText>}
-            </FormControl>
-        </React.Fragment>
+        <FormControl style={{width: '100%'}}>
+            <FormLabel>{title}</FormLabel>
+            {field}
+            {props.property.description && <FormHelperText>{props.property.description}</FormHelperText>}
+        </FormControl>
     )
 }

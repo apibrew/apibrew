@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { alpha } from '@mui/material/styles'
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { TokenService } from '../../service/token'
+import * as TokenService  from '../../service/token'
 const MENU_OPTIONS = [
     {
         label: 'Home',
@@ -76,11 +76,11 @@ export default function AccountPopover() {
                 </Box>
                 <Divider sx={{ borderStyle: 'dashed' }} />
                 <Stack sx={{ p: 1 }}>
-                    {MENU_OPTIONS.map((option) => (
-                        <MenuItem key={option.label} onClick={handleClose}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
+                    <MenuItem onClick={() => {
+                        navigate('/dashboard/user/profile')
+                    }} sx={{ m: 1 }}>
+                        Account Settings
+                    </MenuItem>
                 </Stack>
                 <Divider sx={{ borderStyle: 'dashed' }} />
                 <MenuItem onClick={() => {

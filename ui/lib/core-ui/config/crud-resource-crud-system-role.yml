@@ -1,0 +1,34 @@
+type: record
+namespace: ui
+resource: Crud
+properties:
+  name: ResourceCrud-system-role
+  namespace: system
+  resource: role
+  gridConfig:
+    columns:
+      - name: id
+        title: Id
+        width: 300
+      - name: name
+        flex: 1
+        title: Name
+  formConfig:
+    children:
+      - kind: tab
+        title: Details
+        children:
+          - kind: property
+            propertyPath: name
+            children:
+              - kind: input
+      - kind: tab
+        title: Permissions
+        children:
+          - kind: property
+            propertyPath: securityConstraints
+            children:
+              - kind: custom
+                component: CoreUI/SecurityConstraintsInput
+                params:
+                  mode: 'role'

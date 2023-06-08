@@ -52,15 +52,24 @@ function RouterComponent(props: RouterComponentProps) {
     </Routes>
 }
 
-export function App(): JSX.Element {
-    const systemRouter = useRecordByName<RouterModel>(RouterName, 'ui', 'system')
-    const userRouter = useRecordByName<RouterModel>(RouterName, 'ui', 'user')
+function RouterComponentWithRouterName(props: {routerName: string}) {
+    const router = useRecordByName<RouterModel>(RouterName, 'ui', props.routerName)
 
+    if (!router) {
+        return <Loading/>
+    }
+
+    return <RouterComponent routes={router.routes}/>
+}
+
+export function App(): JSX.Element {
     return (
         <BaseLayout>
             <Router>
-                {systemRouter && <RouterComponent routes={systemRouter.routes}/>}
-                {userRouter && <RouterComponent routes={userRouter.routes}/>}
+                <Routes>
+                    <Route path={'/login'} element={<DynamicComponent component={'CoreUI/LoginPage'}/>}></Route>
+                    <Route path={'*'} element={<RouterComponentWithRouterName routerName={'main'}/>}></Route>
+                </Routes>
             </Router>
         </BaseLayout>
     )

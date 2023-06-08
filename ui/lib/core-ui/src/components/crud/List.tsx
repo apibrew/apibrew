@@ -9,8 +9,9 @@ import React, {useContext, useEffect, useState} from "react"
 import {SdkDrawer} from "../sdk/SdkDrawer"
 import {Crud} from "../../model/ui/crud.ts";
 import {Icon} from "../Icon.tsx";
-import {ModuleService} from "../../service/module.ts";
+import * as ModuleService from "../../service/module.ts";
 import {LayoutContext} from "../../context/layout-context.ts";
+import {useErrorHandler} from "../../hooks/error-handler.tsx";
 
 export interface ListProps {
     resource: Resource
@@ -22,11 +23,12 @@ export function List(props: ListProps) {
     const [list, setList] = useState<Record[]>([])
     const [showSdk, setShowSdk] = useState(false)
     const layoutContext = useContext(LayoutContext)
+    const errorHandler = useErrorHandler()
 
     const load = () => {
         RecordService.list<Record>(props.resource.namespace ?? 'default', props.resource.name).then((data) => {
             setList(data)
-        })
+        }, errorHandler)
     }
 
     const resourcePropertyMap = new Map<string, ResourceProperty>()

@@ -75,7 +75,7 @@ export function DashboardLayout(props: DashboardLayoutProps): JSX.Element {
                     </IconButton>
                 </Toolbar>
                 <Divider style={{background: '#AAA'}}/>
-                {menu && menu.children.map(item => <NavList title={item.title} items={item.children}/>)}
+                {menu && menu.children.map(item => <NavList key={item.title} title={item.title} items={item.children}/>)}
             </div>
             <div style={{flexGrow: 1}}/>
         </Box>
