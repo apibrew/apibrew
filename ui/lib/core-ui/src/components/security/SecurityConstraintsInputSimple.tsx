@@ -70,9 +70,9 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                         <b>All</b>
                     </TableCell>
                     {accessMap[`system`] && <PermissionCheckBoxGroup value={accessMap[`system`]}
-                                                                     indeterminate={anyOf(namespaces, item => {
+                                                                     indeterminate={combine(...namespaces.map(item => {
                                                                          return accessMap[`namespace-${item.name}`]
-                                                                     })}
+                                                                     }))}
                                                                      onChange={value => {
                                                                          setAccessMap({
                                                                              ...accessMap,
@@ -95,11 +95,11 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                         {accessMap[`namespace-${namespace.name}`] &&
                             <PermissionCheckBoxGroup
                                 value={combine(accessMap[`system`], accessMap[`namespace-${namespace.name}`])}
-                                indeterminate={anyOf(resources.filter(item => item.namespace === namespace.name), resource => {
-                                    return combine(accessMap[`resource-${resource.namespace}/${resource.name}`], anyOf(resource.properties, property => {
+                                indeterminate={combine(...resources.filter(item => item.namespace === namespace.name).map(resource => {
+                                    return combine(accessMap[`resource-${resource.namespace}/${resource.name}`], ...resource.properties.map(property => {
                                         return accessMap[`resource-${resource.namespace}/${resource.name}-${property.name}`]
                                     }))
-                                })}
+                                }))}
                                 onChange={value => {
                                     setAccessMap({
                                         ...accessMap,
