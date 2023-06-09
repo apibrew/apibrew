@@ -20,7 +20,12 @@ func SecurityContextToValue(securityConstraints []*model.SecurityConstraint) *st
 		properties["property"] = item.Property
 		properties["before"] = item.Before.AsTime().UnixMilli()
 		properties["after"] = item.After.AsTime().UnixMilli()
-		properties["username"] = item.Username
+		if item.Username != nil {
+			properties["username"] = *item.Username
+		}
+		if item.Role != nil {
+			properties["role"] = *item.Role
+		}
 		properties["operation"] = int32(item.Operation.Number())
 		properties["permit"] = int32(item.Permit.Number())
 		properties["recordIds"] = util.ArrayMap(item.GetRecordIds(), func(t string) interface{} {
@@ -60,7 +65,17 @@ func SecurityContextFromValue(value *structpb.Value) []*model.SecurityConstraint
 		securityConstraint.Property = obj.Fields["property"].GetStringValue()
 		securityConstraint.Before = timestamppb.New(time.UnixMilli(int64(obj.Fields["before"].GetNumberValue())))
 		securityConstraint.After = timestamppb.New(time.UnixMilli(int64(obj.Fields["after"].GetNumberValue())))
-		securityConstraint.Username = obj.Fields["username"].GetStringValue()
+
+		if obj.Fields["username"] != nil {
+			securityConstraint.Username = new(string)
+			*securityConstraint.Username = obj.Fields["username"].GetStringValue()
+		}
+
+		if obj.Fields["role"] != nil {
+			securityConstraint.Role = new(string)
+			*securityConstraint.Role = obj.Fields["role"].GetStringValue()
+		}
+
 		securityConstraint.Operation = model.OperationType(obj.Fields["operation"].GetNumberValue())
 		securityConstraint.Permit = model.PermitType(obj.Fields["permit"].GetNumberValue())
 

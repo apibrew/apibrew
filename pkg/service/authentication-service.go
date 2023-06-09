@@ -73,7 +73,7 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 
 	for _, role := range roles {
 		for _, constraint := range role.SecurityConstraints {
-			constraint.Role = role.Name
+			constraint.Role = &role.Name
 			constraints = append(constraints, constraint)
 		}
 	}
