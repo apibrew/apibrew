@@ -155,6 +155,7 @@ export function List(props: ListProps) {
             <DataGrid
                 rows={list}
                 columns={columns}
+                density='compact'
                 initialState={{
                     pagination: {
                         paginationModel: {

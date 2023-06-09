@@ -22,3 +22,14 @@ export function useRecordBy<T>(resourceName: string, namespace: string, key: str
 
     return record
 }
+
+export function useRecords<T>(resourceName: string, namespace: string) {
+    const [records, setRecords] = useState<T[]>([])
+    const errorHandler = useErrorHandler()
+
+    useEffect(() => {
+        RecordService.list<T>(namespace, resourceName).then(setRecords, errorHandler)
+    }, [resourceName, namespace])
+
+    return records
+}
