@@ -101,11 +101,11 @@ func (a *authorizationService) evaluateConstraint(params abs.CheckRecordAccessPa
 }
 
 func (a *authorizationService) checkConstraintUserPart(constraint *model.SecurityConstraint, userDetails *abs.UserDetails) bool {
-	if constraint.Username != "*" && constraint.Username != "" && constraint.Username != userDetails.Username {
+	if constraint.Username != nil && *constraint.Username != "*" && *constraint.Username != userDetails.Username {
 		return false
 	}
 
-	if constraint.Role != "*" && constraint.Role != "" && !util.ArrayContains(userDetails.Roles, constraint.Role) {
+	if constraint.Role != nil && *constraint.Role != "*" && !util.ArrayContains(userDetails.Roles, *constraint.Role) {
 		return false
 	}
 
@@ -113,11 +113,11 @@ func (a *authorizationService) checkConstraintUserPart(constraint *model.Securit
 }
 
 func (a *authorizationService) checkConstraintMatchPart(params abs.CheckRecordAccessParams, constraint *model.SecurityConstraint, now time.Time) bool {
-	if constraint.Resource != "*" && constraint.Resource != "" && constraint.Resource != params.Resource.Name {
+	if constraint.Resource != "*" && constraint.Resource != params.Resource.Name {
 		return false
 	}
 
-	if constraint.Namespace != "*" && constraint.Namespace != "" && constraint.Namespace != params.Resource.Namespace {
+	if constraint.Namespace != "*" && constraint.Namespace != params.Resource.Namespace {
 		return false
 	}
 
@@ -151,7 +151,7 @@ func (a *authorizationService) checkConstraintMatchPart(params abs.CheckRecordAc
 		return false
 	}
 
-	if constraint.Property != "" && constraint.Property != "*" {
+	if params.Records != nil && constraint.Property != "*" {
 		for _, record := range *params.Records {
 			for key := range record.Properties {
 				if key == "id" {

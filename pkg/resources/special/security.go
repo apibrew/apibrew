@@ -14,10 +14,16 @@ var SecurityConstraintsProperty = &model.ResourceProperty{
 	Required: false,
 }
 
+var rootRoleName = new(string)
+
+func init() {
+	*rootRoleName = "root"
+}
+
 var SecurityContextDisallowAll = []*model.SecurityConstraint{
 	{
 		Operation:   model.OperationType_FULL,
-		Role:        "root",
+		Role:        rootRoleName,
 		Permit:      model.PermitType_PERMIT_TYPE_ALLOW,
 		RequirePass: true,
 	},

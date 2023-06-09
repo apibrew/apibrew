@@ -37,8 +37,8 @@ message SecurityConstraint {
   google.protobuf.Timestamp after = 6; // after it is valid
 
   // user part
-  string username = 7; // username which it is applied to
-  string role = 8; // role which it is applied to
+  optional string username = 7; // username which it is applied to
+  optional string role = 8; // role which it is applied to
 
 
   bool requirePass = 10; // if yes, if this rule passes match part, it will be required to match remaining parts also, if not, it will cause rejection

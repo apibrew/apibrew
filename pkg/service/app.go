@@ -113,6 +113,9 @@ func (app *App) initServices() {
 		Name: "root",
 		SecurityConstraints: []*model.SecurityConstraint{
 			{
+				Namespace: "*",
+				Resource:  "*",
+				Property:  "*",
 				Operation: model.OperationType_FULL,
 				Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
 			},
