@@ -41,7 +41,6 @@ export namespace RecordService {
     }
 
     export async function update<T extends Record>(namespace: string, resource: string, record: T): Promise<T> {
-
         const result = await axios.put<T>(`${BACKEND_URL}/records/${namespace}/${resource}/${record.id!}`, record, {
             headers: {
                 Authorization: `Bearer ${TokenService.get()}`

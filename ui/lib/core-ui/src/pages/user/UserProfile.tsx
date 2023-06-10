@@ -38,7 +38,7 @@ export function UserProfile(props: UserProfileProps): JSX.Element {
     const formConfig = crudConfig.formConfig
 
     return <Card>
-        <CardHeader title={'Execute function ' + crudConfig.name}/>
+        <CardHeader title={'User: ' + record.username}/>
         <CardContent>
             {resource && formConfig && <Form resource={resource}
                                              record={record}

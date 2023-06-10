@@ -88,7 +88,7 @@ export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], 
     }
 
     for (const constraint of constraints) {
-        if (constraint.propertyMode || constraint.permit == 'PERMIT_TYPE_REJECT' || constraint.propertyValue) {
+        if (constraint.propertyMode || constraint.permit == 'PERMIT_TYPE_REJECT' || constraint.propertyValue || constraint.recordIds.length > 0) {
             continue
         }
 

@@ -71,6 +71,7 @@ func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*abs
 	}
 
 	return &abs.UserDetails{
+		UserId:   claims.UserId,
 		Username: claims.Username,
 		Roles:    claims.Roles,
 		SecurityConstraints: util.ArrayMap(claims.SecurityConstraints, func(item *SecurityConstraintWrapper) *model.SecurityConstraint {

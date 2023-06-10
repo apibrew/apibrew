@@ -13,21 +13,23 @@ export function checkResourcePropertyAccess(resource: Resource, property: string
     const userConstraints = getBody().securityConstraints;
 
     const matchingConstraints = userConstraints.filter(constraint => {
-        if (constraint.namespace && constraint.namespace !== '*' && constraint.namespace != resource.namespace) {
+        if (constraint.namespace !== '*' && constraint.namespace != resource.namespace) {
             return false
         }
 
-        if (constraint.resource && constraint.resource !== '*' && constraint.resource != resource.name) {
+        if (constraint.resource !== '*' && constraint.resource != resource.name) {
             return false
         }
 
-        if (constraint.property && constraint.property !== '*' && constraint.property != property) {
+        if (constraint.property !== '*' && constraint.property != property) {
             return false
         }
 
+        /*
         if (recordId && constraint.recordIds && constraint.recordIds.length > 0 && !constraint.recordIds.includes(recordId)) {
             return false
         }
+        */
 
         return true
     })
