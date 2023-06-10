@@ -22,9 +22,8 @@ func init() {
 
 var SecurityContextDisallowAll = []*model.SecurityConstraint{
 	{
-		Operation:   model.OperationType_FULL,
-		Role:        rootRoleName,
-		Permit:      model.PermitType_PERMIT_TYPE_ALLOW,
-		RequirePass: true,
+		Operation: model.OperationType_FULL,
+		Role:      rootRoleName,
+		Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
 	},
 }

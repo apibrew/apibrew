@@ -10,6 +10,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -37,7 +38,7 @@ func NewRecordService(resourceService abs.ResourceService, backendProviderServic
 }
 
 func (r *recordService) List(ctx context.Context, params abs.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
-	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+	resource := r.resourceService.GetResourceByName(security.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return nil, 0, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
@@ -117,7 +118,7 @@ func (r *recordService) Create(ctx context.Context, params abs.RecordCreateParam
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
 
-	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+	resource := r.resourceService.GetResourceByName(security.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
@@ -261,7 +262,7 @@ func (r *recordService) Apply(ctx context.Context, params abs.RecordUpdateParams
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
 
-	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+	resource := r.resourceService.GetResourceByName(security.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + params.Resource)
@@ -338,7 +339,7 @@ func (r *recordService) Update(ctx context.Context, params abs.RecordUpdateParam
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
 
-	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+	resource := r.resourceService.GetResourceByName(security.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + params.Resource)
@@ -452,7 +453,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 }
 
 func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError) {
-	resource := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
+	resource := r.resourceService.GetResourceByName(security.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
 		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
@@ -504,7 +505,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	logger.Debug("Begin record-service FindBy")
 	defer logger.Debug("Finish record-service FindBy")
 
-	resource := r.resourceService.GetResourceByName(ctx, namespace, resourceName)
+	resource := r.resourceService.GetResourceByName(security.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
 		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
@@ -552,7 +553,7 @@ func (r *recordService) Get(ctx context.Context, params abs.RecordGetParams) (*m
 }
 
 func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParams) errors.ServiceError {
-	resource := r.resourceService.GetResourceByName(ctx, params.Namespace, params.Resource)
+	resource := r.resourceService.GetResourceByName(security.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))

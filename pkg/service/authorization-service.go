@@ -2,12 +2,15 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/util"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -32,20 +35,28 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params abs
 		constraint.Namespace = params.Resource.Namespace
 	}
 
+	for _, constraint := range userDetails.SecurityConstraints {
+		constraint.Username = nil
+		constraint.Role = nil
+	}
+
 	constraints = append(constraints, params.Resource.SecurityConstraints...)
 	constraints = append(constraints, userDetails.SecurityConstraints...)
 
-	result := a.evaluateConstraints(params, constraints, userDetails)
+	errorFields := a.evaluateConstraints(ctx, params, constraints, userDetails)
 
-	if result == model.PermitType_PERMIT_TYPE_ALLOW {
+	if len(errorFields) == 0 {
 		return nil
 	} else {
-		return errors.AccessDeniedError.WithDetails("User don't have permission to access this resource")
+		return errors.AccessDeniedError.WithDetails("User don't have permission to access this resource").WithErrorFields(errorFields)
 	}
 }
 
-func (a *authorizationService) evaluateConstraints(params abs.CheckRecordAccessParams, constraints []*model.SecurityConstraint, userDetails *abs.UserDetails) model.PermitType {
+func (a *authorizationService) evaluateConstraints(ctx context.Context, params abs.CheckRecordAccessParams, constraints []*model.SecurityConstraint, userDetails *abs.UserDetails) []*model.ErrorField {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	now := time.Now()
+	var errorFields []*model.ErrorField
 
 	/*
 	  Default policy for checking constraints are like that
@@ -54,71 +65,65 @@ func (a *authorizationService) evaluateConstraints(params abs.CheckRecordAccessP
 	*/
 
 	// Default permit type is disallow
-	currentPermitType := model.PermitType_PERMIT_TYPE_REJECT
+	hasAllowFlag := false
+
+	var remainingPropertyCheck = make(map[string]bool)
+	for _, property := range params.Resource.Properties {
+		remainingPropertyCheck[property.Name] = true
+	}
 
 	for _, constraint := range constraints {
-		permit := a.evaluateConstraint(params, constraint, now, userDetails)
+		logger.Tracef("Evaluating constraint: %v", constraint)
+		hasAllowFlagLocal, errorFieldsLocal := a.evaluateConstraint(ctx, params, constraint, now, userDetails, &remainingPropertyCheck)
 
-		if permit == nil { // constraint does not match our case
-			continue
+		logger.Tracef("Constraint evaluation result: %v, %v", hasAllowFlagLocal, errorFieldsLocal)
+
+		if hasAllowFlagLocal {
+			hasAllowFlag = true
 		}
 
-		if *permit == model.PermitType_PERMIT_TYPE_ALLOW {
-			currentPermitType = model.PermitType_PERMIT_TYPE_ALLOW
-		}
-
-		// if anyone rejects, then reject immediately
-		if *permit == model.PermitType_PERMIT_TYPE_REJECT {
-			return model.PermitType_PERMIT_TYPE_REJECT
+		if errorFieldsLocal != nil {
+			errorFields = append(errorFields, errorFieldsLocal...)
 		}
 	}
 
-	return currentPermitType
+	// check remaining properties
+	for property, matched := range remainingPropertyCheck {
+		if !matched {
+			errorFields = append(errorFields, &model.ErrorField{
+				Property: property,
+				Message:  fmt.Sprintf("Property '%s' is not allowed", property),
+			})
+		}
+	}
+
+	// if none rejects and anyone allows, then allow
+
+	if !hasAllowFlag {
+		errorFields = append(errorFields, &model.ErrorField{
+			Property: "resource",
+			Message:  "No constraints matched",
+		})
+	}
+
+	return errorFields
 }
 
-func (a *authorizationService) evaluateConstraint(params abs.CheckRecordAccessParams, constraint *model.SecurityConstraint, now time.Time, userDetails *abs.UserDetails) *model.PermitType {
+func (a *authorizationService) evaluateConstraint(ctx context.Context, params abs.CheckRecordAccessParams, constraint *model.SecurityConstraint, now time.Time, userDetails *abs.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	// check resource constraint matches
 
-	matchPartOkay := a.checkConstraintMatchPart(params, constraint, now)
-
-	if !matchPartOkay {
-		return nil
-	}
-
-	// we matched our constraint, now check other constraints
-
-	userPartOkay := a.checkConstraintUserPart(constraint, userDetails)
-	if !userPartOkay {
-		if constraint.RequirePass {
-			var permit = model.PermitType_PERMIT_TYPE_REJECT
-			return &permit
-		} else {
-			return nil
-		}
-	}
-
-	return &constraint.Permit
-}
-
-func (a *authorizationService) checkConstraintUserPart(constraint *model.SecurityConstraint, userDetails *abs.UserDetails) bool {
-	if constraint.Username != nil && *constraint.Username != "*" && *constraint.Username != userDetails.Username {
-		return false
-	}
-
-	if constraint.Role != nil && *constraint.Role != "*" && !util.ArrayContains(userDetails.Roles, *constraint.Role) {
-		return false
-	}
-
-	return true
-}
-
-func (a *authorizationService) checkConstraintMatchPart(params abs.CheckRecordAccessParams, constraint *model.SecurityConstraint, now time.Time) bool {
 	if constraint.Resource != "*" && constraint.Resource != params.Resource.Name {
-		return false
+		// skipping as not related to this resource
+		logger.Tracef("Skipping constraint as not related to this resource: %v", constraint)
+		return false, nil
 	}
 
 	if constraint.Namespace != "*" && constraint.Namespace != params.Resource.Namespace {
-		return false
+		// skipping as not related to this namespace
+		logger.Tracef("Skipping constraint as not related to this namespace: %v", constraint)
+		return false, nil
 	}
 
 	if constraint.RecordIds != nil {
@@ -126,6 +131,12 @@ func (a *authorizationService) checkConstraintMatchPart(params abs.CheckRecordAc
 
 	mainLoop:
 		for _, id := range constraint.RecordIds {
+			if id == "$selfId" {
+				id = userDetails.UserId
+			} else if id == "$selfUsername" {
+				id = userDetails.Username
+			}
+
 			for _, record := range *params.Records {
 				if record.Id == id {
 					found = true
@@ -135,36 +146,102 @@ func (a *authorizationService) checkConstraintMatchPart(params abs.CheckRecordAc
 		}
 
 		if !found {
-			return false
+			logger.Tracef("Skipping constraint as record id not matched: %v", constraint)
+			return false, nil
 		}
 	}
 
 	if constraint.Operation != model.OperationType_FULL && constraint.Operation != params.Operation {
-		return false
+		logger.Tracef("Skipping constraint as operation not matched: %v", constraint)
+		return false, nil
 	}
 
 	if constraint.Before != nil && constraint.Before.AsTime().After(now) {
-		return false
+		logger.Tracef("Skipping constraint as before time not matched: %v", constraint)
+		return false, nil
 	}
 
 	if constraint.After != nil && constraint.Before.AsTime().After(now) {
-		return false
+		logger.Tracef("Skipping constraint as after time not matched: %v", constraint)
+		return false, nil
 	}
 
-	if params.Records != nil && constraint.Property != "*" {
-		for _, record := range *params.Records {
-			for key := range record.Properties {
-				if key == "id" {
-					continue
+	if constraint.Username != nil && *constraint.Username != "*" && *constraint.Username != userDetails.Username {
+		logger.Tracef("Skipping constraint as username not matched: %v", constraint)
+		return false, nil
+	}
+
+	if constraint.Role != nil && *constraint.Role != "*" && !util.ArrayContains(userDetails.Roles, *constraint.Role) {
+		logger.Tracef("Skipping constraint as role not matched: %v", constraint)
+		return false, nil
+	}
+
+	if constraint.Property != "*" {
+		if constraint.PropertyMode == model.SecurityConstraint_PROPERTY_MATCH_ONLY {
+			if constraint.PropertyValue != nil {
+				for _, record := range *params.Records {
+					for key := range record.Properties {
+						if key == "id" {
+							continue
+						}
+						if key != constraint.Property {
+							continue
+						}
+
+						(*remainingPropertyCheck)[key] = false
+
+						if constraint.PropertyValue != nil {
+							var value = *constraint.PropertyValue
+
+							value = a.processValue(value, userDetails)
+
+							strActualVal := fmt.Sprintf("%v", record.Properties[constraint.Property].AsInterface())
+
+							if strActualVal != value {
+								logger.Tracef("Skipping constraint as property value not matched: %v", constraint)
+								return false, nil
+							}
+						}
+					}
 				}
-				if key != constraint.Property {
-					return false
+			}
+		} else {
+			var value = *constraint.PropertyValue
+
+			value = a.processValue(value, userDetails)
+
+			if params.Records != nil {
+				for _, record := range *params.Records {
+					if record.Properties[constraint.Property] == nil {
+						logger.Tracef("Skipping constraint as property not found: %v", constraint)
+						return false, nil
+					}
+
+					strActualVal := fmt.Sprintf("%v", record.Properties[constraint.Property].AsInterface())
+
+					if strActualVal != value {
+						return false, []*model.ErrorField{
+							{
+								Property: constraint.Property,
+								Message:  fmt.Sprintf("Property '%s' is not allowed", constraint.Property),
+							},
+						}
+					}
 				}
 			}
 		}
 	}
 
-	return true
+	return true, nil
+}
+
+func (a *authorizationService) processValue(value string, userDetails *abs.UserDetails) string {
+	if value == "$userId" {
+		value = userDetails.UserId
+	} else if value == "$username" {
+		value = userDetails.Username
+	}
+	return value
 }
 
 func NewAuthorizationService() abs.AuthorizationService {

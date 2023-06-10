@@ -2692,6 +2692,12 @@ components:
                     type: string
                 propertyValue:
                     type: string
+                propertyMode:
+                    enum:
+                        - PROPERTY_MATCH_ONLY
+                        - PROPERTY_MATCH_ANY
+                    type: string
+                    format: enum
                 operation:
                     enum:
                         - OPERATION_TYPE_READ
@@ -2717,14 +2723,14 @@ components:
                     description: user part
                 role:
                     type: string
-                requirePass:
-                    type: boolean
                 permit:
                     enum:
                         - PERMIT_TYPE_ALLOW
                         - PERMIT_TYPE_REJECT
                     type: string
                     format: enum
+                localFlags:
+                    $ref: '#/components/schemas/GoogleProtobufValue'
             description: SecurityConstraint is a rule
         Status:
             type: object
