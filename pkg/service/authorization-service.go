@@ -131,10 +131,11 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params ab
 
 	mainLoop:
 		for _, id := range constraint.RecordIds {
-			if id == "$selfId" {
-				id = userDetails.UserId
-			} else if id == "$selfUsername" {
-				id = userDetails.Username
+			id = a.processValue(id, userDetails)
+
+			if params.Records == nil {
+				logger.Tracef("Skipping constraint as records not found: %v", constraint)
+				return false, nil
 			}
 
 			for _, record := range *params.Records {
@@ -236,12 +237,15 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params ab
 }
 
 func (a *authorizationService) processValue(value string, userDetails *abs.UserDetails) string {
-	if value == "$userId" {
-		value = userDetails.UserId
-	} else if value == "$username" {
-		value = userDetails.Username
+	var processedValue = value
+
+	if processedValue == "$userId" {
+		processedValue = userDetails.UserId
+	} else if processedValue == "$username" {
+		processedValue = userDetails.Username
 	}
-	return value
+
+	return processedValue
 }
 
 func NewAuthorizationService() abs.AuthorizationService {
