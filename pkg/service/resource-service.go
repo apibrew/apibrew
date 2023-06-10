@@ -198,7 +198,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	resourceRecords := []*model.Record{mapping.ResourceToRecord(resource)}
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
-		Resource:  resource,
+		Resource:  resources.ResourceResource,
 		Records:   &resourceRecords,
 		Operation: model.OperationType_OPERATION_TYPE_UPDATE,
 	}); err != nil {
@@ -435,6 +435,16 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		util.NormalizeResource(resource)
 	}
 
+	resourceRecord := mapping.ResourceToRecord(resource)
+
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
+		Resource:  resources.ResourceResource,
+		Records:   &[]*model.Record{resourceRecord},
+		Operation: model.OperationType_OPERATION_TYPE_CREATE,
+	}); err != nil {
+		return nil, err
+	}
+
 	systemBackend := r.backendProviderService.GetSystemBackend(ctx)
 
 	txk, err := systemBackend.BeginTransaction(ctx, false)
@@ -465,7 +475,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 	}()
 
-	resourceRecord := mapping.ResourceToRecord(resource)
 	util.InitRecord(ctx, resources.ResourceResource, resourceRecord)
 	util.NormalizeRecord(resources.ResourceResource, resourceRecord)
 
@@ -639,13 +648,21 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 	return nil
 }
 
-func (r *resourceService) GetResourceByName(_ context.Context, namespace string, resourceName string) *model.Resource {
+func (r *resourceService) GetResourceByName(ctx context.Context, namespace string, resourceName string) *model.Resource {
 	if namespace == "" {
 		namespace = "default"
 	}
 
 	for _, item := range r.schema.Resources {
 		if item.Namespace == namespace && item.Name == resourceName {
+
+			if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
+				Resource:  resources.ResourceResource,
+				Operation: model.OperationType_OPERATION_TYPE_READ,
+			}); err != nil {
+				return nil
+			}
+
 			return item
 		}
 	}
@@ -741,6 +758,14 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			return err
 		}
 
+		if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
+			Resource:  resources.ResourceResource,
+			Records:   &[]*model.Record{{Id: resourceId}},
+			Operation: model.OperationType_OPERATION_TYPE_DELETE,
+		}); err != nil {
+			return err
+		}
+
 		err = r.backendProviderService.GetSystemBackend(ctx).DeleteRecords(ctx, resources.ResourceResource, []string{resourceId})
 
 		if err != nil {
@@ -800,13 +825,29 @@ func (r *resourceService) mustModifyResource(resource *model.Resource) errors.Se
 	return nil
 }
 
-func (r *resourceService) List(_ context.Context) []*model.Resource {
+func (r *resourceService) List(ctx context.Context) []*model.Resource {
+	if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
+		Resource:  resources.ResourceResource,
+		Operation: model.OperationType_OPERATION_TYPE_READ,
+	}); err != nil {
+		return nil
+	}
+
 	return r.schema.Resources
 }
 
-func (r *resourceService) Get(_ context.Context, id string) *model.Resource {
+func (r *resourceService) Get(ctx context.Context, id string) *model.Resource {
 	for _, item := range r.schema.Resources {
 		if item.Id != "" && item.Id == id {
+
+			if err := r.authorizationService.CheckRecordAccess(ctx, abs.CheckRecordAccessParams{
+				Resource:  resources.ResourceResource,
+				Records:   &[]*model.Record{{Id: id}},
+				Operation: model.OperationType_OPERATION_TYPE_READ,
+			}); err != nil {
+				return nil
+			}
+
 			return item
 		}
 	}

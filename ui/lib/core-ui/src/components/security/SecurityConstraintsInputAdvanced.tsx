@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Box from "@mui/material/Box";
 import {Checkbox, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow, TextField} from "@mui/material";
-import {Operation, Permit, SecurityConstraint} from "../../model/security-constraint.ts";
+import {Operation, Permit, PropertyMode, SecurityConstraint} from "../../model/security-constraint.ts";
 import {useRecord} from "../../context/record.ts";
 import {useResourceByName} from "../../hooks/resource.ts";
 import {useValue} from "../../context/value.ts";
@@ -33,14 +33,14 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                     <TableCell>Namespace</TableCell>
                     <TableCell>Resource</TableCell>
                     <TableCell>Property</TableCell>
-                    {/*<TableCell>Value</TableCell>*/}
+                    <TableCell>PropertyValue</TableCell>
+                    <TableCell>PropertyMode</TableCell>
                     <TableCell>Operation</TableCell>
                     <TableCell>Record(s)</TableCell>
                     {/*<TableCell>Before</TableCell>*/}
                     {/*<TableCell>After</TableCell>*/}
                     {props.mode === 'resource' && <TableCell>Username</TableCell>}
                     {props.mode === 'resource' && <TableCell>Role</TableCell>}
-                    {props.mode === 'resource' && <TableCell style={{width: '50px'}}>Require</TableCell>}
                     <TableCell style={{width: '50px'}}>Permit</TableCell>
                     <TableCell style={{width: '50px'}}>Actions</TableCell>
                 </TableRow>
@@ -70,6 +70,24 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                             updatedConstraints[index].property = e.target.value
                             props.setConstraints(updatedConstraints)
                         }}/>
+                    </TableCell>
+                    <TableCell sx={{padding: 1}}>
+                        <TextField size='small' variant='outlined'
+                                   value={constraint.propertyValue} onChange={e => {
+                            const updatedConstraints = [...props.constraints]
+                            updatedConstraints[index].propertyValue = e.target.value
+                            props.setConstraints(updatedConstraints)
+                        }}/>
+                    </TableCell>
+                    <TableCell sx={{padding: 1}}>
+                        <Select sx={{width: '100%'}} size='small' variant='outlined' value={constraint.propertyMode} onChange={e => {
+                            const updatedConstraints = [...props.constraints]
+                            updatedConstraints[index].propertyMode = e.target.value as string as PropertyMode
+                            props.setConstraints(updatedConstraints)
+                        }}>
+                            <MenuItem value='PROPERTY_MATCH_ONLY'>Only</MenuItem>
+                            <MenuItem value='PROPERTY_MATCH_ANY'>Any</MenuItem>
+                        </Select>
                     </TableCell>
                     <TableCell sx={{padding: 1}}>
                         <Select sx={{width: '100%'}} size='small' variant='outlined' value={constraint.operation} onChange={e => {
@@ -107,14 +125,6 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                                    value={constraint.role} onChange={e => {
                             const updatedConstraints = [...props.constraints]
                             updatedConstraints[index].role = e.target.value
-                            props.setConstraints(updatedConstraints)
-                        }}/>
-                    </TableCell>}
-                    {props.mode === 'resource' && <TableCell sx={{padding: 1}}>
-                        <Checkbox size='small'
-                                  value={constraint.requirePass} onChange={e => {
-                            const updatedConstraints = [...props.constraints]
-                            updatedConstraints[index].requirePass = e.target.checked
                             props.setConstraints(updatedConstraints)
                         }}/>
                     </TableCell>}
