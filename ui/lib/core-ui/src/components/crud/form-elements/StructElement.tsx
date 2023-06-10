@@ -14,6 +14,9 @@ export interface StructElementProps {
 }
 
 export function StructElement(props: StructElementProps) {
+    if (!props.config.children) {
+        return <Box/>
+    }
     // tabs will be combined
     const tabs = props.config.children.filter((item) => item.kind === 'tab')
     const other = props.config.children.filter((item) => item.kind !== 'tab')
