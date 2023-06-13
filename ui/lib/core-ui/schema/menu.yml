@@ -47,6 +47,12 @@ types:
         item:
           type: STRUCT
           typeRef: MenuItem
+      - name: component
+        type: STRING
+        length: 255
+        required: false
+      - name: params
+        type: OBJECT
 properties:
   - name: name
     type: STRING

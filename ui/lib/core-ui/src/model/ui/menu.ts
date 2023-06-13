@@ -3,13 +3,23 @@
 
 // Sub Types
 
+export interface RequireSecurityConstraintParams {
+     resource?: string;
+     namespace?: string;
+     operation?: 'read' | 'write' | 'create' | 'delete';
+
+}
+
 export interface MenuItem {
      title: string;
      system?: boolean;
      link?: string;
      icon?: string;
      target?: 'internal' | 'external' | 'external-redirect';
+     securityConstraint?: RequireSecurityConstraintParams;
      children?: MenuItem[];
+     component?: string;
+     params?: object;
 
 }
 

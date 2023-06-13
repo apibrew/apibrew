@@ -4,36 +4,94 @@ namespace: ui
 properties:
   name: main
   children:
-    - title: User
-      system: true
+    - title: User Pages
+      icon: article
+      link: pages
       children:
         - title: Country
-          link: /dashboard/crud/default/country
+          link: country
+          component: CoreUI/Crud
+          params:
+            namespace: default
+            resource: country
+          icon: table_rows
           securityConstraint:
             resource: country
             namespace: default
         - title: City
-          link: /dashboard/crud/default/city
+          link: city
+          component: CoreUI/Crud
+          params:
+            namespace: default
+            resource: city
           securityConstraint:
             resource: city
             namespace: default
+    - title: SDK
+      icon: api
+      link: sdk
+      children:
+        - title: User
+          link: user
+          icon: person
+          component: CoreUI/Crud
+          params:
+            namespace: system
+            resource: user
+    - title: User & Management
+      icon: admin_panel_settings
+      link: user-management
+      children:
+        - title: User
+          link: user
+          icon: person
+          component: CoreUI/Crud
+          params:
+            namespace: system
+            resource: user
+        - title: Role
+          icon: lock
+          link: role
+          component: CoreUI/Crud
+          params:
+            namespace: system
+            resource: role
     - title: Develop
+      icon: code
+      link: develop
       children:
         - title: App Designer
-          link: /dashboard/app-designer
-        - title: User & Roles
-          children:
-            - title: User
-              link: /dashboard/crud/system/user
-            - title: Role
-              link: /dashboard/crud/system/role
+          link: app-designer
+          icon: architecture
+          component: CoreUI/AppDesigner
         - title: Logic
+          link: logic
           children:
             - title: Function
-              link: /dashboard/crud/logic/Function
+              link: function
+              icon: functions
+              component: CoreUI/Crud
+              params:
+                namespace: logic
+                resource: Function
             - title: Trigger
-              link: /dashboard/crud/logic/FunctionTrigger
+              icon: commit
+              link: function-trigger
+              component: CoreUI/Crud
+              params:
+                namespace: logic
+                resource: FunctionTrigger
             - title: Rule
-              link: /dashboard/crud/logic/ResourceRule
+              icon: rule
+              link: resource-rule
+              component: CoreUI/Crud
+              params:
+                namespace: logic
+                resource: ResourceRule
             - title: FunctionExecution
-              link: /dashboard/crud/logic/FunctionExecution
+              icon: smart_button
+              link: function-execution
+              component: CoreUI/Crud
+              params:
+                namespace: logic
+                resource: FunctionExecution

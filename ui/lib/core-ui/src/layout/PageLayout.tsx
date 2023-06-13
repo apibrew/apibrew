@@ -20,35 +20,30 @@ export interface PageLayoutProps {
 }
 
 export function PageLayout(props: PageLayoutProps) {
-    return <React.Fragment>
-        <Card>
-            <CardHeader title={
-                <Box>
-                    <Box sx={{display: 'flex'}}>
-                        <Box>
-                            {props.pageTitle}
+    return <Box sx={{width: '100%', height: '100%', padding: '20px'}}>
+        <Box sx={{display: 'flex'}}>
+            <Box>
+                <h3>
+                    {props.pageTitle}
+                </h3>
 
-                            {props.breadcrumbs &&
-                                <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small"/>}>
-                                    {props.breadcrumbs.map(item => {
-                                        if (item.to) {
-                                            return <Link key={item.label} to={item.to}>{item.label}</Link>
-                                        } else {
-                                            return <Typography key={item.label}
-                                                               color="text.primary">{item.label}</Typography>
-                                        }
-                                    })}
-                                </Breadcrumbs>}
-                        </Box>
-                        <Box sx={{flexGrow: 1}}/>
-                        {(props.actions != null) && <Box>{props.actions}</Box>}
-                    </Box>
-                </Box>
-            }></CardHeader>
-            <Divider/>
-            <CardContent>
-                {props.children}
-            </CardContent>
-        </Card>
-    </React.Fragment>
+                {props.breadcrumbs &&
+                    <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small"/>}>
+                        {props.breadcrumbs.map(item => {
+                            if (item.to) {
+                                return <Link key={item.label} to={item.to}>{item.label}</Link>
+                            } else {
+                                return <Typography key={item.label}
+                                                   color="text.primary">{item.label}</Typography>
+                            }
+                        })}
+                    </Breadcrumbs>}
+            </Box>
+            <Box sx={{flexGrow: 1}}/>
+            {(props.actions != null) && <Box>{props.actions}</Box>}
+        </Box>
+        <Box sx={{width: '100%', height: '100%', marginTop: '20px'}}>
+            {props.children}
+        </Box>
+    </Box>
 }

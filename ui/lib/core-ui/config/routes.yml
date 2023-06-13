@@ -6,31 +6,16 @@ properties:
   routes:
     - path: /dashboard/*
       component: CoreUI/DashboardLayout
-      system: false
-      routes:
-        - path: app-designer
-          component: CoreUI/AppDesigner
-          system: true
-        - path: crud/:namespace/:resource/*
-          component: CoreUI/CrudPage
-          system: true
-        - path: test
-          system: false
-          component: CoreUI/Test
-        - path: "*"
-          component: CoreUI/Error
-          params:
-            code: 404
-            message: Page not found
-        - path: /user/profile/*
-          component: CoreUI/UserProfile
-          system: true
+      system: true
     - path: /
       component: Router/Forward
       system: true
       params:
         to: /dashboard
         system: true
+    - path: /sdk
+      component: CoreUI/Sdk
+      system: true
     - path: "*"
       component: CoreUI/Error
       params:

@@ -200,7 +200,9 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 	return nil
 }
 func (e *Executor) Init() error {
-	resp, err := e.Params.DhClient.GetResourceClient().List(context.TODO(), &stub.ListResourceRequest{})
+	resp, err := e.Params.DhClient.GetResourceClient().List(context.TODO(), &stub.ListResourceRequest{
+		Token: e.Params.Token,
+	})
 
 	if err != nil {
 		return err

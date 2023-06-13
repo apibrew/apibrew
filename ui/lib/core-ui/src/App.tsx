@@ -5,9 +5,11 @@ import {useRecordByName} from "./hooks/record.ts";
 import {Route as RouteItem, Router as RouterModel, RouterName} from "./model/ui/router.ts";
 import {DynamicComponent} from "./components/dynamic/DynamicComponent.tsx";
 import {Loading} from "./components/basic/Loading.tsx";
+import {RouteContext} from "./context/route-context.ts";
 
 export interface RouteElementComponentProps {
     route: RouteItem
+    path: string
 }
 
 export function RouteElementComponent(props: RouteElementComponentProps) {
@@ -33,7 +35,7 @@ export function RouteElementComponent(props: RouteElementComponentProps) {
 
     if (route.routes) {
         return <DynamicComponent component={route.component} componentProps={componentProps}>
-            <RouterComponent routes={route.routes}/>
+            <RouterComponent routes={route.routes} path={props.path}/>
         </DynamicComponent>
     } else {
         return <DynamicComponent component={route.component} componentProps={componentProps}></DynamicComponent>
@@ -42,24 +44,35 @@ export function RouteElementComponent(props: RouteElementComponentProps) {
 
 export interface RouterComponentProps {
     routes: RouteItem[]
+    path: string
 }
 
 function RouterComponent(props: RouterComponentProps) {
     return <Routes>
         {props.routes.map(route => {
-            return <Route key={route.path} path={route.path} element={<RouteElementComponent route={route}/>}></Route>
+            let path = props.path + '/' + route.path
+
+            if (props.path === '') {
+                path = route.path
+            }
+
+            return <Route key={route.path} path={route.path} element={
+                <RouteContext.Provider value={path}>
+                    <RouteElementComponent route={route} path={path}/>
+                </RouteContext.Provider>
+            }></Route>
         })}
     </Routes>
 }
 
-function RouterComponentWithRouterName(props: {routerName: string}) {
+function RouterComponentWithRouterName(props: { routerName: string }) {
     const router = useRecordByName<RouterModel>(RouterName, 'ui', props.routerName)
 
     if (!router) {
         return <Loading/>
     }
 
-    return <RouterComponent routes={router.routes}/>
+    return <RouterComponent routes={router.routes} path=''/>
 }
 
 export function App(): JSX.Element {

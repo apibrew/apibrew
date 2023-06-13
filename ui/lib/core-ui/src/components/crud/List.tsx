@@ -159,12 +159,14 @@ export function List(props: ListProps) {
                 initialState={{
                     pagination: {
                         paginationModel: {
-                            pageSize: 5,
+                            pageSize: 100,
                         },
                     },
                 }}
-                pageSizeOptions={[5]}
                 disableRowSelectionOnClick
+                autoHeight={true}
+                // rowHeight={35}
+                disableColumnMenu={true}
             />
 
         </PageLayout>
