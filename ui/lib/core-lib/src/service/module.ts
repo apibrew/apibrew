@@ -1,5 +1,5 @@
 import {ModuleData} from "../model/module-data.ts";
-import {RecordService} from "./record.ts";
+import {RecordService} from "@apibrew/core-lib";
 import * as jsxRuntime from "react/jsx-runtime";
 // import * as CoreUI from "../index.ts";
 import {Module} from "../model/ui/module.ts";

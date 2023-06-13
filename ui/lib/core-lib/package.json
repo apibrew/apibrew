@@ -1,0 +1,56 @@
+{
+  "name": "@apibrew/core-lib",
+  "private": false,
+  "version": "1.0.13",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/lab": "^5.0.0-alpha.133",
+    "@mui/material": "^5.12.2",
+    "@mui/x-data-grid": "^6.4.0",
+    "axios": "^1.4.0",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
+    "nodemon": "^2.0.22",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.10.0",
+    "simplebar-react": "^3.2.4",
+    "styled-components": "^6.0.0-rc.1",
+    "swagger-ui-react": "^4.19.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^8.38.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.3.4",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2",
+    "vite-plugin-dts": "^2.3.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/core-lib.umd.js",
+  "module": "./dist/core-lib.es.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/core-lib.es.js",
+      "require": "./dist/core-lib.umd.js",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}
