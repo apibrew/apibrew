@@ -11,6 +11,7 @@ import {LayoutContext, useBreadCramps} from "../../context/layout-context.ts";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
 import {useResource} from "../../context/resource.ts";
 import {filterRecordForUpdate} from "../../service/authorization.ts";
+import {Loading} from "../basic/Loading.tsx";
 
 export interface UpdateProps {
     resource: Resource
@@ -42,13 +43,18 @@ export function Update(props: UpdateProps): JSX.Element {
         load()
     }, [params.id])
 
-    if (!record) {
-        return <span>Loading...</span>
+    if (loading) {
+        return <Loading/>
     }
 
     return (
-        <PageLayout pageTitle={props.resource.name} actions={<React.Fragment>
-            <Box sx={{display: 'flex'}}>
+        <Box flexDirection='column' display='flex' width='100%' height='100%' padding='20px'>
+            <Box flexGrow={1}>
+                <Form resource={props.resource} record={record} setRecord={setRecord}
+                      formConfig={props.crudConfig.formConfig}/>
+            </Box>
+            <Box sx={{display: 'flex', paddingBottom: '10px', width: '100%'}}>
+                <Box flexGrow={1}/>
                 <Box m={0.5}>
                     <Button variant={'outlined'}
                             color='warning'
@@ -89,11 +95,6 @@ export function Update(props: UpdateProps): JSX.Element {
                             startIcon={<Save/>}>Save</Button>
                 </Box>
             </Box>
-        </React.Fragment>}>
-            <React.Fragment>
-                {!loading && <Form resource={props.resource} record={record} setRecord={setRecord}
-                                   formConfig={props.crudConfig.formConfig}/>}
-            </React.Fragment>
-        </PageLayout>
+        </Box>
     )
 }

@@ -58,7 +58,6 @@ export function CrudSettingsGridConfig(props: CrudSettingsGridConfigProps) {
 
     return (
         <Box m={1}>
-            <Typography>Grid Column Config</Typography>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -74,35 +73,35 @@ export function CrudSettingsGridConfig(props: CrudSettingsGridConfigProps) {
                 <TableBody>
                     {columns.map((column) => (
                         <TableRow key={column.name}>
-                            <TableCell>{column.name}</TableCell>
-                            <TableCell>
+                            <TableCell padding='none'>{column.name}</TableCell>
+                            <TableCell padding='none'>
                                 <Checkbox checked={column.disabled} onChange={e => {
                                     handleColumnUpdate(column, 'disabled', e.target.checked);
                                 }}/>
                             </TableCell>
-                            <TableCell>
+                            <TableCell padding='none'>
                                 <Checkbox checked={column.hidden} onChange={e => {
                                     handleColumnUpdate(column, 'hidden', e.target.checked);
                                 }}/>
                             </TableCell>
 
-                            <TableCell>
+                            <TableCell padding='none'>
                                 <Checkbox checked={column.sortable} onChange={e => {
                                     handleColumnUpdate(column, 'sortable', e.target.checked);
                                 }}/>
                             </TableCell>
 
-                            <TableCell>
+                            <TableCell padding='none'>
                                 <Checkbox checked={column.filterable} onChange={e => {
                                     handleColumnUpdate(column, 'filterable', e.target.checked);
                                 }}/>
                             </TableCell>
-                            <TableCell>
+                            <TableCell padding='none'>
                                 <TextField type={'number'} value={column.width} onChange={e => {
                                     handleColumnUpdate(column, 'width', parseInt(e.target.value));
                                 }}/>
                             </TableCell>
-                            <TableCell>
+                            <TableCell padding='none'>
                                 <TextField type={'number'} value={column.flex} onChange={e => {
                                     handleColumnUpdate(column, 'flex', parseInt(e.target.value));
                                 }}/>

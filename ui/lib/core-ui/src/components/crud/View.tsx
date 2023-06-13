@@ -10,47 +10,42 @@ import {Crud} from "../../model/ui/crud.ts";
 import {useBreadCramps} from "../../context/layout-context.ts";
 
 export interface ViewProps {
-  resource: Resource
-  crudConfig: Crud
+    resource: Resource
+    crudConfig: Crud
 }
 
 export function View(props: ViewProps): JSX.Element {
-  const navigate = useNavigate()
-  const [record, setRecord] = React.useState<Record>()
+    const navigate = useNavigate()
+    const [record, setRecord] = React.useState<Record>()
 
-  const params = useParams<{ id: string }>()
+    const params = useParams<{ id: string }>()
 
-  useBreadCramps({title: params.id}, {title: 'View'})
+    useBreadCramps({title: params.id}, {title: 'View'})
 
-  useEffect(() => {
-    RecordService.get<Record>(props.resource.namespace ?? 'default', props.resource.name, params.id!)
-      .then((record) => {
-        setRecord(record)
-      })
-  }, [params.id])
+    useEffect(() => {
+        RecordService.get<Record>(props.resource.namespace ?? 'default', props.resource.name, params.id!)
+            .then((record) => {
+                setRecord(record)
+            })
+    }, [params.id])
 
-  if (!record) {
-    return <>Loading...</>
-  }
+    if (!record) {
+        return <>Loading...</>
+    }
 
-  return (
-    <PageLayout pageTitle={props.resource.name} actions={<React.Fragment>
-      <Box sx={{display: 'flex'}}>
-        <Box m={0.5}>
-          <Button variant={'outlined'}
-                  color='primary'
-                  size='small'
-                  onClick={() => {
-                    navigate('../')
-                  }}
-                  startIcon={<Cancel/>}>Cancel</Button>
-        </Box>
-      </Box>
-    </React.Fragment>}>
-      <React.Fragment>
-        <Form resource={props.resource} readOnly={true} record={record} setRecord={setRecord}
-              formConfig={props.crudConfig.formConfig}/>
-      </React.Fragment>
-    </PageLayout>
-  )
+    return (
+        <PageLayout>
+            <Box sx={{display: 'flex', paddingBottom: '10px', width: '100%'}}>
+                <Button variant={'outlined'}
+                        color='primary'
+                        size='small'
+                        onClick={() => {
+                            navigate('../')
+                        }}
+                        startIcon={<Cancel/>}>Cancel</Button>
+            </Box>
+            <Form resource={props.resource} readOnly={true} record={record} setRecord={setRecord}
+                  formConfig={props.crudConfig.formConfig}/>
+        </PageLayout>
+    )
 }

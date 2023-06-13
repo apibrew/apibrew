@@ -23,8 +23,13 @@ export function New(props: NewProps) {
     useBreadCramps({title: 'New'})
 
     return (
-        <PageLayout actions={<React.Fragment>
-            <Box sx={{display: 'flex'}}>
+        <Box flexDirection='column' display='flex' width='100%' height='100%' padding='20px'>
+            <Box flexGrow={1}>
+                <Form resource={props.resource} record={record} setRecord={setRecord}
+                      formConfig={props.crudConfig.formConfig}/>
+            </Box>
+            <Box sx={{display: 'flex', paddingBottom: '10px', width: '100%'}}>
+                <Box flexGrow={1}/>
                 <Box m={0.5}>
                     <Button variant={'outlined'}
                             color='primary'
@@ -46,11 +51,6 @@ export function New(props: NewProps) {
                             startIcon={<Save/>}>Save</Button>
                 </Box>
             </Box>
-        </React.Fragment>}>
-            <React.Fragment>
-                <Form resource={props.resource} record={record} setRecord={setRecord}
-                      formConfig={props.crudConfig.formConfig}/>
-            </React.Fragment>
-        </PageLayout>
+        </Box>
     )
 }

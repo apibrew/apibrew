@@ -7,7 +7,6 @@ import {Form} from "./Form"
 import {Record, RecordService} from "../../service/record"
 import React, {useEffect} from "react"
 import {Crud, CrudName} from "../../model/ui/crud";
-import {ResourceService} from "../../service/resource";
 import {resetCrudForm} from "./helper";
 import {useResourceByName} from "../../hooks/resource.ts";
 import {useRecordByName} from "../../hooks/record.ts";
@@ -46,53 +45,49 @@ export function Settings(props: SettingsProps): JSX.Element {
     }
 
     return (
-        <PageLayout breadcrumbs={[
-            {label: 'Country', to: '../'},
-            {label: 'Crud Settings'}
-        ]}
-                    actions={<React.Fragment>
-                        <Box sx={{display: 'flex'}}>
-                            <Box m={0.5}>
-                                <Button variant={'outlined'}
-                                        color='primary'
-                                        size='small'
-                                        onClick={() => {
-                                            navigate('../')
-                                        }}
-                                        startIcon={<Cancel/>}>Cancel</Button>
-                            </Box>
-                            <Box m={0.5}>
-                                <Button variant={'outlined'}
-                                        color='success'
-                                        size='small'
-                                        onClick={() => {
-                                            RecordService.apply('ui', CrudName, crudConfig).then(() => {
-                                                props.updateCrud(crudConfig as Crud)
-                                                navigate('../')
-                                            })
-                                        }}
-                                        startIcon={<Save/>}>Save</Button>
-                            </Box>
-                            <Box m={0.5}>
-                                <Button variant={'outlined'}
-                                        color='success'
-                                        size='small'
-                                        onClick={() => {
-                                            resetCrudForm(props.resource).then((newCrudConfig) => {
-                                                props.updateCrud(newCrudConfig)
-                                                navigate('../')
-                                            })
-                                        }}
-                                        startIcon={<Save/>}>Reset to Defaults</Button>
-                            </Box>
-                        </Box>
-                    </React.Fragment>}>
-            <React.Fragment>
+        <Box flexDirection='column' display='flex' width='100%' height='100%' padding='20px'>
+            <Box flexGrow={1}>
                 {crudResource && <Form resource={crudResource}
                                        formConfig={selfCrud.formConfig}
                                        record={crudConfig}
                                        setRecord={setCrudConfig}/>}
-            </React.Fragment>
-        </PageLayout>
+            </Box>
+            <Box sx={{display: 'flex', paddingBottom: '10px', width: '100%'}}>
+                <Box flexGrow={1}/>
+                <Box m={0.5}>
+                    <Button variant={'outlined'}
+                            color='primary'
+                            size='small'
+                            onClick={() => {
+                                navigate('../')
+                            }}
+                            startIcon={<Cancel/>}>Cancel</Button>
+                </Box>
+                <Box m={0.5}>
+                    <Button variant={'outlined'}
+                            color='success'
+                            size='small'
+                            onClick={() => {
+                                RecordService.apply('ui', CrudName, crudConfig).then(() => {
+                                    props.updateCrud(crudConfig as Crud)
+                                    navigate('../')
+                                })
+                            }}
+                            startIcon={<Save/>}>Save</Button>
+                </Box>
+                <Box m={0.5}>
+                    <Button variant={'outlined'}
+                            color='success'
+                            size='small'
+                            onClick={() => {
+                                resetCrudForm(props.resource).then((newCrudConfig) => {
+                                    props.updateCrud(newCrudConfig)
+                                    navigate('../')
+                                })
+                            }}
+                            startIcon={<Save/>}>Reset to Defaults</Button>
+                </Box>
+            </Box>
+        </Box>
     )
 }
