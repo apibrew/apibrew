@@ -7,7 +7,7 @@ import {Form} from "./Form"
 import {Record, RecordService} from "../../service/record"
 import React, {useContext, useEffect, useState} from "react"
 import {Crud} from "../../model/ui/crud.ts";
-import {LayoutContext} from "../../context/layout-context.ts";
+import {LayoutContext, useBreadCramps} from "../../context/layout-context.ts";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
 import {useResource} from "../../context/resource.ts";
 import {filterRecordForUpdate} from "../../service/authorization.ts";
@@ -26,6 +26,8 @@ export function Update(props: UpdateProps): JSX.Element {
     const [loading, setLoading] = useState(true)
 
     const params = useParams<{ id: string }>()
+
+    useBreadCramps({title: params.id}, {title: 'Update'})
 
     const load = async () => {
         setLoading(true)

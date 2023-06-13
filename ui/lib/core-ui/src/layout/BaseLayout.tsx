@@ -1,7 +1,14 @@
 import {createTheme, ThemeProvider} from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import React, {Fragment} from "react";
-import {AlertOptions, LayoutContext, LayoutOptions, ModalOperations, ModalOptions} from "../context/layout-context.ts";
+import {
+    AlertOptions,
+    BreadCramp,
+    LayoutContext,
+    LayoutOptions,
+    ModalOperations,
+    ModalOptions
+} from "../context/layout-context.ts";
 import {Alert, Modal, Snackbar} from "@mui/material";
 
 export interface BaseLayoutProps {
@@ -12,8 +19,11 @@ export function BaseLayout(props: BaseLayoutProps): JSX.Element {
     const [snackBarOpen, setSnackBarOpen] = React.useState(false)
     const [alert, setAlert] = React.useState<AlertOptions>()
     const [modals, setModals] = React.useState<ModalOptions[]>([])
+    const [breadCramps, setBreadCramps] = React.useState<BreadCramp[]>([])
 
     const layoutOptions: LayoutOptions = {
+        breadCramps: breadCramps,
+        setBreadCramps: setBreadCramps,
         showAlert(alert: AlertOptions): void {
             setAlert(alert)
             setSnackBarOpen(true)

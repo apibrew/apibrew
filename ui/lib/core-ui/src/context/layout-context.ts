@@ -1,9 +1,16 @@
-import { type ModalTypeMap } from '@mui/material'
-import React, { type ReactNode } from 'react'
+import {type ModalTypeMap} from '@mui/material'
+import React, {type ReactNode, useEffect} from 'react'
+
+export interface BreadCramp {
+    title: string
+    link?: string
+}
 
 export interface LayoutOptions {
     showAlert: (alert: AlertOptions) => void
     showModal: (modal: ModalOptions) => ModalOperations
+    setBreadCramps: (list: BreadCramp[]) => void
+    breadCramps: BreadCramp[]
 }
 
 export interface ModalOptions {
@@ -24,3 +31,11 @@ export interface AlertOptions {
 }
 
 export const LayoutContext = React.createContext<LayoutOptions>({} as any)
+
+export function useBreadCramps(...list: BreadCramp[]) {
+    const layoutContext = React.useContext(LayoutContext)
+
+    useEffect(() => {
+        layoutContext.setBreadCramps(list);
+    }, [])
+}

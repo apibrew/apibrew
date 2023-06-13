@@ -7,6 +7,7 @@ import {Form} from "./Form"
 import {Record, RecordService} from "../../service/record"
 import React, {useEffect} from "react"
 import {Crud} from "../../model/ui/crud.ts";
+import {useBreadCramps} from "../../context/layout-context.ts";
 
 export interface ViewProps {
   resource: Resource
@@ -18,6 +19,8 @@ export function View(props: ViewProps): JSX.Element {
   const [record, setRecord] = React.useState<Record>()
 
   const params = useParams<{ id: string }>()
+
+  useBreadCramps({title: params.id}, {title: 'View'})
 
   useEffect(() => {
     RecordService.get<Record>(props.resource.namespace ?? 'default', props.resource.name, params.id!)

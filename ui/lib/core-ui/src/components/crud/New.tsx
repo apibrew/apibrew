@@ -5,9 +5,10 @@ import {Resource} from "../../model"
 import {useNavigate} from "react-router-dom"
 import {Form} from "./Form"
 import {Record, RecordService} from "../../service/record"
-import React from "react"
+import React, {useEffect} from "react"
 import {Crud} from "../../model/ui/crud.ts";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
+import {LayoutContext, useBreadCramps} from "../../context/layout-context.ts";
 
 export interface NewProps {
     resource: Resource
@@ -18,6 +19,8 @@ export function New(props: NewProps) {
     const navigate = useNavigate()
     const [record, setRecord] = React.useState<Record>({})
     const errorHandler = useErrorHandler()
+
+    useBreadCramps({title: 'New'})
 
     return (
         <PageLayout actions={<React.Fragment>

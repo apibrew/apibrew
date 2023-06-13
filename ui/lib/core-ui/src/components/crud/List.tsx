@@ -10,8 +10,9 @@ import {SdkDrawer} from "../sdk/SdkDrawer"
 import {Crud} from "../../model/ui/crud.ts";
 import {Icon} from "../Icon.tsx";
 import * as ModuleService from "../../service/module.ts";
-import {LayoutContext} from "../../context/layout-context.ts";
+import {LayoutContext, useBreadCramps} from "../../context/layout-context.ts";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
+import Box from "@mui/material/Box";
 
 export interface ListProps {
     resource: Resource
@@ -22,14 +23,16 @@ export function List(props: ListProps) {
     const navigate = useNavigate()
     const [list, setList] = useState<Record[]>([])
     const [showSdk, setShowSdk] = useState(false)
-    const layoutContext = useContext(LayoutContext)
     const errorHandler = useErrorHandler()
+    const layoutContext = useContext(LayoutContext)
 
     const load = () => {
         RecordService.list<Record>(props.resource.namespace ?? 'default', props.resource.name).then((data) => {
             setList(data)
         }, errorHandler)
     }
+
+    useBreadCramps()
 
     const resourcePropertyMap = new Map<string, ResourceProperty>()
 
@@ -138,17 +141,20 @@ export function List(props: ListProps) {
 
 
     return (
-        <PageLayout pageTitle={props.resource.name} actions={<React.Fragment>
-            <Button variant={'contained'} color='success' onClick={() => {
-                navigate('new')
-            }} startIcon={<PlusOneOutlined/>}>New {props.resource.name}</Button>
-            <Button variant={'contained'} color='primary' onClick={() => {
-                setShowSdk(true)
-            }} startIcon={<Api/>}>sdk</Button>
-            <Button variant={'contained'} color='secondary' onClick={() => {
-                navigate('settings')
-            }} startIcon={<Api/>}>Crud Settings</Button>
-        </React.Fragment>}>
+        <PageLayout>
+            <Box sx={{display: 'flex', paddingBottom: '10px', width: '100%'}}>
+                <Button variant={'contained'} color='success' onClick={() => {
+                    navigate('new')
+                }} startIcon={<PlusOneOutlined/>}>New {props.resource.name}</Button>
+                <Box flexGrow={1}/>
+                <Button variant={'contained'} color='primary' onClick={() => {
+                    setShowSdk(true)
+                }} startIcon={<Api/>}>sdk</Button>
+                <Button variant={'contained'} color='secondary' onClick={() => {
+                    navigate('settings')
+                }} startIcon={<Api/>}>Crud Settings</Button>
+            </Box>
+
             <SdkDrawer resource={props.resource} open={showSdk} onClose={() => {
                 setShowSdk(false)
             }}/>

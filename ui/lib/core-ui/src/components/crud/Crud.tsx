@@ -1,7 +1,4 @@
-import {Box, CircularProgress, LinearProgress} from "@mui/material"
 import React, {JSX, useEffect, Fragment, useContext} from "react"
-import {Resource} from "../../model"
-import {ResourceService} from "../../service/resource"
 import {Route, Routes} from "react-router-dom"
 import {List} from "./List"
 import {New} from "./New"

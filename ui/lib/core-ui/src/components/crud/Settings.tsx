@@ -11,6 +11,7 @@ import {ResourceService} from "../../service/resource";
 import {resetCrudForm} from "./helper";
 import {useResourceByName} from "../../hooks/resource.ts";
 import {useRecordByName} from "../../hooks/record.ts";
+import {useBreadCramps} from "../../context/layout-context.ts";
 
 export interface SettingsProps {
     resource: Resource
@@ -28,6 +29,8 @@ export function Settings(props: SettingsProps): JSX.Element {
     const selfCrud = useRecordByName<Crud>(CrudName, 'ui', 'CrudSettings')
 
     const params = useParams<{ id: string }>()
+
+    useBreadCramps({title: 'Settings'})
 
     useEffect(() => {
         RecordService.findBy<Record>('ui', CrudName, 'name', crudConfig.name)

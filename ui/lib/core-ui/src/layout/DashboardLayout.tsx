@@ -1,18 +1,21 @@
 import * as React from 'react'
-import {Fragment, ReactNode} from 'react'
+import {Fragment, ReactNode, useContext} from 'react'
 import Box from '@mui/material/Box'
 import Container from "@mui/material/Container";
-import {Drawer, IconButton, Menu, MenuItem, Toolbar, Tooltip} from "@mui/material";
+import {Breadcrumbs, Drawer, IconButton, Menu, MenuItem, Toolbar, Tooltip} from "@mui/material";
 import {Icon} from "../components/Icon.tsx";
 import Divider from "@mui/material/Divider";
 import {useRecordByName} from "../hooks/record.ts";
 import {Menu as MenuRecord, MenuItem as RecordMenuItem} from "../model/ui/menu";
 import {Loading} from "../components/basic/Loading.tsx";
-import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {Link, Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {useRoute} from "../hooks/route.ts";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {DynamicComponent} from "../components/dynamic/DynamicComponent.tsx";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import Typography from "@mui/material/Typography";
+import {LayoutContext} from "../context/layout-context.ts";
 
 export interface DashboardLayoutProps {
     children: ReactNode
@@ -187,7 +190,7 @@ function SecondDrawer(props: { menu: MenuRecord }) {
             </h4>
             {activeMenuItem.children.map((item, index) => {
                 const menuItemPath = normalizePath(activeMenuPath, item.link)
-                let active = pathInside(route.fullPath, menuItemPath)
+                let active = pathInside(menuItemPath, route.fullPath)
 
                 const itemSx = prepareMenuItemSx(active, item)
 
@@ -220,12 +223,45 @@ function SecondDrawer(props: { menu: MenuRecord }) {
     </Drawer>;
 }
 
-function DashboardPage(props: { menuItem: RecordMenuItem }) {
-    return <DynamicComponent component={props.menuItem.component}
-                             componentProps={props.menuItem.params}/>
+function DashboardPage(props: { menuItem: RecordMenuItem, parents: RecordMenuItem[], selfLink: string }) {
+    const layoutContext = useContext(LayoutContext)
+    const route = useRoute()
+
+    return <Box display='flex' flexDirection='column' sx={{height: '100%'}}>
+        <Box sx={{
+            height: '70px',
+            background: 'rgb(255,255,255)',
+            padding: '20px',
+            borderBottom: '1px solid rgb(200,200,200)',
+        }}>
+            <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small"/>}>
+                <Typography color="text.primary">{props.parents[0].title}</Typography>
+                {props.parents[1] && <Typography color="text.primary">{props.parents[1].title}</Typography>}
+                <Link style={{
+                    textDecoration: 'underline',
+                    color: 'rgb(0, 0, 0)',
+                }} to={props.selfLink} color="text.primary">{props.menuItem.title}</Link>
+
+                {layoutContext.breadCramps && layoutContext.breadCramps.map((item, index) => {
+                    if (item.link) {
+                        return <Link key={item.link} to={item.link}/>
+                    } else {
+                        return <Typography key={index} color="text.primary">{item.title}</Typography>
+                    }
+                })}
+
+            </Breadcrumbs>
+        </Box>
+        <Box flexGrow={1} display='flex'>
+            <DynamicComponent component={props.menuItem.component}
+                              componentProps={props.menuItem.params}/>
+        </Box>
+    </Box>
 }
 
 function DashboardRoutes(props: { menu: MenuRecord }) {
+    const route = useRoute()
+
     return <>
         <Routes>
             {props.menu.children.map(item => (
@@ -239,9 +275,13 @@ function DashboardRoutes(props: { menu: MenuRecord }) {
                                               {subItem.children.map(subSubItem => (
                                                   <Route key={subSubItem.link}
                                                          path={subSubItem.link + '/*'}
-                                                         element={<DashboardPage menuItem={subSubItem}/>}/>
+                                                         element={<DashboardPage menuItem={subSubItem}
+                                                                                 selfLink={route.path + item.link + '/' + subItem.link + '/' + subSubItem.link}
+                                                                                 parents={[item, subItem]}/>}/>
                                               ))}
-                                          </Routes> : <DashboardPage menuItem={subItem}/>
+                                          </Routes> : <DashboardPage menuItem={subItem}
+                                                                     selfLink={route.path + item.link + '/' + subItem.link}
+                                                                     parents={[item]}/>
                                       }/>
                            ))}
 
@@ -252,6 +292,14 @@ function DashboardRoutes(props: { menu: MenuRecord }) {
 }
 
 export function DashboardLayout(props: DashboardLayoutProps): React.JSX.Element {
+    const route = useRoute()
+    const navigate = useNavigate()
+
+    if (route.fullPath.endsWith('/')) {
+        navigate(route.fullPath.slice(0, -1))
+        return <Loading/>
+    }
+
     const menu = useRecordByName<MenuRecord>('Menu', 'ui', 'main')
 
     if (!menu) {
@@ -259,10 +307,10 @@ export function DashboardLayout(props: DashboardLayoutProps): React.JSX.Element 
     }
 
     return <Container maxWidth={false} disableGutters
-                      sx={{background: 'rgb(210,240,240)', height: '100vh', display: 'flex'}}>
+                      sx={{background: 'rgb(251,251,251)', height: '100vh', display: 'flex'}}>
         <MainDrawer menu={menu}/>
         <SecondDrawer menu={menu}/>
-        <Box marginLeft={(DashboardLayoutSettings.drawer.width + DashboardLayoutSettings.secondDrawer.width) + 'px'}
+        <Box paddingLeft={(DashboardLayoutSettings.drawer.width + DashboardLayoutSettings.secondDrawer.width) + 'px'}
              flexGrow={1} height='100%' width='100%'>
             <DashboardRoutes menu={menu}/>
         </Box>
