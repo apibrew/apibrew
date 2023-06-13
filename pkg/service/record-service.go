@@ -324,7 +324,7 @@ func (r *recordService) Apply(ctx context.Context, params abs.RecordUpdateParams
 			})
 
 			if err != nil {
-				return nil, errors.RecordValidationError.WithMessage(err.Error())
+				return nil, err
 			}
 
 			result = append(result, records...)
