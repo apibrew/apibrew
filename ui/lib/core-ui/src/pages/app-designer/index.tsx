@@ -3,7 +3,7 @@ import {Designer} from "../../components";
 import {PageLayout} from "../../layout";
 
 export function AppDesigner(): JSX.Element {
-    return <PageLayout pageTitle={'App Designer'}>
+    return <PageLayout>
         <Designer name='Default'/>
     </PageLayout>
 }

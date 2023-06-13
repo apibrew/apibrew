@@ -1,16 +1,15 @@
 import {Box, Button} from "@mui/material"
-import {PageLayout} from "../../layout/PageLayout"
 import {Cancel, Save} from "@mui/icons-material"
 import {Resource} from "../../model"
 import {useNavigate, useParams} from "react-router-dom"
 import {Form} from "./Form"
-import {Record, RecordService} from "../../service/record"
+import {Record, RecordService} from "@apibrew/core-lib"
 import React, {useContext, useEffect, useState} from "react"
 import {Crud} from "../../model/ui/crud.ts";
 import {LayoutContext, useBreadCramps} from "../../context/layout-context.ts";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
 import {useResource} from "../../context/resource.ts";
-import {filterRecordForUpdate} from "../../service/authorization.ts";
+import {AuthorizationService} from "@apibrew/core-lib"
 import {Loading} from "../basic/Loading.tsx";
 
 export interface UpdateProps {
@@ -83,7 +82,7 @@ export function Update(props: UpdateProps): JSX.Element {
                             color='success'
                             size='small'
                             onClick={() => {
-                                const updateFilteredRecord = filterRecordForUpdate(resource, record)
+                                const updateFilteredRecord = AuthorizationService.filterRecordForUpdate(resource, record)
 
                                 RecordService.update(props.resource.namespace ?? 'default', props.resource.name, updateFilteredRecord).then(() => {
                                     layoutContext.showAlert({

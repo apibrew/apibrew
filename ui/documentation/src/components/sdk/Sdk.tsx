@@ -1,7 +1,7 @@
-import {Box, MenuItem, Select, Typography} from "@mui/material";
-import {Resource} from "../../model";
+import {Box, Typography} from "@mui/material";
+import {Resource} from "@apibrew/core-lib";
 
-import React, {JSX} from "react";
+import {JSX} from "react";
 import CurdSdkPlatform from "./CurlSdkPlatform.tsx";
 
 export interface SdkProps {
@@ -22,7 +22,7 @@ export const SdkPlatforms: SdkPlatform[] = [
 ]
 
 export function Sdk(props: SdkProps): JSX.Element {
-
+    console.log(props)
     return <Box display={'flex'} flexDirection={'row'} height={'100%'}>
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'}
              sx={{background: 'white', width: '300px', height: '100%'}}>

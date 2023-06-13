@@ -3,7 +3,7 @@ import React, { useContext } from 'react'
 import { type Resource } from '../../model'
 import { ResourceBasicForm } from './ResourceBasicForm'
 import { ResourceAdvancedForm } from './ResourceAdvancedForm'
-import { ResourceService } from '../../service/resource'
+import { ResourceService } from "@apibrew/core-lib"
 import { LayoutContext } from '../../context/layout-context'
 import { AxiosError } from 'axios'
 

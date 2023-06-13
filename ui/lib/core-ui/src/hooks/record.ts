@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {RecordService} from "../service";
+import {RecordService} from "@apibrew/core-lib";
 import {useErrorHandler} from "./error-handler.tsx";
 import {useResourceByName} from "./resource.ts";
 

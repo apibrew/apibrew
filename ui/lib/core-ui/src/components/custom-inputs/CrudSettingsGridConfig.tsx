@@ -3,7 +3,7 @@ import {useResource} from "../../context/resource.ts";
 import React, {useEffect, useState} from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import {GridColumnConfig, GridConfig} from "../../model/ui/crud.ts";
+import {Crud, GridColumnConfig, GridConfig} from "../../model/ui/crud.ts";
 import {useRecord} from "../../context/record.ts";
 import {useResourceByName} from "../../hooks/resource.ts";
 import {useValue} from "../../context/value.ts";
@@ -13,7 +13,7 @@ export interface CrudSettingsGridConfigProps {
 }
 
 export function CrudSettingsGridConfig(props: CrudSettingsGridConfigProps) {
-    const record = useRecord()
+    const record = useRecord<Crud>()
     const resource = useResourceByName(record.resource, record.namespace)
     const valueContext = useValue()
 

@@ -13,6 +13,8 @@
     "build-ui-config:watch": "nodemon --watch config -e \"yml\" --exec \"yarn build-ui-config\""
   },
   "dependencies": {
+    "@apibrew/core-lib": "^1.0.14",
+    "@apibrew/documentation": "^1.0.18",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.16",

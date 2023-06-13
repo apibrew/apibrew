@@ -1,8 +1,5 @@
-interface CurlSdkPlatformProps {
 
-}
-
-function CurdSdk(props: CurlSdkPlatformProps) {
+function CurdSdk() {
     return <>
         CurdSdkPlatform
     </>

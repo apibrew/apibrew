@@ -2,7 +2,7 @@ import React, {Suspense} from "react";
 import {ModuleData} from '../../model/module-data'
 import * as ModuleService from "../../service/module";
 import Box from "@mui/material/Box";
-import {Loading} from "../basic/Loading.tsx";
+import {Loading} from "../Loading.tsx";
 
 export interface DynamicComponentProps {
     component: string

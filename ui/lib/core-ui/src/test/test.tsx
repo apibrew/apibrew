@@ -53,9 +53,7 @@ exports.ExampleComponent = ExampleComponent;
   const Component1 = params.exports.Component1
 
   return (
-    <PageLayout pageTitle={'Test Page'} actions={<>
-      <Button variant={'contained'} color="success" startIcon={<PlusOneOutlined/>}>New Item</Button>
-    </>}>
+    <PageLayout>
       <>
         Hello World {BACKEND_URL}
         <br/>

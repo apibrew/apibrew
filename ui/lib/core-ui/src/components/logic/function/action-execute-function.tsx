@@ -1,5 +1,5 @@
 import {ActionComponent} from "../../../model/component-interfaces";
-import {RecordService} from "../../../service";
+import {RecordService} from "@apibrew/core-lib";
 import {Function as Function$} from "../../../model/logic/function";
 import {LayoutOptions} from "../../../context/layout-context.ts";
 import {Button, Card, CardActions, CardContent, CardHeader} from "@mui/material";

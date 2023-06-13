@@ -4,7 +4,7 @@ import {Checkbox, Popover, Table, TableBody, TableCell, TableHead, TableRow, Tex
 import {useRecords} from "../../hooks/record.ts";
 import {Namespace, Resource, ResourceProperty} from "../../model";
 import Box from "@mui/material/Box";
-import {ResourceService} from "../../service";
+import {ResourceService} from "@apibrew/core-lib";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
 import IconButton from "@mui/material/IconButton";
 import {prepareAccessMap, prepareConstraintsFromAccessMap} from "./access-map.computer.ts";

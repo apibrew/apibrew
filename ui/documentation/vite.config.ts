@@ -16,12 +16,12 @@ export default defineConfig({
         sourcemap: true,
         lib: {
             entry: path.resolve(__dirname, 'src/index.ts'),
-            name: 'CoreLib',
+            name: 'Documentation',
             formats: ['es', 'umd'],
-            fileName: (format) => `core-lib.${format}.js`,
+            fileName: (format) => `documentation.${format}.js`,
         },
         rollupOptions: {
-            external: [/react/, 'react-dom', 'styled-components', /^@mui\//, 'axios', ],
+            external: [/react/, 'react-dom', 'styled-components', /^@mui\//, 'axios', /^@apibrew\//],
             input: [
                 './src/'
             ],

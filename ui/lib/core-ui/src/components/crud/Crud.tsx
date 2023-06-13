@@ -5,7 +5,7 @@ import {New} from "./New"
 import {View} from "./View"
 import {Update} from "./Update"
 import {Settings} from "./Settings";
-import {RecordService} from "../../service/record";
+import {RecordService} from "@apibrew/core-lib";
 import {Crud as CrudModel, CrudName} from "../../model/ui/crud.ts";
 import {resetCrudForm} from "./helper";
 import {useResourceByName} from "../../hooks/resource.ts";

@@ -3,9 +3,15 @@ import React, {JSX, useEffect} from 'react'
 import {BaseLayout} from "./layout";
 import {useRecordByName} from "./hooks/record.ts";
 import {Route as RouteItem, Router as RouterModel, RouterName} from "./model/ui/router.ts";
-import {DynamicComponent} from "./components/dynamic/DynamicComponent.tsx";
 import {Loading} from "./components/basic/Loading.tsx";
 import {RouteContext} from "./context/route-context.ts";
+import {DynamicComponent} from "@apibrew/core-lib";
+
+import * as Documentation from '@apibrew/documentation'
+
+console.log(Documentation.registerModule)
+
+Documentation.registerModule()
 
 export interface RouteElementComponentProps {
     route: RouteItem

@@ -12,7 +12,7 @@ import {Link, Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {useRoute} from "../hooks/route.ts";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
-import {DynamicComponent} from "../components/dynamic/DynamicComponent.tsx";
+import {DynamicComponent} from "@apibrew/core-lib";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Typography from "@mui/material/Typography";
 import {LayoutContext} from "../context/layout-context.ts";

@@ -1,5 +1,5 @@
 import {Crud as CrudModel, FormItem, CrudName, GridColumnConfig} from "../../model/ui/crud";
-import {RecordService} from "../../service/record";
+import {RecordService} from "@apibrew/core-lib";
 import {Resource} from "../../model";
 import {isSimpleProperty, isSpecialProperty} from "../../util/property";
 import {not} from "../../util/lambda";

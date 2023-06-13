@@ -27,17 +27,32 @@ properties:
           securityConstraint:
             resource: city
             namespace: default
-    - title: SDK
-      icon: api
-      link: sdk
+    - title: Documentation
+      icon: description
+      link: description
       children:
-        - title: User
-          link: user
-          icon: person
-          component: CoreUI/Crud
+        - title: SDK
+          link: sdk
+          icon: api
+          component: Documentation/Sdk
           params:
             namespace: system
             resource: user
+        - title: System design
+          link: system-design
+          children:
+            - title: Resource Design
+              link: resource-design
+              component: Documentation/Sdk
+              params:
+                namespace: system
+                resource: user
+            - title: Internal Design
+              link: internal-design
+              component: Documentation/Sdk
+              params:
+                namespace: system
+                resource: user
     - title: User & Management
       icon: admin_panel_settings
       link: user-management

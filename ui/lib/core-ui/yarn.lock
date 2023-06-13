@@ -10,6 +10,46 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@apibrew/core-lib@^1.0.14":
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/@apibrew/core-lib/-/core-lib-1.0.14.tgz#cd092c6377a92f5aaf7a20b9ec1f4f4319e968a8"
+  integrity sha512-WyzX6m3ljQdgGq3DNy25iDhjcLJDhs+GUaEQJA/8ewh2qrpDUiuaAMivYj0bTEyd/HU03t/4pZWOB8E0wFE0Og==
+  dependencies:
+    "@emotion/react" "^11.10.6"
+    "@emotion/styled" "^11.10.6"
+    "@mui/icons-material" "^5.11.16"
+    "@mui/lab" "^5.0.0-alpha.133"
+    "@mui/material" "^5.12.2"
+    "@mui/x-data-grid" "^6.4.0"
+    axios "^1.4.0"
+    date-fns "^2.30.0"
+    date-fns-tz "^2.0.0"
+    nodemon "^2.0.22"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+    react-router-dom "^6.10.0"
+    simplebar-react "^3.2.4"
+    styled-components "^6.0.0-rc.1"
+    swagger-ui-react "^4.19.0"
+
+"@apibrew/documentation@^1.0.15":
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/@apibrew/documentation/-/documentation-1.0.15.tgz#dd70d1587cd4041860a9e7b6c31f32f64ba63da1"
+  integrity sha512-y2Cu8S17KpGr5ktLpMXhGdaVQLFc/2vYo59EjUvunuhF8mPuVqY3H3H0aVN3kJzPZWvytm4eVif6hBgO5k+YmA==
+  dependencies:
+    "@apibrew/documentation" "^1.0.15"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+
+"@apibrew/documentation@^1.0.18":
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/@apibrew/documentation/-/documentation-1.0.18.tgz#afa1fa00bc99a18e221f8ca754793a4ec6f067d2"
+  integrity sha512-6xb7x9xkZZd5KCErB6TYDB3N7SCvETkT8C8ULnOl/yqLMLsWPukEAt6EBybmH/jNg8Cvqp7l1A6s1aZ6O+Z1Lw==
+  dependencies:
+    "@apibrew/documentation" "^1.0.15"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+
 "@babel/cli@^7.21.0":
   version "7.21.5"
   resolved "https://registry.npmjs.org/@babel/cli/-/cli-7.21.5.tgz"

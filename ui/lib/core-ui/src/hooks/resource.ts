@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Resource} from "../model";
-import {ResourceService} from "../service";
+import {ResourceService} from "@apibrew/core-lib";
 import {useErrorHandler} from "./error-handler.tsx";
 
 export function useResourceByName(resourceName: string, namespace = 'default'): Resource | undefined {

@@ -1,7 +1,7 @@
 import {Resource} from "../../model";
 import React, {JSX, ReactNode, useEffect} from "react";
 import {ResourceContext as ResourceCtx} from "../../context/resource.ts";
-import {ResourceService} from "../../service";
+import {ResourceService} from "@apibrew/core-lib";
 
 export interface ResourceContextComponentProps {
     resource$?: Resource

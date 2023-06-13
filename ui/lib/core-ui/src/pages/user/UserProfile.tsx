@@ -4,7 +4,7 @@ import {useResourceByName} from "../../hooks/resource.ts";
 import {useRecordBy, useRecordByName} from "../../hooks/record.ts";
 import {Crud} from "../../model/ui/crud.ts";
 import {Loading} from "../../components/basic/Loading.tsx";
-import {RecordService, TokenService} from "../../service";
+import {RecordService, TokenService} from "@apibrew/core-lib";
 import {useContext, useEffect, useState} from "react";
 import {LayoutContext} from "../../context/layout-context.ts";
 import {User} from "../../model";

@@ -1,6 +1,6 @@
 import React, {Fragment, type ReactNode, useEffect, useState} from 'react'
 import {type Resource} from '../../model'
-import {ResourceService} from '../../service/resource'
+import {ResourceService} from "@apibrew/core-lib"
 import {ResourceElement} from './ResourceElement'
 import {Scale} from './Scale'
 import {Movable, MovableComponent} from './Movable'
@@ -27,7 +27,7 @@ import {LayoutContext} from '../../context/layout-context'
 import Button from '@mui/material/Button'
 import {ResourceForm} from '../resource-form/ResourceForm'
 import {ResourceVisualizer} from './ResourceVisualizer'
-import {RecordService} from '../../service/record'
+import {RecordService} from "@apibrew/core-lib"
 import {type AppDesignerBoard, AppDesignerBoardName, AppDesignerBoardNameName} from '../../model/ui/app-designer-board'
 import {type Point} from './point'
 import {SdkDrawer} from '../sdk/SdkDrawer'

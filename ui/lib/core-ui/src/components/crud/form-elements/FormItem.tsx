@@ -8,7 +8,7 @@ import {FormInput} from "./FormInput.tsx";
 import React from "react";
 import {StructElement} from "./StructElement.tsx";
 import Box from "@mui/material/Box";
-import {DynamicComponent} from "../../dynamic/DynamicComponent.tsx";
+import {DynamicComponent} from "@apibrew/core-lib";
 
 export interface FormItemProps {
     config: CrudFormItem

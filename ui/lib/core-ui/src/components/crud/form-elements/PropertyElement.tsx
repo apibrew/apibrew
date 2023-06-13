@@ -6,7 +6,7 @@ import {useResource} from "../../../context/resource.ts";
 import {ResourceProperty} from "../../../model";
 import {FormItem} from "../../../model/ui/crud.ts";
 import {PropertyPathContext} from "../PropertyPathContext.tsx";
-import {AuthorizationService, Record} from "../../../service";
+import {AuthorizationService, Record} from "@apibrew/core-lib";
 import {useRecord} from "../../../context/record.ts";
 
 export interface PropertyElementProps {

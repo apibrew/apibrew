@@ -10,7 +10,7 @@ import {
 } from "@mui/material"
 import {ResourceProperty} from "../../../model"
 import React, {useEffect, useMemo, useState} from "react"
-import {Record, RecordService} from "../../../service/record.ts"
+import {Record, RecordService} from "@apibrew/core-lib"
 import {FormItem} from "../../../model/ui/crud.ts";
 import {useResource} from "../../../context/resource.ts";
 import {ListElement} from "./ListElement.tsx";
