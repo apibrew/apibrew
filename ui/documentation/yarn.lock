@@ -32,6 +32,15 @@
     styled-components "^6.0.0-rc.1"
     swagger-ui-react "^4.19.0"
 
+"@apibrew/documentation@^1.0.15":
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/@apibrew/documentation/-/documentation-1.0.18.tgz#afa1fa00bc99a18e221f8ca754793a4ec6f067d2"
+  integrity sha512-6xb7x9xkZZd5KCErB6TYDB3N7SCvETkT8C8ULnOl/yqLMLsWPukEAt6EBybmH/jNg8Cvqp7l1A6s1aZ6O+Z1Lw==
+  dependencies:
+    "@apibrew/documentation" "^1.0.15"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+
 "@babel/cli@^7.21.0":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.22.5.tgz#eb323bd69f50297792c2b7c205a97306a305d703"
