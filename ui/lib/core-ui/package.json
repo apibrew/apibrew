@@ -1,7 +1,7 @@
 {
   "name": "@apibrew/core-ui",
   "private": false,
-  "version": "1.0.12",
+  "version": "1.0.19",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

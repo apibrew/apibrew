@@ -1,7 +1,7 @@
 {
   "name": "@apibrew/app",
   "private": false,
-  "version": "1.0.7",
+  "version": "1.0.19",
   "type": "module",
   "scripts": {
     "dev": "vite",

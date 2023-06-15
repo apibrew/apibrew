@@ -1,7 +1,7 @@
 {
     "name": "@apibrew/documentation",
     "private": false,
-    "version": "1.0.18",
+    "version": "1.0.19",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
