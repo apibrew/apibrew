@@ -46,7 +46,7 @@ export function SdkDrawer(props: SdkDrawerProps): JSX.Element {
                     </IconButton>
                 </Box>
                 <Box>
-                    <Sdk resource={props.resource}/>
+                    <Sdk/>
                 </Box>
             </Box>
         </Drawer>

@@ -1,51 +1,52 @@
 {
-  "name": "@apibrew/documentation",
-  "private": false,
-  "version": "1.0.18",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@apibrew/core-lib": "^1.0.15",
-    "@apibrew/documentation": "^1.0.15",
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
-    "@mui/icons-material": "^5.11.16",
-    "@mui/lab": "^5.0.0-alpha.133",
-    "@mui/material": "^5.12.2",
-    "@mui/x-data-grid": "^6.4.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.10.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.0.37",
-    "@types/react-dom": "^18.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.59.0",
-    "@typescript-eslint/parser": "^5.59.0",
-    "@vitejs/plugin-react": "^4.0.0",
-    "eslint": "^8.38.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.3.4",
-    "typescript": "^5.0.2",
-    "vite": "^4.3.9",
-    "vite-plugin-dts": "^2.3.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/documentation.umd.js",
-  "module": "./dist/documentation.es.js",
-  "types": "./dist/index.d.ts",
-  "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/documentation.es.js",
-      "require": "./dist/documentation.umd.js",
-      "types": "./dist/index.d.ts"
+    "name": "@apibrew/documentation",
+    "private": false,
+    "version": "1.0.18",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "preview": "vite preview",
+        "build-proto-image": "cd ../../proto; buf build  --exclude-imports --exclude-source-info -o ../ui/documentation/src/proto/image.json"
+    },
+    "dependencies": {
+        "@apibrew/core-lib": "^1.0.15",
+        "@apibrew/documentation": "^1.0.15",
+        "@emotion/react": "^11.10.6",
+        "@emotion/styled": "^11.10.6",
+        "@mui/icons-material": "^5.11.16",
+        "@mui/lab": "^5.0.0-alpha.133",
+        "@mui/material": "^5.12.2",
+        "@mui/x-data-grid": "^6.4.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.10.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.0.37",
+        "@types/react-dom": "^18.0.11",
+        "@typescript-eslint/eslint-plugin": "^5.59.0",
+        "@typescript-eslint/parser": "^5.59.0",
+        "@vitejs/plugin-react": "^4.0.0",
+        "eslint": "^8.38.0",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-react-refresh": "^0.3.4",
+        "typescript": "^5.0.2",
+        "vite": "^4.3.9",
+        "vite-plugin-dts": "^2.3.0"
+    },
+    "files": [
+        "dist"
+    ],
+    "main": "./dist/documentation.umd.js",
+    "module": "./dist/documentation.es.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/documentation.es.js",
+            "require": "./dist/documentation.umd.js",
+            "types": "./dist/index.d.ts"
+        }
     }
-  }
 }
