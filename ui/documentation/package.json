@@ -1,7 +1,7 @@
 {
     "name": "@apibrew/documentation",
     "private": false,
-    "version": "1.0.19",
+    "version": "1.0.23",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
@@ -10,8 +10,6 @@
         "build-proto-image": "cd ../../proto; buf build  --exclude-imports --exclude-source-info -o ../ui/documentation/src/proto/image.json"
     },
     "dependencies": {
-        "@apibrew/core-lib": "^1.0.15",
-        "@apibrew/documentation": "^1.0.15",
         "@emotion/react": "^11.10.6",
         "@emotion/styled": "^11.10.6",
         "@mui/icons-material": "^5.11.16",

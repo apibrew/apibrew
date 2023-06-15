@@ -1,6 +1,6 @@
 {
-  "name": "test-extension",
-  "version": "1.0.19",
+  "name": "@apibrew/extensions-test",
+  "version": "1.0.23",
   "description": "Made with create-react-library",
   "author": "tislib",
   "license": "MIT",

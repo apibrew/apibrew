@@ -1,5 +1,5 @@
 import {Resource} from "../../model"
-import {Record} from "../../service/record"
+import {Record} from "@apibrew/core-lib"
 import {FormConfig as CrudFormConfig} from "../../model/ui/crud.ts";
 import {ResourceContext} from "../../context/resource";
 import {ValueContext} from "../../context/value";

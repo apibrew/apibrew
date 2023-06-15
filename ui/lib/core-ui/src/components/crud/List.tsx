@@ -6,10 +6,10 @@ import {useNavigate} from "react-router-dom"
 import {DataGrid, GridActionsCellItem, GridColDef, GridRowParams, GridValueGetterParams} from '@mui/x-data-grid';
 import {Record, RecordService} from "@apibrew/core-lib"
 import React, {useContext, useEffect, useState} from "react"
-import {SdkDrawer} from "../sdk/SdkDrawer"
+// import {SdkDrawer} from "../sdk/SdkDrawer"
 import {Crud} from "../../model/ui/crud.ts";
 import {Icon} from "../Icon.tsx";
-import * as ModuleService from "../../../../core-lib/src/service/module.ts";
+import {ModuleService} from "@apibrew/core-lib";
 import {LayoutContext, useBreadCramps} from "../../context/layout-context.ts";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
 import Box from "@mui/material/Box";
@@ -155,9 +155,9 @@ export function List(props: ListProps) {
                 }} startIcon={<Api/>}>Crud Settings</Button>
             </Box>
 
-            <SdkDrawer resource={props.resource} open={showSdk} onClose={() => {
-                setShowSdk(false)
-            }}/>
+            {/*<SdkDrawer resource={props.resource} open={showSdk} onClose={() => {*/}
+            {/*    setShowSdk(false)*/}
+            {/*}}/>*/}
             <DataGrid
                 rows={list}
                 columns={columns}

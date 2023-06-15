@@ -30,7 +30,7 @@ import {ResourceVisualizer} from './ResourceVisualizer'
 import {RecordService} from "@apibrew/core-lib"
 import {type AppDesignerBoard, AppDesignerBoardName, AppDesignerBoardNameName} from '../../model/ui/app-designer-board'
 import {type Point} from './point'
-import {SdkDrawer} from '../sdk/SdkDrawer'
+// import {SdkDrawer} from '../sdk/SdkDrawer'
 import {checkResourceAllowedOnBoard} from "./util";
 
 export interface Selection {
@@ -443,9 +443,9 @@ export const Designer: React.FC<DesignerProps> = (props: DesignerProps) => {
         <Box sx={{flexGrow: 1}}>
             {board && designingArea}
         </Box>
-        <SdkDrawer resource={sdkResource} open={showSdk} onClose={() => {
-            setShowSdk(false)
-        }}/>
+        {/*<SdkDrawer resource={sdkResource} open={showSdk} onClose={() => {*/}
+        {/*    setShowSdk(false)*/}
+        {/*}}/>*/}
         {modules}
     </Box>
 }

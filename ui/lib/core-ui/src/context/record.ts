@@ -1,5 +1,5 @@
 import React from "react";
-import {Record} from "../service/record";
+import {Record} from "@apibrew/core-lib";
 
 export const RecordContext = React.createContext<Record | undefined>(undefined)
 

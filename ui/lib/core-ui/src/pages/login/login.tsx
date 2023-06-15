@@ -9,8 +9,7 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import {useNavigate} from 'react-router-dom'
-import * as TokenService from "../../service/token.ts";
-import {authenticate} from "@apibrew/core-lib";
+import {TokenService, authenticate} from "@apibrew/core-lib";
 
 export function Login(): JSX.Element {
     const isLoggedIn = TokenService.isLoggedIn()

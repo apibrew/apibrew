@@ -9,7 +9,7 @@ import {useContext, useEffect, useState} from "react";
 import {LayoutContext} from "../../context/layout-context.ts";
 import {User} from "../../model";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
-import {filterRecordForUpdate} from "../../service/authorization.ts";
+import {AuthorizationService} from "@apibrew/core-lib";
 
 export interface UserProfileProps {
 
@@ -47,7 +47,7 @@ export function UserProfile(props: UserProfileProps): JSX.Element {
         </CardContent>
         <CardActions>
             <Button onClick={() => {
-                const updateFilteredRecord = filterRecordForUpdate(resource, record)
+                const updateFilteredRecord = AuthorizationService.filterRecordForUpdate(resource, record)
 
                 RecordService.update('system', 'user', updateFilteredRecord).then(() => {
                     layoutContext.showAlert({
