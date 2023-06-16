@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "auto-deploy": "npm version -ws patch; npm publish -ws --access public"
+    "auto-deploy": "npm version -ws patch; npm publish -ws --access public",
+    "build": "npm run build -ws"
   },
   "author": "",
   "license": "ISC",

@@ -1,5 +1,19 @@
+export type ProtoElementKind = 'message' | 'enum' | 'service'
+export type ProtoElement = MessageType | EnumType | Service
+
 export interface Root {
     file: File[]
+}
+
+export interface Location {
+    path: number[]
+    span: number[]
+    leadingComments?: string
+    trailingComments?: string
+}
+
+export interface SourceCodeInfo {
+    location: Location[]
 }
 
 export interface File {
@@ -13,6 +27,7 @@ export interface File {
     messageType?: MessageType[]
     enumType?: EnumType2[]
     service?: Service[]
+    sourceCodeInfo: SourceCodeInfo
 }
 
 export interface Extension {
@@ -92,7 +107,8 @@ export interface AdditionalProperty2 {
     value: Value2
 }
 
-export interface Value2 {}
+export interface Value2 {
+}
 
 export interface BufExtension {
     isImport: boolean
@@ -109,11 +125,23 @@ export interface MessageType {
     enumType?: EnumType[]
 }
 
+export type FieldType =
+    "TYPE_INT32" |
+    "TYPE_INT64" |
+    "TYPE_ENUM" |
+    "TYPE_FLOAT" |
+    "TYPE_DOUBLE" |
+    "TYPE_BOOL" |
+    "TYPE_UINT32" |
+    "TYPE_UINT64" |
+    "TYPE_STRING" |
+    "TYPE_MESSAGE"
+
 export interface Field {
     name: string
     number: number
     label: string
-    type: string
+    type: FieldType
     typeName?: string
     jsonName: string
     oneofIndex?: number
@@ -136,23 +164,8 @@ export interface ModelPropertyAnnotations {
     value: string
 }
 
-export interface NestedType {
-    name: string
-    field: Field2[]
-    options?: Options3
-}
+export interface NestedType extends MessageType {
 
-export interface Field2 {
-    name: string
-    number: number
-    label: string
-    type: string
-    typeName?: string
-    jsonName: string
-}
-
-export interface Options3 {
-    mapEntry: boolean
 }
 
 export interface OneofDecl {

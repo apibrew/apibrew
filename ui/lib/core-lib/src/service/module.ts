@@ -3,7 +3,7 @@ import * as jsxRuntime from "react/jsx-runtime";
 import {Module} from "../model/ui/module.ts";
 import {ActionComponent} from "../model/component-interfaces.ts";
 import {ModuleData} from "../model/module-data.ts";
-// import * as CoreUI from "../index.ts";
+// import * as CoreUI from "../proto.ts";
 
 const modules: ModuleData[] = []
 const awaitedModules: Promise<ModuleData>[] = []

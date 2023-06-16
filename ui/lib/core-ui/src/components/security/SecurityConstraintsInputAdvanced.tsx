@@ -2,10 +2,6 @@ import React, {useState} from "react";
 import Box from "@mui/material/Box";
 import {Checkbox, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow, TextField} from "@mui/material";
 import {Operation, Permit, PropertyMode, SecurityConstraint} from "../../model/security-constraint.ts";
-import {useRecord} from "../../context/record.ts";
-import {useResourceByName} from "../../hooks/resource.ts";
-import {useValue} from "../../context/value.ts";
-import {FormItem as CrudFormItem} from "../../model/ui/crud.ts";
 import IconButton from "@mui/material/IconButton";
 import {Add, Delete, Edit, Save} from "@mui/icons-material";
 

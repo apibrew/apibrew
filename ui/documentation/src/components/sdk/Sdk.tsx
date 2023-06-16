@@ -1,17 +1,25 @@
-import {Box, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Box} from "@mui/material";
 
 import {JSX} from "react";
 import {NavigationTree} from "./NavigationTree.tsx";
 import {NavigationItem, navigationItems} from "./navigation";
-import Image from "../../proto/index.ts";
+import {getMessageTypeDescriptor, getProtoDescriptor, GetProtoImage} from "../../proto";
+import {ProtoMessageElement} from "./ProtoMessageElement.tsx";
+import {useProtoImageLoading} from "../../proto/loaded-hook.ts";
+import {Loading} from "@apibrew/core-lib";
 
 export function Sdk(): JSX.Element {
+    const loading = useProtoImageLoading()
 
-    console.log(Image.file.map(item => {
-        console.log(item.name)
-        console.log(item.bufExtension)
-        console.log(item.options)
-    }))
+    if (!loading) {
+        return <Loading/>
+    }
+
+    const authenticationStubProto = getProtoDescriptor('stub', 'authentication');
+    const AuthenticationRequest = getMessageTypeDescriptor(authenticationStubProto, 'AuthenticationRequest');
+    const AuthenticationResponse = getMessageTypeDescriptor(authenticationStubProto, 'AuthenticationResponse');
+
+    const ProtoImage = GetProtoImage()
 
     return <Box className='documentation' display={'flex'} flexDirection={'row'} height={'100%'} overflow='hidden'>
         <Box display={'flex'} flexDirection={'column'}
@@ -39,61 +47,9 @@ export function Sdk(): JSX.Element {
                 The access token is used to authenticate the user for all the endpoints which needs authentication.
             </p>
             <h3>Request Parameters</h3>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Parameter name</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Description</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    <TableRow>
-                        <TableCell>username</TableCell>
-                        <TableCell>string</TableCell>
-                        <TableCell>Username of the user</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>password</TableCell>
-                        <TableCell>string</TableCell>
-                        <TableCell>Password of the user</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>term</TableCell>
-                        <TableCell>enum</TableCell>
-                        <TableCell>Term is to indicate how long the token will live. <br/> Values: short &gt; 1 min;
-                            middle &gt; 2 hours</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+            <ProtoMessageElement open={true} messageType={AuthenticationRequest} protoFile={authenticationStubProto}/>
             <h3>Response Parameters</h3>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Parameter name</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Description</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    <TableRow>
-                        <TableCell>username</TableCell>
-                        <TableCell>string</TableCell>
-                        <TableCell>Username of the user</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>password</TableCell>
-                        <TableCell>string</TableCell>
-                        <TableCell>Password of the user</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>term</TableCell>
-                        <TableCell>enum</TableCell>
-                        <TableCell>Term is to indicate how long the token will live. <br/> Values: short &gt; 1 min;
-                            middle &gt; 2 hours</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+            <ProtoMessageElement open={true} messageType={AuthenticationResponse} protoFile={authenticationStubProto}/>
 
             <h3>
                 Examples
@@ -104,6 +60,21 @@ export function Sdk(): JSX.Element {
             {/*<h2>City</h2>*/}
 
             {/*END*/}
+
+
+            <h2>Schema</h2>
+            <h3>Stub</h3>
+            {ProtoImage.file.filter(item => item.package === 'stub').map(file => <>
+                {(file.messageType ?? []).map(messageType => <>
+                    <ProtoMessageElement messageType={messageType} protoFile={file}/>
+                </>)}
+            </>)}
+            <h3>Model</h3>
+            {ProtoImage.file.filter(item => item.package === 'model').map(file => <>
+                {(file.messageType ?? []).map(messageType => <>
+                    <ProtoMessageElement messageType={messageType} protoFile={file}/>
+                </>)}
+            </>)}
         </Box>
     </Box>
 }

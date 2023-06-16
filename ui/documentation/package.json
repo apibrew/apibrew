@@ -7,7 +7,7 @@
         "build": "tsc && vite build",
         "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
-        "build-proto-image": "cd ../../proto; buf build  --exclude-imports --exclude-source-info -o ../ui/documentation/src/proto/image.json"
+        "build-proto-image": "cd ../../proto; buf build --exclude-imports -o ../ui/documentation/public/image.json.gz"
     },
     "dependencies": {
         "@emotion/react": "^11.10.6",
