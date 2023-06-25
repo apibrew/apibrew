@@ -56,16 +56,20 @@ func prepareInitRoles() []*model.Role {
 	}
 }
 
+func strPointer(s string) *string {
+	return &s
+}
+
 func prepareInitUsers() []*model.User {
 	return []*model.User{
 		{
 			Username: "admin",
-			Password: "admin",
+			Password: strPointer("admin"),
 			Roles:    []string{"root"},
 		},
 		{
 			Username: "dh_test",
-			Password: "dh_test",
+			Password: strPointer("dh_test"),
 			Roles:    []string{"test_user"},
 		},
 	}

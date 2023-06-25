@@ -2,7 +2,7 @@ import {Pet} from "./schema";
 import {DhClient} from "apibrew-client";
 
 const client = new DhClient({
-    Addr: "127.0.0.1:9009", // API Brew server address
+    Addr: "127.0.0.1:9009", // API Brew apbr-server address
     Insecure: true,
 })
 

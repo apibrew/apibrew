@@ -139,8 +139,9 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 		if *isReferenced && targetTable != nil && targetColumn != nil {
 			property.Type = model.ResourceProperty_REFERENCE
 			property.Reference = &model.Reference{
-				ReferencedResource: fmt.Sprintf("[%s]", **targetTable),
-				Cascade:            false,
+				Resource:  fmt.Sprintf("[%s]", **targetTable),
+				Namespace: "default",
+				Cascade:   false,
 			}
 		}
 

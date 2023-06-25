@@ -119,7 +119,7 @@ func interceptRequest(authenticationService abs.AuthenticationService, ctx conte
 		ctx = logging.WithLogField(ctx, "User", userDetails.Username)
 	}
 
-	// server track id
+	// apbr-server track id
 	trackId := helper.RandStringRunes(8)
 	header := metadata.Pairs("TrackId", trackId)
 	err := grpc.SetHeader(ctx, header)

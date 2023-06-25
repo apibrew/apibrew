@@ -78,7 +78,7 @@ func PropPureGoType(prop *model.ResourceProperty) string {
 	typeDef := GoTypeRaw(prop)
 
 	if prop.Type == model.ResourceProperty_REFERENCE {
-		typeDef = "*" + strcase.ToCamel(prop.Reference.ReferencedResource)
+		typeDef = "*" + strcase.ToCamel(prop.Reference.Resource)
 	}
 
 	return typeDef

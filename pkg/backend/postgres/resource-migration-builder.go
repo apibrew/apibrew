@@ -78,14 +78,14 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 
 	if property.Type == model.ResourceProperty_REFERENCE {
 		if property.Reference != nil {
-			referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+			referencedResource := schema.ResourceByNamespaceSlashName[property.Reference.Namespace+"/"+property.Reference.Resource]
 			var refClause = ""
 			if property.Reference.Cascade {
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
 
 			if referencedResource == nil {
-				return "", errors.LogicalError.WithDetails("Referenced resource not exists with name: " + resource.Namespace + "/" + property.Reference.ReferencedResource)
+				return "", errors.LogicalError.WithDetails("Referenced resource not exists with name: " + property.Reference.Namespace + "/" + property.Reference.Resource)
 			}
 
 			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Mapping+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
@@ -228,7 +228,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 
 		if property.Type == model.ResourceProperty_REFERENCE {
 			if prevProperty.Reference == nil && property.Reference != nil {
-				referencedResource := r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+				referencedResource := r.schema.ResourceByNamespaceSlashName[property.Reference.Namespace+"/"+property.Reference.Resource]
 				var refClause = ""
 				if property.Reference.Cascade {
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"

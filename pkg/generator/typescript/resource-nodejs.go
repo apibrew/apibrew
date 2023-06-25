@@ -81,7 +81,7 @@ func IfRequired(prop *model.ResourceProperty) string {
 
 func PropNodejsType(resource *model.Resource, prop *model.ResourceProperty) string {
 	if prop.Type == model.ResourceProperty_REFERENCE {
-		return strcase.ToCamel(prop.Reference.ReferencedResource)
+		return strcase.ToCamel(prop.Reference.Resource)
 	}
 
 	if prop.Type == model.ResourceProperty_LIST {

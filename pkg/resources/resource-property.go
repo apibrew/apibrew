@@ -85,8 +85,9 @@ var ResourcePropertyResource = &model.Resource{
 			Type:     model.ResourceProperty_REFERENCE,
 			Required: true,
 			Reference: &model.Reference{
-				ReferencedResource: ResourceResource.Name,
-				Cascade:            true,
+				Resource:  ResourceResource.Name,
+				Namespace: ResourceResource.Namespace,
+				Cascade:   true,
 			},
 		},
 		{
@@ -106,8 +107,9 @@ var ResourcePropertyResource = &model.Resource{
 			Mapping: "reference_resource",
 			Type:    model.ResourceProperty_REFERENCE,
 			Reference: &model.Reference{
-				ReferencedResource: ResourceResource.Name,
-				Cascade:            true,
+				Resource:  ResourceResource.Name,
+				Namespace: ResourceResource.Namespace,
+				Cascade:   true,
 			},
 			Required: false,
 		},

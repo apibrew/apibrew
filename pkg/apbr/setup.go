@@ -63,7 +63,7 @@ func locateServerByName(serverName string) ConfigServer {
 		}
 	}
 
-	log.Fatal("could not find server with name: " + server)
+	log.Fatal("could not find apbr-server with name: " + server)
 
 	return ConfigServer{}
 }

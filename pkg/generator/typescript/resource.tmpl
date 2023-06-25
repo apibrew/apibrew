@@ -1,6 +1,6 @@
 {{ with $resource := .resource }}
 {{ range ReferenceProps $resource }}
-import { {{ToCamel .Reference.ReferencedResource}} } from "./{{ToDash .Reference.ReferencedResource}}";
+import { {{ToCamel .Reference.Resource}} } from "./{{ToDash .Reference.Resource}}";
 {{ end }}
 
 // Sub Types

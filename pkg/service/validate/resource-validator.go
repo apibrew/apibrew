@@ -33,6 +33,10 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 			}
 		}
 
+		if prop.Type == 0 && prop.TypeRef != nil {
+			prop.Type = model.ResourceProperty_STRUCT
+		}
+
 		if prop.TypeRef != nil && prop.Type != model.ResourceProperty_STRUCT {
 			errorFields = append(errorFields, &model.ErrorField{
 				Property: propertyPrefix + "TypeRef",
@@ -48,12 +52,15 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Message:  "Reference should not be empty for reference type",
 					Value:    nil,
 				})
-			} else if prop.Reference.ReferencedResource == "" {
+			} else if prop.Reference.Resource == "" {
 				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix + "Reference.ReferencedResource",
-					Message:  "Reference.ReferencedResource should not be empty for reference type",
+					Property: propertyPrefix + "Reference.Resource",
+					Message:  "Reference.Resource should not be empty for reference type",
 					Value:    nil,
 				})
+			} else {
+				// validate if referenced resource exists
+
 			}
 		}
 

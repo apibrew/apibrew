@@ -66,7 +66,19 @@ func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 			return false
 		}
 
-		if property1.Reference.ReferencedResource != property2.Reference.ReferencedResource {
+		if property1.Reference.Resource != property2.Reference.Resource {
+			return false
+		}
+
+		if property1.Reference.Namespace == "" {
+			property1.Reference.Namespace = "default"
+		}
+
+		if property2.Reference.Namespace == "" {
+			property2.Reference.Namespace = "default"
+		}
+
+		if property1.Reference.Namespace != property2.Reference.Namespace {
 			return false
 		}
 

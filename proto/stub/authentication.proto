@@ -48,8 +48,8 @@ service Authentication {
 AuthenticationRequest is the request for authentication
  */
 message AuthenticationRequest {
-  string username = 1;
-  string password = 2;
+  string username = 1; // username is the username
+  string password = 2; // password is the password
 
   /*
   Token Lifespan

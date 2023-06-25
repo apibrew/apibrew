@@ -78,7 +78,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 
 	if property.Type == model.ResourceProperty_REFERENCE {
 		if property.Reference != nil {
-			referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+			referencedResource := schema.ResourceByNamespaceSlashName[property.Reference.Namespace+"/"+property.Reference.Resource]
 			var refClause = ""
 			if property.Reference.Cascade {
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
@@ -217,7 +217,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 
 		if property.Type == model.ResourceProperty_REFERENCE {
 			if prevProperty.Reference == nil && property.Reference != nil {
-				referencedResource := r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+				referencedResource := r.schema.ResourceByNamespaceSlashName[property.Reference.Namespace+"/"+property.Reference.Resource]
 				var refClause = ""
 				if property.Reference.Cascade {
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
