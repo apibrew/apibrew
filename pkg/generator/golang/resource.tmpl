@@ -38,7 +38,7 @@ func (s *{{ToCamel .resource.Name}}) FromProperties(properties map[string]*struc
 {{ range .resource.Properties }}
     if properties["{{.Name}}"] != nil {
     {{if eq .Type.String "REFERENCE" }}
-        s.{{ToCamel .Name}} = new({{ToCamel .Reference.ReferencedResource}})
+        s.{{ToCamel .Name}} = new({{ToCamel .Reference.Resource}})
         s.{{ToCamel .Name}}.FromProperties(properties["{{.Name}}"].GetStructValue().Fields)
     {{else}}
         val, err := types.ByResourcePropertyType(model.ResourceProperty_{{.Type.String}}).UnPack(properties["{{.Name}}"])

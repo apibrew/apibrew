@@ -53,8 +53,8 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["securityContext"] = SecurityContextToValue(property.SecurityConstraints)
 
 	if property.Reference != nil {
-		properties["reference_resource"] = util.StructKv2("name", property.Reference.ReferencedResource, "namespace", map[string]interface{}{
-			"name": resource.Namespace,
+		properties["reference_resource"] = util.StructKv2("name", property.Reference.Resource, "namespace", map[string]interface{}{
+			"name": property.Reference.Namespace,
 		})
 		properties["reference_cascade"] = structpb.NewBoolValue(property.Reference.Cascade)
 	}
@@ -87,7 +87,8 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	var hasReference bool
 
 	if record.Properties["reference_resource"] != nil {
-		reference.ReferencedResource = record.Properties["reference_resource"].GetStructValue().GetFields()["name"].GetStringValue()
+		reference.Resource = record.Properties["reference_resource"].GetStructValue().GetFields()["name"].GetStringValue()
+		reference.Namespace = record.Properties["reference_resource"].GetStructValue().GetFields()["namespace"].GetStringValue()
 		hasReference = true
 	}
 

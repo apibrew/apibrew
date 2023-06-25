@@ -1,10 +1,9 @@
 import { Box, Button, Card, CardActions, CardContent, CardHeader } from '@mui/material'
 import React, { useContext } from 'react'
-import { type Resource } from '../../model'
+import { type Resource, LayoutContext } from '@apibrew/core-lib'
 import { ResourceBasicForm } from './ResourceBasicForm'
 import { ResourceAdvancedForm } from './ResourceAdvancedForm'
 import { ResourceService } from "@apibrew/core-lib"
-import { LayoutContext } from '../../context/layout-context'
 import { AxiosError } from 'axios'
 
 export type ResourceFormVariant = 'basic' | 'advanced'

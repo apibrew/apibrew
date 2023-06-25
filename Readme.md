@@ -12,7 +12,7 @@ Demo http://tisserv.net:9009/    (swagger docs: http://tisserv.net:9009/docs)
 
 For using demo, you need to use following config on ~/.dhctl/config
 ```yaml
-type: server
+type: apbr-server
 servers:
   - name: local
     host: tisserv.net:9009

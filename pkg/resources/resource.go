@@ -38,8 +38,9 @@ var ResourceResource = &model.Resource{
 			Type:     model.ResourceProperty_REFERENCE,
 			Required: true,
 			Reference: &model.Reference{
-				ReferencedResource: NamespaceResource.Name,
-				Cascade:            false,
+				Resource:  NamespaceResource.Name,
+				Namespace: NamespaceResource.Namespace,
+				Cascade:   false,
 			},
 		},
 		{
@@ -76,8 +77,9 @@ var ResourceResource = &model.Resource{
 			Type:     model.ResourceProperty_REFERENCE,
 			Required: false,
 			Reference: &model.Reference{
-				ReferencedResource: DataSourceResource.Name,
-				Cascade:            false,
+				Resource:  DataSourceResource.Name,
+				Namespace: DataSourceResource.Namespace,
+				Cascade:   false,
 			},
 		},
 		{

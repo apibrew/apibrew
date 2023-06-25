@@ -1,6 +1,6 @@
 type: record
 namespace: ui
-resource: AppDesignerBoard
+resource: ResourceDesignerBoard
 properties:
   name: Default
   description: 'The default board.'

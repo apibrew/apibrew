@@ -18,7 +18,7 @@ ENTRYPOINT ["/app/apbr"]
 
 FROM buildenv as builder
 
-RUN go build -o apibrew cmd/server/main.go
+RUN go build -o apibrew cmd/apbr-server/main.go
 
 FROM golang:1.19-alpine as app
 WORKDIR /

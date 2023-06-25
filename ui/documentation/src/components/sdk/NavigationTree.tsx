@@ -64,7 +64,7 @@ export function NavigationTreeComponent(props: NavigationTreeComponentProps) {
 
     return <StyledTreeItem nodeId={path} label={props.item.title}>
         {props.item.children && props.item.children.map(subItem => {
-            return <NavigationTreeComponent path={path} item={subItem}/>;
+            return <NavigationTreeComponent key={path} path={path} item={subItem}/>;
         })}
     </StyledTreeItem>
 }
@@ -80,7 +80,7 @@ export function NavigationTree(props: NavigationTreeProps) {
             sx={{height: 264, flexGrow: 1, maxWidth: 400, overflowY: 'auto'}}
         >
             <StyledTreeItem nodeId="1" label="SDK">
-                {props.items.map(item => <NavigationTreeComponent path={item.name} item={item}/>)}
+                {props.items.map(item => <NavigationTreeComponent key={item.name} path={item.name} item={item}/>)}
             </StyledTreeItem>
         </TreeView>
     );

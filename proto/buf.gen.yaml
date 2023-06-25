@@ -15,7 +15,7 @@ plugins:
       - allow_delete_body=true
   - name: openapi
     strategy: all
-    out: ../pkg/server/rest
+    out: ../pkg/apbr-server/rest
 #  - name: doc
 #    strategy: all
 #    out: ../docs/content/

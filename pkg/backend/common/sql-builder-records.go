@@ -48,7 +48,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 				}
 
 				if property.Type == model.ResourceProperty_REFERENCE {
-					referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+					referencedResource := schema.ResourceByNamespaceSlashName[property.Reference.Namespace+"/"+property.Reference.Resource]
 					item, err := p.resolveReference(packedVal.GetStructValue().Fields, args.Add, referencedResource)
 
 					if err != nil {
@@ -220,7 +220,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 		}
 
 		if property.Type == model.ResourceProperty_REFERENCE {
-			referencedResource := schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.ReferencedResource]
+			referencedResource := schema.ResourceByNamespaceSlashName[property.Reference.Namespace+"/"+property.Reference.Resource]
 			item, err := p.resolveReference(packedVal.GetStructValue().Fields, updateBuilder.Var, referencedResource)
 
 			if err != nil {

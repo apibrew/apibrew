@@ -1,0 +1,11 @@
+type: record
+resource: LogicCode
+namespace: logic
+properties:
+  statements:
+    - type: var
+      var:
+        name: x
+        value:
+          type: Expression
+          typeRef: VarExpression

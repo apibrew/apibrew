@@ -1,5 +1,5 @@
 type: resource
-name: AppDesignerBoard
+name: ResourceDesignerBoard
 namespace: ui
 description: A board is a collection of widgets that are displayed together.
 types:

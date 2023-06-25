@@ -1,0 +1,80 @@
+type: resource
+name: LogicDesignerBoard
+namespace: ui
+description: Logic definition board
+types:
+  ###### Expressions
+  - name: Expression
+    properties:
+      - name: type
+        required: true
+  ###### Statements
+  - name: Statement
+    properties:
+      - name: type
+        required: true
+      - name: var
+        typeRef: VarStatement
+      - name: if
+        typeRef: IfStatement
+      - name: for
+        typeRef: ForStatement
+  - name: VarStatement
+    properties:
+      - name: name
+        required: true
+        type: STRING
+      - name: value
+        required: true
+        typeRef: Expression
+  - name: IfStatement
+    properties:
+      - name: name
+        required: true
+        type: STRING
+      - name: value
+        required: true
+        typeRef: Expression
+  - name: ForStatement
+    properties:
+      - name: name
+        required: true
+        type: STRING
+      - name: value
+        required: true
+        typeRef: Expression
+  - name: FunctionDefinition
+    properties:
+      - name: function
+        required: true
+        type: REFERENCE
+        reference:
+          resource: Function
+          namespace: logic
+      - name: parameters
+        type: LIST
+        item:
+          type: STRING
+      - name: statements
+        type: LIST
+        item:
+          typeRef: Statement
+properties:
+  - name: functionDefs
+    type: LIST
+    item:
+      typeRef: FunctionDefinition
+  - name: triggerDefs
+    type: LIST
+    item:
+      type: REFERENCE
+      reference:
+        resource: FunctionTrigger
+        namespace: logic
+  - name: resourceRules
+    type: LIST
+    item:
+      type: REFERENCE
+      reference:
+        resource: ResourceRule
+        namespace: logic

@@ -1,0 +1,17 @@
+@import "https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap";
+
+html {
+    background: rgb(210, 210, 210);
+}
+
+/*
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet">
+ */
+
+.documentation {
+    font-family: 'Fira Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+}

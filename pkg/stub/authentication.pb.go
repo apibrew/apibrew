@@ -29,8 +29,8 @@ type AuthenticationRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"` // username is the username
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"` // password is the password
 	// Token Lifespan
 	Term model.TokenTerm `protobuf:"varint,3,opt,name=term,proto3,enum=model.TokenTerm" json:"term,omitempty"`
 }

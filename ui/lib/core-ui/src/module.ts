@@ -25,7 +25,6 @@ ModuleService.registerLocalModule({
         Test: lazyComponent(() => import("./test/test"), 'Test'),
         Crud: lazyComponent(() => import("./components/crud/Crud"), 'Crud'),
         LoginPage: lazyComponent(() => import("./pages/login/login.tsx"), 'Login'),
-        AppDesigner: lazyComponent(() => import("./pages/app-designer/index.tsx"), 'AppDesigner'),
         Error: lazyComponent(() => import("./pages/error/Error.tsx"), 'Error'),
         SecurityConstraintsInput: lazyComponent(() => import("./components/security/SecurityConstraintsInput.tsx"), 'SecurityConstraintsInput'),
         UserProfile: lazyComponent(() => import("./pages/user/UserProfile"), 'UserProfile'),
