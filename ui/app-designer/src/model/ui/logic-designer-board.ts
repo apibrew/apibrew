@@ -13,7 +13,7 @@ export interface Expression {
 }
 
 export interface Statement {
-     type: boolean;
+     type: string;
      var?: VarStatement;
      if?: IfStatement;
      for?: ForStatement;

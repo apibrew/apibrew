@@ -13,6 +13,7 @@ types:
     properties:
       - name: type
         required: true
+        type: STRING
       - name: var
         typeRef: VarStatement
       - name: if

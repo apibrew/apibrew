@@ -27,7 +27,9 @@ import { ResourceForm } from '../resource-form/ResourceForm'
 import { RecordService } from "@apibrew/core-lib"
 import { Point } from '../designer/point'
 import { ResourceVisualizer } from '../designer/ResourceVisualizer'
-import { LogicDesignerBoard } from '../../model/ui/logic-designer-board'
+import { Expression, LogicDesignerBoard, VarStatement } from '../../model/ui/logic-designer-board'
+import { Function } from '../../model/logic/function'
+import { ResourceRule } from '../../model/logic/resource-rule'
 // import {SdkDrawer} from '../sdk/SdkDrawer'
 // import { checkResourceAllowedOnBoard } from "./util";
 
@@ -262,8 +264,34 @@ export const LogicDesigner: React.FC<LogicDesignerProps> = (props: LogicDesigner
         version: 1,
         functionDefs: [
             {
+                function: {
+                    name: 'countryNameCapitalCheck',
+                    package: 'LogicDesignerBoard'
+                } as Function,
+                parameters: ['entity'],
+                statements: [
+                    {
+                        type: 'var',
+                        var: {
+                            name: 'name',
+                            value: {
 
+                            } as Expression
+                        } as VarStatement
+                    }
+                ]
             }
+        ],
+        resourceRules: [
+            {
+                name: 'countryNameCapitalCheck',
+                conditionFunction: {
+                    name: 'countryNameCapitalCheck',
+                    package: 'LogicDesignerBoard'
+                },
+                resource: 'country',
+                namespace: 'default'
+            } as ResourceRule
         ],
     }
 

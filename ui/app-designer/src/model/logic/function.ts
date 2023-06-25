@@ -18,14 +18,14 @@ export interface Argument {
 
 // Resource Type
 export interface Function {
-    id: string;
-package: string;
-name: string;
-script: string;
-engine: FunctionExecutionEngine;
-options?: Options;
-args?: Argument[];
-version: number;
+     id: string;
+     package: string;
+     name: string;
+     script: string;
+     engine: FunctionExecutionEngine;
+     options?: Options;
+     args?: Argument[];
+     version: number;
 
 }
 // Resource and Property Names
