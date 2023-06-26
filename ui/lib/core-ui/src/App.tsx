@@ -1,11 +1,11 @@
-import {BrowserRouter as Router, Route, Routes, useNavigate, useParams} from 'react-router-dom'
-import React, {JSX, useEffect} from 'react'
-import {BaseLayout} from "./layout";
-import {useRecordByName} from "./hooks/record.ts";
-import {Route as RouteItem, Router as RouterModel, RouterName} from "./model/ui/router.ts";
-import {Loading} from "./components/basic/Loading.tsx";
-import {RouteContext} from "./context/route-context.ts";
-import {DynamicComponent} from "@apibrew/core-lib";
+import { BrowserRouter as Router, Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import React, { JSX, useEffect } from 'react'
+import { BaseLayout } from "./layout";
+import { useRecordByName } from "./hooks/record.ts";
+import { Route as RouteItem, Router as RouterModel, RouterName } from "./model/ui/router.ts";
+import { Loading } from "./components/basic/Loading.tsx";
+import { RouteContext } from "./context/route-context.ts";
+import { DynamicComponent } from "@apibrew/core-lib";
 
 import * as Documentation from '@apibrew/documentation'
 // import * as AppDesigner from '@apibrew/app-designer'
@@ -36,12 +36,12 @@ export function RouteElementComponent(props: RouteElementComponentProps) {
     }, [route])
 
     if (route.component === 'Router/Forward') {
-        return <Loading/>
+        return <Loading />
     }
 
     if (route.routes) {
         return <DynamicComponent component={route.component} componentProps={componentProps}>
-            <RouterComponent routes={route.routes} path={props.path}/>
+            <RouterComponent routes={route.routes} path={props.path} />
         </DynamicComponent>
     } else {
         return <DynamicComponent component={route.component} componentProps={componentProps}></DynamicComponent>
@@ -64,7 +64,7 @@ function RouterComponent(props: RouterComponentProps) {
 
             return <Route key={route.path} path={route.path} element={
                 <RouteContext.Provider value={path}>
-                    <RouteElementComponent route={route} path={path}/>
+                    <RouteElementComponent route={route} path={path} />
                 </RouteContext.Provider>
             }></Route>
         })}
@@ -75,22 +75,22 @@ function RouterComponentWithRouterName(props: { routerName: string }) {
     const router = useRecordByName<RouterModel>(RouterName, 'ui', props.routerName)
 
     if (!router) {
-        return <Loading/>
+        return <Loading />
     }
 
-    return <RouterComponent routes={router.routes} path=''/>
+    return <RouterComponent routes={router.routes} path='' />
 }
 
 export function App(): JSX.Element {
     return (
-        <BaseLayout>
-            <Router>
+        <Router>
+            <BaseLayout>
                 <Routes>
-                    <Route path={'/login'} element={<DynamicComponent component={'CoreUI/LoginPage'}/>}></Route>
-                    <Route path={'*'} element={<RouterComponentWithRouterName routerName={'main'}/>}></Route>
+                    <Route path={'/login'} element={<DynamicComponent component={'CoreUI/LoginPage'} />}></Route>
+                    <Route path={'*'} element={<RouterComponentWithRouterName routerName={'main'} />}></Route>
                 </Routes>
-            </Router>
-        </BaseLayout>
+            </BaseLayout>
+        </Router>
     )
 }
 

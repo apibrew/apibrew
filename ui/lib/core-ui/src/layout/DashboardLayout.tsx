@@ -46,6 +46,10 @@ const DashboardLayoutSettings = {
 function normalizePath(parent: string, path: string) {
     let result = path
 
+    if (!result) {
+        result = ''
+    }
+
     if (!result.startsWith('/')) {
         if (parent.endsWith('/')) {
             result = parent + result
