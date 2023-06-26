@@ -53,8 +53,12 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["securityContext"] = SecurityContextToValue(property.SecurityConstraints)
 
 	if property.Reference != nil {
+		referenceNamespace := property.Reference.Namespace
+		if referenceNamespace == "" {
+			referenceNamespace = resource.Namespace
+		}
 		properties["reference_resource"] = util.StructKv2("name", property.Reference.Resource, "namespace", map[string]interface{}{
-			"name": property.Reference.Namespace,
+			"name": referenceNamespace,
 		})
 		properties["reference_cascade"] = structpb.NewBoolValue(property.Reference.Cascade)
 	}

@@ -194,7 +194,11 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 			}
 			if found {
 				// locating referenced resource
-				referencedResource := r.backend.schema.ResourceByNamespaceSlashName[prop.Reference.Namespace+"/"+prop.Reference.Resource]
+				referenceNamespace := prop.Reference.Namespace
+				if referenceNamespace == "" {
+					referenceNamespace = resource.Namespace
+				}
+				referencedResource := r.backend.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+prop.Reference.Resource]
 				newPath := path + "__" + prop.Mapping
 
 				// add to joins
@@ -285,7 +289,11 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 						}
 					}
 
-					referencedResource := r.backend.schema.ResourceByNamespaceSlashName[prop.Reference.Namespace+"/"+prop.Reference.Resource]
+					referenceNamespace := prop.Reference.Namespace
+					if referenceNamespace == "" {
+						referenceNamespace = resource.Namespace
+					}
+					referencedResource := r.backend.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+prop.Reference.Resource]
 
 					if referencedResource != nil && resolveReference {
 						nv, err := r.mapRecordProperties(recordId, referencedResource, pathPrefix+"_"+prop.Mapping+"_", propertyPointers)
