@@ -8,10 +8,10 @@ import {RouteContext} from "./context/route-context.ts";
 import {DynamicComponent} from "@apibrew/core-lib";
 
 import * as Documentation from '@apibrew/documentation'
-import * as AppDesigner from '@apibrew/app-designer'
+// import * as AppDesigner from '@apibrew/app-designer'
 
 Documentation.registerModule()
-AppDesigner.registerModule()
+// AppDesigner.registerModule()
 
 export interface RouteElementComponentProps {
     route: RouteItem

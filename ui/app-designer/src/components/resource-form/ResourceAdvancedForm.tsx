@@ -1,4 +1,4 @@
-import {type Resource} from '../../model'
+import { type Resource } from "@apibrew/core-lib"
 import React from "react";
 
 export interface ResourceAdvancedProps {

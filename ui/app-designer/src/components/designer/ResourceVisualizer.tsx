@@ -1,5 +1,5 @@
 import { Card } from '@mui/material'
-import { type Resource } from '../../model'
+import { type Resource } from '@apibrew/core-lib'
 
 export interface ResourceVisualizerProps {
     resource?: Resource

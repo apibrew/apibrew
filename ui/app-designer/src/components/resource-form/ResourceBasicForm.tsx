@@ -17,7 +17,7 @@ import {
     TableRow,
     TextField
 } from '@mui/material'
-import { type Resource, type ResourceProperty } from '../../model'
+import { type Resource, type ResourceProperty } from "@apibrew/core-lib"
 import { Add, Delete, Edit, Save } from '@mui/icons-material'
 import React from 'react'
 

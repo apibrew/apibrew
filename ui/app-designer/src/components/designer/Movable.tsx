@@ -44,14 +44,14 @@ export function Movable(props: MovableProps) {
                 setMovingIdx(movingIdx + 1)
             }
         }}
-        onPointerUp={(e) => {
+        onPointerUp={() => {
             if (moving) {
                 setMoveLoc(undefined)
                 setMoving(false)
                 setMovingIdx(movingIdx + 1)
             }
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={() => {
             if (moving) {
                 setMoveLoc(undefined)
                 setMoving(false)
@@ -88,10 +88,10 @@ export function MovableComponent(props: MovableComponentProps) {
 
     return <g {...props} transform={`translate(${props.location.x + loc.x},${props.location.y + loc.y})`}
         className={'movable-component'}
-        onMouseEnter={(e) => {
+        onMouseEnter={() => {
             setHover(true)
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={() => {
             setHover(false)
         }}
     >

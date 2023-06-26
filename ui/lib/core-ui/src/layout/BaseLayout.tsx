@@ -8,7 +8,7 @@ import {
     LayoutOptions,
     ModalOperations,
     ModalOptions
-} from "../context/layout-context.ts";
+} from '@apibrew/core-lib';
 import {Alert, Modal, Snackbar} from "@mui/material";
 
 export interface BaseLayoutProps {

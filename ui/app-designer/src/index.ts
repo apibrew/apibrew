@@ -1,10 +1,10 @@
-import {ModuleService} from "@apibrew/core-lib";
-import {Sdk} from "./components/sdk/Sdk.tsx";
+import { ModuleService } from "@apibrew/core-lib";
 
 export function registerModule() {
     ModuleService.registerLocalModule({
         exports: {
-            Sdk: Sdk,
+            ResourceDesigner: () => import('./components/resource-designer/ResourceDesigner'),
+            LogicDesigner: () => import('./components/logic-designer/LogicDesigner'),
         },
         name: 'Documentation',
     })

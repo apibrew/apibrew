@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import SwaggerUI from "swagger-ui-react"
 import "swagger-ui-react/swagger-ui.css"
 
@@ -10,7 +10,7 @@ class AugmentingLayout extends React.Component {
     render() {
         const {
             getComponent
-        } = this.props
+        } = this.props as any
 
         const BaseLayout = getComponent("BaseLayout", true)
         const originalOperation = getComponent("operation", true)
@@ -34,14 +34,6 @@ class AugmentingLayout extends React.Component {
     }
 }
 
-function OperationsNew(props: any) {
-    const getComponent = props.getComponent
-
-    return <>
-        {/* <Operations {...props} /> */}
-    </>
-}
-
 // Create the plugin that provides our layout component
 const AugmentingLayoutPlugin = () => {
     return {
@@ -49,7 +41,7 @@ const AugmentingLayoutPlugin = () => {
             AugmentingLayout: AugmentingLayout,
         },
         wrapComponents: {
-            operation: (Original, { React }) => props => {
+            operation: (Original: any, { React }: any) => (props: any) => {
                 const { operation } = props
                 // if (
                 //     operation.get("path") === "/pet/findByStatus" &&

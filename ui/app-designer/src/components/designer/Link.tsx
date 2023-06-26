@@ -1,5 +1,5 @@
 import { Arrow } from './Arrow'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { type Point } from './point'
 import { MovingContext } from './Movable'
 import { ScaleContext } from './Scale'

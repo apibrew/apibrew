@@ -6,10 +6,9 @@ import {Crud} from "../../model/ui/crud.ts";
 import {Loading} from "../../components/basic/Loading.tsx";
 import {RecordService, TokenService} from "@apibrew/core-lib";
 import {useContext, useEffect, useState} from "react";
-import {LayoutContext} from "../../context/layout-context.ts";
 import {User} from "../../model";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
-import {AuthorizationService} from "@apibrew/core-lib";
+import {AuthorizationService, LayoutContext} from "@apibrew/core-lib";
 
 export interface UserProfileProps {
 

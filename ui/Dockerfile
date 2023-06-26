@@ -3,19 +3,18 @@ FROM node:20-alpine as builder
 
 RUN npm install -g npm@latest
 
-WORKDIR /app
+WORKDIR /ui
 
 # copy the package.json to install dependencies
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 
 # Install the dependencies and make the folder
-RUN yarn
+RUN npm install
 
 COPY . .
 
 # Build the project and copy the files
-RUN yarn build
-
+RUN npm --workspaces run build
 
 FROM nginx:alpine
 
@@ -27,7 +26,7 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy from the stahg 1
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /ui/app/dist /usr/share/nginx/html
 
 EXPOSE 80
 

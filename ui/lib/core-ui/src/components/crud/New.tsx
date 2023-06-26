@@ -4,11 +4,10 @@ import {Cancel, Save} from "@mui/icons-material"
 import {Resource} from "../../model"
 import {useNavigate} from "react-router-dom"
 import {Form} from "./Form"
-import {Record, RecordService} from "@apibrew/core-lib"
+import {Record, RecordService, useBreadCramps} from "@apibrew/core-lib"
 import React, {useEffect} from "react"
 import {Crud} from "../../model/ui/crud.ts";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
-import {LayoutContext, useBreadCramps} from "../../context/layout-context.ts";
 
 export interface NewProps {
     resource: Resource

@@ -1,4 +1,5 @@
-import React, { Fragment, type ReactNode, useEffect, useState } from 'react'
+// eslint disable
+import React, { Fragment, type ReactNode, useState } from 'react'
 import { type Resource, ResourceService, LayoutContext } from "@apibrew/core-lib"
 import { ResourceElement } from '../designer/ResourceElement'
 import { Scale } from '../designer/Scale'
@@ -10,12 +11,8 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import {
     Add,
-    Api,
-    Brush,
     Delete,
     Edit,
-    FormatAlignCenter,
-    Replay,
     Search,
     SettingsApplications,
     ZoomIn,
@@ -24,9 +21,7 @@ import {
 import { Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Menu, MenuItem, Tooltip } from '@mui/material'
 import Button from '@mui/material/Button'
 import { ResourceForm } from '../resource-form/ResourceForm'
-import { RecordService } from "@apibrew/core-lib"
 import { Point } from '../designer/point'
-import { ResourceVisualizer } from '../designer/ResourceVisualizer'
 import { Expression, LogicDesignerBoard, VarStatement } from '../../model/ui/logic-designer-board'
 import { Function } from '../../model/logic/function'
 import { ResourceRule } from '../../model/logic/resource-rule'

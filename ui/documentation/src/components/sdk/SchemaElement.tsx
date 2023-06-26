@@ -7,7 +7,7 @@ import {
     TableRow,
     Collapse
 } from "@mui/material";
-import React, { ReactNode } from "react";
+import React from "react";
 import { ChevronRight, ExpandMore, Link } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import { OpenAPIV3_1 } from "openapi-types";
