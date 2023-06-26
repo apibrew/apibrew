@@ -16,6 +16,7 @@
   "workspaces": [
     "app",
     "documentation",
+    "app-designer",
     "lib/*"
   ]
 }

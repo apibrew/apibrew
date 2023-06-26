@@ -6,15 +6,26 @@ RUN npm install -g npm@latest
 WORKDIR /ui
 
 # copy the package.json to install dependencies
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # Install the dependencies and make the folder
 RUN npm install
 
 COPY . .
 
+RUN npm install -w lib/core-lib 
+RUN npm install -w documentation
+RUN npm install -w app-designer
+RUN npm install -w app
+RUN npm install -w lib/core-ui
+RUN npm install --save-dev typescript
+
 # Build the project and copy the files
-RUN npm --workspaces run build
+RUN npm run build -w lib/core-lib
+RUN npm run build -w documentation
+RUN npm run build -w app-designer
+RUN npm run build -w app
+RUN npm run build -w lib/core-ui
 
 FROM nginx:alpine
 
