@@ -64,7 +64,7 @@ services:
   apibrew-ui:
     restart: always
     build:
-      context: ../../ui/app
+      context: ../../ui
     volumes:
       - ./config.js:/usr/share/nginx/html/config.js
     ports:
