@@ -54,6 +54,7 @@ services:
     build:
       context: ../../extensions/nodejs-engine
     environment:
+      APBR_TOKEN: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tL2FwaWJyZXcvYXBpYnJldyIsInN1YiI6ImFkbWluIiwiYXVkIjpbImdpdGh1Yi5jb20vYXBpYnJldy9hcGlicmV3Il0sImV4cCI6MTc1MDg2OTkyMSwibmJmIjoxNjg3Nzk3OTIxLCJpYXQiOjE2ODc3OTc5MjEsImp0aSI6IjgwZGJiYmZmLWVjYzMtNGRjNi05NzI1LTY3YTdlNTI3YmYyMiIsInNlY3VyaXR5Q29uc3RyYWludHMiOlt7Im5hbWVzcGFjZSI6IioiLCJyZXNvdXJjZSI6IioiLCJwcm9wZXJ0eSI6IioiLCJvcGVyYXRpb24iOiJGVUxMIiwicm9sZSI6InJvb3QifV0sInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlcyI6WyJyb290Il0sInVpZCI6IjBkZGFkZGU2LWYxZWYtMTFlZC05YjJhLWIyOWM0YWM5MTI3MSJ9.VIVjAMc3-ybUeUkl4pyemUpXhooZX-5UbzEc_Or1rixOo4nqRb4R7IsCn6VMe_HMdC3FX3nOkrFhJhoFrrQzn756Lom1cwxWyBh0--9rsFP1Cvu67j2qTtrXzwfqensYxSz5P0zTcToksAqdI1Wq3A166dGR6Iy6GIUtIgeO7Jg
       APBR_HOST: apibrew:9009
       ENGINE_HOST: nodejs-engine:23619
     depends_on:
