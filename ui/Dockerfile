@@ -16,7 +16,7 @@ COPY . .
 RUN npm install -w @apibrew/core-lib 
 RUN npm install -w @apibrew/documentation
 RUN npm install -w @apibrew/app-designer
-RUN npm install -w @apibrew/lib/core-ui
+RUN npm install -w @apibrew/core-ui
 RUN npm install -w @apibrew/app
 RUN npm install --save-dev typescript
 
