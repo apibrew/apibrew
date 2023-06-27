@@ -4,8 +4,7 @@
   "description": "",
   "main": "test-function.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "npx tsc; apbr apply -f test-function-2.yml"
+    "deploy": "npx tsc; apbr apply -f function.yml"
   },
   "author": "",
   "license": "ISC",

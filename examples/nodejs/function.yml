@@ -7,7 +7,7 @@ properties:
   engine: 
     name: nodejs-engine
   script:
-    $file: './test-function.js'
-  startFunction: execute
+    $file: './dist/index.js'
+  startFunction: default
   args:
     - name: name
