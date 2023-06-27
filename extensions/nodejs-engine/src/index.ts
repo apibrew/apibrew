@@ -7,17 +7,21 @@ import { components } from "./model/base-schema";
 import { handleFunctionExecutionCall } from './handler'
 
 
-const promises = [
-    initExtensions(),
-    load('logic', 'Function'),
-    load('logic', 'FunctionTrigger'),
-    load('logic', 'ResourceRule'),
-]
+function init() {
+    const promises = [
+        initExtensions(),
+        load('logic', 'Function'),
+        load('logic', 'FunctionTrigger'),
+        load('logic', 'ResourceRule'),
+    ]
 
-Promise.all(promises).then(() => {
-    console.log('All resources loaded')
-    reloadInternal()
-})
+    Promise.all(promises).then(() => {
+        console.log('All resources loaded')
+        reloadInternal()
+    })
+}
+
+init()
 
 const app = express()
 const port = 23619
@@ -30,6 +34,13 @@ app.post('/call/function', (req, res) => {
     handleFunctionExecutionCall(event).then((result) => {
         res.send(result)
     })
+})
+
+app.post('/reload', (req, res) => {
+    console.log('trigger reload')
+    init()
+
+    res.send(req.body)
 })
 
 app.listen(port, () => {
