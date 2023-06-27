@@ -1,0 +1,13 @@
+type: record
+resource: Function
+namespace: logic
+properties:
+  name: TestFunction2
+  package: Test
+  engine: 
+    name: nodejs-engine
+  script:
+    $file: './dist/index.js'
+  startFunction: default
+  args:
+    - name: name

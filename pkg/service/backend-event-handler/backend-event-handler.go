@@ -53,7 +53,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 		if !handler.Sync {
 			nextEvent.Sync = false
 			go func(localHandler Handler) {
-				_, err := localHandler.Fn(ctx, nextEvent)
+				_, err := localHandler.Fn(context.TODO(), nextEvent)
 
 				if err != nil {
 					logger.Error("Error from async handler", err)

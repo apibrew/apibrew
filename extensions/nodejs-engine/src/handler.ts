@@ -39,7 +39,9 @@ export async function executeFunction<R>(fn: Function, params: object): Promise<
                 result = exports[fn.startFunction](params)
             }
 
-            exports.result = result
+            if (!exports.result) {
+                exports.result = result
+            }
             `, {
         timeout: 1000,
     })
