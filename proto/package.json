@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@bufbuild/buf": "^1.20.0-1",
-    "@bufbuild/protobuf": "^1.2.1",
-    "@bufbuild/protoc-gen-es": "^1.2.1"
-  }
-}
