@@ -42,11 +42,15 @@ properties:
     type: STRING
     length: 64000
     required: true
+  - name: startFunction
+    type: STRING
+    length: 255
+    required: false
   - name: engine
     type: REFERENCE
     required: true
     reference:
-      referencedResource: FunctionExecutionEngine
+      resource: FunctionExecutionEngine
   - name: options
     type: STRUCT
     typeRef: Options
@@ -72,7 +76,7 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      referencedResource: Function
+      resource: Function
   - name: input
     type: OBJECT
   - name: output
@@ -126,7 +130,7 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      referencedResource: Function
+      resource: Function
 ---
 type: resource
 name: ResourceRule
@@ -150,7 +154,7 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      referencedResource: Function
+      resource: Function
 ---
 type: resource
 name: Schedule
@@ -170,4 +174,4 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      referencedResource: Function
+      resource: Function

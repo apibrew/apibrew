@@ -1,46 +1,61 @@
-import {functionIdMap, functionMap, reloadInternal} from "./function-registry";
-import {load, read} from "./store";
+import { functionIdMap, functionMap, reloadInternal } from "./function-registry";
+import { load, read } from "./store";
 import {
     ExecuteFunction,
     ResourceOperationRule,
     ResourceOperationTrigger,
     WatchLogicResources
 } from "./const";
-import {Function} from './model/function'
-import {ResourceRule, ResourceRuleName} from "./model/resource-rule";
-import {FunctionTrigger, FunctionTriggerName} from "./model/function-trigger";
+import { Function } from './model/function'
+import { ResourceRule, ResourceRuleName } from "./model/resource-rule";
+import { FunctionTrigger, FunctionTriggerName } from "./model/function-trigger";
 import { components } from "./model/base-schema";
 
 type Event = components['schemas']['Event']
 
-const {VM} = require('vm2');
+const { VM } = require('vm2');
 
 function locateFunction(packageName: string, name: string): Function {
     return functionMap[packageName + '/' + name]
 }
 
 export async function executeFunction<R>(fn: Function, params: object): Promise<R> {
-    return new VM({
+    const exports: {
+        result?: R,
+    } = {}
+
+    new VM({
         sandbox: {
-            ...params
+            fn: fn,
+            ...params,
+            params: params,
+            exports: exports,
         },
-    }).run(`(function () {
+    }).run(`let result = (function () {
                 ${fn.script}
-            })()`, {
+            })()
+            
+            if (fn.startFunction) {
+                result = exports[fn.startFunction](params)
+            }
+
+            exports.result = result
+            `, {
         timeout: 1000,
     })
 
+    return exports.result
 }
 
 export async function handleFunctionExecutionCall(event: Event) {
     for (const record of event.records) {
         try {
             const packageName = record.properties.function.package
-            const name =  record.properties.function.name
+            const name = record.properties.function.name
             const input = record.properties.input
             const fn = locateFunction(packageName, name)
 
-            const output = (await executeFunction(fn, input) ?? {ok: true});
+            const output = (await executeFunction(fn, input) ?? { ok: true });
 
             record.properties.output = output
 

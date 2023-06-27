@@ -11,6 +11,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"strings"
 )
 
@@ -42,6 +43,10 @@ func (p *preprocessor) preprocess(body Unstructured) (Unstructured, error) {
 func (p *preprocessor) runPreprocess(un Unstructured) (interface{}, error) {
 	var err error
 	var keys = un.Keys()
+
+	if util.ArrayContains(keys, "$file") {
+		return p.runIncludeFile(un)
+	}
 
 	if util.ArrayContains(keys, "$extend") {
 		un, err = p.runPreprocessExtend(un)
@@ -98,6 +103,18 @@ func (p *preprocessor) runPreprocess(un Unstructured) (interface{}, error) {
 
 func (p *preprocessor) runPreprocessInclude(un Unstructured) (Unstructured, error) {
 	return un, nil
+}
+
+func (p *preprocessor) runIncludeFile(un Unstructured) (string, error) {
+	filePath := un["$file"]
+
+	dat, err := os.ReadFile(filePath.(string))
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(dat), nil
 }
 
 func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error) {
@@ -280,7 +297,7 @@ func (p *preprocessor) runPreprocessProperties(un Unstructured) (Unstructured, e
 }
 
 var preprocessKeywords = []string{
-	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties",
+	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties", "$file",
 }
 
 func isPreprocessorKey(key string) bool {
