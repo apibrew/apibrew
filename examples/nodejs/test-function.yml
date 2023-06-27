@@ -1,0 +1,13 @@
+type: record
+resource: Function
+namespace: logic
+properties:
+  name: TestFunction
+  package: Test
+  engine: 
+    name: nodejs-engine
+  script:
+    $file: './test-function.js'
+  startFunction: execute
+  args:
+    - name: name

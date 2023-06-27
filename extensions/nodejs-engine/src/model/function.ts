@@ -26,6 +26,7 @@ engine: FunctionExecutionEngine;
 options?: Options;
 args?: Argument[];
 version: number;
+startFunction?: string
 
 }
 // Resource and Property Names
