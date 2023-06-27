@@ -9,9 +9,9 @@ import {
 import {Function} from './model/function'
 import {ResourceRule, ResourceRuleName} from "./model/resource-rule";
 import {FunctionTrigger, FunctionTriggerName} from "./model/function-trigger";
-import {Event_Action, Event} from "./gen/model/event_pb";
-import {JsonValue, Struct, Value} from "@bufbuild/protobuf";
-import {Record} from './gen/model/record_pb'
+import { components } from "./model/base-schema";
+
+type Event = components['schemas']['Event']
 
 const {VM} = require('vm2');
 
@@ -32,25 +32,24 @@ export async function executeFunction<R>(fn: Function, params: object): Promise<
 
 }
 
-async function handleFunctionExecutionCall(event: Event) {
+export async function handleFunctionExecutionCall(event: Event) {
     for (const record of event.records) {
         try {
-            const fnParams = (record.properties.function.kind.value as Struct).fields
-            const packageName = fnParams.package.toJson() as string
-            const name =  fnParams.name.toJson() as string
-            const input = record.properties.input.toJson() as object
+            const packageName = record.properties.function.package
+            const name =  record.properties.function.name
+            const input = record.properties.input
             const fn = locateFunction(packageName, name)
 
             const output = (await executeFunction(fn, input) ?? {ok: true});
 
-            record.properties.output = Value.fromJson(output as JsonValue)
+            record.properties.output = output
 
-            record.properties.status = Value.fromJson('success')
+            record.properties.status = 'success'
         } catch (e) {
             console.error(e)
 
-            record.properties.error = Value.fromJson(e.message)
-            record.properties.status = Value.fromJson('error')
+            record.properties.error = e.message
+            record.properties.status = 'error'
         }
     }
 
@@ -58,7 +57,7 @@ async function handleFunctionExecutionCall(event: Event) {
 }
 
 function locateRulesListeningToEvent(event: Event): ResourceRule[] {
-    if (event.action != Event_Action.CREATE && event.action != Event_Action.UPDATE) {
+    if (event.action != 'CREATE' && event.action != 'UPDATE') {
         return []
     }
     const rules = read<ResourceRule>('logic', ResourceRuleName)
@@ -67,7 +66,7 @@ function locateRulesListeningToEvent(event: Event): ResourceRule[] {
 }
 
 function locateTriggersListeningToEvent(event: Event): FunctionTrigger[] {
-    if (event.action != Event_Action.CREATE && event.action != Event_Action.UPDATE) {
+    if (event.action != 'CREATE' && event.action != 'UPDATE') {
         return []
     }
     const triggers = read<FunctionTrigger>('logic', FunctionTriggerName)
@@ -88,7 +87,7 @@ function locateTriggersListeningToEvent(event: Event): FunctionTrigger[] {
             return false
         }
 
-        if (trigger.action != eventActionToString(event.action)) {
+        if (trigger.action.toLowerCase() != event.action.toLowerCase()) {
             console.log('trigger action mismatch', trigger.action, event.action.toString().toLowerCase())
             return false
         }
@@ -97,24 +96,7 @@ function locateTriggersListeningToEvent(event: Event): FunctionTrigger[] {
     })
 }
 
-export function eventActionToString(action: Event_Action) {
-    switch (action) {
-        case Event_Action.CREATE:
-            return 'create'
-        case Event_Action.UPDATE:
-            return 'update'
-        case Event_Action.DELETE:
-            return 'delete'
-        case Event_Action.LIST:
-            return 'list'
-        case Event_Action.GET:
-            return 'get'
-        default:
-            return 'unknown'
-    }
-}
-
-function recordToEntity(record: Record) {
+function recordToEntity(record: any) {
     const entity = {}
 
     for (const key of Object.keys(record.properties)) {
@@ -127,7 +109,7 @@ function recordToEntity(record: Record) {
 }
 
 async function handleResourceOperationTrigger(event: Event): Promise<Event> {
-    console.log('Handling resource operation trigger', eventActionToString(event.action))
+    console.log('Handling resource operation trigger', event.action)
 
     const triggers = locateTriggersListeningToEvent(event)
 
@@ -153,7 +135,7 @@ async function handleResourceOperationTrigger(event: Event): Promise<Event> {
                 if (output[property.name] === record.properties[property.name]) {
                     continue
                 }
-                record.properties[property.name] = Value.fromJson(output[property.name])
+                record.properties[property.name] = output[property.name]
             }
         }
     }
@@ -162,7 +144,7 @@ async function handleResourceOperationTrigger(event: Event): Promise<Event> {
 }
 
 async function handleResourceOperationRule(event: Event): Promise<Event> {
-    console.log('Handling resource operation rule', eventActionToString(event.action))
+    console.log('Handling resource operation rule', event.action)
 
     const rules = locateRulesListeningToEvent(event)
 

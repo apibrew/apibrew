@@ -1,13 +1,13 @@
-import {read, filter} from "./store";
-import {Function, FunctionName} from "./model/function";
-import {FunctionTrigger, FunctionTriggerName} from "./model/function-trigger";
-import {ResourceRule, ResourceRuleName} from "./model/resource-rule";
-import {ENGINE_REMOTE_ADDR, EXTENSION_NAME} from "./config";
-import {registerExtensions} from "./registrator";
-import {ResourceOperationRule, ResourceOperationTrigger} from "./const";
-import {Extension} from "./gen/model/extension_pb";
-import {ExternalCall, FunctionCall} from "./gen/model/external_pb";
-import {Event_Action, EventSelector} from "./gen/model/event_pb";
+import { read, filter } from "./store";
+import { Function, FunctionName } from "./model/function";
+import { FunctionTrigger, FunctionTriggerName } from "./model/function-trigger";
+import { ResourceRule, ResourceRuleName } from "./model/resource-rule";
+import { ENGINE_REMOTE_ADDR, EXTENSION_NAME } from "./config";
+import { registerExtensions } from "./registrator";
+import { ResourceOperationRule, ResourceOperationTrigger } from "./const";
+import { Extension } from "./model";
+import { components } from './model/base-schema'
+
 
 let engineId: string
 
@@ -28,10 +28,8 @@ export async function reloadInternal() {
     functionMap = {}
     functionIdMap = {}
     functions.forEach((record) => {
-        if (record.engine.id === engineId) {
-            functionMap[record.package + '/' + record.name] = record
-            functionIdMap[record.id] = record
-        }
+        functionMap[record.package + '/' + record.name] = record
+        functionIdMap[record.id] = record
     })
 
     let extensions: Extension[] = []
@@ -52,14 +50,14 @@ export async function reloadInternal() {
 }
 
 function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
-    const extension = new Extension()
+    const extension = {} as Extension
     extension.name = `${EXTENSION_NAME}_trigger_${trigger.namespace}_${trigger.resource}`
     extension.sync = !trigger.async
-    const call = new ExternalCall()
-    const fCall = new FunctionCall()
-    fCall.functionName = ResourceOperationTrigger
-    fCall.host = ENGINE_REMOTE_ADDR
-    call.functionCall = fCall
+    const call = {} as components['schemas']['ExternalCall']
+    const hCall = {} as components['schemas']['HttpCall']
+    hCall.method = 'POST'
+    hCall.uri = `${ENGINE_REMOTE_ADDR}/call/trigger`
+    call.httpCall = hCall
     extension.call = call
     extension.responds = true
 
@@ -79,19 +77,19 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
         }
     }
 
-    const eventSelector = new EventSelector()
+    const eventSelector = {} as components['schemas']['EventSelector']
     eventSelector.namespaces = [trigger.namespace]
     eventSelector.resources = [trigger.resource]
-    let action: Event_Action
+    let action: "CREATE" | "UPDATE" | "DELETE" | "GET" | "LIST" | "OPERATE"
     switch (trigger.action) {
         case 'create':
-            action = Event_Action.CREATE
+            action = 'CREATE'
             break
         case 'update':
-            action = Event_Action.UPDATE
+            action = 'UPDATE'
             break
         case 'delete':
-            action = Event_Action.DELETE
+            action = 'DELETE'
             break
         default:
             throw new Error('Unknown action: ' + trigger.action)
@@ -103,21 +101,21 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
 }
 
 function prepareExtensionFromRule(rule: ResourceRule): Extension {
-    const extension = new Extension()
+    const extension = {} as Extension
     extension.name = `${EXTENSION_NAME}_rule_${rule.namespace}_${rule.resource}`
     extension.sync = true
-    const call = new ExternalCall()
-    const fCall = new FunctionCall()
-    fCall.functionName = ResourceOperationRule
-    fCall.host = ENGINE_REMOTE_ADDR
-    call.functionCall = fCall
+    const call = {} as components['schemas']['ExternalCall']
+    const hCall = {} as components['schemas']['HttpCall']
+    hCall.method = 'POST'
+    hCall.uri = `${ENGINE_REMOTE_ADDR}/call/rule`
+    call.httpCall = hCall
     extension.call = call
     extension.order = 85
 
-    const eventSelector = new EventSelector()
+    const eventSelector = {} as components['schemas']['EventSelector']
     eventSelector.namespaces = [rule.namespace]
     eventSelector.resources = [rule.resource]
-    eventSelector.actions = [Event_Action.CREATE, Event_Action.UPDATE]
+    eventSelector.actions = ['CREATE', 'UPDATE']
     extension.selector = eventSelector
 
     return extension
