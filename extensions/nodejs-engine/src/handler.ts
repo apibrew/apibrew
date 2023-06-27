@@ -6,48 +6,14 @@ import {
     ResourceOperationTrigger,
     WatchLogicResources
 } from "./const";
-import { Function } from './model/function'
 import { ResourceRule, ResourceRuleName } from "./model/resource-rule";
 import { FunctionTrigger, FunctionTriggerName } from "./model/function-trigger";
 import { components } from "./model/base-schema";
+import { executeFunction, locateFunction } from "./function-execute";
 
 type Event = components['schemas']['Event']
 
 const { VM } = require('vm2');
-
-function locateFunction(packageName: string, name: string): Function {
-    return functionMap[packageName + '/' + name]
-}
-
-export async function executeFunction<R>(fn: Function, params: object): Promise<R> {
-    const exports: {
-        result?: R,
-    } = {}
-
-    new VM({
-        sandbox: {
-            fn: fn,
-            ...params,
-            params: params,
-            exports: exports,
-        },
-    }).run(`let result = (function () {
-                ${fn.script}
-            })()
-            
-            if (fn.startFunction) {
-                result = exports[fn.startFunction](params)
-            }
-
-            if (!exports.result) {
-                exports.result = result
-            }
-            `, {
-        timeout: 1000,
-    })
-
-    return exports.result
-}
 
 export async function handleFunctionExecutionCall(event: Event) {
     for (const record of event.records) {

@@ -1,3 +1,8 @@
-export default function (params) {
-    return `Taleh: Hello from file based function 123 3x3: ${params.name}`
+import axios from "axios";
+
+
+export default async function (params) {
+    const response = await axios.get('http://tisserv.net:9009/docs/')
+
+    return response.data
 }

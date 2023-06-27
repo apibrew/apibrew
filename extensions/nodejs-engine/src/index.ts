@@ -26,7 +26,8 @@ init()
 const app = express()
 const port = 23619
 
-app.use(express.json());
+app.use(express.json({limit: '5000mb'}));
+app.use(express.urlencoded({limit: '5000mb'}));
 
 app.post('/call/function', (req, res) => {
     const event = req.body as components['schemas']['Event']
