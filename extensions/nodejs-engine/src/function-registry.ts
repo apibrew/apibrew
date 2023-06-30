@@ -2,22 +2,33 @@ import { read, filter } from "./store";
 import { Function, FunctionName } from "./model/function";
 import { FunctionTrigger, FunctionTriggerName } from "./model/function-trigger";
 import { ResourceRule, ResourceRuleName } from "./model/resource-rule";
-import { ENGINE_REMOTE_ADDR, EXTENSION_NAME } from "./config";
+import { ENGINE_REMOTE_ADDR, EXTENSION_NAME, FN_DIR } from "./config";
 import { registerExtensions } from "./registrator";
 import { ResourceOperationRule, ResourceOperationTrigger } from "./const";
 import { Extension } from "./model";
 import { components } from './model/base-schema'
+import { Module, ModuleName } from "./model/module";
+import { scriptFunctionTemplate, moduleFunctionTemplate } from "./function-template";
+import * as fs from 'fs'
+import path from "path";
+import { PassThrough } from "stream";
+import { Extract, extract } from 'tar-fs'
+var mkdirp = require('mkdirp');
 
 
 let engineId: string
 
 export let functionMap: { [key: string]: Function } = {}
 export let functionIdMap: { [key: string]: Function } = {}
+export let functionNameIdMap: { [key: string]: string } = {}
 
 
 export async function reloadInternal() {
     filter('logic', FunctionName, (record: Function) => record.engine.id === engineId)
     const functions = read<Function>('logic', FunctionName)
+
+    filter('logic', ModuleName, (record: Function) => record.engine.id === engineId)
+    const modules = read<Module>('logic', ModuleName)
 
     filter('logic', FunctionTriggerName, (record: FunctionTrigger) => functions.some(fn => fn.id === record.function.id))
     const triggers = read<FunctionTrigger>('logic', FunctionTriggerName)
@@ -25,11 +36,24 @@ export async function reloadInternal() {
     filter('logic', ResourceRuleName, (record: ResourceRule) => functions.some(fn => fn.id === record.conditionFunction.id))
     const rules = read<ResourceRule>('logic', ResourceRuleName)
 
+    for (const cacheKey of Object.keys(require.cache)) {
+        if (cacheKey.startsWith(FN_DIR)) {
+            delete require.cache[cacheKey]
+        }
+    }
+
     functionMap = {}
     functionIdMap = {}
-    functions.forEach((record) => {
+    functions.forEach(async (record) => {
         functionMap[record.package + '/' + record.name] = record
         functionIdMap[record.id] = record
+        functionNameIdMap[record.package + '/' + record.name] = record.id
+
+        await storeFunction(record)
+    })
+
+    modules.forEach(async module => {
+        await storeModule(module)
     })
 
     let extensions: Extension[] = []
@@ -123,4 +147,26 @@ function prepareExtensionFromRule(rule: ResourceRule): Extension {
 
 export async function initFunctionRegistry(_engineId: string) {
     engineId = _engineId
+}
+
+async function storeFunction(record: Function) {
+    if (record.script) {
+        const functionContent = scriptFunctionTemplate(record)
+
+        fs.writeFileSync(path.join(FN_DIR + '/', record.id + '.js'), functionContent)
+    } else if (record.module) {
+        const functionContent = moduleFunctionTemplate(record)
+
+        fs.writeFileSync(path.join(FN_DIR + '/', record.id + '.js'), functionContent)
+    }
+}
+
+async function storeModule(record: Module) {
+    const content = Buffer.from(record.content, 'base64')
+
+    const stream = new PassThrough()
+
+    stream.end(content)
+
+    stream.pipe(extract(path.join(FN_DIR + '/', record.id)))
 }

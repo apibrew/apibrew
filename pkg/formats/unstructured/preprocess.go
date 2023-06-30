@@ -1,7 +1,9 @@
 package unstructured
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -46,6 +48,10 @@ func (p *preprocessor) runPreprocess(un Unstructured) (interface{}, error) {
 
 	if util.ArrayContains(keys, "$file") {
 		return p.runIncludeFile(un)
+	}
+
+	if util.ArrayContains(keys, "$folder") {
+		return p.runIncludeFolder(un)
 	}
 
 	if util.ArrayContains(keys, "$extend") {
@@ -115,6 +121,24 @@ func (p *preprocessor) runIncludeFile(un Unstructured) (string, error) {
 	}
 
 	return string(dat), nil
+}
+
+func (p *preprocessor) runIncludeFolder(un Unstructured) (string, error) {
+	filePath := un["$folder"].(string)
+	format := un["$format"].(string)
+
+	if format == "tar" {
+		var buffer = new(bytes.Buffer)
+		err := makeTar(filePath, buffer)
+
+		if err != nil {
+			return "", err
+		}
+
+		return base64.StdEncoding.EncodeToString(buffer.Bytes()), nil
+	} else {
+		return "", errors.New("unsupported format: " + format)
+	}
 }
 
 func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error) {
@@ -297,7 +321,7 @@ func (p *preprocessor) runPreprocessProperties(un Unstructured) (Unstructured, e
 }
 
 var preprocessKeywords = []string{
-	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties", "$file",
+	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties", "$file", "$folder",
 }
 
 func isPreprocessorKey(key string) bool {

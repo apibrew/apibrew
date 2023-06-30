@@ -13,6 +13,25 @@ properties:
     unique: true
 ---
 type: resource
+name: Module
+namespace: logic
+description: Module
+properties:
+  - name: package
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: content
+    type: BYTES
+    required: true
+  - name: engine
+    type: REFERENCE
+    required: true
+    reference:
+      resource: FunctionExecutionEngine
+---
+type: resource
 name: Function
 namespace: logic
 description: Function
@@ -40,12 +59,14 @@ properties:
     required: true
   - name: script
     type: STRING
-    length: 64000
-    required: true
-  - name: startFunction
-    type: STRING
-    length: 255
     required: false
+    annotations:
+      SQLType: TEXT
+  - name: module
+    type: REFERENCE
+    required: false
+    reference:
+      resource: Module
   - name: engine
     type: REFERENCE
     required: true

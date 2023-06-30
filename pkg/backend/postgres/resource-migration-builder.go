@@ -74,6 +74,10 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 	}
 	sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
+	if property.Annotations != nil && property.Annotations[annotations.SQLType] != "" {
+		sqlType = property.Annotations[annotations.SQLType]
+	}
+
 	var def = []string{r.options.Quote(property.Mapping), sqlType, nullModifier, uniqModifier}
 
 	if property.Type == model.ResourceProperty_REFERENCE {
@@ -112,6 +116,10 @@ func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resour
 	for _, prop := range resource.Properties {
 		if prop.Primary {
 			var typ = r.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
+
+			if prop.Annotations != nil && prop.Annotations[annotations.SQLType] != "" {
+				typ = prop.Annotations[annotations.SQLType]
+			}
 
 			if annotations.IsEnabled(prop, annotations.Identity) {
 				if typ == "INT" {
@@ -204,7 +212,14 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		var sqlParts []string
 		changes := 0
 		if r.options.GetSqlTypeFromProperty(prevProperty.Type, property.Length) != r.options.GetSqlTypeFromProperty(property.Type, property.Length) {
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", r.options.Quote(property.Mapping), r.options.GetSqlTypeFromProperty(property.Type, property.Length)))
+
+			sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
+
+			if property.Annotations != nil && property.Annotations[annotations.SQLType] != "" {
+				sqlType = property.Annotations[annotations.SQLType]
+			}
+
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", r.options.Quote(property.Mapping), sqlType))
 			changes++
 		}
 

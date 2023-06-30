@@ -30,3 +30,6 @@ const CheckVersion = "CheckVersion"
 
 // security
 const AllowPublicAccess = "AllowPublicAccess"
+
+// sql
+const SQLType = "SQLType"

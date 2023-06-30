@@ -10,6 +10,7 @@ import { handleFunctionExecutionCall } from './handler'
 function init() {
     const promises = [
         initExtensions(),
+        load('logic', 'Module'),
         load('logic', 'Function'),
         load('logic', 'FunctionTrigger'),
         load('logic', 'ResourceRule'),
