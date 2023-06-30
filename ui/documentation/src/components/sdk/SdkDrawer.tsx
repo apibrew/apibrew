@@ -1,6 +1,6 @@
 import {Box, Drawer, IconButton, Typography} from "@mui/material"
 import React, {useState} from "react"
-import {Resource} from "@apibrew/core-lib"
+import {Resource} from "@apibrew/ui-lib"
 import {Close, KeyboardArrowLeft, KeyboardArrowRight} from "@mui/icons-material"
 import {Sdk} from "./Sdk"
 

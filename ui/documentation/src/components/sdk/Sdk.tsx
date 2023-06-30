@@ -3,10 +3,10 @@ import { Box } from "@mui/material";
 import { JSX, useEffect, useState } from "react";
 import { NavigationTree } from "./NavigationTree.tsx";
 import { NavigationItem, navigationItems } from "./navigation";
-import { Loading } from "@apibrew/core-lib";
+import { Loading } from "@apibrew/ui-lib";
 import { OpenAPIV3_1 } from "openapi-types";
 import { OpenApiService } from '../../service'
-import { useErrorHandler } from "@apibrew/core-lib";
+import { useErrorHandler } from "@apibrew/ui-lib";
 import { SchemaElement } from "./SchemaElement.tsx";
 import { relatedSchemas } from "../../util/openapi.ts";
 

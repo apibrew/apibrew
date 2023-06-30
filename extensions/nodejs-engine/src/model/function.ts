@@ -2,6 +2,8 @@
 
 import { FunctionExecutionEngine } from "./function-execution-engine";
 
+import { Module } from "./module";
+
 
 // Sub Types
 
@@ -21,12 +23,12 @@ export interface Function {
     id: string;
 package: string;
 name: string;
-script: string;
+script?: string;
 engine: FunctionExecutionEngine;
 options?: Options;
-args?: Argument[];
 version: number;
-startFunction?: string
+args?: Argument[];
+module?: Module;
 
 }
 // Resource and Property Names
@@ -44,8 +46,10 @@ export const FunctionEngineName = "Engine";
 
 export const FunctionOptionsName = "Options";
 
+export const FunctionVersionName = "Version";
+
 export const FunctionArgsName = "Args";
 
-export const FunctionVersionName = "Version";
+export const FunctionModuleName = "Module";
 
 

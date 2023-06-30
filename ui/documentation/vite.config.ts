@@ -15,7 +15,7 @@ export default defineConfig({
         minify: false,
         sourcemap: true,
         lib: {
-            entry: path.resolve(__dirname, 'src/proto.ts'),
+            entry: path.resolve(__dirname, 'src/index.ts'),
             name: 'Documentation',
             formats: ['es', 'umd'],
             fileName: (format) => `documentation.${format}.js`,

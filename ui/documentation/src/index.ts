@@ -1,4 +1,4 @@
-import {ModuleService} from "@apibrew/core-lib";
+import {ModuleService} from "@apibrew/ui-lib";
 import {Sdk} from "./components/sdk/Sdk.tsx";
 
 export function registerModule() {

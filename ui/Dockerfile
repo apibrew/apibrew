@@ -13,18 +13,16 @@ RUN npm install
 
 COPY . .
 
-RUN npm install -w @apibrew/core-lib 
+RUN npm install -w @apibrew/ui-lib 
 RUN npm install -w @apibrew/documentation
-RUN npm install -w @apibrew/app-designer
-RUN npm install -w @apibrew/core-ui
+RUN npm install -w @apibrew/designer
 RUN npm install -w @apibrew/app
 RUN npm install --save-dev typescript
 
 # Build the project and copy the files
-RUN npm run build -w @apibrew/core-lib
+RUN npm run build -w @apibrew/ui-lib
 RUN npm run build -w @apibrew/documentation
-RUN npm run build -w @apibrew/app-designer
-RUN npm run build -w @apibrew/core-ui
+RUN npm run build -w @apibrew/designer
 RUN npm run build -w @apibrew/app
 
 FROM nginx:alpine

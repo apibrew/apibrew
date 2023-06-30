@@ -1249,7 +1249,7 @@
   dependencies:
     "@microsoft/tsdoc" "0.14.2"
     "@microsoft/tsdoc-config" "~0.16.1"
-    "@rushstack/node-core-library" "3.59.1"
+    "@rushstack/node-ui-library" "3.59.1"
 
 "@microsoft/api-extractor@^7.34.4":
   version "7.35.0"
@@ -1259,7 +1259,7 @@
     "@microsoft/api-extractor-model" "7.27.0"
     "@microsoft/tsdoc" "0.14.2"
     "@microsoft/tsdoc-config" "~0.16.1"
-    "@rushstack/node-core-library" "3.59.1"
+    "@rushstack/node-ui-library" "3.59.1"
     "@rushstack/rig-package" "0.3.19"
     "@rushstack/ts-command-line" "4.13.3"
     colors "~1.2.1"
@@ -1433,9 +1433,9 @@
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
 
-"@rushstack/node-core-library@^3.55.2", "@rushstack/node-core-library@3.59.1":
+"@rushstack/node-ui-library@^3.55.2", "@rushstack/node-ui-library@3.59.1":
   version "3.59.1"
-  resolved "https://registry.npmjs.org/@rushstack/node-core-library/-/node-core-library-3.59.1.tgz"
+  resolved "https://registry.npmjs.org/@rushstack/node-ui-library/-/node-ui-library-3.59.1.tgz"
   integrity sha512-iy/xaEhXGpX+DY1ZzAtNA+QPw+9+TJh773Im+JxG4R1fu00/vWq470UOEj6upxlUxmp0JxhnmNRxzfptHrn/Uw==
   dependencies:
     colors "~1.2.1"
@@ -4172,7 +4172,7 @@ vite-plugin-dts@^2.3.0:
     "@babel/parser" "^7.21.4"
     "@microsoft/api-extractor" "^7.34.4"
     "@rollup/pluginutils" "^5.0.2"
-    "@rushstack/node-core-library" "^3.55.2"
+    "@rushstack/node-ui-library" "^3.55.2"
     debug "^4.3.4"
     fast-glob "^3.2.12"
     fs-extra "^10.1.0"

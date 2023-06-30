@@ -4,7 +4,7 @@
   "description": "",
   "main": "test-function.js",
   "scripts": {
-    "deploy": "npx tsc; apbr apply -f function.yml"
+    "deploy": "npx tsc; apbr apply -f module.yml"
   },
   "author": "",
   "license": "ISC",
