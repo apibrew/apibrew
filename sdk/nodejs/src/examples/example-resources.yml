@@ -1,0 +1,13 @@
+type: resource
+name: CountryExample
+namespace: default
+description: CountryExample Desc
+properties:
+  - name: name
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  - name: description
+    type: STRING
+    length: 255

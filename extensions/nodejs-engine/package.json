@@ -13,14 +13,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apibrew/client": "^1.0.19",
     "@types/tar-fs": "^2.0.1",
-    "@types/tar-stream": "^2.2.2",
     "axios": "^1.4.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "tar": "^6.1.15",
+    "mkdirp": "^3.0.1",
     "tar-fs": "^3.0.3",
-    "tar-stream": "^3.1.4",
     "vm2": "^3.9.19"
   },
   "devDependencies": {
