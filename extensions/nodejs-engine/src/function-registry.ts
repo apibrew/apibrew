@@ -14,6 +14,7 @@ import path from "path";
 import { PassThrough } from "stream";
 import { Extract, extract } from 'tar-fs'
 import { initModule } from "./module-init";
+import { Lambda, LambdaNameName, LambdaResource } from "./model/lambda";
 var mkdirp = require('mkdirp');
 
 
@@ -56,6 +57,22 @@ export async function reloadModules() {
     })
 }
 
+export async function reloadLambdas() {
+    const functions = read<Function>('logic', FunctionName)
+
+    filter(LambdaResource.namespace, LambdaResource.resource, (record: Lambda) => functions.some(fn => fn.id === record.function.id))
+
+    const lambdas = read<Lambda>(LambdaResource.namespace, LambdaResource.resource)
+
+    let extensions: Extension[] = []
+
+    for (const lambda of lambdas) {
+        extensions.push(prepareExtensionFromLambda(lambda))
+    }
+
+    await registerExtensions(extensions)
+}
+
 export function clearCache() {
     for (const cacheKey of Object.keys(require.cache)) {
         if (cacheKey.startsWith(FN_DIR)) {
@@ -67,6 +84,7 @@ export function clearCache() {
 export async function reloadInternal() {
     reloadFunction()
     reloadModules()
+    reloadLambdas()
 
     const functions = read<Function>('logic', FunctionName)
 
@@ -150,6 +168,47 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
     return extension
 }
 
+function prepareExtensionFromLambda(lambda: Lambda): Extension {
+    const parts = lambda.eventSelectorPattern.split(':')
+
+    const resourceFullName = parts[0]
+    // const action = parts[1]
+    const subParts = resourceFullName.split('/')
+    let resourceName;
+    let resourceNamespace;
+
+    if (subParts.length === 1) {
+        resourceName = subParts[0]
+        resourceNamespace = 'default'
+    } else if (subParts.length === 2) {
+        resourceNamespace = subParts[0]
+        resourceName = subParts[1]
+    } else {
+        throw new Error('Invalid resource name: ' + resourceFullName)
+    }
+
+    const extension = {} as Extension
+    extension.name = `${EXTENSION_NAME}_lambda_${lambda.id}`
+    extension.sync = true
+    const call = {} as components['schemas']['ExternalCall']
+    const hCall = {} as components['schemas']['HttpCall']
+    hCall.method = 'POST'
+    hCall.uri = `${ENGINE_REMOTE_ADDR}/call/lambda/${lambda.id}`
+    call.httpCall = hCall
+    extension.call = call
+    extension.order = 85
+    extension.finalizes = true
+    extension.responds = true
+
+    const eventSelector = {} as components['schemas']['EventSelector']
+    eventSelector.namespaces = [resourceNamespace]
+    eventSelector.resources = [resourceName]
+    eventSelector.actions = ['CREATE']
+    extension.selector = eventSelector
+
+    return extension
+}
+
 function prepareExtensionFromRule(rule: ResourceRule): Extension {
     const extension = {} as Extension
     extension.name = `${EXTENSION_NAME}_rule_${rule.namespace}_${rule.resource}`
@@ -202,9 +261,5 @@ async function storeModule(record: Module) {
 
     await new Promise((resolve: any, reject) => {
         stream.pipe(extract(destination)).on('error', reject).on('close', resolve)
-
-        // stream.on('end', () => {
-            // resolve()
-        // })
     })
 }

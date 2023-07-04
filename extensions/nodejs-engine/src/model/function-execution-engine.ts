@@ -1,6 +1,11 @@
 
 
 
+export const FunctionExecutionEngineResource = {
+    resource: "FunctionExecutionEngine",
+    namespace: "logic",
+};
+
 // Sub Types
 
 // Resource Type

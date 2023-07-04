@@ -1,7 +1,7 @@
 {
   "name": "@apibrew/client",
   "private": false,
-  "version": "1.0.19",
+  "version": "1.0.24",
   "description": "Client library for API Brew client",
   "scripts": {
     "generate-model": "apbr generate --namespace=logic --platform=typescript --path=src/model/logic;apbr generate --namespace=system --platform=typescript --path=src/model/system",

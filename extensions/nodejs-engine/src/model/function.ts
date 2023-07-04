@@ -5,6 +5,11 @@ import { FunctionExecutionEngine } from "./function-execution-engine";
 import { Module } from "./module";
 
 
+export const FunctionResource = {
+    resource: "Function",
+    namespace: "logic",
+};
+
 // Sub Types
 
 export interface Options {

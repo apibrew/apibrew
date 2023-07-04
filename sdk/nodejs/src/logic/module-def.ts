@@ -1,3 +1,5 @@
+import { Module } from "../model"
+
 export interface ModuleBackendParams {
     authentication?: {
         username: string
@@ -16,20 +18,20 @@ export interface ModuleInitFunctionParams {
 
 export type ModuleInitFunction = (params: ModuleInitFunctionParams) => Promise<void>
 
-let moduleId: string
+let module: Module
 
 let moduleRegistry: Record<string, any> = {}
 
-export async function setModuleId(_moduleId: string) {
-    moduleId = _moduleId
+export async function setModule(_module: Module) {
+    module = _module
 }
 
-export function getModuleId() {
-    if (!moduleId) {
+export function getModule() {
+    if (!module) {
         throw new Error('Module not inited')
     }
 
-    return moduleId
+    return module
 }
 
 export function registerModuleChild(name: string, element: any) {

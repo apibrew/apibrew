@@ -36,25 +36,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getModuleChild = exports.registerModuleChild = exports.getModuleId = exports.setModuleId = void 0;
-var moduleId;
+exports.getModuleChild = exports.registerModuleChild = exports.getModule = exports.setModule = void 0;
+var module;
 var moduleRegistry = {};
-function setModuleId(_moduleId) {
+function setModule(_module) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            moduleId = _moduleId;
+            module = _module;
             return [2 /*return*/];
         });
     });
 }
-exports.setModuleId = setModuleId;
-function getModuleId() {
-    if (!moduleId) {
+exports.setModule = setModule;
+function getModule() {
+    if (!module) {
         throw new Error('Module not inited');
     }
-    return moduleId;
+    return module;
 }
-exports.getModuleId = getModuleId;
+exports.getModule = getModule;
 function registerModuleChild(name, element) {
     moduleRegistry[name] = element;
 }

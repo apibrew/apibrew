@@ -3,6 +3,7 @@ import { functionMap, functionNameIdMap } from "./function-registry"
 import { Function } from './model/function'
 import { FN_DIR } from "./config"
 import { apbrClient } from "./client"
+import { Lambda } from "./model/lambda"
 
 export function locateFunction(packageName: string, name: string): Function {
     return functionMap[packageName + '/' + name]
@@ -39,4 +40,8 @@ export async function executeFunction<R>(fn: Function, params: object): Promise<
     const result = await (vm.runFile(FN_DIR + `/${fnId}.js`).result as Promise<R>)
 
     return result
+}
+
+export async function executeLambda<R>(lambda: Lambda, entity: any): Promise<R> {
+    return executeFunction<R>(lambda.function, entity)
 }

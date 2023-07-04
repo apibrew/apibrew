@@ -3,6 +3,11 @@
 import { FunctionExecutionEngine } from "./function-execution-engine";
 
 
+export const ModuleResource = {
+    resource: "Module",
+    namespace: "logic",
+};
+
 // Sub Types
 
 // Resource Type
