@@ -49,11 +49,10 @@ function run() {
                 case 1:
                     _a.sent();
                     client_1.Client.setDefaultClient(client);
-                    (0, logic_1.setModuleId)('a0ff7cce-16ae-11ee-8665-c6aac64f19b2');
-                    (0, logic_1.defineFunction)({
-                        package: 'test',
-                        name: 'Test1',
-                    }, function (params) {
+                    (0, logic_1.setModule)({
+                        id: 'a0ff7cce-16ae-11ee-8665-c6aac64f19b2'
+                    });
+                    (0, logic_1.defineFunction)('test', [], function (params) {
                         console.log('I am running');
                         return 123;
                     });

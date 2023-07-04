@@ -1,4 +1,4 @@
-import { Argument, Function } from '../model/logic/function';
+import { Argument } from '../model/logic/function';
 export interface FunctionParams {
     [key: string]: any;
 }
@@ -8,4 +8,4 @@ export interface FunctionProps {
     name: string;
     args?: Argument[];
 }
-export declare function defineFunction<T>(funcProps: Partial<Function>, fn: FunctionDef<T>): void;
+export declare function defineFunction<T>(name: string, args: string[], fn: FunctionDef<T>): void;

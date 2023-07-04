@@ -1,25 +1,40 @@
 import axios from "axios";
 import { test1, test2 } from "./functions.js";
-import { defineFunction } from "@apibrew/client/dist/logic/function-def.js";
+import { LogicDef } from "@apibrew/client";
 
-defineFunction({
-    package: 'test',
-    name: 'Test1',
-}, test1)
+LogicDef.defineFunction('Test1', [], test2)
 
-defineFunction({
-    package: 'test',
-    name: 'Test2',
-}, test2)
+LogicDef.defineFunction('Test2', [], test2)
 
-defineFunction({
-    package: 'test',
-    name: 'Test3',
-    args: [{
-        name: 'a'
-    }, {
-        name: 'b'
+LogicDef.defineFunction('Test3', ['a', 'b'], ({ a, b }) => {
+    return a + b + '33xx'
+})
+
+LogicDef.defineResource({
+    name: 'SimpleEventObject',
+    properties: [{
+        name: 'action',
+        type: 'ENUM',
+        enumValues: [
+            'AcceptPayment',
+            'RejectPayment',
+            'CancelPayment',
+            'RefundPayment',
+        ] as any
     }]
-}, ({ a, b }) => {
-    return a + b  + '33xx'
+})
+
+LogicDef.defineLambda('TestLambda', 'SimpleEventObject:AcceptPayment', (element) => {
+    LogicDef.fireLambda('SimpleEventObject:RejectPayment', {})
+})
+
+LogicDef.defineLambda('TestLambda', 'SimpleEventObject:RejectPayment', (element) => {
+    console.log('Lambda triggered 2')
+})
+
+LogicDef.defineFunction('TriggerLambda', [], ({ a, b }) => {
+
+    LogicDef.fireLambda('SimpleEventObject:AcceptPayment', {})
+
+    return 'ok'
 })

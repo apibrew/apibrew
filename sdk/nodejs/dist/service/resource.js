@@ -39,170 +39,167 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResourceService = void 0;
+exports.migrate = exports.save = exports.getByName = exports.get = exports.remove = exports.update = exports.create = exports.list = void 0;
 var axios_1 = __importDefault(require("axios"));
-var ResourceService;
-(function (ResourceService) {
-    function list(config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources"), {
-                            headers: {
-                                Authorization: "Bearer ".concat(config.token)
-                            }
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.data.resources];
-                }
-            });
-        });
-    }
-    ResourceService.list = list;
-    function create(config, resource) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, axios_1.default.post("".concat(config.backendUrl, "/system/resources"), {
-                            resources: [resource],
-                            doMigration: true,
-                            forceMigration: true
-                        }, {
-                            headers: {
-                                Authorization: "Bearer ".concat(config.token)
-                            }
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.data];
-                }
-            });
-        });
-    }
-    ResourceService.create = create;
-    function update(config, resource) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, axios_1.default.put("".concat(config.backendUrl, "/system/resources"), {
-                            resources: [resource],
-                            doMigration: true,
-                            forceMigration: true
-                        }, {
-                            headers: {
-                                Authorization: "Bearer ".concat(config.token)
-                            }
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.data];
-                }
-            });
-        });
-    }
-    ResourceService.update = update;
-    function remove(config, resource, forceMigrate) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, axios_1.default.delete("".concat(config.backendUrl, "/system/resources"), {
-                            data: {
-                                doMigration: true,
-                                forceMigration: forceMigrate,
-                                ids: [resource.id]
-                            },
-                            headers: {
-                                Authorization: "Bearer ".concat(config.token)
-                            }
-                        })];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    }
-    ResourceService.remove = remove;
-    function get(config, resourceId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources/").concat(resourceId), {
-                            headers: {
-                                Authorization: "Bearer ".concat(config.token)
-                            }
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.data];
-                }
-            });
-        });
-    }
-    ResourceService.get = get;
-    function getByName(config, resourceName, namespace) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!namespace) {
-                            namespace = 'default';
+function list(config) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources"), {
+                        headers: {
+                            Authorization: "Bearer ".concat(config.token)
                         }
-                        return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources/").concat(namespace, "/").concat(resourceName), {
-                                headers: {
-                                    Authorization: "Bearer ".concat(config.token)
-                                }
-                            })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.data.resource];
-                }
-            });
+                    })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, result.data.resources];
+            }
         });
-    }
-    ResourceService.getByName = getByName;
-    function save(config, resource) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!resource.id) return [3 /*break*/, 2];
-                        return [4 /*yield*/, update(config, resource)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                    case 2: return [4 /*yield*/, create(config, resource)];
-                    case 3: return [2 /*return*/, _a.sent()];
-                }
-            });
+    });
+}
+exports.list = list;
+function create(config, resource) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.post("".concat(config.backendUrl, "/system/resources"), {
+                        resources: [resource],
+                        doMigration: true,
+                        forceMigration: true
+                    }, {
+                        headers: {
+                            Authorization: "Bearer ".concat(config.token)
+                        }
+                    })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, result.data];
+            }
         });
-    }
-    ResourceService.save = save;
-    function migrate(config, resource) {
-        return __awaiter(this, void 0, void 0, function () {
-            var e_1, existingResource;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 5]);
-                        return [4 /*yield*/, create(config, resource)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                    case 2:
-                        e_1 = _a.sent();
-                        return [4 /*yield*/, getByName(config, resource.name, resource.namespace)];
-                    case 3:
-                        existingResource = _a.sent();
-                        resource.id = existingResource.id;
-                        return [4 /*yield*/, update(config, resource)];
-                    case 4: return [2 /*return*/, _a.sent()];
-                    case 5: return [2 /*return*/];
-                }
-            });
+    });
+}
+exports.create = create;
+function update(config, resource) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.put("".concat(config.backendUrl, "/system/resources"), {
+                        resources: [resource],
+                        doMigration: true,
+                        forceMigration: true
+                    }, {
+                        headers: {
+                            Authorization: "Bearer ".concat(config.token)
+                        }
+                    })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, result.data];
+            }
         });
-    }
-    ResourceService.migrate = migrate;
-})(ResourceService = exports.ResourceService || (exports.ResourceService = {}));
+    });
+}
+exports.update = update;
+function remove(config, resource, forceMigrate) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.delete("".concat(config.backendUrl, "/system/resources"), {
+                        data: {
+                            doMigration: true,
+                            forceMigration: forceMigrate,
+                            ids: [resource.id]
+                        },
+                        headers: {
+                            Authorization: "Bearer ".concat(config.token)
+                        }
+                    })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.remove = remove;
+function get(config, resourceId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources/").concat(resourceId), {
+                        headers: {
+                            Authorization: "Bearer ".concat(config.token)
+                        }
+                    })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, result.data];
+            }
+        });
+    });
+}
+exports.get = get;
+function getByName(config, resourceName, namespace) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!namespace) {
+                        namespace = 'default';
+                    }
+                    return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources/").concat(namespace, "/").concat(resourceName), {
+                            headers: {
+                                Authorization: "Bearer ".concat(config.token)
+                            }
+                        })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, result.data.resource];
+            }
+        });
+    });
+}
+exports.getByName = getByName;
+function save(config, resource) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!resource.id) return [3 /*break*/, 2];
+                    return [4 /*yield*/, update(config, resource)];
+                case 1: return [2 /*return*/, _a.sent()];
+                case 2: return [4 /*yield*/, create(config, resource)];
+                case 3: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
+}
+exports.save = save;
+function migrate(config, resource) {
+    return __awaiter(this, void 0, void 0, function () {
+        var e_1, existingResource;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 5]);
+                    return [4 /*yield*/, create(config, resource)];
+                case 1: return [2 /*return*/, _a.sent()];
+                case 2:
+                    e_1 = _a.sent();
+                    return [4 /*yield*/, getByName(config, resource.name, resource.namespace)];
+                case 3:
+                    existingResource = _a.sent();
+                    resource.id = existingResource.id;
+                    return [4 /*yield*/, update(config, resource)];
+                case 4: return [2 /*return*/, _a.sent()];
+                case 5: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.migrate = migrate;

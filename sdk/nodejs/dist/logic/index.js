@@ -17,3 +17,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./function-def"), exports);
 __exportStar(require("./lambda-def"), exports);
 __exportStar(require("./module-def"), exports);
+__exportStar(require("./record-def"), exports);
+__exportStar(require("./resource-def"), exports);

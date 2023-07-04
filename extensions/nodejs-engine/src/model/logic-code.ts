@@ -1,6 +1,11 @@
 
 
 
+export const LogicCodeResource = {
+    resource: "LogicCode",
+    namespace: "logic",
+};
+
 // Sub Types
 
 export interface Expression {

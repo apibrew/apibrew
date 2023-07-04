@@ -3,6 +3,11 @@
 import { Function } from "./function";
 
 
+export const ResourceRuleResource = {
+    resource: "ResourceRule",
+    namespace: "logic",
+};
+
 // Sub Types
 
 // Resource Type

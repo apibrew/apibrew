@@ -1,6 +1,6 @@
 import { Client } from '../client';
 import { Argument, Function, FunctionArgsName, FunctionResource } from '../model/logic/function'
-import { getModuleId, registerModuleChild } from './module-def';
+import { getModule, registerModuleChild } from './module-def';
 
 export interface FunctionParams {
     [key: string]: any
@@ -14,15 +14,23 @@ export interface FunctionProps {
     args?: Argument[];
 }
 
-export function defineFunction<T>(funcProps: Partial<Function>, fn: FunctionDef<T>) {
+export function defineFunction<T>(name: string, args: string[], fn: FunctionDef<T>) {
     const client = Client.getDefaultClient()
 
     const functionRepository = client.newRepository(FunctionResource)
 
+    const module = getModule()
+
     functionRepository.apply({
-        ...funcProps,
+        package: module.package,
+        name: name,
+        args: args.map(arg => {
+            return {
+                name: arg
+            }
+        }),
         module: {
-            id: getModuleId()
+            id: module.id,
         },
         engine: {
             name: 'nodejs-engine'
@@ -33,5 +41,5 @@ export function defineFunction<T>(funcProps: Partial<Function>, fn: FunctionDef<
         console.error(err)
     })
 
-    registerModuleChild(funcProps.name!, fn)
+    registerModuleChild(name, fn)
 }

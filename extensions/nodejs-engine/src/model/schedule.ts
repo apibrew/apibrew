@@ -3,6 +3,11 @@
 import { Function } from "./function";
 
 
+export const ScheduleResource = {
+    resource: "Schedule",
+    namespace: "logic",
+};
+
 // Sub Types
 
 // Resource Type

@@ -1,22 +1,28 @@
-import {Function} from "./function";
 
+
+import { Function } from "./function";
+
+
+export const FunctionTriggerResource = {
+    resource: "FunctionTrigger",
+    namespace: "logic",
+};
 
 // Sub Types
 
 // Resource Type
 export interface FunctionTrigger {
     id: string;
-    name: string;
-    resource: string;
-    namespace: string;
-    action: 'create' | 'update' | 'delete' | 'list' | 'get';
-    order?: 'before' | 'after' | 'instead';
-    async: boolean;
-    function: Function;
-    version: number;
+name: string;
+resource: string;
+namespace: string;
+action: 'create' | 'update' | 'delete' | 'list' | 'get';
+order?: 'before' | 'after' | 'instead';
+async: boolean;
+function: Function;
+version: number;
 
 }
-
 // Resource and Property Names
 export const FunctionTriggerName = "FunctionTrigger";
 
@@ -37,3 +43,5 @@ export const FunctionTriggerAsyncName = "Async";
 export const FunctionTriggerFunctionName = "Function";
 
 export const FunctionTriggerVersionName = "Version";
+
+

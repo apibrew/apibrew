@@ -1,3 +1,4 @@
+import { Module } from "../model";
 export interface ModuleBackendParams {
     authentication?: {
         username: string;
@@ -11,7 +12,7 @@ export interface ModuleInitFunctionParams {
     moduleId: string;
 }
 export type ModuleInitFunction = (params: ModuleInitFunctionParams) => Promise<void>;
-export declare function setModuleId(_moduleId: string): Promise<void>;
-export declare function getModuleId(): string;
+export declare function setModule(_module: Module): Promise<void>;
+export declare function getModule(): Module;
 export declare function registerModuleChild(name: string, element: any): void;
 export declare function getModuleChild(name: string): any;

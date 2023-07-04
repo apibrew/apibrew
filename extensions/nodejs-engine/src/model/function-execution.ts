@@ -3,6 +3,11 @@
 import { Function } from "./function";
 
 
+export const FunctionExecutionResource = {
+    resource: "FunctionExecution",
+    namespace: "logic",
+};
+
 // Sub Types
 
 // Resource Type

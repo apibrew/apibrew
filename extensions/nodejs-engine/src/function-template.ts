@@ -23,9 +23,9 @@ exports.result = fn(params)
 export const moduleFunctionTemplate = (record: Function) => `
 ${functionInitTemplate}
 
-const { FunctionParams, defineFunction, setModuleId, getModuleChild } = require('@apibrew/client').LogicDef;
+const { FunctionParams, defineFunction, setModule, getModuleChild } = require('@apibrew/client').LogicDef;
 
-setModuleId('${record.module.id}')
+setModule(${JSON.stringify(record.module)})
 
 const fnModule = require('./${record.module.id}/index.js')
 
@@ -37,9 +37,9 @@ exports.result = fn(params)
 export const moduleInitTemplate = (module: Module) => `
 ${functionInitTemplate}
 
-const { FunctionParams, defineFunction, setModuleId } = require('@apibrew/client').LogicDef;
+const { FunctionParams, defineFunction, setModule } = require('@apibrew/client').LogicDef;
 
-setModuleId('${module.id}')
+setModule(${JSON.stringify(module)})
 
 const fnModule = require('./index.js')
 
