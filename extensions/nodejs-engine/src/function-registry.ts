@@ -8,11 +8,12 @@ import { ResourceOperationRule, ResourceOperationTrigger } from "./const";
 import { Extension } from "./model";
 import { components } from './model/base-schema'
 import { Module, ModuleName } from "./model/module";
-import { scriptFunctionTemplate, moduleFunctionTemplate } from "./function-template";
+import { scriptFunctionTemplate, moduleFunctionTemplate, moduleInitTemplate } from "./function-template";
 import * as fs from 'fs'
 import path from "path";
 import { PassThrough } from "stream";
 import { Extract, extract } from 'tar-fs'
+import { initModule } from "./module-init";
 var mkdirp = require('mkdirp');
 
 
@@ -22,13 +23,52 @@ export let functionMap: { [key: string]: Function } = {}
 export let functionIdMap: { [key: string]: Function } = {}
 export let functionNameIdMap: { [key: string]: string } = {}
 
+export async function reloadFunction() {
+    console.log('Reload Function')
+    clearCache()
 
-export async function reloadInternal() {
     filter('logic', FunctionName, (record: Function) => record.engine.id === engineId)
     const functions = read<Function>('logic', FunctionName)
 
+    functionMap = {}
+    functionIdMap = {}
+    functions.forEach(async (record) => {
+        functionMap[record.package + '/' + record.name] = record
+        functionIdMap[record.id] = record
+        functionNameIdMap[record.package + '/' + record.name] = record.id
+
+        await storeFunction(record)
+    })
+}
+
+export async function reloadModules() {
+    clearCache()
+
     filter('logic', ModuleName, (record: Function) => record.engine.id === engineId)
     const modules = read<Module>('logic', ModuleName)
+
+    modules.forEach(async module => {
+        console.log('Store Module: ', module.id)
+        await storeModule(module)
+        console.log('Init Module: ', module.id)
+        await initModule(module)
+        console.log('Done Module: ', module.id)
+    })
+}
+
+export function clearCache() {
+    for (const cacheKey of Object.keys(require.cache)) {
+        if (cacheKey.startsWith(FN_DIR)) {
+            delete require.cache[cacheKey]
+        }
+    }
+}
+
+export async function reloadInternal() {
+    reloadFunction()
+    reloadModules()
+
+    const functions = read<Function>('logic', FunctionName)
 
     filter('logic', FunctionTriggerName, (record: FunctionTrigger) => functions.some(fn => fn.id === record.function.id))
     const triggers = read<FunctionTrigger>('logic', FunctionTriggerName)
@@ -41,20 +81,6 @@ export async function reloadInternal() {
             delete require.cache[cacheKey]
         }
     }
-
-    functionMap = {}
-    functionIdMap = {}
-    functions.forEach(async (record) => {
-        functionMap[record.package + '/' + record.name] = record
-        functionIdMap[record.id] = record
-        functionNameIdMap[record.package + '/' + record.name] = record.id
-
-        await storeFunction(record)
-    })
-
-    modules.forEach(async module => {
-        await storeModule(module)
-    })
 
     let extensions: Extension[] = []
 
@@ -168,5 +194,17 @@ async function storeModule(record: Module) {
 
     stream.end(content)
 
-    stream.pipe(extract(path.join(FN_DIR + '/', record.id)))
+    const destination = path.join(FN_DIR + '/', record.id)
+
+    fs.rmSync(destination, { recursive: true, force: true });
+
+    mkdirp.sync(destination)
+
+    await new Promise((resolve: any, reject) => {
+        stream.pipe(extract(destination)).on('error', reject).on('close', resolve)
+
+        // stream.on('end', () => {
+            // resolve()
+        // })
+    })
 }

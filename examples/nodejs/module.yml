@@ -8,35 +8,3 @@ properties:
   content:
     $folder: './dist'
     $format: tar
----
-type: record
-resource: Function
-namespace: logic
-properties:
-  package: Test
-  name: Test1
-  engine: 
-    name: nodejs-engine
-  module:
-    package: Test
----
-type: record
-resource: Function
-namespace: logic
-properties:
-  package: Test
-  name: Test2
-  engine: 
-    name: nodejs-engine
-  module:
-    package: Test
----
-type: record
-resource: Function
-namespace: logic
-properties:
-  package: Test
-  name: SayHello
-  engine: 
-    name: nodejs-engine
-  script: return 'hello'

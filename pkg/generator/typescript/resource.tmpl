@@ -3,6 +3,11 @@
 import { {{ToCamel .Reference.Resource}} } from "./{{ToDash .Reference.Resource}}";
 {{ end }}
 
+export const {{ToCamel $resource.Name}}Resource = {
+    resource: "{{$resource.Name}}",
+    namespace: "{{$resource.Namespace}}",
+};
+
 // Sub Types
 {{range $resource.Types}}
 export interface {{ToCamel .Name}} {
