@@ -19,3 +19,4 @@ __exportStar(require("./lambda-def"), exports);
 __exportStar(require("./module-def"), exports);
 __exportStar(require("./record-def"), exports);
 __exportStar(require("./resource-def"), exports);
+__exportStar(require("./trigger-def"), exports);

@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@apibrew/client@^1.0.24":
-  version "1.0.24"
-  resolved "https://registry.npmjs.org/@apibrew/client/-/client-1.0.24.tgz"
-  integrity sha512-OzTdZNI5yH0y7byH/MmI4G76jjhitTOoOCew8lb7D1XECxNiR4VDO/oaLULPhFanCCPYSN77o9Ft1vumIkN9XQ==
+"@apibrew/client@^1.0.25":
+  version "1.0.25"
+  resolved "https://registry.npmjs.org/@apibrew/client/-/client-1.0.25.tgz"
+  integrity sha512-RKMPqbjpoJKGlBSt+4Ytu0uTKdkflMagIpWSCYZLgJgALJrxYz7OVEB2T5p9xqzFfVba/dQrGjs2/2gwlfvzPQ==
   dependencies:
     axios "^1.4.0"
 

@@ -25,7 +25,7 @@ ${functionInitTemplate}
 
 const { FunctionParams, defineFunction, setModule, getModuleChild } = require('@apibrew/client').LogicDef;
 
-setModule(${JSON.stringify(record.module)})
+setModule(${JSON.stringify({id: record.module.id, package: record.module.package})})
 
 const fnModule = require('./${record.module.id}/index.js')
 
@@ -39,7 +39,7 @@ ${functionInitTemplate}
 
 const { FunctionParams, defineFunction, setModule } = require('@apibrew/client').LogicDef;
 
-setModule(${JSON.stringify(module)})
+setModule(${JSON.stringify({id: module.id, package: module.package})})
 
 const fnModule = require('./index.js')
 

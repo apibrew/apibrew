@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apibrew/client": "1.0.24",
+    "@apibrew/client": "1.0.25",
     "axios": "^1.4.0"
   },
   "devDependencies": {

@@ -10,6 +10,7 @@ export function locateFunction(packageName: string, name: string): Function {
 }
 
 export async function executeFunction<R>(fn: Function, params: object): Promise<R> {
+
     let fnId = fn.id
 
     if (!fnId) {

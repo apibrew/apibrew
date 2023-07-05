@@ -52,8 +52,13 @@ export async function reloadModules() {
         console.log('Store Module: ', module.id)
         await storeModule(module)
         console.log('Init Module: ', module.id)
-        await initModule(module)
-        console.log('Done Module: ', module.id)
+        try {
+            await initModule(module)
+            console.log('Done Module: ', module.id)
+        } catch (e) {
+            console.log('Error Module: ', module.id)
+            console.log(e)
+        }
     })
 }
 
@@ -240,6 +245,7 @@ async function storeFunction(record: Function) {
 
         fs.writeFileSync(path.join(FN_DIR + '/', record.id + '.js'), functionContent)
     } else if (record.module) {
+        record.module = read<Module>('logic', ModuleName).find(item => item.id === record.module.id)
         const functionContent = moduleFunctionTemplate(record)
 
         fs.writeFileSync(path.join(FN_DIR + '/', record.id + '.js'), functionContent)

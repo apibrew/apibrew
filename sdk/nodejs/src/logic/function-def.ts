@@ -1,4 +1,5 @@
 import { Client } from '../client';
+import { FunctionExecution, FunctionExecutionResource } from '../model';
 import { Argument, Function, FunctionArgsName, FunctionResource } from '../model/logic/function'
 import { getModule, registerModuleChild } from './module-def';
 
@@ -42,4 +43,26 @@ export function defineFunction<T>(name: string, args: string[], fn: FunctionDef<
     })
 
     registerModuleChild(name, fn)
+}
+
+export async function callFunction<T = any, R = any>(fnPackage: string, fnName: string, params: T): Promise<R> {
+    const client = Client.getDefaultClient()
+
+    const functionRepository = client.newRepository<FunctionExecution>(FunctionExecutionResource)
+
+    const result = await functionRepository.create({
+        id: '',
+        version: 1,
+        function: {
+            package: fnPackage,
+            name: fnName,
+        } as Function,
+        input: params,
+    } as FunctionExecution)
+
+    if (result.error) {
+        throw new Error(result.error as any)
+    }
+
+    return result.output as R
 }

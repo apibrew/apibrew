@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,62 +47,54 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.callFunction = exports.defineFunction = void 0;
+exports.defineTrigger = void 0;
 var client_1 = require("../client");
 var model_1 = require("../model");
-var function_1 = require("../model/logic/function");
 var module_def_1 = require("./module-def");
-function defineFunction(name, args, fn) {
+function defineTrigger(functionTrigger, fn) {
     var client = client_1.Client.getDefaultClient();
-    var functionRepository = client.newRepository(function_1.FunctionResource);
+    var functionRepository = client.newRepository(model_1.FunctionResource);
+    var triggerRepository = client.newRepository(model_1.FunctionTriggerResource);
     var module = (0, module_def_1.getModule)();
-    functionRepository.apply({
-        package: module.package,
-        name: name,
-        args: args.map(function (arg) {
-            return {
-                name: arg
-            };
-        }),
-        module: {
-            id: module.id,
-        },
-        engine: {
-            name: 'nodejs-engine'
-        }
-    }).then(function (resp) {
-        console.log(resp);
-    }, function (err) {
-        console.error(err);
-    });
-    (0, module_def_1.registerModuleChild)(name, fn);
-}
-exports.defineFunction = defineFunction;
-function callFunction(fnPackage, fnName, params) {
-    return __awaiter(this, void 0, void 0, function () {
-        var client, functionRepository, result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    client = client_1.Client.getDefaultClient();
-                    functionRepository = client.newRepository(model_1.FunctionExecutionResource);
-                    return [4 /*yield*/, functionRepository.create({
-                            id: '',
-                            version: 1,
-                            function: {
-                                package: fnPackage,
-                                name: fnName,
+    function createTrigger() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, functionRepository.apply({
+                            package: module.package,
+                            name: 'Trigger_' + functionTrigger.name,
+                            args: [{
+                                    name: 'element'
+                                }],
+                            module: {
+                                id: module.id,
                             },
-                            input: params,
+                            engine: {
+                                name: 'nodejs-engine'
+                            }
+                        }).then(function (resp) {
+                            console.log(resp);
+                        }, function (err) {
+                            console.error(err);
                         })];
-                case 1:
-                    result = _a.sent();
-                    if (result.error) {
-                        throw new Error(result.error);
-                    }
-                    return [2 /*return*/, result.output];
-            }
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, triggerRepository.apply(__assign(__assign({}, functionTrigger), { function: {
+                                    package: module.package,
+                                    name: 'Trigger_' + functionTrigger.name,
+                                } })).then(function (resp) {
+                                console.log(resp);
+                            }, function (err) {
+                                console.error(err);
+                            })];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
         });
-    });
+    }
+    createTrigger();
+    (0, module_def_1.registerModuleChild)('Trigger_' + functionTrigger.name, fn);
 }
-exports.callFunction = callFunction;
+exports.defineTrigger = defineTrigger;

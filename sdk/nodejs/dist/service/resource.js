@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.migrate = exports.save = exports.getByName = exports.get = exports.remove = exports.update = exports.create = exports.list = void 0;
+exports.apply = exports.save = exports.getByName = exports.get = exports.remove = exports.update = exports.create = exports.list = void 0;
 var axios_1 = __importDefault(require("axios"));
 function list(config) {
     return __awaiter(this, void 0, void 0, function () {
@@ -180,26 +180,26 @@ function save(config, resource) {
     });
 }
 exports.save = save;
-function migrate(config, resource) {
+function apply(config, resource) {
     return __awaiter(this, void 0, void 0, function () {
-        var e_1, existingResource;
+        var existingResource, e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 5]);
-                    return [4 /*yield*/, create(config, resource)];
-                case 1: return [2 /*return*/, _a.sent()];
-                case 2:
-                    e_1 = _a.sent();
+                    _a.trys.push([0, 3, , 5]);
                     return [4 /*yield*/, getByName(config, resource.name, resource.namespace)];
-                case 3:
+                case 1:
                     existingResource = _a.sent();
                     resource.id = existingResource.id;
                     return [4 /*yield*/, update(config, resource)];
+                case 2: return [2 /*return*/, _a.sent()];
+                case 3:
+                    e_1 = _a.sent();
+                    return [4 /*yield*/, create(config, resource)];
                 case 4: return [2 /*return*/, _a.sent()];
                 case 5: return [2 /*return*/];
             }
         });
     });
 }
-exports.migrate = migrate;
+exports.apply = apply;
