@@ -7,4 +7,4 @@ export declare function remove(config: ServiceConfig, resource: Resource, forceM
 export declare function get(config: ServiceConfig, resourceId: string): Promise<Resource>;
 export declare function getByName(config: ServiceConfig, resourceName: string, namespace?: string): Promise<Resource>;
 export declare function save(config: ServiceConfig, resource: Resource): Promise<Resource>;
-export declare function migrate(config: ServiceConfig, resource: Resource): Promise<Resource>;
+export declare function apply(config: ServiceConfig, resource: Resource): Promise<Resource>;

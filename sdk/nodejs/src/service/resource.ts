@@ -103,12 +103,13 @@ export async function save(config: ServiceConfig, resource: Resource): Promise<R
     }
 }
 
-export async function migrate(config: ServiceConfig, resource: Resource): Promise<Resource> {
+export async function apply(config: ServiceConfig, resource: Resource): Promise<Resource> {
     try {
-        return await create(config, resource)
-    } catch (e) {
         const existingResource = await getByName(config, resource.name, resource.namespace)
         resource.id = existingResource.id
+
         return await update(config, resource)
+    } catch (e) {
+        return await create(config, resource)
     }
 }

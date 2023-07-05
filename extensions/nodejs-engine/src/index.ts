@@ -8,6 +8,10 @@ import { Event } from "@apibrew/client";
 import { Lambda, LambdaResource } from "./model/lambda";
 import { executeLambda } from "./function-execute";
 
+process.on('uncaughtException', (err) => {
+    console.error('Asynchronous error caught.', err);
+});
+
 
 function init() {
     const promises = [
@@ -54,7 +58,11 @@ app.post('/call/lambda/:id', async (req, res) => {
     }
 
     for (const record of event.records) {
-        await executeLambda(lambda, record.properties)
+        try {
+            await executeLambda(lambda, record.properties)
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     res.send(event)
@@ -80,6 +88,9 @@ app.post('/reload', (req, res) => {
             load('logic', 'Lambda').then(() => {
                 reloadLambdas()
             })
+            break
+        case 'logic/FunctionExecution':
+            // ignore
             break
         default:
             init()

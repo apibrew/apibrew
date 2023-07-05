@@ -7,7 +7,6 @@ import { FN_DIR } from "./config"
 import { apbrClient } from "./client"
 
 export async function initModule(module: Module) {
-
     const moduleInitContent = moduleInitTemplate(module)
 
     fs.writeFileSync(path.join(FN_DIR + '/', module.id + '/module_init.js'), moduleInitContent)

@@ -23,6 +23,10 @@ export async function handleFunctionExecutionCall(event: Event) {
             const input = record.properties.input
             const fn = locateFunction(packageName, name)
 
+            if (!fn) {
+                throw new Error('Function not found')
+            }
+
             const output = (await executeFunction(fn, input) ?? { ok: true });
 
             record.properties.output = output
@@ -98,27 +102,33 @@ async function handleResourceOperationTrigger(event: Event): Promise<Event> {
 
     for (const record of event.records) {
         for (const trigger of triggers) {
-            console.log('Handling trigger', trigger.name)
-            const fn = functionIdMap[trigger.function.id]
+            try {
+                console.log('Handling trigger', trigger.name)
+                const fn = functionIdMap[trigger.function.id]
 
-            const entity = recordToEntity(record);
+                const entity = recordToEntity(record);
 
-            let output = await executeFunction(fn, {
-                entity: entity
-            })
+                let output = await executeFunction(fn, {
+                    entity: entity
+                })
 
-            console.log('output', output)
+                console.log('output', output)
 
-            if (!output) {
-                output = entity
+                if (!output) {
+                    output = entity
 
-            }
-
-            for (const property of event.resource.properties) {
-                if (output[property.name] === record.properties[property.name]) {
-                    continue
                 }
-                record.properties[property.name] = output[property.name]
+
+                for (const property of event.resource.properties) {
+                    if (output[property.name] === record.properties[property.name]) {
+                        continue
+                    }
+                    record.properties[property.name] = output[property.name]
+                }
+            } catch (e) {
+                console.error(e)
+
+                return undefined
             }
         }
     }
@@ -133,19 +143,23 @@ async function handleResourceOperationRule(event: Event): Promise<Event> {
 
     for (const record of event.records) {
         for (const rule of rules) {
-            console.log('Handling rule', rule.name)
-            const fn = functionIdMap[rule.conditionFunction.id]
+            try {
+                console.log('Handling rule', rule.name)
+                const fn = functionIdMap[rule.conditionFunction.id]
 
-            const entity = recordToEntity(record);
+                const entity = recordToEntity(record);
 
-            const output = await executeFunction(fn, {
-                entity: entity
-            })
+                const output = await executeFunction(fn, {
+                    entity: entity
+                })
 
-            console.log('output', output)
+                console.log('output', output)
 
-            if (output === false) {
-                throw new Error(`Rule condition failed: ${rule.name}`)
+                if (output === false) {
+                    throw new Error(`Rule condition failed: ${rule.name}`)
+                }
+            } catch (e) {
+                throw new Error(`Rule condition failed: ${e.message}`)
             }
         }
     }

@@ -9,3 +9,4 @@ export interface FunctionProps {
     args?: Argument[];
 }
 export declare function defineFunction<T>(name: string, args: string[], fn: FunctionDef<T>): void;
+export declare function callFunction<T = any, R = any>(fnPackage: string, fnName: string, params: T): Promise<R>;
