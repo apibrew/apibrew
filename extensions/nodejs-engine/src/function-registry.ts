@@ -13,7 +13,7 @@ import { PassThrough } from "stream";
 import { Extract, extract } from 'tar-fs'
 import { initModule } from "./module-init";
 import { Lambda, LambdaNameName, LambdaResource } from "./model/lambda";
-import { functionRepository, lambdaRepository, moduleRepository } from "./client";
+import { functionRepository, lambdaRepository, moduleRepository, resourceRuleRpository, triggerRepository } from "./client";
 import { FunctionExecution } from "@apibrew/client";
 var mkdirp = require('mkdirp');
 
@@ -65,87 +65,69 @@ export async function registerLambda(lambda: Lambda) {
     const extension = prepareExtensionFromLambda(lambda)
 
     await registerExtensions([extension])
-    
+
     lambdaIdMap[lambda.id] = lambda
 }
 
 export async function registerFunctionTrigger(trigger: FunctionTrigger) {
+    const extension = prepareExtensionFromTrigger(trigger)
 
+    console.log('registerFunctionTrigger', extension)
+
+    await registerExtensions([extension])
+
+    console.log('registerFunctionTrigger done', extension)
 }
 
 export async function registerResourceRule(rule: ResourceRule) {
+    const extension = prepareExtensionFromRule(rule)
 
+    await registerExtensions([extension])
 }
 
 export async function loadAll() {
     console.log('begin load all')
+    console.debug('begin to load modules')
 
     const modules$ = await moduleRepository.list()
+    console.debug('modules loaded: ', modules$.content.length)
     const modules = modules$.content.filter(module => module.engine.id === engineId)
 
+    console.debug('modules filtered: ', modules.length)
     for (const module of modules) {
         await registerModule(module)
     }
 
-    console.log('load functions')
     const functions$ = await functionRepository.list()
     const functions = functions$.content.filter(fn => fn.engine.id === engineId)
 
-    console.log('registering functions')
     for (const fn of functions) {
         await registerFunction(fn)
     }
 
     const lambdas$ = await lambdaRepository.list()
-
     const lambdas = lambdas$.content.filter(lambda => functionIdMap[lambda.function.id])
 
     for (const lambda of lambdas) {
         await registerLambda(lambda)
     }
 
-    // load functions
-    // load modules
-    // load lambdas
-    // load triggers
-    // load rules
-    // register extensions
+    const triggers$ = await triggerRepository.list()
+    console.debug('triggers loaded: ', triggers$.content.length)
+    const triggers = triggers$.content.filter(trigger => functionIdMap[trigger.function.id])
+    console.debug('triggers filtered: ', triggers.length)
 
-    // reloadFunction()
-    // reloadModules()
-    // reloadLambdas()
+    for (const trigger of triggers) {
+        await registerFunctionTrigger(trigger)
+    }
 
-    // const functions = read<Function>('logic', FunctionName)
 
-    // filter('logic', FunctionTriggerName, (record: FunctionTrigger) => functions.some(fn => fn.id === record.function.id))
-    // const triggers = read<FunctionTrigger>('logic', FunctionTriggerName)
+    const rules$ = await resourceRuleRpository.list()
+    const rules = rules$.content.filter(trigger => functionIdMap[trigger.conditionFunction.id])
 
-    // filter('logic', ResourceRuleName, (record: ResourceRule) => functions.some(fn => fn.id === record.conditionFunction.id))
-    // const rules = read<ResourceRule>('logic', ResourceRuleName)
-
-    // for (const cacheKey of Object.keys(require.cache)) {
-    //     if (cacheKey.startsWith(FN_DIR)) {
-    //         delete require.cache[cacheKey]
-    //     }
-    // }
-
-    // let extensions: Extension[] = []
-
-    // for (const trigger of triggers) {
-    //     extensions.push(prepareExtensionFromTrigger(trigger))
-    // }
-
-    // for (const rule of rules) {
-    //     extensions.push(prepareExtensionFromRule(rule))
-    // }
-
-    // extensions = extensions.filter((item, index) => extensions.findIndex(item2 => JSON.stringify(item) === JSON.stringify(item2)) === index)
-
-    // await registerExtensions(extensions)
-
-    // console.log('Configuring extensions: ', extensions.map(item => item.name))
-
-    console.log('end load all')
+    for (const rule of rules) {
+        await registerResourceRule(rule)
+    }
 }
 
 function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
@@ -159,6 +141,7 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
     call.httpCall = hCall
     extension.call = call
     extension.responds = true
+    extension.finalizes = false
 
     if (trigger.order) {
         switch (trigger.order) {
@@ -173,7 +156,11 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
                 extension.order = 80
                 extension.finalizes = true
                 break
+            default:
+                throw new Error('Unknown order: ' + trigger.order)
         }
+    } else {
+        extension.order = 200
     }
 
     const eventSelector = {} as components['schemas']['EventSelector']

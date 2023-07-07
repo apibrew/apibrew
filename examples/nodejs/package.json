@@ -9,13 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apibrew/client": "1.0.25",
+    "@apibrew/client": "^1.0.52",
     "axios": "^1.4.0"
   },
   "devDependencies": {
-    "typescript": "^5.1.3",
     "@types/node": "^20.2.5",
     "concurrently": "^8.0.1",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "typescript": "^5.1.3"
   }
 }

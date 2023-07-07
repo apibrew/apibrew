@@ -71,9 +71,6 @@ function list(config, namespace, resource) {
 }
 exports.list = list;
 function resourceUrl(config, namespace, resource) {
-    if (namespace === 'system') {
-        return "".concat(config.backendUrl, "/system/").concat(resource);
-    }
     return "".concat(config.backendUrl, "/records/").concat(namespace, "/").concat(resource);
 }
 function create(config, namespace, resource, record) {

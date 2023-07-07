@@ -21,22 +21,31 @@ async function registerFunctionEngine() {
 }
 
 export async function registerExtensions(extensions: Extension[]) {
+    console.log('registerExtensions called[first line]')
     const existingExtensions = (await extensionRepository.list()).content
 
+    if (extensions.length === 0) {
+        console.log('No extensions to register')
+        return
+    }
+
     for (const extension of extensions) {
+        console.log('registerExtensions called', extension.name)
         let found = false
 
         for (const existing of existingExtensions) {
             if (existing.name === extension.name) {
-                console.log('updating extension')
-                await extensionRepository.apply(extension)
+                console.log('updating extension', extension.name)
+                const result = await extensionRepository.apply(extension)
+                console.log('updating extension done', result)
                 found = true
             }
         }
 
         if (!found) {
-            console.log('creating extension')
-            await extensionRepository.create(extension)
+            console.log('creating extension', extension.name)
+            const result = await extensionRepository.create(extension)
+            console.log('creating extension done', result)
         }
     }
 }
