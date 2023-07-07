@@ -74,7 +74,10 @@ func (r *recordLister) Prepare() errors.ServiceError {
 		if err != nil {
 			return err
 		}
-		r.builder.Where(where)
+
+		if where != "" {
+			r.builder.Where(where)
+		}
 	}
 
 	if r.Limit == 0 {

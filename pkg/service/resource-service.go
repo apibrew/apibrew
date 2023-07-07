@@ -31,6 +31,11 @@ func (r *resourceService) GetSchema() *abs.Schema {
 }
 
 func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError) {
+	r.mu.Lock()
+	defer func() {
+		r.mu.Unlock()
+	}()
+
 	var result []*model.ResourceMigrationPlan
 
 	for _, resource := range resources {
@@ -62,6 +67,11 @@ func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, reso
 }
 
 func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError {
+	r.mu.Lock()
+	defer func() {
+		r.mu.Unlock()
+	}()
+
 	records, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourceResource, abs.ListRecordParams{
 		Limit: 1000000,
 		ResolveReferences: []string{
@@ -306,6 +316,11 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 }
 
 func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMigrationPlan) errors.ServiceError {
+	r.mu.Lock()
+	defer func() {
+		r.mu.Unlock()
+	}()
+
 	var currentPropertyMap = util.GetNamedMap(plan.CurrentResource.Properties)
 	var existingPropertyMap = util.GetNamedMap(plan.ExistingResource.Properties)
 
@@ -401,6 +416,11 @@ func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMig
 }
 
 func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
+	r.mu.Lock()
+	defer func() {
+		r.mu.Unlock()
+	}()
+
 	if resource.Namespace == "" {
 		resource.Namespace = "default"
 	}
@@ -702,6 +722,11 @@ func (r *resourceService) Init(_ *model.InitData) {
 }
 
 func (r *resourceService) MigrateResource(resource *model.Resource) {
+	r.mu.Lock()
+	defer func() {
+		r.mu.Unlock()
+	}()
+
 	if resource.Annotations == nil {
 		resource.Annotations = make(map[string]string)
 	}
@@ -741,6 +766,11 @@ func (r *resourceService) MigrateResource(resource *model.Resource) {
 }
 
 func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
+	r.mu.Lock()
+	defer func() {
+		r.mu.Unlock()
+	}()
+
 	for _, resourceId := range ids {
 		resource := r.Get(ctx, resourceId)
 

@@ -32,6 +32,14 @@ func (u *ExtensionServer) Update(ctx context.Context, request *stub.UpdateExtens
 	}, util.ToStatusError(err)
 }
 
+func (u *ExtensionServer) Apply(ctx context.Context, request *stub.ApplyExtensionRequest) (*stub.ApplyExtensionResponse, error) {
+	Extensions, err := u.service.Update(ctx, request.Extensions)
+
+	return &stub.ApplyExtensionResponse{
+		Extensions: Extensions,
+	}, util.ToStatusError(err)
+}
+
 func (u *ExtensionServer) Delete(ctx context.Context, request *stub.DeleteExtensionRequest) (*stub.DeleteExtensionResponse, error) {
 	err := u.service.Delete(ctx, request.Ids)
 

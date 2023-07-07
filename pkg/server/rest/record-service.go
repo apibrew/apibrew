@@ -27,6 +27,13 @@ func (r *recordService) Create(ctx context.Context, request *rest.CreateRecordRe
 		return nil, util.ToStatusError(err)
 	}
 
+	if records == nil {
+		return &rest.CreateRecordResponse{
+			Id:         "",
+			Properties: nil,
+		}, util.ToStatusError(err)
+	}
+
 	return &rest.CreateRecordResponse{
 		Id:         records[0].Id,
 		Properties: records[0].Properties,
@@ -46,6 +53,12 @@ func (r *recordService) Apply(ctx context.Context, request *rest.ApplyRecordRequ
 		return nil, util.ToStatusError(err)
 	}
 
+	if records == nil {
+		return &rest.ApplyRecordResponse{
+			Properties: nil,
+		}, util.ToStatusError(err)
+	}
+
 	return &rest.ApplyRecordResponse{
 		Properties: records[0].Properties,
 	}, util.ToStatusError(err)
@@ -63,6 +76,12 @@ func (r *recordService) Update(ctx context.Context, request *rest.UpdateRecordRe
 
 	if err != nil {
 		return nil, util.ToStatusError(err)
+	}
+
+	if records == nil {
+		return &rest.UpdateRecordResponse{
+			Properties: nil,
+		}, util.ToStatusError(err)
 	}
 
 	return &rest.UpdateRecordResponse{

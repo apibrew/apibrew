@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { type Resource } from '../model'
 import { ServiceConfig } from './config'
+import { isObjectModified } from '../util'
 
 interface ResourceListContainer {
     resources: Resource[]
@@ -108,8 +109,14 @@ export async function apply(config: ServiceConfig, resource: Resource): Promise<
         const existingResource = await getByName(config, resource.name, resource.namespace)
         resource.id = existingResource.id
 
+        if (!isObjectModified(existingResource, resource)) {
+            return existingResource
+        }
+
+        console.log('Updating resource', resource.name)
         return await update(config, resource)
     } catch (e) {
+        console.log('Creating resource', resource.name)
         return await create(config, resource)
     }
 }

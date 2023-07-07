@@ -31,6 +31,12 @@ service Extension {
       body: "*"
     };
   }
+  rpc Apply (ApplyExtensionRequest) returns (ApplyExtensionResponse) {
+    option (google.api.http) = {
+      patch: "/system/extensions",
+      body: "*"
+    };
+  }
   rpc Delete (DeleteExtensionRequest) returns (DeleteExtensionResponse) {
     option (google.api.http) = {
       delete: "/system/extensions",
@@ -71,6 +77,15 @@ message UpdateExtensionRequest {
 }
 
 message UpdateExtensionResponse {
+  repeated model.Extension extensions = 1;
+}
+
+message ApplyExtensionRequest {
+  string token = 1;
+  repeated model.Extension extensions = 2;
+}
+
+message ApplyExtensionResponse {
   repeated model.Extension extensions = 1;
 }
 

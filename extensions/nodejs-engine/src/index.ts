@@ -1,32 +1,21 @@
-import { initExtensions } from "./registrator";
-import { load, read } from "./store";
-import { reloadFunction, reloadInternal, reloadLambdas, reloadModules } from "./function-registry";
+import { loadAll } from "./function-registry";
 import express from 'express';
-import { components } from "./model/base-schema";
-import { handleFunctionExecutionCall } from './handler'
+
+import { handleFunctionCall, handleLambdaCall, handleReload } from './handler'
 import { Event } from "@apibrew/client";
-import { Lambda, LambdaResource } from "./model/lambda";
-import { executeLambda } from "./function-execute";
+import { initExtensions } from "./registrator";
+import { AxiosError } from "axios";
 
 process.on('uncaughtException', (err) => {
     console.error('Asynchronous error caught.', err);
 });
 
 
-function init() {
-    const promises = [
-        initExtensions(),
-        load('logic', 'Module'),
-        load('logic', 'Function'),
-        load('logic', 'Lambda'),
-        load('logic', 'FunctionTrigger'),
-        load('logic', 'ResourceRule'),
-    ]
+async function init() {
+    await initExtensions()
+    await loadAll()
 
-    Promise.all(promises).then(() => {
-        console.log('All resources loaded')
-        reloadInternal()
-    })
+    console.log('ready')
 }
 
 init()
@@ -37,65 +26,23 @@ const port = 23619
 app.use(express.json({ limit: '5000mb' }));
 app.use(express.urlencoded({ limit: '5000mb' }));
 
-app.post('/call/function', (req, res) => {
-    const event = req.body as components['schemas']['Event']
+app.post('/call/function', async (req, res) => {
+    const result = await handleFunctionCall(req.body as Event)
 
-    handleFunctionExecutionCall(event).then((result) => {
-        res.send(result)
-    })
+    res.send(result)
 })
 
 app.post('/call/lambda/:id', async (req, res) => {
     const event = req.body as Event
-
-    const lambdas = read<Lambda>(LambdaResource.namespace, LambdaResource.resource)
-
-    const lambda = lambdas.find(lambda => lambda.id === req.params.id)
-
-    if (!lambda) {
-        res.status(404).send('Lambda not found')
-        return
-    }
-
-    for (const record of event.records) {
-        try {
-            await executeLambda(lambda, record.properties)
-        } catch (e) {
-            console.error(e)
-        }
-    }
+    const result = await handleLambdaCall(event, req.params.id)
 
     res.send(event)
 })
 
-app.post('/reload', (req, res) => {
-    console.log('trigger reload')
-    const event = req.body as Event
-    // init()
-
-    switch (`${event.resource.namespace}/${event.resource.name}`) {
-        case 'logic/Function':
-            load('logic', 'Function').then(() => {
-                reloadFunction()
-            })
-            break
-        case 'logic/Module':
-            load('logic', 'Module').then(() => {
-                reloadModules()
-            })
-            break
-        case 'logic/Lambda':
-            load('logic', 'Lambda').then(() => {
-                reloadLambdas()
-            })
-            break
-        case 'logic/FunctionExecution':
-            // ignore
-            break
-        default:
-            init()
-
-    }
+app.post('/reload', async (req, res) => {
+    handleReload(req.body as Event).then(() => {
+        console.log('reloaded')
+    }, console.error)
 
     res.send(req.body)
 })

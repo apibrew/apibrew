@@ -1,10 +1,8 @@
-import { read, filter } from "./store";
 import { Function, FunctionName } from "./model/function";
 import { FunctionTrigger, FunctionTriggerName } from "./model/function-trigger";
 import { ResourceRule, ResourceRuleName } from "./model/resource-rule";
 import { ENGINE_REMOTE_ADDR, EXTENSION_NAME, FN_DIR } from "./config";
 import { registerExtensions } from "./registrator";
-import { ResourceOperationRule, ResourceOperationTrigger } from "./const";
 import { Extension } from "./model";
 import { components } from './model/base-schema'
 import { Module, ModuleName } from "./model/module";
@@ -15,6 +13,8 @@ import { PassThrough } from "stream";
 import { Extract, extract } from 'tar-fs'
 import { initModule } from "./module-init";
 import { Lambda, LambdaNameName, LambdaResource } from "./model/lambda";
+import { functionRepository, lambdaRepository, moduleRepository } from "./client";
+import { FunctionExecution } from "@apibrew/client";
 var mkdirp = require('mkdirp');
 
 
@@ -23,103 +23,129 @@ let engineId: string
 export let functionMap: { [key: string]: Function } = {}
 export let functionIdMap: { [key: string]: Function } = {}
 export let functionNameIdMap: { [key: string]: string } = {}
+export let moduleIdMap: { [key: string]: Module } = {}
+export let lambdaIdMap: { [key: string]: Lambda } = {}
 
-export async function reloadFunction() {
-    console.log('Reload Function')
-    clearCache()
-
-    filter('logic', FunctionName, (record: Function) => record.engine.id === engineId)
-    const functions = read<Function>('logic', FunctionName)
-
-    functionMap = {}
-    functionIdMap = {}
-    functions.forEach(async (record) => {
-        functionMap[record.package + '/' + record.name] = record
-        functionIdMap[record.id] = record
-        functionNameIdMap[record.package + '/' + record.name] = record.id
-
-        await storeFunction(record)
-    })
-}
-
-export async function reloadModules() {
-    clearCache()
-
-    filter('logic', ModuleName, (record: Function) => record.engine.id === engineId)
-    const modules = read<Module>('logic', ModuleName)
-
-    modules.forEach(async module => {
-        console.log('Store Module: ', module.id)
-        await storeModule(module)
-        console.log('Init Module: ', module.id)
-        try {
-            await initModule(module)
-            console.log('Done Module: ', module.id)
-        } catch (e) {
-            console.log('Error Module: ', module.id)
-            console.log(e)
+export function clearFnCache(id: string) {
+    for (const cacheKey of Object.keys(require.cache)) {
+        if (cacheKey.startsWith(`${FN_DIR}/${id}`)) {
+            delete require.cache[cacheKey]
         }
-    })
+    }
 }
 
-export async function reloadLambdas() {
-    const functions = read<Function>('logic', FunctionName)
+export async function registerFunction(fn: Function) {
+    functionMap[fn.package + '/' + fn.name] = fn
+    functionIdMap[fn.id] = fn
+    functionNameIdMap[fn.package + '/' + fn.name] = fn.id
 
-    filter(LambdaResource.namespace, LambdaResource.resource, (record: Lambda) => functions.some(fn => fn.id === record.function.id))
+    await storeFunction(fn)
 
-    const lambdas = read<Lambda>(LambdaResource.namespace, LambdaResource.resource)
+    clearFnCache(fn.id)
+}
 
-    let extensions: Extension[] = []
+export async function registerModule(module: Module) {
+    console.log('Store Module: ', module.id)
+    await storeModule(module)
+    console.log('Init Module: ', module.id)
+
+    try {
+        await initModule(module)
+        console.log('Done Module: ', module.id)
+        moduleIdMap[module.id] = module
+    } catch (e) {
+        console.log('Error Module: ', module.id)
+        console.log(e)
+    }
+
+    clearFnCache(module.id)
+}
+
+export async function registerLambda(lambda: Lambda) {
+    const extension = prepareExtensionFromLambda(lambda)
+
+    await registerExtensions([extension])
+    
+    lambdaIdMap[lambda.id] = lambda
+}
+
+export async function registerFunctionTrigger(trigger: FunctionTrigger) {
+
+}
+
+export async function registerResourceRule(rule: ResourceRule) {
+
+}
+
+export async function loadAll() {
+    console.log('begin load all')
+
+    const modules$ = await moduleRepository.list()
+    const modules = modules$.content.filter(module => module.engine.id === engineId)
+
+    for (const module of modules) {
+        await registerModule(module)
+    }
+
+    console.log('load functions')
+    const functions$ = await functionRepository.list()
+    const functions = functions$.content.filter(fn => fn.engine.id === engineId)
+
+    console.log('registering functions')
+    for (const fn of functions) {
+        await registerFunction(fn)
+    }
+
+    const lambdas$ = await lambdaRepository.list()
+
+    const lambdas = lambdas$.content.filter(lambda => functionIdMap[lambda.function.id])
 
     for (const lambda of lambdas) {
-        extensions.push(prepareExtensionFromLambda(lambda))
+        await registerLambda(lambda)
     }
 
-    await registerExtensions(extensions)
-}
+    // load functions
+    // load modules
+    // load lambdas
+    // load triggers
+    // load rules
+    // register extensions
 
-export function clearCache() {
-    for (const cacheKey of Object.keys(require.cache)) {
-        if (cacheKey.startsWith(FN_DIR)) {
-            delete require.cache[cacheKey]
-        }
-    }
-}
+    // reloadFunction()
+    // reloadModules()
+    // reloadLambdas()
 
-export async function reloadInternal() {
-    reloadFunction()
-    reloadModules()
-    reloadLambdas()
+    // const functions = read<Function>('logic', FunctionName)
 
-    const functions = read<Function>('logic', FunctionName)
+    // filter('logic', FunctionTriggerName, (record: FunctionTrigger) => functions.some(fn => fn.id === record.function.id))
+    // const triggers = read<FunctionTrigger>('logic', FunctionTriggerName)
 
-    filter('logic', FunctionTriggerName, (record: FunctionTrigger) => functions.some(fn => fn.id === record.function.id))
-    const triggers = read<FunctionTrigger>('logic', FunctionTriggerName)
+    // filter('logic', ResourceRuleName, (record: ResourceRule) => functions.some(fn => fn.id === record.conditionFunction.id))
+    // const rules = read<ResourceRule>('logic', ResourceRuleName)
 
-    filter('logic', ResourceRuleName, (record: ResourceRule) => functions.some(fn => fn.id === record.conditionFunction.id))
-    const rules = read<ResourceRule>('logic', ResourceRuleName)
+    // for (const cacheKey of Object.keys(require.cache)) {
+    //     if (cacheKey.startsWith(FN_DIR)) {
+    //         delete require.cache[cacheKey]
+    //     }
+    // }
 
-    for (const cacheKey of Object.keys(require.cache)) {
-        if (cacheKey.startsWith(FN_DIR)) {
-            delete require.cache[cacheKey]
-        }
-    }
+    // let extensions: Extension[] = []
 
-    let extensions: Extension[] = []
+    // for (const trigger of triggers) {
+    //     extensions.push(prepareExtensionFromTrigger(trigger))
+    // }
 
-    for (const trigger of triggers) {
-        extensions.push(prepareExtensionFromTrigger(trigger))
-    }
+    // for (const rule of rules) {
+    //     extensions.push(prepareExtensionFromRule(rule))
+    // }
 
-    for (const rule of rules) {
-        extensions.push(prepareExtensionFromRule(rule))
-    }
+    // extensions = extensions.filter((item, index) => extensions.findIndex(item2 => JSON.stringify(item) === JSON.stringify(item2)) === index)
 
-    extensions = extensions.filter((item, index) => extensions.findIndex(item2 => JSON.stringify(item) === JSON.stringify(item2)) === index)
+    // await registerExtensions(extensions)
 
-    await registerExtensions(extensions)
+    // console.log('Configuring extensions: ', extensions.map(item => item.name))
 
-    console.log('Configuring extensions: ', extensions.map(item => item.name))
+    console.log('end load all')
 }
 
 function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
@@ -241,11 +267,13 @@ export async function initFunctionRegistry(_engineId: string) {
 
 async function storeFunction(record: Function) {
     if (record.script) {
+        console.log(record)
         const functionContent = scriptFunctionTemplate(record)
 
         fs.writeFileSync(path.join(FN_DIR + '/', record.id + '.js'), functionContent)
     } else if (record.module) {
-        record.module = read<Module>('logic', ModuleName).find(item => item.id === record.module.id)
+        record.module = moduleIdMap[record.module.id]
+        record.module.content = undefined
         const functionContent = moduleFunctionTemplate(record)
 
         fs.writeFileSync(path.join(FN_DIR + '/', record.id + '.js'), functionContent)

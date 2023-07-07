@@ -41,6 +41,7 @@ var client_1 = require("../client");
 var model_1 = require("../model");
 var lambda_1 = require("../model/logic/lambda");
 var module_def_1 = require("./module-def");
+var error_1 = require("../service/error");
 function parseLambdaEventSelectorPattern(eventSelectorPattern) {
     var parts = eventSelectorPattern.split(':');
     var resourceFullName = parts[0];
@@ -75,25 +76,28 @@ function defineLambda(name, eventSelectorPattern, fn) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, functionRepository.apply({
-                            package: module.package,
-                            name: 'Lambda_' + name,
-                            args: [{
-                                    name: 'element'
-                                }],
-                            module: {
-                                id: module.id,
-                            },
-                            engine: {
-                                name: 'nodejs-engine'
-                            }
-                        }).then(function (resp) {
-                            console.log(resp);
-                        }, function (err) {
-                            console.error(err);
-                        })];
+                    case 0:
+                        console.log('before create lambda');
+                        return [4 /*yield*/, functionRepository.apply({
+                                package: module.package,
+                                name: 'Lambda_' + name,
+                                args: [{
+                                        name: 'element'
+                                    }],
+                                module: {
+                                    id: module.id,
+                                },
+                                engine: {
+                                    name: 'nodejs-engine'
+                                }
+                            }).then(function (resp) {
+                                console.log(resp);
+                            }, function (err) {
+                                console.error((0, error_1.handleError)(err));
+                            })];
                     case 1:
                         _a.sent();
+                        console.log('after create lambda');
                         return [4 /*yield*/, lambdaRepository.apply({
                                 package: module.package,
                                 name: 'Lambda_' + name,
@@ -105,10 +109,11 @@ function defineLambda(name, eventSelectorPattern, fn) {
                             }).then(function (resp) {
                                 console.log(resp);
                             }, function (err) {
-                                console.error(err);
+                                console.error((0, error_1.handleError)(err));
                             })];
                     case 2:
                         _a.sent();
+                        console.log('after create lambda 2');
                         return [2 /*return*/];
                 }
             });
@@ -130,7 +135,7 @@ function fireLambda(trigger, element) {
     repository.create(element).then(function (resp) {
         console.log('Lambda ' + trigger + ' fired');
     }, function (err) {
-        console.error(err);
+        console.error((0, error_1.handleError)(err));
     });
 }
 exports.fireLambda = fireLambda;

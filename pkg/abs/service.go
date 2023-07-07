@@ -77,6 +77,7 @@ type GenericRecordService[T proto.Message] interface {
 	Init(records []T)
 	Create(ctx context.Context, users []T) ([]T, errors.ServiceError)
 	Update(ctx context.Context, users []T) ([]T, errors.ServiceError)
+	Apply(ctx context.Context, users []T) ([]T, errors.ServiceError)
 	Delete(ctx context.Context, ids []string) errors.ServiceError
 	Get(ctx context.Context, id string) (T, errors.ServiceError)
 	List(ctx context.Context, query *model.BooleanExpression, limit uint32, offset uint64) ([]T, errors.ServiceError)
@@ -100,6 +101,7 @@ type ExtensionService interface {
 	List(ctx context.Context) ([]*model.Extension, errors.ServiceError)
 	Create(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)
 	Update(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)
+	Apply(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)
 	Get(ctx context.Context, id string) (*model.Extension, errors.ServiceError)
 	Delete(ctx context.Context, ids []string) errors.ServiceError
 	RegisterExtension(extension *model.Extension)

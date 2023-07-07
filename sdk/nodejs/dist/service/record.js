@@ -41,6 +41,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.apply = exports.search = exports.findByMulti = exports.findBy = exports.get = exports.remove = exports.update = exports.create = exports.list = void 0;
 var axios_1 = __importDefault(require("axios"));
+function fixContainerProperties(result) {
+    result.content = result.content.map(function (record) {
+        if (record['properties']) {
+            return record['properties'];
+        }
+        else {
+            return record;
+        }
+    });
+}
 function list(config, namespace, resource) {
     return __awaiter(this, void 0, void 0, function () {
         var result;
@@ -53,6 +63,7 @@ function list(config, namespace, resource) {
                     })];
                 case 1:
                     result = _a.sent();
+                    fixContainerProperties(result.data);
                     return [2 /*return*/, result.data];
             }
         });
@@ -61,9 +72,9 @@ function list(config, namespace, resource) {
 exports.list = list;
 function resourceUrl(config, namespace, resource) {
     if (namespace === 'system') {
-        return "".concat(config.backendUrl, "/").concat(resource, "?resolveReferences=*");
+        return "".concat(config.backendUrl, "/system/").concat(resource);
     }
-    return "".concat(config.backendUrl, "/records/").concat(namespace, "/").concat(resource, "?resolveReferences=*");
+    return "".concat(config.backendUrl, "/records/").concat(namespace, "/").concat(resource);
 }
 function create(config, namespace, resource, record) {
     return __awaiter(this, void 0, void 0, function () {
@@ -123,7 +134,7 @@ function get(config, namespace, resource, id) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.get("".concat(resourceUrl(config, namespace, resource), "/").concat(id), {
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(resourceUrl(config, namespace, resource), "/").concat(id, "?resolveReferences=*"), {
                         headers: {
                             Authorization: "Bearer ".concat(config.token)
                         }
@@ -167,7 +178,7 @@ function findByMulti(config, namespace, resource, conditions) {
                             }); })
                         }
                     };
-                    return [4 /*yield*/, axios_1.default.post("".concat(resourceUrl(config, namespace, resource), "/_search"), {
+                    return [4 /*yield*/, axios_1.default.post("".concat(resourceUrl(config, namespace, resource), "/_search?resolveReferences=*"), {
                             query: query
                         }, {
                             headers: {
@@ -176,6 +187,7 @@ function findByMulti(config, namespace, resource, conditions) {
                         })];
                 case 1:
                     result = _a.sent();
+                    fixContainerProperties(result.data);
                     if (result.data.content && result.data.content.length > 0) {
                         return [2 /*return*/, result.data.content[0]];
                     }
@@ -200,6 +212,7 @@ function search(config, params) {
                     })];
                 case 1:
                     result = _a.sent();
+                    fixContainerProperties(result.data);
                     return [2 /*return*/, result.data];
             }
         });

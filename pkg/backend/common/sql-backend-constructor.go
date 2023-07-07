@@ -10,6 +10,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
+	"sync"
 )
 
 type sqlBackend struct {
@@ -18,6 +19,7 @@ type sqlBackend struct {
 	dataSourceName string
 	options        SqlBackendOptions
 	schema         *abs.Schema
+	mu             sync.Mutex
 }
 
 func (p *sqlBackend) SetSchema(schema *abs.Schema) {

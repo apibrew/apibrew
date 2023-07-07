@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/ext"
@@ -95,6 +96,10 @@ func (e *externalService) CallHttp(ctx context.Context, call *model.HttpCall, ev
 		return nil, errors.ExternalBackendCommunicationError.WithMessage(err.Error())
 	}
 
+	if len(responseData) == 0 {
+		return nil, nil
+	}
+
 	var result = new(model.Event)
 
 	err = protojson.Unmarshal(responseData, result)
@@ -105,7 +110,7 @@ func (e *externalService) CallHttp(ctx context.Context, call *model.HttpCall, ev
 		err = protojson.Unmarshal(responseData, responseError)
 
 		if err != nil {
-			return nil, errors.ExternalBackendCommunicationError.WithMessage(err.Error())
+			return nil, errors.ExternalBackendCommunicationError.WithMessage(fmt.Sprintf("Error: %s; content: %s", err.Error(), string(responseData)))
 		}
 
 		return nil, errors.RecordValidationError.WithDetails(responseError.Message)

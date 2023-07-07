@@ -23,6 +23,7 @@ const (
 	Extension_Get_FullMethodName    = "/stub.Extension/Get"
 	Extension_Create_FullMethodName = "/stub.Extension/Create"
 	Extension_Update_FullMethodName = "/stub.Extension/Update"
+	Extension_Apply_FullMethodName  = "/stub.Extension/Apply"
 	Extension_Delete_FullMethodName = "/stub.Extension/Delete"
 )
 
@@ -34,6 +35,7 @@ type ExtensionClient interface {
 	Get(ctx context.Context, in *GetExtensionRequest, opts ...grpc.CallOption) (*GetExtensionResponse, error)
 	Create(ctx context.Context, in *CreateExtensionRequest, opts ...grpc.CallOption) (*CreateExtensionResponse, error)
 	Update(ctx context.Context, in *UpdateExtensionRequest, opts ...grpc.CallOption) (*UpdateExtensionResponse, error)
+	Apply(ctx context.Context, in *ApplyExtensionRequest, opts ...grpc.CallOption) (*ApplyExtensionResponse, error)
 	Delete(ctx context.Context, in *DeleteExtensionRequest, opts ...grpc.CallOption) (*DeleteExtensionResponse, error)
 }
 
@@ -81,6 +83,15 @@ func (c *extensionClient) Update(ctx context.Context, in *UpdateExtensionRequest
 	return out, nil
 }
 
+func (c *extensionClient) Apply(ctx context.Context, in *ApplyExtensionRequest, opts ...grpc.CallOption) (*ApplyExtensionResponse, error) {
+	out := new(ApplyExtensionResponse)
+	err := c.cc.Invoke(ctx, Extension_Apply_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *extensionClient) Delete(ctx context.Context, in *DeleteExtensionRequest, opts ...grpc.CallOption) (*DeleteExtensionResponse, error) {
 	out := new(DeleteExtensionResponse)
 	err := c.cc.Invoke(ctx, Extension_Delete_FullMethodName, in, out, opts...)
@@ -98,6 +109,7 @@ type ExtensionServer interface {
 	Get(context.Context, *GetExtensionRequest) (*GetExtensionResponse, error)
 	Create(context.Context, *CreateExtensionRequest) (*CreateExtensionResponse, error)
 	Update(context.Context, *UpdateExtensionRequest) (*UpdateExtensionResponse, error)
+	Apply(context.Context, *ApplyExtensionRequest) (*ApplyExtensionResponse, error)
 	Delete(context.Context, *DeleteExtensionRequest) (*DeleteExtensionResponse, error)
 	mustEmbedUnimplementedExtensionServer()
 }
@@ -117,6 +129,9 @@ func (UnimplementedExtensionServer) Create(context.Context, *CreateExtensionRequ
 }
 func (UnimplementedExtensionServer) Update(context.Context, *UpdateExtensionRequest) (*UpdateExtensionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedExtensionServer) Apply(context.Context, *ApplyExtensionRequest) (*ApplyExtensionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Apply not implemented")
 }
 func (UnimplementedExtensionServer) Delete(context.Context, *DeleteExtensionRequest) (*DeleteExtensionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
@@ -206,6 +221,24 @@ func _Extension_Update_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Extension_Apply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyExtensionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExtensionServer).Apply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Extension_Apply_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExtensionServer).Apply(ctx, req.(*ApplyExtensionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Extension_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteExtensionRequest)
 	if err := dec(in); err != nil {
@@ -246,6 +279,10 @@ var Extension_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Update",
 			Handler:    _Extension_Update_Handler,
+		},
+		{
+			MethodName: "Apply",
+			Handler:    _Extension_Apply_Handler,
 		},
 		{
 			MethodName: "Delete",

@@ -81,6 +81,26 @@ func (d *extensionService) Update(ctx context.Context, extensions []*model.Exten
 	return mapping.MapFromRecord(result, mapping.ExtensionFromRecord), nil
 }
 
+func (d *extensionService) Apply(ctx context.Context, extensions []*model.Extension) ([]*model.Extension, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+	logger.WithField("extensions", extensions).Debug("Begin data-source Update")
+	defer logger.Debug("End data-source Update")
+
+	// insert records via resource service
+	records := mapping.MapToRecord(extensions, mapping.ExtensionToRecord)
+	result, err := d.recordService.Apply(ctx, abs.RecordUpdateParams{
+		Namespace: resources.ExtensionResource.Namespace,
+		Resource:  resources.ExtensionResource.Name,
+		Records:   records,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return mapping.MapFromRecord(result, mapping.ExtensionFromRecord), nil
+}
+
 func (d *extensionService) Get(ctx context.Context, id string) (*model.Extension, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("id", id).Debug("Begin data-source Get")
