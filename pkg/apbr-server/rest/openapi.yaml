@@ -957,6 +957,30 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - Extension
+            summary: Apply
+            operationId: Extension_Apply
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ApplyExtensionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplyExtensionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /system/extensions/{id}:
         get:
             tags:
@@ -1630,6 +1654,22 @@ components:
                     $ref: '#/components/schemas/GoogleProtobufAny'
                 yaml:
                     type: string
+        ApplyExtensionRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
+        ApplyExtensionResponse:
+            type: object
+            properties:
+                extensions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Extension'
         ApplyRecordRequest_PropertiesEntry:
             type: object
             properties:

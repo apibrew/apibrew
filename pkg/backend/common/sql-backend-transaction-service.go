@@ -44,11 +44,15 @@ func (p *sqlBackend) BeginTransaction(ctx context.Context, readOnly bool) (strin
 
 	transactionKey := helper.RandStringRunes(8)
 
+	p.mu.Lock()
 	p.transactionMap[transactionKey] = txDataInstance
+	p.mu.Unlock()
 
 	go func() {
 		<-transactionCtx.Done()
+		p.mu.Lock()
 		delete(p.transactionMap, transactionKey)
+		p.mu.Unlock()
 
 		log.Println(transactionCtx.Err())
 

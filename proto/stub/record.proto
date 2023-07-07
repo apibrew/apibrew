@@ -125,7 +125,7 @@ message SearchRecordRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  model.BooleanExpression quelry = 4;
+  model.BooleanExpression query = 4;
   uint32 limit = 5;
   uint64 offset = 6;
   bool useHistory = 7;

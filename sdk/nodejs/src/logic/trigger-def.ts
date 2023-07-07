@@ -1,5 +1,6 @@
 import { Client } from "../client";
 import { FunctionResource, FunctionTrigger, FunctionTriggerResource, Record, Function } from "../model";
+import { handleError } from "../service/error";
 import { getModule, registerModuleChild } from "./module-def";
 
 export function defineTrigger<T extends Record<unknown>>(functionTrigger: FunctionTrigger, fn: (entity: T) => T) {
@@ -26,7 +27,7 @@ export function defineTrigger<T extends Record<unknown>>(functionTrigger: Functi
         } as Function).then(resp => {
             console.log(resp)
         }, err => {
-            console.error(err)
+            console.error(handleError(err))
         })
 
         await triggerRepository.apply({
@@ -38,7 +39,7 @@ export function defineTrigger<T extends Record<unknown>>(functionTrigger: Functi
         } as FunctionTrigger).then(resp => {
             console.log(resp)
         }, err => {
-            console.error(err)
+            console.error(handleError(err))
         })
     }
 

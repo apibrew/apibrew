@@ -1,7 +1,9 @@
+import { AxiosError } from "axios"
 import { Client } from "../client"
 import { Function, FunctionResource, RecordResourceInfo } from "../model"
 import { Lambda, LambdaResource } from "../model/logic/lambda"
 import { getModule, registerModuleChild } from "./module-def"
+import { handleError } from "../service/error"
 
 export interface LambdaParams {
     name: string
@@ -50,6 +52,7 @@ export function defineLambda<T extends LambdaEntity>(name: string, eventSelector
     const module = getModule()
 
     async function createLambda() {
+        console.log('before create lambda')
         await functionRepository.apply({
             package: module.package,
             name: 'Lambda_' + name,
@@ -65,8 +68,10 @@ export function defineLambda<T extends LambdaEntity>(name: string, eventSelector
         } as Function).then(resp => {
             console.log(resp)
         }, err => {
-            console.error(err)
+            console.error(handleError(err))
         })
+
+        console.log('after create lambda')
 
         await lambdaRepository.apply({
             package: module.package,
@@ -79,8 +84,10 @@ export function defineLambda<T extends LambdaEntity>(name: string, eventSelector
         } as Lambda).then(resp => {
             console.log(resp)
         }, err => {
-            console.error(err)
+            console.error(handleError(err))
         })
+
+        console.log('after create lambda 2')
     }
 
     createLambda()
@@ -105,6 +112,6 @@ export function fireLambda<T extends LambdaEntity>(trigger: string, element: Par
     repository.create(element).then(resp => {
         console.log('Lambda ' + trigger + ' fired')
     }, err => {
-        console.error(err)
+        console.error(handleError(err))
     })
 }

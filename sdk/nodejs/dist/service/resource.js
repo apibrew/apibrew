@@ -41,6 +41,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.apply = exports.save = exports.getByName = exports.get = exports.remove = exports.update = exports.create = exports.list = void 0;
 var axios_1 = __importDefault(require("axios"));
+var util_1 = require("../util");
 function list(config) {
     return __awaiter(this, void 0, void 0, function () {
         var result;
@@ -191,10 +192,15 @@ function apply(config, resource) {
                 case 1:
                     existingResource = _a.sent();
                     resource.id = existingResource.id;
+                    if (!(0, util_1.isObjectModified)(existingResource, resource)) {
+                        return [2 /*return*/, existingResource];
+                    }
+                    console.log('Updating resource', resource.name);
                     return [4 /*yield*/, update(config, resource)];
                 case 2: return [2 /*return*/, _a.sent()];
                 case 3:
                     e_1 = _a.sent();
+                    console.log('Creating resource', resource.name);
                     return [4 /*yield*/, create(config, resource)];
                 case 4: return [2 /*return*/, _a.sent()];
                 case 5: return [2 /*return*/];

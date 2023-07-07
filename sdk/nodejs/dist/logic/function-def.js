@@ -40,41 +40,81 @@ exports.callFunction = exports.defineFunction = void 0;
 var client_1 = require("../client");
 var model_1 = require("../model");
 var function_1 = require("../model/logic/function");
+var util_1 = require("../util");
 var module_def_1 = require("./module-def");
+var error_1 = require("../service/error");
 function defineFunction(name, args, fn) {
     var client = client_1.Client.getDefaultClient();
     var functionRepository = client.newRepository(function_1.FunctionResource);
     var module = (0, module_def_1.getModule)();
-    functionRepository.apply({
-        package: module.package,
-        name: name,
-        args: args.map(function (arg) {
-            return {
-                name: arg
-            };
-        }),
-        module: {
-            id: module.id,
-        },
-        engine: {
-            name: 'nodejs-engine'
-        }
-    }).then(function (resp) {
-        console.log(resp);
-    }, function (err) {
-        console.error(err);
-    });
+    function createFunction() {
+        return __awaiter(this, void 0, void 0, function () {
+            var functionRecord, existingFunction, e_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        functionRecord = {
+                            package: module.package,
+                            name: name,
+                            args: args.map(function (arg) {
+                                return {
+                                    name: arg
+                                };
+                            }),
+                            module: {
+                                id: module.id,
+                            },
+                            engine: {
+                                name: 'nodejs-engine'
+                            }
+                        };
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, functionRepository.findByMulti([
+                                {
+                                    property: 'package',
+                                    value: module.package,
+                                },
+                                {
+                                    property: 'name',
+                                    value: name,
+                                }
+                            ])];
+                    case 2:
+                        existingFunction = _a.sent();
+                        if (!(0, util_1.isObjectModified)(existingFunction, functionRecord)) {
+                            return [2 /*return*/];
+                        }
+                        return [3 /*break*/, 4];
+                    case 3:
+                        e_1 = _a.sent();
+                        return [3 /*break*/, 4];
+                    case 4: return [4 /*yield*/, functionRepository.apply(functionRecord).catch(function (err) {
+                            console.trace((0, error_1.handleError)(err));
+                        })];
+                    case 5:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    createFunction();
     (0, module_def_1.registerModuleChild)(name, fn);
 }
 exports.defineFunction = defineFunction;
 function callFunction(fnPackage, fnName, params) {
     return __awaiter(this, void 0, void 0, function () {
-        var client, functionRepository, result;
+        var client, functionRepository, result, e_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     client = client_1.Client.getDefaultClient();
                     functionRepository = client.newRepository(model_1.FunctionExecutionResource);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
                     return [4 /*yield*/, functionRepository.create({
                             id: '',
                             version: 1,
@@ -84,12 +124,17 @@ function callFunction(fnPackage, fnName, params) {
                             },
                             input: params,
                         })];
-                case 1:
+                case 2:
                     result = _a.sent();
                     if (result.error) {
                         throw new Error(result.error);
                     }
                     return [2 /*return*/, result.output];
+                case 3:
+                    e_2 = _a.sent();
+                    console.log('Cannot Call Function', e_2.message);
+                    throw (0, error_1.handleError)(e_2);
+                case 4: return [2 /*return*/];
             }
         });
     });

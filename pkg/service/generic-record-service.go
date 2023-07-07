@@ -73,6 +73,25 @@ func (g genericRecordService[T]) Update(ctx context.Context, items []T) ([]T, er
 	return response, nil
 }
 
+func (g genericRecordService[T]) Apply(ctx context.Context, items []T) ([]T, errors.ServiceError) {
+	// update records via resource service
+	records := mapping.MapToRecord(items, g.mapTo)
+
+	result, err := g.recordService.Apply(ctx, abs.RecordUpdateParams{
+		Namespace: g.namespace,
+		Resource:  g.resource,
+		Records:   records,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	response := mapping.MapFromRecord(result, g.mapFrom)
+
+	return response, nil
+}
+
 func (g genericRecordService[T]) Delete(ctx context.Context, ids []string) errors.ServiceError {
 	return g.recordService.Delete(ctx, abs.RecordDeleteParams{
 		Namespace: g.namespace,

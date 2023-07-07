@@ -3,6 +3,16 @@ import { BooleanExpression, RecordListContainer } from "../model";
 import { ServiceConfig } from './config';
 import { Record } from '../model';
 
+function fixContainerProperties<T extends Record<unknown>>(result: RecordListContainer<T>) {
+    result.content = result.content.map((record: Record<T>) => {
+        if ((record as any)['properties']) {
+            return (record as any)['properties'] as any as T
+        } else {
+            return record
+        }
+    }) as any
+}
+
 export async function list<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string): Promise<RecordListContainer<T>> {
 
     const result = await axios.get<RecordListContainer<T>>(resourceUrl(config, namespace, resource), {
@@ -11,16 +21,18 @@ export async function list<T extends Record<unknown>>(config: ServiceConfig, nam
         }
     })
 
+    fixContainerProperties(result.data)
+
     return result.data
 
 }
 
 function resourceUrl(config: ServiceConfig, namespace: string, resource: string): string {
     if (namespace === 'system') {
-        return `${config.backendUrl}/${resource}?resolveReferences=*`;
+        return `${config.backendUrl}/system/${resource}`;
     }
 
-    return `${config.backendUrl}/records/${namespace}/${resource}?resolveReferences=*`;
+    return `${config.backendUrl}/records/${namespace}/${resource}`;
 }
 
 export async function create<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string, record: T): Promise<T> {
@@ -57,7 +69,7 @@ export async function remove(config: ServiceConfig, namespace: string, resource:
 
 export async function get<T>(config: ServiceConfig, namespace: string, resource: string, id: string): Promise<T> {
 
-    const result = await axios.get<T>(`${resourceUrl(config, namespace, resource)}/${id}`, {
+    const result = await axios.get<T>(`${resourceUrl(config, namespace, resource)}/${id}?resolveReferences=*`, {
         headers: {
             Authorization: `Bearer ${config.token}`
         }
@@ -93,13 +105,15 @@ export async function findByMulti<T extends Record<unknown>>(config: ServiceConf
             }))
         }
     } as BooleanExpression
-    const result = await axios.post<RecordListContainer<T>>(`${resourceUrl(config, namespace, resource)}/_search`, {
+    const result = await axios.post<RecordListContainer<T>>(`${resourceUrl(config, namespace, resource)}/_search?resolveReferences=*`, {
         query: query
     }, {
         headers: {
             Authorization: `Bearer ${config.token}`
         }
     })
+
+    fixContainerProperties(result.data)
 
     if (result.data.content && result.data.content.length > 0) {
         return result.data.content[0]
@@ -129,11 +143,12 @@ export async function search<T extends Record<unknown>>(config: ServiceConfig, p
         }
     })
 
+    fixContainerProperties(result.data)
+
     return result.data
 }
 
 export async function apply<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string, record: T): Promise<T> {
-
     const result = await axios.patch<T>(resourceUrl(config, namespace, resource), record, {
         headers: {
             Authorization: `Bearer ${config.token}`

@@ -47,6 +47,10 @@ func (b backendProxy) AddRecords(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
+	if endEvent == nil {
+		return nil, nil
+	}
+
 	return endEvent.Records, nil
 }
 
@@ -69,7 +73,7 @@ func (b backendProxy) UpdateRecords(ctx context.Context, resource *model.Resourc
 	}
 
 	if endEvent == nil {
-		return nil, errors.ExternalBackendCommunicationError.WithMessage("backend returned nil event")
+		return nil, nil
 	}
 
 	return endEvent.Records, nil
@@ -91,6 +95,10 @@ func (b backendProxy) GetRecord(ctx context.Context, resource *model.Resource, i
 
 	if err != nil {
 		return nil, err
+	}
+
+	if endEvent == nil {
+		return nil, nil
 	}
 
 	if len(endEvent.Records) == 0 {
@@ -141,6 +149,10 @@ func (b backendProxy) ListRecords(ctx context.Context, resource *model.Resource,
 
 	if err != nil {
 		return nil, total, err
+	}
+
+	if endEvent == nil {
+		return nil, 0, nil
 	}
 
 	if total == 0 {

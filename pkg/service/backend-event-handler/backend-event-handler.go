@@ -74,6 +74,10 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 				nextEvent = result
 			}
 
+			if nextEvent == nil {
+				break
+			}
+
 			if handler.Finalizes {
 				logger.Debugf("Handler [%s] finalizes", handler.Name)
 				break

@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var __1 = require("..");
 var client_1 = require("../client");
 var logic_1 = require("../logic");
 function run() {
@@ -50,11 +51,45 @@ function run() {
                     _a.sent();
                     client_1.Client.setDefaultClient(client);
                     (0, logic_1.setModule)({
-                        id: 'a0ff7cce-16ae-11ee-8665-c6aac64f19b2'
+                        id: 'a0ff7cce-16ae-11ee-8665-c6aac64f19b2',
+                        package: 'Test'
                     });
                     (0, logic_1.defineFunction)('test', [], function (params) {
                         console.log('I am running');
                         return 123;
+                    });
+                    __1.LogicDef.defineFunction('Test3', ['a', 'b'], function (_a) {
+                        var a = _a.a, b = _a.b;
+                        return a + b + '33xx';
+                    });
+                    __1.LogicDef.defineResource({
+                        name: 'SimpleEventObject',
+                        properties: [{
+                                name: 'action',
+                                type: 'ENUM',
+                                enumValues: [
+                                    'AcceptPayment',
+                                    'RejectPayment',
+                                    'CancelPayment',
+                                    'RefundPayment',
+                                ]
+                            }]
+                    });
+                    __1.LogicDef.defineLambda('TestLambda', 'SimpleEventObject:AcceptPayment', function (element) {
+                        __1.LogicDef.fireLambda('SimpleEventObject:RejectPayment', {});
+                    });
+                    __1.LogicDef.defineLambda('TestLambda', 'SimpleEventObject:RejectPayment', function (element) {
+                        __1.LogicDef.callFunction((0, logic_1.getModule)().package, 'CallBackForLambda', { a: 1, b: 2 });
+                    });
+                    __1.LogicDef.defineFunction('TriggerLambda', [], function (_a) {
+                        var a = _a.a, b = _a.b;
+                        __1.LogicDef.fireLambda('SimpleEventObject:AcceptPayment', {});
+                        return 'ok';
+                    });
+                    __1.LogicDef.defineFunction('CallBackForLambda', ['a', 'b'], function (_a) {
+                        var a = _a.a, b = _a.b;
+                        console.log('CallBackForLambda called', a, b);
+                        return 'ok';
                     });
                     return [2 /*return*/];
             }
