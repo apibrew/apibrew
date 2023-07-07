@@ -28,10 +28,6 @@ export async function list<T extends Record<unknown>>(config: ServiceConfig, nam
 }
 
 function resourceUrl(config: ServiceConfig, namespace: string, resource: string): string {
-    if (namespace === 'system') {
-        return `${config.backendUrl}/system/${resource}`;
-    }
-
     return `${config.backendUrl}/records/${namespace}/${resource}`;
 }
 

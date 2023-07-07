@@ -1,6 +1,6 @@
 import axios from "axios";
 import { test1, test2 } from "./functions.js";
-import { LogicDef } from "@apibrew/client";
+import { FunctionTrigger, LogicDef } from "@apibrew/client";
 import { getModule } from "@apibrew/client/dist/logic/module-def.js";
 
 LogicDef.defineFunction('Test1', [], test2)
@@ -38,6 +38,18 @@ LogicDef.defineFunction('TriggerLambda', [], ({ a, b }) => {
     LogicDef.fireLambda('SimpleEventObject:AcceptPayment', {})
 
     return 'ok'
+})
+
+LogicDef.defineTrigger({
+    name: 'country-trigger-lambda',
+    async: true,
+    action: 'update',
+    namespace: 'default',
+    resource: 'country',
+} as FunctionTrigger, (entity) => {
+    console.log(entity)
+
+    return entity
 })
 
 LogicDef.defineFunction('CallBackForLambda', ['a', 'b'], ({ a, b }) => {

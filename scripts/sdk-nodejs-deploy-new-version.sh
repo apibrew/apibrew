@@ -14,5 +14,5 @@ npm install @apibrew/client@${NODEJS_SDK_VERSION}
 
 cd ../..
 
-cd example/nodejs
+cd examples/nodejs
 npm install @apibrew/client@${NODEJS_SDK_VERSION}

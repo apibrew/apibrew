@@ -3,7 +3,7 @@ import { FunctionResource, FunctionTrigger, FunctionTriggerResource, Record, Fun
 import { handleError } from "../service/error";
 import { getModule, registerModuleChild } from "./module-def";
 
-export function defineTrigger<T extends Record<unknown>>(functionTrigger: FunctionTrigger, fn: (entity: T) => T) {
+export function defineTrigger<T extends Record<unknown>>(functionTrigger: Partial<FunctionTrigger>, fn: (entity: T) => T) {
     const client = Client.getDefaultClient()
 
     const functionRepository = client.newRepository(FunctionResource)

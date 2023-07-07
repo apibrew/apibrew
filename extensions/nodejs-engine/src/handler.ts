@@ -1,10 +1,10 @@
-import { functionIdMap, functionMap, lambdaIdMap, registerFunction, registerFunctionTrigger, registerLambda, registerModule } from "./function-registry";
+import { functionIdMap, functionMap, lambdaIdMap, registerFunction, registerFunctionTrigger, registerLambda, registerModule, registerResourceRule } from "./function-registry";
 import { ResourceRule, ResourceRuleName } from "./model/resource-rule";
 import { FunctionTrigger, FunctionTriggerName } from "./model/function-trigger";
 import { components } from "./model/base-schema";
 import { executeFunction, executeLambda, locateFunction } from "./function-execute";
 import { Lambda, LambdaResource } from "./model/lambda";
-import { functionRepository, functionTriggerRepository, lambdaRepository, moduleRepository } from "./client";
+import { functionRepository, functionTriggerRepository, lambdaRepository, moduleRepository, resourceRuleRpository } from "./client";
 
 type Event = components['schemas']['Event']
 
@@ -92,6 +92,12 @@ export async function handleReload(event: Event) {
                 await registerFunctionTrigger(functionTrigger)
 
                 console.log('reloaded functionTrigger', functionTrigger.id)
+                break
+            case 'logic/ResourceRule':
+                const resourceRule = await resourceRuleRpository.get(record.id!)
+                await registerResourceRule(resourceRule)
+
+                console.log('reloaded resourceRule', resourceRule.id)
                 break
         }
     }
