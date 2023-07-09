@@ -29,6 +29,8 @@ func SnakeCaseToCamelCase(inputUnderScoreStr string) (camelCase string) {
 			} else {
 				if v == '_' {
 					isToUpper = true
+				} else if v == '-' {
+					isToUpper = true
 				} else {
 					camelCase += string(v)
 				}

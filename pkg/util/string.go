@@ -15,3 +15,9 @@ func StripSpaces(str string) string {
 		return r
 	}, str)
 }
+
+func Capitalize(str string) string {
+	runes := []rune(str)
+	runes[0] = unicode.ToUpper(runes[0])
+	return string(runes)
+}
