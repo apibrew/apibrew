@@ -2,9 +2,7 @@ package apbr
 
 import (
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
-	"github.com/apibrew/apibrew/pkg/generator/golang"
-	"github.com/apibrew/apibrew/pkg/generator/typescript"
-	log "github.com/sirupsen/logrus"
+	"github.com/apibrew/apibrew/pkg/generator"
 	"github.com/spf13/cobra"
 )
 
@@ -36,24 +34,7 @@ var generatorCmd = &cobra.Command{
 			pkg = "model"
 		}
 
-		switch platform {
-		case "golang":
-			err = golang.GenerateGoResourceCode(golang.GenerateResourceCodeParams{
-				Namespace: namespace,
-				Package:   pkg,
-				Resources: selection.Resources,
-				Path:      path,
-			})
-		case "typescript":
-			err = typescript.GenerateResourceCode(typescript.GenerateResourceCodeParams{
-				Namespace: namespace,
-				Package:   pkg,
-				Resources: selection.Resources,
-				Path:      path,
-			})
-		default:
-			log.Fatal("Unknown platform: " + platform)
-		}
+		err = generator.GenerateResourceCodes(platform, pkg, selection.Resources, path, namespace)
 
 		check(err)
 	},
