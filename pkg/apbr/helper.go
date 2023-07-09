@@ -1,34 +1,31 @@
 package apbr
 
 import (
-	"context"
-	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc/status"
 )
 
-func loadDataSourceByNameOrId(ctx context.Context, id string, name string) *model.DataSource {
-	if id == "" {
-		resp := check2(GetDhClient().GetDataSourceClient().List(ctx, &stub.ListDataSourceRequest{
-			Token: GetDhClient().GetToken(),
-		}))
-
-		for _, item := range resp.Content {
-			if item.Name == name {
-				return item
-			}
-		}
-
-		log.Fatal("Datasource not found with name: " + name)
-	}
-
-	return check2(GetDhClient().GetDataSourceClient().Get(ctx, &stub.GetDataSourceRequest{
-		Token: GetDhClient().GetToken(),
-		Id:    id,
-	})).DataSource
-}
+//func loadDataSourceByNameOrId(ctx context.Context, id string, name string) *modelnew.DataSource {
+//	if id == "" {
+//		resp := check2(GetDhClient().GetDataSourceClient().List(ctx, &stub.ListDataSourceRequest{
+//			Token: GetDhClient().GetToken(),
+//		}))
+//
+//		for _, item := range resp.Content {
+//			if item.Name == name {
+//				return item
+//			}
+//		}
+//
+//		log.Fatal("Datasource not found with name: " + name)
+//	}
+//
+//	return check2(GetDhClient().GetDataSourceClient().Get(ctx, &stub.GetDataSourceRequest{
+//		Token: GetDhClient().GetToken(),
+//		Id:    id,
+//	})).DataSource
+//}
 
 func check(err error) {
 	if err != nil {

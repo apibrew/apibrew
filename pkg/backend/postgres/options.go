@@ -9,14 +9,15 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/modelnew"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/lib/pq"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type postgreSqlBackendOptions struct {
-	connectionDetails *model.DataSource_PostgresqlParams
-	handleDbError     func(ctx context.Context, err error) errors.ServiceError
+	handleDbError func(ctx context.Context, err error) errors.ServiceError
+	dataSource    *modelnew.DataSource
 }
 
 func (p *postgreSqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
@@ -69,8 +70,13 @@ func (p postgreSqlBackendOptions) GetDriverName() string {
 }
 
 func (p postgreSqlBackendOptions) GetConnectionString() string {
-	params := p.connectionDetails.PostgresqlParams
-	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", params.GetUsername(), params.GetPassword(), params.GetHost(), params.GetPort(), params.GetDbName())
+	username := p.dataSource.Options["username"]
+	password := p.dataSource.Options["password"]
+	host := p.dataSource.Options["host"]
+	port := p.dataSource.Options["port"]
+	dbName := p.dataSource.Options["db_name"]
+
+	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, dbName)
 }
 
 func (p *postgreSqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourceConfig) string {

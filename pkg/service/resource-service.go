@@ -9,6 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -698,7 +699,7 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, na
 	return r.GetResourceByName(ctx, namespace, name) != nil
 }
 
-func (r *resourceService) Init(_ *model.InitData) {
+func (r *resourceService) Init(config *model.AppConfig) {
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
 
 	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
@@ -718,6 +719,18 @@ func (r *resourceService) Init(_ *model.InitData) {
 
 	if err := r.ReloadSchema(context.TODO()); err != nil {
 		panic(err)
+	}
+
+	for _, resource := range config.InitResources {
+		if _, err := r.Create(security.WithSystemContext(context.TODO()), &model.Resource{
+			Name:       resource.Name,
+			Namespace:  resource.Namespace,
+			Properties: resource.Properties,
+			Types:      resource.Types,
+			Virtual:    resource.Virtual,
+		}, true, true); err != nil {
+			panic(err)
+		}
 	}
 }
 

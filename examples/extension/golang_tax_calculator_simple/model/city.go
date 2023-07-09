@@ -178,12 +178,12 @@ func NewCityRepository(dhClient client.DhClient) client.Repository[*City] {
 	}})
 }
 
-var CityId = client.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
+var CityId = helper.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
 
-var CityName = client.DefineProperty[string, helper.StringQueryBuilder]("name", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "name"})
+var CityName = helper.DefineProperty[string, helper.StringQueryBuilder]("name", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "name"})
 
-var CityCountry = client.DefineProperty[*Country, helper.ReferenceQueryBuilder[*Country]]("country", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*Country]{PropName: "country"})
+var CityCountry = helper.DefineProperty[*Country, helper.ReferenceQueryBuilder[*Country]]("country", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*Country]{PropName: "country"})
 
-var CityDescription = client.DefineProperty[string, helper.StringQueryBuilder]("description", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "description"})
+var CityDescription = helper.DefineProperty[string, helper.StringQueryBuilder]("description", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "description"})
 
-var CityVersion = client.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})
+var CityVersion = helper.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})

@@ -600,3 +600,17 @@ func (r *recordService) Delete(ctx context.Context, params abs.RecordDeleteParam
 
 	return nil
 }
+
+func (r *recordService) Init(config *model.AppConfig) {
+	for _, initRecord := range config.InitRecords {
+		_, err := r.Apply(security.WithSystemContext(context.TODO()), abs.RecordUpdateParams{
+			Namespace: initRecord.Namespace,
+			Resource:  initRecord.Resource,
+			Records:   []*model.Record{initRecord.Record},
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}

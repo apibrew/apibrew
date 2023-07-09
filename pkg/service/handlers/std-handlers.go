@@ -6,7 +6,7 @@ import (
 )
 
 type StdHandlers interface {
-	Init(data *model.InitData)
+	Init(config *model.AppConfig)
 }
 
 type stdHandlers struct {
@@ -15,7 +15,7 @@ type stdHandlers struct {
 	userHandler         *userHandler
 }
 
-func (s *stdHandlers) Init(data *model.InitData) {
+func (s *stdHandlers) Init(config *model.AppConfig) {
 	s.dataSourceHandler.Register(s.backendEventHandler)
 	s.userHandler.Register(s.backendEventHandler)
 }

@@ -90,19 +90,7 @@ func (d *namespaceService) List(ctx context.Context) ([]*model.Namespace, errors
 	return mapping2.MapFromRecord(result, mapping2.NamespaceFromRecord), err
 }
 
-func (d *namespaceService) Init(data *model.InitData) {
-	if len(data.InitNamespaces) > 0 {
-		_, err := d.recordService.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordCreateParams{
-			Namespace: resources.NamespaceResource.Namespace,
-			Resource:  resources.NamespaceResource.Name,
-			Records:   mapping2.MapToRecord(data.InitNamespaces, mapping2.NamespaceToRecord),
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
+func (d *namespaceService) Init(config *model.AppConfig) {
 	_, err := d.recordService.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordCreateParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,

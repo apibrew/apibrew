@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/apibrew/apibrew/pkg/model";
+
+import 'model/record.proto';
+import 'model/resource.proto';
+
+message InitRecord {
+  string namespace = 1;
+  string resource = 2;
+  model.Record record = 3;
+}
+
+message AppConfig {
+  string host = 1;
+  int32 port = 2;
+  string jwtPrivateKey = 3;
+  string jwtPublicKey = 4;
+  bool disableAuthentication = 5;
+  bool disableCache = 6;
+  string pluginsPath = 7;
+  model.Record systemDataSource = 8;
+  repeated model.Resource initResources = 9;
+  repeated InitRecord initRecords = 10;
+}

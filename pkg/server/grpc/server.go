@@ -18,7 +18,7 @@ import (
 
 type Server interface {
 	Serve(lis net.Listener)
-	Init(*model.InitData)
+	Init(config *model.AppConfig)
 	Stop()
 }
 
@@ -31,7 +31,7 @@ type grpcServer struct {
 	dataSourceService        abs.DataSourceService
 	namespaceService         abs.NamespaceService
 	userService              abs.GenericRecordService[*model.User]
-	initData                 *model.InitData
+	config                   *model.AppConfig
 	watchService             abs.WatchService
 	extensionService         abs.ExtensionService
 }
@@ -40,8 +40,7 @@ func (g *grpcServer) Stop() {
 	g.grpcServer.Stop()
 }
 
-func (g *grpcServer) Init(initData *model.InitData) {
-	g.initData = initData
+func (g *grpcServer) Init(appConfig *model.AppConfig) {
 	var opts = []grpc.ServerOption{
 		grpc.UnaryInterceptor(g.grpcIntercept),
 		grpc.StreamInterceptor(g.grpcStreamIntercept),

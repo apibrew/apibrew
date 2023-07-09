@@ -641,131 +641,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /system/data-sources:
-        get:
-            tags:
-                - DataSource
-            summary: List
-            operationId: DataSource_List
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListDataSourceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        put:
-            tags:
-                - DataSource
-            summary: Update
-            operationId: DataSource_Update
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateDataSourceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateDataSourceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - DataSource
-            summary: Create
-            operationId: DataSource_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateDataSourceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateDataSourceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        delete:
-            tags:
-                - DataSource
-            summary: Delete
-            operationId: DataSource_Delete
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeleteDataSourceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteDataSourceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /system/data-sources/{id}:
-        get:
-            tags:
-                - DataSource
-            summary: Get
-            operationId: DataSource_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetDataSourceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /system/data-sources/{id}/_prepare_entity:
         post:
             tags:
@@ -1589,22 +1464,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/BooleanExpression'
-        CreateDataSourceRequest:
-            type: object
-            properties:
-                token:
-                    type: string
-                dataSources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
-        CreateDataSourceResponse:
-            type: object
-            properties:
-                dataSources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
         CreateNamespaceRequest:
             type: object
             properties:
@@ -1676,40 +1535,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
-        DataSource:
-            type: object
-            properties:
-                id:
-                    type: string
-                backend:
-                    enum:
-                        - POSTGRESQL
-                        - VIRTUAL
-                        - MYSQL
-                        - ORACLE
-                        - MONGODB
-                        - REDIS
-                    type: string
-                    format: enum
-                name:
-                    type: string
-                description:
-                    type: string
-                postgresqlParams:
-                    $ref: '#/components/schemas/PostgresqlParams'
-                mysqlParams:
-                    $ref: '#/components/schemas/MysqlParams'
-                virtualParams:
-                    $ref: '#/components/schemas/VirtualParams'
-                redisParams:
-                    $ref: '#/components/schemas/RedisParams'
-                mongoParams:
-                    $ref: '#/components/schemas/MongoParams'
-                auditData:
-                    $ref: '#/components/schemas/AuditData'
-                version:
-                    type: integer
-                    format: uint32
         DataSourceCatalog:
             type: object
             properties:
@@ -1726,18 +1551,6 @@ components:
                     type: string
                 readOnly:
                     type: boolean
-        DeleteDataSourceRequest:
-            type: object
-            properties:
-                token:
-                    type: string
-                ids:
-                    type: array
-                    items:
-                        type: string
-        DeleteDataSourceResponse:
-            type: object
-            properties: {}
         DeleteNamespaceRequest:
             type: object
             properties:
@@ -1851,11 +1664,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/NamedAny'
-        GetDataSourceResponse:
-            type: object
-            properties:
-                dataSource:
-                    $ref: '#/components/schemas/DataSource'
         GetNamespaceResponse:
             type: object
             properties:
@@ -1891,13 +1699,6 @@ components:
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
         GoogleProtobufValue:
             description: Represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values.
-        ListDataSourceResponse:
-            type: object
-            properties:
-                content:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
         ListEntitiesResponse:
             type: object
             properties:
@@ -1936,29 +1737,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
-        MongoParams:
-            type: object
-            properties:
-                uri:
-                    type: string
-                dbName:
-                    type: string
-        MysqlParams:
-            type: object
-            properties:
-                username:
-                    type: string
-                password:
-                    type: string
-                host:
-                    type: string
-                port:
-                    type: integer
-                    format: uint32
-                dbName:
-                    type: string
-                defaultSchema:
-                    type: string
         NamedAny:
             type: object
             properties:
@@ -1995,22 +1773,6 @@ components:
                     $ref: '#/components/schemas/Expression'
                 right:
                     $ref: '#/components/schemas/Expression'
-        PostgresqlParams:
-            type: object
-            properties:
-                username:
-                    type: string
-                password:
-                    type: string
-                host:
-                    type: string
-                port:
-                    type: integer
-                    format: uint32
-                dbName:
-                    type: string
-                defaultSchema:
-                    type: string
         PrepareResourceFromEntityRequest:
             type: object
             properties:
@@ -2096,16 +1858,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/GoogleProtobufValue'
-        RedisParams:
-            type: object
-            properties:
-                addr:
-                    type: string
-                password:
-                    type: string
-                db:
-                    type: integer
-                    format: int32
         Reference:
             type: object
             properties:
@@ -2519,22 +2271,6 @@ components:
                 expiration:
                     type: string
                     format: date-time
-        UpdateDataSourceRequest:
-            type: object
-            properties:
-                token:
-                    type: string
-                dataSources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
-        UpdateDataSourceResponse:
-            type: object
-            properties:
-                dataSources:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DataSource'
         UpdateMultiRecordResponse:
             type: object
             properties:
@@ -2636,15 +2372,6 @@ components:
                     items:
                         type: string
                     description: string signKey = 7; // rsa pub key to create tokens
-        VirtualParams:
-            type: object
-            properties:
-                mode:
-                    enum:
-                        - DISCARD
-                        - ERROR
-                    type: string
-                    format: enum
     securitySchemes:
         bearerAuth:
             type: http

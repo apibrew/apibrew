@@ -79,8 +79,8 @@ func prepareInitNamespaces() []*model.Namespace {
 	return nil
 }
 
-func prepareInitDataSources() []*model.DataSource {
-	return []*model.DataSource{
+func prepareInitDataSources() []*modelnew.DataSource {
+	return []*modelnew.DataSource{
 		DefaultDataSource,
 	}
 }
@@ -91,6 +91,6 @@ func prepareSystemNamespace() *model.Namespace {
 	}
 }
 
-func prepareSystemDataSource() *model.DataSource {
+func prepareSystemDataSource() *modelnew.DataSource {
 	return SystemDataSource
 }

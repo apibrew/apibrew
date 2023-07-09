@@ -9,7 +9,7 @@ import (
 )
 
 type AuthenticationService interface {
-	Init(data *model.InitData)
+	Init(config *model.AppConfig)
 	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	ParseAndVerifyToken(token string) (*UserDetails, errors.ServiceError)
@@ -21,7 +21,7 @@ type AuthorizationService interface {
 }
 
 type BackendProviderService interface {
-	Init(data *model.InitData)
+	Init(config *model.AppConfig)
 	GetSystemBackend(ctx context.Context) Backend
 	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
 	GetBackendByDataSourceName(ctx context.Context, dataSourceId string) (Backend, errors.ServiceError)
@@ -30,18 +30,15 @@ type BackendProviderService interface {
 }
 
 type DataSourceService interface {
-	Init(*model.InitData)
+	Init(config *model.AppConfig)
 	ListEntities(ctx context.Context, id string) ([]*model.DataSourceCatalog, errors.ServiceError)
-	List(ctx context.Context) ([]*model.DataSource, errors.ServiceError)
 	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
-	Create(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)
-	Update(ctx context.Context, sources []*model.DataSource) ([]*model.DataSource, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, catalog, entity string) (*model.Resource, errors.ServiceError)
-	Get(ctx context.Context, id string) (*model.DataSource, errors.ServiceError)
 	Delete(ctx context.Context, ids []string) errors.ServiceError
 }
 
 type RecordService interface {
+	Init(config *model.AppConfig)
 	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
 	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
 	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
@@ -55,7 +52,7 @@ type RecordService interface {
 }
 
 type ResourceService interface {
-	Init(data *model.InitData)
+	Init(config *model.AppConfig)
 	CheckResourceExists(ctx context.Context, namespace, name string) bool
 	GetResourceByName(ctx context.Context, namespace, resource string) *model.Resource
 	GetSystemResourceByName(ctx context.Context, resourceName string) *model.Resource
@@ -88,7 +85,7 @@ type WatchService interface {
 }
 
 type NamespaceService interface {
-	Init(data *model.InitData)
+	Init(config *model.AppConfig)
 	Create(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError)
 	Update(ctx context.Context, namespaces []*model.Namespace) ([]*model.Namespace, errors.ServiceError)
 	Delete(ctx context.Context, ids []string) errors.ServiceError
@@ -97,7 +94,7 @@ type NamespaceService interface {
 }
 
 type ExtensionService interface {
-	Init(*model.InitData)
+	Init(config *model.AppConfig)
 	List(ctx context.Context) ([]*model.Extension, errors.ServiceError)
 	Create(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)
 	Update(ctx context.Context, sources []*model.Extension) ([]*model.Extension, errors.ServiceError)

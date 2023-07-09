@@ -59,43 +59,43 @@ var deleteResource = &cobra.Command{
 	},
 }
 
-var deleteDataSource = &cobra.Command{
-	Use: "data-source",
-	Run: func(cmd *cobra.Command, args []string) {
-		if *deleteDataSourceId == "" && *deleteDataSourceName == "" {
-			log.Fatal("Id or name must be provided")
-		}
-
-		if *deleteDataSourceId == "" {
-			resp, err := GetDhClient().GetDataSourceClient().List(cmd.Context(), &stub.ListDataSourceRequest{
-				Token: GetDhClient().GetToken(),
-			})
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, item := range resp.Content {
-				if item.Name == *deleteDataSourceName {
-					*deleteDataSourceId = item.Id
-				}
-			}
-
-			if *deleteDataSourceId == "" {
-				log.Fatal("Datasource not found with name: " + *deleteDataSourceName)
-			}
-		}
-
-		_, err := GetDhClient().GetDataSourceClient().Delete(cmd.Context(), &stub.DeleteDataSourceRequest{
-			Token: GetDhClient().GetToken(),
-			Ids:   []string{*deleteDataSourceId},
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	},
-}
+//var deleteDataSource = &cobra.Command{
+//	Use: "data-source",
+//	Run: func(cmd *cobra.Command, args []string) {
+//		if *deleteDataSourceId == "" && *deleteDataSourceName == "" {
+//			log.Fatal("Id or name must be provided")
+//		}
+//
+//		if *deleteDataSourceId == "" {
+//			resp, err := GetDhClient().GetDataSourceClient().List(cmd.Context(), &stub.ListDataSourceRequest{
+//				Token: GetDhClient().GetToken(),
+//			})
+//
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//
+//			for _, item := range resp.Content {
+//				if item.Name == *deleteDataSourceName {
+//					*deleteDataSourceId = item.Id
+//				}
+//			}
+//
+//			if *deleteDataSourceId == "" {
+//				log.Fatal("Datasource not found with name: " + *deleteDataSourceName)
+//			}
+//		}
+//
+//		_, err := GetDhClient().GetDataSourceClient().Delete(cmd.Context(), &stub.DeleteDataSourceRequest{
+//			Token: GetDhClient().GetToken(),
+//			Ids:   []string{*deleteDataSourceId},
+//		})
+//
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//	},
+//}
 
 var deleteNamespace = &cobra.Command{
 	Use: "namespace",
@@ -219,8 +219,8 @@ func init() {
 	deleteResourceName = deleteResource.PersistentFlags().String("name", "", "Id of resource")
 	deleteResourceNamespace = deleteResource.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 
-	deleteDataSourceId = deleteDataSource.PersistentFlags().String("id", "", "Id of data-source")
-	deleteDataSourceName = deleteDataSource.PersistentFlags().String("name", "", "Id of data-source")
+	//deleteDataSourceId = deleteDataSource.PersistentFlags().String("id", "", "Id of data-source")
+	//deleteDataSourceName = deleteDataSource.PersistentFlags().String("name", "", "Id of data-source")
 
 	deleteNamespaceId = deleteNamespace.PersistentFlags().String("id", "", "Id of namespace")
 	deleteNamespaceName = deleteNamespace.PersistentFlags().String("name", "", "Id of namespace")
@@ -232,7 +232,7 @@ func init() {
 	deleteExtensionName = deleteExtension.PersistentFlags().String("name", "", "name of extension")
 
 	deleteCmd.AddCommand(deleteResource)
-	deleteCmd.AddCommand(deleteDataSource)
+	//deleteCmd.AddCommand(deleteDataSource)
 	deleteCmd.AddCommand(deleteNamespace)
 	deleteCmd.AddCommand(deleteUser)
 	deleteCmd.AddCommand(deleteExtension)

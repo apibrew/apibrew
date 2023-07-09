@@ -9,6 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/modelnew"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
@@ -16,9 +17,8 @@ import (
 )
 
 type mysqlBackendOptions struct {
-	connectionDetails *model.DataSource_MysqlParams
-	dataSource        *model.DataSource
-	handleDbError     func(ctx context.Context, err error) errors.ServiceError
+	dataSource    *modelnew.DataSource
+	handleDbError func(ctx context.Context, err error) errors.ServiceError
 }
 
 func (p *mysqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
@@ -71,8 +71,13 @@ func (p mysqlBackendOptions) GetDriverName() string {
 }
 
 func (p mysqlBackendOptions) GetConnectionString() string {
-	params := p.connectionDetails.MysqlParams
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", params.GetUsername(), params.GetPassword(), params.GetHost(), params.GetPort(), params.GetDbName())
+	username := p.dataSource.Options["username"]
+	password := p.dataSource.Options["password"]
+	host := p.dataSource.Options["host"]
+	port := p.dataSource.Options["port"]
+	dbName := p.dataSource.Options["db_name"]
+
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", username, password, host, port, dbName)
 }
 
 func (p *mysqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourceConfig) string {
