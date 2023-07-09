@@ -28,12 +28,12 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/http-swagger v1.3.3
+	github.com/valyala/quicktemplate v1.7.0
 	github.com/yargevad/filepathx v1.0.0
 	github.com/zclconf/go-cty v1.13.1
 	go.mongodb.org/mongo-driver v1.11.4
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/net v0.8.0
-	golang.org/x/oauth2 v0.3.0
 	google.golang.org/genproto v0.0.0-20230117162540-28d6b9783ac4
 	google.golang.org/grpc v1.52.0
 	google.golang.org/protobuf v1.30.0
@@ -56,7 +56,7 @@ require (
 	github.com/go-openapi/spec v0.20.6 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/golang/snappy v0.0.1 // indirect
+	github.com/golang/snappy v0.0.3 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.6 // indirect
@@ -84,6 +84,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/swaggo/swag v1.8.1 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
@@ -92,6 +93,5 @@ require (
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )

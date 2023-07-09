@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package model;
+//
+//option go_package = "github.com/apibrew/apibrew/pkg/model";
+//
+//import 'model/audit.proto';
+//import 'model/common.proto';
+//import 'model/hcl.proto';
+//
+//enum DataSourceBackendType {
+//  POSTGRESQL = 0;
+//  VIRTUAL = 1;
+//  MYSQL = 2;
+//  ORACLE = 3;
+//  MONGODB = 4;
+//  REDIS = 5;
+//}
+//
+//message PostgresqlParams {
+//  string username = 1;
+//  string password = 2;
+//  string host = 3;
+//  uint32 port = 4;
+//  string dbName = 5;
+//  string defaultSchema = 6;
+//}
+//
+//message MysqlParams {
+//  string username = 1;
+//  string password = 2;
+//  string host = 3;
+//  uint32 port = 4;
+//  string dbName = 5;
+//  string defaultSchema = 6;
+//}
+//
+//message RedisParams {
+//  string addr = 1;
+//  string password = 2;
+//  int32 db = 3;
+//}
+//
+//message MongoParams {
+//  string uri = 1;
+//  string dbName = 2;
+//}
+//
+//message VirtualParams {
+//  enum Mode {
+//    DISCARD = 0;
+//    ERROR = 1;
+//  }
+//  Mode mode = 1;
+//}
+//
+//message DataSource {
+//  string id = 1 [(model.hcl_ignore) = true]; // id; read only
+//  DataSourceBackendType backend = 2;
+//  string name = 5 [(model.hcl_label) = "name"];
+//  string description = 6;
+//
+//  oneof params {
+//    PostgresqlParams postgresqlParams = 7 [(model.hcl_block) = "postgresql_params"];
+//    MysqlParams mysqlParams = 8 [(model.hcl_block) = "mysql_params"];
+//    VirtualParams virtualParams = 9 [(model.hcl_block) = "virtual_params"];
+//    RedisParams redisParams = 10 [(model.hcl_block) = "redis_params"];
+//    MongoParams mongoParams = 11 [(model.hcl_block) = "mongo_params"];
+//  }
+//  AuditData auditData = 101; // read only
+//  uint32 version = 102; // read only
+//}
+//
+//message DataSourceEntity {
+//  string name = 1;
+//  bool readOnly = 2;
+//}
+//
+//message DataSourceCatalog {
+//  string name = 1;
+//  repeated model.DataSourceEntity entities = 2;
+//}

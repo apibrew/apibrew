@@ -14,8 +14,6 @@ func (d *dhClient) Apply(ctx context.Context, msg proto.Message) error {
 	switch msgTyped := msg.(type) {
 	case *model.Resource:
 		return d.ApplyResource(ctx, msgTyped, true, false)
-	case *model.DataSource:
-		return d.ApplyDataSource(ctx, msgTyped)
 	case *model.User:
 		return d.ApplyUser(ctx, msgTyped)
 	case *model.Extension:
@@ -67,53 +65,6 @@ func (d *dhClient) ApplyResource(ctx context.Context, resource *model.Resource, 
 		}
 
 		log.Info("Resource updated: " + resource.Name)
-
-		return nil
-	}
-}
-
-func (d *dhClient) ApplyDataSource(ctx context.Context, dataSource *model.DataSource) error {
-	resp, err := d.dataSourceClient.List(ctx, &stub.ListDataSourceRequest{
-		Token: d.GetToken(),
-	})
-
-	if err != nil {
-		return err
-	}
-
-	var existingDataSource *model.DataSource
-
-	for _, item := range resp.Content {
-		if item.Name == dataSource.Name {
-			existingDataSource = item
-		}
-	}
-
-	if existingDataSource == nil { // create
-		_, err = d.dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
-			Token:       d.GetToken(),
-			DataSources: []*model.DataSource{dataSource},
-		})
-
-		if err != nil {
-			return err
-		}
-
-		log.Info("DataSource created: " + dataSource.Name)
-
-		return nil
-	} else {
-		dataSource.Id = existingDataSource.Id
-		_, err = d.dataSourceClient.Update(ctx, &stub.UpdateDataSourceRequest{
-			Token:       d.GetToken(),
-			DataSources: []*model.DataSource{dataSource},
-		})
-
-		if err != nil {
-			return err
-		}
-
-		log.Info("DataSource updated: " + dataSource.Name)
 
 		return nil
 	}

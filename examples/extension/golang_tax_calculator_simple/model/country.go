@@ -217,14 +217,14 @@ func NewCountryRepository(dhClient client.DhClient) client.Repository[*Country] 
 	}})
 }
 
-var CountryId = client.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
+var CountryId = helper.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
 
-var CountryName = client.DefineProperty[string, helper.StringQueryBuilder]("name", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "name"})
+var CountryName = helper.DefineProperty[string, helper.StringQueryBuilder]("name", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "name"})
 
-var CountryDescription = client.DefineProperty[string, helper.StringQueryBuilder]("description", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "description"})
+var CountryDescription = helper.DefineProperty[string, helper.StringQueryBuilder]("description", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "description"})
 
-var CountryPopulation = client.DefineProperty[int64, helper.Int64QueryBuilder]("population", model.ResourceProperty_INT64, helper.Int64QueryBuilder{PropName: "population"})
+var CountryPopulation = helper.DefineProperty[int64, helper.Int64QueryBuilder]("population", model.ResourceProperty_INT64, helper.Int64QueryBuilder{PropName: "population"})
 
-var CountryArea = client.DefineProperty[int64, helper.Int64QueryBuilder]("area", model.ResourceProperty_INT64, helper.Int64QueryBuilder{PropName: "area"})
+var CountryArea = helper.DefineProperty[int64, helper.Int64QueryBuilder]("area", model.ResourceProperty_INT64, helper.Int64QueryBuilder{PropName: "area"})
 
-var CountryVersion = client.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})
+var CountryVersion = helper.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})

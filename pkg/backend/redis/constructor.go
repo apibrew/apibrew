@@ -2,20 +2,22 @@ package redis
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/modelnew"
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
+	"strconv"
 )
 
-func NewRedisResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
-	redisOptions := dataSource.Params.(*model.DataSource_RedisParams)
+func NewRedisResourceServiceBackend(dataSource *modelnew.DataSource) abs.Backend {
+
+	db, _ := strconv.Atoi(dataSource.Options["db"])
 
 	bck := &redisBackend{
 		dataSource: dataSource,
 		rdb: redis.NewClient(&redis.Options{
-			Addr:     redisOptions.RedisParams.Addr,
-			Password: redisOptions.RedisParams.Password,
-			DB:       int(redisOptions.RedisParams.Db),
+			Addr:     dataSource.Options["addr"],
+			Password: dataSource.Options["password"],
+			DB:       db,
 		}),
 	}
 

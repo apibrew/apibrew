@@ -10,8 +10,8 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/modelnew"
 	"github.com/apibrew/apibrew/pkg/resources"
-	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	backend_proxy "github.com/apibrew/apibrew/pkg/service/backend-proxy"
 	"github.com/apibrew/apibrew/pkg/service/security"
@@ -20,7 +20,7 @@ import (
 )
 
 type backendProviderService struct {
-	systemDataSource *model.DataSource
+	systemDataSource *modelnew.DataSource
 	backendMap       map[string]abs.Backend
 	backendIdMap     map[string]string
 	schema           *abs.Schema
@@ -63,7 +63,11 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 			return nil, err
 		}
 
-		return b.GetBackend(mapping.DataSourceFromRecord(record)), nil
+		dataSource := &modelnew.DataSource{}
+
+		dataSource.FromRecord(record)
+
+		return b.GetBackend(dataSource), nil
 	}
 }
 
@@ -104,7 +108,11 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 		var record = records[0]
 		record.Id = records[0].Properties["id"].GetStringValue()
 
-		return b.GetBackend(mapping.DataSourceFromRecord(record)), nil
+		dataSource := &modelnew.DataSource{}
+
+		dataSource.FromRecord(record)
+
+		return b.GetBackend(dataSource), nil
 	}
 }
 
@@ -112,7 +120,7 @@ func (b *backendProviderService) GetSystemBackend(_ context.Context) abs.Backend
 	return b.GetBackend(b.systemDataSource)
 }
 
-func (b *backendProviderService) GetBackend(dataSource *model.DataSource) abs.Backend {
+func (b *backendProviderService) GetBackend(dataSource *modelnew.DataSource) abs.Backend {
 	if b.backendMap[dataSource.Id] != nil {
 		return b.backendMap[dataSource.Id]
 	}
@@ -133,23 +141,25 @@ func (b *backendProviderService) GetBackend(dataSource *model.DataSource) abs.Ba
 	return instance
 }
 
-func (b *backendProviderService) GetBackendConstructor(backend model.DataSourceBackendType) abs.BackendConstructor {
+func (b *backendProviderService) GetBackendConstructor(backend modelnew.DataSourceBackendType) abs.BackendConstructor {
 	switch backend {
-	case model.DataSourceBackendType_POSTGRESQL:
+	case modelnew.DataSourceBackendType_POSTGRESQL:
 		return postgres.NewPostgresResourceServiceBackend
-	case model.DataSourceBackendType_MYSQL:
+	case modelnew.DataSourceBackendType_MYSQL:
 		return mysql.NewMysqlResourceServiceBackend
-	case model.DataSourceBackendType_MONGODB:
+	case modelnew.DataSourceBackendType_MONGODB:
 		return mongo.NewMongoResourceServiceBackend
-	case model.DataSourceBackendType_REDIS:
+	case modelnew.DataSourceBackendType_REDIS:
 		return redis.NewRedisResourceServiceBackend
 	}
 
-	panic("Not implemented backend: " + backend.String())
+	panic("Not implemented backend: " + string(backend))
 }
 
-func (b *backendProviderService) Init(data *model.InitData) {
-	b.systemDataSource = data.SystemDataSource
+func (b *backendProviderService) Init(config *model.AppConfig) {
+	b.systemDataSource = &modelnew.DataSource{}
+	b.systemDataSource.FromRecord(config.SystemDataSource)
+
 	b.systemDataSource.Id = "system"
 	b.systemDataSource.Name = "system"
 }

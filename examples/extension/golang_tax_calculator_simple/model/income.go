@@ -221,16 +221,16 @@ func NewIncomeRepository(dhClient client.DhClient) client.Repository[*Income] {
 	}})
 }
 
-var IncomeId = client.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
+var IncomeId = helper.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
 
-var IncomeCountry = client.DefineProperty[*Country, helper.ReferenceQueryBuilder[*Country]]("country", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*Country]{PropName: "country"})
+var IncomeCountry = helper.DefineProperty[*Country, helper.ReferenceQueryBuilder[*Country]]("country", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*Country]{PropName: "country"})
 
-var IncomeCity = client.DefineProperty[*City, helper.ReferenceQueryBuilder[*City]]("city", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*City]{PropName: "city"})
+var IncomeCity = helper.DefineProperty[*City, helper.ReferenceQueryBuilder[*City]]("city", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*City]{PropName: "city"})
 
-var IncomeGrossIncome = client.DefineProperty[int32, helper.Int32QueryBuilder]("gross_income", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "gross_income"})
+var IncomeGrossIncome = helper.DefineProperty[int32, helper.Int32QueryBuilder]("gross_income", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "gross_income"})
 
-var IncomeTax = client.DefineProperty[int32, helper.Int32QueryBuilder]("tax", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "tax"})
+var IncomeTax = helper.DefineProperty[int32, helper.Int32QueryBuilder]("tax", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "tax"})
 
-var IncomeNetIncome = client.DefineProperty[int32, helper.Int32QueryBuilder]("net_income", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "net_income"})
+var IncomeNetIncome = helper.DefineProperty[int32, helper.Int32QueryBuilder]("net_income", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "net_income"})
 
-var IncomeVersion = client.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})
+var IncomeVersion = helper.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})

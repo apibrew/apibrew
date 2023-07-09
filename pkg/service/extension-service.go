@@ -131,7 +131,7 @@ func (d *extensionService) Delete(ctx context.Context, ids []string) errors.Serv
 	})
 }
 
-func (d *extensionService) Init(data *model.InitData) {
+func (d *extensionService) Init(config *model.AppConfig) {
 	d.runConfigureExtensions()
 
 	go d.keepExtensionsRunning()

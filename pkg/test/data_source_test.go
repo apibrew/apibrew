@@ -28,7 +28,7 @@ func TestCreateAndReadDataSource(t *testing.T) {
 }
 
 func TestCreateDataSourceStatusTest(t *testing.T) {
-	newDataSource := &model.DataSource{
+	newDataSource := &modelnew.DataSource{
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
@@ -49,7 +49,7 @@ func TestCreateDataSourceStatusTest(t *testing.T) {
 	}()
 
 	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
-		DataSources: []*model.DataSource{newDataSource},
+		DataSources: []*modelnew.DataSource{newDataSource},
 	})
 
 	if err != nil {
@@ -64,7 +64,7 @@ func TestCreateDataSourceStatusTest(t *testing.T) {
 
 func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 
-	newDataSource := &model.DataSource{
+	newDataSource := &modelnew.DataSource{
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
@@ -85,7 +85,7 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 	}()
 
 	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
-		DataSources: []*model.DataSource{newDataSource},
+		DataSources: []*modelnew.DataSource{newDataSource},
 	})
 
 	if err != nil {
@@ -114,7 +114,7 @@ func TestListCreatedDataSources(t *testing.T) {
 
 func TestUpdateDataSource(t *testing.T) {
 
-	newDataSource := &model.DataSource{
+	newDataSource := &modelnew.DataSource{
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
@@ -136,7 +136,7 @@ func TestUpdateDataSource(t *testing.T) {
 	}()
 
 	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
-		DataSources: []*model.DataSource{newDataSource},
+		DataSources: []*modelnew.DataSource{newDataSource},
 	})
 
 	if err != nil {
@@ -148,7 +148,7 @@ func TestUpdateDataSource(t *testing.T) {
 
 	checkNewCreatedDatasourceStatus(newDataSource, t)
 
-	newDataSource.Params = &model.DataSource_PostgresqlParams{
+	newDataSource.Params = &modelnew.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dhtest2",
 			Password:      "dhtest2",
@@ -160,7 +160,7 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	res, err := dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
-		DataSources: []*model.DataSource{newDataSource},
+		DataSources: []*modelnew.DataSource{newDataSource},
 	})
 
 	if err != nil {
@@ -172,7 +172,7 @@ func TestUpdateDataSource(t *testing.T) {
 		t.Error("Invalid datasource length on update response", len(res.DataSources))
 	}
 
-	updatedParams := res.DataSources[0].Params.(*model.DataSource_PostgresqlParams)
+	updatedParams := res.DataSources[0].Params.(*modelnew.DataSource_PostgresqlParams)
 
 	if updatedParams.PostgresqlParams.Username != "dhtest2" {
 		t.Error("Username is not updated")
@@ -194,7 +194,7 @@ func TestUpdateDataSource(t *testing.T) {
 		t.Error(err)
 	}
 
-	getParams := getRes.DataSource.Params.(*model.DataSource_PostgresqlParams)
+	getParams := getRes.DataSource.Params.(*modelnew.DataSource_PostgresqlParams)
 
 	if getParams.PostgresqlParams.Username != "dhtest2" {
 		t.Error("Username is not updated")
@@ -213,11 +213,11 @@ func TestUpdateDataSource(t *testing.T) {
 
 func TestUpdateDataSourceStatus(t *testing.T) {
 
-	newDataSource := &model.DataSource{
+	newDataSource := &modelnew.DataSource{
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Params: &model.DataSource_PostgresqlParams{
+		Params: &modelnew.DataSource_PostgresqlParams{
 			PostgresqlParams: &model.PostgresqlParams{
 				Username:      "dh_test2",
 				Password:      "dh_test",
@@ -244,7 +244,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	}()
 
 	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
-		DataSources: []*model.DataSource{newDataSource},
+		DataSources: []*modelnew.DataSource{newDataSource},
 	})
 
 	if err != nil {
@@ -257,7 +257,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 
 	checkNewCreatedDatasourceStatusPasswordWrong(newDataSource, t)
 
-	createdDataSource1.Params = &model.DataSource_PostgresqlParams{
+	createdDataSource1.Params = &modelnew.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test2",
 			Password:      "dh_test",
@@ -269,12 +269,12 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	}
 
 	_, _ = dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
-		DataSources: []*model.DataSource{createdDataSource1},
+		DataSources: []*modelnew.DataSource{createdDataSource1},
 	})
 
 	checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource1, t)
 
-	createdDataSource1.Params = &model.DataSource_PostgresqlParams{
+	createdDataSource1.Params = &modelnew.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
@@ -287,7 +287,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	createdDataSource1.Version++
 
 	_, err = dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
-		DataSources: []*model.DataSource{createdDataSource1},
+		DataSources: []*modelnew.DataSource{createdDataSource1},
 	})
 
 	if err != nil {
@@ -298,7 +298,7 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 	checkNewCreatedDatasourceStatus(createdDataSource1, t)
 }
 
-func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, t *testing.T) {
+func checkNewCreatedDatasourceStatus(createdDataSource *modelnew.DataSource, t *testing.T) {
 
 	res, err := dataSourceClient.Status(setup.Ctx, &stub.StatusRequest{
 		Id: createdDataSource.Id,
@@ -319,7 +319,7 @@ func checkNewCreatedDatasourceStatus(createdDataSource *model.DataSource, t *tes
 	}
 }
 
-func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *model.DataSource, t *testing.T) {
+func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *modelnew.DataSource, t *testing.T) {
 	resp, err := dataSourceClient.Status(setup.Ctx, &stub.StatusRequest{
 		Id: createdDataSource.Id,
 	})

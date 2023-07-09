@@ -7,9 +7,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
-	mapping2 "github.com/apibrew/apibrew/pkg/resources/mapping"
-	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/service/security"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -34,23 +31,6 @@ func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]*mod
 	return bck.ListEntities(ctx)
 }
 
-func (d *dataSourceService) List(ctx context.Context) ([]*model.DataSource, errors.ServiceError) {
-	logger := log.WithFields(logging.CtxFields(ctx))
-	logger.Debug("Begin data-source List")
-	defer logger.Debug("End data-source List")
-
-	result, _, err := d.recordService.List(ctx, abs.RecordListParams{
-		Namespace: resources.DataSourceResource.Namespace,
-		Resource:  resources.DataSourceResource.Name,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return mapping2.MapFromRecord(result, mapping2.DataSourceFromRecord), nil
-}
-
 func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("id", id).Debug("Begin data-source GetStatus")
@@ -63,50 +43,6 @@ func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectio
 	}
 
 	return bck.GetStatus(ctx)
-}
-
-func (d *dataSourceService) Create(ctx context.Context, dataSources []*model.DataSource) ([]*model.DataSource, errors.ServiceError) {
-	logger := log.WithFields(logging.CtxFields(ctx))
-	logger.WithField("dataSources", dataSources).Debug("Begin data-source Create")
-	defer logger.Debug("End data-source Create")
-
-	// insert records via resource service
-	records := mapping2.MapToRecord(dataSources, mapping2.DataSourceToRecord)
-	result, err := d.recordService.Create(ctx, abs.RecordCreateParams{
-		Namespace: resources.DataSourceResource.Namespace,
-		Resource:  resources.DataSourceResource.Name,
-		Records:   records,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return mapping2.MapFromRecord(result, mapping2.DataSourceFromRecord), nil
-}
-
-func (d *dataSourceService) Update(ctx context.Context, dataSources []*model.DataSource) ([]*model.DataSource, errors.ServiceError) {
-	logger := log.WithFields(logging.CtxFields(ctx))
-	logger.WithField("dataSources", dataSources).Debug("Begin data-source Update")
-	defer logger.Debug("End data-source Update")
-
-	// insert records via resource service
-	records := mapping2.MapToRecord(dataSources, mapping2.DataSourceToRecord)
-	result, err := d.recordService.Update(ctx, abs.RecordUpdateParams{
-		Namespace: resources.DataSourceResource.Namespace,
-		Resource:  resources.DataSourceResource.Name,
-		Records:   records,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range dataSources {
-		_ = d.backendProviderService.DestroyBackend(ctx, item.Id)
-	}
-
-	return mapping2.MapFromRecord(result, mapping2.DataSourceFromRecord), nil
 }
 
 func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id string, catalog, entity string) (*model.Resource, errors.ServiceError) {
@@ -145,24 +81,6 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 	return resource, nil
 }
 
-func (d *dataSourceService) Get(ctx context.Context, id string) (*model.DataSource, errors.ServiceError) {
-	logger := log.WithFields(logging.CtxFields(ctx))
-	logger.WithField("id", id).Debug("Begin data-source Get")
-	defer logger.Debug("End data-source Get")
-
-	record, err := d.recordService.Get(ctx, abs.RecordGetParams{
-		Namespace: resources.DataSourceResource.Namespace,
-		Resource:  resources.DataSourceResource.Name,
-		Id:        id,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return mapping2.DataSourceFromRecord(record), nil
-}
-
 func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("ids", ids).Debug("Begin data-source Delete")
@@ -175,18 +93,8 @@ func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.Ser
 	})
 }
 
-func (d *dataSourceService) Init(data *model.InitData) {
-	if len(data.InitDataSources) > 0 {
-		_, err := d.recordService.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), abs.RecordCreateParams{
-			Namespace: resources.DataSourceResource.Namespace,
-			Resource:  resources.DataSourceResource.Name,
-			Records:   mapping2.MapToRecord(data.InitDataSources, mapping2.DataSourceToRecord),
-		})
+func (d *dataSourceService) Init(config *model.AppConfig) {
 
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
 }
 
 func NewDataSourceService(resourceService abs.ResourceService, recordService abs.RecordService, backendProviderService abs.BackendProviderService) abs.DataSourceService {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/modelnew"
 )
 
 type Backend interface {
@@ -63,4 +64,4 @@ type AddResourceParams struct {
 type DataSourceConnectionDetails interface {
 }
 
-type BackendConstructor func(dataSource *model.DataSource) Backend
+type BackendConstructor func(dataSource *modelnew.DataSource) Backend

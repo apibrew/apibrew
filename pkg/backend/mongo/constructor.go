@@ -3,17 +3,15 @@ package mongo
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/modelnew"
 	_ "github.com/lib/pq"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func NewMongoResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
-	mongoOptions := dataSource.Params.(*model.DataSource_MongoParams)
-
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoOptions.MongoParams.Uri))
+func NewMongoResourceServiceBackend(dataSource *modelnew.DataSource) abs.Backend {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dataSource.Options["uri"]))
 	if err != nil {
 		panic(err)
 	}
@@ -21,7 +19,7 @@ func NewMongoResourceServiceBackend(dataSource *model.DataSource) abs.Backend {
 	bck := &mongoBackend{
 		dataSource: dataSource,
 		client:     client,
-		dbName:     mongoOptions.MongoParams.DbName,
+		dbName:     dataSource.Options["db_name"],
 	}
 
 	return bck

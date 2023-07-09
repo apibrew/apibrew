@@ -235,18 +235,18 @@ func NewTaxRateRepository(dhClient client.DhClient) client.Repository[*TaxRate] 
 	}})
 }
 
-var TaxRateId = client.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
+var TaxRateId = helper.DefineProperty[uuid.UUID, helper.UuidQueryBuilder]("id", model.ResourceProperty_UUID, helper.UuidQueryBuilder{PropName: "id"})
 
-var TaxRateName = client.DefineProperty[string, helper.StringQueryBuilder]("name", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "name"})
+var TaxRateName = helper.DefineProperty[string, helper.StringQueryBuilder]("name", model.ResourceProperty_STRING, helper.StringQueryBuilder{PropName: "name"})
 
-var TaxRateCountry = client.DefineProperty[*Country, helper.ReferenceQueryBuilder[*Country]]("country", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*Country]{PropName: "country"})
+var TaxRateCountry = helper.DefineProperty[*Country, helper.ReferenceQueryBuilder[*Country]]("country", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*Country]{PropName: "country"})
 
-var TaxRateCity = client.DefineProperty[*City, helper.ReferenceQueryBuilder[*City]]("city", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*City]{PropName: "city"})
+var TaxRateCity = helper.DefineProperty[*City, helper.ReferenceQueryBuilder[*City]]("city", model.ResourceProperty_REFERENCE, helper.ReferenceQueryBuilder[*City]{PropName: "city"})
 
-var TaxRateOrder = client.DefineProperty[int32, helper.Int32QueryBuilder]("order", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "order"})
+var TaxRateOrder = helper.DefineProperty[int32, helper.Int32QueryBuilder]("order", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "order"})
 
-var TaxRateUntil = client.DefineProperty[int32, helper.Int32QueryBuilder]("until", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "until"})
+var TaxRateUntil = helper.DefineProperty[int32, helper.Int32QueryBuilder]("until", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "until"})
 
-var TaxRateRate = client.DefineProperty[float32, helper.Float32QueryBuilder]("rate", model.ResourceProperty_FLOAT32, helper.Float32QueryBuilder{PropName: "rate"})
+var TaxRateRate = helper.DefineProperty[float32, helper.Float32QueryBuilder]("rate", model.ResourceProperty_FLOAT32, helper.Float32QueryBuilder{PropName: "rate"})
 
-var TaxRateVersion = client.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})
+var TaxRateVersion = helper.DefineProperty[int32, helper.Int32QueryBuilder]("version", model.ResourceProperty_INT32, helper.Int32QueryBuilder{PropName: "version"})

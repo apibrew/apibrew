@@ -137,20 +137,6 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		if err != nil {
 			return err
 		}
-	case "datasource", "data-source", "dataSource":
-		var dataSource = new(model.DataSource)
-
-		err = body.ToProtoMessage(dataSource)
-
-		if err != nil {
-			return err
-		}
-
-		err = e.Params.DhClient.Apply(ctx, dataSource)
-
-		if err != nil {
-			return err
-		}
 	case "namespace":
 		var namespace = new(model.Namespace)
 

@@ -14,7 +14,6 @@ type ApplyInterface interface {
 	ApplyNamespace(ctx context.Context, namespace *model.Namespace) error
 	ApplyExtension(ctx context.Context, extension *model.Extension) error
 	ApplyUser(ctx context.Context, user *model.User) error
-	ApplyDataSource(ctx context.Context, dataSource *model.DataSource) error
 	ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error
 }
 

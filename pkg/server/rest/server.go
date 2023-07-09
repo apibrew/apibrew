@@ -28,9 +28,9 @@ type Router interface {
 }
 
 type Server interface {
+	Init(config *model.AppConfig)
 	ServeH2C(lis net.Listener)
 	ServeHttp(lis net.Listener)
-	Init(data *model.InitData)
 	ServeHttp2Tls(tls net.Listener)
 }
 
@@ -43,7 +43,7 @@ type server struct {
 	docsApi                     docs.Api
 }
 
-func (s *server) Init(*model.InitData) {
+func (s *server) Init(config *model.AppConfig) {
 	s.configureRoutes()
 }
 

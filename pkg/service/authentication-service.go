@@ -201,14 +201,14 @@ func (s *authenticationService) LocateRoles(ctx context.Context, names []string)
 	return mapping.MapFromRecord(res, roleMappingHelper.MapFrom), nil
 }
 
-func (s *authenticationService) Init(data *model.InitData) {
-	s.DisableAuthentication = data.Config.GetDisableAuthentication()
+func (s *authenticationService) Init(config *model.AppConfig) {
+	s.DisableAuthentication = config.GetDisableAuthentication()
 
-	if data.Config.DisableAuthentication {
+	if config.DisableAuthentication {
 		return
 	}
 
-	if data.Config.JwtPrivateKey == "" {
+	if config.JwtPrivateKey == "" {
 		priv, err := rsa.GenerateKey(rand.Reader, 2048)
 
 		if err != nil {
@@ -218,11 +218,11 @@ func (s *authenticationService) Init(data *model.InitData) {
 		s.privateKey = priv
 		s.publicKey = &priv.PublicKey
 	} else {
-		privateKeyContent, err := os.ReadFile(data.Config.JwtPrivateKey)
+		privateKeyContent, err := os.ReadFile(config.JwtPrivateKey)
 		if err != nil {
 			panic(err)
 		}
-		publicKeyContent, err := os.ReadFile(data.Config.JwtPublicKey)
+		publicKeyContent, err := os.ReadFile(config.JwtPublicKey)
 		if err != nil {
 			panic(err)
 		}

@@ -18,7 +18,7 @@ func init() {
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(generatorCmd)
 	rootCmd.AddCommand(deleteCmd)
-	rootCmd.AddCommand(dataSourceCmd)
+	//rootCmd.AddCommand(dataSourceCmd)
 	defineRootFlags(rootCmd)
 }
 

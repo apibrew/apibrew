@@ -18,7 +18,7 @@ import (
 import _ "net/http/pprof"
 
 func Run() {
-	init := flag.String("init", "", "Initial Data for configuring system")
+	init := flag.String("config", "", "Config file")
 	logLevelStr := flag.String("log-level", "info", "Debug flag")
 	flag.Parse()
 	//grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
@@ -34,14 +34,14 @@ func Run() {
 
 	flag.Parse()
 
-	initData := &model.InitData{}
+	appConfig := &model.AppConfig{}
 
 	if strings.HasSuffix(*init, "pb") {
-		err = util.Read(*init, initData)
+		err = util.Read(*init, appConfig)
 	} else if strings.HasSuffix(*init, "json") {
-		err = util.ReadJson(*init, initData)
+		err = util.ReadJson(*init, appConfig)
 	} else {
-		log.Fatal("init config is not set")
+		log.Fatal("config is not set")
 	}
 
 	if err != nil {
@@ -50,7 +50,7 @@ func Run() {
 
 	app := new(service.App)
 
-	app.SetInitData(initData)
+	app.SetConfig(appConfig)
 
 	//if grayLogAddr != nil {
 	//	app.SetGrayLogAddr(*grayLogAddr)
@@ -59,7 +59,7 @@ func Run() {
 	app.Init()
 
 	// Create the main listener.
-	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", initData.Config.Host, initData.Config.Port))
+	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", appConfig.Host, appConfig.Port))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,9 +75,9 @@ func Run() {
 	http2Tls := tcpm.Match(cmux.TLS())
 
 	grpcServer := grpc.NewGrpcServer(app)
-	grpcServer.Init(initData)
+	grpcServer.Init(appConfig)
 	restServer := rest.NewServer(app)
-	restServer.Init(initData)
+	restServer.Init(appConfig)
 
 	go grpcServer.Serve(grpcl)
 	go restServer.ServeHttp(httpl)

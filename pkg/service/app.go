@@ -11,7 +11,7 @@ import (
 )
 
 type App struct {
-	initData                 *model.InitData
+	config                   *model.AppConfig
 	authenticationService    abs.AuthenticationService
 	authorizationService     abs.AuthorizationService
 	dataSourceService        abs.DataSourceService
@@ -103,13 +103,14 @@ func (app *App) Init() <-chan interface{} {
 }
 
 func (app *App) initServices() {
-	app.backendProviderService.Init(app.initData)
-	app.stdHandler.Init(app.initData)
-	app.resourceService.Init(app.initData)
-	app.dataSourceService.Init(app.initData)
-	app.namespaceService.Init(app.initData)
-	app.userService.Init(app.initData.InitUsers)
-	app.roleService.Init(append(app.initData.InitRoles, &model.Role{
+	app.backendProviderService.Init(app.config)
+	app.stdHandler.Init(app.config)
+	app.resourceService.Init(app.config)
+	app.recordService.Init(app.config)
+	app.dataSourceService.Init(app.config)
+	app.namespaceService.Init(app.config)
+	app.userService.Init([]*model.User{})
+	app.roleService.Init([]*model.Role{{
 		Name: "root",
 		SecurityConstraints: []*model.SecurityConstraint{
 			{
@@ -120,20 +121,20 @@ func (app *App) initServices() {
 				Permit:    model.PermitType_PERMIT_TYPE_ALLOW,
 			},
 		},
-	}))
-	app.authenticationService.Init(app.initData)
+	}})
+	app.authenticationService.Init(app.config)
 
-	app.extensionService.Init(app.initData)
+	app.extensionService.Init(app.config)
 }
 
-func (app *App) SetInitData(data *model.InitData) {
-	app.initData = data
+func (app *App) SetConfig(config *model.AppConfig) {
+	app.config = config
 
-	app.CheckInitData(data)
+	app.CheckInitData(config)
 }
 
-func (app *App) CheckInitData(data *model.InitData) {
-	if data.SystemDataSource == nil {
+func (app *App) CheckInitData(config *model.AppConfig) {
+	if config.SystemDataSource == nil {
 		log.Fatal("System dataSource is not set")
 	}
 }
