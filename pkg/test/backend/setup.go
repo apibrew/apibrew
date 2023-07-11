@@ -2,11 +2,11 @@ package backend
 
 import "github.com/apibrew/apibrew/pkg/model"
 
-var dhTestMysql = &modelnew.DataSource{
-	Backend:     modelnew.DataSourceBackendType_MYSQL,
+var dhTestMysql = &resource_model.DataSource{
+	Backend:     resource_model.DataSourceBackendType_MYSQL,
 	Name:        "dh-test-mysql",
 	Description: "dh-test-mysql",
-	Params: &modelnew.DataSource_MysqlParams{
+	Params: &resource_model.DataSource_MysqlParams{
 		MysqlParams: &model.MysqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
@@ -18,11 +18,11 @@ var dhTestMysql = &modelnew.DataSource{
 	},
 }
 
-var dhTestRedis = &modelnew.DataSource{
-	Backend:     modelnew.DataSourceBackendType_REDIS,
+var dhTestRedis = &resource_model.DataSource{
+	Backend:     resource_model.DataSourceBackendType_REDIS,
 	Name:        "dh-test-redis",
 	Description: "dh-test-redis",
-	Params: &modelnew.DataSource_RedisParams{
+	Params: &resource_model.DataSource_RedisParams{
 		RedisParams: &model.RedisParams{
 			Addr:     "localhost:6379",
 			Password: "",
@@ -31,11 +31,11 @@ var dhTestRedis = &modelnew.DataSource{
 	},
 }
 
-var dhTestMongo = &modelnew.DataSource{
-	Backend:     modelnew.DataSourceBackendType_MONGODB,
+var dhTestMongo = &resource_model.DataSource{
+	Backend:     resource_model.DataSourceBackendType_MONGODB,
 	Name:        "dh-test-mongo",
 	Description: "dh-test-mongo",
-	Params: &modelnew.DataSource_MongoParams{
+	Params: &resource_model.DataSource_MongoParams{
 		MongoParams: &model.MongoParams{
 			Uri:    "mongodb://127.0.0.1:27017",
 			DbName: "dhTest",

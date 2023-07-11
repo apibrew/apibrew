@@ -13,14 +13,14 @@ import (
 	"testing"
 )
 
-var dataSources = []*modelnew.DataSource{
+var dataSources = []*resource_model.DataSource{
 	setup.DhTest,
 	dhTestMysql,
 	dhTestRedis,
 	dhTestMongo,
 }
 
-var resources = make(map[*modelnew.DataSource]*model.Resource)
+var resources = make(map[*resource_model.DataSource]*model.Resource)
 
 func TestMain(t *testing.M) {
 	setup.SetupDataSources(setup.Ctx, dataSources)

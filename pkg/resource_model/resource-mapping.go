@@ -494,24 +494,12 @@ func (m *ResourceSecurityConstraintMapper) FromProperties(properties map[string]
 		*s.PropertyValue = val.(string)
 	}
 	if properties["propertyMode"] != nil {
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_ENUM).UnPack(properties["propertyMode"])
-
-		if err != nil {
-			panic(err)
-		}
-
 		s.PropertyMode = new(ResourcePropertyMode)
-		*s.PropertyMode = val.(ResourcePropertyMode)
+		*s.PropertyMode = (ResourcePropertyMode)(properties["propertyMode"].GetStringValue())
 	}
 	if properties["operation"] != nil {
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_ENUM).UnPack(properties["operation"])
-
-		if err != nil {
-			panic(err)
-		}
-
 		s.Operation = new(ResourceOperation)
-		*s.Operation = val.(ResourceOperation)
+		*s.Operation = (ResourceOperation)(properties["operation"].GetStringValue())
 	}
 	if properties["recordIds"] != nil {
 		s.RecordIds = []string{}
@@ -560,13 +548,7 @@ func (m *ResourceSecurityConstraintMapper) FromProperties(properties map[string]
 		*s.Role = val.(string)
 	}
 	if properties["permit"] != nil {
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_ENUM).UnPack(properties["permit"])
-
-		if err != nil {
-			panic(err)
-		}
-
-		s.Permit = val.(ResourcePermit)
+		s.Permit = (ResourcePermit)(properties["permit"].GetStringValue())
 	}
 	if properties["localFlags"] != nil {
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(properties["localFlags"])

@@ -9,7 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/modelnew"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
@@ -17,7 +17,7 @@ import (
 )
 
 type mysqlBackendOptions struct {
-	dataSource    *modelnew.DataSource
+	dataSource    *resource_model.DataSource
 	handleDbError func(ctx context.Context, err error) errors.ServiceError
 }
 

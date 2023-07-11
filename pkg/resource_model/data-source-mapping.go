@@ -188,13 +188,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 		*s.Description = val.(string)
 	}
 	if properties["backend"] != nil {
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_ENUM).UnPack(properties["backend"])
-
-		if err != nil {
-			panic(err)
-		}
-
-		s.Backend = val.(DataSourceBackend)
+		s.Backend = (DataSourceBackend)(properties["backend"].GetStringValue())
 	}
 	if properties["options"] != nil {
 		s.Options = make(map[string]string)

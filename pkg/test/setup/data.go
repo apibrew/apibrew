@@ -5,12 +5,12 @@ import (
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 )
 
-var SystemDataSource = &modelnew.DataSource{
+var SystemDataSource = &resource_model.DataSource{
 	Id:          "system",
-	Backend:     modelnew.DataSourceBackendType_POSTGRESQL,
+	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
 	Name:        "system",
 	Description: "system",
-	Params: &modelnew.DataSource_PostgresqlParams{
+	Params: &resource_model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
@@ -22,12 +22,12 @@ var SystemDataSource = &modelnew.DataSource{
 	},
 }
 
-var DefaultDataSource = &modelnew.DataSource{
+var DefaultDataSource = &resource_model.DataSource{
 	Id:          "default",
-	Backend:     modelnew.DataSourceBackendType_POSTGRESQL,
+	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
 	Name:        "default",
 	Description: "default",
-	Params: &modelnew.DataSource_PostgresqlParams{
+	Params: &resource_model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
@@ -39,11 +39,11 @@ var DefaultDataSource = &modelnew.DataSource{
 	},
 }
 
-var DhTest = &modelnew.DataSource{
-	Backend:     modelnew.DataSourceBackendType_POSTGRESQL,
+var DhTest = &resource_model.DataSource{
+	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
 	Name:        "dh-test",
 	Description: "dh-test",
-	Params: &modelnew.DataSource_PostgresqlParams{
+	Params: &resource_model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
@@ -55,11 +55,11 @@ var DhTest = &modelnew.DataSource{
 	},
 }
 
-var DhTestWrongPassword = &modelnew.DataSource{
-	Backend:     modelnew.DataSourceBackendType_POSTGRESQL,
+var DhTestWrongPassword = &resource_model.DataSource{
+	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1-wrong",
 	Description: "data-source-1-wrong",
-	Params: &modelnew.DataSource_PostgresqlParams{
+	Params: &resource_model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test_wrong_pass",
 			Password:      "dh_test_wrong_pass",
@@ -71,11 +71,11 @@ var DhTestWrongPassword = &modelnew.DataSource{
 	},
 }
 
-var DataSourceDhTest = &modelnew.DataSource{
-	Backend:     modelnew.DataSourceBackendType_POSTGRESQL,
+var DataSourceDhTest = &resource_model.DataSource{
+	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-test",
 	Description: "data-source-test",
-	Params: &modelnew.DataSource_PostgresqlParams{
+	Params: &resource_model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
@@ -87,12 +87,12 @@ var DataSourceDhTest = &modelnew.DataSource{
 	},
 }
 
-var DataSource1 = &modelnew.DataSource{
-	Backend:     modelnew.DataSourceBackendType_POSTGRESQL,
+var DataSource1 = &resource_model.DataSource{
+	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
 	Name:        "data-source-1",
 	Description: "data-source-1",
 	Version:     1,
-	Params: &modelnew.DataSource_PostgresqlParams{
+	Params: &resource_model.DataSource_PostgresqlParams{
 		PostgresqlParams: &model.PostgresqlParams{
 			Username:      "dh_test",
 			Password:      "dh_test",
