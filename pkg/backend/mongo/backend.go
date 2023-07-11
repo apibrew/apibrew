@@ -5,7 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/modelnew"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,7 +15,7 @@ import (
 )
 
 type mongoBackend struct {
-	dataSource *modelnew.DataSource
+	dataSource *resource_model.DataSource
 	client     *mongo.Client
 	dbName     string
 	schema     *abs.Schema

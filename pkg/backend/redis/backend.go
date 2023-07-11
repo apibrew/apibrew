@@ -5,7 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/modelnew"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
@@ -14,7 +14,7 @@ import (
 )
 
 type redisBackend struct {
-	dataSource *modelnew.DataSource
+	dataSource *resource_model.DataSource
 	rdb        *redis.Client
 	schema     *abs.Schema
 }

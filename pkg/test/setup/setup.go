@@ -19,7 +19,7 @@ var Ctx context.Context
 func init() {
 	initClient()
 	initTextContext()
-	dataSources := []*modelnew.DataSource{
+	dataSources := []*resource_model.DataSource{
 		DataSourceDhTest,
 		DhTest,
 		DataSource1,
@@ -32,7 +32,7 @@ func init() {
 	SetupResources(Ctx, resources)
 }
 
-func SetupDataSources(ctx context.Context, dataSources []*modelnew.DataSource) {
+func SetupDataSources(ctx context.Context, dataSources []*resource_model.DataSource) {
 	// creating data sources
 	listDataSourceResp, err := dataSourceClient.List(ctx, &stub.ListDataSourceRequest{})
 
@@ -40,7 +40,7 @@ func SetupDataSources(ctx context.Context, dataSources []*modelnew.DataSource) {
 		panic(err)
 	}
 
-	var dataSourcesForCreate []*modelnew.DataSource
+	var dataSourcesForCreate []*resource_model.DataSource
 
 	for _, cd := range dataSources {
 		found := false

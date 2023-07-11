@@ -21,7 +21,7 @@ package apbr
 //var dataSourcePrepareEntityNames *string
 //var dataSourcePrepareCatalogs *string
 //
-//func prepareResourcesFromDataSource(ctx context.Context, dataSource *modelnew.DataSource) <-chan *model.Resource {
+//func prepareResourcesFromDataSource(ctx context.Context, dataSource *resource_model.DataSource) <-chan *model.Resource {
 //	ch := make(chan *model.Resource)
 //
 //	go func() {

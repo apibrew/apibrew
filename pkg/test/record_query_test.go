@@ -77,7 +77,7 @@ func TestListRecord1(t *testing.T) {
 	})
 }
 
-func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *modelnew.DataSource, catalog, entity string, exec func(resource *model.Resource)) {
+func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *resource_model.DataSource, catalog, entity string, exec func(resource *model.Resource)) {
 	log.Print("begin PrepareResourceFromEntity", catalog, entity, dataSource.Id)
 	res, err := dataSourceClient.PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
 		Id:      dataSource.Id,

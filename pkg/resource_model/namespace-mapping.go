@@ -361,24 +361,12 @@ func (m *NamespaceSecurityConstraintMapper) FromProperties(properties map[string
 		*s.PropertyValue = val.(string)
 	}
 	if properties["propertyMode"] != nil {
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_ENUM).UnPack(properties["propertyMode"])
-
-		if err != nil {
-			panic(err)
-		}
-
 		s.PropertyMode = new(NamespacePropertyMode)
-		*s.PropertyMode = val.(NamespacePropertyMode)
+		*s.PropertyMode = (NamespacePropertyMode)(properties["propertyMode"].GetStringValue())
 	}
 	if properties["operation"] != nil {
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_ENUM).UnPack(properties["operation"])
-
-		if err != nil {
-			panic(err)
-		}
-
 		s.Operation = new(NamespaceOperation)
-		*s.Operation = val.(NamespaceOperation)
+		*s.Operation = (NamespaceOperation)(properties["operation"].GetStringValue())
 	}
 	if properties["recordIds"] != nil {
 		s.RecordIds = []string{}
@@ -427,13 +415,7 @@ func (m *NamespaceSecurityConstraintMapper) FromProperties(properties map[string
 		*s.Role = val.(string)
 	}
 	if properties["permit"] != nil {
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_ENUM).UnPack(properties["permit"])
-
-		if err != nil {
-			panic(err)
-		}
-
-		s.Permit = val.(NamespacePermit)
+		s.Permit = (NamespacePermit)(properties["permit"].GetStringValue())
 	}
 	if properties["localFlags"] != nil {
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(properties["localFlags"])

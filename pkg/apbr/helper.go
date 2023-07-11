@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//func loadDataSourceByNameOrId(ctx context.Context, id string, name string) *modelnew.DataSource {
+//func loadDataSourceByNameOrId(ctx context.Context, id string, name string) *resource_model.DataSource {
 //	if id == "" {
 //		resp := check2(GetDhClient().GetDataSourceClient().List(ctx, &stub.ListDataSourceRequest{
 //			Token: GetDhClient().GetToken(),

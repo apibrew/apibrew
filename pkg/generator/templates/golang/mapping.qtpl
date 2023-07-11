@@ -107,6 +107,13 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
         for _, v := range properties["{%s property.Name %}"].AsInterface().([]interface{}) {
             s.{%= GoName(property.Name) %} = append(s.{%= GoName(property.Name) %}, v.({%= PropPureGoType(resource, property.Item, property.Name) %}))
         }
+    {%- elseif property.Type == model.ResourceProperty_ENUM -%}
+        {%- if isNullable(property) -%}
+        s.{%= GoName(property.Name) %} = new({%= PropPureGoType(resource, property, property.Name) %})
+        *s.{%= GoName(property.Name) %} = ({%= PropPureGoType(resource, property, property.Name) %})(properties["{%s property.Name %}"].GetStringValue())
+        {%- else -%}
+        s.{%= GoName(property.Name) %} = ({%= PropPureGoType(resource, property, property.Name) %})(properties["{%s property.Name %}"].GetStringValue())
+        {%- endif -%}
     {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
         var mappedValue = {%= GoName(resource.Name + "_" + *property.TypeRef) %}MapperInstance.FromProperties(properties["{%s property.Name %}"].GetStructValue().Fields)
         {% if property.Required %}

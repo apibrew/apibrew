@@ -10,17 +10,18 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/modelnew"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	backend_proxy "github.com/apibrew/apibrew/pkg/service/backend-proxy"
 	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/util"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 )
 
 type backendProviderService struct {
-	systemDataSource *modelnew.DataSource
+	systemDataSource *resource_model.DataSource
 	backendMap       map[string]abs.Backend
 	backendIdMap     map[string]string
 	schema           *abs.Schema
@@ -52,7 +53,7 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 		return b.backendMap[dataSourceId], nil
 	}
 
-	if dataSourceId == b.systemDataSource.Id {
+	if dataSourceId == b.systemDataSource.Id.String() {
 		return b.GetSystemBackend(ctx), nil
 	} else {
 		systemCtx := security.WithSystemContext(context.TODO())
@@ -63,11 +64,7 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 			return nil, err
 		}
 
-		dataSource := &modelnew.DataSource{}
-
-		dataSource.FromRecord(record)
-
-		return b.GetBackend(dataSource), nil
+		return b.GetBackend(resource_model.DataSourceMapperInstance.FromRecord(record)), nil
 	}
 }
 
@@ -108,11 +105,7 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 		var record = records[0]
 		record.Id = records[0].Properties["id"].GetStringValue()
 
-		dataSource := &modelnew.DataSource{}
-
-		dataSource.FromRecord(record)
-
-		return b.GetBackend(dataSource), nil
+		return b.GetBackend(resource_model.DataSourceMapperInstance.FromRecord(record)), nil
 	}
 }
 
@@ -120,9 +113,9 @@ func (b *backendProviderService) GetSystemBackend(_ context.Context) abs.Backend
 	return b.GetBackend(b.systemDataSource)
 }
 
-func (b *backendProviderService) GetBackend(dataSource *modelnew.DataSource) abs.Backend {
-	if b.backendMap[dataSource.Id] != nil {
-		return b.backendMap[dataSource.Id]
+func (b *backendProviderService) GetBackend(dataSource *resource_model.DataSource) abs.Backend {
+	if b.backendMap[dataSource.Id.String()] != nil {
+		return b.backendMap[dataSource.Id.String()]
 	}
 
 	constructor := b.GetBackendConstructor(dataSource.GetBackend())
@@ -134,22 +127,22 @@ func (b *backendProviderService) GetBackend(dataSource *modelnew.DataSource) abs
 
 	instance = proxy
 
-	b.backendMap[dataSource.Id] = instance
-	b.backendIdMap[dataSource.Id] = dataSource.Name
+	b.backendMap[dataSource.Id.String()] = instance
+	b.backendIdMap[dataSource.Id.String()] = dataSource.Name
 	b.backendMap[dataSource.Name] = instance
 
 	return instance
 }
 
-func (b *backendProviderService) GetBackendConstructor(backend modelnew.DataSourceBackendType) abs.BackendConstructor {
+func (b *backendProviderService) GetBackendConstructor(backend resource_model.DataSourceBackend) abs.BackendConstructor {
 	switch backend {
-	case modelnew.DataSourceBackendType_POSTGRESQL:
+	case resource_model.DataSourceBackend_POSTGRESQL:
 		return postgres.NewPostgresResourceServiceBackend
-	case modelnew.DataSourceBackendType_MYSQL:
+	case resource_model.DataSourceBackend_MYSQL:
 		return mysql.NewMysqlResourceServiceBackend
-	case modelnew.DataSourceBackendType_MONGODB:
+	case resource_model.DataSourceBackend_MONGODB:
 		return mongo.NewMongoResourceServiceBackend
-	case modelnew.DataSourceBackendType_REDIS:
+	case resource_model.DataSourceBackend_REDIS:
 		return redis.NewRedisResourceServiceBackend
 	}
 
@@ -157,10 +150,10 @@ func (b *backendProviderService) GetBackendConstructor(backend modelnew.DataSour
 }
 
 func (b *backendProviderService) Init(config *model.AppConfig) {
-	b.systemDataSource = &modelnew.DataSource{}
-	b.systemDataSource.FromRecord(config.SystemDataSource)
+	b.systemDataSource = resource_model.DataSourceMapperInstance.FromRecord(config.SystemDataSource)
 
-	b.systemDataSource.Id = "system"
+	id := uuid.New()
+	b.systemDataSource.Id = &id
 	b.systemDataSource.Name = "system"
 }
 

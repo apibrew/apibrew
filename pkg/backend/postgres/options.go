@@ -9,7 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/modelnew"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/lib/pq"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -17,7 +17,7 @@ import (
 
 type postgreSqlBackendOptions struct {
 	handleDbError func(ctx context.Context, err error) errors.ServiceError
-	dataSource    *modelnew.DataSource
+	dataSource    *resource_model.DataSource
 }
 
 func (p *postgreSqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
