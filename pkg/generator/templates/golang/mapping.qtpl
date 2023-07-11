@@ -1,0 +1,136 @@
+{% import "github.com/apibrew/apibrew/pkg/model" %}
+{% import "strings" %}
+
+{%- func PropertyTo(property *model.ResourceProperty, isNullable bool, varName string) -%}
+    {%- if isNullable -%}
+    {%- code varName = "*" + varName -%}
+    {%- endif -%}
+    {%- if isPrimitive(property) -%}
+        {%= GoVarName(property.Name) %}, err := types.ByResourcePropertyType(model.ResourceProperty_{%s property.Type.String() %}).Pack({%s varName %})
+        if err != nil {
+            panic(err)
+        }
+        properties["{%s property.Name %}"] = {%= GoVarName(property.Name) %}
+        {%- else -%}
+    {%- endif -%}
+{%- endfunc -%}
+
+
+
+
+{%- func GenerateResourceMappingCode(pkg string, resource *model.Resource, resources []*model.Resource) -%}
+
+{%= GenerateResourceMappingHeaderCode(pkg, resource, resources) %}
+{%= GenerateResourceMappingBodyCode(pkg, resource, GoName(resource.Name), resource.Properties, resources) %}
+
+{%- for _, subType := range getAllSubTypes(resource) -%}
+{%- code typeName := GoName(resource.Name + "_" + subType.Name) -%}
+{%= GenerateResourceMappingBodyCode(pkg, resource, typeName, subType.Properties, resources ) %}
+{%- endfor -%}
+
+{%- endfunc -%}
+
+
+{%- func GenerateResourceMappingHeaderCode(pkg string, resource *model.Resource, resources []*model.Resource) -%}
+{%- code pkgParts := strings.Split(pkg, "/") -%}
+{%- code pkgName := pkgParts[len(pkgParts)-1] -%}
+package {%s pkgName %}
+
+import (
+    "github.com/apibrew/apibrew/pkg/model"
+    "github.com/apibrew/apibrew/pkg/types"
+    "google.golang.org/protobuf/types/known/structpb"
+)
+
+{%- for _, importLine := range getImports(resource.Properties) -%}
+import "{%s importLine %}"
+{%- endfor -%}
+{%- endfunc -%}
+
+
+
+
+{%- func GenerateResourceMappingBodyCode(pkg string, resource *model.Resource, typeName string, properties []*model.ResourceProperty, resources []*model.Resource) -%}
+type {%s typeName %}Mapper struct {
+}
+
+func New{%s typeName %}Mapper() *{%s typeName %}Mapper {
+    return &{%s typeName %}Mapper{}
+}
+
+var {%s typeName %}MapperInstance = New{%s typeName %}Mapper()
+
+func (m *{%s typeName %}Mapper) New() *{%s typeName %} {
+    return &{%s typeName %}{}
+}
+
+func (m *{%s typeName %}Mapper) ToRecord({%= GoVarName(typeName)%} *{%s typeName %}) *model.Record {
+    var rec = &model.Record{}
+    rec.Properties = m.ToProperties({%= GoVarName(typeName)%})
+    return rec
+}
+
+func (m *{%s typeName %}Mapper) FromRecord(record *model.Record) *{%s typeName %}  {
+    return m.FromProperties(record.Properties)
+}
+
+func (m *{%s typeName %}Mapper) ToProperties({%= GoVarName(typeName)%} *{%s typeName %}) map[string]*structpb.Value {
+    var properties = make(map[string]*structpb.Value)
+
+    {%- for _, property := range properties -%}
+    {%- code varName := GoVarName(typeName) + "." + GoName(property.Name) -%}
+        {%- if isNullable(property) -%}
+    if {%s varName %} != nil {
+        {%-= PropertyTo(property, true, varName) -%}
+    }
+    {%- else -%}
+    {%-= PropertyTo(property, false, varName) -%}
+    {%- endif -%}
+
+    {%- endfor -%}
+    return properties
+}
+
+func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.Value) *{%s typeName %}  {
+    var s = m.New()
+{%- for _, property := range properties -%}
+    if properties["{%s property.Name %}"] != nil {
+    {%- if property.Type == model.ResourceProperty_REFERENCE -%}
+        s.{%= GoName(property.Name) %} = {%= GoName(property.Reference.Resource) %}MapperInstance.FromProperties(properties["{%s property.Name %}"].GetStructValue().Fields)
+    {%- elseif property.Type == model.ResourceProperty_MAP -%}
+        s.{%= GoName(property.Name) %} = make({%= PropPureGoType(resource, property, property.Name) %})
+        for k, v := range properties["{%s property.Name %}"].GetStructValue().Fields {
+            s.{%= GoName(property.Name) %}[k] = v.AsInterface().({%= PropPureGoType(resource, property.Item, property.Name) %})
+        }
+    {%- elseif property.Type == model.ResourceProperty_LIST -%}
+        s.{%= GoName(property.Name) %} = []{%= PropPureGoType(resource, property.Item, property.Name) %}{}
+        for _, v := range properties["{%s property.Name %}"].AsInterface().([]interface{}) {
+            s.{%= GoName(property.Name) %} = append(s.{%= GoName(property.Name) %}, v.({%= PropPureGoType(resource, property.Item, property.Name) %}))
+        }
+    {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
+        var mappedValue = {%= GoName(resource.Name + "_" + *property.TypeRef) %}MapperInstance.FromProperties(properties["{%s property.Name %}"].GetStructValue().Fields)
+        {% if property.Required %}
+        s.{%= GoName(property.Name) %} = *mappedValue
+        {% else %}
+        s.{%= GoName(property.Name) %} = mappedValue
+        {% endif %}
+    {%- else -%}
+        val, err := types.ByResourcePropertyType(model.ResourceProperty_{%s property.Type.String() %}).UnPack(properties["{%s property.Name %}"])
+
+        if err != nil {
+            panic(err)
+        }
+
+        {%- if isNullable(property) -%}
+        s.{%= GoName(property.Name) %} = new({%= PropPureGoType(resource, property, property.Name) %})
+        *s.{%= GoName(property.Name) %} = val.({%= PropPureGoType(resource, property, property.Name) %})
+        {%- else -%}
+        s.{%= GoName(property.Name) %} = val.({%= PropertyType(resource, property) %})
+        {%- endif -%}
+    {%- endif -%}
+    }
+{%- endfor -%}
+    return s
+}
+
+{% endfunc %}

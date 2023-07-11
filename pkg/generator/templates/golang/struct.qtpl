@@ -1,0 +1,17 @@
+{% import "github.com/apibrew/apibrew/pkg/model" %}
+
+{%- func GenerateStructCode(pkg string, resource*model.Resource, name string, properties []*model.ResourceProperty) -%}
+{%- code typeName := GoName(name) -%}
+type {%s typeName %} struct {
+    {%- for _, property := range properties -%}
+	{%= GoName(property.Name) %} {%= PropertyType(resource, property) %}
+	{%- endfor -%}
+}
+
+{%- for _, property := range properties -%}
+func (s *{%s typeName %}) Get{%= GoName(property.Name) %}() {%= PropertyType(resource, property) %} {
+	return s.{%= GoName(property.Name) %}
+}
+{%- endfor -%}
+
+{% endfunc %}

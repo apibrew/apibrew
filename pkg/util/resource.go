@@ -154,3 +154,42 @@ func GetResourceSinglePrimaryProp(resource *model.Resource) *model.ResourcePrope
 
 	return nil
 }
+
+func ResourceWalkProperties(resource *model.Resource, callback func(path string, property *model.ResourceProperty)) {
+	ResourceWalkPropertiesRecursive(resource, "", resource.Properties, callback)
+}
+
+func ResourceWalkPropertiesRecursive(resource *model.Resource, path string, properties []*model.ResourceProperty, callback func(path string, property *model.ResourceProperty)) {
+	for _, property := range properties {
+		callback(path, property)
+
+		if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
+			ResourceWalkPropertiesRecursive(resource, path+"."+property.Name+"[]", []*model.ResourceProperty{property.Item}, func(path string, property *model.ResourceProperty) {
+				callback(path, property)
+			})
+		} else if property.Type == model.ResourceProperty_STRUCT {
+			ResourceWalkPropertiesRecursive(resource, path+"."+property.Name, property.Properties, func(path string, property *model.ResourceProperty) {
+				callback(path, property)
+			})
+
+			if property.TypeRef != nil {
+				var subType *model.ResourceSubType
+
+				for _, subTypeItem := range resource.Types {
+					if subTypeItem.Name == *property.TypeRef {
+						subType = subTypeItem
+						break
+					}
+				}
+
+				if subType == nil {
+					panic("sub type not found: " + *property.TypeRef)
+				}
+
+				ResourceWalkPropertiesRecursive(resource, path+"."+property.Name, subType.Properties, func(path string, property *model.ResourceProperty) {
+					callback(path, property)
+				})
+			}
+		}
+	}
+}

@@ -60,7 +60,6 @@ type ResourceService interface {
 	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
 	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
 	List(ctx context.Context) []*model.Resource
-	ReloadSchema(ctx context.Context) errors.ServiceError
 	Get(ctx context.Context, id string) *model.Resource
 	GetSchema() *Schema
 	PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError)

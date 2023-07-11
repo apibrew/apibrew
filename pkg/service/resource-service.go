@@ -67,12 +67,7 @@ func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, reso
 	return result, nil
 }
 
-func (r *resourceService) ReloadSchema(ctx context.Context) errors.ServiceError {
-	r.mu.Lock()
-	defer func() {
-		r.mu.Unlock()
-	}()
-
+func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError {
 	records, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourceResource, abs.ListRecordParams{
 		Limit: 1000000,
 		ResolveReferences: []string{
@@ -218,7 +213,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 
 	// running migration through existing resource
 	//reload schema for comparing
-	if err := r.ReloadSchema(ctx); err != nil {
+	if err := r.reloadSchema(ctx); err != nil {
 		return err
 	}
 
@@ -264,7 +259,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		r.mustReloadResources(context.TODO())
 	}()
 
-	if err := r.ApplyPlan(txCtx, plan); err != nil {
+	if err := r.applyPlan(txCtx, plan); err != nil {
 		return err
 	}
 
@@ -316,12 +311,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	return nil
 }
 
-func (r *resourceService) ApplyPlan(ctx context.Context, plan *model.ResourceMigrationPlan) errors.ServiceError {
-	r.mu.Lock()
-	defer func() {
-		r.mu.Unlock()
-	}()
-
+func (r *resourceService) applyPlan(ctx context.Context, plan *model.ResourceMigrationPlan) errors.ServiceError {
 	var currentPropertyMap = util.GetNamedMap(plan.CurrentResource.Properties)
 	var existingPropertyMap = util.GetNamedMap(plan.ExistingResource.Properties)
 
@@ -707,17 +697,17 @@ func (r *resourceService) Init(config *model.AppConfig) {
 		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
 	}
 
-	r.MigrateResource(resources.NamespaceResource)
-	r.MigrateResource(resources.DataSourceResource)
+	r.migrateResource(resources.NamespaceResource)
+	r.migrateResource(resources.DataSourceResource)
 
-	r.MigrateResource(resources.ResourceResource)
-	r.MigrateResource(resources.ResourcePropertyResource)
+	r.migrateResource(resources.ResourceResource)
+	r.migrateResource(resources.ResourcePropertyResource)
 
-	r.MigrateResource(resources.UserResource)
-	r.MigrateResource(resources.RoleResource)
-	r.MigrateResource(resources.ExtensionResource)
+	r.migrateResource(resources.UserResource)
+	r.migrateResource(resources.RoleResource)
+	r.migrateResource(resources.ExtensionResource)
 
-	if err := r.ReloadSchema(context.TODO()); err != nil {
+	if err := r.reloadSchema(context.TODO()); err != nil {
 		panic(err)
 	}
 
@@ -734,12 +724,7 @@ func (r *resourceService) Init(config *model.AppConfig) {
 	}
 }
 
-func (r *resourceService) MigrateResource(resource *model.Resource) {
-	r.mu.Lock()
-	defer func() {
-		r.mu.Unlock()
-	}()
-
+func (r *resourceService) migrateResource(resource *model.Resource) {
 	if resource.Annotations == nil {
 		resource.Annotations = make(map[string]string)
 	}
@@ -855,7 +840,7 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 }
 
 func (r *resourceService) mustReloadResources(ctx context.Context) {
-	if err := r.ReloadSchema(ctx); err != nil {
+	if err := r.reloadSchema(ctx); err != nil {
 		panic(err)
 	}
 }

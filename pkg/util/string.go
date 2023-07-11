@@ -21,3 +21,11 @@ func Capitalize(str string) string {
 	runes[0] = unicode.ToUpper(runes[0])
 	return string(runes)
 }
+
+func StringPointer(str string) *string {
+	var pointer = new(string)
+
+	*pointer = str
+
+	return pointer
+}

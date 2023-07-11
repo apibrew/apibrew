@@ -2142,6 +2142,10 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/ResourceProperty'
+                annotations:
+                    type: object
+                    additionalProperties:
+                        type: string
         SearchRecordRequest:
             type: object
             properties:
