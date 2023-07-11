@@ -82,3 +82,18 @@ var AuditProperties = []*model.ResourceProperty{
 	AuditPropertyCreatedOn,
 	AuditPropertyUpdatedOn,
 }
+
+var AnnotationsProperty = &model.ResourceProperty{
+	Name:      "annotations",
+	Type:      model.ResourceProperty_MAP,
+	Mapping:   "annotations",
+	Required:  false,
+	Immutable: false,
+	Primary:   false,
+	Item: &model.ResourceProperty{
+		Type: model.ResourceProperty_STRING,
+	},
+	Annotations: map[string]string{
+		annotations.SpecialProperty: "true",
+	},
+}

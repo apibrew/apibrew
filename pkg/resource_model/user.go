@@ -1,0 +1,52 @@
+package resource_model
+
+import "github.com/google/uuid"
+import "time"
+
+type User struct {
+	Id                  *uuid.UUID
+	Version             *int32
+	CreatedBy           *string
+	UpdatedBy           *string
+	CreatedOn           *time.Time
+	UpdatedOn           *time.Time
+	Username            string
+	Password            *string
+	SecurityConstraints []interface{}
+	Details             *interface{}
+	Roles               []string
+}
+
+func (s *User) GetId() *uuid.UUID {
+	return s.Id
+}
+func (s *User) GetVersion() *int32 {
+	return s.Version
+}
+func (s *User) GetCreatedBy() *string {
+	return s.CreatedBy
+}
+func (s *User) GetUpdatedBy() *string {
+	return s.UpdatedBy
+}
+func (s *User) GetCreatedOn() *time.Time {
+	return s.CreatedOn
+}
+func (s *User) GetUpdatedOn() *time.Time {
+	return s.UpdatedOn
+}
+func (s *User) GetUsername() string {
+	return s.Username
+}
+func (s *User) GetPassword() *string {
+	return s.Password
+}
+func (s *User) GetSecurityConstraints() []interface{} {
+	return s.SecurityConstraints
+}
+func (s *User) GetDetails() *interface{} {
+	return s.Details
+}
+func (s *User) GetRoles() []string {
+	return s.Roles
+}

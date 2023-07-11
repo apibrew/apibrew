@@ -115,6 +115,7 @@ message ResourceIndex {
 message ResourceSubType {
   string name = 1;
   repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
+  map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
 
 message Resource {

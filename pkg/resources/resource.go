@@ -3,6 +3,7 @@ package resources
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
+	sub_types "github.com/apibrew/apibrew/pkg/resources/sub-types"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 )
 
@@ -12,6 +13,9 @@ var ResourceResource = &model.Resource{
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "resource",
+	},
+	Types: []*model.ResourceSubType{
+		sub_types.SecurityConstraint,
 	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,
@@ -96,12 +100,7 @@ var ResourceResource = &model.Resource{
 			Length:   256,
 			Required: false,
 		},
-		{
-			Name:     "annotations",
-			Mapping:  "annotations",
-			Type:     model.ResourceProperty_OBJECT,
-			Required: false,
-		},
+		special.AnnotationsProperty,
 		{
 			Name:     "indexes",
 			Mapping:  "indexes",

@@ -33,3 +33,6 @@ const AllowPublicAccess = "AllowPublicAccess"
 
 // sql
 const SQLType = "SQLType"
+
+// code generator
+const GenericType = "GenericType"
