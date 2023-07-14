@@ -2,14 +2,14 @@ package grpc
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 )
 
 type dataSourceServer struct {
 	stub.DataSourceServer
-	service abs.DataSourceService
+	service service.DataSourceService
 }
 
 func (d *dataSourceServer) ListEntities(ctx context.Context, request *stub.ListEntitiesRequest) (*stub.ListEntitiesResponse, error) {
@@ -37,7 +37,7 @@ func (d *dataSourceServer) PrepareResourceFromEntity(ctx context.Context, reques
 	}, util.ToStatusError(err)
 }
 
-func NewDataSourceServer(dataSourceService abs.DataSourceService) stub.DataSourceServer {
+func NewDataSourceServer(dataSourceService service.DataSourceService) stub.DataSourceServer {
 	return &dataSourceServer{
 		service: dataSourceService,
 	}

@@ -2,16 +2,16 @@ package rest
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest/docs"
-	"github.com/apibrew/apibrew/pkg/service/security"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/stub/rest"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
@@ -39,7 +39,7 @@ type server struct {
 	certFile                    string
 	keyFile                     string
 	recordsApiFiltersMiddleWare *recordsApiFiltersMiddleWare
-	container                   abs.Container
+	container                   service.Container
 	docsApi                     docs.Api
 }
 
@@ -50,7 +50,7 @@ func (s *server) Init(config *model.AppConfig) {
 func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if s.container.GetAuthenticationService().AuthenticationDisabled() {
-			req = req.WithContext(security.WithSystemContext(req.Context()))
+			req = req.WithContext(util.WithSystemContext(req.Context()))
 
 			next.ServeHTTP(w, req)
 			return
@@ -77,7 +77,7 @@ func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 			userDetails, err := s.container.GetAuthenticationService().ParseAndVerifyToken(token)
 
 			if err == nil {
-				ctx := security.WithUserDetails(req.Context(), *userDetails)
+				ctx := util.WithUserDetails(req.Context(), *userDetails)
 
 				ctx = logging.WithLogField(ctx, "User", userDetails.Username)
 
@@ -158,22 +158,13 @@ func (s *server) configureRoutes() {
 	if err := rest.RegisterRecordHandlerServer(context.TODO(), m, newRecordService(s.container.GetRecordService())); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterUserHandlerServer(context.TODO(), m, grpc.NewUserServer(s.container.GetUserService())); err != nil {
-		log.Fatal(err)
-	}
 	if err := stub.RegisterRecordHandlerServer(context.TODO(), m, grpc.NewRecordServer(s.container.GetRecordService(), s.container.GetAuthenticationService())); err != nil {
 		log.Fatal(err)
 	}
 	if err := stub.RegisterResourceHandlerServer(context.TODO(), m, grpc.NewResourceServer(s.container.GetResourceService())); err != nil {
 		log.Fatal(err)
 	}
-	if err := stub.RegisterNamespaceHandlerServer(context.TODO(), m, grpc.NewNamespaceServer(s.container.GetNamespaceService())); err != nil {
-		log.Fatal(err)
-	}
 	if err := stub.RegisterDataSourceHandlerServer(context.TODO(), m, grpc.NewDataSourceServer(s.container.GetDataSourceService())); err != nil {
-		log.Fatal(err)
-	}
-	if err := stub.RegisterExtensionHandlerServer(context.TODO(), m, grpc.NewExtensionServer(s.container.GetExtensionService())); err != nil {
 		log.Fatal(err)
 	}
 	if err := stub.RegisterWatchHandlerServer(context.TODO(), m, grpc.NewWatchServer(s.container.GetWatchService())); err != nil {
@@ -203,7 +194,7 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 	})
 }
 
-func NewServer(container abs.Container) Server {
+func NewServer(container service.Container) Server {
 	return &server{
 		container:                   container,
 		docsApi:                     docs.NewApi(container.GetResourceService()),

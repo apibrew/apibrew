@@ -3,9 +3,9 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -13,7 +13,7 @@ import (
 
 type resourceGrpcService struct {
 	stub.ResourceServer
-	resourceService abs.ResourceService
+	resourceService service.ResourceService
 }
 
 func (r resourceGrpcService) Create(ctx context.Context, request *stub.CreateResourceRequest) (*stub.CreateResourceResponse, error) {
@@ -113,6 +113,6 @@ func (r resourceGrpcService) PrepareResourceMigrationPlan(ctx context.Context, r
 	}, util.ToStatusError(err)
 }
 
-func NewResourceServer(resourceService abs.ResourceService) stub.ResourceServer {
+func NewResourceServer(resourceService service.ResourceService) stub.ResourceServer {
 	return &resourceGrpcService{resourceService: resourceService}
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 )
@@ -33,7 +32,7 @@ func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
 }
 
 func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
-	resp, err := r.client.GetRecordClient().Update(annotations.SetWithContext(security.SystemContext, annotations.CheckVersion, annotations.Enabled), &stub.UpdateRecordRequest{
+	resp, err := r.client.GetRecordClient().Update(annotations.SetWithContext(util.SystemContext, annotations.CheckVersion, annotations.Enabled), &stub.UpdateRecordRequest{
 		Token:     r.client.GetToken(),
 		Namespace: entity.GetNamespace(),
 		Resource:  entity.GetResourceName(),
@@ -108,11 +107,6 @@ func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, error)
 
 		return newInstance
 	}), nil
-}
-
-func (r repository[T]) Extend(extension Extension) RepositoryExtension[T] {
-	instance := r.params.InstanceProvider()
-	return &repositoryExtension[T]{client: r.client, instanceProvider: r.params.InstanceProvider, repository: r, extension: extension, resourceName: instance.GetResourceName(), namespace: instance.GetNamespace()}
 }
 
 func (r repository[T]) loadResource(ctx context.Context) (*model.Resource, error) {

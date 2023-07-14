@@ -736,131 +736,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /system/namespaces:
-        get:
-            tags:
-                - Namespace
-            summary: List
-            operationId: Namespace_List
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListNamespaceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        put:
-            tags:
-                - Namespace
-            summary: Update
-            operationId: Namespace_Update
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateNamespaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateNamespaceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - Namespace
-            summary: Create
-            operationId: Namespace_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateNamespaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateNamespaceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        delete:
-            tags:
-                - Namespace
-            summary: Delete
-            operationId: Namespace_Delete
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeleteNamespaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteNamespaceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /system/namespaces/{id}:
-        get:
-            tags:
-                - Namespace
-            summary: Get
-            operationId: Namespace_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetNamespaceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /system/resources:
         get:
             tags:
@@ -1040,233 +915,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetResourceByNameResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /system/users:
-        get:
-            tags:
-                - User
-            summary: List
-            operationId: User_List
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint64
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListUserResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /system/users/_bulk:
-        put:
-            tags:
-                - User
-            summary: Update
-            operationId: User_Update
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: user.id
-                  in: query
-                  schema:
-                    type: string
-                - name: user.version
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: user.auditData.createdOn
-                  in: query
-                  schema:
-                    type: string
-                    format: date-time
-                - name: user.auditData.updatedOn
-                  in: query
-                  schema:
-                    type: string
-                    format: date-time
-                - name: user.auditData.createdBy
-                  in: query
-                  schema:
-                    type: string
-                - name: user.auditData.updatedBy
-                  in: query
-                  schema:
-                    type: string
-                - name: user.username
-                  in: query
-                  schema:
-                    type: string
-                - name: user.password
-                  in: query
-                  schema:
-                    type: string
-                - name: user.roles
-                  in: query
-                  description: string signKey = 7; // rsa pub key to create tokens
-                  schema:
-                    type: array
-                    items:
-                        type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateUserResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - User
-            summary: Create
-            operationId: User_Create
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: user.id
-                  in: query
-                  schema:
-                    type: string
-                - name: user.version
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: user.auditData.createdOn
-                  in: query
-                  schema:
-                    type: string
-                    format: date-time
-                - name: user.auditData.updatedOn
-                  in: query
-                  schema:
-                    type: string
-                    format: date-time
-                - name: user.auditData.createdBy
-                  in: query
-                  schema:
-                    type: string
-                - name: user.auditData.updatedBy
-                  in: query
-                  schema:
-                    type: string
-                - name: user.username
-                  in: query
-                  schema:
-                    type: string
-                - name: user.password
-                  in: query
-                  schema:
-                    type: string
-                - name: user.roles
-                  in: query
-                  description: string signKey = 7; // rsa pub key to create tokens
-                  schema:
-                    type: array
-                    items:
-                        type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateUserResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        delete:
-            tags:
-                - User
-            summary: Delete
-            operationId: User_Delete
-            parameters:
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-                - name: id
-                  in: query
-                  schema:
-                    type: string
-                - name: ids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteUserResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /system/users/{id}:
-        get:
-            tags:
-                - User
-            summary: Get
-            operationId: User_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: token
-                  in: query
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetUserResponse'
                 default:
                     description: Default error response
                     content:
@@ -1464,22 +1112,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/BooleanExpression'
-        CreateNamespaceRequest:
-            type: object
-            properties:
-                token:
-                    type: string
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
-        CreateNamespaceResponse:
-            type: object
-            properties:
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
         CreateRecordRequest_PropertiesEntry:
             type: object
             properties:
@@ -1526,15 +1158,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Resource'
-        CreateUserResponse:
-            type: object
-            properties:
-                user:
-                    $ref: '#/components/schemas/User'
-                users:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/User'
         DataSourceCatalog:
             type: object
             properties:
@@ -1551,22 +1174,6 @@ components:
                     type: string
                 readOnly:
                     type: boolean
-        DeleteNamespaceRequest:
-            type: object
-            properties:
-                token:
-                    type: string
-                ids:
-                    type: array
-                    items:
-                        type: string
-        DeleteNamespaceResponse:
-            type: object
-            properties:
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
         DeleteRecordResponse:
             type: object
             properties: {}
@@ -1590,9 +1197,6 @@ components:
                     additionalProperties:
                         type: string
         DeleteResourceResponse:
-            type: object
-            properties: {}
-        DeleteUserResponse:
             type: object
             properties: {}
         Event:
@@ -1664,11 +1268,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/NamedAny'
-        GetNamespaceResponse:
-            type: object
-            properties:
-                Namespace:
-                    $ref: '#/components/schemas/Namespace'
         GetRecordResponse:
             type: object
             properties:
@@ -1684,11 +1283,6 @@ components:
             properties:
                 resource:
                     $ref: '#/components/schemas/Resource'
-        GetUserResponse:
-            type: object
-            properties:
-                user:
-                    $ref: '#/components/schemas/User'
         GoogleProtobufAny:
             type: object
             properties:
@@ -1706,13 +1300,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/DataSourceCatalog'
-        ListNamespaceResponse:
-            type: object
-            properties:
-                content:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
         ListRecordResponse:
             type: object
             properties:
@@ -1730,13 +1317,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Resource'
-        ListUserResponse:
-            type: object
-            properties:
-                content:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/User'
         NamedAny:
             type: object
             properties:
@@ -1746,26 +1326,6 @@ components:
                 value:
                     $ref: '#/components/schemas/Any'
             description: Automatically-generated message used to represent maps of Any as ordered (name,value) pairs.
-        Namespace:
-            type: object
-            properties:
-                id:
-                    type: string
-                name:
-                    type: string
-                description:
-                    type: string
-                details:
-                    type: object
-                securityConstraints:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/SecurityConstraint'
-                auditData:
-                    $ref: '#/components/schemas/AuditData'
-                version:
-                    type: integer
-                    format: uint32
         PairExpression:
             type: object
             properties:
@@ -2284,22 +1844,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
-        UpdateNamespaceRequest:
-            type: object
-            properties:
-                token:
-                    type: string
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
-        UpdateNamespaceResponse:
-            type: object
-            properties:
-                Namespaces:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Namespace'
         UpdateRecordRequest_PropertiesEntry:
             type: object
             properties:
@@ -2342,40 +1886,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Resource'
-        UpdateUserResponse:
-            type: object
-            properties:
-                user:
-                    $ref: '#/components/schemas/User'
-                users:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/User'
-        User:
-            type: object
-            properties:
-                id:
-                    type: string
-                version:
-                    type: integer
-                    format: uint32
-                auditData:
-                    $ref: '#/components/schemas/AuditData'
-                username:
-                    type: string
-                password:
-                    type: string
-                securityConstraints:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/SecurityConstraint'
-                details:
-                    type: object
-                roles:
-                    type: array
-                    items:
-                        type: string
-                    description: string signKey = 7; // rsa pub key to create tokens
     securitySchemes:
         bearerAuth:
             type: http
@@ -2388,15 +1898,11 @@ tags:
       description: Authentication Service is for authentication related operations
     - name: DataSource
       description: DataSource Service is for managing data sources
-    - name: Namespace
-      description: Namespace Service is for managing namespaces
     - name: Record
       description: Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
     - name: Record
       description: Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
     - name: Resource
       description: Resource service is for managing resources
-    - name: User
-      description: User service is for managing users
     - name: Watch
       description: Watch service watching operations on records

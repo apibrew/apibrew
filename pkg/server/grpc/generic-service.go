@@ -2,9 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -18,7 +18,7 @@ type GenericGrpcService interface {
 
 type genericServer struct {
 	stub.GenericServer
-	service abs.RecordService
+	service service.RecordService
 }
 
 func (g *genericServer) Create(ctx context.Context, request *stub.CreateRequest) (*stub.CreateResponse, error) {
@@ -28,7 +28,7 @@ func (g *genericServer) Create(ctx context.Context, request *stub.CreateRequest)
 		return nil, err
 	}
 
-	records, serviceErr := g.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
+	records, serviceErr := g.service.Create(annotations.WithContext(ctx, request), service.RecordCreateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records:   records,
@@ -52,7 +52,7 @@ func (g *genericServer) Update(ctx context.Context, request *stub.UpdateRequest)
 		return nil, err
 	}
 
-	records, serviceErr := g.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
+	records, serviceErr := g.service.Update(annotations.WithContext(ctx, request), service.RecordUpdateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records:   records,
@@ -73,7 +73,7 @@ func (g *genericServer) UpdateMulti(ctx context.Context, request *stub.UpdateMul
 }
 
 func (g *genericServer) Delete(ctx context.Context, request *stub.DeleteRequest) (*stub.DeleteResponse, error) {
-	err := g.service.Delete(annotations.WithContext(ctx, request), abs.RecordDeleteParams{
+	err := g.service.Delete(annotations.WithContext(ctx, request), service.RecordDeleteParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Ids:       request.Ids,
@@ -83,7 +83,7 @@ func (g *genericServer) Delete(ctx context.Context, request *stub.DeleteRequest)
 }
 
 func (g *genericServer) List(ctx context.Context, request *stub.ListRequest) (*stub.ListResponse, error) {
-	records, total, serviceErr := g.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
+	records, total, serviceErr := g.service.List(annotations.WithContext(ctx, request), service.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
 		Limit:             request.Limit,
@@ -105,7 +105,7 @@ func (g *genericServer) List(ctx context.Context, request *stub.ListRequest) (*s
 }
 
 func (g *genericServer) Search(ctx context.Context, request *stub.SearchRequest) (*stub.SearchResponse, error) {
-	records, total, serviceErr := g.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
+	records, total, serviceErr := g.service.List(annotations.WithContext(ctx, request), service.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
 		Limit:             request.Limit,
@@ -128,7 +128,7 @@ func (g *genericServer) Search(ctx context.Context, request *stub.SearchRequest)
 }
 
 func (g *genericServer) Get(ctx context.Context, request *stub.GetRequest) (*stub.GetResponse, error) {
-	record, serviceErr := g.service.Get(annotations.WithContext(ctx, request), abs.RecordGetParams{
+	record, serviceErr := g.service.Get(annotations.WithContext(ctx, request), service.RecordGetParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Id:        request.Id,
@@ -184,6 +184,6 @@ func (g *genericServer) itemsToRecords(items []*anypb.Any) ([]*model.Record, err
 	return records, nil
 }
 
-func NewGenericService(service abs.RecordService) stub.GenericServer {
+func NewGenericService(service service.RecordService) stub.GenericServer {
 	return &genericServer{service: service}
 }

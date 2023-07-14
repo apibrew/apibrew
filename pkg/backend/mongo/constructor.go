@@ -10,7 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func NewMongoResourceServiceBackend(dataSource *resource_model.DataSource) abs.Backend {
+func NewMongoResourceServiceBackend(dataSource1 abs.DataSource) abs.Backend {
+	var dataSource = dataSource1.(*resource_model.DataSource)
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dataSource.Options["uri"]))
 	if err != nil {
 		panic(err)

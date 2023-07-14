@@ -6,7 +6,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
-	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -83,7 +82,7 @@ func InitRecord(ctx context.Context, resource *model.Resource, record *model.Rec
 
 	if ah.IsAuditEnabled() {
 		ah.SetCreatedOn(timestamppb.New(now))
-		ah.SetCreatedBy(security.GetUserPrincipalFromContext(ctx))
+		ah.SetCreatedBy(GetUserPrincipalFromContext(ctx))
 	}
 
 	if ah.IsVersionEnabled() {
@@ -153,10 +152,10 @@ func PrepareUpdateForRecord(ctx context.Context, resource *model.Resource, recor
 			ah.SetCreatedOn(timestamppb.New(time.Now()))
 		}
 		if ah.GetCreatedBy() == nil {
-			ah.SetCreatedBy(security.GetUserPrincipalFromContext(ctx))
+			ah.SetCreatedBy(GetUserPrincipalFromContext(ctx))
 		}
 		ah.SetUpdatedOn(timestamppb.New(time.Now()))
-		ah.SetUpdatedBy(security.GetUserPrincipalFromContext(ctx))
+		ah.SetUpdatedBy(GetUserPrincipalFromContext(ctx))
 	}
 
 	if ah.IsVersionEnabled() {

@@ -96,120 +96,120 @@ var deleteResource = &cobra.Command{
 //		}
 //	},
 //}
+//
+//var deleteNamespace = &cobra.Command{
+//	Use: "namespace",
+//	Run: func(cmd *cobra.Command, args []string) {
+//		if *deleteNamespaceId == "" && *deleteNamespaceName == "" {
+//			log.Fatal("Id or name must be provided")
+//		}
+//
+//		if *deleteNamespaceId == "" {
+//			resp, err := GetDhClient().GetNamespaceClient().List(cmd.Context(), &stub.ListNamespaceRequest{
+//				Token: GetDhClient().GetToken(),
+//			})
+//
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//
+//			for _, item := range resp.Content {
+//				if item.Name == *deleteNamespaceName {
+//					*deleteNamespaceId = item.Id
+//				}
+//			}
+//
+//			if *deleteNamespaceId == "" {
+//				log.Fatal("Namespace not found with name: " + *deleteNamespaceName)
+//			}
+//		}
+//
+//		_, err := GetDhClient().GetNamespaceClient().Delete(cmd.Context(), &stub.DeleteNamespaceRequest{
+//			Token: GetDhClient().GetToken(),
+//			Ids:   []string{*deleteNamespaceId},
+//		})
+//
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//	},
+//}
 
-var deleteNamespace = &cobra.Command{
-	Use: "namespace",
-	Run: func(cmd *cobra.Command, args []string) {
-		if *deleteNamespaceId == "" && *deleteNamespaceName == "" {
-			log.Fatal("Id or name must be provided")
-		}
-
-		if *deleteNamespaceId == "" {
-			resp, err := GetDhClient().GetNamespaceClient().List(cmd.Context(), &stub.ListNamespaceRequest{
-				Token: GetDhClient().GetToken(),
-			})
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, item := range resp.Content {
-				if item.Name == *deleteNamespaceName {
-					*deleteNamespaceId = item.Id
-				}
-			}
-
-			if *deleteNamespaceId == "" {
-				log.Fatal("Namespace not found with name: " + *deleteNamespaceName)
-			}
-		}
-
-		_, err := GetDhClient().GetNamespaceClient().Delete(cmd.Context(), &stub.DeleteNamespaceRequest{
-			Token: GetDhClient().GetToken(),
-			Ids:   []string{*deleteNamespaceId},
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	},
-}
-
-var deleteUser = &cobra.Command{
-	Use: "user",
-	Run: func(cmd *cobra.Command, args []string) {
-		if *deleteUserId == "" && *deleteUserName == "" {
-			log.Fatal("Id or name must be provided")
-		}
-
-		if *deleteUserId == "" {
-			resp, err := GetDhClient().GetUserClient().List(cmd.Context(), &stub.ListUserRequest{
-				Token: GetDhClient().GetToken(),
-			})
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, item := range resp.Content {
-				if item.Username == *deleteUserName {
-					*deleteUserId = item.Id
-				}
-			}
-
-			if *deleteUserId == "" {
-				log.Fatal("User not found with name: " + *deleteUserName)
-			}
-		}
-
-		_, err := GetDhClient().GetUserClient().Delete(cmd.Context(), &stub.DeleteUserRequest{
-			Token: GetDhClient().GetToken(),
-			Ids:   []string{*deleteUserId},
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	},
-}
-
-var deleteExtension = &cobra.Command{
-	Use: "extension",
-	Run: func(cmd *cobra.Command, args []string) {
-		if *deleteExtensionId == "" && *deleteExtensionName == "" {
-			log.Fatal("Id or name must be provided")
-		}
-
-		if *deleteExtensionId == "" {
-			resp, err := GetDhClient().GetExtensionClient().List(cmd.Context(), &stub.ListExtensionRequest{
-				Token: GetDhClient().GetToken(),
-			})
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, item := range resp.Content {
-				if item.Name == *deleteExtensionName {
-					*deleteExtensionId = item.Id
-				}
-			}
-
-			if *deleteExtensionId == "" {
-				log.Fatal("Extension not found with name: " + *deleteExtensionName)
-			}
-		}
-
-		_, err := GetDhClient().GetExtensionClient().Delete(cmd.Context(), &stub.DeleteExtensionRequest{
-			Token: GetDhClient().GetToken(),
-			Ids:   []string{*deleteExtensionId},
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	},
-}
+//var deleteUser = &cobra.Command{
+//	Use: "user",
+//	Run: func(cmd *cobra.Command, args []string) {
+//		if *deleteUserId == "" && *deleteUserName == "" {
+//			log.Fatal("Id or name must be provided")
+//		}
+//
+//		if *deleteUserId == "" {
+//			resp, err := GetDhClient().GetUserClient().List(cmd.Context(), &stub.ListUserRequest{
+//				Token: GetDhClient().GetToken(),
+//			})
+//
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//
+//			for _, item := range resp.Content {
+//				if item.Username == *deleteUserName {
+//					*deleteUserId = item.Id
+//				}
+//			}
+//
+//			if *deleteUserId == "" {
+//				log.Fatal("User not found with name: " + *deleteUserName)
+//			}
+//		}
+//
+//		_, err := GetDhClient().GetUserClient().Delete(cmd.Context(), &stub.DeleteUserRequest{
+//			Token: GetDhClient().GetToken(),
+//			Ids:   []string{*deleteUserId},
+//		})
+//
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//	},
+//}
+//
+//var deleteExtension = &cobra.Command{
+//	Use: "extension",
+//	Run: func(cmd *cobra.Command, args []string) {
+//		if *deleteExtensionId == "" && *deleteExtensionName == "" {
+//			log.Fatal("Id or name must be provided")
+//		}
+//
+//		if *deleteExtensionId == "" {
+//			resp, err := GetDhClient().GetExtensionClient().List(cmd.Context(), &stub.ListExtensionRequest{
+//				Token: GetDhClient().GetToken(),
+//			})
+//
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//
+//			for _, item := range resp.Content {
+//				if item.Name == *deleteExtensionName {
+//					*deleteExtensionId = item.Id
+//				}
+//			}
+//
+//			if *deleteExtensionId == "" {
+//				log.Fatal("Extension not found with name: " + *deleteExtensionName)
+//			}
+//		}
+//
+//		_, err := GetDhClient().GetExtensionClient().Delete(cmd.Context(), &stub.DeleteExtensionRequest{
+//			Token: GetDhClient().GetToken(),
+//			Ids:   []string{*deleteExtensionId},
+//		})
+//
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//	},
+//}
 
 func init() {
 	deleteResourceMigrate = deleteResource.PersistentFlags().BoolP("migrate", "m", true, "")
@@ -222,18 +222,18 @@ func init() {
 	//deleteDataSourceId = deleteDataSource.PersistentFlags().String("id", "", "Id of data-source")
 	//deleteDataSourceName = deleteDataSource.PersistentFlags().String("name", "", "Id of data-source")
 
-	deleteNamespaceId = deleteNamespace.PersistentFlags().String("id", "", "Id of namespace")
-	deleteNamespaceName = deleteNamespace.PersistentFlags().String("name", "", "Id of namespace")
+	//deleteNamespaceId = deleteNamespace.PersistentFlags().String("id", "", "Id of namespace")
+	//deleteNamespaceName = deleteNamespace.PersistentFlags().String("name", "", "Id of namespace")
 
-	deleteUserId = deleteUser.PersistentFlags().String("id", "", "Id of user")
-	deleteUserName = deleteUser.PersistentFlags().String("username", "", "Username of user")
-
-	deleteExtensionId = deleteExtension.PersistentFlags().String("id", "", "Id of extension")
-	deleteExtensionName = deleteExtension.PersistentFlags().String("name", "", "name of extension")
+	//deleteUserId = deleteUser.PersistentFlags().String("id", "", "Id of user")
+	//deleteUserName = deleteUser.PersistentFlags().String("username", "", "Username of user")
+	//
+	//deleteExtensionId = deleteExtension.PersistentFlags().String("id", "", "Id of extension")
+	//deleteExtensionName = deleteExtension.PersistentFlags().String("name", "", "name of extension")
 
 	deleteCmd.AddCommand(deleteResource)
 	//deleteCmd.AddCommand(deleteDataSource)
-	deleteCmd.AddCommand(deleteNamespace)
-	deleteCmd.AddCommand(deleteUser)
-	deleteCmd.AddCommand(deleteExtension)
+	//deleteCmd.AddCommand(deleteNamespace)
+	//deleteCmd.AddCommand(deleteUser)
+	//deleteCmd.AddCommand(deleteExtension)
 }

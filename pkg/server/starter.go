@@ -6,7 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest"
-	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/impl"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
@@ -48,7 +48,7 @@ func Run() {
 		log.Fatalf("failed to load init data: %v", err)
 	}
 
-	app := new(service.App)
+	app := new(impl.App)
 
 	app.SetConfig(appConfig)
 

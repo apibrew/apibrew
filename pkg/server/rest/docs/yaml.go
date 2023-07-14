@@ -1,14 +1,14 @@
 package docs
 
 import (
-	"github.com/apibrew/apibrew/pkg/abs"
 	yamlformat "github.com/apibrew/apibrew/pkg/formats/yamlformat"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strings"
 )
 
-func yaml(resourceService abs.ResourceService) func(r *mux.Router) {
+func yaml(resourceService service.ResourceService) func(r *mux.Router) {
 	return func(r *mux.Router) {
 		r.PathPrefix("/docs/yaml").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// strip prefix

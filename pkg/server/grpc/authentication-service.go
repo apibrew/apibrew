@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/logging"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -11,7 +11,7 @@ import (
 
 type authenticationServer struct {
 	stub.AuthenticationServer
-	service abs.AuthenticationService
+	service service.AuthenticationService
 }
 
 type RequestWithToken interface {
@@ -41,6 +41,6 @@ func (s *authenticationServer) RenewToken(ctx context.Context, req *stub.RenewTo
 	}, util.ToStatusError(err)
 }
 
-func NewAuthenticationServer(service abs.AuthenticationService) stub.AuthenticationServer {
+func NewAuthenticationServer(service service.AuthenticationService) stub.AuthenticationServer {
 	return &authenticationServer{service: service}
 }

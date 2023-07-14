@@ -124,7 +124,7 @@ func (e *executor) ApplyBlock(ctx context.Context, block *hcl.Block) error {
 			if resourceItem, ok := resourceMessage.(*model.Resource); ok {
 				err = e.params.DhClient.ApplyResource(ctx, resourceItem, e.params.DoMigration, e.params.ForceMigration)
 			} else {
-				err = e.params.DhClient.Apply(ctx, resourceMessage)
+				err = errors.New("Cannot apply system resource")
 			}
 
 			if err != nil {

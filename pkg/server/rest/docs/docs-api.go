@@ -1,12 +1,12 @@
 package docs
 
 import (
-	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/gorilla/mux"
 )
 
 type api struct {
-	resourceService abs.ResourceService
+	resourceService service.ResourceService
 	swaggerApi      SwaggerApi
 }
 
@@ -24,7 +24,7 @@ func (a *api) Handler() *mux.Router {
 	return r
 }
 
-func NewApi(resourceService abs.ResourceService) Api {
+func NewApi(resourceService service.ResourceService) Api {
 	return &api{
 		resourceService: resourceService,
 		swaggerApi:      NewSwaggerApi(resourceService),

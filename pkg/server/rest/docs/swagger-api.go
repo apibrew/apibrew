@@ -3,9 +3,9 @@ package docs
 import (
 	"context"
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gorilla/mux"
@@ -22,7 +22,7 @@ type SwaggerApi interface {
 }
 
 type swaggerApi struct {
-	resourceService abs.ResourceService
+	resourceService service.ResourceService
 }
 
 func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
@@ -415,7 +415,7 @@ func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.S
 	return recordSchema
 }
 
-func NewSwaggerApi(resourceService abs.ResourceService) SwaggerApi {
+func NewSwaggerApi(resourceService service.ResourceService) SwaggerApi {
 	return &swaggerApi{
 		resourceService: resourceService,
 	}
