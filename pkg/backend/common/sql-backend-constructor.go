@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
 	"sync"
@@ -44,10 +43,10 @@ type SqlBackendOptions interface {
 	TypeModifier(propertyType model.ResourceProperty_Type) types.PropertyType
 }
 
-func NewSqlBackend(dataSource *resource_model.DataSource, options SqlBackendOptions) abs.Backend {
+func NewSqlBackend(dataSource abs.DataSource, options SqlBackendOptions) abs.Backend {
 	backend := &sqlBackend{
 		options:        options,
-		dataSourceName: dataSource.Name,
+		dataSourceName: dataSource.GetName(),
 		transactionMap: make(map[string]*txData),
 	}
 

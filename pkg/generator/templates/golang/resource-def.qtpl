@@ -1,0 +1,76 @@
+{% import "github.com/apibrew/apibrew/pkg/model" %}
+{% import "strings" %}
+
+{%- func GenerateResourceDefCode(pkg string, resource *model.Resource) -%}
+{%- code pkgParts := strings.Split(pkg, "/") -%}
+{%- code pkgName := pkgParts[len(pkgParts)-1] -%}
+package {%s pkgName %}
+
+import (
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources/special"
+	sub_types "github.com/apibrew/apibrew/pkg/resources/sub-types"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
+)
+
+var {%= GoName(resource.Name) %}Resource = &model.Resource{
+	Name:      "{%s resource.Name %}",
+	Namespace: "{%s resource.Namespace %}",
+	{%- if resource.SourceConfig != nil -%}
+	SourceConfig: &model.ResourceSourceConfig{
+		DataSource: "{%s resource.SourceConfig.DataSource %}",
+		Entity:     "{%s resource.SourceConfig.Entity %}",
+	},
+	{%- endif -%}
+	Types: []*model.ResourceSubType{
+		sub_types.SecurityConstraint,
+	},
+	Properties: []*model.ResourceProperty{
+		special.IdProperty,
+		special.VersionProperty,
+		special.AuditProperties[0],
+		special.AuditProperties[1],
+		special.AuditProperties[2],
+		special.AuditProperties[3],
+		{
+			Name:     "username",
+			Mapping:  "username",
+			Primary:  false,
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: true,
+			Unique:   true,
+			Annotations: map[string]string{
+				annotations.IsHclLabel: annotations.Enabled,
+			},
+		},
+		{
+			Name: "password",
+
+			Mapping:  "password",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: true,
+		},
+		{
+			Name:    "roles",
+			Mapping: "roles",
+			Type:    model.ResourceProperty_LIST,
+			Item: &model.ResourceProperty{
+				Type: model.ResourceProperty_STRING,
+			},
+		},
+		special.SecurityConstraintsProperty,
+		{
+			Name:    "details",
+			Mapping: "details",
+			Type:    model.ResourceProperty_OBJECT,
+		},
+	},
+	Annotations: map[string]string{
+		annotations.EnableAudit: "true",
+	},
+}
+
+
+}{%- endfunc -%}

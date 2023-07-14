@@ -41,8 +41,14 @@ func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
 			name = strings.ReplaceAll(name, "[]", "")
 		}
 		if prop.Type == model.ResourceProperty_ENUM {
+			var enumName = GoName(resource.Name + "_" + name)
+
+			if annotations.Get(prop, annotations.TypeName) != "" {
+				enumName = annotations.Get(prop, annotations.TypeName)
+			}
+
 			enums = append(enums, &model.ResourceProperty{
-				Name:       GoName(resource.Name + "_" + name),
+				Name:       enumName,
 				EnumValues: prop.EnumValues,
 			})
 		}
@@ -102,7 +108,10 @@ func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actu
 		typeVal = "interface{}"
 	} else if prop.Type == model.ResourceProperty_ENUM {
 		typeVal = strcase.ToCamel(resource.Name + "_" + actualName)
-		typeVal = typeVal
+
+		if annotations.Get(prop, annotations.TypeName) != "" {
+			typeVal = annotations.Get(prop, annotations.TypeName)
+		}
 	}
 
 	return typeVal

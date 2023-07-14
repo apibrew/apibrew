@@ -2,10 +2,10 @@ package setup
 
 import (
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/client"
 	grpc2 "github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/impl"
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"net"
@@ -16,7 +16,7 @@ var authenticationClient stub.AuthenticationClient
 var dataSourceClient stub.DataSourceClient
 var resourceClient stub.ResourceClient
 
-var container abs.Container
+var container service.Container
 
 var dhClient client.DhClient
 
@@ -24,7 +24,7 @@ func GetTestDhClient() client.DhClient {
 	return dhClient
 }
 
-func GetContainer() abs.Container {
+func GetContainer() service.Container {
 	return container
 }
 
@@ -38,7 +38,7 @@ func initClient() {
 	log.SetLevel(log.DebugLevel)
 	log.SetReportCaller(false)
 
-	application := new(service.App)
+	application := new(impl.App)
 
 	var initData = prepareInitData()
 

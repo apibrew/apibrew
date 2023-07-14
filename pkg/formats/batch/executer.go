@@ -6,8 +6,8 @@ import (
 	"github.com/apibrew/apibrew/pkg/formats"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/service/security"
 	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -110,7 +110,7 @@ func (e executor) processBatch(ctx context.Context, batch *model.Batch) error {
 				records = append(records, record)
 			}
 
-			resp, err := e.params.RecordClient.Create(annotations.SetWithContext(security.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), &stub.CreateRecordRequest{
+			resp, err := e.params.RecordClient.Create(annotations.SetWithContext(util.SystemContext, annotations.IgnoreIfExists, annotations.Enabled), &stub.CreateRecordRequest{
 				Token:       e.params.Token,
 				Namespace:   res.Namespace,
 				Resource:    res.Resource,

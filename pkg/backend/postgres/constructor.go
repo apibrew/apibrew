@@ -7,8 +7,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewPostgresResourceServiceBackend(dataSource *resource_model.DataSource) abs.Backend {
+func NewPostgresResourceServiceBackend(dataSource abs.DataSource) abs.Backend {
 	return common.NewSqlBackend(dataSource, &postgreSqlBackendOptions{
-		dataSource: dataSource,
+		dataSource: dataSource.(*resource_model.DataSource),
 	})
 }

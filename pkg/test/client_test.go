@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
 )
@@ -13,7 +13,7 @@ var recordClient stub.RecordClient
 var userClient stub.UserClient
 var namespaceClient stub.NamespaceClient
 
-var container abs.Container
+var container service.Container
 
 func init() {
 	dhClient := setup.GetTestDhClient()

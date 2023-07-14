@@ -137,48 +137,6 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		if err != nil {
 			return err
 		}
-	case "namespace":
-		var namespace = new(model.Namespace)
-
-		err = body.ToProtoMessage(namespace)
-
-		if err != nil {
-			return err
-		}
-
-		err = e.Params.DhClient.Apply(ctx, namespace)
-
-		if err != nil {
-			return err
-		}
-	case "extension":
-		var dataSource = new(model.Extension)
-
-		err = body.ToProtoMessage(dataSource)
-
-		if err != nil {
-			return err
-		}
-
-		err = e.Params.DhClient.Apply(ctx, dataSource)
-
-		if err != nil {
-			return err
-		}
-	case "user":
-		var user = new(model.User)
-
-		err = body.ToProtoMessage(user)
-
-		if err != nil {
-			return err
-		}
-
-		err = e.Params.DhClient.Apply(ctx, user)
-
-		if err != nil {
-			return err
-		}
 	default:
 		return errors.New("unknown type: " + elemType)
 	}

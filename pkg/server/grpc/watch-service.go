@@ -2,14 +2,14 @@ package grpc
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 )
 
 type watchGrpcService struct {
 	stub.WatchServer
-	watchService abs.WatchService
+	watchService service.WatchService
 }
 
 func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchServer) error {
@@ -18,7 +18,7 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchSer
 		cancel()
 	}()
 
-	out := w.watchService.Watch(localCtx, abs.WatchParams{
+	out := w.watchService.Watch(localCtx, service.WatchParams{
 		Selector:   req.Selector,
 		BufferSize: 500,
 	})
@@ -36,6 +36,6 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchSer
 	return nil
 }
 
-func NewWatchServer(service abs.WatchService) stub.WatchServer {
+func NewWatchServer(service service.WatchService) stub.WatchServer {
 	return &watchGrpcService{watchService: service}
 }

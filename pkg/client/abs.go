@@ -5,15 +5,10 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
-	"google.golang.org/protobuf/proto"
 )
 
 type ApplyInterface interface {
-	Apply(ctx context.Context, msg proto.Message) error
 	ApplyRecord(ctx context.Context, resource *model.Resource, record *model.Record) error
-	ApplyNamespace(ctx context.Context, namespace *model.Namespace) error
-	ApplyExtension(ctx context.Context, extension *model.Extension) error
-	ApplyUser(ctx context.Context, user *model.User) error
 	ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error
 }
 
@@ -24,9 +19,6 @@ type DhClient interface {
 	GetResourceClient() stub.ResourceClient
 	GetRecordClient() stub.RecordClient
 	GetGenericClient() stub.GenericClient
-	GetNamespaceClient() stub.NamespaceClient
-	GetExtensionClient() stub.ExtensionClient
-	GetUserClient() stub.UserClient
 	GetToken() string
 	AuthenticateWithToken(token string)
 	AuthenticateWithUsernameAndPassword(username string, password string) error
@@ -39,7 +31,6 @@ type Repository[T abs.Entity[T]] interface {
 	Save(ctx context.Context, entity T) (T, error)
 	Get(ctx context.Context, id string) (T, error)
 	Find(ctx context.Context, params FindParams) ([]T, error)
-	Extend(extension Extension) RepositoryExtension[T]
 }
 
 type FindParams struct {

@@ -3,6 +3,8 @@ package apbr
 import (
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/generator"
+	"github.com/apibrew/apibrew/pkg/model"
+	resources2 "github.com/apibrew/apibrew/pkg/resources"
 	"github.com/spf13/cobra"
 )
 
@@ -15,6 +17,9 @@ var generatorCmd = &cobra.Command{
 		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)
 
+		system, err := cmd.Flags().GetBool("system")
+		check(err)
+
 		path, err := cmd.Flags().GetString("path")
 		check(err)
 
@@ -24,17 +29,21 @@ var generatorCmd = &cobra.Command{
 		platform, err := cmd.Flags().GetString("platform")
 		check(err)
 
-		var selection = &flags.SelectedRecordsResult{}
+		var resources []*model.Resource
 
-		selectorFlags.Parse(selection, cmd, args)
-
-		check(err)
+		if !system {
+			var selection = &flags.SelectedRecordsResult{}
+			selectorFlags.Parse(selection, cmd, args)
+			resources = selection.Resources
+		} else {
+			resources = resources2.GetAllSystemResources()
+		}
 
 		if pkg == "" {
 			pkg = "model"
 		}
 
-		err = generator.GenerateResourceCodes(platform, pkg, selection.Resources, path, namespace)
+		err = generator.GenerateResourceCodes(platform, pkg, resources, path, namespace)
 
 		check(err)
 	},
@@ -43,6 +52,7 @@ var generatorCmd = &cobra.Command{
 func init() {
 	generatorCmd.PersistentFlags().StringP("path", "p", ".", "Path")
 	generatorCmd.PersistentFlags().String("package", "", "Package")
+	generatorCmd.PersistentFlags().Bool("system", false, "System only")
 	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, nodejs, typescript]")
 	selectorFlags.Declare(generatorCmd)
 }

@@ -2,13 +2,13 @@ package grpc
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/service/security"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -24,16 +24,13 @@ type Server interface {
 
 type grpcServer struct {
 	grpcServer               *grpc.Server
-	resourceService          abs.ResourceService
-	resourceMigrationService abs.ResourceMigrationService
-	recordService            abs.RecordService
-	authenticationService    abs.AuthenticationService
-	dataSourceService        abs.DataSourceService
-	namespaceService         abs.NamespaceService
-	userService              abs.GenericRecordService[*model.User]
+	resourceService          service.ResourceService
+	resourceMigrationService service.ResourceMigrationService
+	recordService            service.RecordService
+	authenticationService    service.AuthenticationService
+	dataSourceService        service.DataSourceService
 	config                   *model.AppConfig
-	watchService             abs.WatchService
-	extensionService         abs.ExtensionService
+	watchService             service.WatchService
 }
 
 func (g *grpcServer) Stop() {
@@ -54,10 +51,7 @@ func (g *grpcServer) Init(appConfig *model.AppConfig) {
 	stub.RegisterAuthenticationServer(g.grpcServer, NewAuthenticationServer(g.authenticationService))
 	stub.RegisterDataSourceServer(g.grpcServer, NewDataSourceServer(g.dataSourceService))
 	stub.RegisterRecordServer(g.grpcServer, NewRecordServer(g.recordService, g.authenticationService))
-	stub.RegisterUserServer(g.grpcServer, NewUserServer(g.userService))
-	stub.RegisterNamespaceServer(g.grpcServer, NewNamespaceServer(g.namespaceService))
 	stub.RegisterWatchServer(g.grpcServer, NewWatchServer(g.watchService))
-	stub.RegisterExtensionServer(g.grpcServer, NewExtensionServer(g.extensionService))
 	stub.RegisterGenericServer(g.grpcServer, NewGenericService(g.recordService))
 }
 
@@ -81,7 +75,7 @@ func (g *grpcServer) grpcStreamIntercept(req interface{}, ss grpc.ServerStream, 
 	return handler(req, ss)
 }
 
-func interceptRequest(authenticationService abs.AuthenticationService, ctx context.Context, req interface{}) (context.Context, error) {
+func interceptRequest(authenticationService service.AuthenticationService, ctx context.Context, req interface{}) (context.Context, error) {
 	// pass authentication context
 	var token string
 
@@ -105,7 +99,7 @@ func interceptRequest(authenticationService abs.AuthenticationService, ctx conte
 	}
 
 	if authenticationService.AuthenticationDisabled() {
-		ctx = security.WithSystemContext(ctx)
+		ctx = util.WithSystemContext(ctx)
 	} else if token != "" {
 		userDetails, err := authenticationService.ParseAndVerifyToken(token)
 
@@ -113,7 +107,7 @@ func interceptRequest(authenticationService abs.AuthenticationService, ctx conte
 			return ctx, errors.AuthenticationFailedError
 		}
 
-		ctx = security.WithUserDetails(ctx, *userDetails)
+		ctx = util.WithUserDetails(ctx, *userDetails)
 
 		ctx = logging.WithLogField(ctx, "User", userDetails.Username)
 	}
@@ -132,7 +126,7 @@ func interceptRequest(authenticationService abs.AuthenticationService, ctx conte
 	return ctx, nil
 }
 
-func NewGrpcServer(container abs.Container) Server {
+func NewGrpcServer(container service.Container) Server {
 	return &grpcServer{
 		resourceService:          container.GetResourceService(),
 		resourceMigrationService: container.GetResourceMigrationService(),
@@ -140,8 +134,5 @@ func NewGrpcServer(container abs.Container) Server {
 		watchService:             container.GetWatchService(),
 		authenticationService:    container.GetAuthenticationService(),
 		dataSourceService:        container.GetDataSourceService(),
-		namespaceService:         container.GetNamespaceService(),
-		userService:              container.GetUserService(),
-		extensionService:         container.GetExtensionService(),
 	}
 }

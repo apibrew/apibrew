@@ -20,10 +20,7 @@ type dhClient struct {
 	authenticationClient stub.AuthenticationClient
 	resourceClient       stub.ResourceClient
 	dataSourceClient     stub.DataSourceClient
-	userClient           stub.UserClient
-	extensionClient      stub.ExtensionClient
 	genericClient        stub.GenericClient
-	namespaceClient      stub.NamespaceClient
 }
 
 func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
@@ -44,10 +41,6 @@ func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password
 
 func (d *dhClient) AuthenticateWithToken(token string) {
 	d.params.Token = token
-}
-
-func (d *dhClient) GetNamespaceClient() stub.NamespaceClient {
-	return d.namespaceClient
 }
 
 func (d *dhClient) GetToken() string {
@@ -74,14 +67,6 @@ func (d *dhClient) GetGenericClient() stub.GenericClient {
 	return d.genericClient
 }
 
-func (d *dhClient) GetExtensionClient() stub.ExtensionClient {
-	return d.extensionClient
-}
-
-func (d *dhClient) GetUserClient() stub.UserClient {
-	return d.userClient
-}
-
 func NewDhClient(params DhClientParams) (DhClient, error) {
 	var opts []grpc.DialOption
 	if params.Insecure {
@@ -101,9 +86,6 @@ func NewDhClient(params DhClientParams) (DhClient, error) {
 		authenticationClient: stub.NewAuthenticationClient(conn),
 		resourceClient:       stub.NewResourceClient(conn),
 		dataSourceClient:     stub.NewDataSourceClient(conn),
-		userClient:           stub.NewUserClient(conn),
-		extensionClient:      stub.NewExtensionClient(conn),
 		genericClient:        stub.NewGenericClient(conn),
-		namespaceClient:      stub.NewNamespaceClient(conn),
 	}, nil
 }

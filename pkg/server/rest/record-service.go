@@ -2,8 +2,8 @@ package rest
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub/rest"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -11,11 +11,11 @@ import (
 
 type recordService struct {
 	rest.RecordServer
-	service abs.RecordService
+	service service.RecordService
 }
 
 func (r *recordService) Create(ctx context.Context, request *rest.CreateRecordRequest) (*rest.CreateRecordResponse, error) {
-	records, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
+	records, err := r.service.Create(annotations.WithContext(ctx, request), service.RecordCreateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records: []*model.Record{{
@@ -41,7 +41,7 @@ func (r *recordService) Create(ctx context.Context, request *rest.CreateRecordRe
 }
 
 func (r *recordService) Apply(ctx context.Context, request *rest.ApplyRecordRequest) (*rest.ApplyRecordResponse, error) {
-	records, err := r.service.Apply(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
+	records, err := r.service.Apply(annotations.WithContext(ctx, request), service.RecordUpdateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records: []*model.Record{{
@@ -65,7 +65,7 @@ func (r *recordService) Apply(ctx context.Context, request *rest.ApplyRecordRequ
 }
 
 func (r *recordService) Update(ctx context.Context, request *rest.UpdateRecordRequest) (*rest.UpdateRecordResponse, error) {
-	records, err := r.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
+	records, err := r.service.Update(annotations.WithContext(ctx, request), service.RecordUpdateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records: []*model.Record{{
@@ -90,7 +90,7 @@ func (r *recordService) Update(ctx context.Context, request *rest.UpdateRecordRe
 }
 
 func (r *recordService) Delete(ctx context.Context, request *rest.DeleteRecordRequest) (*rest.DeleteRecordResponse, error) {
-	err := r.service.Delete(annotations.WithContext(ctx, request), abs.RecordDeleteParams{
+	err := r.service.Delete(annotations.WithContext(ctx, request), service.RecordDeleteParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Ids:       []string{request.Id},
@@ -103,6 +103,6 @@ func (r *recordService) Delete(ctx context.Context, request *rest.DeleteRecordRe
 	return &rest.DeleteRecordResponse{}, util.ToStatusError(err)
 }
 
-func newRecordService(service abs.RecordService) rest.RecordServer {
+func newRecordService(service service.RecordService) rest.RecordServer {
 	return &recordService{service: service}
 }

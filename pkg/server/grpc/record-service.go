@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -13,12 +13,12 @@ import (
 
 type recordServer struct {
 	stub.RecordServer
-	service               abs.RecordService
-	authenticationService abs.AuthenticationService
+	service               service.RecordService
+	authenticationService service.AuthenticationService
 }
 
 func (r *recordServer) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
-	records, total, err := r.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
+	records, total, err := r.service.List(annotations.WithContext(ctx, request), service.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
 		Filters:           request.Filters,
@@ -35,7 +35,7 @@ func (r *recordServer) List(ctx context.Context, request *stub.ListRecordRequest
 }
 
 func (r *recordServer) Search(ctx context.Context, request *stub.SearchRecordRequest) (*stub.SearchRecordResponse, error) {
-	records, total, err := r.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
+	records, total, err := r.service.List(annotations.WithContext(ctx, request), service.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
 		Limit:             request.Limit,
@@ -90,7 +90,7 @@ func (r *recordServer) ReadStream(request *stub.ReadStreamRequest, resp stub.Rec
 		}
 	}()
 
-	_, _, err = r.service.List(annotations.WithContext(ctx, request), abs.RecordListParams{
+	_, _, err = r.service.List(annotations.WithContext(ctx, request), service.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
 		Limit:             request.Limit,
@@ -110,7 +110,7 @@ func (r *recordServer) ReadStream(request *stub.ReadStreamRequest, resp stub.Rec
 }
 
 func (r *recordServer) Create(ctx context.Context, request *stub.CreateRecordRequest) (*stub.CreateRecordResponse, error) {
-	records, err := r.service.Create(annotations.WithContext(ctx, request), abs.RecordCreateParams{
+	records, err := r.service.Create(annotations.WithContext(ctx, request), service.RecordCreateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records:   util.ArrayPrepend(request.Records, request.Record),
@@ -123,7 +123,7 @@ func (r *recordServer) Create(ctx context.Context, request *stub.CreateRecordReq
 }
 
 func (r *recordServer) Update(ctx context.Context, request *stub.UpdateRecordRequest) (*stub.UpdateRecordResponse, error) {
-	records, err := r.service.Update(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
+	records, err := r.service.Update(annotations.WithContext(ctx, request), service.RecordUpdateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records:   util.ArrayPrepend(request.Records, request.Record),
@@ -136,7 +136,7 @@ func (r *recordServer) Update(ctx context.Context, request *stub.UpdateRecordReq
 }
 
 func (r *recordServer) Apply(ctx context.Context, request *stub.ApplyRecordRequest) (*stub.ApplyRecordResponse, error) {
-	records, err := r.service.Apply(annotations.WithContext(ctx, request), abs.RecordUpdateParams{
+	records, err := r.service.Apply(annotations.WithContext(ctx, request), service.RecordUpdateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Records:   util.ArrayPrepend(request.Records, request.Record),
@@ -149,7 +149,7 @@ func (r *recordServer) Apply(ctx context.Context, request *stub.ApplyRecordReque
 }
 
 func (r *recordServer) Get(ctx context.Context, request *stub.GetRecordRequest) (*stub.GetRecordResponse, error) {
-	record, err := r.service.Get(annotations.WithContext(ctx, request), abs.RecordGetParams{
+	record, err := r.service.Get(annotations.WithContext(ctx, request), service.RecordGetParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Id:        request.Id,
@@ -165,7 +165,7 @@ func (r *recordServer) Delete(ctx context.Context, request *stub.DeleteRecordReq
 		request.Ids = []string{request.Id}
 	}
 
-	err := r.service.Delete(annotations.WithContext(ctx, request), abs.RecordDeleteParams{
+	err := r.service.Delete(annotations.WithContext(ctx, request), service.RecordDeleteParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
 		Ids:       request.Ids,
@@ -174,6 +174,6 @@ func (r *recordServer) Delete(ctx context.Context, request *stub.DeleteRecordReq
 	return &stub.DeleteRecordResponse{}, util.ToStatusError(err)
 }
 
-func NewRecordServer(service abs.RecordService, authenticationService abs.AuthenticationService) stub.RecordServer {
+func NewRecordServer(service service.RecordService, authenticationService service.AuthenticationService) stub.RecordServer {
 	return &recordServer{service: service, authenticationService: authenticationService}
 }

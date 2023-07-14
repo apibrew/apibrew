@@ -36,3 +36,4 @@ const SQLType = "SQLType"
 
 // code generator
 const GenericType = "GenericType"
+const TypeName = "TypeName"

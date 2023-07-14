@@ -2,14 +2,14 @@ package rest
 
 import (
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
 	"net/http"
 	"strings"
 )
 
 type recordsApiFiltersMiddleWare struct {
-	resourceService abs.ResourceService
+	resourceService service.ResourceService
 }
 
 func (w recordsApiFiltersMiddleWare) handler(handler http.Handler) http.Handler {
@@ -47,6 +47,6 @@ func (w recordsApiFiltersMiddleWare) handler(handler http.Handler) http.Handler 
 	})
 }
 
-func newRecordsApiFiltersMiddleWare(resourceService abs.ResourceService) *recordsApiFiltersMiddleWare {
+func newRecordsApiFiltersMiddleWare(resourceService service.ResourceService) *recordsApiFiltersMiddleWare {
 	return &recordsApiFiltersMiddleWare{resourceService: resourceService}
 }

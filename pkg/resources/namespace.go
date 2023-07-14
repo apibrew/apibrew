@@ -3,19 +3,15 @@ package resources
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
-	sub_types "github.com/apibrew/apibrew/pkg/resources/sub-types"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 )
 
 var NamespaceResource = &model.Resource{
-	Name:      "namespace",
+	Name:      "Namespace",
 	Namespace: "system",
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "namespace",
-	},
-	Types: []*model.ResourceSubType{
-		sub_types.SecurityConstraint,
 	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,

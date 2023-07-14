@@ -7,8 +7,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewMysqlResourceServiceBackend(dataSource *resource_model.DataSource) abs.Backend {
+func NewMysqlResourceServiceBackend(dataSource abs.DataSource) abs.Backend {
 	return common.NewSqlBackend(dataSource, &mysqlBackendOptions{
-		dataSource: dataSource,
+		dataSource: dataSource.(*resource_model.DataSource),
 	})
 }

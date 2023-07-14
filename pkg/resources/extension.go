@@ -9,15 +9,16 @@ import (
 )
 
 var ExtensionResource = &model.Resource{
-	Name:      "extension",
+	Name:      "Extension",
 	Namespace: "system",
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "extension",
 	},
 	Types: []*model.ResourceSubType{
+		sub_types.BooleanExpression,
 		{
-			Name: "functionCall",
+			Name: "FunctionCall",
 			Properties: []*model.ResourceProperty{
 				{
 					Name:     "host",
@@ -32,7 +33,7 @@ var ExtensionResource = &model.Resource{
 			},
 		},
 		{
-			Name: "httpCall",
+			Name: "HttpCall",
 			Properties: []*model.ResourceProperty{
 				{
 					Name:     "uri",
@@ -47,23 +48,22 @@ var ExtensionResource = &model.Resource{
 			},
 		},
 		{
-			Name: "call",
+			Name: "ExternalCall",
 			Properties: []*model.ResourceProperty{
 				{
 					Name:    "functionCall",
 					Type:    model.ResourceProperty_STRUCT,
-					TypeRef: util.StringPointer("functionCall"),
+					TypeRef: util.StringPointer("FunctionCall"),
 				},
 				{
 					Name:    "httpCall",
 					Type:    model.ResourceProperty_STRUCT,
-					TypeRef: util.StringPointer("httpCall"),
+					TypeRef: util.StringPointer("HttpCall"),
 				},
 			},
 		},
-		sub_types.BooleanExpression,
 		{
-			Name: "selector",
+			Name: "EventSelector",
 			Properties: []*model.ResourceProperty{
 				{
 					Name: "actions",
@@ -77,6 +77,9 @@ var ExtensionResource = &model.Resource{
 							"GET",
 							"LIST",
 							"OPERATE",
+						},
+						Annotations: map[string]string{
+							annotations.TypeName: "EventAction",
 						},
 					},
 				},
@@ -99,6 +102,103 @@ var ExtensionResource = &model.Resource{
 					Name: "ids",
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{Type: model.ResourceProperty_STRING},
+				},
+				special.AnnotationsProperty,
+			},
+		},
+		{
+			Name: "RecordSearchParams",
+			Properties: []*model.ResourceProperty{
+				{
+					Name:    "query",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: &sub_types.BooleanExpression.Name,
+				},
+				{
+					Name: "limit",
+					Type: model.ResourceProperty_INT32,
+				},
+				{
+					Name: "offset",
+					Type: model.ResourceProperty_INT32,
+				},
+				{
+					Name: "resolveReferences",
+					Type: model.ResourceProperty_LIST,
+					Item: &model.ResourceProperty{
+						Type: model.ResourceProperty_STRING,
+					},
+				},
+			},
+		},
+		{
+			Name: "Event",
+			Properties: []*model.ResourceProperty{
+				special.IdProperty,
+				{
+					Name: "action",
+					Type: model.ResourceProperty_ENUM,
+					EnumValues: []string{
+						"CREATE",
+						"UPDATE",
+						"DELETE",
+						"GET",
+						"LIST",
+						"OPERATE",
+					},
+					Required: true,
+					Annotations: map[string]string{
+						annotations.TypeName: "EventAction",
+					},
+				},
+				{
+					Name:    "recordSearchParams",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.StringPointer("RecordSearchParams"),
+				},
+				{
+					Name: "actionSummary",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "actionDescription",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "resource",
+					Type: model.ResourceProperty_REFERENCE,
+					Reference: &model.Reference{
+						Resource: "Resource",
+					},
+				},
+				{
+					Name: "records",
+					Type: model.ResourceProperty_LIST,
+					Item: &model.ResourceProperty{
+						Type: model.ResourceProperty_REFERENCE,
+						Reference: &model.Reference{
+							Resource: "Record",
+						},
+					},
+				},
+				{
+					Name: "ids",
+					Type: model.ResourceProperty_LIST,
+					Item: &model.ResourceProperty{
+						Type: model.ResourceProperty_STRING,
+					},
+				},
+				{
+					Name: "finalizes",
+					Type: model.ResourceProperty_BOOL,
+				},
+				{
+					Name: "sync",
+					Type: model.ResourceProperty_BOOL,
+				},
+				{
+					Name: "time",
+					Type: model.ResourceProperty_TIMESTAMP,
 				},
 				special.AnnotationsProperty,
 			},
@@ -136,7 +236,7 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "selector",
 			Type:     model.ResourceProperty_STRUCT,
 			Required: false,
-			TypeRef:  util.StringPointer("selector"),
+			TypeRef:  util.StringPointer("EventSelector"),
 		},
 		{
 			Name:     "order",
@@ -171,7 +271,7 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "call",
 			Type:     model.ResourceProperty_STRUCT,
 			Required: true,
-			TypeRef:  util.StringPointer("call"),
+			TypeRef:  util.StringPointer("ExternalCall"),
 		},
 		special.AnnotationsProperty,
 	},

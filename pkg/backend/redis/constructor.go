@@ -8,7 +8,8 @@ import (
 	"strconv"
 )
 
-func NewRedisResourceServiceBackend(dataSource *resource_model.DataSource) abs.Backend {
+func NewRedisResourceServiceBackend(dataSource1 abs.DataSource) abs.Backend {
+	var dataSource = dataSource1.(*resource_model.DataSource)
 
 	db, _ := strconv.Atoi(dataSource.Options["db"])
 
