@@ -29,17 +29,18 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 		return errors.AccessDeniedError.WithDetails("Public access is denied")
 	}
 
-	var constraints []resource_model.SecurityConstraint
-
-	for _, constraint := range params.Resource.SecurityConstraints {
-		constraint.Resource = params.Resource.Name
-		constraint.Namespace = params.Resource.Namespace
-	}
+	//var constraints []resource_model.SecurityConstraint
+	//
+	//for _, constraint := range params.Resource.SecurityConstraints {
+	//	constraint.Resource = params.Resource.Name
+	//	constraint.Namespace = params.Resource.Namespace
+	//}
 
 	//constraints = append(constraints, params.Resource.SecurityConstraints...)
 	//constraints = append(constraints, userDetails.SecurityConstraints...)
 
-	errorFields := a.evaluateConstraints(ctx, params, constraints, userDetails)
+	//errorFields := a.evaluateConstraints(ctx, params, constraints, userDetails)
+	var errorFields []*model.ErrorField
 
 	if len(errorFields) == 0 {
 		return nil

@@ -1,6 +1,11 @@
 
 
 
+export const MenuResource = {
+    resource: "Menu",
+    namespace: "ui",
+};
+
 // Sub Types
 
 export interface RequireSecurityConstraintParams {

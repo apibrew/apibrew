@@ -1,6 +1,11 @@
 
 
 
+export const LayoutResource = {
+    resource: "Layout",
+    namespace: "ui",
+};
+
 // Sub Types
 
 export interface LayoutComponent {

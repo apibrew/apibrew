@@ -1,2 +1,5 @@
-type: namespace
-name: ui
+type: record
+resource: Namespace
+namespace: system
+properties:
+  name: ui

@@ -1,6 +1,11 @@
 
 
 
+export const CrudResource = {
+    resource: "Crud",
+    namespace: "ui",
+};
+
 // Sub Types
 
 export interface FormItem {

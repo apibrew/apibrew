@@ -1,6 +1,11 @@
 
 
 
+export const RouterResource = {
+    resource: "Router",
+    namespace: "ui",
+};
+
 // Sub Types
 
 export interface Route {
@@ -14,21 +19,21 @@ export interface Route {
 
 // Resource Type
 export interface Router {
-    version: number;
-id: string;
+    id: string;
 name: string;
 routes: Route[];
+version: number;
 
 }
 // Resource and Property Names
 export const RouterName = "Router";
-
-export const RouterVersionName = "Version";
 
 export const RouterIdName = "Id";
 
 export const RouterNameName = "Name";
 
 export const RouterRoutesName = "Routes";
+
+export const RouterVersionName = "Version";
 
 
