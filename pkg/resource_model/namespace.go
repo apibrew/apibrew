@@ -3,7 +3,6 @@ package resource_model
 import "github.com/google/uuid"
 import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
-import "encoding/json"
 
 type Namespace struct {
 	Id                  *uuid.UUID

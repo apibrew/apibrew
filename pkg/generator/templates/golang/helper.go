@@ -20,9 +20,18 @@ func getImports(resource *model.Resource) []string {
 			imports = append(imports, "time")
 		} else if prop.Type == model.ResourceProperty_OBJECT {
 			imports = append(imports, "github.com/apibrew/apibrew/pkg/formats/unstructured")
-			imports = append(imports, "encoding/json")
 		}
 	})
+
+	return util.ArrayUnique(imports)
+}
+
+func getResourceSpecificImports(resource *model.Resource) []string {
+	imports := []string{}
+
+	if annotations.Get(resource, annotations.SelfContainedProperty) != "" {
+		imports = append(imports, "encoding/json")
+	}
 
 	return util.ArrayUnique(imports)
 }
