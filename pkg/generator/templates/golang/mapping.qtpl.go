@@ -180,7 +180,7 @@ import (
 
 `)
 //line templates/golang/mapping.qtpl:46
-	for _, importLine := range getImports(resource.Properties) {
+	for _, importLine := range getImports(resource) {
 //line templates/golang/mapping.qtpl:46
 		qw422016.N().S(`import "`)
 //line templates/golang/mapping.qtpl:47

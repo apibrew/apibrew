@@ -6,13 +6,13 @@
 {%- code pkgName := pkgParts[len(pkgParts)-1] -%}
 package {%s pkgName %}
 
-{%- for _, importLine := range getImports(resource.Properties) -%}
+{%- for _, importLine := range getImports(resource) -%}
 import "{%s importLine %}"
 {%- endfor -%}
 
-{%= GenerateStructCode(pkg, resource, resource.Name, resource.Properties) %}
+{%= GenerateStructCode(pkg, resource, resource.Name, resource.Properties, resource) %}
 {%- for _, subType := range getAllSubTypes(resource) -%}
-{%= GenerateStructCode(pkg, resource, resource.Name + "_" + subType.Name, subType.Properties) %}
+{%= GenerateStructCode(pkg, resource, resource.Name + "_" + subType.Name, subType.Properties, subType) %}
 {%- endfor -%}
 {%- for _, enumProperty := range getAllEnums(resource) -%}
 {%= GenerateEnumCode(enumProperty) %}

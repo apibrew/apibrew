@@ -2,6 +2,8 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "encoding/json"
 
 type SecurityConstraint struct {
 	Id            *uuid.UUID
@@ -22,7 +24,7 @@ type SecurityConstraint struct {
 	Username      *string
 	Role          *string
 	Permit        SecurityConstraintPermit
-	LocalFlags    *interface{}
+	LocalFlags    *unstructured.Unstructured
 }
 
 func (s *SecurityConstraint) GetId() *uuid.UUID {
@@ -79,7 +81,7 @@ func (s *SecurityConstraint) GetRole() *string {
 func (s *SecurityConstraint) GetPermit() SecurityConstraintPermit {
 	return s.Permit
 }
-func (s *SecurityConstraint) GetLocalFlags() *interface{} {
+func (s *SecurityConstraint) GetLocalFlags() *unstructured.Unstructured {
 	return s.LocalFlags
 }
 

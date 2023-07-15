@@ -40,7 +40,7 @@ func StreamGenerateResourceCode(qw422016 *qt422016.Writer, pkg string, resource 
 
 `)
 //line templates/golang/resource.qtpl:9
-	for _, importLine := range getImports(resource.Properties) {
+	for _, importLine := range getImports(resource) {
 //line templates/golang/resource.qtpl:9
 		qw422016.N().S(`import "`)
 //line templates/golang/resource.qtpl:10
@@ -54,14 +54,14 @@ func StreamGenerateResourceCode(qw422016 *qt422016.Writer, pkg string, resource 
 	qw422016.N().S(`
 `)
 //line templates/golang/resource.qtpl:13
-	StreamGenerateStructCode(qw422016, pkg, resource, resource.Name, resource.Properties)
+	StreamGenerateStructCode(qw422016, pkg, resource, resource.Name, resource.Properties, resource)
 //line templates/golang/resource.qtpl:13
 	qw422016.N().S(`
 `)
 //line templates/golang/resource.qtpl:14
 	for _, subType := range getAllSubTypes(resource) {
 //line templates/golang/resource.qtpl:15
-		StreamGenerateStructCode(qw422016, pkg, resource, resource.Name+"_"+subType.Name, subType.Properties)
+		StreamGenerateStructCode(qw422016, pkg, resource, resource.Name+"_"+subType.Name, subType.Properties, subType)
 //line templates/golang/resource.qtpl:15
 		qw422016.N().S(`
 `)

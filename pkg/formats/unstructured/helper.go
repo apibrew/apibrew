@@ -46,33 +46,3 @@ func WalkUnstructured(body interface{}, visitor func(value interface{}) (interfa
 
 	return body, nil
 }
-
-func fixMaps(i interface{}) interface{} {
-	switch x := i.(type) {
-	case map[interface{}]interface{}:
-		m2 := Unstructured{}
-		for k, v := range x {
-			// TODO: check if key is string
-			m2[k.(string)] = fixMaps(v)
-		}
-		return m2
-	case map[string]interface{}:
-		m2 := Unstructured{}
-		for k, v := range x {
-			// TODO: check if key is string
-			m2[k] = fixMaps(v)
-		}
-		return m2
-	case Unstructured:
-		m2 := Unstructured{}
-		for k, v := range x {
-			m2[k] = fixMaps(v)
-		}
-		return m2
-	case []interface{}:
-		for i, v := range x {
-			x[i] = fixMaps(v)
-		}
-	}
-	return i
-}

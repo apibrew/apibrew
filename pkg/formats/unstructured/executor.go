@@ -21,13 +21,11 @@ type Executor struct {
 	resources           []*model.Resource
 	resourceNameMap     map[string]*model.Resource
 	resourcePropertyMap map[string]*model.ResourceProperty
-	parser              Parser
+	parser              ParserFunc
 	preprocessor        preprocessor
 }
 
 func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
-	body = fixMaps(body).(Unstructured)
-
 	body, err := e.preprocessor.preprocess(body)
 
 	if err != nil {
@@ -64,7 +62,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 	switch elemType {
 	case "resource":
 		var resource = new(model.Resource)
-		err = body.ToProtoMessage(resource)
+		err = ToProtoMessage(body, resource)
 
 		if err != nil {
 			jsonData, _ := json.MarshalIndent(body, " ", "  ")
@@ -95,7 +93,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		// locating resource
 
 		var record = new(model.Record)
-		err = body.ToProtoMessage(record)
+		err = ToProtoMessage(body, record)
 
 		if err != nil {
 			return err
@@ -186,4 +184,4 @@ type ExecutorParams struct {
 	DataOnly       bool
 }
 
-type Parser func(reader io.Reader, consumer func(data Unstructured) error) error
+type ParserFunc func(reader io.Reader, consumer func(data Unstructured) error) error

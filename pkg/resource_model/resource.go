@@ -2,6 +2,8 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "encoding/json"
 
 type Resource struct {
 	Id                  *uuid.UUID
@@ -13,14 +15,14 @@ type Resource struct {
 	Name                string
 	Namespace           *Namespace
 	Virtual             bool
-	Types               *interface{}
+	Types               *unstructured.Unstructured
 	Immutable           bool
 	Abstract            bool
 	DataSource          *DataSource
 	Entity              *string
 	Catalog             *string
 	Annotations         map[string]string
-	Indexes             *interface{}
+	Indexes             *unstructured.Unstructured
 	SecurityConstraints []*SecurityConstraint
 	Title               *string
 	Description         *string
@@ -53,7 +55,7 @@ func (s *Resource) GetNamespace() *Namespace {
 func (s *Resource) GetVirtual() bool {
 	return s.Virtual
 }
-func (s *Resource) GetTypes() *interface{} {
+func (s *Resource) GetTypes() *unstructured.Unstructured {
 	return s.Types
 }
 func (s *Resource) GetImmutable() bool {
@@ -74,7 +76,7 @@ func (s *Resource) GetCatalog() *string {
 func (s *Resource) GetAnnotations() map[string]string {
 	return s.Annotations
 }
-func (s *Resource) GetIndexes() *interface{} {
+func (s *Resource) GetIndexes() *unstructured.Unstructured {
 	return s.Indexes
 }
 func (s *Resource) GetSecurityConstraints() []*SecurityConstraint {

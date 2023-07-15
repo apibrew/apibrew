@@ -1,19 +1,31 @@
 package resource_model
 
 import "github.com/google/uuid"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "encoding/json"
 
 type Record struct {
 	Id               *uuid.UUID
-	Properties       map[string]interface{}
-	PackedProperties []interface{}
+	Properties       unstructured.Unstructured
+	PackedProperties []unstructured.Unstructured
 }
 
 func (s *Record) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Record) GetProperties() map[string]interface{} {
+func (s *Record) GetProperties() unstructured.Unstructured {
 	return s.Properties
 }
-func (s *Record) GetPackedProperties() []interface{} {
+func (s *Record) GetPackedProperties() []unstructured.Unstructured {
 	return s.PackedProperties
+}
+
+func (s *Record) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.Properties)
+}
+
+func (s *Record) UnmarshalJSON(data []byte) error {
+	s.Properties = make(unstructured.Unstructured)
+
+	return json.Unmarshal(data, &s.Properties)
 }

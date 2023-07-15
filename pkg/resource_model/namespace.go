@@ -2,6 +2,8 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "encoding/json"
 
 type Namespace struct {
 	Id                  *uuid.UUID
@@ -12,7 +14,7 @@ type Namespace struct {
 	UpdatedOn           *time.Time
 	Name                string
 	Description         *string
-	Details             *interface{}
+	Details             *unstructured.Unstructured
 	SecurityConstraints []*SecurityConstraint
 }
 
@@ -40,7 +42,7 @@ func (s *Namespace) GetName() string {
 func (s *Namespace) GetDescription() *string {
 	return s.Description
 }
-func (s *Namespace) GetDetails() *interface{} {
+func (s *Namespace) GetDetails() *unstructured.Unstructured {
 	return s.Details
 }
 func (s *Namespace) GetSecurityConstraints() []*SecurityConstraint {

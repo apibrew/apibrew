@@ -1,6 +1,7 @@
 {% import "github.com/apibrew/apibrew/pkg/model" %}
+{% import "github.com/apibrew/apibrew/pkg/service/annotations" %}
 
-{%- func GenerateStructCode(pkg string, resource*model.Resource, name string, properties []*model.ResourceProperty) -%}
+{%- func GenerateStructCode(pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty, annotated annotations.Annotated) -%}
 {%- code typeName := GoName(name) -%}
 type {%s typeName %} struct {
     {%- for _, property := range properties -%}
@@ -13,5 +14,17 @@ func (s *{%s typeName %}) Get{%= GoName(property.Name) %}() {%= PropertyType(res
 	return s.{%= GoName(property.Name) %}
 }
 {%- endfor -%}
+
+{% if annotations.Get(annotated, annotations.SelfContainedProperty) != "" %}
+func (s *{%s typeName %}) MarshalJSON() ([]byte, error) {
+    return json.Marshal(s.{%= GoName(annotations.Get(annotated, annotations.SelfContainedProperty)) %})
+}
+
+func (s *{%s typeName %}) UnmarshalJSON(data []byte) error {
+   s.{%= GoName(annotations.Get(annotated, annotations.SelfContainedProperty)) %} = make(unstructured.Unstructured)
+
+   return json.Unmarshal(data, &s.{%= GoName(annotations.Get(annotated, annotations.SelfContainedProperty))%})
+}
+{% endif %}
 
 {% endfunc %}
