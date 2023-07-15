@@ -76,11 +76,11 @@ func (d *extensionService) UnRegisterExtension(extension *resource_model.Extensi
 }
 
 func (d *extensionService) configureExtension(extension *resource_model.Extension) {
-	if d.extensionVersionMap[extension.Id.String()] == uint32(*extension.Version) {
+	if d.extensionVersionMap[extension.Id.String()] == uint32(extension.Version) {
 		return
 	}
 
-	d.extensionVersionMap[extension.Id.String()] = uint32(*extension.Version)
+	d.extensionVersionMap[extension.Id.String()] = uint32(extension.Version)
 
 	extensionHandler := d.prepareExtensionHandler(extension)
 	if d.extensionHandlerMap[extension.Id.String()] != nil {

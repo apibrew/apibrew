@@ -5,13 +5,13 @@ import "time"
 
 type DataSource struct {
 	Id          *uuid.UUID
-	Version     *int32
+	Version     int32
 	CreatedBy   *string
 	UpdatedBy   *string
 	CreatedOn   *time.Time
 	UpdatedOn   *time.Time
 	Name        string
-	Description *string
+	Description string
 	Backend     DataSourceBackend
 	Options     map[string]string
 }
@@ -19,7 +19,7 @@ type DataSource struct {
 func (s *DataSource) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *DataSource) GetVersion() *int32 {
+func (s *DataSource) GetVersion() int32 {
 	return s.Version
 }
 func (s *DataSource) GetCreatedBy() *string {
@@ -37,7 +37,7 @@ func (s *DataSource) GetUpdatedOn() *time.Time {
 func (s *DataSource) GetName() string {
 	return s.Name
 }
-func (s *DataSource) GetDescription() *string {
+func (s *DataSource) GetDescription() string {
 	return s.Description
 }
 func (s *DataSource) GetBackend() DataSourceBackend {

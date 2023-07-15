@@ -6,7 +6,7 @@ import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type User struct {
 	Id                  *uuid.UUID
-	Version             *int32
+	Version             int32
 	CreatedBy           *string
 	UpdatedBy           *string
 	CreatedOn           *time.Time
@@ -21,7 +21,7 @@ type User struct {
 func (s *User) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *User) GetVersion() *int32 {
+func (s *User) GetVersion() int32 {
 	return s.Version
 }
 func (s *User) GetCreatedBy() *string {

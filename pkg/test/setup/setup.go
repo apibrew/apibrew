@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -19,7 +20,7 @@ var Ctx context.Context
 func init() {
 	initClient()
 	initTextContext()
-	dataSources := []*resource_model.DataSource{
+	Records := []*resource_model.DataSource{
 		DataSourceDhTest,
 		DhTest,
 		DataSource1,
@@ -28,23 +29,24 @@ func init() {
 		RichResource1,
 		SimpleVirtualResource1,
 	}
-	SetupDataSources(Ctx, dataSources)
+	SetupRecords(Ctx, Records)
 	SetupResources(Ctx, resources)
 }
 
-func SetupDataSources(ctx context.Context, dataSources []*resource_model.DataSource) {
+func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 	// creating data sources
-	listDataSourceResp, err := dataSourceClient.List(ctx, &stub.ListDataSourceRequest{})
+	listDataSourceResp, err := recordClient.List(ctx, &stub.ListRecordRequest{})
 
 	if err != nil {
 		panic(err)
 	}
 
-	var dataSourcesForCreate []*resource_model.DataSource
+	var RecordsForCreate []*resource_model.DataSource
 
-	for _, cd := range dataSources {
+	for _, cd := range Records {
 		found := false
-		for _, ds := range listDataSourceResp.Content {
+		for _, dso := range listDataSourceResp.Content {
+			ds := resource_model.DataSourceMapperInstance.FromRecord(dso)
 
 			if cd.Name == ds.Name {
 				found = true
@@ -54,26 +56,27 @@ func SetupDataSources(ctx context.Context, dataSources []*resource_model.DataSou
 		}
 
 		if !found {
-			dataSourcesForCreate = append(dataSourcesForCreate, cd)
+			RecordsForCreate = append(RecordsForCreate, cd)
 		}
 	}
 
-	if len(dataSourcesForCreate) > 0 {
-		createRes, err := dataSourceClient.Create(ctx, &stub.CreateDataSourceRequest{
-			DataSources: dataSourcesForCreate,
+	if len(RecordsForCreate) > 0 {
+		createRes, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
+			Records: util.ArrayMap(RecordsForCreate, resource_model.DataSourceMapperInstance.ToRecord),
 		})
 
 		if err != nil {
 			panic(err)
 		}
 
-		for _, cd := range dataSources {
-			if cd.Id != "" {
+		for _, cd := range Records {
+			if cd.Id != nil {
 				continue
 			}
 
 			found := false
-			for _, ds := range createRes.DataSources {
+			for _, dsr := range createRes.Records {
+				ds := resource_model.DataSourceMapperInstance.FromRecord(dsr)
 
 				if cd.Name == ds.Name {
 					found = true

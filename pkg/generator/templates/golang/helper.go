@@ -79,6 +79,10 @@ func isPrimitive(prop *model.ResourceProperty) bool {
 }
 
 func isNullable(prop *model.ResourceProperty) bool {
+	if annotations.IsEnabled(prop, annotations.AllowEmptyPrimitive) {
+		return false
+	}
+
 	return prop.Type == model.ResourceProperty_REFERENCE || !prop.Required || annotations.IsEnabled(prop, annotations.SpecialProperty)
 }
 

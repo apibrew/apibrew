@@ -90,6 +90,8 @@ type ExternalService interface {
 }
 
 type ExtensionService interface {
+	RegisterExtension(*resource_model.Extension)
+	UnRegisterExtension(*resource_model.Extension)
 }
 
 type CheckRecordAccessParams struct {

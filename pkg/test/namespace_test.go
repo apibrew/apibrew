@@ -2,19 +2,21 @@ package test
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
+	"github.com/google/uuid"
 	"testing"
 )
 
 func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
-	namespace1 := &model.Namespace{
+	namespace1 := &resource_model.Namespace{
 		Name: "test-namespace",
 	}
 
-	res, err := namespaceClient.Create(setup.Ctx, &stub.CreateNamespaceRequest{
-		Namespaces: []*model.Namespace{
-			namespace1,
+	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
+		Records: []*model.Record{
+			resource_model.NamespaceMapperInstance.ToRecord(namespace1),
 		},
 	})
 
@@ -23,17 +25,18 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 		return
 	}
 
-	if res.Namespaces != nil {
-		namespace1.Id = res.Namespaces[0].Id
+	if res.Records != nil {
+		namespace1.Id = new(uuid.UUID)
+		*namespace1.Id = uuid.MustParse(res.Records[0].Id)
 	} else {
 		t.Error("Namespace was not created")
 		return
 	}
 
 	defer func() {
-		_, _ = namespaceClient.Delete(setup.Ctx, &stub.DeleteNamespaceRequest{
+		_, _ = recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
 			Ids: []string{
-				namespace1.Id,
+				namespace1.Id.String(),
 			},
 		})
 	}()
@@ -42,9 +45,9 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 
 	namespace1.Name = "test-123321123"
 
-	_, err = namespaceClient.Update(setup.Ctx, &stub.UpdateNamespaceRequest{
-		Namespaces: []*model.Namespace{
-			namespace1,
+	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
+		Records: []*model.Record{
+			resource_model.NamespaceMapperInstance.ToRecord(namespace1),
 		},
 	})
 
@@ -53,14 +56,14 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 		return
 	}
 
-	res2, err := namespaceClient.Get(setup.Ctx, &stub.GetNamespaceRequest{Id: namespace1.Id})
+	res2, err := recordClient.Get(setup.Ctx, &stub.GetRecordRequest{Id: namespace1.Id.String()})
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	if res2.Namespace.Name != "test-namespace" {
+	if res2.Record.Properties["Name"].GetStringValue() != "test-namespace" {
 		t.Error("Namespace name is immutable and it must not be updated")
 	}
 }
