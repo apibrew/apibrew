@@ -8,7 +8,6 @@ import (
 
 import "github.com/google/uuid"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
-import "encoding/json"
 
 type RecordMapper struct {
 }
@@ -54,50 +53,50 @@ func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Re
 	var s = m.New()
 	if properties["id"] != nil {
 
-		var_65211d43dfa0 := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_65211d43dfa0)
+		var_ff2d5684e9a3 := properties["id"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_ff2d5684e9a3)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_65211d43dfa0_mapped := new(uuid.UUID)
-		*var_65211d43dfa0_mapped = val.(uuid.UUID)
+		var_ff2d5684e9a3_mapped := new(uuid.UUID)
+		*var_ff2d5684e9a3_mapped = val.(uuid.UUID)
 
-		s.Id = var_65211d43dfa0_mapped
+		s.Id = var_ff2d5684e9a3_mapped
 	}
 	if properties["properties"] != nil {
 
-		var_41a3eca5294a := properties["properties"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_41a3eca5294a)
+		var_615b7c705441 := properties["properties"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_615b7c705441)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_41a3eca5294a_mapped := val.(unstructured.Unstructured)
+		var_615b7c705441_mapped := val.(unstructured.Unstructured)
 
-		s.Properties = var_41a3eca5294a_mapped
+		s.Properties = var_615b7c705441_mapped
 	}
 	if properties["packedProperties"] != nil {
 
-		var_8caf7c79756a := properties["packedProperties"]
-		var_8caf7c79756a_mapped := []unstructured.Unstructured{}
-		for _, v := range var_8caf7c79756a.GetListValue().Values {
+		var_a23147582751 := properties["packedProperties"]
+		var_a23147582751_mapped := []unstructured.Unstructured{}
+		for _, v := range var_a23147582751.GetListValue().Values {
 
-			var_5fac1524b4db := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_5fac1524b4db)
+			var_34117d4743b5 := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_34117d4743b5)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_5fac1524b4db_mapped := val.(unstructured.Unstructured)
+			var_34117d4743b5_mapped := val.(unstructured.Unstructured)
 
-			var_8caf7c79756a_mapped = append(var_8caf7c79756a_mapped, var_5fac1524b4db_mapped)
+			var_a23147582751_mapped = append(var_a23147582751_mapped, var_34117d4743b5_mapped)
 		}
 
-		s.PackedProperties = var_8caf7c79756a_mapped
+		s.PackedProperties = var_a23147582751_mapped
 	}
 	return s
 }

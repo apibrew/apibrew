@@ -9,6 +9,9 @@ package {%s pkgName %}
 {%- for _, importLine := range getImports(resource) -%}
 import "{%s importLine %}"
 {%- endfor -%}
+{%- for _, importLine := range getResourceSpecificImports(resource) -%}
+import "{%s importLine %}"
+{%- endfor -%}
 
 {%= GenerateStructCode(pkg, resource, resource.Name, resource.Properties, resource) %}
 {%- for _, subType := range getAllSubTypes(resource) -%}
