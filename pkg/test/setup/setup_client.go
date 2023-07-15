@@ -13,8 +13,9 @@ import (
 )
 
 var authenticationClient stub.AuthenticationClient
-var dataSourceClient stub.DataSourceClient
 var resourceClient stub.ResourceClient
+var recordClient stub.RecordClient
+var dataSourceClient stub.DataSourceClient
 
 var container service.Container
 
@@ -40,20 +41,20 @@ func initClient() {
 
 	application := new(impl.App)
 
-	var initData = prepareInitData()
+	var config = prepareInitData()
 
-	addr := fmt.Sprintf("%s:%d", initData.Config.Host, initData.Config.Port)
+	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 
-	application.SetInitData(initData)
+	application.SetConfig(config)
 
 	<-application.Init()
 
 	grpcServer := grpc2.NewGrpcServer(application)
-	grpcServer.Init(initData)
+	grpcServer.Init(config)
 
 	container = application
 
-	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", initData.Config.Host, initData.Config.Port))
+	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", config.Host, config.Port))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,5 +74,6 @@ func initClient() {
 
 	authenticationClient = dhClient.GetAuthenticationClient()
 	resourceClient = dhClient.GetResourceClient()
+	recordClient = dhClient.GetRecordClient()
 	dataSourceClient = dhClient.GetDataSourceClient()
 }

@@ -53,50 +53,50 @@ func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Re
 	var s = m.New()
 	if properties["id"] != nil {
 
-		var_ff2d5684e9a3 := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_ff2d5684e9a3)
+		var_2892878dee7c := properties["id"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_2892878dee7c)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_ff2d5684e9a3_mapped := new(uuid.UUID)
-		*var_ff2d5684e9a3_mapped = val.(uuid.UUID)
+		var_2892878dee7c_mapped := new(uuid.UUID)
+		*var_2892878dee7c_mapped = val.(uuid.UUID)
 
-		s.Id = var_ff2d5684e9a3_mapped
+		s.Id = var_2892878dee7c_mapped
 	}
 	if properties["properties"] != nil {
 
-		var_615b7c705441 := properties["properties"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_615b7c705441)
+		var_482ac1801cfa := properties["properties"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_482ac1801cfa)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_615b7c705441_mapped := val.(unstructured.Unstructured)
+		var_482ac1801cfa_mapped := val.(unstructured.Unstructured)
 
-		s.Properties = var_615b7c705441_mapped
+		s.Properties = var_482ac1801cfa_mapped
 	}
 	if properties["packedProperties"] != nil {
 
-		var_a23147582751 := properties["packedProperties"]
-		var_a23147582751_mapped := []unstructured.Unstructured{}
-		for _, v := range var_a23147582751.GetListValue().Values {
+		var_5a0a96d0e398 := properties["packedProperties"]
+		var_5a0a96d0e398_mapped := []unstructured.Unstructured{}
+		for _, v := range var_5a0a96d0e398.GetListValue().Values {
 
-			var_34117d4743b5 := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_34117d4743b5)
+			var_fab3836afff0 := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_fab3836afff0)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_34117d4743b5_mapped := val.(unstructured.Unstructured)
+			var_fab3836afff0_mapped := val.(unstructured.Unstructured)
 
-			var_a23147582751_mapped = append(var_a23147582751_mapped, var_34117d4743b5_mapped)
+			var_5a0a96d0e398_mapped = append(var_5a0a96d0e398_mapped, var_fab3836afff0_mapped)
 		}
 
-		s.PackedProperties = var_a23147582751_mapped
+		s.PackedProperties = var_5a0a96d0e398_mapped
 	}
 	return s
 }

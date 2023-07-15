@@ -2,14 +2,16 @@ package test
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
+	"github.com/google/uuid"
 	"testing"
 )
 
 func TestCreateAndReadDataSource(t *testing.T) {
-	res2, err := dataSourceClient.Get(setup.Ctx, &stub.GetDataSourceRequest{
-		Id: setup.DataSource1.Id,
+	res2, err := recordClient.Get(setup.Ctx, &stub.GetRecordRequest{
+		Id: setup.DataSource1.Id.String(),
 	})
 
 	if err != nil {
@@ -17,28 +19,26 @@ func TestCreateAndReadDataSource(t *testing.T) {
 		return
 	}
 
-	if res2.DataSource == nil {
+	if res2.Record == nil {
 		t.Error("Data source must not be null")
 		return
 	}
 
-	setup.DataSource1.AuditData = res2.DataSource.AuditData
-
-	DeepEqual(t, setup.DataSource1, res2.DataSource, "")
+	DeepEqual(t, resource_model.DataSourceMapperInstance.ToRecord(setup.DataSource1), res2.Record, "")
 }
 
-func TestCreateDataSourceStatusTest(t *testing.T) {
+func TestCreateRecordstatusTest(t *testing.T) {
 	newDataSource := &resource_model.DataSource{
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Params:      setup.SystemDataSource.Params,
+		Options:     setup.SystemDataSource.Options,
 	}
 
 	defer func() {
-		if newDataSource.Id != "" {
-			_, err := dataSourceClient.Delete(setup.Ctx, &stub.DeleteDataSourceRequest{
-				Ids: []string{newDataSource.Id},
+		if newDataSource.Id != nil {
+			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
+				Ids: []string{newDataSource.Id.String()},
 			})
 
 			if err != nil {
@@ -48,8 +48,8 @@ func TestCreateDataSourceStatusTest(t *testing.T) {
 		}
 	}()
 
-	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
-		DataSources: []*resource_model.DataSource{newDataSource},
+	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
+		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -57,9 +57,10 @@ func TestCreateDataSourceStatusTest(t *testing.T) {
 		return
 	}
 
-	newDataSource.Id = resp.DataSources[0].Id
+	newDataSource.Id = new(uuid.UUID)
+	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
 
-	checkNewCreatedDatasourceStatus(newDataSource, t)
+	checkNewCreatedRecordStatus(newDataSource, t)
 }
 
 func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
@@ -68,13 +69,13 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Params:      setup.DhTestWrongPassword.Params,
+		Options:     setup.DhTestWrongPassword.Options,
 	}
 
 	defer func() {
-		if newDataSource.Id != "" {
-			_, err := dataSourceClient.Delete(setup.Ctx, &stub.DeleteDataSourceRequest{
-				Ids: []string{newDataSource.Id},
+		if newDataSource.Id != nil {
+			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
+				Ids: []string{newDataSource.Id.String()},
 			})
 
 			if err != nil {
@@ -84,8 +85,8 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 		}
 	}()
 
-	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
-		DataSources: []*resource_model.DataSource{newDataSource},
+	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
+		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -93,14 +94,15 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 		return
 	}
 
-	newDataSource.Id = resp.DataSources[0].Id
+	newDataSource.Id = new(uuid.UUID)
+	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
 
-	checkNewCreatedDatasourceStatusPasswordWrong(newDataSource, t)
+	checkNewCreatedRecordStatusPasswordWrong(newDataSource, t)
 }
 
-func TestListCreatedDataSources(t *testing.T) {
+func TestListCreatedRecords(t *testing.T) {
 
-	res, err := dataSourceClient.List(setup.Ctx, &stub.ListDataSourceRequest{})
+	res, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{})
 
 	if err != nil {
 		t.Error(err)
@@ -118,14 +120,14 @@ func TestUpdateDataSource(t *testing.T) {
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Params:      setup.DataSource1.Params,
+		Options:     setup.DataSource1.Options,
 		Version:     1,
 	}
 
 	defer func() {
-		if newDataSource.Id != "" {
-			_, err := dataSourceClient.Delete(setup.Ctx, &stub.DeleteDataSourceRequest{
-				Ids: []string{newDataSource.Id},
+		if newDataSource.Id != nil {
+			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
+				Ids: []string{newDataSource.Id.String()},
 			})
 
 			if err != nil {
@@ -135,8 +137,8 @@ func TestUpdateDataSource(t *testing.T) {
 		}
 	}()
 
-	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
-		DataSources: []*resource_model.DataSource{newDataSource},
+	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
+		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -144,23 +146,24 @@ func TestUpdateDataSource(t *testing.T) {
 		return
 	}
 
-	newDataSource.Id = resp.DataSources[0].Id
+	newDataSource.Id = new(uuid.UUID)
+	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
 
-	checkNewCreatedDatasourceStatus(newDataSource, t)
+	checkNewCreatedRecordStatus(newDataSource, t)
 
-	newDataSource.Params = &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dhtest2",
-			Password:      "dhtest2",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "market",
-			DefaultSchema: "public",
+	newDataSource.Options = map[string]string{
+		"Username":      "dhtest2",
+		"Password":      "dhtest2",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "market",
+		"DefaultSchema": "public",
+	}
+
+	res, err := recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
+		Records: []*model.Record{
+			resource_model.DataSourceMapperInstance.ToRecord(newDataSource),
 		},
-	}
-
-	res, err := dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
-		DataSources: []*resource_model.DataSource{newDataSource},
 	})
 
 	if err != nil {
@@ -168,72 +171,70 @@ func TestUpdateDataSource(t *testing.T) {
 		return
 	}
 
-	if len(res.DataSources) != 1 {
-		t.Error("Invalid datasource length on update response", len(res.DataSources))
+	if len(res.Records) != 1 {
+		t.Error("Invalid datasource length on update response", len(res.Records))
 	}
 
-	updatedParams := res.DataSources[0].Params.(*resource_model.DataSource_PostgresqlParams)
+	updatedParams := resource_model.DataSourceMapperInstance.FromRecord(res.Records[0])
 
-	if updatedParams.PostgresqlParams.Username != "dhtest2" {
+	if updatedParams.Options["Username"] != "dhtest2" {
 		t.Error("Username is not updated")
 	}
 
-	if updatedParams.PostgresqlParams.Host != "127.0.0.1" {
+	if updatedParams.Options["Host"] != "127.0.0.1" {
 		t.Error("Host is corrupted")
 	}
 
-	if res.DataSources[0].Version != 2 {
+	if res.Records[0].Properties["Version"].GetNumberValue() != 2 {
 		t.Error("Version is wrong")
 	}
 
-	getRes, err := dataSourceClient.Get(setup.Ctx, &stub.GetDataSourceRequest{
-		Id: newDataSource.Id,
+	getRes, err := recordClient.Get(setup.Ctx, &stub.GetRecordRequest{
+		Id: newDataSource.Id.String(),
 	})
 
 	if err != nil {
 		t.Error(err)
 	}
 
-	getParams := getRes.DataSource.Params.(*resource_model.DataSource_PostgresqlParams)
+	getParams := resource_model.DataSourceMapperInstance.FromRecord(getRes.Record).Options
 
-	if getParams.PostgresqlParams.Username != "dhtest2" {
+	if getParams["Username"] != "dhtest2" {
 		t.Error("Username is not updated")
 	}
 
-	if getParams.PostgresqlParams.Host != "127.0.0.1" {
+	if getParams["Host"] != "127.0.0.1" {
 		t.Error("Host is corrupted")
 	}
 
-	if getRes.DataSource.Version != 2 {
+	if getRes.Record.Properties["Version"].GetNumberValue() != 2 {
 		t.Error("Version is wrong")
 	}
 
-	checkNewCreatedDatasourceStatusPasswordWrong(getRes.DataSource, t)
+	checkNewCreatedRecordStatusPasswordWrong(resource_model.DataSourceMapperInstance.FromRecord(getRes.Record), t)
 }
 
-func TestUpdateDataSourceStatus(t *testing.T) {
+func TestUpdateRecordstatus(t *testing.T) {
 
 	newDataSource := &resource_model.DataSource{
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
 		Description: "test-data-source",
-		Params: &resource_model.DataSource_PostgresqlParams{
-			PostgresqlParams: &model.PostgresqlParams{
-				Username:      "dh_test2",
-				Password:      "dh_test",
-				Host:          "127.0.0.1",
-				Port:          5432,
-				DbName:        "dh_test",
-				DefaultSchema: "public",
-			},
+		Options: map[string]string{
+			"Username":      "dh_test2",
+			"Password":      "dh_test",
+			"Host":          "127.0.0.1",
+			"Port":          "5432",
+			"DbName":        "dh_test",
+			"DefaultSchema": "public",
 		},
 		Version: 1,
 	}
 
 	defer func() {
-		if newDataSource.Id != "" {
-			_, err := dataSourceClient.Delete(setup.Ctx, &stub.DeleteDataSourceRequest{
-				Ids: []string{newDataSource.Id},
+		if newDataSource.Id != nil {
+			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
+				Ids: []string{newDataSource.Id.String()},
 			})
 
 			if err != nil {
@@ -243,8 +244,8 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 		}
 	}()
 
-	resp, err := dataSourceClient.Create(setup.Ctx, &stub.CreateDataSourceRequest{
-		DataSources: []*resource_model.DataSource{newDataSource},
+	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
+		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -252,42 +253,39 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 		return
 	}
 
-	newDataSource.Id = resp.DataSources[0].Id
-	createdDataSource1 := resp.DataSources[0]
+	newDataSource.Id = new(uuid.UUID)
+	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
+	createdDataSource1 := resource_model.DataSourceMapperInstance.FromRecord(resp.Records[0])
 
-	checkNewCreatedDatasourceStatusPasswordWrong(newDataSource, t)
+	checkNewCreatedRecordStatusPasswordWrong(newDataSource, t)
 
-	createdDataSource1.Params = &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dh_test2",
-			Password:      "dh_test",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "dh_test",
-			DefaultSchema: "public",
-		},
+	createdDataSource1.Options = map[string]string{
+		"Username":      "dh_test2",
+		"Password":      "dh_test",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "dh_test",
+		"DefaultSchema": "public",
 	}
 
-	_, _ = dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
-		DataSources: []*resource_model.DataSource{createdDataSource1},
+	_, _ = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
+		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
 	})
 
-	checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource1, t)
+	checkNewCreatedRecordStatusPasswordWrong(createdDataSource1, t)
 
-	createdDataSource1.Params = &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dh_test",
-			Password:      "dh_test",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "dh_test",
-			DefaultSchema: "public",
-		},
+	createdDataSource1.Options = map[string]string{
+		"Username":      "dh_test",
+		"Password":      "dh_test",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "dh_test",
+		"DefaultSchema": "public",
 	}
 	createdDataSource1.Version++
 
-	_, err = dataSourceClient.Update(setup.Ctx, &stub.UpdateDataSourceRequest{
-		DataSources: []*resource_model.DataSource{createdDataSource1},
+	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
+		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
 	})
 
 	if err != nil {
@@ -295,13 +293,13 @@ func TestUpdateDataSourceStatus(t *testing.T) {
 		return
 	}
 
-	checkNewCreatedDatasourceStatus(createdDataSource1, t)
+	checkNewCreatedRecordStatus(createdDataSource1, t)
 }
 
-func checkNewCreatedDatasourceStatus(createdDataSource *resource_model.DataSource, t *testing.T) {
+func checkNewCreatedRecordStatus(createdDataSource *resource_model.DataSource, t *testing.T) {
 
 	res, err := dataSourceClient.Status(setup.Ctx, &stub.StatusRequest{
-		Id: createdDataSource.Id,
+		Id: createdDataSource.Id.String(),
 	})
 
 	if err != nil {
@@ -319,9 +317,9 @@ func checkNewCreatedDatasourceStatus(createdDataSource *resource_model.DataSourc
 	}
 }
 
-func checkNewCreatedDatasourceStatusPasswordWrong(createdDataSource *resource_model.DataSource, t *testing.T) {
+func checkNewCreatedRecordStatusPasswordWrong(createdDataSource *resource_model.DataSource, t *testing.T) {
 	resp, err := dataSourceClient.Status(setup.Ctx, &stub.StatusRequest{
-		Id: createdDataSource.Id,
+		Id: createdDataSource.Id.String(),
 	})
 
 	if err == nil {

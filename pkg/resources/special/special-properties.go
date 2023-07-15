@@ -24,7 +24,8 @@ var VersionProperty = &model.ResourceProperty{
 	Required: true,
 	Primary:  false,
 	Annotations: map[string]string{
-		annotations.SpecialProperty: "true",
+		annotations.SpecialProperty:     annotations.Enabled,
+		annotations.AllowEmptyPrimitive: annotations.Enabled,
 	},
 }
 

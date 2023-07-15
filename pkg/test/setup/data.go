@@ -2,105 +2,85 @@ package setup
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 )
 
 var SystemDataSource = &resource_model.DataSource{
-	Id:          "system",
-	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
-	Name:        "system",
-	Description: "system",
-	Params: &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dh_test",
-			Password:      "dh_test",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "dh_test",
-			DefaultSchema: "public",
-		},
+	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Name:    "system",
+	Options: map[string]string{
+		"Username":      "dh_test",
+		"Password":      "dh_test",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "dh_test",
+		"DefaultSchema": "public",
 	},
 }
 
 var DefaultDataSource = &resource_model.DataSource{
-	Id:          "default",
-	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
-	Name:        "default",
-	Description: "default",
-	Params: &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dh_test",
-			Password:      "dh_test",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "dh_test",
-			DefaultSchema: "public",
-		},
+	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Name:    "default",
+	Options: map[string]string{
+		"Username":      "dh_test",
+		"Password":      "dh_test",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "dh_test",
+		"DefaultSchema": "public",
 	},
 }
 
 var DhTest = &resource_model.DataSource{
-	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
-	Name:        "dh-test",
-	Description: "dh-test",
-	Params: &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dh_test",
-			Password:      "dh_test",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "dh_test",
-			DefaultSchema: "public",
-		},
+	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Name:    "dh-test",
+	Options: map[string]string{
+		"Username":      "dh_test",
+		"Password":      "dh_test",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "dh_test",
+		"DefaultSchema": "public",
 	},
 }
 
 var DhTestWrongPassword = &resource_model.DataSource{
-	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
-	Name:        "data-source-1-wrong",
-	Description: "data-source-1-wrong",
-	Params: &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dh_test_wrong_pass",
-			Password:      "dh_test_wrong_pass",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "dh_test",
-			DefaultSchema: "public",
-		},
+	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Name:    "data-source-1-wrong",
+	Options: map[string]string{
+		"Username":      "dh_test",
+		"Password":      "dh_test_wrong",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "dh_test",
+		"DefaultSchema": "public",
 	},
 }
 
 var DataSourceDhTest = &resource_model.DataSource{
-	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
-	Name:        "data-source-test",
-	Description: "data-source-test",
-	Params: &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dh_test",
-			Password:      "dh_test",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "dh_test",
-			DefaultSchema: "public",
-		},
+	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Name:    "data-source-test",
+	Options: map[string]string{
+		"Username":      "dh_test",
+		"Password":      "dh_test",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "dh_test",
+		"DefaultSchema": "public",
 	},
 }
 
 var DataSource1 = &resource_model.DataSource{
-	Backend:     resource_model.DataSourceBackendType_POSTGRESQL,
-	Name:        "data-source-1",
-	Description: "data-source-1",
-	Version:     1,
-	Params: &resource_model.DataSource_PostgresqlParams{
-		PostgresqlParams: &model.PostgresqlParams{
-			Username:      "dh_test",
-			Password:      "dh_test",
-			Host:          "127.0.0.1",
-			Port:          5432,
-			DbName:        "dh_test",
-			DefaultSchema: "public",
-		},
+	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Name:    "data-source-1",
+	Options: map[string]string{
+		"Username":      "dh_test",
+		"Password":      "dh_test",
+		"Host":          "127.0.0.1",
+		"Port":          "5432",
+		"DbName":        "dh_test",
+		"DefaultSchema": "public",
 	},
 }
 

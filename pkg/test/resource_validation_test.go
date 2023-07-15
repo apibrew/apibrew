@@ -100,7 +100,7 @@ func TestCreateResourceWithSameName(t *testing.T) {
 	}
 }
 
-func TestCreateResourceWithNonExistingDatasourceShouldFail(t *testing.T) {
+func TestCreateResourceWithNonExistingRecordshouldFail(t *testing.T) {
 	randUUid, _ := uuid.NewRandom()
 
 	resp, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{

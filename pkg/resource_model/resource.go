@@ -6,7 +6,7 @@ import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Resource struct {
 	Id                  *uuid.UUID
-	Version             *int32
+	Version             int32
 	CreatedBy           *string
 	UpdatedBy           *string
 	CreatedOn           *time.Time
@@ -30,7 +30,7 @@ type Resource struct {
 func (s *Resource) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Resource) GetVersion() *int32 {
+func (s *Resource) GetVersion() int32 {
 	return s.Version
 }
 func (s *Resource) GetCreatedBy() *string {

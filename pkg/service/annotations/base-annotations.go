@@ -37,3 +37,4 @@ const SQLType = "SQLType"
 // code generator
 const TypeName = "TypeName"
 const SelfContainedProperty = "SelfContainedProperty"
+const AllowEmptyPrimitive = "AllowEmptyPrimitive"

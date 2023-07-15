@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-var dataSources = []*resource_model.DataSource{
+var Records = []*resource_model.DataSource{
 	setup.DhTest,
 	dhTestMysql,
 	dhTestRedis,
@@ -23,11 +23,11 @@ var dataSources = []*resource_model.DataSource{
 var resources = make(map[*resource_model.DataSource]*model.Resource)
 
 func TestMain(t *testing.M) {
-	setup.SetupDataSources(setup.Ctx, dataSources)
+	setup.SetupRecords(setup.Ctx, Records)
 
 	var pendingResources []*model.Resource
 
-	for _, dataSource := range dataSources {
+	for _, dataSource := range Records {
 		newRes := setup.PrepareRichResource1()
 
 		newRes.SourceConfig.DataSource = dataSource.Name
@@ -45,7 +45,7 @@ func TestMain(t *testing.M) {
 }
 
 func TestCreateRecord(t *testing.T) {
-	for _, dataSource := range dataSources {
+	for _, dataSource := range Records {
 		t.Run(fmt.Sprintf("%s[%s]", dataSource.Backend.String(), dataSource.Name), func(t *testing.T) {
 			record1 := new(model.Record)
 			st, err := structpb.NewStruct(map[string]interface{}{
@@ -113,7 +113,7 @@ func TestCreateRecord(t *testing.T) {
 }
 
 func TestDeleteRecord(t *testing.T) {
-	for _, dataSource := range dataSources {
+	for _, dataSource := range Records {
 		t.Run(fmt.Sprintf("%s[%s]", dataSource.Backend.String(), dataSource.Name), func(t *testing.T) {
 			record1 := new(model.Record)
 			st, err := structpb.NewStruct(map[string]interface{}{
@@ -174,7 +174,7 @@ func TestDeleteRecord(t *testing.T) {
 }
 
 func TestUpdateRecord(t *testing.T) {
-	for _, dataSource := range dataSources {
+	for _, dataSource := range Records {
 		t.Run(fmt.Sprintf("%s[%s]", dataSource.Backend.String(), dataSource.Name), func(t *testing.T) {
 			record1 := new(model.Record)
 			st, err := structpb.NewStruct(map[string]interface{}{
@@ -257,7 +257,7 @@ func TestUpdateRecord(t *testing.T) {
 }
 
 func TestQueryRecord(t *testing.T) {
-	for _, dataSource := range dataSources {
+	for _, dataSource := range Records {
 		t.Run(fmt.Sprintf("%s[%s]", dataSource.Backend.String(), dataSource.Name), func(t *testing.T) {
 			var list = []map[string]interface{}{
 				{

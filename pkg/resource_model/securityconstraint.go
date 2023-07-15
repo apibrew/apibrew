@@ -6,7 +6,7 @@ import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type SecurityConstraint struct {
 	Id            *uuid.UUID
-	Version       *int32
+	Version       int32
 	CreatedBy     *string
 	UpdatedBy     *string
 	CreatedOn     *time.Time
@@ -29,7 +29,7 @@ type SecurityConstraint struct {
 func (s *SecurityConstraint) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *SecurityConstraint) GetVersion() *int32 {
+func (s *SecurityConstraint) GetVersion() int32 {
 	return s.Version
 }
 func (s *SecurityConstraint) GetCreatedBy() *string {

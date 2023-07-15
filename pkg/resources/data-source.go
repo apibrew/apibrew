@@ -39,6 +39,9 @@ var DataSourceResource = &model.Resource{
 			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Required: false,
+			Annotations: map[string]string{
+				annotations.AllowEmptyPrimitive: annotations.Enabled,
+			},
 		},
 		{
 			Name:     "backend",

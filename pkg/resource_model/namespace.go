@@ -6,7 +6,7 @@ import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Namespace struct {
 	Id                  *uuid.UUID
-	Version             *int32
+	Version             int32
 	CreatedBy           *string
 	UpdatedBy           *string
 	CreatedOn           *time.Time
@@ -20,7 +20,7 @@ type Namespace struct {
 func (s *Namespace) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Namespace) GetVersion() *int32 {
+func (s *Namespace) GetVersion() int32 {
 	return s.Version
 }
 func (s *Namespace) GetCreatedBy() *string {

@@ -4,8 +4,10 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/ext"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -114,16 +116,17 @@ func TestMain(m *testing.M) {
 }
 
 func TestListResourceWithFunctionCallExtension(t *testing.T) {
-	var te = &model.Extension{
-		Id:   RandStringRunes(9),
+	var id = uuid.New()
+	var te = &resource_model.Extension{
+		Id:   &id,
 		Name: "test-extension",
 
-		Selector: &model.EventSelector{
+		Selector: &resource_model.ExtensionEventSelector{
 			Namespaces: []string{setup.SimpleVirtualResource1.Namespace},
 			Resources:  []string{setup.SimpleVirtualResource1.Name},
 		},
-		Call: &model.ExternalCall{
-			FunctionCall: &model.FunctionCall{
+		Call: resource_model.ExtensionExternalCall{
+			FunctionCall: &resource_model.ExtensionFunctionCall{
 				Host:         extensionGrpcHost,
 				FunctionName: "testFunc",
 			},
@@ -188,16 +191,16 @@ func TestListResourceWithFunctionCallExtension(t *testing.T) {
 }
 
 func TestListResourceWithHttpExtension(t *testing.T) {
-	var te = &model.Extension{
-		Id:   RandStringRunes(9),
+	var id = uuid.New()
+	var te = &resource_model.Extension{
+		Id:   &id,
 		Name: "test-extension",
-
-		Selector: &model.EventSelector{
+		Selector: &resource_model.ExtensionEventSelector{
 			Namespaces: []string{setup.SimpleVirtualResource1.Namespace},
 			Resources:  []string{setup.SimpleVirtualResource1.Name},
 		},
-		Call: &model.ExternalCall{
-			HttpCall: &model.HttpCall{
+		Call: resource_model.ExtensionExternalCall{
+			HttpCall: &resource_model.ExtensionHttpCall{
 				Uri:    "http://" + extensionRestHost + "/path-1",
 				Method: "POST",
 			},

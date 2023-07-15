@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
 	util2 "github.com/apibrew/apibrew/pkg/util"
@@ -80,7 +81,7 @@ func TestListRecord1(t *testing.T) {
 func withAutoLoadedResource(ctx context.Context, t testing.TB, dataSource *resource_model.DataSource, catalog, entity string, exec func(resource *model.Resource)) {
 	log.Print("begin PrepareResourceFromEntity", catalog, entity, dataSource.Id)
 	res, err := dataSourceClient.PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
-		Id:      dataSource.Id,
+		Id:      dataSource.Id.String(),
 		Catalog: catalog,
 		Entity:  entity,
 	})

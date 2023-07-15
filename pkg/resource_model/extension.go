@@ -5,7 +5,7 @@ import "time"
 
 type Extension struct {
 	Id          *uuid.UUID
-	Version     *int32
+	Version     int32
 	CreatedBy   *string
 	UpdatedBy   *string
 	CreatedOn   *time.Time
@@ -24,7 +24,7 @@ type Extension struct {
 func (s *Extension) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Extension) GetVersion() *int32 {
+func (s *Extension) GetVersion() int32 {
 	return s.Version
 }
 func (s *Extension) GetCreatedBy() *string {
