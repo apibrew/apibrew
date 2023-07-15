@@ -3,6 +3,7 @@ package resources
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 )
 
 var RecordResource = &model.Resource{
@@ -12,11 +13,9 @@ var RecordResource = &model.Resource{
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,
 		{
-			Name: "properties",
-			Type: model.ResourceProperty_MAP,
-			Item: &model.ResourceProperty{
-				Type: model.ResourceProperty_OBJECT,
-			},
+			Name:     "properties",
+			Type:     model.ResourceProperty_OBJECT,
+			Required: true,
 		},
 		{
 			Name: "packedProperties",
@@ -25,5 +24,9 @@ var RecordResource = &model.Resource{
 				Type: model.ResourceProperty_OBJECT,
 			},
 		},
+	},
+
+	Annotations: map[string]string{
+		annotations.SelfContainedProperty: "properties",
 	},
 }

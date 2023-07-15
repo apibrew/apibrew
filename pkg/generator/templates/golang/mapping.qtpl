@@ -43,7 +43,7 @@ import (
     "google.golang.org/protobuf/types/known/structpb"
 )
 
-{%- for _, importLine := range getImports(resource.Properties) -%}
+{%- for _, importLine := range getImports(resource) -%}
 import "{%s importLine %}"
 {%- endfor -%}
 {%- endfunc -%}

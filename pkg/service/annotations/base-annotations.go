@@ -35,5 +35,5 @@ const AllowPublicAccess = "AllowPublicAccess"
 const SQLType = "SQLType"
 
 // code generator
-const GenericType = "GenericType"
 const TypeName = "TypeName"
+const SelfContainedProperty = "SelfContainedProperty"

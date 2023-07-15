@@ -2,6 +2,8 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "encoding/json"
 
 type Role struct {
 	Id                  *uuid.UUID
@@ -12,7 +14,7 @@ type Role struct {
 	UpdatedOn           *time.Time
 	Name                string
 	SecurityConstraints []*SecurityConstraint
-	Details             *interface{}
+	Details             *unstructured.Unstructured
 }
 
 func (s *Role) GetId() *uuid.UUID {
@@ -39,6 +41,6 @@ func (s *Role) GetName() string {
 func (s *Role) GetSecurityConstraints() []*SecurityConstraint {
 	return s.SecurityConstraints
 }
-func (s *Role) GetDetails() *interface{} {
+func (s *Role) GetDetails() *unstructured.Unstructured {
 	return s.Details
 }

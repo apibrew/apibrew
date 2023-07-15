@@ -10,15 +10,15 @@ import (
 	"unicode/utf8"
 )
 
-type Unstructured map[string]interface{}
+type Unstructured = map[string]interface{}
 
-func (u Unstructured) MergeInto(un Unstructured, nested bool) {
+func MergeInto(u Unstructured, un Unstructured, nested bool) {
 	for key, value := range un {
 		if !nested || u[key] == nil {
 			u[key] = value
 		} else {
 			if subU, ok := u[key].(Unstructured); ok {
-				subU.MergeInto(value.(Unstructured), nested)
+				MergeInto(subU, value.(Unstructured), nested)
 			} else if subU, ok := u[key].([]interface{}); ok {
 				subU = append(subU, value.([]interface{})...)
 				u[key] = subU
@@ -29,13 +29,13 @@ func (u Unstructured) MergeInto(un Unstructured, nested bool) {
 	}
 }
 
-func (u Unstructured) MergeOut(un Unstructured, nested bool) {
+func MergeOut(u Unstructured, un Unstructured, nested bool) {
 	for key, value := range un {
 		if !nested || u[key] == nil {
 			u[key] = value
 		} else {
 			if subU, ok := u[key].(Unstructured); ok {
-				subU.MergeOut(value.(Unstructured), nested)
+				MergeOut(subU, value.(Unstructured), nested)
 			} else if subU, ok := u[key].([]interface{}); ok {
 				subU = append(subU, value.([]interface{})...)
 				u[key] = subU
@@ -44,7 +44,7 @@ func (u Unstructured) MergeOut(un Unstructured, nested bool) {
 	}
 }
 
-func (u Unstructured) ToProtoMessage(msg proto.Message) error {
+func ToProtoMessage(u Unstructured, msg proto.Message) error {
 	b, err := json.Marshal(u)
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func (u Unstructured) ToProtoMessage(msg proto.Message) error {
 	return jsonUMo.Unmarshal(b, msg)
 }
 
-func (u Unstructured) FromProtoMessage(msg proto.Message) error {
+func FromProtoMessage(u Unstructured, msg proto.Message) error {
 	b, err := jsonMo.Marshal(msg)
 	if err != nil {
 		return err
@@ -79,9 +79,9 @@ var jsonUMo = protojson.UnmarshalOptions{
 	Resolver:       nil,
 }
 
-func (u Unstructured) ToRecord() (*model.Record, error) {
+func ToRecord(u Unstructured) (*model.Record, error) {
 	record := &model.Record{}
-	properties, err := u.ToProperties()
+	properties, err := ToProperties(u)
 
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (u Unstructured) ToRecord() (*model.Record, error) {
 	return record, nil
 }
 
-func (u Unstructured) ToProperties() (map[string]*structpb.Value, error) {
+func ToProperties(u Unstructured) (map[string]*structpb.Value, error) {
 	var properties = make(map[string]*structpb.Value)
 
 	for key, value := range u {
@@ -107,7 +107,7 @@ func (u Unstructured) ToProperties() (map[string]*structpb.Value, error) {
 	return properties, nil
 }
 
-func (u Unstructured) Keys() []string {
+func Keys(u Unstructured) []string {
 	var keys []string
 
 	for key := range u {
@@ -117,7 +117,7 @@ func (u Unstructured) Keys() []string {
 	return keys
 }
 
-func (u Unstructured) DeleteKey(key string) {
+func DeleteKey(u Unstructured, key string) {
 	delete(u, key)
 }
 

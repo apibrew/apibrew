@@ -11,15 +11,19 @@ import (
 	"strings"
 )
 
-func getImports(properties []*model.ResourceProperty) []string {
+func getImports(resource *model.Resource) []string {
 	imports := []string{}
-	for _, prop := range properties {
+	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
 		if prop.Type == model.ResourceProperty_UUID {
 			imports = append(imports, "github.com/google/uuid")
 		} else if prop.Type == model.ResourceProperty_TIMESTAMP || prop.Type == model.ResourceProperty_TIME || prop.Type == model.ResourceProperty_DATE {
 			imports = append(imports, "time")
+		} else if prop.Type == model.ResourceProperty_OBJECT {
+			imports = append(imports, "github.com/apibrew/apibrew/pkg/formats/unstructured")
+			imports = append(imports, "encoding/json")
 		}
-	}
+	})
+
 	return util.ArrayUnique(imports)
 }
 
@@ -105,7 +109,7 @@ func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actu
 			typeVal = GenerateInlineStructCode(resource, prop.Properties)
 		}
 	} else if prop.Type == model.ResourceProperty_OBJECT {
-		typeVal = "interface{}"
+		typeVal = "unstructured.Unstructured"
 	} else if prop.Type == model.ResourceProperty_ENUM {
 		typeVal = strcase.ToCamel(resource.Name + "_" + actualName)
 

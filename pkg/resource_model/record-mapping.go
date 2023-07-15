@@ -7,6 +7,8 @@ import (
 )
 
 import "github.com/google/uuid"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "encoding/json"
 
 type RecordMapper struct {
 }
@@ -42,9 +44,6 @@ func (m *RecordMapper) ToProperties(record *Record) map[string]*structpb.Value {
 		properties["id"] = id
 	}
 
-	if record.Properties != nil {
-	}
-
 	if record.PackedProperties != nil {
 	}
 
@@ -55,57 +54,50 @@ func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Re
 	var s = m.New()
 	if properties["id"] != nil {
 
-		var_15ae3e6c1b13 := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_15ae3e6c1b13)
+		var_65211d43dfa0 := properties["id"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_65211d43dfa0)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_15ae3e6c1b13_mapped := new(uuid.UUID)
-		*var_15ae3e6c1b13_mapped = val.(uuid.UUID)
+		var_65211d43dfa0_mapped := new(uuid.UUID)
+		*var_65211d43dfa0_mapped = val.(uuid.UUID)
 
-		s.Id = var_15ae3e6c1b13_mapped
+		s.Id = var_65211d43dfa0_mapped
 	}
 	if properties["properties"] != nil {
 
-		var_c5ebbffd6a69 := properties["properties"]
-		var_c5ebbffd6a69_mapped := make(map[string]interface{})
-		for k, v := range var_c5ebbffd6a69.GetStructValue().Fields {
+		var_41a3eca5294a := properties["properties"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_41a3eca5294a)
 
-			var_e95b98f6b5e5 := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_e95b98f6b5e5)
-
-			if err != nil {
-				panic(err)
-			}
-
-			var_e95b98f6b5e5_mapped := val.(interface{})
-
-			var_c5ebbffd6a69_mapped[k] = var_e95b98f6b5e5_mapped
+		if err != nil {
+			panic(err)
 		}
 
-		s.Properties = var_c5ebbffd6a69_mapped
+		var_41a3eca5294a_mapped := val.(unstructured.Unstructured)
+
+		s.Properties = var_41a3eca5294a_mapped
 	}
 	if properties["packedProperties"] != nil {
 
-		var_fb2b6af1e372 := properties["packedProperties"]
-		var_fb2b6af1e372_mapped := []interface{}{}
-		for _, v := range var_fb2b6af1e372.GetListValue().Values {
+		var_8caf7c79756a := properties["packedProperties"]
+		var_8caf7c79756a_mapped := []unstructured.Unstructured{}
+		for _, v := range var_8caf7c79756a.GetListValue().Values {
 
-			var_67ebdf268f2d := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_67ebdf268f2d)
+			var_5fac1524b4db := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_5fac1524b4db)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_67ebdf268f2d_mapped := val.(interface{})
+			var_5fac1524b4db_mapped := val.(unstructured.Unstructured)
 
-			var_fb2b6af1e372_mapped = append(var_fb2b6af1e372_mapped, var_67ebdf268f2d_mapped)
+			var_8caf7c79756a_mapped = append(var_8caf7c79756a_mapped, var_5fac1524b4db_mapped)
 		}
 
-		s.PackedProperties = var_fb2b6af1e372_mapped
+		s.PackedProperties = var_8caf7c79756a_mapped
 	}
 	return s
 }

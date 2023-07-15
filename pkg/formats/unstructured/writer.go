@@ -18,15 +18,13 @@ func (w *Writer) isForApply() bool {
 func (w *Writer) WriteRecord(namespace string, resourceName string, record *model.Record) (Unstructured, error) {
 	var data = Unstructured{}
 
-	err := data.FromProtoMessage(record)
+	err := FromProtoMessage(data, record)
 
 	if err != nil {
 		return nil, err
 	}
 
 	data = fixBeforeWrite(data).(Unstructured)
-
-	data = fixMaps(data).(Unstructured)
 
 	data["type"] = "record"
 	data["namespace"] = namespace
@@ -42,7 +40,7 @@ func (w *Writer) WriteResource(resource *model.Resource) (Unstructured, error) {
 
 	var data = Unstructured{}
 
-	err := Unstructured{}.FromProtoMessage(resource)
+	err := FromProtoMessage(Unstructured{}, resource)
 
 	if err != nil {
 		return nil, err

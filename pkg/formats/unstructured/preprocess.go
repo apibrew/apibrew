@@ -44,7 +44,7 @@ func (p *preprocessor) preprocess(body Unstructured) (Unstructured, error) {
 
 func (p *preprocessor) runPreprocess(un Unstructured) (interface{}, error) {
 	var err error
-	var keys = un.Keys()
+	var keys = Keys(un)
 
 	if util.ArrayContains(keys, "$file") {
 		return p.runIncludeFile(un)
@@ -184,7 +184,7 @@ func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error
 		return un, err
 	}
 
-	un.MergeOut(recordUn, true)
+	MergeOut(un, recordUn, true)
 
 	if ref != "" {
 		updatedUn, err := ParseRef(un, ref)
@@ -204,7 +204,7 @@ func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error
 		un = updatedUn
 	}
 
-	un.DeleteKey("$extend")
+	DeleteKey(un, "$extend")
 
 	return un, nil
 }
@@ -228,16 +228,16 @@ func (p *preprocessor) runPreprocessOverride(un Unstructured) (Unstructured, err
 	}
 
 	if merge != nil {
-		reUn.MergeInto(merge, true)
-		un.DeleteKey("$merge")
+		MergeInto(reUn, merge, true)
+		DeleteKey(un, "$merge")
 	}
 
 	if set != nil {
-		reUn.MergeInto(set, false)
-		un.DeleteKey("$set")
+		MergeInto(reUn, set, false)
+		DeleteKey(un, "$set")
 	}
 
-	un.DeleteKey("$override")
+	DeleteKey(un, "$override")
 
 	return un, nil
 }
@@ -250,17 +250,17 @@ func (p *preprocessor) checkSyntax(un Unstructured) error {
 			return err
 		}
 
-		un.DeleteKey("$syntax")
+		DeleteKey(un, "$syntax")
 
 		var subType = &model.Resource{}
 
-		err = syntax.(Unstructured).ToProtoMessage(subType)
+		err = ToProtoMessage(syntax.(Unstructured), subType)
 
 		if err != nil {
 			return err
 		}
 
-		record, err := un.ToRecord()
+		record, err := ToRecord(un)
 
 		if err != nil {
 			return err
@@ -294,7 +294,7 @@ func (p *preprocessor) runPreprocessProperties(un Unstructured) (Unstructured, e
 			} else {
 				return nil, errors.New(fmt.Sprintf("invalid property type %s", typeStr))
 			}
-			err := propertyUn.FromProtoMessage(property)
+			err := FromProtoMessage(propertyUn, property)
 
 			if err != nil {
 				return nil, err
@@ -315,7 +315,7 @@ func (p *preprocessor) runPreprocessProperties(un Unstructured) (Unstructured, e
 		properties = append(properties, propertyUn)
 	}
 
-	un.DeleteKey("$properties")
+	DeleteKey(un, "$properties")
 	un["properties"] = properties
 	return un, nil
 }

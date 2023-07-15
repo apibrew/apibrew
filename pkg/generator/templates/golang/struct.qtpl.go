@@ -7,103 +7,146 @@ package golang
 //line templates/golang/struct.qtpl:1
 import "github.com/apibrew/apibrew/pkg/model"
 
-//line templates/golang/struct.qtpl:3
+//line templates/golang/struct.qtpl:2
+import "github.com/apibrew/apibrew/pkg/service/annotations"
+
+//line templates/golang/struct.qtpl:4
 import (
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"
 )
 
-//line templates/golang/struct.qtpl:3
+//line templates/golang/struct.qtpl:4
 var (
 	_ = qtio422016.Copy
 	_ = qt422016.AcquireByteBuffer
 )
 
-//line templates/golang/struct.qtpl:3
-func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty) {
 //line templates/golang/struct.qtpl:4
+func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty, annotated annotations.Annotated) {
+//line templates/golang/struct.qtpl:5
 	typeName := GoName(name)
 
-//line templates/golang/struct.qtpl:4
+//line templates/golang/struct.qtpl:5
 	qw422016.N().S(`type `)
-//line templates/golang/struct.qtpl:5
+//line templates/golang/struct.qtpl:6
 	qw422016.E().S(typeName)
-//line templates/golang/struct.qtpl:5
+//line templates/golang/struct.qtpl:6
 	qw422016.N().S(` struct {
 `)
-//line templates/golang/struct.qtpl:6
+//line templates/golang/struct.qtpl:7
 	for _, property := range properties {
-//line templates/golang/struct.qtpl:6
+//line templates/golang/struct.qtpl:7
 		qw422016.N().S(`	`)
-//line templates/golang/struct.qtpl:7
+//line templates/golang/struct.qtpl:8
 		StreamGoName(qw422016, property.Name)
-//line templates/golang/struct.qtpl:7
+//line templates/golang/struct.qtpl:8
 		qw422016.N().S(` `)
-//line templates/golang/struct.qtpl:7
+//line templates/golang/struct.qtpl:8
 		StreamPropertyType(qw422016, resource, property)
-//line templates/golang/struct.qtpl:7
+//line templates/golang/struct.qtpl:8
 		qw422016.N().S(`
 `)
-//line templates/golang/struct.qtpl:8
+//line templates/golang/struct.qtpl:9
 	}
-//line templates/golang/struct.qtpl:8
+//line templates/golang/struct.qtpl:9
 	qw422016.N().S(`}
 
 `)
-//line templates/golang/struct.qtpl:11
+//line templates/golang/struct.qtpl:12
 	for _, property := range properties {
-//line templates/golang/struct.qtpl:11
+//line templates/golang/struct.qtpl:12
 		qw422016.N().S(`func (s *`)
-//line templates/golang/struct.qtpl:12
+//line templates/golang/struct.qtpl:13
 		qw422016.E().S(typeName)
-//line templates/golang/struct.qtpl:12
+//line templates/golang/struct.qtpl:13
 		qw422016.N().S(`) Get`)
-//line templates/golang/struct.qtpl:12
+//line templates/golang/struct.qtpl:13
 		StreamGoName(qw422016, property.Name)
-//line templates/golang/struct.qtpl:12
+//line templates/golang/struct.qtpl:13
 		qw422016.N().S(`() `)
-//line templates/golang/struct.qtpl:12
+//line templates/golang/struct.qtpl:13
 		StreamPropertyType(qw422016, resource, property)
-//line templates/golang/struct.qtpl:12
+//line templates/golang/struct.qtpl:13
 		qw422016.N().S(` {
 	return s.`)
-//line templates/golang/struct.qtpl:13
+//line templates/golang/struct.qtpl:14
 		StreamGoName(qw422016, property.Name)
-//line templates/golang/struct.qtpl:13
+//line templates/golang/struct.qtpl:14
 		qw422016.N().S(`
 }
 `)
-//line templates/golang/struct.qtpl:15
+//line templates/golang/struct.qtpl:16
 	}
-//line templates/golang/struct.qtpl:15
+//line templates/golang/struct.qtpl:16
 	qw422016.N().S(`
 `)
-//line templates/golang/struct.qtpl:17
+//line templates/golang/struct.qtpl:18
+	if annotations.Get(annotated, annotations.SelfContainedProperty) != "" {
+//line templates/golang/struct.qtpl:18
+		qw422016.N().S(`
+func (s *`)
+//line templates/golang/struct.qtpl:19
+		qw422016.E().S(typeName)
+//line templates/golang/struct.qtpl:19
+		qw422016.N().S(`) MarshalJSON() ([]byte, error) {
+    return json.Marshal(s.`)
+//line templates/golang/struct.qtpl:20
+		StreamGoName(qw422016, annotations.Get(annotated, annotations.SelfContainedProperty))
+//line templates/golang/struct.qtpl:20
+		qw422016.N().S(`)
 }
 
-//line templates/golang/struct.qtpl:17
-func WriteGenerateStructCode(qq422016 qtio422016.Writer, pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty) {
-//line templates/golang/struct.qtpl:17
+func (s *`)
+//line templates/golang/struct.qtpl:23
+		qw422016.E().S(typeName)
+//line templates/golang/struct.qtpl:23
+		qw422016.N().S(`) UnmarshalJSON(data []byte) error {
+   s.`)
+//line templates/golang/struct.qtpl:24
+		StreamGoName(qw422016, annotations.Get(annotated, annotations.SelfContainedProperty))
+//line templates/golang/struct.qtpl:24
+		qw422016.N().S(` = make(unstructured.Unstructured)
+
+   return json.Unmarshal(data, &s.`)
+//line templates/golang/struct.qtpl:26
+		StreamGoName(qw422016, annotations.Get(annotated, annotations.SelfContainedProperty))
+//line templates/golang/struct.qtpl:26
+		qw422016.N().S(`)
+}
+`)
+//line templates/golang/struct.qtpl:28
+	}
+//line templates/golang/struct.qtpl:28
+	qw422016.N().S(`
+
+`)
+//line templates/golang/struct.qtpl:30
+}
+
+//line templates/golang/struct.qtpl:30
+func WriteGenerateStructCode(qq422016 qtio422016.Writer, pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty, annotated annotations.Annotated) {
+//line templates/golang/struct.qtpl:30
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line templates/golang/struct.qtpl:17
-	StreamGenerateStructCode(qw422016, pkg, resource, name, properties)
-//line templates/golang/struct.qtpl:17
+//line templates/golang/struct.qtpl:30
+	StreamGenerateStructCode(qw422016, pkg, resource, name, properties, annotated)
+//line templates/golang/struct.qtpl:30
 	qt422016.ReleaseWriter(qw422016)
-//line templates/golang/struct.qtpl:17
+//line templates/golang/struct.qtpl:30
 }
 
-//line templates/golang/struct.qtpl:17
-func GenerateStructCode(pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty) string {
-//line templates/golang/struct.qtpl:17
+//line templates/golang/struct.qtpl:30
+func GenerateStructCode(pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty, annotated annotations.Annotated) string {
+//line templates/golang/struct.qtpl:30
 	qb422016 := qt422016.AcquireByteBuffer()
-//line templates/golang/struct.qtpl:17
-	WriteGenerateStructCode(qb422016, pkg, resource, name, properties)
-//line templates/golang/struct.qtpl:17
+//line templates/golang/struct.qtpl:30
+	WriteGenerateStructCode(qb422016, pkg, resource, name, properties, annotated)
+//line templates/golang/struct.qtpl:30
 	qs422016 := string(qb422016.B)
-//line templates/golang/struct.qtpl:17
+//line templates/golang/struct.qtpl:30
 	qt422016.ReleaseByteBuffer(qb422016)
-//line templates/golang/struct.qtpl:17
+//line templates/golang/struct.qtpl:30
 	return qs422016
-//line templates/golang/struct.qtpl:17
+//line templates/golang/struct.qtpl:30
 }
