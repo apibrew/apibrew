@@ -162,7 +162,6 @@ func applyLocal(inputFilePath string, doMigration bool, dataOnly bool, force boo
 
 		executor, err = yamlformat.NewExecutor(yamlformat.ExecutorParams{
 			Input:          in,
-			Token:          GetDhClient().GetToken(),
 			DhClient:       GetDhClient(),
 			DoMigration:    doMigration,
 			ForceMigration: force,

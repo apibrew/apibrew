@@ -21,6 +21,13 @@ func prepareInitData() *model.AppConfig {
 func prepareInitRecords() []*model.InitRecord {
 	return []*model.InitRecord{
 		{
+			Namespace: resources.NamespaceResource.Namespace,
+			Resource:  resources.NamespaceResource.Name,
+			Record: resource_model.NamespaceMapperInstance.ToRecord(&resource_model.Namespace{
+				Name: "default",
+			}),
+		},
+		{
 			Namespace: resources.RoleResource.Namespace,
 			Resource:  resources.RoleResource.Name,
 			Record: resource_model.RoleMapperInstance.ToRecord(&resource_model.Role{
@@ -59,6 +66,11 @@ func prepareInitRecords() []*model.InitRecord {
 					},
 				},
 			}),
+		},
+		{
+			Namespace: resources.DataSourceResource.Namespace,
+			Resource:  resources.DataSourceResource.Name,
+			Record:    resource_model.DataSourceMapperInstance.ToRecord(DefaultDataSource),
 		},
 		{
 			Namespace: resources.UserResource.Namespace,

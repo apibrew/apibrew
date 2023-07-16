@@ -59,8 +59,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		return err
 	}
 
-	switch elemType {
-	case "resource":
+	if elemType == "resource" {
 		var resource = new(model.Resource)
 		err = ToProtoMessage(body, resource)
 
@@ -79,7 +78,15 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		if err != nil {
 			return err
 		}
-	case "record":
+	} else {
+		if elemType != "record" {
+			if strings.Contains(elemType, "/") {
+				namespace = strings.Split(elemType, "/")[0]
+				resourceName = strings.Split(elemType, "/")[1]
+			} else {
+				resourceName = elemType
+			}
+		}
 		if resourceName == "" {
 			return errors.New("resource field is required on record yaml definition")
 		}
@@ -93,6 +100,18 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		// locating resource
 
 		var record = new(model.Record)
+
+		if _, exists := body["properties"]; !exists {
+			body["properties"] = make(Unstructured)
+		}
+
+		for key, value := range body {
+			if key != "properties" {
+				body["properties"].(Unstructured)[key] = value
+				delete(body, key)
+			}
+		}
+
 		err = ToProtoMessage(body, record)
 
 		if err != nil {
@@ -135,8 +154,6 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		if err != nil {
 			return err
 		}
-	default:
-		return errors.New("unknown type: " + elemType)
 	}
 
 	return nil

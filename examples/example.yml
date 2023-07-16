@@ -37,7 +37,7 @@ properties:
   - name: country
     type: REFERENCE
     reference:
-      referencedResource: country2
+      resource: country2
       cascade: true
 extension:
   - step: BEFORE

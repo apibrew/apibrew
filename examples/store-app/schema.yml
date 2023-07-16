@@ -40,12 +40,12 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      referencedResource: store
+      resource: store
       cascade: true
   - name: category
     type: REFERENCE
     reference:
-      referencedResource: category
+      resource: category
       cascade: true
   - name: quantity
     type: INT32
@@ -80,13 +80,13 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      referencedResource: customer
+      resource: customer
       cascade: true
   - name: product
     type: REFERENCE
     required: true
     reference:
-      referencedResource: product
+      resource: product
       cascade: true
   - name: quantity
     type: INT32
