@@ -10,12 +10,12 @@ var SystemDataSource = &resource_model.DataSource{
 	Backend: resource_model.DataSourceBackend_POSTGRESQL,
 	Name:    "system",
 	Options: map[string]string{
-		"Username":      "dh_test",
-		"Password":      "dh_test",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "dh_test",
-		"DefaultSchema": "public",
+		"username":       "dh_test",
+		"password":       "dh_test",
+		"host":           "127.0.0.1",
+		"port":           "5432",
+		"db_name":        "dh_test",
+		"default_schema": "public",
 	},
 }
 
@@ -23,12 +23,12 @@ var DefaultDataSource = &resource_model.DataSource{
 	Backend: resource_model.DataSourceBackend_POSTGRESQL,
 	Name:    "default",
 	Options: map[string]string{
-		"Username":      "dh_test",
-		"Password":      "dh_test",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "dh_test",
-		"DefaultSchema": "public",
+		"username":       "dh_test",
+		"password":       "dh_test",
+		"host":           "127.0.0.1",
+		"port":           "5432",
+		"db_name":        "dh_test",
+		"default_schema": "public",
 	},
 }
 
@@ -36,12 +36,12 @@ var DhTest = &resource_model.DataSource{
 	Backend: resource_model.DataSourceBackend_POSTGRESQL,
 	Name:    "dh-test",
 	Options: map[string]string{
-		"Username":      "dh_test",
-		"Password":      "dh_test",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "dh_test",
-		"DefaultSchema": "public",
+		"username":       "dh_test",
+		"password":       "dh_test",
+		"host":           "127.0.0.1",
+		"port":           "5432",
+		"db_name":        "dh_test",
+		"default_schema": "public",
 	},
 }
 
@@ -49,12 +49,12 @@ var DhTestWrongPassword = &resource_model.DataSource{
 	Backend: resource_model.DataSourceBackend_POSTGRESQL,
 	Name:    "data-source-1-wrong",
 	Options: map[string]string{
-		"Username":      "dh_test",
-		"Password":      "dh_test_wrong",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "dh_test",
-		"DefaultSchema": "public",
+		"username":       "dh_test",
+		"password":       "dh_test_wrong",
+		"host":           "127.0.0.1",
+		"port":           "5432",
+		"db_name":        "dh_test",
+		"default_schema": "public",
 	},
 }
 
@@ -62,12 +62,12 @@ var DataSourceDhTest = &resource_model.DataSource{
 	Backend: resource_model.DataSourceBackend_POSTGRESQL,
 	Name:    "data-source-test",
 	Options: map[string]string{
-		"Username":      "dh_test",
-		"Password":      "dh_test",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "dh_test",
-		"DefaultSchema": "public",
+		"username":       "dh_test",
+		"password":       "dh_test",
+		"host":           "127.0.0.1",
+		"port":           "5432",
+		"db_name":        "dh_test",
+		"default_schema": "public",
 	},
 }
 
@@ -75,12 +75,12 @@ var DataSource1 = &resource_model.DataSource{
 	Backend: resource_model.DataSourceBackend_POSTGRESQL,
 	Name:    "data-source-1",
 	Options: map[string]string{
-		"Username":      "dh_test",
-		"Password":      "dh_test",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "dh_test",
-		"DefaultSchema": "public",
+		"username":       "dh_test",
+		"password":       "dh_test",
+		"host":           "127.0.0.1",
+		"port":           "5432",
+		"db_name":        "dh_test",
+		"default_schema": "public",
 	},
 }
 

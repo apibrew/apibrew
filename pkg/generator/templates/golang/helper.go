@@ -98,6 +98,36 @@ func PropertyType(resource *model.Resource, prop *model.ResourceProperty) string
 	}
 }
 
+func HasPointer(prop *model.ResourceProperty, collectionItem bool) bool {
+	if prop.Type == model.ResourceProperty_REFERENCE {
+		return true
+	}
+
+	if collectionItem {
+		return false
+	}
+
+	return isNullable(prop)
+}
+
+func NormalizePointer(prop *model.ResourceProperty, varName string, collectionItem bool, mustHavePointer bool) string {
+	hasPointer := HasPointer(prop, collectionItem)
+
+	if mustHavePointer && !hasPointer {
+		return "&" + varName
+	}
+
+	if !mustHavePointer && hasPointer {
+		return "*" + varName
+	}
+
+	return varName
+}
+
+func StreamNormalizePointer(qw422016 *qt422016.Writer, prop *model.ResourceProperty, varName string, collectionItem bool, mustHavePointer bool) {
+	qw422016.W().Write([]byte(NormalizePointer(prop, varName, collectionItem, mustHavePointer)))
+}
+
 func StreamPropertyType(qw422016 *qt422016.Writer, resource *model.Resource, prop *model.ResourceProperty) {
 	qw422016.W().Write([]byte(PropertyType(resource, prop)))
 }
@@ -164,3 +194,17 @@ func GoVarName(name string) string {
 func StreamGoVarName(qw422016 *qt422016.Writer, name string) {
 	qw422016.W().Write([]byte(GoVarName(name)))
 }
+
+/*
+_______________________
+| required | collectionItem | mustHavePointer | result
+| ---------|----------------|-----------------|--------
+| true     | true           | true            | &
+| true     | true           | false           |
+| true     | false          | true            | &
+| true     | false          | false           |
+| false    | true           | true            | &
+| false    | true           | false           |
+| false    | false          | true            | &
+| false    | false          | false           |
+*/
