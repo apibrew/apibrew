@@ -36,75 +36,160 @@ func (m *UserMapper) FromRecord(record *model.Record) *User {
 func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	if user.Id != nil {
-		id, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*user.Id)
-		if err != nil {
-			panic(err)
+	var_765df8e0789d := user.Id
+
+	if var_765df8e0789d != nil {
+		var var_765df8e0789d_mapped *structpb.Value
+
+		var var_765df8e0789d_err error
+		var_765df8e0789d_mapped, var_765df8e0789d_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_765df8e0789d)
+		if var_765df8e0789d_err != nil {
+			panic(var_765df8e0789d_err)
 		}
-		properties["id"] = id
+		properties["id"] = var_765df8e0789d_mapped
 	}
 
-	version, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(user.Version)
-	if err != nil {
-		panic(err)
-	}
-	properties["version"] = version
+	var_afc019e8a6df := user.Version
 
-	if user.CreatedBy != nil {
-		createdBy, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*user.CreatedBy)
-		if err != nil {
-			panic(err)
+	var var_afc019e8a6df_mapped *structpb.Value
+
+	var var_afc019e8a6df_err error
+	var_afc019e8a6df_mapped, var_afc019e8a6df_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_afc019e8a6df)
+	if var_afc019e8a6df_err != nil {
+		panic(var_afc019e8a6df_err)
+	}
+	properties["version"] = var_afc019e8a6df_mapped
+
+	var_7c78575b0382 := user.CreatedBy
+
+	if var_7c78575b0382 != nil {
+		var var_7c78575b0382_mapped *structpb.Value
+
+		var var_7c78575b0382_err error
+		var_7c78575b0382_mapped, var_7c78575b0382_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_7c78575b0382)
+		if var_7c78575b0382_err != nil {
+			panic(var_7c78575b0382_err)
 		}
-		properties["createdBy"] = createdBy
+		properties["createdBy"] = var_7c78575b0382_mapped
 	}
 
-	if user.UpdatedBy != nil {
-		updatedBy, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*user.UpdatedBy)
-		if err != nil {
-			panic(err)
+	var_3c13dcbf5fe2 := user.UpdatedBy
+
+	if var_3c13dcbf5fe2 != nil {
+		var var_3c13dcbf5fe2_mapped *structpb.Value
+
+		var var_3c13dcbf5fe2_err error
+		var_3c13dcbf5fe2_mapped, var_3c13dcbf5fe2_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_3c13dcbf5fe2)
+		if var_3c13dcbf5fe2_err != nil {
+			panic(var_3c13dcbf5fe2_err)
 		}
-		properties["updatedBy"] = updatedBy
+		properties["updatedBy"] = var_3c13dcbf5fe2_mapped
 	}
 
-	if user.CreatedOn != nil {
-		createdOn, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*user.CreatedOn)
-		if err != nil {
-			panic(err)
+	var_71853828af7f := user.CreatedOn
+
+	if var_71853828af7f != nil {
+		var var_71853828af7f_mapped *structpb.Value
+
+		var var_71853828af7f_err error
+		var_71853828af7f_mapped, var_71853828af7f_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_71853828af7f)
+		if var_71853828af7f_err != nil {
+			panic(var_71853828af7f_err)
 		}
-		properties["createdOn"] = createdOn
+		properties["createdOn"] = var_71853828af7f_mapped
 	}
 
-	if user.UpdatedOn != nil {
-		updatedOn, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*user.UpdatedOn)
-		if err != nil {
-			panic(err)
+	var_1cd278e2f264 := user.UpdatedOn
+
+	if var_1cd278e2f264 != nil {
+		var var_1cd278e2f264_mapped *structpb.Value
+
+		var var_1cd278e2f264_err error
+		var_1cd278e2f264_mapped, var_1cd278e2f264_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_1cd278e2f264)
+		if var_1cd278e2f264_err != nil {
+			panic(var_1cd278e2f264_err)
 		}
-		properties["updatedOn"] = updatedOn
+		properties["updatedOn"] = var_1cd278e2f264_mapped
 	}
 
-	username, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(user.Username)
-	if err != nil {
-		panic(err)
-	}
-	properties["username"] = username
+	var_14ace208d203 := user.Username
 
-	if user.Password != nil {
-		password, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*user.Password)
-		if err != nil {
-			panic(err)
+	var var_14ace208d203_mapped *structpb.Value
+
+	var var_14ace208d203_err error
+	var_14ace208d203_mapped, var_14ace208d203_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_14ace208d203)
+	if var_14ace208d203_err != nil {
+		panic(var_14ace208d203_err)
+	}
+	properties["username"] = var_14ace208d203_mapped
+
+	var_605a7462aebd := user.Password
+
+	if var_605a7462aebd != nil {
+		var var_605a7462aebd_mapped *structpb.Value
+
+		var var_605a7462aebd_err error
+		var_605a7462aebd_mapped, var_605a7462aebd_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_605a7462aebd)
+		if var_605a7462aebd_err != nil {
+			panic(var_605a7462aebd_err)
 		}
-		properties["password"] = password
+		properties["password"] = var_605a7462aebd_mapped
 	}
 
-	if user.Roles != nil {
+	var_e77498d50640 := user.Roles
+
+	if var_e77498d50640 != nil {
+		var var_e77498d50640_mapped *structpb.Value
+
+		var var_e77498d50640_l []*structpb.Value
+		for _, value := range var_e77498d50640 {
+
+			var_bbab2b9164c0 := value
+			var var_bbab2b9164c0_mapped *structpb.Value
+
+			var var_bbab2b9164c0_err error
+			var_bbab2b9164c0_mapped, var_bbab2b9164c0_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_bbab2b9164c0)
+			if var_bbab2b9164c0_err != nil {
+				panic(var_bbab2b9164c0_err)
+			}
+
+			var_e77498d50640_l = append(var_e77498d50640_l, var_bbab2b9164c0_mapped)
+		}
+		var_e77498d50640_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_e77498d50640_l})
+		properties["roles"] = var_e77498d50640_mapped
 	}
 
-	if user.SecurityConstraints != nil {
+	var_c870a8b4f5eb := user.SecurityConstraints
+
+	if var_c870a8b4f5eb != nil {
+		var var_c870a8b4f5eb_mapped *structpb.Value
+
+		var var_c870a8b4f5eb_l []*structpb.Value
+		for _, value := range var_c870a8b4f5eb {
+
+			var_974a004e0a92 := value
+			var var_974a004e0a92_mapped *structpb.Value
+
+			var_974a004e0a92_mapped = structpb.NewStructValue(&structpb.Struct{Fields: SecurityConstraintMapperInstance.ToProperties(var_974a004e0a92)})
+
+			var_c870a8b4f5eb_l = append(var_c870a8b4f5eb_l, var_974a004e0a92_mapped)
+		}
+		var_c870a8b4f5eb_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_c870a8b4f5eb_l})
+		properties["securityConstraints"] = var_c870a8b4f5eb_mapped
 	}
 
-	if user.Details != nil {
-	}
+	var_870a16ea1b31 := user.Details
 
+	if var_870a16ea1b31 != nil {
+		var var_870a16ea1b31_mapped *structpb.Value
+
+		var var_870a16ea1b31_err error
+		var_870a16ea1b31_mapped, var_870a16ea1b31_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(*var_870a16ea1b31)
+		if var_870a16ea1b31_err != nil {
+			panic(var_870a16ea1b31_err)
+		}
+		properties["details"] = var_870a16ea1b31_mapped
+	}
 	return properties
 }
 
@@ -112,161 +197,161 @@ func (m *UserMapper) FromProperties(properties map[string]*structpb.Value) *User
 	var s = m.New()
 	if properties["id"] != nil {
 
-		var_ff01a276ce1a := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_ff01a276ce1a)
+		var_1deb6e5b2e3e := properties["id"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_1deb6e5b2e3e)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_ff01a276ce1a_mapped := new(uuid.UUID)
-		*var_ff01a276ce1a_mapped = val.(uuid.UUID)
+		var_1deb6e5b2e3e_mapped := new(uuid.UUID)
+		*var_1deb6e5b2e3e_mapped = val.(uuid.UUID)
 
-		s.Id = var_ff01a276ce1a_mapped
+		s.Id = var_1deb6e5b2e3e_mapped
 	}
 	if properties["version"] != nil {
 
-		var_50ea22a28e57 := properties["version"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_50ea22a28e57)
+		var_0cfcc924afc6 := properties["version"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_0cfcc924afc6)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_50ea22a28e57_mapped := val.(int32)
+		var_0cfcc924afc6_mapped := val.(int32)
 
-		s.Version = var_50ea22a28e57_mapped
+		s.Version = var_0cfcc924afc6_mapped
 	}
 	if properties["createdBy"] != nil {
 
-		var_c6808ae28b1c := properties["createdBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_c6808ae28b1c)
+		var_5d16813f3957 := properties["createdBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_5d16813f3957)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_c6808ae28b1c_mapped := new(string)
-		*var_c6808ae28b1c_mapped = val.(string)
+		var_5d16813f3957_mapped := new(string)
+		*var_5d16813f3957_mapped = val.(string)
 
-		s.CreatedBy = var_c6808ae28b1c_mapped
+		s.CreatedBy = var_5d16813f3957_mapped
 	}
 	if properties["updatedBy"] != nil {
 
-		var_fe0361dd392a := properties["updatedBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_fe0361dd392a)
+		var_4137a836703b := properties["updatedBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4137a836703b)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_fe0361dd392a_mapped := new(string)
-		*var_fe0361dd392a_mapped = val.(string)
+		var_4137a836703b_mapped := new(string)
+		*var_4137a836703b_mapped = val.(string)
 
-		s.UpdatedBy = var_fe0361dd392a_mapped
+		s.UpdatedBy = var_4137a836703b_mapped
 	}
 	if properties["createdOn"] != nil {
 
-		var_21be0490a095 := properties["createdOn"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_21be0490a095)
+		var_ad5c8a7a613d := properties["createdOn"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_ad5c8a7a613d)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_21be0490a095_mapped := new(time.Time)
-		*var_21be0490a095_mapped = val.(time.Time)
+		var_ad5c8a7a613d_mapped := new(time.Time)
+		*var_ad5c8a7a613d_mapped = val.(time.Time)
 
-		s.CreatedOn = var_21be0490a095_mapped
+		s.CreatedOn = var_ad5c8a7a613d_mapped
 	}
 	if properties["updatedOn"] != nil {
 
-		var_df4dd8c0ed2a := properties["updatedOn"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_df4dd8c0ed2a)
+		var_6c7dba1b9eee := properties["updatedOn"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_6c7dba1b9eee)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_df4dd8c0ed2a_mapped := new(time.Time)
-		*var_df4dd8c0ed2a_mapped = val.(time.Time)
+		var_6c7dba1b9eee_mapped := new(time.Time)
+		*var_6c7dba1b9eee_mapped = val.(time.Time)
 
-		s.UpdatedOn = var_df4dd8c0ed2a_mapped
+		s.UpdatedOn = var_6c7dba1b9eee_mapped
 	}
 	if properties["username"] != nil {
 
-		var_6f54caefb791 := properties["username"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_6f54caefb791)
+		var_92d978ad00a6 := properties["username"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_92d978ad00a6)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_6f54caefb791_mapped := val.(string)
+		var_92d978ad00a6_mapped := val.(string)
 
-		s.Username = var_6f54caefb791_mapped
+		s.Username = var_92d978ad00a6_mapped
 	}
 	if properties["password"] != nil {
 
-		var_d899b66418a1 := properties["password"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_d899b66418a1)
+		var_7945ef24a249 := properties["password"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_7945ef24a249)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_d899b66418a1_mapped := new(string)
-		*var_d899b66418a1_mapped = val.(string)
+		var_7945ef24a249_mapped := new(string)
+		*var_7945ef24a249_mapped = val.(string)
 
-		s.Password = var_d899b66418a1_mapped
+		s.Password = var_7945ef24a249_mapped
 	}
 	if properties["roles"] != nil {
 
-		var_6930f57501cd := properties["roles"]
-		var_6930f57501cd_mapped := []string{}
-		for _, v := range var_6930f57501cd.GetListValue().Values {
+		var_db230176c3c3 := properties["roles"]
+		var_db230176c3c3_mapped := []string{}
+		for _, v := range var_db230176c3c3.GetListValue().Values {
 
-			var_78d064809640 := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_78d064809640)
+			var_aaf24db80c5a := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_aaf24db80c5a)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_78d064809640_mapped := val.(string)
+			var_aaf24db80c5a_mapped := val.(string)
 
-			var_6930f57501cd_mapped = append(var_6930f57501cd_mapped, var_78d064809640_mapped)
+			var_db230176c3c3_mapped = append(var_db230176c3c3_mapped, var_aaf24db80c5a_mapped)
 		}
 
-		s.Roles = var_6930f57501cd_mapped
+		s.Roles = var_db230176c3c3_mapped
 	}
 	if properties["securityConstraints"] != nil {
 
-		var_87af61e75803 := properties["securityConstraints"]
-		var_87af61e75803_mapped := []*SecurityConstraint{}
-		for _, v := range var_87af61e75803.GetListValue().Values {
+		var_1782b9348e8a := properties["securityConstraints"]
+		var_1782b9348e8a_mapped := []*SecurityConstraint{}
+		for _, v := range var_1782b9348e8a.GetListValue().Values {
 
-			var_41b092772f36 := v
-			var_41b092772f36_mapped := SecurityConstraintMapperInstance.FromProperties(var_41b092772f36.GetStructValue().Fields)
+			var_eec229c83911 := v
+			var_eec229c83911_mapped := SecurityConstraintMapperInstance.FromProperties(var_eec229c83911.GetStructValue().Fields)
 
-			var_87af61e75803_mapped = append(var_87af61e75803_mapped, var_41b092772f36_mapped)
+			var_1782b9348e8a_mapped = append(var_1782b9348e8a_mapped, var_eec229c83911_mapped)
 		}
 
-		s.SecurityConstraints = var_87af61e75803_mapped
+		s.SecurityConstraints = var_1782b9348e8a_mapped
 	}
 	if properties["details"] != nil {
 
-		var_2ea134d4e3e6 := properties["details"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_2ea134d4e3e6)
+		var_33a2f16850e4 := properties["details"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).UnPack(var_33a2f16850e4)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_2ea134d4e3e6_mapped := new(unstructured.Unstructured)
-		*var_2ea134d4e3e6_mapped = val.(unstructured.Unstructured)
+		var_33a2f16850e4_mapped := new(unstructured.Unstructured)
+		*var_33a2f16850e4_mapped = val.(unstructured.Unstructured)
 
-		s.Details = var_2ea134d4e3e6_mapped
+		s.Details = var_33a2f16850e4_mapped
 	}
 	return s
 }

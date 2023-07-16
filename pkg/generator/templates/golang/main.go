@@ -31,9 +31,9 @@ func generaMappingCode(pkg string, resources []*model.Resource, path string, res
 
 	code, err := format.Source([]byte(rawCode))
 	if err != nil {
-		log.Print(code)
+		code = []byte(rawCode)
 
-		return err
+		log.Warn(err)
 	}
 
 	resourceFileName := slug.Make(resource.Name) + "-mapping.go"
@@ -55,9 +55,9 @@ func generaDefCode(pkg string, resources []*model.Resource, path string, resourc
 
 	code, err := format.Source([]byte(rawCode))
 	if err != nil {
-		log.Print(code)
+		code = []byte(rawCode)
 
-		return err
+		log.Warn(err)
 	}
 
 	resourceFileName := slug.Make(resource.Name) + "-def.go"
@@ -79,9 +79,9 @@ func generateResourceCode(pkg string, resource *model.Resource, path string) err
 
 	code, err := format.Source([]byte(rawCode))
 	if err != nil {
-		log.Print(code)
+		code = []byte(rawCode)
 
-		return err
+		log.Warn(err)
 	}
 
 	resourceFileName := slug.Make(resource.Name) + ".go"
