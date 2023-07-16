@@ -23,6 +23,10 @@ type dhClient struct {
 	genericClient        stub.GenericClient
 }
 
+func (d *dhClient) UpdateTokenFromContext(ctx context.Context) {
+	d.params.Token = ctx.Value("token").(string)
+}
+
 func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
 	authResp, err := d.authenticationClient.Authenticate(context.TODO(), &stub.AuthenticationRequest{
 		Username: username,

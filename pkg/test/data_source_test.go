@@ -3,6 +3,7 @@ package test
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
 	"github.com/google/uuid"
@@ -11,7 +12,9 @@ import (
 
 func TestCreateAndReadDataSource(t *testing.T) {
 	res2, err := recordClient.Get(setup.Ctx, &stub.GetRecordRequest{
-		Id: setup.DataSource1.Id.String(),
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Id:        setup.DataSource1.Id.String(),
 	})
 
 	if err != nil {
@@ -38,7 +41,9 @@ func TestCreateRecordstatusTest(t *testing.T) {
 	defer func() {
 		if newDataSource.Id != nil {
 			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
-				Ids: []string{newDataSource.Id.String()},
+				Namespace: resources.DataSourceResource.Namespace,
+				Resource:  resources.DataSourceResource.Name,
+				Ids:       []string{newDataSource.Id.String()},
 			})
 
 			if err != nil {
@@ -75,7 +80,9 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 	defer func() {
 		if newDataSource.Id != nil {
 			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
-				Ids: []string{newDataSource.Id.String()},
+				Namespace: resources.DataSourceResource.Namespace,
+				Resource:  resources.DataSourceResource.Name,
+				Ids:       []string{newDataSource.Id.String()},
 			})
 
 			if err != nil {
@@ -86,7 +93,9 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 	}()
 
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
-		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -102,7 +111,11 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 
 func TestListCreatedRecords(t *testing.T) {
 
-	res, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{})
+	res, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{
+
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+	})
 
 	if err != nil {
 		t.Error(err)

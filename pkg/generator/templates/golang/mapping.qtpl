@@ -89,15 +89,22 @@ func (m *{%s typeName %}Mapper) New() *{%s typeName %} {
     return &{%s typeName %}{}
 }
 
+{% if typeName == resource.Name %}
 func (m *{%s typeName %}Mapper) ToRecord({%= GoVarName(typeName)%} *{%s typeName %}) *model.Record {
     var rec = &model.Record{}
     rec.Properties = m.ToProperties({%= GoVarName(typeName)%})
+
+    if {%= GoVarName(typeName)%}.Id != nil {
+        rec.Id = {%= GoVarName(typeName)%}.Id.String()
+    }
+
     return rec
 }
 
 func (m *{%s typeName %}Mapper) FromRecord(record *model.Record) *{%s typeName %}  {
     return m.FromProperties(record.Properties)
 }
+{% endif %}
 
 func (m *{%s typeName %}Mapper) ToProperties({%= GoVarName(typeName)%} *{%s typeName %}) map[string]*structpb.Value {
     var properties = make(map[string]*structpb.Value)

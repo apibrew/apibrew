@@ -19,5 +19,5 @@ properties:
   - name: author
     type: REFERENCE
     reference: 
-      referencedResource: author
+      resource: author
 

@@ -23,6 +23,7 @@ type DhClient interface {
 	AuthenticateWithToken(token string)
 	AuthenticateWithUsernameAndPassword(username string, password string) error
 	NewExtension(host string) Extension
+	UpdateTokenFromContext(ctx context.Context)
 }
 
 type Repository[T abs.Entity[T]] interface {

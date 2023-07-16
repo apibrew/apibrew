@@ -41,7 +41,7 @@ properties:
     required: true
     type: TYPE_REFERENCE
     reference:
-      referencedResource: author
+      resource: author
     unique: false
 sourceConfig:
   catalog: ""

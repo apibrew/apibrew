@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -35,7 +36,10 @@ func init() {
 
 func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 	// creating data sources
-	listDataSourceResp, err := recordClient.List(ctx, &stub.ListRecordRequest{})
+	listDataSourceResp, err := recordClient.List(ctx, &stub.ListRecordRequest{
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+	})
 
 	if err != nil {
 		panic(err)
@@ -62,7 +66,9 @@ func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 
 	if len(RecordsForCreate) > 0 {
 		createRes, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
-			Records: util.ArrayMap(RecordsForCreate, resource_model.DataSourceMapperInstance.ToRecord),
+			Namespace: resources.DataSourceResource.Namespace,
+			Resource:  resources.DataSourceResource.Name,
+			Records:   util.ArrayMap(RecordsForCreate, resource_model.DataSourceMapperInstance.ToRecord),
 		})
 
 		if err != nil {
@@ -250,6 +256,8 @@ func initTextContext() {
 
 	log.Info("Init test clientTrackId: ", clientTrackId)
 	Ctx = WithUserAuthenticationContext(Ctx, "admin", "admin")
+
+	dhClient.UpdateTokenFromContext(Ctx)
 }
 
 func WithUserAuthenticationContext(ctx context.Context, username, password string) context.Context {
@@ -263,5 +271,7 @@ func WithUserAuthenticationContext(ctx context.Context, username, password strin
 		panic(err)
 	}
 
-	return metadata.AppendToOutgoingContext(context.TODO(), "token", resp.Token.Content)
+	ctx = context.WithValue(ctx, "token", resp.Token.Content)
+
+	return metadata.AppendToOutgoingContext(ctx, "token", resp.Token.Content)
 }
