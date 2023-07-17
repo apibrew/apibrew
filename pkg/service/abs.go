@@ -27,7 +27,7 @@ type BackendProviderService interface {
 	GetSystemBackend(ctx context.Context) abs.Backend
 	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (abs.Backend, errors.ServiceError)
 	GetBackendByDataSourceName(ctx context.Context, dataSourceId string) (abs.Backend, errors.ServiceError)
-	DestroyBackend(ctx context.Context, id string) error
+	DestroyBackend(ctx context.Context, id string) errors.ServiceError
 	SetSchema(schema *abs.Schema)
 }
 

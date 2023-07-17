@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 )
 
@@ -20,10 +21,10 @@ func (s *stdHandlers) Init(config *model.AppConfig) {
 	s.userHandler.Register(s.backendEventHandler)
 }
 
-func NewStdHandler(backendEventHandler backend_event_handler.BackendEventHandler) StdHandlers {
+func NewStdHandler(backendEventHandler backend_event_handler.BackendEventHandler, backendProviderService service.BackendProviderService) StdHandlers {
 	return &stdHandlers{
 		backendEventHandler: backendEventHandler,
-		dataSourceHandler:   &dataSourceHandler{},
+		dataSourceHandler:   &dataSourceHandler{backendProviderService: backendProviderService},
 		userHandler:         &userHandler{},
 	}
 }

@@ -61,7 +61,6 @@ func extensionHandler(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	var event = &model.Event{}
-
 	err = protojson.Unmarshal(bodyBytes, event)
 	if err != nil {
 		http.Error(writer, err.Error(), 500)
