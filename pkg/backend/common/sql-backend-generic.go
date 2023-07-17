@@ -28,6 +28,14 @@ func (p *sqlBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated 
 		return
 	}
 
+	_, intErr := conn.ExecContext(ctx, "SELECT 1")
+
+	err = p.handleDbError(ctx, intErr)
+
+	if err != nil {
+		return
+	}
+
 	err = p.handleDbError(ctx, conn.Ping())
 
 	testConnection = err == nil

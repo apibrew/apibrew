@@ -4,29 +4,40 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 )
 
 type dataSourceHandler struct {
-}
-
-func (h *dataSourceHandler) BeforeCreate(ctx context.Context, resource *model.Resource, params service.RecordCreateParams) errors.ServiceError {
-	if resource.Namespace != "system" || resource.Name != "data-source" {
-		return nil
-	}
-
-	return nil
-}
-
-func (h *dataSourceHandler) BeforeList(ctx context.Context, resource *model.Resource, params service.RecordListParams) errors.ServiceError {
-	if resource.Namespace != "system" || resource.Name != "data-source" {
-		return nil
-	}
-
-	return nil
+	backendProviderService service.BackendProviderService
 }
 
 func (h *dataSourceHandler) Register(eventHandler backend_event_handler.BackendEventHandler) {
+	eventHandler.RegisterHandler(prepareStdHandler(101, model.Event_UPDATE, h.AfterUpdate, resources.DataSourceResource))
+	eventHandler.RegisterHandler(prepareStdHandler(101, model.Event_DELETE, h.AfterDelete, resources.DataSourceResource))
+}
 
+func (h *dataSourceHandler) AfterUpdate(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	for _, dataSource := range event.Records {
+		err := h.backendProviderService.DestroyBackend(ctx, dataSource.Id)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return event, nil
+}
+
+func (h *dataSourceHandler) AfterDelete(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	for _, id := range event.Ids {
+		err := h.backendProviderService.DestroyBackend(ctx, id)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return event, nil
 }

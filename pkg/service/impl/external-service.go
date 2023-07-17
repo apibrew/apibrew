@@ -3,7 +3,6 @@ package impl
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/ext"
@@ -71,7 +70,7 @@ func (e *externalService) CallFunction(ctx context.Context, call *resource_model
 }
 
 func (e *externalService) CallHttp(ctx context.Context, call *resource_model.ExtensionHttpCall, event *model.Event) (*model.Event, errors.ServiceError) {
-	body, err := json.Marshal(event)
+	body, err := protojson.Marshal(event)
 
 	if err != nil {
 		log.Error(err)

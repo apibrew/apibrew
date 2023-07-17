@@ -27,7 +27,7 @@ func TestCreateAndReadDataSource(t *testing.T) {
 		return
 	}
 
-	DeepEqual(t, resource_model.DataSourceMapperInstance.ToRecord(setup.DataSource1), res2.Record, "")
+	CheckTwoRecordEquals(t, resources.DataSourceResource, resource_model.DataSourceMapperInstance.ToRecord(setup.DataSource1), res2.Record)
 }
 
 func TestCreateRecordstatusTest(t *testing.T) {
@@ -54,7 +54,9 @@ func TestCreateRecordstatusTest(t *testing.T) {
 	}()
 
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
-		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -69,7 +71,6 @@ func TestCreateRecordstatusTest(t *testing.T) {
 }
 
 func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
-
 	newDataSource := &resource_model.DataSource{
 		Backend:     setup.SystemDataSource.Backend,
 		Name:        "test-data-source",
@@ -112,7 +113,6 @@ func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
 func TestListCreatedRecords(t *testing.T) {
 
 	res, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{
-
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
 	})
@@ -140,7 +140,9 @@ func TestUpdateDataSource(t *testing.T) {
 	defer func() {
 		if newDataSource.Id != nil {
 			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
-				Ids: []string{newDataSource.Id.String()},
+				Namespace: resources.DataSourceResource.Namespace,
+				Resource:  resources.DataSourceResource.Name,
+				Ids:       []string{newDataSource.Id.String()},
 			})
 
 			if err != nil {
@@ -151,7 +153,9 @@ func TestUpdateDataSource(t *testing.T) {
 	}()
 
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
-		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -165,7 +169,7 @@ func TestUpdateDataSource(t *testing.T) {
 	checkNewCreatedRecordStatus(newDataSource, t)
 
 	newDataSource.Options = map[string]string{
-		"Username":      "dhtest2",
+		"username":      "dhtest2",
 		"Password":      "dhtest2",
 		"Host":          "127.0.0.1",
 		"Port":          "5432",
@@ -174,6 +178,8 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	res, err := recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
 		Records: []*model.Record{
 			resource_model.DataSourceMapperInstance.ToRecord(newDataSource),
 		},
@@ -190,37 +196,40 @@ func TestUpdateDataSource(t *testing.T) {
 
 	updatedParams := resource_model.DataSourceMapperInstance.FromRecord(res.Records[0])
 
-	if updatedParams.Options["Username"] != "dhtest2" {
-		t.Error("Username is not updated")
+	if updatedParams.Options["username"] != "dhtest2" {
+		t.Error("username is not updated")
 	}
 
 	if updatedParams.Options["Host"] != "127.0.0.1" {
 		t.Error("Host is corrupted")
 	}
 
-	if res.Records[0].Properties["Version"].GetNumberValue() != 2 {
+	if res.Records[0].Properties["version"].GetNumberValue() != 2 {
 		t.Error("Version is wrong")
 	}
 
 	getRes, err := recordClient.Get(setup.Ctx, &stub.GetRecordRequest{
-		Id: newDataSource.Id.String(),
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Id:        newDataSource.Id.String(),
 	})
 
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	getParams := resource_model.DataSourceMapperInstance.FromRecord(getRes.Record).Options
 
-	if getParams["Username"] != "dhtest2" {
-		t.Error("Username is not updated")
+	if getParams["username"] != "dhtest2" {
+		t.Error("username is not updated")
 	}
 
 	if getParams["Host"] != "127.0.0.1" {
 		t.Error("Host is corrupted")
 	}
 
-	if getRes.Record.Properties["Version"].GetNumberValue() != 2 {
+	if getRes.Record.Properties["version"].GetNumberValue() != 2 {
 		t.Error("Version is wrong")
 	}
 
@@ -234,12 +243,12 @@ func TestUpdateRecordstatus(t *testing.T) {
 		Name:        "test-data-source",
 		Description: "test-data-source",
 		Options: map[string]string{
-			"Username":      "dh_test2",
-			"Password":      "dh_test",
-			"Host":          "127.0.0.1",
-			"Port":          "5432",
-			"DbName":        "dh_test",
-			"DefaultSchema": "public",
+			"username":       "dh_test2",
+			"password":       "dh_test",
+			"host":           "127.0.0.1",
+			"port":           "5432",
+			"db_name":        "dh_test",
+			"default_schema": "public",
 		},
 		Version: 1,
 	}
@@ -247,7 +256,9 @@ func TestUpdateRecordstatus(t *testing.T) {
 	defer func() {
 		if newDataSource.Id != nil {
 			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
-				Ids: []string{newDataSource.Id.String()},
+				Namespace: resources.DataSourceResource.Namespace,
+				Resource:  resources.DataSourceResource.Name,
+				Ids:       []string{newDataSource.Id.String()},
 			})
 
 			if err != nil {
@@ -258,7 +269,9 @@ func TestUpdateRecordstatus(t *testing.T) {
 	}()
 
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
-		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -273,32 +286,36 @@ func TestUpdateRecordstatus(t *testing.T) {
 	checkNewCreatedRecordStatusPasswordWrong(newDataSource, t)
 
 	createdDataSource1.Options = map[string]string{
-		"Username":      "dh_test2",
-		"Password":      "dh_test",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "dh_test",
-		"DefaultSchema": "public",
+		"username":       "dh_test2",
+		"password":       "dh_test",
+		"host":           "127.0.0.1",
+		"port":           "5432",
+		"db_name":        "dh_test",
+		"default_schema": "public",
 	}
 
 	_, _ = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
-		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
 	})
 
 	checkNewCreatedRecordStatusPasswordWrong(createdDataSource1, t)
 
 	createdDataSource1.Options = map[string]string{
-		"Username":      "dh_test",
-		"Password":      "dh_test",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "dh_test",
-		"DefaultSchema": "public",
+		"username":       "dh_test",
+		"password":       "dh_test",
+		"host":           "127.0.0.1",
+		"port":           "5432",
+		"db_name":        "dh_test",
+		"default_schema": "public",
 	}
 	createdDataSource1.Version++
 
 	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
-		Records: []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
+		Namespace: resources.DataSourceResource.Namespace,
+		Resource:  resources.DataSourceResource.Name,
+		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
 	})
 
 	if err != nil {

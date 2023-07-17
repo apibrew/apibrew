@@ -65,7 +65,7 @@ func (app *App) Init() <-chan interface{} {
 
 	app.dataSourceService = NewDataSourceService(app.resourceService, app.recordService, app.backendProviderService)
 
-	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler)
+	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler, app.backendProviderService)
 	app.watchService = NewWatchService(app.backendEventHandler, app.authorizationService)
 	app.externalService = NewExternalService()
 	app.authenticationService = NewAuthenticationService(app.recordService, app.authorizationService)

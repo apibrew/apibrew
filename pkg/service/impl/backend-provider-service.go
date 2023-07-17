@@ -32,7 +32,7 @@ func (b *backendProviderService) SetSchema(schema *abs.Schema) {
 	b.schema = schema
 }
 
-func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) error {
+func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) errors.ServiceError {
 	bck, err := b.GetBackendByDataSourceId(ctx, dataSourceId)
 
 	if err != nil {
