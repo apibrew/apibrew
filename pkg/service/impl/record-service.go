@@ -849,7 +849,7 @@ func (r *recordService) expandRecords(ctx context.Context, records []*model.Reco
 	}
 
 	for _, record := range records {
-		if getterMap == nil {
+		if getterMap[record.Id] == nil {
 			continue
 		}
 		referenceIdentifiableValue := getterMap[record.Id]()

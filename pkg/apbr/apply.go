@@ -165,6 +165,7 @@ func applyLocal(inputFilePath string, doMigration bool, dataOnly bool, force boo
 			DhClient:       GetDhClient(),
 			DoMigration:    doMigration,
 			ForceMigration: force,
+			Token:          GetDhClient().GetToken(),
 			OverrideConfig: yamlformat.OverrideConfig{
 				Namespace:  overrideConfig.Namespace,
 				DataSource: overrideConfig.DataSource,
