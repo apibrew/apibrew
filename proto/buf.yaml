@@ -1,5 +1,2 @@
 name: buf.build/apibrew/apibrew
 version: v1
-deps:
-  - buf.build/googleapis/googleapis
-  - buf.build/gnostic/gnostic

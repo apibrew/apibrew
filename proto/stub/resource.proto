@@ -7,53 +7,19 @@ option go_package = "github.com/apibrew/apibrew/pkg/stub";
 import 'model/error.proto';
 import 'model/resource.proto';
 import 'model/resource-migration.proto';
-import "google/api/annotations.proto";
-import "gnostic/openapi/v3/annotations.proto";
 
 // Resource service is for managing resources
 service Resource {
-  rpc Create(CreateResourceRequest) returns(CreateResourceResponse) {
-    option (google.api.http) = {
-      post: "/system/resources",
-      body: "*"
-    };
-  }
-  rpc Update(UpdateResourceRequest) returns(UpdateResourceResponse) {
-    option (google.api.http) = {
-      put: "/system/resources",
-      body: "*"
-    };
-  }
-  rpc Delete(DeleteResourceRequest) returns(DeleteResourceResponse) {
-    option (google.api.http) = {
-      delete: "/system/resources",
-      body: "*"
-    };
-  }
-  rpc List(ListResourceRequest) returns(ListResourceResponse) {
-    option (google.api.http) = {
-      get: "/system/resources",
-    };
-  }
+  rpc Create(CreateResourceRequest) returns(CreateResourceResponse) {}
+  rpc Update(UpdateResourceRequest) returns(UpdateResourceResponse) {}
+  rpc Delete(DeleteResourceRequest) returns(DeleteResourceResponse) {}
+  rpc List(ListResourceRequest) returns(ListResourceResponse) {}
   /*
   PrepareResourceMigrationPlan will prepare the migration plan for the resources, it will not do any migration. It will just return the plan for the migration.
    */
-  rpc PrepareResourceMigrationPlan(PrepareResourceMigrationPlanRequest) returns(PrepareResourceMigrationPlanResponse) {
-    option (google.api.http) = {
-      post: "/system/resources/_migrate",
-      body: "*"
-    };
-  }
-  rpc Get(GetResourceRequest) returns(GetResourceResponse) {
-    option (google.api.http) = {
-      get: "/system/resources/{id}",
-    };
-  }
-  rpc GetByName(GetResourceByNameRequest) returns(GetResourceByNameResponse) {
-    option (google.api.http) = {
-      get: "/system/resources/{namespace}/{name}",
-    };
-  }
+  rpc PrepareResourceMigrationPlan(PrepareResourceMigrationPlanRequest) returns(PrepareResourceMigrationPlanResponse) {}
+  rpc Get(GetResourceRequest) returns(GetResourceResponse) {}
+  rpc GetByName(GetResourceByNameRequest) returns(GetResourceByNameResponse) {}
   rpc GetSystemResource(GetSystemResourceRequest) returns(GetSystemResourceResponse) {}
 }
 

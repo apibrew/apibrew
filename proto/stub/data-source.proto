@@ -7,37 +7,22 @@ option go_package = "github.com/apibrew/apibrew/pkg/stub";
 import 'model/error.proto';
 import 'model/resource.proto';
 import 'model/data-source.proto';
-import "google/api/annotations.proto";
-import "gnostic/openapi/v3/annotations.proto";
 
 // DataSource Service is for managing data sources
 service DataSource {
   /*
   Status will return connection status of data source
    */
-  rpc Status(StatusRequest) returns (StatusResponse) {
-    option (google.api.http) = {
-      get: "/system/data-sources/{id}/_status",
-    };
-  }
+  rpc Status(StatusRequest) returns (StatusResponse) {}
   /*
   List entities will return all entities from data source
    */
-  rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {
-    option (google.api.http) = {
-      get: "/system/data-sources/{id}/entities",
-    };
-  }
+  rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {}
   /*
   PrepareResourceFromEntity will return resource from data source based on entity.
   It is for database first approach. If you already have an entity/table on data source and your want to create resource based on it, you can call this endpoint to do it.
    */
-  rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {
-    option (google.api.http) = {
-      post: "/system/data-sources/{id}/_prepare_entity",
-      body: "*"
-    };
-  }
+  rpc PrepareResourceFromEntity(PrepareResourceFromEntityRequest) returns (PrepareResourceFromEntityResponse) {}
 }
 
 message PrepareResourceFromEntityRequest {

@@ -8,11 +8,6 @@ plugins:
     out: ../pkg/
     opt:
       - paths=source_relative
-  - name: grpc-gateway
-    out: ../pkg/
-    opt:
-      - paths=source_relative
-      - allow_delete_body=true
   - name: openapi
     strategy: all
     out: ../pkg/apbr-server/rest
