@@ -22,10 +22,10 @@ func Capitalize(str string) string {
 	return string(runes)
 }
 
-func StringPointer(str string) *string {
-	var pointer = new(string)
+func Pointer[T interface{}](val T) *T {
+	var pointer = new(T)
 
-	*pointer = str
+	*pointer = val
 
 	return pointer
 }

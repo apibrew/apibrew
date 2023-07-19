@@ -11,6 +11,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -108,7 +109,7 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 	selectBuilder.Select(r.prepareCols()...)
 
 	for _, jd := range r.joins {
-		selectBuilder.JoinWithOption(sqlbuilder.LeftJoin, fmt.Sprintf("%s as %s", jd.targetTable, jd.targetTableAlias), fmt.Sprintf("%s.%s = %s", jd.targetTableAlias, jd.targetColumn, jd.sourcePath))
+		selectBuilder.JoinWithOption(sqlbuilder.LeftJoin, fmt.Sprintf("\"%s\" as \"%s\"", jd.targetTable, jd.targetTableAlias), fmt.Sprintf("\"%s\".\"%s\" = %s", jd.targetTableAlias, jd.targetColumn, jd.sourcePath))
 	}
 
 	sqlQuery, args := selectBuilder.Build()
@@ -187,7 +188,7 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 			propertyType: prop.Type,
 		})
 
-		if prop.Type == model.ResourceProperty_REFERENCE {
+		if annotations.IsEnabled(annotations.FromCtx(r.ctx), annotations.UseJoinTable) && prop.Type == model.ResourceProperty_REFERENCE {
 			// check resource
 			found := false
 			for _, rr := range r.ResolveReferences {

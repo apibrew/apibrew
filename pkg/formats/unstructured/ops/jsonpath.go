@@ -1,4 +1,4 @@
-package unstructured
+package ops
 
 // Package jsonpath implements Stefan Goener's JSONPath http://goessner.net/articles/JsonPath/
 //
@@ -30,6 +30,7 @@ package unstructured
 import (
 	"errors"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"sort"
 	"strconv"
 	"strings"
@@ -178,7 +179,7 @@ func (p *parser) parseObjAccess() error {
 	ident := p.text()
 	column := p.scanner.Position.Column
 	p.add(func(r, c interface{}, a actions) (interface{}, error) {
-		obj, ok := c.(Unstructured)
+		obj, ok := c.(unstructured.Unstructured)
 		if !ok {
 			return nil, fmt.Errorf("expected JSON object to access child '%s' at %d", ident, column)
 		}
@@ -193,7 +194,7 @@ func (p *parser) parseObjAccess() error {
 func (p *parser) prepareWildcard() error {
 	p.add(func(r, c interface{}, a actions) (interface{}, error) {
 		values := searchResults{}
-		if obj, ok := c.(Unstructured); ok {
+		if obj, ok := c.(unstructured.Unstructured); ok {
 			for _, v := range valuesSortedByKey(obj) {
 				v, err := a.next(r, v)
 				if err != nil {
@@ -371,7 +372,7 @@ func recSearchParent(r, c interface{}, a actions, acc searchResults) searchResul
 }
 
 func recSearchChildren(r, c interface{}, a actions, acc searchResults) searchResults {
-	if obj, ok := c.(Unstructured); ok {
+	if obj, ok := c.(unstructured.Unstructured); ok {
 		for _, c := range valuesSortedByKey(obj) {
 			acc = recSearchParent(r, c, a, acc)
 		}
@@ -385,7 +386,7 @@ func recSearchChildren(r, c interface{}, a actions, acc searchResults) searchRes
 
 func prepareIndex(index interface{}, column int) actionFunc {
 	return func(r, c interface{}, a actions) (interface{}, error) {
-		if obj, ok := c.(Unstructured); ok {
+		if obj, ok := c.(unstructured.Unstructured); ok {
 			key, err := indexAsString(index, r, c)
 			if err != nil {
 				return nil, err
@@ -464,7 +465,7 @@ func prepareSlice(indexes []interface{}, column int) actionFunc {
 
 func prepareUnion(indexes []interface{}, column int) actionFunc {
 	return func(r, c interface{}, a actions) (interface{}, error) {
-		if obj, ok := c.(Unstructured); ok {
+		if obj, ok := c.(unstructured.Unstructured); ok {
 			var values searchResults
 			for _, index := range indexes {
 				key, err := indexAsString(index, r, c)
@@ -553,7 +554,7 @@ func indexAsString(key, r, c interface{}) (string, error) {
 	}
 }
 
-func valuesSortedByKey(m Unstructured) []interface{} {
+func valuesSortedByKey(m unstructured.Unstructured) []interface{} {
 	if len(m) == 0 {
 		return nil
 	}

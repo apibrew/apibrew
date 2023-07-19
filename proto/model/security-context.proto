@@ -7,7 +7,6 @@ option go_package = "github.com/apibrew/apibrew/pkg/model";
 import 'google/protobuf/struct.proto';
 import 'model/audit.proto';
 import 'model/common.proto';
-import 'model/security.proto';
 import 'model/hcl.proto';
 import 'model/annotations.proto';
 
@@ -20,7 +19,6 @@ message SecurityContext {
 
   string id = 1 [(hcl_ignore) = true, (propertyType) = UUID];
   string name = 2[(propertyUnique) = true];
-  repeated SecurityConstraint constraints = 6 [(model.hcl_block) = "constraint"];
   optional google.protobuf.Struct details = 7;
 
   AuditData auditData = 101;

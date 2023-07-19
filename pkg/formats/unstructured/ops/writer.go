@@ -1,7 +1,8 @@
-package unstructured
+package ops
 
 import (
 	"github.com/apibrew/apibrew/pkg/formats"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"reflect"
 	"sort"
@@ -15,16 +16,16 @@ func (w *Writer) isForApply() bool {
 	return w.Annotations != nil && w.Annotations["for-apply"] == "true"
 }
 
-func (w *Writer) WriteRecord(namespace string, resourceName string, record *model.Record) (Unstructured, error) {
-	var data = Unstructured{}
+func (w *Writer) WriteRecord(namespace string, resourceName string, record *model.Record) (unstructured.Unstructured, error) {
+	var data = unstructured.Unstructured{}
 
-	err := FromProtoMessage(data, record)
+	err := unstructured.FromProtoMessage(data, record)
 
 	if err != nil {
 		return nil, err
 	}
 
-	data = fixBeforeWrite(data).(Unstructured)
+	data = fixBeforeWrite(data).(unstructured.Unstructured)
 
 	data["type"] = "record"
 	data["namespace"] = namespace
@@ -33,20 +34,20 @@ func (w *Writer) WriteRecord(namespace string, resourceName string, record *mode
 	return data, nil
 }
 
-func (w *Writer) WriteResource(resource *model.Resource) (Unstructured, error) {
+func (w *Writer) WriteResource(resource *model.Resource) (unstructured.Unstructured, error) {
 	if w.isForApply() {
 		resource = formats.FixResourceForApply(resource)
 	}
 
-	var data = Unstructured{}
+	var data = unstructured.Unstructured{}
 
-	err := FromProtoMessage(Unstructured{}, resource)
+	err := unstructured.FromProtoMessage(unstructured.Unstructured{}, resource)
 
 	if err != nil {
 		return nil, err
 	}
 
-	data = fixBeforeWrite(data).(Unstructured)
+	data = fixBeforeWrite(data).(unstructured.Unstructured)
 
 	data["type"] = "resource"
 

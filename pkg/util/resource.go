@@ -156,21 +156,21 @@ func GetResourceSinglePrimaryProp(resource *model.Resource) *model.ResourcePrope
 }
 
 func ResourceWalkProperties(resource *model.Resource, callback func(path string, property *model.ResourceProperty)) {
-	ResourceWalkPropertiesRecursive(resource, "", resource.Properties, callback)
+	resourceWalkPropertiesRecursive(resource, "$", resource.Properties, false, callback)
 }
 
-func ResourceWalkPropertiesRecursive(resource *model.Resource, path string, properties []*model.ResourceProperty, callback func(path string, property *model.ResourceProperty)) {
+func resourceWalkPropertiesRecursive(resource *model.Resource, path string, properties []*model.ResourceProperty, isCollectionItem bool, callback func(path string, property *model.ResourceProperty)) {
 	for _, property := range properties {
-		callback(path, property)
+		var newName = path
+		if !isCollectionItem {
+			newName += "." + property.Name
+		}
+		callback(newName, property)
 
 		if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
-			ResourceWalkPropertiesRecursive(resource, path+"."+property.Name+"[]", []*model.ResourceProperty{property.Item}, func(path string, property *model.ResourceProperty) {
-				callback(path, property)
-			})
+			resourceWalkPropertiesRecursive(resource, newName+"[]", []*model.ResourceProperty{property.Item}, true, callback)
 		} else if property.Type == model.ResourceProperty_STRUCT {
-			ResourceWalkPropertiesRecursive(resource, path+"."+property.Name, property.Properties, func(path string, property *model.ResourceProperty) {
-				callback(path, property)
-			})
+			resourceWalkPropertiesRecursive(resource, newName, property.Properties, false, callback)
 
 			if property.TypeRef != nil {
 				var subType *model.ResourceSubType
@@ -186,9 +186,7 @@ func ResourceWalkPropertiesRecursive(resource *model.Resource, path string, prop
 					panic("sub type not found: " + *property.TypeRef)
 				}
 
-				ResourceWalkPropertiesRecursive(resource, path+"."+property.Name, subType.Properties, func(path string, property *model.ResourceProperty) {
-					callback(path, property)
-				})
+				resourceWalkPropertiesRecursive(resource, newName, subType.Properties, false, callback)
 			}
 		}
 	}

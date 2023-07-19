@@ -48,9 +48,23 @@ var NamespaceResource = &model.Resource{
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},
-		special.SecurityConstraintsProperty,
+		{
+			Name:    "securityConstraints",
+			Mapping: "security_constraints",
+			Type:    model.ResourceProperty_LIST,
+			Item: &model.ResourceProperty{
+				Type: model.ResourceProperty_REFERENCE,
+				Reference: &model.Reference{
+					Namespace: "system",
+					Resource:  "SecurityConstraint",
+				},
+				BackReference: &model.BackReference{
+					Property: "namespace",
+				},
+			},
+			Required: false,
+		},
 	},
-	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

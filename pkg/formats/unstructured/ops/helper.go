@@ -1,13 +1,14 @@
-package unstructured
+package ops
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"reflect"
 )
 
 func WalkUnstructured(body interface{}, visitor func(value interface{}) (interface{}, error)) (interface{}, error) {
 	switch x := body.(type) {
-	case Unstructured:
+	case unstructured.Unstructured:
 		for key, value := range x {
 			newVal, err := WalkUnstructured(value, visitor)
 			if err != nil {

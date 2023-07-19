@@ -11,18 +11,18 @@ func WithSystemContext(ctx context.Context) context.Context {
 	return context.WithValue(ctx, abs.SystemContextKey, true)
 }
 
-func WithUserDetails(ctx context.Context, userDetails abs.UserDetails) context.Context {
+func WithUserDetails(ctx context.Context, userDetails UserDetails) context.Context {
 	return context.WithValue(ctx, abs.UserContextKey, userDetails)
 }
 
-func GetUserDetailsFromContext(ctx context.Context) *abs.UserDetails {
+func GetUserDetailsFromContext(ctx context.Context) *UserDetails {
 	if ctx.Value(abs.UserContextKey) == nil {
 		return nil
 	}
 
-	var res = new(abs.UserDetails)
+	var res = new(UserDetails)
 
-	*res = ctx.Value(abs.UserContextKey).(abs.UserDetails)
+	*res = ctx.Value(abs.UserContextKey).(UserDetails)
 
 	return res
 }

@@ -13,7 +13,7 @@ type User struct {
 	UpdatedOn           *time.Time
 	Username            string
 	Password            *string
-	Roles               []string
+	Roles               []*Role
 	SecurityConstraints []*SecurityConstraint
 	Details             *unstructured.Unstructured
 }
@@ -42,7 +42,7 @@ func (s *User) GetUsername() string {
 func (s *User) GetPassword() *string {
 	return s.Password
 }
-func (s *User) GetRoles() []string {
+func (s *User) GetRoles() []*Role {
 	return s.Roles
 }
 func (s *User) GetSecurityConstraints() []*SecurityConstraint {

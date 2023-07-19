@@ -1,7 +1,8 @@
-package jwt
+package util
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
@@ -29,10 +30,11 @@ type JwtUserClaims struct {
 	ID string `json:"jti,omitempty"`
 
 	// username
-	Username string `json:"username,omitempty"`
+	Username string   `json:"username,omitempty"`
+	Roles    []string `json:"roles,omitempty"`
+	UserId   string   `json:"uid,omitempty"`
 
-	Roles  []string `json:"roles,omitempty"`
-	UserId string   `json:"uid,omitempty"`
+	SecurityConstraints []*resource_model.SecurityConstraint `json:"security_constraints,omitempty"`
 }
 
 func (c *JwtUserClaims) Valid() error {

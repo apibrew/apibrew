@@ -1,4 +1,4 @@
-package unstructured
+package ops
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/client"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/stub"
@@ -22,12 +23,12 @@ type preprocessor struct {
 	writer   *Writer
 }
 
-func (p *preprocessor) preprocess(body Unstructured) (Unstructured, error) {
+func (p *preprocessor) preprocess(body unstructured.Unstructured) (unstructured.Unstructured, error) {
 	visitedBody, err := WalkUnstructured(body, func(value interface{}) (interface{}, error) {
-		if un, ok := value.(Unstructured); ok {
+		if un, ok := value.(unstructured.Unstructured); ok {
 			for key := range un {
 				if isPreprocessorKey(key) {
-					return p.runPreprocess(value.(Unstructured))
+					return p.runPreprocess(value.(unstructured.Unstructured))
 				}
 			}
 		}
@@ -39,12 +40,12 @@ func (p *preprocessor) preprocess(body Unstructured) (Unstructured, error) {
 		return nil, err
 	}
 
-	return visitedBody.(Unstructured), nil
+	return visitedBody.(unstructured.Unstructured), nil
 }
 
-func (p *preprocessor) runPreprocess(un Unstructured) (interface{}, error) {
+func (p *preprocessor) runPreprocess(un unstructured.Unstructured) (interface{}, error) {
 	var err error
-	var keys = Keys(un)
+	var keys = unstructured.Keys(un)
 
 	if util.ArrayContains(keys, "$file") {
 		return p.runIncludeFile(un)
@@ -107,11 +108,11 @@ func (p *preprocessor) runPreprocess(un Unstructured) (interface{}, error) {
 	return un, nil
 }
 
-func (p *preprocessor) runPreprocessInclude(un Unstructured) (Unstructured, error) {
+func (p *preprocessor) runPreprocessInclude(un unstructured.Unstructured) (unstructured.Unstructured, error) {
 	return un, nil
 }
 
-func (p *preprocessor) runIncludeFile(un Unstructured) (string, error) {
+func (p *preprocessor) runIncludeFile(un unstructured.Unstructured) (string, error) {
 	filePath := un["$file"]
 
 	dat, err := os.ReadFile(filePath.(string))
@@ -123,7 +124,7 @@ func (p *preprocessor) runIncludeFile(un Unstructured) (string, error) {
 	return string(dat), nil
 }
 
-func (p *preprocessor) runIncludeFolder(un Unstructured) (string, error) {
+func (p *preprocessor) runIncludeFolder(un unstructured.Unstructured) (string, error) {
 	filePath := un["$folder"].(string)
 	format := un["$format"].(string)
 
@@ -141,12 +142,12 @@ func (p *preprocessor) runIncludeFolder(un Unstructured) (string, error) {
 	}
 }
 
-func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error) {
-	extend := un["$extend"].(Unstructured)
+func (p *preprocessor) runPreprocessExtend(un unstructured.Unstructured) (unstructured.Unstructured, error) {
+	extend := un["$extend"].(unstructured.Unstructured)
 
 	namespace := extend["$namespace"].(string)
 	resource := extend["$resource"].(string)
-	match := extend["$match"].(Unstructured)
+	match := extend["$match"].(unstructured.Unstructured)
 
 	if namespace != "" {
 		namespace = "ui" //default
@@ -184,7 +185,7 @@ func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error
 		return un, err
 	}
 
-	MergeOut(un, recordUn, true)
+	unstructured.MergeOut(un, recordUn, true)
 
 	if ref != "" {
 		updatedUn, err := ParseRef(un, ref)
@@ -204,22 +205,22 @@ func (p *preprocessor) runPreprocessExtend(un Unstructured) (Unstructured, error
 		un = updatedUn
 	}
 
-	DeleteKey(un, "$extend")
+	unstructured.DeleteKey(un, "$extend")
 
 	return un, nil
 }
 
-func reportError(un Unstructured, err error) {
+func reportError(un unstructured.Unstructured, err error) {
 	data, _ := json.MarshalIndent(un, " ", "  ")
 	fmt.Println(string(data))
 	log.Error(err)
 }
 
-func (p *preprocessor) runPreprocessOverride(un Unstructured) (Unstructured, error) {
-	override := un["$override"].(Unstructured)
+func (p *preprocessor) runPreprocessOverride(un unstructured.Unstructured) (unstructured.Unstructured, error) {
+	override := un["$override"].(unstructured.Unstructured)
 	selectParam := override["$select"].(string)
-	merge, _ := override["$merge"].(Unstructured)
-	set, _ := override["$set"].(Unstructured)
+	merge, _ := override["$merge"].(unstructured.Unstructured)
+	set, _ := override["$set"].(unstructured.Unstructured)
 
 	reUn, err := ParseRef(un, selectParam)
 
@@ -228,39 +229,39 @@ func (p *preprocessor) runPreprocessOverride(un Unstructured) (Unstructured, err
 	}
 
 	if merge != nil {
-		MergeInto(reUn, merge, true)
-		DeleteKey(un, "$merge")
+		unstructured.MergeInto(reUn, merge, true)
+		unstructured.DeleteKey(un, "$merge")
 	}
 
 	if set != nil {
-		MergeInto(reUn, set, false)
-		DeleteKey(un, "$set")
+		unstructured.MergeInto(reUn, set, false)
+		unstructured.DeleteKey(un, "$set")
 	}
 
-	DeleteKey(un, "$override")
+	unstructured.DeleteKey(un, "$override")
 
 	return un, nil
 }
 
-func (p *preprocessor) checkSyntax(un Unstructured) error {
+func (p *preprocessor) checkSyntax(un unstructured.Unstructured) error {
 	if un["$syntax"] != nil {
-		syntax, err := p.runPreprocess(un["$syntax"].(Unstructured))
+		syntax, err := p.runPreprocess(un["$syntax"].(unstructured.Unstructured))
 
 		if err != nil {
 			return err
 		}
 
-		DeleteKey(un, "$syntax")
+		unstructured.DeleteKey(un, "$syntax")
 
 		var subType = &model.Resource{}
 
-		err = ToProtoMessage(syntax.(Unstructured), subType)
+		err = unstructured.ToProtoMessage(syntax.(unstructured.Unstructured), subType)
 
 		if err != nil {
 			return err
 		}
 
-		record, err := ToRecord(un)
+		record, err := unstructured.ToRecord(un)
 
 		if err != nil {
 			return err
@@ -279,12 +280,12 @@ func (p *preprocessor) checkSyntax(un Unstructured) error {
 	return nil
 }
 
-func (p *preprocessor) runPreprocessProperties(un Unstructured) (Unstructured, error) {
-	propertiesDirective := un["$properties"].(Unstructured)
-	var properties []Unstructured
+func (p *preprocessor) runPreprocessProperties(un unstructured.Unstructured) (unstructured.Unstructured, error) {
+	propertiesDirective := un["$properties"].(unstructured.Unstructured)
+	var properties []unstructured.Unstructured
 
 	for key, value := range propertiesDirective {
-		var propertyUn = make(Unstructured)
+		var propertyUn = make(unstructured.Unstructured)
 
 		if typeStr, ok := value.(string); ok {
 			var property = new(model.ResourceProperty)
@@ -294,12 +295,12 @@ func (p *preprocessor) runPreprocessProperties(un Unstructured) (Unstructured, e
 			} else {
 				return nil, errors.New(fmt.Sprintf("invalid property type %s", typeStr))
 			}
-			err := FromProtoMessage(propertyUn, property)
+			err := unstructured.FromProtoMessage(propertyUn, property)
 
 			if err != nil {
 				return nil, err
 			}
-		} else if valueUn, ok := value.(Unstructured); ok {
+		} else if valueUn, ok := value.(unstructured.Unstructured); ok {
 			propertyUn = valueUn
 		} else {
 			return nil, errors.New(fmt.Sprintf("invalid property type %s", value))
@@ -315,7 +316,7 @@ func (p *preprocessor) runPreprocessProperties(un Unstructured) (Unstructured, e
 		properties = append(properties, propertyUn)
 	}
 
-	DeleteKey(un, "$properties")
+	unstructured.DeleteKey(un, "$properties")
 	un["properties"] = properties
 	return un, nil
 }

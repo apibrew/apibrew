@@ -7,7 +7,6 @@ option go_package = "github.com/apibrew/apibrew/pkg/model";
 import 'model/audit.proto';
 import 'model/query.proto';
 import 'model/common.proto';
-import 'model/security.proto';
 import 'model/hcl.proto';
 import 'google/protobuf/struct.proto';
 import "google/protobuf/descriptor.proto";
@@ -58,16 +57,16 @@ message ResourceProperty {
   uint32 length = 7; // length property is only valid and required for String typed properties
   bool unique = 8;
   bool immutable = 9; // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded
-  repeated SecurityConstraint securityConstraints = 10; // security context is to apply ACL to resource property
   optional google.protobuf.Value defaultValue = 11; // defaultValue is default value.
   optional google.protobuf.Value exampleValue = 12; // exampleValue is example value. It is an informative column
   repeated string enumValues = 13; // enumValues is used if property type is an enum
   optional Reference reference = 14 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
-  repeated ResourceProperty properties = 15 [(model.hcl_block) = "property"]; // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
-  optional ResourceProperty item = 16; // item is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
+  optional BackReference backReference = 15 [(model.hcl_block) = "reference"]; // reference property is only valid and required for Reference types.
+  repeated ResourceProperty properties = 16 [(model.hcl_block) = "property"]; // list of properties of struct. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
+  optional ResourceProperty item = 18; // item is used for complex types(list, map). For list, subType is element type. For map, it is value type(key type is always string)
 
-  optional string title = 18; // It is an informative column
-  optional string description = 19; // It is an informative column
+  optional string title = 19; // It is an informative column
+  optional string description = 20; // It is an informative column
 
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
@@ -76,6 +75,10 @@ message Reference {
   string namespace = 1; // referenced resource namespace
   string resource = 2; // referenced resource name
   bool cascade = 3; // if cascade is true, delete/update operations will be cascaded to back referenced resources
+}
+
+message BackReference {
+  string property = 3;
 }
 
 /*
@@ -126,7 +129,6 @@ message Resource {
   repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
   repeated ResourceSubType types = 7 [(model.hcl_block) = "type"];
   repeated ResourceIndex indexes = 8 [(model.hcl_block) = "index"]; // list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends.
-  repeated SecurityConstraint securityConstraints = 10 [(model.hcl_block) = "constraint"]; // security context is to apply ACL to resource property
   bool virtual = 11; // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.
   bool immutable = 12; // if true, delete and update will not be allowed on this resource
   bool abstract = 13; // if abstract, resource is only available to internal and extension side operations

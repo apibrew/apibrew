@@ -17,9 +17,9 @@ func PrepareQueryFromFilters(resource *model.Resource, filters map[string]string
 			}
 
 			if val.GetListValue() != nil {
-				criteria = append(criteria, newInExpression(property.Name, val))
+				criteria = append(criteria, QueryInExpression(property.Name, val))
 			} else {
-				criteria = append(criteria, NewEqualExpression(property.Name, val))
+				criteria = append(criteria, QueryEqualExpression(property.Name, val))
 			}
 
 		}
@@ -93,11 +93,10 @@ func PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*m
 			}
 
 			if val.GetListValue() != nil {
-				criteria = append(criteria, newInExpression(property.Name, val))
+				criteria = append(criteria, QueryInExpression(property.Name, val))
 			} else {
-				criteria = append(criteria, NewEqualExpression(property.Name, val))
+				criteria = append(criteria, QueryEqualExpression(property.Name, val))
 			}
-
 		}
 	}
 
@@ -109,7 +108,7 @@ func PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*m
 	return query, nil
 }
 
-func NewEqualExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
+func QueryEqualExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
 	return &model.BooleanExpression{
 		Expression: &model.BooleanExpression_Equal{
 			Equal: &model.PairExpression{
@@ -128,7 +127,27 @@ func NewEqualExpression(propertyName string, val *structpb.Value) *model.Boolean
 	}
 }
 
-func newInExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
+func QueryAndExpression(left *model.BooleanExpression, right *model.BooleanExpression) *model.BooleanExpression {
+	return &model.BooleanExpression{
+		Expression: &model.BooleanExpression_And{
+			And: &model.CompoundBooleanExpression{
+				Expressions: []*model.BooleanExpression{left, right},
+			},
+		},
+	}
+}
+
+func QueryOrExpression(left *model.BooleanExpression, right *model.BooleanExpression) *model.BooleanExpression {
+	return &model.BooleanExpression{
+		Expression: &model.BooleanExpression_Or{
+			Or: &model.CompoundBooleanExpression{
+				Expressions: []*model.BooleanExpression{left, right},
+			},
+		},
+	}
+}
+
+func QueryInExpression(propertyName string, val *structpb.Value) *model.BooleanExpression {
 	return &model.BooleanExpression{
 		Expression: &model.BooleanExpression_In{
 			In: &model.PairExpression{
@@ -145,4 +164,25 @@ func newInExpression(propertyName string, val *structpb.Value) *model.BooleanExp
 			},
 		},
 	}
+}
+
+func RecordIdentifierQuery(resource *model.Resource, properties map[string]*structpb.Value) (*model.BooleanExpression, error) {
+	identifiableProperties, err := RecordIdentifierProperties(resource, properties)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var criteria []*model.BooleanExpression
+	for key, value := range identifiableProperties {
+		criteria = append(criteria, QueryEqualExpression(key, value))
+	}
+
+	var query *model.BooleanExpression
+
+	if len(criteria) > 0 {
+		query = &model.BooleanExpression{Expression: &model.BooleanExpression_And{And: &model.CompoundBooleanExpression{Expressions: criteria}}}
+	}
+	return query, nil
+
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured/ops"
 	"github.com/apibrew/apibrew/pkg/model"
 	"gopkg.in/yaml.v3"
 	"io"
@@ -15,7 +16,7 @@ type executor struct {
 	resources            []*model.Resource
 	resourceNameMap      map[string]*model.Resource
 	resourcePropertyMap  map[string]*model.ResourceProperty
-	unstructuredExecutor *unstructured.Executor
+	unstructuredExecutor *ops.Executor
 }
 
 func (e *executor) parser(r io.Reader, consumer func(data unstructured.Unstructured) error) error {
@@ -66,10 +67,10 @@ type ExecutorParams struct {
 }
 
 func NewExecutor(params ExecutorParams) (formats.Executor, error) {
-	unstructuredExecutor := &unstructured.Executor{
-		Params: unstructured.ExecutorParams{
+	unstructuredExecutor := &ops.Executor{
+		Params: ops.ExecutorParams{
 			DhClient: params.DhClient,
-			OverrideConfig: unstructured.OverrideConfig{
+			OverrideConfig: ops.OverrideConfig{
 				Namespace:  params.OverrideConfig.Namespace,
 				DataSource: params.OverrideConfig.DataSource,
 			},

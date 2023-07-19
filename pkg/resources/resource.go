@@ -103,7 +103,6 @@ var ResourceResource = &model.Resource{
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},
-		special.SecurityConstraintsProperty,
 		{
 			Name:     "title",
 			Mapping:  "title",
@@ -134,7 +133,6 @@ var ResourceResource = &model.Resource{
 			Unique: true,
 		},
 	},
-	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

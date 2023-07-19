@@ -1,4 +1,4 @@
-package unstructured
+package ops
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/client"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
@@ -25,7 +26,7 @@ type Executor struct {
 	preprocessor        preprocessor
 }
 
-func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
+func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructured) error {
 	body, err := e.preprocessor.preprocess(body)
 
 	if err != nil {
@@ -61,7 +62,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 
 	if elemType == "resource" {
 		var resource = new(model.Resource)
-		err = ToProtoMessage(body, resource)
+		err = unstructured.ToProtoMessage(body, resource)
 
 		if err != nil {
 			jsonData, _ := json.MarshalIndent(body, " ", "  ")
@@ -102,17 +103,17 @@ func (e *Executor) RestoreItem(ctx context.Context, body Unstructured) error {
 		var record = new(model.Record)
 
 		if _, exists := body["properties"]; !exists {
-			body["properties"] = make(Unstructured)
+			body["properties"] = make(unstructured.Unstructured)
 		}
 
 		for key, value := range body {
 			if key != "properties" {
-				body["properties"].(Unstructured)[key] = value
+				body["properties"].(unstructured.Unstructured)[key] = value
 				delete(body, key)
 			}
 		}
 
-		err = ToProtoMessage(body, record)
+		err = unstructured.ToProtoMessage(body, record)
 
 		if err != nil {
 			return err
@@ -201,4 +202,4 @@ type ExecutorParams struct {
 	DataOnly       bool
 }
 
-type ParserFunc func(reader io.Reader, consumer func(data Unstructured) error) error
+type ParserFunc func(reader io.Reader, consumer func(data unstructured.Unstructured) error) error

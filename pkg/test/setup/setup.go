@@ -42,7 +42,7 @@ func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 	})
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	var RecordsForCreate []*resource_model.DataSource
@@ -141,7 +141,7 @@ func ResourcesWithErrorHandler(ctx context.Context, resources []*model.Resource,
 				found = true
 				cd.Id = ds.Id
 				util.NormalizeResource(ds)
-				resourcesForUpdate = append(resourcesForUpdate, ds)
+				resourcesForUpdate = append(resourcesForUpdate, cd)
 				break
 			}
 		}
