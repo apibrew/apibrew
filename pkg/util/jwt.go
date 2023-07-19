@@ -1,8 +1,7 @@
-package jwt
+package util
 
 import (
 	"crypto/rsa"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
@@ -12,7 +11,7 @@ import (
 
 type JwtUserDetailsSignParams struct {
 	Key         rsa.PrivateKey
-	UserDetails abs.UserDetails
+	UserDetails UserDetails
 	ExpiresAt   time.Time
 	Issuer      string
 }
@@ -27,16 +26,16 @@ func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.Service
 	}
 
 	claims := &JwtUserClaims{
-		Issuer:    params.Issuer,
-		Subject:   params.UserDetails.Username,
-		Audience:  []string{params.Issuer},
-		ExpiresAt: jwt.NewNumericDate(params.ExpiresAt),
-		NotBefore: jwt.NewNumericDate(time.Now()),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ID:        jit.String(),
-		Username:  params.UserDetails.Username,
-		Roles:     params.UserDetails.Roles,
-		UserId:    params.UserDetails.UserId,
+		Issuer:              params.Issuer,
+		Subject:             params.UserDetails.Username,
+		Audience:            []string{params.Issuer},
+		ExpiresAt:           jwt.NewNumericDate(params.ExpiresAt),
+		NotBefore:           jwt.NewNumericDate(time.Now()),
+		IssuedAt:            jwt.NewNumericDate(time.Now()),
+		ID:                  jit.String(),
+		Username:            params.UserDetails.Username,
+		SecurityConstraints: params.UserDetails.SecurityConstraints,
+		UserId:              params.UserDetails.UserId,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
@@ -52,7 +51,7 @@ func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.Service
 	return signedToken, nil
 }
 
-func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*abs.UserDetails, errors.ServiceError) {
+func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*UserDetails, errors.ServiceError) {
 	claims := new(JwtUserClaims)
 
 	_, err := jwt.ParseWithClaims(tokenContent, claims, func(token *jwt.Token) (interface{}, error) {
@@ -65,9 +64,9 @@ func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*abs
 		return nil, errors.InternalError.WithDetails(err.Error())
 	}
 
-	return &abs.UserDetails{
-		UserId:   claims.UserId,
-		Username: claims.Username,
-		Roles:    claims.Roles,
+	return &UserDetails{
+		UserId:              claims.UserId,
+		Username:            claims.Username,
+		SecurityConstraints: claims.SecurityConstraints,
 	}, nil
 }

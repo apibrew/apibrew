@@ -48,6 +48,9 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 				}
 
 				if property.Type == model.ResourceProperty_REFERENCE {
+					if property.BackReference != nil {
+						continue
+					}
 					referenceNamespace := property.Reference.Namespace
 					if referenceNamespace == "" {
 						referenceNamespace = resource.Namespace

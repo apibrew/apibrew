@@ -3,6 +3,7 @@ package setup
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resource_model/system"
 	"github.com/apibrew/apibrew/pkg/resources"
 )
 
@@ -34,9 +35,6 @@ func prepareInitRecords() []*model.InitRecord {
 				Name: "root",
 				SecurityConstraints: []*resource_model.SecurityConstraint{
 					{
-						Namespace: "*",
-						Resource:  "*",
-						Property:  "*",
 						Operation: resource_model.SecurityConstraintOperation_FULL,
 						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
 					},
@@ -50,17 +48,17 @@ func prepareInitRecords() []*model.InitRecord {
 				Name: "test_user",
 				SecurityConstraints: []*resource_model.SecurityConstraint{
 					{
-						Resource:  "user",
+						Resource:  system.UserResourceModel,
 						Operation: resource_model.SecurityConstraintOperation_READ,
 						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
 					},
 					{
-						Resource:  "namespace",
+						Resource:  system.NamespaceResourceModel,
 						Operation: resource_model.SecurityConstraintOperation_CREATE,
 						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
 					},
 					{
-						Resource:  "namespace",
+						Resource:  system.NamespaceResourceModel,
 						Operation: resource_model.SecurityConstraintOperation_READ,
 						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
 					},
@@ -78,7 +76,11 @@ func prepareInitRecords() []*model.InitRecord {
 			Record: resource_model.UserMapperInstance.ToRecord(&resource_model.User{
 				Username: "admin",
 				Password: strPointer("admin"),
-				Roles:    []string{"root"},
+				Roles: []*resource_model.Role{
+					{
+						Name: "root",
+					},
+				},
 			}),
 		},
 		{
@@ -87,7 +89,11 @@ func prepareInitRecords() []*model.InitRecord {
 			Record: resource_model.UserMapperInstance.ToRecord(&resource_model.User{
 				Username: "dh_test",
 				Password: strPointer("dh_test"),
-				Roles:    []string{"test_user"},
+				Roles: []*resource_model.Role{
+					{
+						Name: "test_user",
+					},
+				},
 			}),
 		},
 	}

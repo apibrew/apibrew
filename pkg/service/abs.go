@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -14,7 +15,7 @@ type AuthenticationService interface {
 	Init(config *model.AppConfig)
 	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
-	ParseAndVerifyToken(token string) (*abs.UserDetails, errors.ServiceError)
+	ParseAndVerifyToken(token string) (*util.UserDetails, errors.ServiceError)
 	AuthenticationDisabled() bool
 }
 
@@ -44,7 +45,7 @@ type RecordService interface {
 	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
 	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
 	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
-
+	ResolveReferences(ctx context.Context, resource *model.Resource, records []*model.Record, referencesToResolve []string) errors.ServiceError
 	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
 	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, errors.ServiceError)
 	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)

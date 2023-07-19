@@ -1,4 +1,4 @@
-package unstructured
+package ops
 
 import (
 	"archive/tar"

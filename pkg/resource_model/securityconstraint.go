@@ -11,17 +11,17 @@ type SecurityConstraint struct {
 	UpdatedBy     *string
 	CreatedOn     *time.Time
 	UpdatedOn     *time.Time
-	Namespace     string
-	Resource      string
-	Property      string
+	Namespace     *Namespace
+	Resource      *Resource
+	Property      *string
 	PropertyValue *string
 	PropertyMode  *SecurityConstraintPropertyMode
 	Operation     SecurityConstraintOperation
 	RecordIds     []string
 	Before        *time.Time
 	After         *time.Time
-	Username      *string
-	Role          *string
+	User          *User
+	Role          *Role
 	Permit        SecurityConstraintPermit
 	LocalFlags    *unstructured.Unstructured
 }
@@ -44,13 +44,13 @@ func (s *SecurityConstraint) GetCreatedOn() *time.Time {
 func (s *SecurityConstraint) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
-func (s *SecurityConstraint) GetNamespace() string {
+func (s *SecurityConstraint) GetNamespace() *Namespace {
 	return s.Namespace
 }
-func (s *SecurityConstraint) GetResource() string {
+func (s *SecurityConstraint) GetResource() *Resource {
 	return s.Resource
 }
-func (s *SecurityConstraint) GetProperty() string {
+func (s *SecurityConstraint) GetProperty() *string {
 	return s.Property
 }
 func (s *SecurityConstraint) GetPropertyValue() *string {
@@ -71,10 +71,10 @@ func (s *SecurityConstraint) GetBefore() *time.Time {
 func (s *SecurityConstraint) GetAfter() *time.Time {
 	return s.After
 }
-func (s *SecurityConstraint) GetUsername() *string {
-	return s.Username
+func (s *SecurityConstraint) GetUser() *User {
+	return s.User
 }
-func (s *SecurityConstraint) GetRole() *string {
+func (s *SecurityConstraint) GetRole() *Role {
 	return s.Role
 }
 func (s *SecurityConstraint) GetPermit() SecurityConstraintPermit {

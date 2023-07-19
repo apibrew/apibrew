@@ -30,8 +30,6 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		return v
 	}))
 
-	properties["securityContext"] = SecurityContextToValue(resource.SecurityConstraints)
-
 	if resource.Indexes != nil {
 		var lv []*structpb.Value
 
@@ -77,7 +75,6 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 			Entity:     record.Properties["entity"].GetStringValue(),
 			Catalog:    record.Properties["catalog"].GetStringValue(),
 		},
-		SecurityConstraints: SecurityContextFromValue(record.Properties["securityContext"]),
 		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
 		}),

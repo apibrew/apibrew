@@ -3,7 +3,6 @@ package impl
 import (
 	"context"
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -29,18 +28,17 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 		return errors.AccessDeniedError.WithDetails("Public access is denied")
 	}
 
-	//var constraints []resource_model.SecurityConstraint
-	//
+	var constraints []*resource_model.SecurityConstraint
+
 	//for _, constraint := range params.Resource.SecurityConstraints {
 	//	constraint.Resource = params.Resource.Name
 	//	constraint.Namespace = params.Resource.Namespace
 	//}
 
 	//constraints = append(constraints, params.Resource.SecurityConstraints...)
-	//constraints = append(constraints, userDetails.SecurityConstraints...)
+	constraints = append(constraints, userDetails.SecurityConstraints...)
 
-	//errorFields := a.evaluateConstraints(ctx, params, constraints, userDetails)
-	var errorFields []*model.ErrorField
+	errorFields := a.evaluateConstraints(ctx, params, constraints, userDetails)
 
 	if len(errorFields) == 0 {
 		return nil
@@ -49,7 +47,7 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 	}
 }
 
-func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, constraints []resource_model.SecurityConstraint, userDetails *abs.UserDetails) []*model.ErrorField {
+func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, constraints []*resource_model.SecurityConstraint, userDetails *util.UserDetails) []*model.ErrorField {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	now := time.Now()
@@ -106,18 +104,18 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 	return errorFields
 }
 
-func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, constraint resource_model.SecurityConstraint, now time.Time, userDetails *abs.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
+func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, constraint *resource_model.SecurityConstraint, now time.Time, userDetails *util.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	// check resource constraint matches
 
-	if constraint.GetResource() != "*" && constraint.GetResource() != params.Resource.Name {
+	if constraint.Resource != nil && constraint.Resource.Name != params.Resource.Name {
 		// skipping as not related to this resource
 		logger.Tracef("Skipping constraint as not related to this resource: %v", constraint)
 		return false, nil
 	}
 
-	if constraint.GetNamespace() != "*" && constraint.GetNamespace() != params.Resource.Namespace {
+	if constraint.Namespace != nil && constraint.Namespace.Name != params.Resource.Namespace {
 		// skipping as not related to this namespace
 		logger.Tracef("Skipping constraint as not related to this namespace: %v", constraint)
 		return false, nil
@@ -164,17 +162,12 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 		return false, nil
 	}
 
-	if constraint.Username != nil && *constraint.Username != "*" && *constraint.Username != userDetails.Username {
+	if constraint.User != nil && constraint.User.Username != userDetails.Username {
 		logger.Tracef("Skipping constraint as username not matched: %v", constraint)
 		return false, nil
 	}
 
-	if constraint.Role != nil && *constraint.Role != "*" && !util.ArrayContains(userDetails.Roles, *constraint.Role) {
-		logger.Tracef("Skipping constraint as role not matched: %v", constraint)
-		return false, nil
-	}
-
-	if constraint.Property != "*" {
+	if constraint.Property != nil {
 		if constraint.PropertyMode != nil && *constraint.PropertyMode == resource_model.SecurityConstraintPropertyMode_PROPERTYMATCHONLY {
 			if constraint.PropertyValue != nil {
 				for _, record := range *params.Records {
@@ -182,7 +175,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 						if key == "id" {
 							continue
 						}
-						if key != constraint.Property {
+						if key != *constraint.Property {
 							continue
 						}
 
@@ -193,7 +186,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 
 							value = a.processValue(value, userDetails)
 
-							strActualVal := fmt.Sprintf("%v", record.Properties[constraint.Property].AsInterface())
+							strActualVal := fmt.Sprintf("%v", record.Properties[*constraint.Property].AsInterface())
 
 							if strActualVal != value {
 								logger.Tracef("Skipping constraint as property value not matched: %v", constraint)
@@ -210,17 +203,17 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 
 			if params.Records != nil {
 				for _, record := range *params.Records {
-					if record.Properties[constraint.Property] == nil {
+					if record.Properties[*constraint.Property] == nil {
 						logger.Tracef("Skipping constraint as property not found: %v", constraint)
 						return false, nil
 					}
 
-					strActualVal := fmt.Sprintf("%v", record.Properties[constraint.Property].AsInterface())
+					strActualVal := fmt.Sprintf("%v", record.Properties[*constraint.Property].AsInterface())
 
 					if strActualVal != value {
 						return false, []*model.ErrorField{
 							{
-								Property: constraint.Property,
+								Property: *constraint.Property,
 								Message:  fmt.Sprintf("Property '%s' is not allowed", constraint.Property),
 							},
 						}
@@ -233,7 +226,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 	return true, nil
 }
 
-func (a *authorizationService) processValue(value string, userDetails *abs.UserDetails) string {
+func (a *authorizationService) processValue(value string, userDetails *util.UserDetails) string {
 	var processedValue = value
 
 	if processedValue == "$userId" {

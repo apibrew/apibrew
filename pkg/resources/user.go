@@ -44,10 +44,29 @@ var UserResource = &model.Resource{
 			Mapping: "roles",
 			Type:    model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
-				Type: model.ResourceProperty_STRING,
+				Type: model.ResourceProperty_REFERENCE,
+				Reference: &model.Reference{
+					Namespace: RoleResource.Namespace,
+					Resource:  RoleResource.Name,
+				},
 			},
 		},
-		special.SecurityConstraintsProperty,
+		{
+			Name:    "securityConstraints",
+			Mapping: "security_constraints",
+			Type:    model.ResourceProperty_LIST,
+			Item: &model.ResourceProperty{
+				Type: model.ResourceProperty_REFERENCE,
+				Reference: &model.Reference{
+					Namespace: "system",
+					Resource:  "SecurityConstraint",
+				},
+				BackReference: &model.BackReference{
+					Property: "user",
+				},
+			},
+			Required: false,
+		},
 		{
 			Name:    "details",
 			Mapping: "details",

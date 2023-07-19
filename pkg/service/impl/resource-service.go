@@ -68,6 +68,7 @@ func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, reso
 }
 
 func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError {
+	ctx = annotations.SetWithContext(ctx, annotations.UseJoinTable, "true")
 	records, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourceResource, abs.ListRecordParams{
 		Limit: 1000000,
 		ResolveReferences: []string{
@@ -135,6 +136,10 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 			fmt.Println(jsonRes)
 			fmt.Println("================")
 		}
+	}
+
+	for _, resource := range r.schema.Resources {
+		r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
 	}
 
 	return nil
@@ -229,35 +234,38 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 
 	systemBackend := r.backendProviderService.GetSystemBackend(ctx)
 
-	txk, err := systemBackend.BeginTransaction(ctx, false)
-
-	if err != nil {
-		return err
-	}
-
-	txCtx := context.WithValue(ctx, abs.TransactionContextKey, txk)
-
+	var txCtx = ctx
 	var success = false
 
-	defer func() {
-		if success {
-			err = systemBackend.CommitTransaction(txCtx)
+	if txCtx.Value(abs.TransactionContextKey) == nil {
+		txk, err := systemBackend.BeginTransaction(ctx, false)
 
-			if err != nil {
-				log.Print(err)
+		if err != nil {
+			return err
+		}
+
+		txCtx = context.WithValue(ctx, abs.TransactionContextKey, txk)
+
+		defer func() {
+			if success {
+				err = systemBackend.CommitTransaction(txCtx)
+
+				if err != nil {
+					log.Print(err)
+				}
+
+				r.mustReloadResources(context.TODO())
+			} else {
+				err = systemBackend.RollbackTransaction(txCtx)
+
+				if err != nil {
+					log.Print(err)
+				}
 			}
 
 			r.mustReloadResources(context.TODO())
-		} else {
-			err = systemBackend.RollbackTransaction(txCtx)
-
-			if err != nil {
-				log.Print(err)
-			}
-		}
-
-		r.mustReloadResources(context.TODO())
-	}()
+		}()
+	}
 
 	if err := r.applyPlan(txCtx, plan); err != nil {
 		return err
@@ -378,7 +386,7 @@ func (r *resourceService) applyPlan(ctx context.Context, plan *model.ResourceMig
 	})
 
 	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourcePropertyResource, abs.ListRecordParams{
-		Query: util.NewEqualExpression("resource", structpb.NewStringValue(resource.Id)),
+		Query: util.QueryEqualExpression("resource", structpb.NewStringValue(resource.Id)),
 		Limit: 1000000,
 	}, nil)
 
@@ -458,33 +466,36 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	systemBackend := r.backendProviderService.GetSystemBackend(ctx)
 
-	txk, err := systemBackend.BeginTransaction(ctx, false)
-
-	if err != nil {
-		return nil, err
-	}
-
-	txCtx := context.WithValue(ctx, abs.TransactionContextKey, txk)
+	var txCtx = ctx
 
 	var success = false
+	if txCtx.Value(abs.TransactionContextKey) == nil {
+		txk, err := systemBackend.BeginTransaction(ctx, false)
 
-	defer func() {
-		if success {
-			err = systemBackend.CommitTransaction(txCtx)
-
-			if err != nil {
-				log.Print(err)
-			}
-
-			r.mustReloadResources(context.TODO())
-		} else {
-			err = systemBackend.RollbackTransaction(txCtx)
-
-			if err != nil {
-				log.Print(err)
-			}
+		if err != nil {
+			return nil, err
 		}
-	}()
+
+		txCtx := context.WithValue(ctx, abs.TransactionContextKey, txk)
+
+		defer func() {
+			if success {
+				err = systemBackend.CommitTransaction(txCtx)
+
+				if err != nil {
+					log.Print(err)
+				}
+
+				r.mustReloadResources(context.TODO())
+			} else {
+				err = systemBackend.RollbackTransaction(txCtx)
+
+				if err != nil {
+					log.Print(err)
+				}
+			}
+		}()
+	}
 
 	util.InitRecord(ctx, resources.ResourceResource, resourceRecord)
 	util.NormalizeRecord(resources.ResourceResource, resourceRecord)
@@ -508,6 +519,8 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	// fetch inserted record
+
+	txCtx = annotations.SetWithContext(txCtx, annotations.UseJoinTable, "true")
 
 	insertedRecord, err := systemBackend.GetRecord(txCtx, resources.ResourceResource, result[0].Id)
 
@@ -693,8 +706,10 @@ func (r *resourceService) Init(config *model.AppConfig) {
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
 
 	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
+	r.schema.ResourcePropertiesByType = make(map[string]map[model.ResourceProperty_Type][]abs.PropertyWithPath)
 	for _, resource := range r.schema.Resources {
 		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
+		r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
 	}
 
 	r.migrateResource(resources.NamespaceResource)
@@ -702,10 +717,9 @@ func (r *resourceService) Init(config *model.AppConfig) {
 
 	r.migrateResource(resources.ResourceResource)
 	r.migrateResource(resources.ResourcePropertyResource)
-
-	r.migrateResource(resources.SecurityConstraintResource)
 	r.migrateResource(resources.UserResource)
 	r.migrateResource(resources.RoleResource)
+	r.migrateResource(resources.SecurityConstraintResource)
 	r.migrateResource(resources.ExtensionResource)
 
 	if err := r.reloadSchema(context.TODO()); err != nil {
@@ -882,6 +896,19 @@ func (r *resourceService) Get(ctx context.Context, id string) *model.Resource {
 	}
 
 	return nil
+}
+
+func (r *resourceService) mapPropertiesByType(resource *model.Resource) map[model.ResourceProperty_Type][]abs.PropertyWithPath {
+	result := make(map[model.ResourceProperty_Type][]abs.PropertyWithPath)
+
+	util.ResourceWalkProperties(resource, func(path string, property *model.ResourceProperty) {
+		result[property.Type] = append(result[property.Type], abs.PropertyWithPath{
+			Path:     path,
+			Property: property,
+		})
+	})
+
+	return result
 }
 
 func NewResourceService(backendProviderService service.BackendProviderService, resourceMigrationService service.ResourceMigrationService, authorizationService service.AuthorizationService) service.ResourceService {

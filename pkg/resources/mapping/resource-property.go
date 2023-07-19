@@ -50,7 +50,6 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["immutable"] = structpb.NewBoolValue(property.Immutable)
 
 	properties["mapping"] = structpb.NewStringValue(property.Mapping)
-	properties["securityContext"] = SecurityContextToValue(property.SecurityConstraints)
 
 	if property.Reference != nil {
 		referenceNamespace := property.Reference.Namespace
@@ -61,6 +60,10 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 			"name": referenceNamespace,
 		})
 		properties["reference_cascade"] = structpb.NewBoolValue(property.Reference.Cascade)
+	}
+
+	if property.BackReference != nil {
+		properties["back_reference_resource"] = structpb.NewStringValue(property.BackReference.Property)
 	}
 
 	properties["defaultValue"] = property.DefaultValue
@@ -88,6 +91,7 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	var reference = &model.Reference{}
+	var backReference *model.BackReference
 	var hasReference bool
 
 	if record.Properties["reference_resource"] != nil {
@@ -101,24 +105,30 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		hasReference = true
 	}
 
+	if record.Properties["back_reference_resource"] != nil {
+		backReference = &model.BackReference{
+			Property: record.Properties["back_reference_resource"].GetStringValue(),
+		}
+	}
+
 	if !hasReference {
 		reference = nil
 	}
 
 	var resourceProperty = &model.ResourceProperty{
-		Id:                  &record.Id,
-		Name:                record.Properties["name"].GetStringValue(),
-		Type:                model.ResourceProperty_Type(record.Properties["type"].GetNumberValue()),
-		Mapping:             record.Properties["mapping"].GetStringValue(),
-		Primary:             record.Properties["primary"].GetBoolValue(),
-		Required:            record.Properties["required"].GetBoolValue(),
-		Length:              uint32(record.Properties["length"].GetNumberValue()),
-		Unique:              record.Properties["unique"].GetBoolValue(),
-		Immutable:           record.Properties["immutable"].GetBoolValue(),
-		SecurityConstraints: SecurityContextFromValue(record.Properties["securityContext"]),
-		DefaultValue:        record.Properties["defaultValue"],
-		ExampleValue:        record.Properties["exampleValue"],
-		Reference:           reference,
+		Id:            &record.Id,
+		Name:          record.Properties["name"].GetStringValue(),
+		Type:          model.ResourceProperty_Type(record.Properties["type"].GetNumberValue()),
+		Mapping:       record.Properties["mapping"].GetStringValue(),
+		Primary:       record.Properties["primary"].GetBoolValue(),
+		Required:      record.Properties["required"].GetBoolValue(),
+		Length:        uint32(record.Properties["length"].GetNumberValue()),
+		Unique:        record.Properties["unique"].GetBoolValue(),
+		Immutable:     record.Properties["immutable"].GetBoolValue(),
+		DefaultValue:  record.Properties["defaultValue"],
+		ExampleValue:  record.Properties["exampleValue"],
+		Reference:     reference,
+		BackReference: backReference,
 		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
 		}),

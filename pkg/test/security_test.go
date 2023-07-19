@@ -1,6 +1,7 @@
 package test
 
 import (
+	"context"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -12,7 +13,7 @@ import (
 )
 
 func TestDhTestUserCannotCreateUser(t *testing.T) {
-	userDhTestCtx := setup.WithUserAuthenticationContext(setup.Ctx, "dh_test", "dh_test")
+	userDhTestCtx := setup.WithUserAuthenticationContext(context.TODO(), "dh_test", "dh_test")
 
 	record, err := recordClient.Apply(userDhTestCtx, &stub.ApplyRecordRequest{
 		Namespace: resources.UserResource.Namespace,
@@ -24,7 +25,7 @@ func TestDhTestUserCannotCreateUser(t *testing.T) {
 		},
 	})
 
-	if record.Records != nil && len(record.Records) > 0 {
+	if record != nil && record.Records != nil && len(record.Records) > 0 {
 		_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
 			Namespace: resources.UserResource.Namespace,
 			Resource:  resources.UserResource.Name,

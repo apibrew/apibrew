@@ -39,6 +39,9 @@ func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder
 			if property.Primary { // skip primary properties because they are already created as upon table creation, this logic should be reworked
 				continue
 			}
+			if property.Type == model.ResourceProperty_REFERENCE && property.BackReference != nil { // skip back references as they will be populated on service layer
+				continue
+			}
 			hp.AddProperty(property)
 		case *model.ResourceMigrationStep_UpdateProperty:
 			hp.UpdateProperty(migrationPlan.CurrentResource, existingPropertyMap[sk.UpdateProperty.ExistingProperty], currentPropertyMap[sk.UpdateProperty.Property])

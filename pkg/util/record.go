@@ -298,3 +298,72 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 
 	return nil, false
 }
+
+func RecordMatchIdentifiableProperties(resource *model.Resource, record *model.Record, properties map[string]*structpb.Value) (bool, error) {
+	idProps, err := RecordIdentifierProperties(resource, properties)
+
+	if err != nil {
+		return false, err
+	}
+
+	for key, val := range idProps {
+		if !proto.Equal(record.Properties[key], val) {
+			return false, nil
+		}
+	}
+
+	return true, nil
+}
+
+func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path string) (getter func() *structpb.Value, setter func(val *structpb.Value)) {
+	path = strings.ReplaceAll(path, "[]", ".[]")
+
+	if strings.HasPrefix(path, "$.") {
+		path = path[2:]
+	}
+
+	parts := strings.Split(path, ".")
+
+	if len(parts) == 0 {
+		return nil, nil
+	}
+
+	if len(parts) == 1 {
+		getter = func() *structpb.Value {
+			return properties[parts[0]]
+		}
+
+		return getter, func(val *structpb.Value) {
+			properties[parts[0]] = val
+		}
+	}
+
+	if parts[1] == "[]" {
+		print("found1")
+	}
+
+	left := parts[0]
+	next := parts[1]
+	right := strings.Join(parts[1:], ".")
+
+	rightProperties := properties[left]
+
+	if rightProperties == nil {
+		return nil, nil
+	}
+
+	if next == "[]" {
+		if right != "[]" {
+			panic("invalid path; array accessor must be at the end")
+		}
+		getter = func() *structpb.Value {
+			return rightProperties
+		}
+
+		return getter, func(val *structpb.Value) {
+			properties[left] = val
+		}
+	} else {
+		return RecordPropertyAccessorByPath(rightProperties.GetStructValue().Fields, right)
+	}
+}

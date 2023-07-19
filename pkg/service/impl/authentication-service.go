@@ -4,15 +4,12 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
-	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
-	jwt2 "github.com/apibrew/apibrew/pkg/service/jwt"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
@@ -62,31 +59,19 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 	logger := log.WithFields(logging.CtxFields(ctx))
 	// Prepare token
 	expiration := s.ExpirationFromTerm(term)
-	//roles, err := s.LocateRoles(ctx, user.Roles)
 
-	//if err != nil {
-	//	return nil, err
-	//}
+	sc, err := s.collectUserSecurityConstraints(ctx, user)
 
-	//var constraints []abs.SecurityConstraint
-	//
-	//for _, role := range roles {
-	//	for _, constraint := range role.SecurityConstraints {
-	//		constraint.Role = &role.Name
-	//		constraints = append(constraints, &constraint)
-	//	}
-	//}
-	//
-	//for _, constraint := range user.SecurityConstraints {
-	//	constraints = append(constraints, &constraint)
-	//}
+	if err != nil {
+		return nil, err
+	}
 
-	token, err := jwt2.JwtUserDetailsSign(jwt2.JwtUserDetailsSignParams{
+	token, err := util.JwtUserDetailsSign(util.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
-		UserDetails: abs.UserDetails{
-			UserId:   user.Id.String(),
-			Username: user.Username,
-			Roles:    user.Roles,
+		UserDetails: util.UserDetails{
+			UserId:              user.Id.String(),
+			Username:            user.Username,
+			SecurityConstraints: sc,
 		},
 		ExpiresAt: expiration,
 		Issuer:    "github.com/apibrew/apibrew",
@@ -107,7 +92,7 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 }
 
 func (s *authenticationService) RenewToken(ctx context.Context, oldToken string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
-	userDetails, err := jwt2.JwtVerifyAndUnpackUserDetails(*s.publicKey, oldToken)
+	userDetails, err := util.JwtVerifyAndUnpackUserDetails(*s.publicKey, oldToken)
 
 	if err != nil {
 		return nil, err
@@ -124,8 +109,8 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 	return s.prepareToken(systemCtx, term, user)
 }
 
-func (s *authenticationService) ParseAndVerifyToken(token string) (*abs.UserDetails, errors.ServiceError) {
-	return jwt2.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
+func (s *authenticationService) ParseAndVerifyToken(token string) (*util.UserDetails, errors.ServiceError) {
+	return util.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
 }
 
 type RequestWithToken interface {
@@ -164,28 +149,6 @@ func (s *authenticationService) FindUser(ctx context.Context, username string) (
 	}
 
 	return resource_model.UserMapperInstance.FromRecord(res), nil
-}
-
-func (s *authenticationService) LocateRoles(ctx context.Context, names []string) ([]*resource_model.Role, errors.ServiceError) {
-	logger := log.WithFields(logging.CtxFields(ctx))
-
-	logger.Debug("Locating role by names: ", names)
-
-	if len(names) == 0 {
-		return []*resource_model.Role{}, nil
-	}
-
-	res, _, err := s.recordService.List(ctx, service.RecordListParams{
-		Namespace: resources.RoleResource.Namespace,
-		Resource:  resources.RoleResource.Name,
-		Query:     helper.NewQueryBuilder().In("name", util.ArrayMap(names, func(s string) interface{} { return s })),
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return util.ArrayMap(res, resource_model.RoleMapperInstance.FromRecord), nil
 }
 
 func (s *authenticationService) Init(config *model.AppConfig) {
@@ -245,7 +208,28 @@ func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Ti
 	}
 }
 
-func NewAuthenticationService(recordService service.RecordService, service service.AuthorizationService) service.AuthenticationService {
+func (s *authenticationService) collectUserSecurityConstraints(ctx context.Context, user *resource_model.User) ([]*resource_model.SecurityConstraint, errors.ServiceError) {
+	var result []*resource_model.SecurityConstraint
+
+	result = append(result, user.SecurityConstraints...)
+
+	roleRecords := util.ArrayMap(user.Roles, resource_model.RoleMapperInstance.ToRecord)
+
+	err := s.recordService.ResolveReferences(ctx, resources.RoleResource, roleRecords, []string{"*"})
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, roleRecord := range roleRecords {
+		role := resource_model.RoleMapperInstance.FromRecord(roleRecord)
+		result = append(result, role.SecurityConstraints...)
+	}
+
+	return result, nil
+}
+
+func NewAuthenticationService(recordService service.RecordService) service.AuthenticationService {
 	return &authenticationService{
 		recordService: recordService,
 	}

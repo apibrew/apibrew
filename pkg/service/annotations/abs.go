@@ -17,6 +17,9 @@ func WithContext(parent context.Context, annotated Annotated) context.Context {
 
 func SetWithContext(parent context.Context, name, value string) context.Context {
 	val := FromCtx(parent).GetAnnotations()
+	if val == nil {
+		val = make(map[string]string)
+	}
 	val[name] = value
 
 	return WithContext(parent, &annotated{

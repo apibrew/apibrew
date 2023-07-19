@@ -67,7 +67,6 @@ var DataSourceResource = &model.Resource{
 			},
 		},
 	},
-	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

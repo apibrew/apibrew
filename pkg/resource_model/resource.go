@@ -5,26 +5,25 @@ import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Resource struct {
-	Id                  *uuid.UUID
-	Version             int32
-	CreatedBy           *string
-	UpdatedBy           *string
-	CreatedOn           *time.Time
-	UpdatedOn           *time.Time
-	Name                string
-	Namespace           *Namespace
-	Virtual             bool
-	Types               *unstructured.Unstructured
-	Immutable           bool
-	Abstract            bool
-	DataSource          *DataSource
-	Entity              *string
-	Catalog             *string
-	Annotations         map[string]string
-	Indexes             *unstructured.Unstructured
-	SecurityConstraints []*SecurityConstraint
-	Title               *string
-	Description         *string
+	Id          *uuid.UUID
+	Version     int32
+	CreatedBy   *string
+	UpdatedBy   *string
+	CreatedOn   *time.Time
+	UpdatedOn   *time.Time
+	Name        string
+	Namespace   *Namespace
+	Virtual     bool
+	Types       *unstructured.Unstructured
+	Immutable   bool
+	Abstract    bool
+	DataSource  *DataSource
+	Entity      *string
+	Catalog     *string
+	Annotations map[string]string
+	Indexes     *unstructured.Unstructured
+	Title       *string
+	Description *string
 }
 
 func (s *Resource) GetId() *uuid.UUID {
@@ -77,9 +76,6 @@ func (s *Resource) GetAnnotations() map[string]string {
 }
 func (s *Resource) GetIndexes() *unstructured.Unstructured {
 	return s.Indexes
-}
-func (s *Resource) GetSecurityConstraints() []*SecurityConstraint {
-	return s.SecurityConstraints
 }
 func (s *Resource) GetTitle() *string {
 	return s.Title

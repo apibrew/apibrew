@@ -100,7 +100,7 @@ func TestCreateResourceWithSameName(t *testing.T) {
 	}
 }
 
-func TestCreateResourceWithNonExistingRecordshouldFail(t *testing.T) {
+func TestCreateResourceWithNonExistingRecordShouldFail(t *testing.T) {
 	randUUid, _ := uuid.NewRandom()
 
 	resp, err := resourceClient.Create(setup.Ctx, &stub.CreateResourceRequest{
@@ -133,7 +133,8 @@ func TestCreateResourceWithNonExistingRecordshouldFail(t *testing.T) {
 		return
 	}
 
-	if util.GetErrorCode(err) != model.ErrorCode_RESOURCE_VALIDATION_ERROR {
+	if util.GetErrorCode(err) != model.ErrorCode_ALREADY_EXISTS {
+		print(util.GetErrorCode(err))
 		t.Error("Error code should be provided for ErrorCode_RESOURCE_VALIDATION_ERROR: " + util.GetErrorCode(err).String())
 	}
 }

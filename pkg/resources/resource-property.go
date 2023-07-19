@@ -119,7 +119,12 @@ var ResourcePropertyResource = &model.Resource{
 			Type:     model.ResourceProperty_BOOL,
 			Required: false,
 		},
-		special.SecurityConstraintsProperty,
+		{
+			Name:     "back_reference_property",
+			Mapping:  "back_reference_property",
+			Type:     model.ResourceProperty_BOOL,
+			Required: false,
+		},
 		{
 			Name:     "defaultValue",
 			Mapping:  "default_value",
@@ -173,7 +178,6 @@ var ResourcePropertyResource = &model.Resource{
 			Unique: true,
 		},
 	},
-	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},

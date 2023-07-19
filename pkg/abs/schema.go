@@ -5,9 +5,15 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+type PropertyWithPath struct {
+	Path     string
+	Property *model.ResourceProperty
+}
+
 type Schema struct {
 	Resources                    []*model.Resource
 	ResourceByNamespaceSlashName map[string]*model.Resource
+	ResourcePropertiesByType     map[string]map[model.ResourceProperty_Type][]PropertyWithPath
 }
 
 type Entity[T any] interface {

@@ -53,12 +53,12 @@ var ExtensionResource = &model.Resource{
 				{
 					Name:    "functionCall",
 					Type:    model.ResourceProperty_STRUCT,
-					TypeRef: util.StringPointer("FunctionCall"),
+					TypeRef: util.Pointer("FunctionCall"),
 				},
 				{
 					Name:    "httpCall",
 					Type:    model.ResourceProperty_STRUCT,
-					TypeRef: util.StringPointer("HttpCall"),
+					TypeRef: util.Pointer("HttpCall"),
 				},
 			},
 		},
@@ -86,7 +86,7 @@ var ExtensionResource = &model.Resource{
 				{
 					Name:    "recordSelector",
 					Type:    model.ResourceProperty_STRUCT,
-					TypeRef: util.StringPointer(sub_types.BooleanExpression.Name),
+					TypeRef: util.Pointer(sub_types.BooleanExpression.Name),
 				},
 				{
 					Name: "namespaces",
@@ -154,7 +154,7 @@ var ExtensionResource = &model.Resource{
 				{
 					Name:    "recordSearchParams",
 					Type:    model.ResourceProperty_STRUCT,
-					TypeRef: util.StringPointer("RecordSearchParams"),
+					TypeRef: util.Pointer("RecordSearchParams"),
 				},
 				{
 					Name: "actionSummary",
@@ -236,7 +236,7 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "selector",
 			Type:     model.ResourceProperty_STRUCT,
 			Required: false,
-			TypeRef:  util.StringPointer("EventSelector"),
+			TypeRef:  util.Pointer("EventSelector"),
 		},
 		{
 			Name:     "order",
@@ -271,11 +271,10 @@ var ExtensionResource = &model.Resource{
 			Mapping:  "call",
 			Type:     model.ResourceProperty_STRUCT,
 			Required: true,
-			TypeRef:  util.StringPointer("ExternalCall"),
+			TypeRef:  util.Pointer("ExternalCall"),
 		},
 		special.AnnotationsProperty,
 	},
-	SecurityConstraints: special.SecurityContextDisallowAll,
 	Annotations: map[string]string{
 		annotations.EnableAudit: "true",
 	},
