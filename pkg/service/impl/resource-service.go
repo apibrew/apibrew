@@ -12,6 +12,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
+	"github.com/gosimple/slug"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -87,16 +88,14 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 		return err
 	}
 
-	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
-
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
+	r.prepareSchemaMappings()
 
 	var resourceMap = make(map[string]*model.Resource)
 	for _, resource := range r.schema.Resources {
 		if resource.Id != "" {
 			resourceMap[resource.Id] = resource
 		}
-		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
 	}
 
 	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourcePropertyResource, abs.ListRecordParams{
@@ -705,12 +704,7 @@ func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, na
 func (r *resourceService) Init(config *model.AppConfig) {
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
 
-	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
-	r.schema.ResourcePropertiesByType = make(map[string]map[model.ResourceProperty_Type][]abs.PropertyWithPath)
-	for _, resource := range r.schema.Resources {
-		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
-		r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
-	}
+	r.prepareSchemaMappings()
 
 	r.migrateResource(resources.NamespaceResource)
 	r.migrateResource(resources.DataSourceResource)
@@ -735,6 +729,20 @@ func (r *resourceService) Init(config *model.AppConfig) {
 			Virtual:    resource.Virtual,
 		}, true, true); err != nil {
 			panic(err)
+		}
+	}
+}
+
+func (r *resourceService) prepareSchemaMappings() {
+	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
+	r.schema.ResourceBySlug = make(map[string]*model.Resource)
+	r.schema.ResourcePropertiesByType = make(map[string]map[model.ResourceProperty_Type][]abs.PropertyWithPath)
+	for _, resource := range r.schema.Resources {
+		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
+		r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
+		r.schema.ResourceBySlug[slug.Make(resource.Namespace+"/"+resource.Name)] = resource
+		if resource.Namespace == "default" {
+			r.schema.ResourceBySlug[slug.Make(resource.Name)] = resource
 		}
 	}
 }

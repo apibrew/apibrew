@@ -13,6 +13,7 @@ type PropertyWithPath struct {
 type Schema struct {
 	Resources                    []*model.Resource
 	ResourceByNamespaceSlashName map[string]*model.Resource
+	ResourceBySlug               map[string]*model.Resource
 	ResourcePropertiesByType     map[string]map[model.ResourceProperty_Type][]PropertyWithPath
 }
 

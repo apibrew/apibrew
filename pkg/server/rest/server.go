@@ -2,7 +2,6 @@ package rest
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -35,12 +34,12 @@ type Server interface {
 }
 
 type server struct {
-	handler                     http.Handler
-	certFile                    string
-	keyFile                     string
-	recordsApiFiltersMiddleWare *recordsApiFiltersMiddleWare
-	container                   service.Container
-	docsApi                     docs.Api
+	handler   http.Handler
+	certFile  string
+	keyFile   string
+	container service.Container
+	docsApi   docs.Api
+	recordApi RecordApi
 }
 
 func (s *server) Init(config *model.AppConfig) {
@@ -56,6 +55,7 @@ func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 			return
 		}
 		authorizationHeader := req.Header.Get("Authorization")
+		tokenUrlParam := req.URL.Query().Get("token")
 
 		if authorizationHeader != "" {
 			tokenParts := strings.Split(authorizationHeader, " ")
@@ -72,24 +72,39 @@ func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 
 			token := tokenParts[1]
 
-			req.Header.Set("Grpc-Metadata-token", token)
-
-			userDetails, err := s.container.GetAuthenticationService().ParseAndVerifyToken(token)
-
-			if err == nil {
-				ctx := util.WithUserDetails(req.Context(), *userDetails)
-
-				ctx = logging.WithLogField(ctx, "User", userDetails.Username)
-
-				req = req.WithContext(ctx)
-			} else {
-				http.Error(w, errors.AuthenticationFailedError.Error(), 401)
+			var notAccepted bool
+			req, notAccepted = s.setRequestToken(w, req, token)
+			if notAccepted {
+				return
+			}
+		} else if tokenUrlParam != "" {
+			var notAccepted bool
+			req, notAccepted = s.setRequestToken(w, req, tokenUrlParam)
+			if notAccepted {
 				return
 			}
 		}
 
 		next.ServeHTTP(w, req)
 	})
+}
+
+func (s *server) setRequestToken(w http.ResponseWriter, req *http.Request, token string) (*http.Request, bool) {
+	req.Header.Set("Grpc-Metadata-token", token)
+
+	userDetails, err := s.container.GetAuthenticationService().ParseAndVerifyToken(token)
+
+	if err == nil {
+		ctx := util.WithUserDetails(req.Context(), *userDetails)
+
+		ctx = logging.WithLogField(ctx, "User", userDetails.Username)
+
+		req = req.WithContext(ctx)
+	} else {
+		http.Error(w, err.Error(), 401)
+		return nil, true
+	}
+	return req, false
 }
 
 func (s *server) ServeH2C(lis net.Listener) {
@@ -152,6 +167,8 @@ func (s *server) configureRoutes() {
 	r.PathPrefix("/authentication").Handler(m)
 	r.PathPrefix("/system").Handler(m)
 
+	s.recordApi.ConfigureRouter(r)
+
 	if err := stub.RegisterAuthenticationHandlerServer(context.TODO(), m, grpc.NewAuthenticationServer(s.container.GetAuthenticationService())); err != nil {
 		log.Fatal(err)
 	}
@@ -176,7 +193,7 @@ func (s *server) configureRoutes() {
 	healthEndpoint := new(HealthEndpoint)
 	r.PathPrefix("/health").Handler(healthEndpoint.Handler())
 
-	s.handler = c.Handler(s.recordsApiFiltersMiddleWare.handler(r))
+	s.handler = c.Handler(r)
 }
 
 func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
@@ -196,8 +213,8 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 
 func NewServer(container service.Container) Server {
 	return &server{
-		container:                   container,
-		docsApi:                     docs.NewApi(container.GetResourceService()),
-		recordsApiFiltersMiddleWare: newRecordsApiFiltersMiddleWare(container.GetResourceService()),
+		container: container,
+		docsApi:   docs.NewApi(container.GetResourceService()),
+		recordApi: NewRecordApi(container),
 	}
 }

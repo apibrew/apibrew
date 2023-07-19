@@ -7,7 +7,6 @@ option go_package = "github.com/apibrew/apibrew/pkg/stub";
 import 'model/record.proto';
 import 'model/query.proto';
 import 'model/error.proto';
-import "google/api/annotations.proto";
 import 'google/protobuf/struct.proto';
 import "google/protobuf/descriptor.proto";
 
@@ -29,78 +28,31 @@ extend google.protobuf.MethodOptions {
 
 // Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
 service Record {
-  rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {
-    option (resources) = {
-      operation {
-        abc: 'asd'
-      }
-      operation {
-        abc: 'aasdd'
-      }
-    };
-    option (google.api.http) = {
-      post: "/records/{namespace}/{resource}/_bulk"
-    };
-  }
+  rpc Create (CreateRecordRequest) returns (CreateRecordResponse) {}
 
-  rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {
-    option (google.api.http) = {
-      put: "/records/{namespace}/{resource}/_bulk"
-    };
-  }
+  rpc Update (UpdateRecordRequest) returns (UpdateRecordResponse) {}
 
-  rpc Apply (ApplyRecordRequest) returns (ApplyRecordResponse) {
-    option (google.api.http) = {
-      patch: "/records/{namespace}/{resource}/_bulk"
-    };
-  }
+  rpc Apply (ApplyRecordRequest) returns (ApplyRecordResponse) {}
 
   /*
   Not implemented yet
    */
-  rpc UpdateMulti (UpdateMultiRecordRequest) returns (UpdateMultiRecordResponse) {
-    option (google.api.http) = {
-      post: "/records/{namespace}/{resource}/_multi"
-    };
-  }
+  rpc UpdateMulti (UpdateMultiRecordRequest) returns (UpdateMultiRecordResponse) {}
 
-  rpc Delete (DeleteRecordRequest)   returns (DeleteRecordResponse) {
-    option (google.api.http) = {
-      delete: "/records/{namespace}/{resource}/_bulk"
-    };
-  }
+  rpc Delete (DeleteRecordRequest)   returns (DeleteRecordResponse) {}
 
-  rpc List (ListRecordRequest) returns (ListRecordResponse) {
-    option (google.api.http) = {
-      get: "/records/{namespace}/{resource}",
-    };
-  }
+  rpc List (ListRecordRequest) returns (ListRecordResponse) {}
 
-  rpc Search (SearchRecordRequest) returns (SearchRecordResponse) {
-    option (google.api.http) = {
-      post: "/records/{namespace}/{resource}/_search",
-      body: "*"
-    };
-  }
+  rpc Search (SearchRecordRequest) returns (SearchRecordResponse) {}
 
-  rpc ReadStream (ReadStreamRequest) returns (stream model.Record) {
-    option (google.api.http) = {
-      post: "/records/read_stream",
-      body: "*"
-    };
-  }
+  rpc ReadStream (ReadStreamRequest) returns (stream model.Record) {}
 
   /*
  Not implemented yet
   */
   rpc WriteStream (stream model.Record) returns (WriteStreamResponse) {}
 
-  rpc Get (GetRecordRequest) returns (GetRecordResponse) {
-    option (google.api.http) = {
-      get: "/records/{namespace}/{resource}/{id}",
-      response_body: "record.properties"
-    };
-  }
+  rpc Get (GetRecordRequest) returns (GetRecordResponse) {}
 }
 
 message ListRecordRequest {

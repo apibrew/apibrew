@@ -6,17 +6,11 @@ option go_package = "github.com/apibrew/apibrew/pkg/stub";
 
 import 'model/event.proto';
 import 'model/query.proto';
-import "google/api/annotations.proto";
-import "gnostic/openapi/v3/annotations.proto";
 
 // Watch service watching operations on records
 service Watch {
   // Sends a greeting
-  rpc Watch (WatchRequest) returns (stream model.Event) {
-    option (google.api.http) = {
-      post: "/system/watch",
-    };
-  }
+  rpc Watch (WatchRequest) returns (stream model.Event) {}
 }
 
 message WatchRequest {
