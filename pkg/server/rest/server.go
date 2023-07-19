@@ -9,7 +9,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/server/rest/docs"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
-	"github.com/apibrew/apibrew/pkg/stub/rest"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -163,19 +162,12 @@ func (s *server) configureRoutes() {
 
 	m := runtime.NewServeMux()
 
-	r.PathPrefix("/records").Handler(m)
 	r.PathPrefix("/authentication").Handler(m)
 	r.PathPrefix("/system").Handler(m)
 
 	s.recordApi.ConfigureRouter(r)
 
 	if err := stub.RegisterAuthenticationHandlerServer(context.TODO(), m, grpc.NewAuthenticationServer(s.container.GetAuthenticationService())); err != nil {
-		log.Fatal(err)
-	}
-	if err := rest.RegisterRecordHandlerServer(context.TODO(), m, newRecordService(s.container.GetRecordService())); err != nil {
-		log.Fatal(err)
-	}
-	if err := stub.RegisterRecordHandlerServer(context.TODO(), m, grpc.NewRecordServer(s.container.GetRecordService(), s.container.GetAuthenticationService())); err != nil {
 		log.Fatal(err)
 	}
 	if err := stub.RegisterResourceHandlerServer(context.TODO(), m, grpc.NewResourceServer(s.container.GetResourceService())); err != nil {
