@@ -172,6 +172,10 @@ func (e *Executor) Init() error {
 	e.resourceNameMap = make(map[string]*model.Resource)
 	e.resourcePropertyMap = make(map[string]*model.ResourceProperty)
 
+	if len(e.resources) == 0 {
+		panic("Could not load resources")
+	}
+
 	for _, item := range e.resources {
 		e.resourceNameMap[item.Namespace+"/"+item.Name] = item
 

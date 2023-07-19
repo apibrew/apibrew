@@ -157,6 +157,10 @@ func GetResourceSinglePrimaryProp(resource *model.Resource) *model.ResourcePrope
 
 func ResourceWalkProperties(resource *model.Resource, callback func(path string, property *model.ResourceProperty)) {
 	resourceWalkPropertiesRecursive(resource, "$", resource.Properties, false, callback)
+
+	for _, subType := range resource.Types {
+		resourceWalkPropertiesRecursive(resource, "$."+subType.Name, subType.Properties, false, callback)
+	}
 }
 
 func resourceWalkPropertiesRecursive(resource *model.Resource, path string, properties []*model.ResourceProperty, isCollectionItem bool, callback func(path string, property *model.ResourceProperty)) {
@@ -171,23 +175,6 @@ func resourceWalkPropertiesRecursive(resource *model.Resource, path string, prop
 			resourceWalkPropertiesRecursive(resource, newName+"[]", []*model.ResourceProperty{property.Item}, true, callback)
 		} else if property.Type == model.ResourceProperty_STRUCT {
 			resourceWalkPropertiesRecursive(resource, newName, property.Properties, false, callback)
-
-			if property.TypeRef != nil {
-				var subType *model.ResourceSubType
-
-				for _, subTypeItem := range resource.Types {
-					if subTypeItem.Name == *property.TypeRef {
-						subType = subTypeItem
-						break
-					}
-				}
-
-				if subType == nil {
-					panic("sub type not found: " + *property.TypeRef)
-				}
-
-				resourceWalkPropertiesRecursive(resource, newName, subType.Properties, false, callback)
-			}
 		}
 	}
 }
