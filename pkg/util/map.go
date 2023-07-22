@@ -15,7 +15,7 @@ func FlatMap[T interface{}](arr ...[]T) []T {
 }
 
 func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
-	var list []R
+	var list = make([]R, 0)
 
 	for _, item := range arr {
 		list = append(list, mapper(item))

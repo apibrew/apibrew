@@ -11,16 +11,14 @@ import (
 	"net/http"
 )
 
-var umo = protojson.UnmarshalOptions{}
-
-func parseRequestMessage[T proto.Message](request *http.Request, msg T) error {
+func parseRequestMessage[T interface{}](request *http.Request, msg T) error {
 	data, err := io.ReadAll(request.Body)
 
 	if err != nil {
 		return err
 	}
 
-	err = umo.Unmarshal(data, msg)
+	err = json.Unmarshal(data, msg)
 
 	return err
 }

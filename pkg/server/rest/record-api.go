@@ -25,9 +25,11 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 	// collection level operations
 	subRoute.HandleFunc("/{resourceSlug}", r.handleRecordList).Methods("GET")
 	subRoute.HandleFunc("/{resourceSlug}", r.handleRecordCreate).Methods("POST")
+	subRoute.HandleFunc("/{resourceSlug}", r.handleRecordApply).Methods("PATCH")
 
 	// search
 	subRoute.HandleFunc("/{resourceSlug}/_search", r.handleRecordSearch).Methods("POST")
+	subRoute.HandleFunc("/{resourceSlug}/_resource", r.handleRecordResource).Methods("GET")
 
 	// record level operations
 	subRoute.HandleFunc("/{resourceSlug}/{id}", r.handleRecordGet).Methods("GET")
@@ -111,7 +113,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
-	record1 := new(model.Record)
+	record1 := NewEmptyRecordWrapper()
 
 	err := parseRequestMessage(request, record1)
 
@@ -128,7 +130,40 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	res, serviceErr := r.recordService.Create(request.Context(), service.RecordCreateParams{
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
-		Records:   []*model.Record{record1},
+		Records:   []*model.Record{record1.toRecord()},
+	})
+
+	ServiceResponder[*stub.CreateRecordRequest]().
+		Writer(writer).
+		Request(request).
+		Respond(&RecordList{
+			Total:   uint64(len(res)),
+			Records: util.ArrayMap(res, NewRecordWrapper),
+		}, serviceErr)
+}
+
+func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	record1 := NewEmptyRecordWrapper()
+
+	err := parseRequestMessage(request, record1)
+
+	if err != nil {
+		handleClientError(writer, err)
+		return
+	}
+
+	if err != nil {
+		handleClientError(writer, err)
+		return
+	}
+
+	res, serviceErr := r.recordService.Apply(request.Context(), service.RecordUpdateParams{
+		Namespace: resource.Namespace,
+		Resource:  resource.Name,
+		Records:   []*model.Record{record1.toRecord()},
 	})
 
 	ServiceResponder[*stub.CreateRecordRequest]().
@@ -162,9 +197,11 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 	id := vars["id"]
 
-	record := new(model.Record)
+	recordWrap := NewEmptyRecordWrapper()
 
-	err := parseRequestMessage(request, record)
+	err := parseRequestMessage(request, recordWrap)
+
+	record := recordWrap.toRecord()
 
 	if err != nil {
 		handleClientError(writer, err)
@@ -212,7 +249,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
-	listRecordRequest := new(stub.SearchRecordRequest)
+	listRecordRequest := new(SearchRecordRequest)
 
 	err := parseRequestMessage(request, listRecordRequest)
 
@@ -222,7 +259,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 	}
 
 	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
-		Query:      listRecordRequest.Query,
+		Query:      listRecordRequest.Query.expr,
 		Namespace:  resource.Namespace,
 		Resource:   resource.Name,
 		Limit:      listRecordRequest.Limit,
@@ -237,6 +274,18 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 			Total:   uint64(total),
 			Records: util.ArrayMap(result, NewRecordWrapper),
 		}, serviceErr)
+}
+
+func (r *recordApi) handleRecordResource(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	ServiceResponder[*stub.ListRecordRequest]().
+		Writer(writer).
+		Request(request).
+		Respond(&ResourceWrapper{
+			resource: resource,
+		}, nil)
 }
 
 func NewRecordApi(container service.Container) RecordApi {
