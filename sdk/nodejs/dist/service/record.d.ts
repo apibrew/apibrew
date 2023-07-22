@@ -1,4 +1,4 @@
-import { BooleanExpression, RecordListContainer } from "../model";
+import { BooleanExpression, RecordListContainer, Resource } from "../model";
 import { ServiceConfig } from './config';
 import { Record } from '../model';
 export declare function list<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string): Promise<RecordListContainer<T>>;
@@ -24,4 +24,5 @@ export interface SearchRecordParams {
     };
 }
 export declare function search<T extends Record<unknown>>(config: ServiceConfig, params: SearchRecordParams): Promise<RecordListContainer<T>>;
+export declare function resource(config: ServiceConfig, namespace: string, resource: string): Promise<Resource>;
 export declare function apply<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string, record: T): Promise<T>;

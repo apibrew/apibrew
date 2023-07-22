@@ -63,14 +63,14 @@ properties:
           component: CoreUI/Crud
           params:
             namespace: system
-            resource: user
+            resource: User
         - title: Role
           icon: lock
           link: role
           component: CoreUI/Crud
           params:
             namespace: system
-            resource: role
+            resource: Role
     - title: Develop
       icon: code
       link: develop

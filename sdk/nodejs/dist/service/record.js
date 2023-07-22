@@ -39,18 +39,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.apply = exports.search = exports.findByMulti = exports.findBy = exports.get = exports.remove = exports.update = exports.create = exports.list = void 0;
+exports.apply = exports.resource = exports.search = exports.findByMulti = exports.findBy = exports.get = exports.remove = exports.update = exports.create = exports.list = void 0;
 var axios_1 = __importDefault(require("axios"));
-function fixContainerProperties(result) {
-    result.content = result.content.map(function (record) {
-        if (record['properties']) {
-            return record['properties'];
-        }
-        else {
-            return record;
-        }
-    });
-}
 function list(config, namespace, resource) {
     return __awaiter(this, void 0, void 0, function () {
         var result;
@@ -63,7 +53,6 @@ function list(config, namespace, resource) {
                     })];
                 case 1:
                     result = _a.sent();
-                    fixContainerProperties(result.data);
                     return [2 /*return*/, result.data];
             }
         });
@@ -71,7 +60,7 @@ function list(config, namespace, resource) {
 }
 exports.list = list;
 function resourceUrl(config, namespace, resource) {
-    return "".concat(config.backendUrl, "/records/").concat(namespace, "/").concat(resource);
+    return "".concat(config.backendUrl, "/").concat(namespace.toLowerCase(), "-").concat(resource.toLowerCase());
 }
 function create(config, namespace, resource, record) {
     return __awaiter(this, void 0, void 0, function () {
@@ -184,7 +173,6 @@ function findByMulti(config, namespace, resource, conditions) {
                         })];
                 case 1:
                     result = _a.sent();
-                    fixContainerProperties(result.data);
                     if (result.data.content && result.data.content.length > 0) {
                         return [2 /*return*/, result.data.content[0]];
                     }
@@ -209,13 +197,30 @@ function search(config, params) {
                     })];
                 case 1:
                     result = _a.sent();
-                    fixContainerProperties(result.data);
                     return [2 /*return*/, result.data];
             }
         });
     });
 }
 exports.search = search;
+function resource(config, namespace, resource) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(resourceUrl(config, namespace, resource), "/_resource"), {
+                        headers: {
+                            Authorization: "Bearer ".concat(config.token)
+                        }
+                    })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, result.data];
+            }
+        });
+    });
+}
+exports.resource = resource;
 function apply(config, namespace, resource, record) {
     return __awaiter(this, void 0, void 0, function () {
         var result;

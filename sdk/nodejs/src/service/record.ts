@@ -1,17 +1,7 @@
 import axios from 'axios'
-import { BooleanExpression, RecordListContainer } from "../model";
+import { BooleanExpression, RecordListContainer, Resource } from "../model";
 import { ServiceConfig } from './config';
 import { Record } from '../model';
-
-function fixContainerProperties<T extends Record<unknown>>(result: RecordListContainer<T>) {
-    result.content = result.content.map((record: Record<T>) => {
-        if ((record as any)['properties']) {
-            return (record as any)['properties'] as any as T
-        } else {
-            return record
-        }
-    }) as any
-}
 
 export async function list<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string): Promise<RecordListContainer<T>> {
 
@@ -21,14 +11,12 @@ export async function list<T extends Record<unknown>>(config: ServiceConfig, nam
         }
     })
 
-    fixContainerProperties(result.data)
-
     return result.data
 
 }
 
 function resourceUrl(config: ServiceConfig, namespace: string, resource: string): string {
-    return `${config.backendUrl}/records/${namespace}/${resource}`;
+    return `${config.backendUrl}/${namespace.toLowerCase()}-${resource.toLowerCase()}`
 }
 
 export async function create<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string, record: T): Promise<T> {
@@ -109,8 +97,6 @@ export async function findByMulti<T extends Record<unknown>>(config: ServiceConf
         }
     })
 
-    fixContainerProperties(result.data)
-
     if (result.data.content && result.data.content.length > 0) {
         return result.data.content[0]
     } else {
@@ -139,7 +125,15 @@ export async function search<T extends Record<unknown>>(config: ServiceConfig, p
         }
     })
 
-    fixContainerProperties(result.data)
+    return result.data
+}
+
+export async function resource(config: ServiceConfig, namespace: string, resource: string): Promise<Resource> {
+    const result = await axios.get<Resource>(`${resourceUrl(config, namespace, resource)}/_resource`, {
+        headers: {
+            Authorization: `Bearer ${config.token}`
+        }
+    })
 
     return result.data
 }

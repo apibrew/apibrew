@@ -163,20 +163,10 @@ func (s *server) configureRoutes() {
 	m := runtime.NewServeMux()
 
 	r.PathPrefix("/authentication").Handler(m)
-	r.PathPrefix("/system").Handler(m)
 
 	s.recordApi.ConfigureRouter(r)
 
 	if err := stub.RegisterAuthenticationHandlerServer(context.TODO(), m, grpc.NewAuthenticationServer(s.container.GetAuthenticationService())); err != nil {
-		log.Fatal(err)
-	}
-	if err := stub.RegisterResourceHandlerServer(context.TODO(), m, grpc.NewResourceServer(s.container.GetResourceService())); err != nil {
-		log.Fatal(err)
-	}
-	if err := stub.RegisterDataSourceHandlerServer(context.TODO(), m, grpc.NewDataSourceServer(s.container.GetDataSourceService())); err != nil {
-		log.Fatal(err)
-	}
-	if err := stub.RegisterWatchHandlerServer(context.TODO(), m, grpc.NewWatchServer(s.container.GetWatchService())); err != nil {
 		log.Fatal(err)
 	}
 

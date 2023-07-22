@@ -47,7 +47,7 @@ function list(config) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources"), {
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/resources"), {
                         headers: {
                             Authorization: "Bearer ".concat(config.token)
                         }
@@ -65,7 +65,7 @@ function create(config, resource) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.post("".concat(config.backendUrl, "/system/resources"), {
+                case 0: return [4 /*yield*/, axios_1.default.post("".concat(config.backendUrl, "/resources"), {
                         resources: [resource],
                         doMigration: true,
                         forceMigration: true
@@ -87,7 +87,7 @@ function update(config, resource) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.put("".concat(config.backendUrl, "/system/resources"), {
+                case 0: return [4 /*yield*/, axios_1.default.put("".concat(config.backendUrl, "/resources"), {
                         resources: [resource],
                         doMigration: true,
                         forceMigration: true
@@ -108,7 +108,7 @@ function remove(config, resource, forceMigrate) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.delete("".concat(config.backendUrl, "/system/resources"), {
+                case 0: return [4 /*yield*/, axios_1.default.delete("".concat(config.backendUrl, "/resources"), {
                         data: {
                             doMigration: true,
                             forceMigration: forceMigrate,
@@ -131,7 +131,7 @@ function get(config, resourceId) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources/").concat(resourceId), {
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/resources/").concat(resourceId), {
                         headers: {
                             Authorization: "Bearer ".concat(config.token)
                         }
@@ -153,7 +153,7 @@ function getByName(config, resourceName, namespace) {
                     if (!namespace) {
                         namespace = 'default';
                     }
-                    return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/system/resources/").concat(namespace, "/").concat(resourceName), {
+                    return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/resources/").concat(namespace, "/").concat(resourceName), {
                             headers: {
                                 Authorization: "Bearer ".concat(config.token)
                             }

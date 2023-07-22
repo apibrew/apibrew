@@ -25,7 +25,6 @@ export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
 
     const newCrudConfig: CrudModel = {
         id: '',
-        version: 1,
         name: name,
         resource: resource.name,
         namespace: resource.namespace ?? 'default',
