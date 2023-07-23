@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "build-ui-model": "apbr apply -f 'schema/*.yml'; apbr generate --path=src/model/ui --namespace=ui --platform=typescript; apbr generate --path=src/model/logic --namespace=logic --platform=typescript",
+    "build-ui-model": "apbr apply -f 'schema/*.yml'; apbr generate --path=src/model/ui --namespace=ui --platform=typescript; apbr generate --path=src/model/system --namespace=system --platform=typescript; apbr generate --path=src/model/logic --namespace=logic --platform=typescript",
     "build-ui-model:watch": "nodemon --watch schema -e \"yml\" --exec \"yarn build-ui-model\"",
     "build-ui-config": "apbr apply -f 'config/*.yml'",
     "build-ui-config:watch": "nodemon --watch config -e \"yml\" --exec \"yarn build-ui-config\""

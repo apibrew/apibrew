@@ -1,7 +1,6 @@
 import {Resource} from "../model";
 import {get, getBody} from "./token.ts";
 import {Record} from "./record.ts";
-import {roundToNearestMinutesWithOptions} from "date-fns/fp";
 
 export enum AccessLevel {
     NONE,
@@ -13,15 +12,15 @@ export function checkResourcePropertyAccess(resource: Resource, property: string
     const userConstraints = getBody().securityConstraints;
 
     const matchingConstraints = userConstraints.filter(constraint => {
-        if (constraint.namespace !== '*' && constraint.namespace != resource.namespace) {
+        if (constraint.namespace && constraint.namespace.name != resource.namespace) {
             return false
         }
 
-        if (constraint.resource !== '*' && constraint.resource != resource.name) {
+        if (constraint.resource && constraint.resource.name != resource.name) {
             return false
         }
 
-        if (constraint.property !== '*' && constraint.property != property) {
+        if (constraint.property && constraint.property != property) {
             return false
         }
 
@@ -35,24 +34,24 @@ export function checkResourcePropertyAccess(resource: Resource, property: string
     })
 
     const readCompatibleConstraints = matchingConstraints.filter(constraint => {
-        return !constraint.operation || constraint.operation === 'OPERATION_TYPE_READ' || constraint.operation === 'FULL';
+        return !constraint.operation || constraint.operation === 'read' || constraint.operation === 'full';
     })
 
     const writeCompatibleConstraints = matchingConstraints.filter(constraint => {
-        return constraint.operation === 'OPERATION_TYPE_UPDATE' || constraint.operation === 'OPERATION_TYPE_CREATE' || constraint.operation === 'FULL';
+        return constraint.operation === 'update' || constraint.operation === 'create' || constraint.operation === 'full';
     })
 
     // checking can read
-    const hasReadAllow = readCompatibleConstraints.some(constraint => !constraint.permit || constraint.permit === 'PERMIT_TYPE_ALLOW')
-    const hasReadReject = readCompatibleConstraints.some(constraint => constraint.permit === 'PERMIT_TYPE_REJECT')
+    const hasReadAllow = readCompatibleConstraints.some(constraint => !constraint.permit || constraint.permit === 'allow')
+    const hasReadReject = readCompatibleConstraints.some(constraint => constraint.permit === 'reject')
 
     if (hasReadReject || !hasReadAllow) {
         return AccessLevel.NONE
     }
 
     // checking can write
-    const hasWriteAllow = writeCompatibleConstraints.some(constraint => !constraint.permit || constraint.permit === 'PERMIT_TYPE_ALLOW')
-    const hasWriteReject = writeCompatibleConstraints.some(constraint => constraint.permit === 'PERMIT_TYPE_REJECT')
+    const hasWriteAllow = writeCompatibleConstraints.some(constraint => !constraint.permit || constraint.permit === 'allow')
+    const hasWriteReject = writeCompatibleConstraints.some(constraint => constraint.permit === 'reject')
 
     if (hasWriteReject || !hasWriteAllow) {
         return AccessLevel.READ

@@ -34,7 +34,7 @@ type JwtUserClaims struct {
 	Roles    []string `json:"roles,omitempty"`
 	UserId   string   `json:"uid,omitempty"`
 
-	SecurityConstraints []*resource_model.SecurityConstraint `json:"security_constraints,omitempty"`
+	SecurityConstraints []*resource_model.SecurityConstraint `json:"securityConstraints,omitempty"`
 }
 
 func (c *JwtUserClaims) Valid() error {

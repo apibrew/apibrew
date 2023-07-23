@@ -4,7 +4,6 @@ import {FormConfig as CrudFormConfig} from "../../model/ui/crud.ts";
 import {ResourceContext} from "../../context/resource.ts";
 import {ValueContext} from "../../context/value.ts";
 import {RecordContext} from "../../context/record.ts";
-import React from "react";
 import {StructElement} from "./form-elements/StructElement.tsx";
 
 export interface FormProps {
@@ -16,6 +15,7 @@ export interface FormProps {
 }
 
 export function Form(props: FormProps) {
+    console.log('Form', props)
     return (
         <ResourceContext.Provider value={props.resource}>
             <RecordContext.Provider value={props.record}>

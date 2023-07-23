@@ -2,9 +2,9 @@ type: record
 namespace: ui
 resource: Crud
 properties:
-  name: ResourceCrud-system-user
+  name: ResourceCrud-system-User
   namespace: system
-  resource: user
+  resource: User
   gridConfig:
     columns:
       - name: id
