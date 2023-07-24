@@ -40,7 +40,7 @@ func NewRecordService(resourceService service.ResourceService, backendProviderSe
 }
 
 func (r *recordService) List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
-	resource := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
+	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return nil, 0, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
@@ -125,7 +125,7 @@ func (r *recordService) Create(ctx context.Context, params service.RecordCreateP
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
 
-	resource := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
+	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
@@ -278,7 +278,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
 
-	resource := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
+	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + params.Resource)
@@ -355,7 +355,7 @@ func (r *recordService) Update(ctx context.Context, params service.RecordUpdateP
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
 
-	resource := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
+	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + params.Resource)
@@ -549,7 +549,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 }
 
 func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError) {
-	resource := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
+	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
 		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
@@ -606,7 +606,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	logger.Debug("Begin record-service FindBy")
 	defer logger.Debug("Finish record-service FindBy")
 
-	resource := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
+	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
 		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
@@ -654,7 +654,7 @@ func (r *recordService) Get(ctx context.Context, params service.RecordGetParams)
 }
 
 func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteParams) errors.ServiceError {
-	resource := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
+	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
 		return errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
@@ -789,7 +789,7 @@ func (r *recordService) ResolveReferences(ctx context.Context, resource *model.R
 }
 
 func (r *recordService) expandRecords(ctx context.Context, records []*model.Record, reference abs.PropertyWithPath) errors.ServiceError {
-	var referencedResource = r.resourceService.GetResourceByName(util.WithSystemContext(ctx), reference.Property.Reference.Namespace, reference.Property.Reference.Resource)
+	var referencedResource, _ = r.resourceService.GetResourceByName(util.WithSystemContext(ctx), reference.Property.Reference.Namespace, reference.Property.Reference.Resource)
 
 	var query *model.BooleanExpression
 

@@ -3,6 +3,7 @@ package docs
 import (
 	yamlformat "github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strings"
@@ -24,7 +25,7 @@ func yaml(resourceService service.ResourceService) func(r *mux.Router) {
 			}
 
 			// locate resource
-			resource := resourceService.GetResourceByName(r.Context(), namespace, resourceName)
+			resource, _ := resourceService.GetResourceByName(util.WithSystemContext(r.Context()), namespace, resourceName)
 
 			if resource == nil {
 				w.WriteHeader(http.StatusNotFound)

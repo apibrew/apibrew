@@ -8,10 +8,3 @@ plugins:
     out: ../pkg/
     opt:
       - paths=source_relative
-  - name: openapi
-    strategy: all
-    out: ../pkg/apbr-server/rest
-#  - name: doc
-#    strategy: all
-#    out: ../docs/content/
-#    opt: ../docs/content/proto.tmpl,proto.md

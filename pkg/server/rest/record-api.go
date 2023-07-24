@@ -122,11 +122,6 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	if err != nil {
-		handleClientError(writer, err)
-		return
-	}
-
 	res, serviceErr := r.recordService.Create(request.Context(), service.RecordCreateParams{
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,

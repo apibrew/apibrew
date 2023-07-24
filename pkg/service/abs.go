@@ -56,14 +56,13 @@ type RecordService interface {
 
 type ResourceService interface {
 	Init(config *model.AppConfig)
-	CheckResourceExists(ctx context.Context, namespace, name string) bool
-	GetResourceByName(ctx context.Context, namespace, resource string) *model.Resource
-	GetSystemResourceByName(ctx context.Context, resourceName string) *model.Resource
+	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
+	GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, errors.ServiceError)
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
 	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
 	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
-	List(ctx context.Context) []*model.Resource
-	Get(ctx context.Context, id string) *model.Resource
+	List(ctx context.Context) ([]*model.Resource, errors.ServiceError)
+	Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError)
 	GetSchema() *abs.Schema
 	PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError)
 }

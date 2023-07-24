@@ -114,3 +114,11 @@ func (rw *ResourceWrapper) MarshalJSON() ([]byte, error) {
 func (rw *ResourceWrapper) UnmarshalJSON(data []byte) error {
 	return umo.Unmarshal(data, rw.resource)
 }
+
+func NewResourceWrapper(resource *model.Resource) *ResourceWrapper {
+	rw := new(ResourceWrapper)
+
+	rw.resource = resource
+
+	return rw
+}
