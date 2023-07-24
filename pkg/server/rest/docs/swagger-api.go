@@ -67,7 +67,7 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 		namespace := vars["namespace"]
 		resourceName := vars["resourceName"]
 
-		resource := s.resourceService.GetResourceByName(req.Context(), namespace, resourceName)
+		resource, _ := s.resourceService.GetResourceByName(util.WithSystemContext(req.Context()), namespace, resourceName)
 
 		if resource == nil {
 			http.Error(w, errors.ResourceNotFoundError.GetFullMessage(), 404)
@@ -105,7 +105,7 @@ func (s *swaggerApi) prepareDoc(ctx context.Context, openApiData []byte) (*opena
 		panic(err)
 	}
 
-	list := s.resourceService.List(ctx)
+	list, _ := s.resourceService.List(util.WithSystemContext(ctx))
 
 	for _, item := range list {
 		if item.Namespace != "system" {

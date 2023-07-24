@@ -53,7 +53,11 @@ func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, reso
 				}
 			}
 		} else {
-			existingResource = r.Get(ctx, resource.Id)
+			existingResource, err = r.Get(ctx, resource.Id)
+
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		plan, err := r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)
@@ -150,7 +154,11 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		r.mu.Unlock()
 	}()
 
-	existingResource := r.Get(ctx, resource.Id)
+	existingResource, err := r.Get(ctx, resource.Id)
+
+	if err != nil {
+		return err
+	}
 
 	if existingResource == nil {
 		return errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", resource.Namespace, resource.Name))
@@ -671,7 +679,7 @@ func validateResource(resource *model.Resource) errors.ServiceError {
 	return nil
 }
 
-func (r *resourceService) GetResourceByName(ctx context.Context, namespace string, resourceName string) *model.Resource {
+func (r *resourceService) GetResourceByName(ctx context.Context, namespace string, resourceName string) (*model.Resource, errors.ServiceError) {
 	if namespace == "" {
 		namespace = "default"
 	}
@@ -683,22 +691,18 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 				Resource:  resources.ResourceResource,
 				Operation: model.OperationType_OPERATION_TYPE_READ,
 			}); err != nil {
-				return nil
+				return nil, err
 			}
 
-			return item
+			return item, nil
 		}
 	}
 
-	return nil
+	return nil, errors.ResourceNotFoundError.WithDetails("Namespace: " + namespace + " resourceName: " + resourceName)
 }
 
-func (r *resourceService) GetSystemResourceByName(ctx context.Context, resourceName string) *model.Resource {
+func (r *resourceService) GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, errors.ServiceError) {
 	return r.GetResourceByName(ctx, "system", resourceName)
-}
-
-func (r *resourceService) CheckResourceExists(ctx context.Context, namespace, name string) bool {
-	return r.GetResourceByName(ctx, namespace, name) != nil
 }
 
 func (r *resourceService) Init(config *model.AppConfig) {
@@ -793,13 +797,15 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 	}()
 
 	for _, resourceId := range ids {
-		resource := r.Get(ctx, resourceId)
+		resource, err := r.Get(ctx, resourceId)
+
+		if err != nil {
+			return err
+		}
 
 		if resource == nil {
 			return errors.ResourceNotFoundError.WithDetails("Id: " + resourceId)
 		}
-
-		var err errors.ServiceError
 
 		if err = r.mustModifyResource(resource); err != nil {
 			return err
@@ -876,18 +882,18 @@ func (r *resourceService) mustModifyResource(resource *model.Resource) errors.Se
 	return nil
 }
 
-func (r *resourceService) List(ctx context.Context) []*model.Resource {
+func (r *resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
 		Operation: model.OperationType_OPERATION_TYPE_READ,
 	}); err != nil {
-		return nil
+		return nil, err
 	}
 
-	return r.schema.Resources
+	return r.schema.Resources, nil
 }
 
-func (r *resourceService) Get(ctx context.Context, id string) *model.Resource {
+func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError) {
 	for _, item := range r.schema.Resources {
 		if item.Id != "" && item.Id == id {
 
@@ -896,14 +902,14 @@ func (r *resourceService) Get(ctx context.Context, id string) *model.Resource {
 				Records:   &[]*model.Record{{Id: id}},
 				Operation: model.OperationType_OPERATION_TYPE_READ,
 			}); err != nil {
-				return nil
+				return nil, err
 			}
 
-			return item
+			return item, nil
 		}
 	}
 
-	return nil
+	return nil, errors.ResourceNotFoundError.WithDetails("Id: " + id)
 }
 
 func (r *resourceService) mapPropertiesByType(resource *model.Resource) map[model.ResourceProperty_Type][]abs.PropertyWithPath {

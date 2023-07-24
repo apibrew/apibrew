@@ -33,12 +33,13 @@ type Server interface {
 }
 
 type server struct {
-	handler   http.Handler
-	certFile  string
-	keyFile   string
-	container service.Container
-	docsApi   docs.Api
-	recordApi RecordApi
+	handler     http.Handler
+	certFile    string
+	keyFile     string
+	container   service.Container
+	docsApi     docs.Api
+	recordApi   RecordApi
+	resourceApi ResourceApi
 }
 
 func (s *server) Init(config *model.AppConfig) {
@@ -162,9 +163,10 @@ func (s *server) configureRoutes() {
 
 	m := runtime.NewServeMux()
 
-	r.PathPrefix("/authentication").Handler(m)
-
 	s.recordApi.ConfigureRouter(r)
+	s.resourceApi.ConfigureRouter(r)
+
+	r.PathPrefix("/authentication").Handler(m)
 
 	if err := stub.RegisterAuthenticationHandlerServer(context.TODO(), m, grpc.NewAuthenticationServer(s.container.GetAuthenticationService())); err != nil {
 		log.Fatal(err)
@@ -195,8 +197,9 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 
 func NewServer(container service.Container) Server {
 	return &server{
-		container: container,
-		docsApi:   docs.NewApi(container.GetResourceService()),
-		recordApi: NewRecordApi(container),
+		container:   container,
+		docsApi:     docs.NewApi(container.GetResourceService()),
+		recordApi:   NewRecordApi(container),
+		resourceApi: NewResourceApi(container),
 	}
 }
