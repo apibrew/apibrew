@@ -111,7 +111,7 @@ func PropNodejsType(resource *model.Resource, prop *model.ResourceProperty) stri
 		var enumValues []string
 
 		for _, enumValue := range prop.EnumValues {
-			enumValues = append(enumValues, fmt.Sprintf("'%s'", util.ToDashCase(enumValue)))
+			enumValues = append(enumValues, fmt.Sprintf("'%s'", enumValue))
 		}
 
 		return strings.Join(enumValues, " | ")

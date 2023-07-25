@@ -5,7 +5,7 @@
 {%- code typeName := GoName(name) -%}
 type {%s typeName %} struct {
     {%- for _, property := range properties -%}
-	{%= GoName(property.Name) %} {%= PropertyType(resource, property) %}
+	{%= GoName(property.Name) %} {%= PropertyType(resource, property) %} `json:"{%= GoVarName(property.Name) %}"`
 	{%- endfor -%}
 }
 
