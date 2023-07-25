@@ -1,5 +1,6 @@
 import React from "react";
-import {ResourceProperty} from "../model";
+import { Resource } from "../model/system/resource";
+type ResourceProperty = Resource[""]
 
 export const ResourcePropertyContext = React.createContext<ResourceProperty | undefined>(undefined)
 
