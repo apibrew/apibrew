@@ -1,7 +1,50 @@
+import { Resource } from "./resource";
 export declare const ExtensionResource: {
     resource: string;
     namespace: string;
 };
+export interface BooleanExpression {
+}
+export interface FunctionCall {
+    host: string;
+    functionName: string;
+}
+export interface HttpCall {
+    uri: string;
+    method: string;
+}
+export interface ExternalCall {
+    functionCall?: FunctionCall;
+    httpCall?: HttpCall;
+}
+export interface EventSelector {
+    actions?: 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'OPERATE'[];
+    recordSelector?: BooleanExpression;
+    namespaces?: string[];
+    resources?: string[];
+    ids?: string[];
+    annotations?: object;
+}
+export interface RecordSearchParams {
+    query?: BooleanExpression;
+    limit?: number;
+    offset?: number;
+    resolveReferences?: string[];
+}
+export interface Event {
+    id: string;
+    action: 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'OPERATE';
+    recordSearchParams?: RecordSearchParams;
+    actionSummary?: string;
+    actionDescription?: string;
+    resource?: Resource;
+    records?: any[];
+    ids?: string[];
+    finalizes?: boolean;
+    sync?: boolean;
+    time?: string;
+    annotations?: object;
+}
 export interface Extension {
     id: string;
     version: number;
@@ -11,12 +54,13 @@ export interface Extension {
     updatedOn?: string;
     name: string;
     description?: string;
-    selector?: object;
+    selector?: EventSelector;
     order: number;
     finalizes: boolean;
     sync: boolean;
     responds: boolean;
-    call: object;
+    call: ExternalCall;
+    annotations?: object;
 }
 export declare const ExtensionName = "Extension";
 export declare const ExtensionIdName = "Id";
@@ -33,3 +77,4 @@ export declare const ExtensionFinalizesName = "Finalizes";
 export declare const ExtensionSyncName = "Sync";
 export declare const ExtensionRespondsName = "Responds";
 export declare const ExtensionCallName = "Call";
+export declare const ExtensionAnnotationsName = "Annotations";

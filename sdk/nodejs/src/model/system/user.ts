@@ -1,8 +1,10 @@
+import { Role } from "./role";
+import { SecurityConstraint } from ".";
 
 
 
 export const UserResource = {
-    resource: "user",
+    resource: "User",
     namespace: "system",
 };
 
@@ -18,9 +20,9 @@ createdOn: string;
 updatedOn?: string;
 username: string;
 password?: string;
-securityConstraints?: object[];
+roles?: Role[];
+securityConstraints?: SecurityConstraint[];
 details?: object;
-roles?: string[];
 
 }
 // Resource and Property Names
@@ -42,10 +44,10 @@ export const UserUsernameName = "Username";
 
 export const UserPasswordName = "Password";
 
+export const UserRolesName = "Roles";
+
 export const UserSecurityConstraintsName = "SecurityConstraints";
 
 export const UserDetailsName = "Details";
-
-export const UserRolesName = "Roles";
 
 

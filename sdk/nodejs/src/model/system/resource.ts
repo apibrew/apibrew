@@ -3,10 +3,11 @@
 import { Namespace } from "./namespace";
 
 import { DataSource } from "./data-source";
+import { ResourceProperty } from "./resource-property";
 
 
 export const ResourceResource = {
-    resource: "resource",
+    resource: "Resource",
     namespace: "system",
 };
 
@@ -31,9 +32,9 @@ entity?: string;
 catalog?: string;
 annotations?: object;
 indexes?: object;
-securityConstraints?: object[];
 title?: string;
 description?: string;
+properties: ResourceProperty[]
 
 }
 // Resource and Property Names
@@ -72,8 +73,6 @@ export const ResourceCatalogName = "Catalog";
 export const ResourceAnnotationsName = "Annotations";
 
 export const ResourceIndexesName = "Indexes";
-
-export const ResourceSecurityConstraintsName = "SecurityConstraints";
 
 export const ResourceTitleName = "Title";
 

@@ -1,3 +1,5 @@
+import { Role } from "./role";
+import { SecurityConstraint } from ".";
 export declare const UserResource: {
     resource: string;
     namespace: string;
@@ -11,9 +13,9 @@ export interface User {
     updatedOn?: string;
     username: string;
     password?: string;
-    securityConstraints?: object[];
+    roles?: Role[];
+    securityConstraints?: SecurityConstraint[];
     details?: object;
-    roles?: string[];
 }
 export declare const UserName = "User";
 export declare const UserIdName = "Id";
@@ -24,6 +26,6 @@ export declare const UserCreatedOnName = "CreatedOn";
 export declare const UserUpdatedOnName = "UpdatedOn";
 export declare const UserUsernameName = "Username";
 export declare const UserPasswordName = "Password";
+export declare const UserRolesName = "Roles";
 export declare const UserSecurityConstraintsName = "SecurityConstraints";
 export declare const UserDetailsName = "Details";
-export declare const UserRolesName = "Roles";

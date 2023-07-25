@@ -188,7 +188,7 @@ function apply(config, resource) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 3, , 5]);
-                    return [4 /*yield*/, getByName(config, resource.name, resource.namespace)];
+                    return [4 /*yield*/, getByName(config, resource.name, resource.namespace.name)];
                 case 1:
                     existingResource = _a.sent();
                     resource.id = existingResource.id;

@@ -1,12 +1,69 @@
+import { Resource } from "./resource";
 
 
 
 export const ExtensionResource = {
-    resource: "extension",
+    resource: "Extension",
     namespace: "system",
 };
 
 // Sub Types
+
+export interface BooleanExpression {
+
+}
+
+export interface FunctionCall {
+     host: string;
+     functionName: string;
+
+}
+
+export interface HttpCall {
+     uri: string;
+     method: string;
+
+}
+
+export interface ExternalCall {
+     functionCall?: FunctionCall;
+     httpCall?: HttpCall;
+
+}
+
+export interface EventSelector {
+     actions?: 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'OPERATE'[];
+     recordSelector?: BooleanExpression;
+     namespaces?: string[];
+     resources?: string[];
+     ids?: string[];
+     annotations?: object;
+
+}
+
+export interface RecordSearchParams {
+     query?: BooleanExpression;
+     limit?: number;
+     offset?: number;
+     resolveReferences?: string[];
+
+}
+
+export interface Event {
+     id: string;
+     action: 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'OPERATE';
+     recordSearchParams?: RecordSearchParams;
+     actionSummary?: string;
+     actionDescription?: string;
+     resource?: Resource;
+     records?: any[];
+     ids?: string[];
+     finalizes?: boolean;
+     sync?: boolean;
+     time?: string;
+     annotations?: object;
+
+}
 
 // Resource Type
 export interface Extension {
@@ -18,12 +75,13 @@ createdOn: string;
 updatedOn?: string;
 name: string;
 description?: string;
-selector?: object;
+selector?: EventSelector;
 order: number;
 finalizes: boolean;
 sync: boolean;
 responds: boolean;
-call: object;
+call: ExternalCall;
+annotations?: object;
 
 }
 // Resource and Property Names
@@ -56,5 +114,7 @@ export const ExtensionSyncName = "Sync";
 export const ExtensionRespondsName = "Responds";
 
 export const ExtensionCallName = "Call";
+
+export const ExtensionAnnotationsName = "Annotations";
 
 

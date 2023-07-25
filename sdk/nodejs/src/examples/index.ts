@@ -1,7 +1,7 @@
 import { LogicDef } from '..';
 import { Client } from '../client';
 import { FunctionParams, defineFunction, getModule, setModule } from '../logic';
-import { Module } from '../model';
+import { Module, Resource } from '../model';
 
 async function run() {
     const client = new Client('http://localhost:9009')
@@ -38,7 +38,7 @@ async function run() {
                 'RefundPayment',
             ] as any
         }]
-    })
+    } as Resource)
 
     LogicDef.defineLambda('TestLambda', 'SimpleEventObject:AcceptPayment', (element) => {
         LogicDef.fireLambda('SimpleEventObject:RejectPayment', {})

@@ -1,5 +1,6 @@
 import { Namespace } from "./namespace";
 import { DataSource } from "./data-source";
+import { ResourceProperty } from "./resource-property";
 export declare const ResourceResource: {
     resource: string;
     namespace: string;
@@ -22,9 +23,9 @@ export interface Resource {
     catalog?: string;
     annotations?: object;
     indexes?: object;
-    securityConstraints?: object[];
     title?: string;
     description?: string;
+    properties: ResourceProperty[];
 }
 export declare const ResourceName = "Resource";
 export declare const ResourceIdName = "Id";
@@ -44,6 +45,5 @@ export declare const ResourceEntityName = "Entity";
 export declare const ResourceCatalogName = "Catalog";
 export declare const ResourceAnnotationsName = "Annotations";
 export declare const ResourceIndexesName = "Indexes";
-export declare const ResourceSecurityConstraintsName = "SecurityConstraints";
 export declare const ResourceTitleName = "Title";
 export declare const ResourceDescriptionName = "Description";
