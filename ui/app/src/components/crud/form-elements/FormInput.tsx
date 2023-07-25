@@ -8,9 +8,9 @@ import {
     TextField,
     TextFieldProps
 } from "@mui/material"
-import {ResourceProperty} from "../../../model/index.ts"
+
 import React, {useEffect, useMemo, useState} from "react"
-import {Record, RecordService} from "@apibrew/ui-lib"
+import {Record, RecordService, ResourceProperty} from "@apibrew/ui-lib"
 import {FormItem} from "../../../model/ui/crud.ts";
 import {useResource} from "../../../context/resource.ts";
 import {ListElement} from "./ListElement.tsx";
@@ -142,7 +142,7 @@ export function FormInput(props: FormElementProps) {
                              props.setValue(e.target.value)
                          }}/>
 
-    const hideLabel = (props.config.params && props.config.params['hideLabel'])
+    const hideLabel = (props.config.params && (props.config.params as any)['hideLabel'])
 
     if (hideLabel) {
         return <FormControl style={{width: '100%'}}>

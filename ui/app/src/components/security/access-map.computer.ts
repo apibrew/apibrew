@@ -1,7 +1,8 @@
-import {Namespace, Resource} from "../../model/index.ts";
-import {PermissionChecks, AccessMap} from "./model.ts";
-import {SecurityConstraint} from "../../model/security-constraint.ts";
-import {namespacePermissions, resourcePermissions} from "./helper.ts";
+import { PermissionChecks, AccessMap } from "./model.ts";
+
+import { namespacePermissions } from "./helper.ts";
+
+import { Namespace, Resource, SecurityConstraint } from "@apibrew/ui-lib";
 
 function mapConstraintTo(constraint: SecurityConstraint, permissionChecks?: PermissionChecks): boolean {
     if (!permissionChecks) {
@@ -10,13 +11,13 @@ function mapConstraintTo(constraint: SecurityConstraint, permissionChecks?: Perm
 
     if (constraint.operation === 'FULL') {
         permissionChecks.full = true
-    } else if (constraint.operation === 'OPERATION_TYPE_READ') {
+    } else if (constraint.operation === 'READ') {
         permissionChecks.read = true
-    } else if (constraint.operation === 'OPERATION_TYPE_UPDATE') {
+    } else if (constraint.operation === 'UPDATE') {
         permissionChecks.update = true
-    } else if (constraint.operation === 'OPERATION_TYPE_CREATE') {
+    } else if (constraint.operation === 'CREATE') {
         permissionChecks.create = true
-    } else if (constraint.operation === 'OPERATION_TYPE_DELETE') {
+    } else if (constraint.operation === 'DELETE') {
         permissionChecks.delete = true
     } else {
         throw new Error(`Unknown operation ${constraint.operation}`)
@@ -30,7 +31,7 @@ function mapConstraintTo(constraint: SecurityConstraint, permissionChecks?: Perm
 }
 
 export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], resources: Resource[], constraints: SecurityConstraint[]) {
-    let updatedAccessMap = {...accessMap}
+    let updatedAccessMap = { ...accessMap }
 
     if (!namespaces.some(item => item.name === 'system')) {
         namespaces.push({
@@ -88,13 +89,13 @@ export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], 
     }
 
     for (const constraint of constraints) {
-        if (constraint.propertyMode || constraint.permit == 'PERMIT_TYPE_REJECT' || constraint.propertyValue || constraint.recordIds.length > 0) {
+        if (constraint.propertyMode || constraint.permit == 'REJECT' || constraint.propertyValue || (constraint.recordIds ?? []).length > 0) {
             continue
         }
 
-        if (constraint.property === '*') { // resource or namespace or system level
-            if (constraint.resource === '*') { // namespace or system level
-                if (constraint.namespace === '*') { // system level
+        if (!constraint.property) { // resource or namespace or system level
+            if (!constraint.resource) { // namespace or system level
+                if (!constraint.namespace) { // system level
                     if (mapConstraintTo(constraint, updatedAccessMap['system'])) {
                         constraint.localFlags = {
                             imported: true,
@@ -132,10 +133,7 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
     const systemPermission = accessMap.system
 
     const systemConstraint = {
-        namespace: '*',
-        resource: '*',
-        property: '*',
-        permit: 'PERMIT_TYPE_ALLOW',
+        permit: 'ALLOW',
         localFlags: {
             imported: true,
         }
@@ -150,25 +148,25 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
     if (systemPermission.read) {
         updatedConstraints.push({
             ...systemConstraint,
-            operation: 'OPERATION_TYPE_READ',
+            operation: 'READ',
         })
     }
     if (systemPermission.create) {
         updatedConstraints.push({
             ...systemConstraint,
-            operation: 'OPERATION_TYPE_CREATE',
+            operation: 'CREATE',
         })
     }
     if (systemPermission.update) {
         updatedConstraints.push({
             ...systemConstraint,
-            operation: 'OPERATION_TYPE_UPDATE',
+            operation: 'UPDATE',
         })
     }
     if (systemPermission.delete) {
         updatedConstraints.push({
             ...systemConstraint,
-            operation: 'OPERATION_TYPE_DELETE',
+            operation: 'DELETE',
         })
     }
 
@@ -176,10 +174,8 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
         const namespacePermission = namespacePermissions(accessMap, namespace.name)
 
         const namespaceConstraint = {
-            namespace: namespace.name,
-            resource: '*',
-            property: '*',
-            permit: 'PERMIT_TYPE_ALLOW',
+            namespace: namespace,
+            permit: 'ALLOW',
             localFlags: {
                 imported: true,
             }
@@ -194,25 +190,25 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
         if (namespacePermission.read) {
             updatedConstraints.push({
                 ...namespaceConstraint,
-                operation: 'OPERATION_TYPE_READ',
+                operation: 'READ',
             })
         }
         if (namespacePermission.create) {
             updatedConstraints.push({
                 ...namespaceConstraint,
-                operation: 'OPERATION_TYPE_CREATE',
+                operation: 'CREATE',
             })
         }
         if (namespacePermission.update) {
             updatedConstraints.push({
                 ...namespaceConstraint,
-                operation: 'OPERATION_TYPE_UPDATE',
+                operation: 'UPDATE',
             })
         }
         if (namespacePermission.delete) {
             updatedConstraints.push({
                 ...namespaceConstraint,
-                operation: 'OPERATION_TYPE_DELETE',
+                operation: 'DELETE',
             })
         }
     }
@@ -221,10 +217,11 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
         const resourcePermission = accessMap[`resource-${resource.namespace}/${resource.name}`]
 
         const resourceConstraint = {
-            namespace: resource.namespace,
-            resource: resource.name,
-            property: '*',
-            permit: 'PERMIT_TYPE_ALLOW',
+            namespace: {
+                name: resource.namespace,
+            },
+            resource: resource,
+            permit: 'ALLOW',
             localFlags: {
                 imported: true,
             }
@@ -245,26 +242,26 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
         if (resourcePermission.read) {
             updatedConstraints.push({
                 ...resourceConstraint,
-                operation: 'OPERATION_TYPE_READ',
+                operation: 'READ',
             })
         }
         if (resourcePermission.create) {
             updatedConstraints.push({
                 ...resourceConstraint,
-                operation: 'OPERATION_TYPE_CREATE',
+                operation: 'CREATE',
             })
             console.log(resourcePermission.create)
         }
         if (resourcePermission.update) {
             updatedConstraints.push({
                 ...resourceConstraint,
-                operation: 'OPERATION_TYPE_UPDATE',
+                operation: 'UPDATE',
             })
         }
         if (resourcePermission.delete) {
             updatedConstraints.push({
                 ...resourceConstraint,
-                operation: 'OPERATION_TYPE_DELETE',
+                operation: 'DELETE',
             })
         }
 
@@ -272,10 +269,12 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
             const propertyPermission = accessMap[`resource-${resource.namespace}/${resource.name}-${property.name}`]
 
             const propertyConstraint = {
-                namespace: resource.namespace,
-                resource: resource.name,
+                namespace: {
+                    name: resource.namespace,
+                },
+                resource: resource,
                 property: property.name,
-                permit: 'PERMIT_TYPE_ALLOW',
+                permit: 'ALLOW',
                 localFlags: {
                     imported: true,
                 }
@@ -290,25 +289,25 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
             if (propertyPermission.read) {
                 updatedConstraints.push({
                     ...propertyConstraint,
-                    operation: 'OPERATION_TYPE_READ',
+                    operation: 'READ',
                 })
             }
             if (propertyPermission.create) {
                 updatedConstraints.push({
                     ...propertyConstraint,
-                    operation: 'OPERATION_TYPE_CREATE',
+                    operation: 'CREATE',
                 })
             }
             if (propertyPermission.update) {
                 updatedConstraints.push({
                     ...propertyConstraint,
-                    operation: 'OPERATION_TYPE_UPDATE',
+                    operation: 'UPDATE',
                 })
             }
             if (propertyPermission.delete) {
                 updatedConstraints.push({
                     ...propertyConstraint,
-                    operation: 'OPERATION_TYPE_DELETE',
+                    operation: 'DELETE',
                 })
             }
         }
@@ -316,7 +315,7 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
 
     // keep constraints which is not related to access map
     for (const constraint of constraints) {
-        if (constraint.localFlags?.imported) {
+        if ((constraint.localFlags as any)?.imported) {
             continue
         }
 

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import { MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow, TextField } from "@mui/material";
 import { SecurityConstraint } from "../../model/system/security-constraint.ts";
@@ -28,9 +27,13 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                     name: 'namespace-1'
                 },
                 resource: {
+                    namespace: {
+                        name: 'namespace-1'
+                    },
                     name: 'resource-1'
                 },
-                operation: 'full',
+                operation: 'FULL',
+                permit: 'ALLOW'
             } as SecurityConstraint])
         }}>
             <Add />
@@ -57,7 +60,7 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                 {props.constraints.map((constraint, index) => <TableRow key={index}>
                     <TableCell sx={{ padding: 1 }}>
                         <TextField sx={{ margin: 0 }} disabled={props.mode === 'namespace' || props.mode == 'resource'} size='small'
-                            variant='outlined' value={constraint.namespace} onChange={e => {
+                            variant='outlined' value={constraint.namespace?.name} onChange={e => {
                                 const updatedConstraints = [...props.constraints]
                                 updatedConstraints[index].namespace = {
                                     name: e.target.value,
@@ -67,7 +70,7 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                     </TableCell>
                     <TableCell sx={{ padding: 1 }} >
                         <TextField disabled={props.mode === 'resource'} size='small' variant='outlined'
-                            value={constraint.resource} onChange={e => {
+                            value={constraint.resource?.name} onChange={e => {
                                 const updatedConstraints = [...props.constraints]
                                 updatedConstraints[index].resource = {
                                     name: e.target.value
@@ -107,11 +110,11 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                             updatedConstraints[index].operation = e.target.value as string as Operation
                             props.setConstraints(updatedConstraints)
                         }}>
-                            <MenuItem value='full'>full</MenuItem>
-                            <MenuItem value='read'>read</MenuItem>
-                            <MenuItem value='update'>update</MenuItem>
-                            <MenuItem value='create'>create</MenuItem>
-                            <MenuItem value='delete'>delete</MenuItem>
+                            <MenuItem value='FULL'>full</MenuItem>
+                            <MenuItem value='READ'>read</MenuItem>
+                            <MenuItem value='UPDATE'>update</MenuItem>
+                            <MenuItem value='CREATE'>create</MenuItem>
+                            <MenuItem value='DELETE'>delete</MenuItem>
                         </Select>
                     </TableCell>
                     <TableCell sx={{ padding: 1 }}>
@@ -141,7 +144,7 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                                 updatedConstraints[index].role = {
                                     name: e.target.value
                                 } as Role,
-                                props.setConstraints(updatedConstraints)
+                                    props.setConstraints(updatedConstraints)
                             }} />
                     </TableCell>}
                     <TableCell sx={{ padding: 1 }}>
@@ -150,8 +153,8 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                             updatedConstraints[index].permit = e.target.value as string as Permit
                             props.setConstraints(updatedConstraints)
                         }}>
-                            <MenuItem value='allow'>allow</MenuItem>
-                            <MenuItem value='reject'>reject</MenuItem>
+                            <MenuItem value='ALLOW'>allow</MenuItem>
+                            <MenuItem value='REJECT'>reject</MenuItem>
                         </Select>
                     </TableCell>
                     <TableCell sx={{ padding: 1 }}>

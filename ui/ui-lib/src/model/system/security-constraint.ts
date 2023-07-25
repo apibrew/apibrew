@@ -28,14 +28,14 @@ namespace?: Namespace;
 resource?: Resource;
 property?: string;
 propertyValue?: string;
-propertyMode?: 'property_match_only' | 'property_match_any';
-operation: 'read' | 'create' | 'update' | 'delete' | 'full';
+propertyMode?: 'PROPERTY_MATCH_ONLY' | 'PROPERTY_MATCH_ANY';
+operation: 'READ' | 'CREATE' | 'UPDATE' | 'DELETE' | 'FULL';
 recordIds?: string[];
 before?: string;
 after?: string;
 user?: User;
 role?: Role;
-permit: 'allow' | 'reject';
+permit: 'ALLOW' | 'REJECT';
 localFlags?: object;
 
 }

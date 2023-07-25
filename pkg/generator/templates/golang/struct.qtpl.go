@@ -46,6 +46,18 @@ func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *m
 //line templates/golang/struct.qtpl:8
 		StreamPropertyType(qw422016, resource, property)
 //line templates/golang/struct.qtpl:8
+		qw422016.N().S(` `)
+//line templates/golang/struct.qtpl:8
+		qw422016.N().S("`")
+//line templates/golang/struct.qtpl:8
+		qw422016.N().S(`json:"`)
+//line templates/golang/struct.qtpl:8
+		StreamGoVarName(qw422016, property.Name)
+//line templates/golang/struct.qtpl:8
+		qw422016.N().S(`"`)
+//line templates/golang/struct.qtpl:8
+		qw422016.N().S("`")
+//line templates/golang/struct.qtpl:8
 		qw422016.N().S(`
 `)
 //line templates/golang/struct.qtpl:9

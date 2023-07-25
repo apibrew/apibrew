@@ -745,7 +745,7 @@ export interface components {
              * Format: enum
              * @enum {string}
              */
-            permit?: "PERMIT_TYPE_ALLOW" | "PERMIT_TYPE_REJECT" | "PERMIT_TYPE_UNKNOWN";
+            permit?: "ALLOW" | "REJECT" | "UNKNOWN";
         };
         SecurityContext: {
             constraints?: (components["schemas"]["SecurityConstraint"])[];

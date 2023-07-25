@@ -1,19 +1,18 @@
-import {useEffect, useState} from "react";
-import {RecordService} from "@apibrew/ui-lib";
-import {useErrorHandler} from "./error-handler.tsx";
-import {useResourceByName} from "./resource.ts";
+import { useEffect, useState } from "react";
+import { RecordService } from "@apibrew/ui-lib";
+import { useErrorHandler } from "./error-handler.tsx";
 
-export function useRecordByName<T>(resourceName: string, namespace: string, recordName: string): T {
+export function useRecordByName<T>(resourceName: string, namespace: string, recordName: string): T | undefined {
     return useRecordBy<T>(resourceName, namespace, 'name', recordName)
 }
 
-export function useRecordBy<T>(resourceName: string, namespace: string, key: string, value: string): T {
+export function useRecordBy<T>(resourceName: string, namespace: string, key: string, value: string): T | undefined {
     const [record, setRecord] = useState<T>()
     const errorHandler = useErrorHandler()
 
     useEffect(() => {
         try {
-            RecordService.findBy(namespace, resourceName, key, value).then(setRecord, errorHandler)
+            RecordService.findBy<T>(namespace, resourceName, key, value).then(setRecord, errorHandler)
         } catch (e) {
             console.error(e)
             errorHandler(e)

@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from "react";
-import {ChevronRight, ExpandMore, MoreVert} from "@mui/icons-material";
-import {Checkbox, Popover, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip} from "@mui/material";
-import {useRecords} from "../../hooks/record.ts";
-import {Namespace, Resource, ResourceProperty} from "../../model/index.ts";
+import React, { useEffect, useState } from "react";
+import { ChevronRight, ExpandMore, MoreVert } from "@mui/icons-material";
+import { Checkbox, Popover, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
+import { useRecords } from "../../hooks/record.ts";
 import Box from "@mui/material/Box";
-import {ResourceService} from "@apibrew/ui-lib";
-import {useErrorHandler} from "../../hooks/error-handler.tsx";
+import { Namespace, Resource, ResourceService } from "@apibrew/ui-lib";
+import { useErrorHandler } from "../../hooks/error-handler.tsx";
 import IconButton from "@mui/material/IconButton";
-import {prepareAccessMap, prepareConstraintsFromAccessMap} from "./access-map.computer.ts";
-import {SecurityConstraint} from "../../model/security-constraint.ts";
-import {AccessMap, PermissionChecks} from "./model.ts";
+import { prepareAccessMap, prepareConstraintsFromAccessMap } from "./access-map.computer.ts";
+import { SecurityConstraint } from "../../model/system/security-constraint.ts";
+import { AccessMap, PermissionChecks } from "./model.ts";
 import {
     computeNamespaceIndeterminate,
     computeNamespaceValue, computeResourceIndeterminate, computeResourcePropertyValue, computeResourceValue,
@@ -17,7 +16,7 @@ import {
     computeSystemValue, isolate,
     namespacePermissions, resourcePermissions
 } from "./helper.ts";
-import {Loading} from "../basic/Loading.tsx";
+import { Loading } from "../basic/Loading.tsx";
 
 export interface SecurityConstraintsInputSimpleProps {
     mode: 'role' | 'resource' | 'namespace'
@@ -31,8 +30,20 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
     const errorHandler = useErrorHandler()
 
     useEffect(() => {
-        ResourceService.list().then(setResources, errorHandler)
+        async function loadResources() {
+            const resp = await ResourceService.list()
+            console.log('resp', resp)
+            if (!resp) {
+                setResources([])
+            } else {
+                setResources(resp)
+            }
+        }
+
+        loadResources()
     }, [])
+    console.log('resources', resources)
+    console.log('resources', resources.length)
 
     const [open, setOpen] = useState<{
         [k: string]: boolean
@@ -62,14 +73,13 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
         if (Object.keys(accessMap).length === 0) {
             return
         }
-        console.log(accessMap)
         props.setConstraints(prepareConstraintsFromAccessMap(props.constraints, accessMap, namespaces, resources))
     }
 
     const systemPermissions = accessMap['system']
 
     if (!ready) {
-        return <Loading/>
+        return <Loading />
     }
 
     return <>
@@ -91,14 +101,14 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                         <b>All</b>
                     </TableCell>
                     {systemPermissions && <PermissionCheckBoxGroup value={computeSystemValue(accessMap)}
-                                                                   indeterminate={computeSystemIndeterminate(accessMap, namespaces)}
-                                                                   onChange={value => {
-                                                                       setAccessMap({
-                                                                           ...accessMap,
-                                                                           [`system`]: value
-                                                                       })
-                                                                   }}/>}
-                    <TableCell/>
+                        indeterminate={computeSystemIndeterminate(accessMap, namespaces)}
+                        onChange={value => {
+                            setAccessMap({
+                                ...accessMap,
+                                [`system`]: value
+                            })
+                        }} />}
+                    <TableCell />
                 </TableRow>
                 {namespaces.map(namespace => <React.Fragment key={namespace.name}>
                     <TableRow>
@@ -108,7 +118,7 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                                 ...open,
                                 [`namespace-${namespace.name}`]: !open[`namespace-${namespace.name}`]
                             })}>
-                                {open[`namespace-${namespace.name}`] ? <ExpandMore/> : <ChevronRight/>}
+                                {open[`namespace-${namespace.name}`] ? <ExpandMore /> : <ChevronRight />}
                             </IconButton>
                         </TableCell>
                         {namespacePermissions(accessMap, namespace.name) &&
@@ -120,21 +130,21 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                                         ...accessMap,
                                         [`namespace-${namespace.name}`]: value
                                     })
-                                }}/>}
-                        <TableCell/>
+                                }} />}
+                        <TableCell />
                     </TableRow>
                     {open[`namespace-${namespace.name}`] && resources.filter(item => item.namespace === namespace.name)
                         .map(resource => <React.Fragment key={resource.name}>
                             <TableRow>
                                 <TableCell>
-                                    <Box sx={{marginLeft: '30px'}}>
+                                    <Box sx={{ marginLeft: '30px' }}>
                                         <span>Resource: <b>{resource.name}</b></span>
                                         <IconButton onClick={() => setOpen({
                                             ...open,
                                             [`resource-${resource.namespace}/${resource.name}`]: !open[`resource-${resource.namespace}/${resource.name}`]
                                         })}>
-                                            {open[`resource-${resource.namespace}/${resource.name}`] ? <ExpandMore/> :
-                                                <ChevronRight/>}
+                                            {open[`resource-${resource.namespace}/${resource.name}`] ? <ExpandMore /> :
+                                                <ChevronRight />}
                                         </IconButton>
                                     </Box>
                                 </TableCell>
@@ -148,13 +158,13 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                                                 ...accessMap,
                                                 [`resource-${resource.namespace}/${resource.name}`]: isolate(value, computeNamespaceValue(accessMap, namespace), resourcePermissions(accessMap, resource))
                                             })
-                                        }}/>}
+                                        }} />}
                             </TableRow>
 
                             {open[`resource-${resource.namespace}/${resource.name}`] && resource.properties.map(property =>
                                 <TableRow key={property.name}>
                                     <TableCell>
-                                        <Box sx={{marginLeft: '70px'}}>
+                                        <Box sx={{ marginLeft: '70px' }}>
                                             <span>Property: <b>{property.name}</b></span>
                                         </Box>
                                     </TableCell>
@@ -166,8 +176,8 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                                                     ...accessMap,
                                                     [`resource-${resource.namespace}/${resource.name}-${property.name}`]: isolate(value, computeResourceValue(accessMap, resource), resourcePermissions(accessMap, resource)),
                                                 })
-                                            }}/>}
-                                    <TableCell/>
+                                            }} />}
+                                    <TableCell />
                                 </TableRow>)}
                         </React.Fragment>)}
                 </React.Fragment>)}
@@ -185,22 +195,21 @@ export interface PermissionCheckBoxGroupProps {
 
 export function PermissionCheckBoxGroup(props: PermissionCheckBoxGroupProps) {
     const controls = ['full', 'read', 'create', 'update', 'delete']
-    const moreControls = ['allowOwnedOnly']
 
     return <>
         {controls.map(item => {
             return <TableCell key={item}>
-                <Checkbox checked={props.value['full'] || props.value[item]}
-                          indeterminate={!(props.value['full'] || props.value[item]) && props?.indeterminate && (props.indeterminate['full'] || props.indeterminate[item])}
-                          onChange={e => {
-                              if (item != 'full' && props.value['full']) {
-                                  return
-                              }
-                              props.onChange({
-                                  ...props.value,
-                                  [item]: e.target.checked
-                              })
-                          }}/>
+                <Checkbox checked={props.value['full'] || props.value[item as keyof PermissionChecks]}
+                    indeterminate={!(props.value['full'] || props.value[item as keyof PermissionChecks]) && props?.indeterminate && (props.indeterminate['full'] || props.indeterminate[item as keyof PermissionChecks])}
+                    onChange={e => {
+                        if (item != 'full' && props.value['full']) {
+                            return
+                        }
+                        props.onChange({
+                            ...props.value,
+                            [item]: e.target.checked
+                        })
+                    }} />
             </TableCell>
         })}
         {/*{props.allowOptions && <>*/}

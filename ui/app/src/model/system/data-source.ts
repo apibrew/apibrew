@@ -18,7 +18,7 @@ createdOn: string;
 updatedOn?: string;
 name: string;
 description?: string;
-backend: 'postgresql' | 'mysql' | 'mongodb' | 'redis';
+backend: 'POSTGRESQL' | 'MYSQL' | 'MONGODB' | 'REDIS';
 options: object;
 
 }

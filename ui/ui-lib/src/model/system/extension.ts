@@ -32,7 +32,7 @@ export interface ExternalCall {
 }
 
 export interface EventSelector {
-     actions?: 'create' | 'update' | 'delete' | 'get' | 'list' | 'operate'[];
+     actions?: 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'OPERATE'[];
      recordSelector?: BooleanExpression;
      namespaces?: string[];
      resources?: string[];
@@ -51,7 +51,7 @@ export interface RecordSearchParams {
 
 export interface Event {
      id: string;
-     action: 'create' | 'update' | 'delete' | 'get' | 'list' | 'operate';
+     action: 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'OPERATE';
      recordSearchParams?: RecordSearchParams;
      actionSummary?: string;
      actionDescription?: string;

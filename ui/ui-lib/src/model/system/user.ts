@@ -1,5 +1,5 @@
-import { SecurityConstraint } from "../system/security-constraint";
 import { Role } from "./role";
+import { SecurityConstraint } from "./security-constraint";
 
 
 

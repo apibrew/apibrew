@@ -62,6 +62,10 @@ func NewEmptyRecordWrapper() *RecordWrapper {
 	return rw
 }
 func NewRecordWrapper(record *model.Record) *RecordWrapper {
+	if record == nil {
+		return nil
+	}
+
 	var rw = new(RecordWrapper)
 
 	rw.properties = make(map[string]*PropertyValueWrapper)
@@ -116,6 +120,10 @@ func (rw *ResourceWrapper) UnmarshalJSON(data []byte) error {
 }
 
 func NewResourceWrapper(resource *model.Resource) *ResourceWrapper {
+	if resource == nil {
+		return nil
+	}
+
 	rw := new(ResourceWrapper)
 
 	rw.resource = resource

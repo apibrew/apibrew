@@ -1,4 +1,4 @@
-import { SecurityConstraint } from "../system/security-constraint";
+import { SecurityConstraint } from "./security-constraint";
 
 
 

@@ -59,6 +59,7 @@ export function PropertyElement(props: PropertyElementProps) {
     // check access
     if (propertyPath === '') { // root property
         accessLevel = AuthorizationService.checkResourcePropertyAccess(resource, property.name, record.id)
+        console.log('accessLevel', accessLevel)
     } else {
         accessLevel = AuthorizationService.AccessLevel.READ_WRITE
     }
