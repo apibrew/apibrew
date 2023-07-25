@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Resource} from "../model";
+import {Resource} from "../model/system/resource.ts";
 import {ResourceService} from "../service";
 import {useErrorHandler} from "./error-handler.tsx";
 

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NamespaceSecurityConstraintsName = exports.NamespaceDetailsName = exports.NamespaceDescriptionName = exports.NamespaceNameName = exports.NamespaceUpdatedOnName = exports.NamespaceCreatedOnName = exports.NamespaceUpdatedByName = exports.NamespaceCreatedByName = exports.NamespaceVersionName = exports.NamespaceIdName = exports.NamespaceName = exports.NamespaceResource = void 0;
 exports.NamespaceResource = {
-    resource: "namespace",
+    resource: "Namespace",
     namespace: "system",
 };
 // Resource and Property Names

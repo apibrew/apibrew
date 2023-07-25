@@ -1,3 +1,4 @@
+import { SecurityConstraint } from "./security-constraint";
 export declare const NamespaceResource: {
     resource: string;
     namespace: string;
@@ -12,7 +13,7 @@ export interface Namespace {
     name: string;
     description?: string;
     details?: object;
-    securityConstraints?: object[];
+    securityConstraints?: SecurityConstraint[];
 }
 export declare const NamespaceName = "Namespace";
 export declare const NamespaceIdName = "Id";

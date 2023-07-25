@@ -1,7 +1,7 @@
 import {useContext} from "react";
 import {AlertOptions, LayoutContext} from "../context/layout-context.ts";
 import {AxiosError} from "axios";
-import {Resource, Status} from "../model";
+import {Status} from "../model";
 import {useNavigate} from "react-router-dom";
 import {TokenService} from "../service";
 

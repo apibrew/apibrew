@@ -1,8 +1,9 @@
+import { SecurityConstraint } from "./security-constraint";
 
 
 
 export const NamespaceResource = {
-    resource: "namespace",
+    resource: "Namespace",
     namespace: "system",
 };
 
@@ -19,7 +20,7 @@ updatedOn?: string;
 name: string;
 description?: string;
 details?: object;
-securityConstraints?: object[];
+securityConstraints?: SecurityConstraint[];
 
 }
 // Resource and Property Names

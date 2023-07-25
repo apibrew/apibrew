@@ -106,7 +106,7 @@ export async function save(config: ServiceConfig, resource: Resource): Promise<R
 
 export async function apply(config: ServiceConfig, resource: Resource): Promise<Resource> {
     try {
-        const existingResource = await getByName(config, resource.name, resource.namespace)
+        const existingResource = await getByName(config, resource.name, resource.namespace.name)
         resource.id = existingResource.id
 
         if (!isObjectModified(existingResource, resource)) {

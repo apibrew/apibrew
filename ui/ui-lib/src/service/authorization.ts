@@ -1,4 +1,4 @@
-import {Resource} from "../model";
+import {Resource} from "../model/system/resource.ts";
 import {get, getBody} from "./token.ts";
 import {Record} from "./record.ts";
 
@@ -14,7 +14,7 @@ export function checkResourcePropertyAccess(resource: Resource, property: string
     console.log('checkResourcePropertyAccess for', resource.name, property, recordId)
 
     const matchingConstraints = userConstraints.filter(constraint => {
-        if (constraint.namespace && constraint.namespace.name != resource.namespace) {
+        if (constraint.namespace && constraint.namespace.name != resource.namespace.name) {
             console.log('could not pass namespace gate')
             return false
         }

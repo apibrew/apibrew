@@ -1,8 +1,9 @@
+import { SecurityConstraint } from ".";
 
 
 
 export const RoleResource = {
-    resource: "role",
+    resource: "Role",
     namespace: "system",
 };
 
@@ -11,14 +12,14 @@ export const RoleResource = {
 // Resource Type
 export interface Role {
     id: string;
-name: string;
-securityConstraints?: object[];
-details?: object;
+version: number;
 createdBy: string;
 updatedBy?: string;
 createdOn: string;
 updatedOn?: string;
-version: number;
+name: string;
+securityConstraints?: SecurityConstraint[];
+details?: object;
 
 }
 // Resource and Property Names
@@ -26,11 +27,7 @@ export const RoleName = "Role";
 
 export const RoleIdName = "Id";
 
-export const RoleNameName = "Name";
-
-export const RoleSecurityConstraintsName = "SecurityConstraints";
-
-export const RoleDetailsName = "Details";
+export const RoleVersionName = "Version";
 
 export const RoleCreatedByName = "CreatedBy";
 
@@ -40,6 +37,10 @@ export const RoleCreatedOnName = "CreatedOn";
 
 export const RoleUpdatedOnName = "UpdatedOn";
 
-export const RoleVersionName = "Version";
+export const RoleNameName = "Name";
+
+export const RoleSecurityConstraintsName = "SecurityConstraints";
+
+export const RoleDetailsName = "Details";
 
 
