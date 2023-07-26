@@ -6,7 +6,6 @@ import { Namespace, Resource, SecurityConstraint } from "@apibrew/client";
 
 function mapConstraintTo(constraint: SecurityConstraint, permissionChecks?: PermissionChecks): boolean {
     if (!permissionChecks) {
-        console.log('permissionChecks is null')
         return false
     }
 
@@ -66,7 +65,7 @@ export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], 
     for (const resource of resources) {
         updatedAccessMap = {
             ...updatedAccessMap,
-            [`resource-${resource.namespace}/${resource.name}`]: {
+            [`resource-${resource.namespace.name}/${resource.name}`]: {
                 full: false,
                 read: false,
                 create: false,
@@ -78,7 +77,7 @@ export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], 
         for (const property of resource.properties) {
             updatedAccessMap = {
                 ...updatedAccessMap,
-                [`resource-${resource.namespace}/${resource.name}-${property.name}`]: {
+                [`resource-${resource.namespace.name}/${resource.name}-${property.name}`]: {
                     full: false,
                     read: false,
                     create: false,
@@ -98,34 +97,27 @@ export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], 
         if (!constraint.property) { // resource or namespace or system level
             if (!constraint.resource) { // namespace or system level
                 if (!constraint.namespace) { // system level
-                    console.log('slc', constraint)
                     if (mapConstraintTo(constraint, updatedAccessMap['system'])) {
                         constraint.localFlags = {
                             imported: true,
                         }
                     }
                 } else { // namespace level
-                    console.log('nlc', constraint)
                     if (mapConstraintTo(constraint, updatedAccessMap[`namespace-${constraint.namespace.name}`])) {
-                        console.log('nlc mapped!!!!')
                         constraint.localFlags = {
                             imported: true,
                         }
-                    } else {
-                        console.log('nlc not mapped!!!!')
                     }
                 }
             } else { // resource level
-                console.log('rlc', constraint)
-                if (mapConstraintTo(constraint, updatedAccessMap[`resource-${constraint.namespace}/${constraint.resource.name}`])) {
+                if (mapConstraintTo(constraint, updatedAccessMap[`resource-${constraint.namespace?.name}/${constraint.resource.name}`])) {
                     constraint.localFlags = {
                         imported: true,
                     }
                 }
             }
         } else { // property level constraint
-            console.log('plc', constraint)
-            if (mapConstraintTo(constraint, updatedAccessMap[`resource-${constraint.namespace}/${constraint.resource}-${constraint.property}`])) {
+            if (mapConstraintTo(constraint, updatedAccessMap[`resource-${constraint.namespace?.name}/${constraint.resource}-${constraint.property}`])) {
                 constraint.localFlags = {
                     imported: true,
                 }
@@ -234,13 +226,6 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
             }
         } as SecurityConstraint
 
-        // if (resourcePermission.allowOwnedOnly) {
-        //     resourceConstraint.propertyMode = 'PROPERTY_MATCH_ANY'
-        //     resourceConstraint.property = 'owner'
-        //     resourceConstraint.propertyValue = '$username'
-        // }
-
-        console.log(resource, `resource-${resource.namespace.name}/${resource.name}`)
         if (resourcePermission.full) {
             updatedConstraints.push({
                 ...resourceConstraint,
@@ -258,7 +243,6 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
                 ...resourceConstraint,
                 operation: 'CREATE',
             })
-            console.log(resourcePermission.create)
         }
         if (resourcePermission.update) {
             updatedConstraints.push({
@@ -326,7 +310,6 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
         }
 
         updatedConstraints.push(constraint)
-        console.log(constraint)
     }
 
     return updatedConstraints;

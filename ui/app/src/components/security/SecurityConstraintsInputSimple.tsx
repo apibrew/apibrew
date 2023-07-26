@@ -32,7 +32,6 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
     useEffect(() => {
         async function loadResources() {
             const resp = await ResourceService.list()
-            console.log('resp', resp)
             if (!resp) {
                 setResources([])
             } else {
@@ -42,8 +41,6 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
 
         loadResources()
     }, [])
-    console.log('resources', resources)
-    console.log('resources', resources.length)
 
     const [open, setOpen] = useState<{
         [k: string]: boolean
@@ -57,8 +54,6 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
     useEffect(() => {
         if (namespaces.length > 0 && resources.length > 0) {
             let updatedAccessMap = prepareAccessMap(accessMap, namespaces, resources, props.constraints);
-
-            console.log('updatedAccessMap', updatedAccessMap)
 
             setAccessMap(updatedAccessMap)
             setReady(true)
@@ -143,9 +138,9 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                                         <span>Resource: <b>{resource.name}</b></span>
                                         <IconButton onClick={() => setOpen({
                                             ...open,
-                                            [`resource-${resource.namespace}/${resource.name}`]: !open[`resource-${resource.namespace}/${resource.name}`]
+                                            [`resource-${resource.namespace.name}/${resource.name}`]: !open[`resource-${resource.namespace.name}/${resource.name}`]
                                         })}>
-                                            {open[`resource-${resource.namespace}/${resource.name}`] ? <ExpandMore /> :
+                                            {open[`resource-${resource.namespace.name}/${resource.name}`] ? <ExpandMore /> :
                                                 <ChevronRight />}
                                         </IconButton>
                                     </Box>
@@ -158,25 +153,25 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                                         onChange={value => {
                                             setAccessMap({
                                                 ...accessMap,
-                                                [`resource-${resource.namespace}/${resource.name}`]: isolate(value, computeNamespaceValue(accessMap, namespace), resourcePermissions(accessMap, resource))
+                                                [`resource-${resource.namespace.name}/${resource.name}`]: isolate(value, computeNamespaceValue(accessMap, namespace), resourcePermissions(accessMap, resource))
                                             })
                                         }} />}
                             </TableRow>
 
-                            {open[`resource-${resource.namespace}/${resource.name}`] && resource.properties.map(property =>
+                            {open[`resource-${resource.namespace.name}/${resource.name}`] && resource.properties.map(property =>
                                 <TableRow key={property.name}>
                                     <TableCell>
                                         <Box sx={{ marginLeft: '70px' }}>
                                             <span>Property: <b>{property.name}</b></span>
                                         </Box>
                                     </TableCell>
-                                    {accessMap[`resource-${resource.namespace}/${resource.name}-${property.name}`] &&
+                                    {accessMap[`resource-${resource.namespace.name}/${resource.name}-${property.name}`] &&
                                         <PermissionCheckBoxGroup
                                             value={computeResourcePropertyValue(accessMap, resource, property)}
                                             onChange={value => {
                                                 setAccessMap({
                                                     ...accessMap,
-                                                    [`resource-${resource.namespace}/${resource.name}-${property.name}`]: isolate(value, computeResourceValue(accessMap, resource), resourcePermissions(accessMap, resource)),
+                                                    [`resource-${resource.namespace.name}/${resource.name}-${property.name}`]: isolate(value, computeResourceValue(accessMap, resource), resourcePermissions(accessMap, resource)),
                                                 })
                                             }} />}
                                     <TableCell />

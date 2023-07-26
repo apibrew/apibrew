@@ -11,7 +11,7 @@ export const MenuResource = {
 export interface RequireSecurityConstraintParams {
      resource?: string;
      namespace?: string;
-     operation?: 'read' | 'write' | 'create' | 'delete';
+     operation?: 'READ' | 'WRITE' | 'CREATE' | 'DELETE';
 
 }
 
@@ -20,7 +20,7 @@ export interface MenuItem {
      system?: boolean;
      link?: string;
      icon?: string;
-     target?: 'internal' | 'external' | 'external-redirect';
+     target?: 'internal' | 'external' | 'externalRedirect';
      securityConstraint?: RequireSecurityConstraintParams;
      children?: MenuItem[];
      component?: string;

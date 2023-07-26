@@ -151,6 +151,9 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 
 		if r.packRecords {
 			for _, prop := range r.resource.Properties {
+				if helper.IsPropertyOmitted(prop) {
+					continue
+				}
 				record.PropertiesPacked = append(record.PropertiesPacked, record.Properties[prop.Name])
 			}
 			record.Properties = nil
@@ -177,6 +180,10 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 	isInner := path != "t"
 
 	for _, prop := range resource.Properties {
+		if helper.IsPropertyOmitted(prop) {
+			continue
+		}
+
 		r.colList = append(r.colList, colDetails{
 			resource:     resource,
 			colName:      prop.Mapping,
@@ -283,6 +290,9 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 		}
 
 		for _, prop := range resource.Properties {
+			if helper.IsPropertyOmitted(prop) {
+				continue
+			}
 			if pathPrefix+prop.Mapping == cd.path {
 
 				if prop.Type == model.ResourceProperty_REFERENCE {

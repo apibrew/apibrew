@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"database/sql"
+	"github.com/apibrew/apibrew/pkg/backend/helper"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -58,6 +59,10 @@ func (p *sqlBackend) prepareResourceRecordCols(resource *model.Resource) []strin
 	var cols []string
 
 	for _, property := range resource.Properties {
+		if helper.IsPropertyOmitted(property) {
+			continue
+		}
+
 		col := p.options.Quote(property.Mapping)
 		cols = append(cols, col)
 	}

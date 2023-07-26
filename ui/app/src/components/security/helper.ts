@@ -1,5 +1,5 @@
-import {Namespace, Resource, ResourceProperty} from "../../model/index.ts";
-import {AccessMap, PermissionChecks} from "./model.ts";
+import { Namespace, Resource, ResourceProperty } from "@apibrew/client";
+import { AccessMap, PermissionChecks } from "./model.ts";
 
 export const computeSystemIndeterminate = (accessMap: AccessMap, namespaces: Namespace[]) => {
     return combine(...namespaces.map(item => {
@@ -16,7 +16,7 @@ export const computeNamespaceValue = (accessMap: AccessMap, namespace: Namespace
 }
 
 export const computeNamespaceIndeterminate = (accessMap: AccessMap, namespace: Namespace, resources: Resource[]) => {
-    return combine(...resources.filter(item => item.namespace === namespace.name).map(resource => {
+    return combine(...resources.filter(item => item.namespace.name === namespace.name).map(resource => {
         return combine(resourcePermissions(accessMap, resource), ...resource.properties.map(property => {
             return propertyPermissions(accessMap, resource, property)
         }))
@@ -24,7 +24,7 @@ export const computeNamespaceIndeterminate = (accessMap: AccessMap, namespace: N
 }
 
 export const computeResourceValue = (accessMap: AccessMap, resource: Resource) => {
-    return combine(computeSystemValue(accessMap), namespacePermissions(accessMap, resource.namespace), resourcePermissions(accessMap, resource))
+    return combine(computeSystemValue(accessMap), namespacePermissions(accessMap, resource.namespace.name), resourcePermissions(accessMap, resource))
 }
 
 export const computeResourceIndeterminate = (accessMap: AccessMap, resource: Resource) => {
@@ -32,15 +32,15 @@ export const computeResourceIndeterminate = (accessMap: AccessMap, resource: Res
 }
 
 export const computeResourcePropertyValue = (accessMap: AccessMap, resource: Resource, property: ResourceProperty) => {
-    return combine(computeSystemValue(accessMap), namespacePermissions(accessMap, resource.namespace), resourcePermissions(accessMap, resource), propertyPermissions(accessMap, resource, property))
+    return combine(computeSystemValue(accessMap), namespacePermissions(accessMap, resource.namespace.name), resourcePermissions(accessMap, resource), propertyPermissions(accessMap, resource, property))
 }
 
 export const propertyPermissions = (accessMap: AccessMap, resource: Resource, property: ResourceProperty) => {
-    return accessMap[`resource-${resource.namespace}/${resource.name}-${property.name}`]
+    return accessMap[`resource-${resource.namespace.name}/${resource.name}-${property.name}`]
 }
 
 export const resourcePermissions = (accessMap: AccessMap, resource: Resource) => {
-    return accessMap[`resource-${resource.namespace}/${resource.name}`]
+    return accessMap[`resource-${resource.namespace.name}/${resource.name}`]
 }
 
 export const namespacePermissions = (accessMap: AccessMap, namespaceName: string) => {
