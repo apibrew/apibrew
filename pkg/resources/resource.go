@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var ResourcePropertyProperties = []*model.ResourceProperty{
@@ -85,27 +86,9 @@ var ResourcePropertyProperties = []*model.ResourceProperty{
 		},
 	},
 	{
-		Name:    "reference_resource",
-		Mapping: "reference_resource",
-		Type:    model.ResourceProperty_REFERENCE,
-		Reference: &model.Reference{
-			Resource:  "Resource",
-			Namespace: "system",
-			Cascade:   true,
-		},
-		Required: false,
-	},
-	{
-		Name:     "reference_cascade",
-		Mapping:  "reference_cascade",
-		Type:     model.ResourceProperty_BOOL,
-		Required: false,
-	},
-	{
-		Name:     "back_reference_property",
-		Mapping:  "back_reference_property",
-		Type:     model.ResourceProperty_BOOL,
-		Required: false,
+		Name:    "reference",
+		Type:    model.ResourceProperty_STRUCT,
+		TypeRef: util.Pointer("Reference"),
 	},
 	{
 		Name:     "defaultValue",
@@ -178,6 +161,74 @@ var ResourceResource = &model.Resource{
 				},
 			},
 		},
+		{
+			Name: "IndexProperty",
+			Properties: []*model.ResourceProperty{
+				{
+					Name:     "name",
+					Type:     model.ResourceProperty_STRING,
+					Required: true,
+				},
+				{
+					Name:     "order",
+					Type:     model.ResourceProperty_ENUM,
+					Required: false,
+					EnumValues: []string{
+						"UNKNOWN", "ASC", "DESC",
+					},
+					DefaultValue: structpb.NewStringValue("ASC"),
+				},
+			},
+		},
+		{
+			Name: "Index",
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "properties",
+					Type: model.ResourceProperty_LIST,
+					Item: &model.ResourceProperty{
+						Type:    model.ResourceProperty_STRUCT,
+						TypeRef: util.Pointer("IndexProperty"),
+					},
+				},
+				{
+					Name:     "indexType",
+					Type:     model.ResourceProperty_ENUM,
+					Required: false,
+					EnumValues: []string{
+						"BTREE", "HASH",
+					},
+					DefaultValue: structpb.NewStringValue("BTREE"),
+				},
+				{
+					Name:     "unique",
+					Type:     model.ResourceProperty_BOOL,
+					Required: false,
+				},
+				special.AnnotationsProperty,
+			},
+		},
+		{
+			Name: "Reference",
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "resource",
+					Type: model.ResourceProperty_REFERENCE,
+					Reference: &model.Reference{
+						Namespace: "system",
+						Resource:  "Resource",
+					},
+				},
+				{
+					Name: "cascade",
+					Type: model.ResourceProperty_BOOL,
+				},
+				{
+					Name: "backReference",
+					Type: model.ResourceProperty_STRING,
+				},
+			},
+		},
 	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,
@@ -224,6 +275,16 @@ var ResourceResource = &model.Resource{
 			Item: &model.ResourceProperty{
 				Type:    model.ResourceProperty_STRUCT,
 				TypeRef: util.Pointer("Property"),
+			},
+		},
+		{
+			Name:     "indexes",
+			Mapping:  "indexes",
+			Type:     model.ResourceProperty_LIST,
+			Required: false,
+			Item: &model.ResourceProperty{
+				Type:    model.ResourceProperty_STRUCT,
+				TypeRef: util.Pointer("Index"),
 			},
 		},
 		{
@@ -276,13 +337,6 @@ var ResourceResource = &model.Resource{
 			Length:   256,
 			Required: false,
 		},
-		special.AnnotationsProperty,
-		{
-			Name:     "indexes",
-			Mapping:  "indexes",
-			Type:     model.ResourceProperty_OBJECT,
-			Required: false,
-		},
 		{
 			Name:     "title",
 			Mapping:  "title",
@@ -299,6 +353,7 @@ var ResourceResource = &model.Resource{
 			Length:   256,
 			Required: false,
 		},
+		special.AnnotationsProperty,
 	},
 	Indexes: []*model.ResourceIndex{
 		{

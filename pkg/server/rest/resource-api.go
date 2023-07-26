@@ -33,7 +33,7 @@ func (r *resourceApi) ConfigureRouter(router *mux.Router) {
 	subRoute.HandleFunc("/{id}", r.handleResourceDelete).Methods("DELETE")
 
 	// by name
-	subRoute.HandleFunc("/resources/by-name/{namespace}/{name}", r.handleResourceByName).Methods("GET")
+	subRoute.HandleFunc("/by-name/{namespace}/{name}", r.handleResourceByName).Methods("GET")
 }
 
 func (r *resourceApi) handleResourceList(writer http.ResponseWriter, request *http.Request) {

@@ -4,16 +4,16 @@ import "github.com/google/uuid"
 import "time"
 
 type DataSource struct {
-	Id          *uuid.UUID        `json:"id"`
-	Version     int32             `json:"version"`
-	CreatedBy   *string           `json:"createdBy"`
-	UpdatedBy   *string           `json:"updatedBy"`
-	CreatedOn   *time.Time        `json:"createdOn"`
-	UpdatedOn   *time.Time        `json:"updatedOn"`
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	Backend     DataSourceBackend `json:"backend"`
-	Options     map[string]string `json:"options"`
+	Id          *uuid.UUID        `json:"id,omitempty"`
+	Version     int32             `json:"version,omitempty"`
+	CreatedBy   *string           `json:"createdBy,omitempty"`
+	UpdatedBy   *string           `json:"updatedBy,omitempty"`
+	CreatedOn   *time.Time        `json:"createdOn,omitempty"`
+	UpdatedOn   *time.Time        `json:"updatedOn,omitempty"`
+	Name        string            `json:"name,omitempty"`
+	Description string            `json:"description,omitempty"`
+	Backend     DataSourceBackend `json:"backend,omitempty"`
+	Options     map[string]string `json:"options,omitempty"`
 }
 
 func (s *DataSource) GetId() *uuid.UUID {

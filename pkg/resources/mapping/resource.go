@@ -1,7 +1,6 @@
 package mapping
 
 import (
-	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -51,7 +50,7 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		var lv []*structpb.Value
 
 		for _, subType := range resource.Types {
-			lv = append(lv, ResourceTypeToValue(subType))
+			lv = append(lv, ResourceTypeToValue(resource, subType))
 		}
 
 		properties["types"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
@@ -122,73 +121,58 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 }
 
 func ResourceIndexFromValue(val *structpb.Value) *model.ResourceIndex {
-	jData, err := val.MarshalJSON()
-
-	if err != nil {
-		panic(err)
+	var ri = &model.ResourceIndex{
+		Properties: nil,
+		IndexType:  0,
 	}
 
-	var ri = new(model.ResourceIndex)
+	st := val.GetStructValue()
 
-	err = json.Unmarshal(jData, ri)
+	if st.Fields["annotations"] != nil {
+		ri.Annotations = convertMap(st.Fields["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
+			return v.(string)
+		})
+	}
 
-	if err != nil {
-		panic(err)
+	if st.Fields["unique"] != nil {
+		ri.Unique = st.Fields["unique"].GetBoolValue()
 	}
 
 	return ri
 }
 
 func ResourceIndexToValue(index *model.ResourceIndex) *structpb.Value {
-	jData, err := json.Marshal(index)
-
-	if err != nil {
-		panic(err)
-	}
-
-	var val = &structpb.Value{}
-
-	err = val.UnmarshalJSON(jData)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return val
+	return structpb.NewStructValue(&structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			// structpb.NewValue(convertMap(resource.Annotations, func(v string) interface{} {
+			//		return v
+			//	}))
+		},
+	})
 }
 
 func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
-	jData, err := val.MarshalJSON()
-
-	if err != nil {
-		panic(err)
+	// FIXME
+	var st = val.GetStructValue()
+	return &model.ResourceSubType{
+		Name: st.GetFields()["name"].GetStringValue(),
+		Properties: util.ArrayMap(st.GetFields()["properties"].GetListValue().Values, func(t *structpb.Value) *model.ResourceProperty {
+			return ResourcePropertyFromRecord(&model.Record{Properties: t.GetStructValue().Fields})
+		}),
 	}
-
-	var ri = new(model.ResourceSubType)
-
-	err = json.Unmarshal(jData, ri)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return ri
 }
 
-func ResourceTypeToValue(index *model.ResourceSubType) *structpb.Value {
-	jData, err := json.Marshal(index)
-
-	if err != nil {
-		panic(err)
+func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubType) *structpb.Value {
+	var propertyStructList []*structpb.Value
+	for _, property := range subType.Properties {
+		propertyRecord := ResourcePropertyToRecord(property, resource)
+		propertyStructList = append(propertyStructList, structpb.NewStructValue(&structpb.Struct{Fields: propertyRecord.Properties}))
 	}
 
-	var val = &structpb.Value{}
-
-	err = val.UnmarshalJSON(jData)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return val
+	return structpb.NewStructValue(&structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"name":       structpb.NewStringValue(subType.Name),
+			"properties": structpb.NewListValue(&structpb.ListValue{Values: propertyStructList}),
+		},
+	})
 }

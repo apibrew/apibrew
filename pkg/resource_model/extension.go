@@ -4,21 +4,21 @@ import "github.com/google/uuid"
 import "time"
 
 type Extension struct {
-	Id          *uuid.UUID              `json:"id"`
-	Version     int32                   `json:"version"`
-	CreatedBy   *string                 `json:"createdBy"`
-	UpdatedBy   *string                 `json:"updatedBy"`
-	CreatedOn   *time.Time              `json:"createdOn"`
-	UpdatedOn   *time.Time              `json:"updatedOn"`
-	Name        string                  `json:"name"`
-	Description *string                 `json:"description"`
-	Selector    *ExtensionEventSelector `json:"selector"`
-	Order       int32                   `json:"order"`
-	Finalizes   bool                    `json:"finalizes"`
-	Sync        bool                    `json:"sync"`
-	Responds    bool                    `json:"responds"`
-	Call        ExtensionExternalCall   `json:"call"`
-	Annotations map[string]string       `json:"annotations"`
+	Id          *uuid.UUID              `json:"id,omitempty"`
+	Version     int32                   `json:"version,omitempty"`
+	CreatedBy   *string                 `json:"createdBy,omitempty"`
+	UpdatedBy   *string                 `json:"updatedBy,omitempty"`
+	CreatedOn   *time.Time              `json:"createdOn,omitempty"`
+	UpdatedOn   *time.Time              `json:"updatedOn,omitempty"`
+	Name        string                  `json:"name,omitempty"`
+	Description *string                 `json:"description,omitempty"`
+	Selector    *ExtensionEventSelector `json:"selector,omitempty"`
+	Order       int32                   `json:"order,omitempty"`
+	Finalizes   bool                    `json:"finalizes,omitempty"`
+	Sync        bool                    `json:"sync,omitempty"`
+	Responds    bool                    `json:"responds,omitempty"`
+	Call        ExtensionExternalCall   `json:"call,omitempty"`
+	Annotations map[string]string       `json:"annotations,omitempty"`
 }
 
 func (s *Extension) GetId() *uuid.UUID {
@@ -71,8 +71,8 @@ type ExtensionBooleanExpression struct {
 }
 
 type ExtensionFunctionCall struct {
-	Host         string `json:"host"`
-	FunctionName string `json:"functionName"`
+	Host         string `json:"host,omitempty"`
+	FunctionName string `json:"functionName,omitempty"`
 }
 
 func (s *ExtensionFunctionCall) GetHost() string {
@@ -83,8 +83,8 @@ func (s *ExtensionFunctionCall) GetFunctionName() string {
 }
 
 type ExtensionHttpCall struct {
-	Uri    string `json:"uri"`
-	Method string `json:"method"`
+	Uri    string `json:"uri,omitempty"`
+	Method string `json:"method,omitempty"`
 }
 
 func (s *ExtensionHttpCall) GetUri() string {
@@ -95,8 +95,8 @@ func (s *ExtensionHttpCall) GetMethod() string {
 }
 
 type ExtensionExternalCall struct {
-	FunctionCall *ExtensionFunctionCall `json:"functionCall"`
-	HttpCall     *ExtensionHttpCall     `json:"httpCall"`
+	FunctionCall *ExtensionFunctionCall `json:"functionCall,omitempty"`
+	HttpCall     *ExtensionHttpCall     `json:"httpCall,omitempty"`
 }
 
 func (s *ExtensionExternalCall) GetFunctionCall() *ExtensionFunctionCall {
@@ -107,12 +107,12 @@ func (s *ExtensionExternalCall) GetHttpCall() *ExtensionHttpCall {
 }
 
 type ExtensionEventSelector struct {
-	Actions        []EventAction               `json:"actions"`
-	RecordSelector *ExtensionBooleanExpression `json:"recordSelector"`
-	Namespaces     []string                    `json:"namespaces"`
-	Resources      []string                    `json:"resources"`
-	Ids            []string                    `json:"ids"`
-	Annotations    map[string]string           `json:"annotations"`
+	Actions        []EventAction               `json:"actions,omitempty"`
+	RecordSelector *ExtensionBooleanExpression `json:"recordSelector,omitempty"`
+	Namespaces     []string                    `json:"namespaces,omitempty"`
+	Resources      []string                    `json:"resources,omitempty"`
+	Ids            []string                    `json:"ids,omitempty"`
+	Annotations    map[string]string           `json:"annotations,omitempty"`
 }
 
 func (s *ExtensionEventSelector) GetActions() []EventAction {
@@ -135,10 +135,10 @@ func (s *ExtensionEventSelector) GetAnnotations() map[string]string {
 }
 
 type ExtensionRecordSearchParams struct {
-	Query             *ExtensionBooleanExpression `json:"query"`
-	Limit             *int32                      `json:"limit"`
-	Offset            *int32                      `json:"offset"`
-	ResolveReferences []string                    `json:"resolveReferences"`
+	Query             *ExtensionBooleanExpression `json:"query,omitempty"`
+	Limit             *int32                      `json:"limit,omitempty"`
+	Offset            *int32                      `json:"offset,omitempty"`
+	ResolveReferences []string                    `json:"resolveReferences,omitempty"`
 }
 
 func (s *ExtensionRecordSearchParams) GetQuery() *ExtensionBooleanExpression {
@@ -155,18 +155,18 @@ func (s *ExtensionRecordSearchParams) GetResolveReferences() []string {
 }
 
 type ExtensionEvent struct {
-	Id                 *uuid.UUID                   `json:"id"`
-	Action             EventAction                  `json:"action"`
-	RecordSearchParams *ExtensionRecordSearchParams `json:"recordSearchParams"`
-	ActionSummary      *string                      `json:"actionSummary"`
-	ActionDescription  *string                      `json:"actionDescription"`
-	Resource           *Resource                    `json:"resource"`
-	Records            []*Record                    `json:"records"`
-	Ids                []string                     `json:"ids"`
-	Finalizes          *bool                        `json:"finalizes"`
-	Sync               *bool                        `json:"sync"`
-	Time               *time.Time                   `json:"time"`
-	Annotations        map[string]string            `json:"annotations"`
+	Id                 *uuid.UUID                   `json:"id,omitempty"`
+	Action             EventAction                  `json:"action,omitempty"`
+	RecordSearchParams *ExtensionRecordSearchParams `json:"recordSearchParams,omitempty"`
+	ActionSummary      *string                      `json:"actionSummary,omitempty"`
+	ActionDescription  *string                      `json:"actionDescription,omitempty"`
+	Resource           *Resource                    `json:"resource,omitempty"`
+	Records            []*Record                    `json:"records,omitempty"`
+	Ids                []string                     `json:"ids,omitempty"`
+	Finalizes          *bool                        `json:"finalizes,omitempty"`
+	Sync               *bool                        `json:"sync,omitempty"`
+	Time               *time.Time                   `json:"time,omitempty"`
+	Annotations        map[string]string            `json:"annotations,omitempty"`
 }
 
 func (s *ExtensionEvent) GetId() *uuid.UUID {

@@ -5,16 +5,16 @@ import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Namespace struct {
-	Id                  *uuid.UUID                 `json:"id"`
-	Version             int32                      `json:"version"`
-	CreatedBy           *string                    `json:"createdBy"`
-	UpdatedBy           *string                    `json:"updatedBy"`
-	CreatedOn           *time.Time                 `json:"createdOn"`
-	UpdatedOn           *time.Time                 `json:"updatedOn"`
-	Name                string                     `json:"name"`
-	Description         *string                    `json:"description"`
-	Details             *unstructured.Unstructured `json:"details"`
-	SecurityConstraints []*SecurityConstraint      `json:"securityConstraints"`
+	Id                  *uuid.UUID                 `json:"id,omitempty"`
+	Version             int32                      `json:"version,omitempty"`
+	CreatedBy           *string                    `json:"createdBy,omitempty"`
+	UpdatedBy           *string                    `json:"updatedBy,omitempty"`
+	CreatedOn           *time.Time                 `json:"createdOn,omitempty"`
+	UpdatedOn           *time.Time                 `json:"updatedOn,omitempty"`
+	Name                string                     `json:"name,omitempty"`
+	Description         *string                    `json:"description,omitempty"`
+	Details             *unstructured.Unstructured `json:"details,omitempty"`
+	SecurityConstraints []*SecurityConstraint      `json:"securityConstraints,omitempty"`
 }
 
 func (s *Namespace) GetId() *uuid.UUID {
