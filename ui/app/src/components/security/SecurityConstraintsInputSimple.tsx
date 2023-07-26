@@ -3,11 +3,10 @@ import { ChevronRight, ExpandMore, MoreVert } from "@mui/icons-material";
 import { Checkbox, Popover, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
 import { useRecords } from "../../hooks/record.ts";
 import Box from "@mui/material/Box";
-import { Namespace, Resource, ResourceService } from "@apibrew/ui-lib";
+import { ResourceService } from "@apibrew/ui-lib";
 import { useErrorHandler } from "../../hooks/error-handler.tsx";
 import IconButton from "@mui/material/IconButton";
 import { prepareAccessMap, prepareConstraintsFromAccessMap } from "./access-map.computer.ts";
-import { SecurityConstraint } from "../../model/system/security-constraint.ts";
 import { AccessMap, PermissionChecks } from "./model.ts";
 import {
     computeNamespaceIndeterminate,
@@ -17,6 +16,7 @@ import {
     namespacePermissions, resourcePermissions
 } from "./helper.ts";
 import { Loading } from "../basic/Loading.tsx";
+import { Namespace, Resource, SecurityConstraint } from "@apibrew/client";
 
 export interface SecurityConstraintsInputSimpleProps {
     mode: 'role' | 'resource' | 'namespace'
@@ -57,6 +57,8 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
     useEffect(() => {
         if (namespaces.length > 0 && resources.length > 0) {
             let updatedAccessMap = prepareAccessMap(accessMap, namespaces, resources, props.constraints);
+
+            console.log('updatedAccessMap', updatedAccessMap)
 
             setAccessMap(updatedAccessMap)
             setReady(true)
@@ -133,7 +135,7 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
                                 }} />}
                         <TableCell />
                     </TableRow>
-                    {open[`namespace-${namespace.name}`] && resources.filter(item => item.namespace === namespace.name)
+                    {open[`namespace-${namespace.name}`] && resources.filter(item => item.namespace.name === namespace.name)
                         .map(resource => <React.Fragment key={resource.name}>
                             <TableRow>
                                 <TableCell>

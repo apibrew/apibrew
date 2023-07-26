@@ -1,7 +1,8 @@
 import axios from 'axios'
-import {BACKEND_URL} from '../config'
+import { BACKEND_URL } from '../config'
 import * as TokenService from './token'
-import {BooleanExpression, Resource} from "../model";
+import { BooleanExpression } from "../model";
+import { type Resource } from '@apibrew/client';
 
 export interface Record {
     id?: string

@@ -1,6 +1,6 @@
-import {Resource} from "../model/system/resource.ts";
 import {get, getBody} from "./token.ts";
 import {Record} from "./record.ts";
+import { Resource } from "@apibrew/client";
 
 export enum AccessLevel {
     NONE,

@@ -46,6 +46,7 @@ func getAllSubTypes(resource *model.Resource) []*model.ResourceSubType {
 
 func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
 	var enums []*model.ResourceProperty
+	var addedEnum = make(map[string]bool)
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
 		var name = prop.Name
 		if name == "" {
@@ -60,22 +61,18 @@ func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
 				enumName = annotations.Get(prop, annotations.TypeName)
 			}
 
+			if addedEnum[enumName] {
+				return
+			}
+
 			enums = append(enums, &model.ResourceProperty{
 				Name:       enumName,
 				EnumValues: prop.EnumValues,
 			})
+			addedEnum[enumName] = true
 		}
 	})
 	return enums
-}
-
-func isPrimitive(prop *model.ResourceProperty) bool {
-	switch prop.Type {
-	case model.ResourceProperty_STRUCT, model.ResourceProperty_OBJECT, model.ResourceProperty_REFERENCE, model.ResourceProperty_MAP, model.ResourceProperty_LIST:
-		return false
-	default:
-		return true
-	}
 }
 
 func isNullable(prop *model.ResourceProperty) bool {

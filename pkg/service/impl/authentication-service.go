@@ -11,6 +11,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/util/jwt-model"
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -66,9 +67,9 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 		return nil, err
 	}
 
-	token, err := util.JwtUserDetailsSign(util.JwtUserDetailsSignParams{
+	token, err := jwt_model.JwtUserDetailsSign(jwt_model.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
-		UserDetails: util.UserDetails{
+		UserDetails: jwt_model.UserDetails{
 			UserId:              user.Id.String(),
 			Username:            user.Username,
 			SecurityConstraints: sc,
@@ -92,7 +93,7 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 }
 
 func (s *authenticationService) RenewToken(ctx context.Context, oldToken string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
-	userDetails, err := util.JwtVerifyAndUnpackUserDetails(*s.publicKey, oldToken)
+	userDetails, err := jwt_model.JwtVerifyAndUnpackUserDetails(*s.publicKey, oldToken)
 
 	if err != nil {
 		return nil, err
@@ -109,8 +110,8 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 	return s.prepareToken(systemCtx, term, user)
 }
 
-func (s *authenticationService) ParseAndVerifyToken(token string) (*util.UserDetails, errors.ServiceError) {
-	return util.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
+func (s *authenticationService) ParseAndVerifyToken(token string) (*jwt_model.UserDetails, errors.ServiceError) {
+	return jwt_model.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
 }
 
 type RequestWithToken interface {

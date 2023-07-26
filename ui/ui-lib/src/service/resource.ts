@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { BACKEND_URL } from '../config'
-import { type Resource } from '../model'
 import * as TokenService from './token'
+import { Resource } from '@apibrew/client'
 
 export namespace ResourceService {
 
@@ -106,7 +106,7 @@ export namespace ResourceService {
         try {
             return await create(resource)
         } catch (e) {
-            const existingResource = await getByName(resource.name, resource.namespace)
+            const existingResource = await getByName(resource.name, resource.namespace.name)
             resource.id = existingResource.id
             return await update(resource)
         }

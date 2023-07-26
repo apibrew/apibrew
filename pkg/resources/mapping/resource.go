@@ -40,6 +40,13 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		properties["indexes"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
 	}
 
+	var propertyStructList []*structpb.Value
+	for _, property := range resource.Properties {
+		propertyRecord := ResourcePropertyToRecord(property, resource)
+		propertyStructList = append(propertyStructList, structpb.NewStructValue(&structpb.Struct{Fields: propertyRecord.Properties}))
+	}
+	properties["properties"] = structpb.NewListValue(&structpb.ListValue{Values: propertyStructList})
+
 	if resource.Types != nil {
 		var lv []*structpb.Value
 
@@ -75,6 +82,9 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 			Entity:     record.Properties["entity"].GetStringValue(),
 			Catalog:    record.Properties["catalog"].GetStringValue(),
 		},
+		Properties: util.ArrayMap(record.Properties["properties"].GetListValue().Values, func(t *structpb.Value) *model.ResourceProperty {
+			return ResourcePropertyFromRecord(&model.Record{Properties: t.GetStructValue().Fields})
+		}),
 		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
 		}),

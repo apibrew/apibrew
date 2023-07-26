@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
@@ -142,6 +143,9 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResource(resource, e
 
 	var changedFields []string
 	for _, prop := range resources.ResourceResource.Properties {
+		if prop.Name == "properties" {
+			continue
+		}
 		if !proto.Equal(resourceRecord.Properties[prop.Name], existingResourceRecord.Properties[prop.Name]) {
 			changedFields = append(changedFields, prop.Name)
 		}
@@ -165,7 +169,17 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(res
 	existingResourcePropertyRecord := mapping.ResourcePropertyToRecord(existingResourceProperty, existingResource)
 
 	var changedFields []string
-	for _, prop := range resources.ResourcePropertyResource.Properties {
+	for _, prop := range resources.ResourcePropertyProperties {
+		var oldValue = resourcePropertyRecord.Properties[prop.Name].AsInterface()
+		var newValue = existingResourcePropertyRecord.Properties[prop.Name].AsInterface()
+
+		if annotations.IsEnabled(prop, annotations.SpecialProperty) {
+			continue
+		}
+		if oldValue == nil && newValue == nil {
+			continue
+		}
+
 		if !proto.Equal(resourcePropertyRecord.Properties[prop.Name], existingResourcePropertyRecord.Properties[prop.Name]) {
 			changedFields = append(changedFields, prop.Name)
 		}

@@ -10,6 +10,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/util/jwt-model"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
@@ -22,7 +23,7 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 		return nil
 	}
 
-	userDetails := util.GetUserDetailsFromContext(ctx)
+	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
 
 	if userDetails == nil && !annotations.IsEnabled(params.Resource, annotations.AllowPublicAccess) {
 		return errors.AccessDeniedError.WithDetails("Public access is denied")
@@ -47,7 +48,7 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 	}
 }
 
-func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, constraints []*resource_model.SecurityConstraint, userDetails *util.UserDetails) []*model.ErrorField {
+func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, constraints []*resource_model.SecurityConstraint, userDetails *jwt_model.UserDetails) []*model.ErrorField {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	now := time.Now()
@@ -104,7 +105,7 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 	return errorFields
 }
 
-func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, constraint *resource_model.SecurityConstraint, now time.Time, userDetails *util.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
+func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, constraint *resource_model.SecurityConstraint, now time.Time, userDetails *jwt_model.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	// check resource constraint matches
@@ -226,7 +227,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 	return true, nil
 }
 
-func (a *authorizationService) processValue(value string, userDetails *util.UserDetails) string {
+func (a *authorizationService) processValue(value string, userDetails *jwt_model.UserDetails) string {
 	var processedValue = value
 
 	if processedValue == "$userId" {

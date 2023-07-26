@@ -1,4 +1,4 @@
-package util
+package jwt_model
 
 import "github.com/apibrew/apibrew/pkg/resource_model"
 

@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
-import {Resource} from "../model/system/resource.ts";
 import {ResourceService} from "../service";
 import {useErrorHandler} from "./error-handler.tsx";
+import { Resource } from "@apibrew/client";
 
 export function useResourceByName(resourceName: string, namespace = 'default'): Resource | undefined {
     const errorHandler = useErrorHandler()

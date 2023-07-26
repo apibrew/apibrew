@@ -1,6 +1,9 @@
 package rest
 
 import (
+	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -39,11 +42,21 @@ func (r *resourceApi) handleResourceList(writer http.ResponseWriter, request *ht
 	ServiceResponder[*stub.ListResourceRequest]().
 		Writer(writer).
 		Request(request).
-		Respond(util.ArrayMap(resources, NewResourceWrapper), err)
+		Respond(util.ArrayMap(resources, resourceTo), err)
+}
+
+func resourceTo(resource *model.Resource) *resource_model.Resource {
+	resourceRec := mapping.ResourceToRecord(resource)
+	return resource_model.ResourceMapperInstance.FromRecord(resourceRec)
+}
+
+func resourceFrom(resource *resource_model.Resource) *model.Resource {
+	resourceRec := resource_model.ResourceMapperInstance.ToRecord(resource)
+	return mapping.ResourceFromRecord(resourceRec)
 }
 
 func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *http.Request) {
-	rw := new(ResourceWrapper)
+	rw := new(resource_model.Resource)
 
 	err := parseRequestMessage(request, rw)
 
@@ -52,12 +65,12 @@ func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *
 		return
 	}
 
-	res, serviceErr := r.resourceService.Create(request.Context(), rw.resource, true, false)
+	res, serviceErr := r.resourceService.Create(request.Context(), resourceFrom(rw), true, false)
 
 	ServiceResponder[*stub.CreateResourceRequest]().
 		Writer(writer).
 		Request(request).
-		Respond(NewResourceWrapper(res), serviceErr)
+		Respond(resourceTo(res), serviceErr)
 }
 
 func (r *resourceApi) handleResourceGet(writer http.ResponseWriter, request *http.Request) {
@@ -70,7 +83,7 @@ func (r *resourceApi) handleResourceGet(writer http.ResponseWriter, request *htt
 	ServiceResponder[*stub.GetResourceRequest]().
 		Writer(writer).
 		Request(request).
-		Respond(NewResourceWrapper(resource), serviceErr)
+		Respond(resourceTo(resource), serviceErr)
 }
 
 func (r *resourceApi) handleResourceByName(writer http.ResponseWriter, request *http.Request) {
@@ -84,7 +97,7 @@ func (r *resourceApi) handleResourceByName(writer http.ResponseWriter, request *
 	ServiceResponder[*stub.GetResourceRequest]().
 		Writer(writer).
 		Request(request).
-		Respond(NewResourceWrapper(resource), serviceErr)
+		Respond(resourceTo(resource), serviceErr)
 }
 
 func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *http.Request) {
@@ -92,9 +105,9 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 	id := vars["id"]
 
-	resourceWrap := new(ResourceWrapper)
+	resourceForUpdate := new(resource_model.Resource)
 
-	err := parseRequestMessage(request, resourceWrap)
+	err := parseRequestMessage(request, resourceForUpdate)
 
 	if err != nil {
 		handleClientError(writer, err)
@@ -103,7 +116,7 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 
 	resource.Id = id
 
-	serviceErr := r.resourceService.Update(request.Context(), resource, true, false)
+	serviceErr := r.resourceService.Update(request.Context(), resourceFrom(resourceForUpdate), true, false)
 
 	if serviceErr != nil {
 		resource = nil
@@ -112,7 +125,7 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 	ServiceResponder[*stub.UpdateResourceRequest]().
 		Writer(writer).
 		Request(request).
-		Respond(NewResourceWrapper(resource), serviceErr)
+		Respond(resourceTo(resource), serviceErr)
 }
 
 func (r *resourceApi) handleResourceDelete(writer http.ResponseWriter, request *http.Request) {

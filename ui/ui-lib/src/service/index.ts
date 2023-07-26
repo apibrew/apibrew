@@ -1,5 +1,4 @@
 export * from './authentication'
-export * from './namespace'
 export * from './record'
 export * from './resource'
 

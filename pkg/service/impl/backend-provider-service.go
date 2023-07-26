@@ -58,7 +58,7 @@ func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, d
 	} else {
 		systemCtx := util.WithSystemContext(context.TODO())
 		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, dataSourceId)
-		util.DeNormalizeRecord(resources.DataSourceResource, record)
+		DeNormalizeRecord(resources.DataSourceResource, record)
 
 		if err != nil {
 			return nil, err

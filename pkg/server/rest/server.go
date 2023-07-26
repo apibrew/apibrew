@@ -10,6 +10,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
+	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
@@ -95,7 +96,7 @@ func (s *server) setRequestToken(w http.ResponseWriter, req *http.Request, token
 	userDetails, err := s.container.GetAuthenticationService().ParseAndVerifyToken(token)
 
 	if err == nil {
-		ctx := util.WithUserDetails(req.Context(), *userDetails)
+		ctx := jwt_model.WithUserDetails(req.Context(), *userDetails)
 
 		ctx = logging.WithLogField(ctx, "User", userDetails.Username)
 
