@@ -5,9 +5,9 @@ import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 import "encoding/json"
 
 type Record struct {
-	Id               *uuid.UUID                  `json:"id"`
-	Properties       unstructured.Unstructured   `json:"properties"`
-	PackedProperties []unstructured.Unstructured `json:"packedProperties"`
+	Id               *uuid.UUID                  `json:"id,omitempty"`
+	Properties       unstructured.Unstructured   `json:"properties,omitempty"`
+	PackedProperties []unstructured.Unstructured `json:"packedProperties,omitempty"`
 }
 
 func (s *Record) GetId() *uuid.UUID {

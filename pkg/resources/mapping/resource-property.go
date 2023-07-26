@@ -55,14 +55,21 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 		if referenceNamespace == "" {
 			referenceNamespace = resource.Namespace
 		}
-		properties["reference_resource"] = util.StructKv2("name", property.Reference.Resource, "namespace", map[string]interface{}{
-			"name": referenceNamespace,
-		})
-		properties["reference_cascade"] = structpb.NewBoolValue(property.Reference.Cascade)
-	}
 
-	if property.BackReference != nil {
-		properties["back_reference_resource"] = structpb.NewStringValue(property.BackReference.Property)
+		var fieldsMap = map[string]*structpb.Value{
+			"resource": util.StructKv2("name", property.Reference.Resource, "namespace", map[string]interface{}{
+				"name": referenceNamespace,
+			}),
+			"cascade": structpb.NewBoolValue(property.Reference.Cascade),
+		}
+
+		if property.BackReference != nil {
+			fieldsMap["backReference"] = structpb.NewStringValue(property.BackReference.Property)
+		}
+
+		properties["reference"] = structpb.NewStructValue(&structpb.Struct{
+			Fields: fieldsMap,
+		})
 	}
 
 	properties["defaultValue"] = property.DefaultValue

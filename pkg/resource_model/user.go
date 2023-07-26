@@ -5,17 +5,17 @@ import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type User struct {
-	Id                  *uuid.UUID                 `json:"id"`
-	Version             int32                      `json:"version"`
-	CreatedBy           *string                    `json:"createdBy"`
-	UpdatedBy           *string                    `json:"updatedBy"`
-	CreatedOn           *time.Time                 `json:"createdOn"`
-	UpdatedOn           *time.Time                 `json:"updatedOn"`
-	Username            string                     `json:"username"`
-	Password            *string                    `json:"password"`
-	Roles               []*Role                    `json:"roles"`
-	SecurityConstraints []*SecurityConstraint      `json:"securityConstraints"`
-	Details             *unstructured.Unstructured `json:"details"`
+	Id                  *uuid.UUID                 `json:"id,omitempty"`
+	Version             int32                      `json:"version,omitempty"`
+	CreatedBy           *string                    `json:"createdBy,omitempty"`
+	UpdatedBy           *string                    `json:"updatedBy,omitempty"`
+	CreatedOn           *time.Time                 `json:"createdOn,omitempty"`
+	UpdatedOn           *time.Time                 `json:"updatedOn,omitempty"`
+	Username            string                     `json:"username,omitempty"`
+	Password            *string                    `json:"password,omitempty"`
+	Roles               []*Role                    `json:"roles,omitempty"`
+	SecurityConstraints []*SecurityConstraint      `json:"securityConstraints,omitempty"`
+	Details             *unstructured.Unstructured `json:"details,omitempty"`
 }
 
 func (s *User) GetId() *uuid.UUID {

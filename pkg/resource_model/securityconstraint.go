@@ -5,25 +5,25 @@ import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type SecurityConstraint struct {
-	Id            *uuid.UUID                      `json:"id"`
-	Version       int32                           `json:"version"`
-	CreatedBy     *string                         `json:"createdBy"`
-	UpdatedBy     *string                         `json:"updatedBy"`
-	CreatedOn     *time.Time                      `json:"createdOn"`
-	UpdatedOn     *time.Time                      `json:"updatedOn"`
-	Namespace     *Namespace                      `json:"namespace"`
-	Resource      *Resource                       `json:"resource"`
-	Property      *string                         `json:"property"`
-	PropertyValue *string                         `json:"propertyValue"`
-	PropertyMode  *SecurityConstraintPropertyMode `json:"propertyMode"`
-	Operation     SecurityConstraintOperation     `json:"operation"`
-	RecordIds     []string                        `json:"recordIds"`
-	Before        *time.Time                      `json:"before"`
-	After         *time.Time                      `json:"after"`
-	User          *User                           `json:"user"`
-	Role          *Role                           `json:"role"`
-	Permit        SecurityConstraintPermit        `json:"permit"`
-	LocalFlags    *unstructured.Unstructured      `json:"localFlags"`
+	Id            *uuid.UUID                      `json:"id,omitempty"`
+	Version       int32                           `json:"version,omitempty"`
+	CreatedBy     *string                         `json:"createdBy,omitempty"`
+	UpdatedBy     *string                         `json:"updatedBy,omitempty"`
+	CreatedOn     *time.Time                      `json:"createdOn,omitempty"`
+	UpdatedOn     *time.Time                      `json:"updatedOn,omitempty"`
+	Namespace     *Namespace                      `json:"namespace,omitempty"`
+	Resource      *Resource                       `json:"resource,omitempty"`
+	Property      *string                         `json:"property,omitempty"`
+	PropertyValue *string                         `json:"propertyValue,omitempty"`
+	PropertyMode  *SecurityConstraintPropertyMode `json:"propertyMode,omitempty"`
+	Operation     SecurityConstraintOperation     `json:"operation,omitempty"`
+	RecordIds     []string                        `json:"recordIds,omitempty"`
+	Before        *time.Time                      `json:"before,omitempty"`
+	After         *time.Time                      `json:"after,omitempty"`
+	User          *User                           `json:"user,omitempty"`
+	Role          *Role                           `json:"role,omitempty"`
+	Permit        SecurityConstraintPermit        `json:"permit,omitempty"`
+	LocalFlags    *unstructured.Unstructured      `json:"localFlags,omitempty"`
 }
 
 func (s *SecurityConstraint) GetId() *uuid.UUID {
