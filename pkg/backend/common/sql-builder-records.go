@@ -36,6 +36,10 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 		for _, property := range resource.Properties {
 			packedVal, exists := record.Properties[property.Name]
 
+			if helper.IsPropertyOmitted(property) {
+				continue
+			}
+
 			if exists || !annotations.IsEnabled(property, annotations.Identity) {
 				if packedVal == nil {
 					row = append(row, args.Add(nil))
@@ -205,6 +209,10 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 	updateBuilder.Where(sqlPart)
 
 	for _, property := range resource.Properties {
+		if helper.IsPropertyOmitted(property) {
+			continue
+		}
+
 		packedVal, exists := record.Properties[property.Name]
 
 		if !exists {

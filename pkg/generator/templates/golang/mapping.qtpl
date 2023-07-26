@@ -174,6 +174,13 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
         {% else %}
         {%s valueVarName %}_mapped := mappedValue
         {% endif %}
+    {%- elseif property.Type == model.ResourceProperty_OBJECT -%}
+        {%- if isNullable(property) && !insideCollection -%}
+            {%s valueVarName %}_mapped := new(unstructured.Unstructured)
+            *{%s valueVarName %}_mapped = unstructured.FromStructValue({%s valueVarName %}.GetStructValue())
+        {%- else -%}
+            {%s valueVarName %}_mapped := unstructured.FromStructValue({%s valueVarName %}.GetStructValue())
+        {%- endif -%}
     {%- else -%}
         val, err := types.ByResourcePropertyType(model.ResourceProperty_{%s property.Type.String() %}).UnPack({%s valueVarName %})
 

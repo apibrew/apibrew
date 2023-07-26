@@ -96,29 +96,24 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		return nil
 	}
 
-	var reference = &model.Reference{}
+	var reference *model.Reference
 	var backReference *model.BackReference
-	var hasReference bool
 
-	if record.Properties["reference_resource"] != nil {
-		reference.Resource = record.Properties["reference_resource"].GetStructValue().GetFields()["name"].GetStringValue()
-		reference.Namespace = record.Properties["reference_resource"].GetStructValue().GetFields()["namespace"].GetStringValue()
-		hasReference = true
-	}
-
-	if record.Properties["reference_cascade"] != nil {
-		reference.Cascade = record.Properties["reference_cascade"].GetBoolValue()
-		hasReference = true
-	}
-
-	if record.Properties["back_reference_resource"] != nil {
-		backReference = &model.BackReference{
-			Property: record.Properties["back_reference_resource"].GetStringValue(),
+	if record.Properties["reference"] != nil {
+		reference = &model.Reference{}
+		var referenceProperties = record.Properties["reference"].GetStructValue().GetFields()
+		reference.Resource = referenceProperties["resource"].GetStructValue().GetFields()["name"].GetStringValue()
+		if referenceProperties["resource"].GetStructValue().GetFields()["namespace"] != nil {
+			reference.Namespace = referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStringValue()
 		}
-	}
 
-	if !hasReference {
-		reference = nil
+		if referenceProperties["cascade"] != nil {
+			reference.Cascade = referenceProperties["cascade"].GetBoolValue()
+		}
+
+		backReference = &model.BackReference{
+			Property: record.Properties["backReference"].GetStringValue(),
+		}
 	}
 
 	var resourceProperty = &model.ResourceProperty{

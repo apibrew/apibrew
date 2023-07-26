@@ -150,3 +150,46 @@ func NewStructValue(v interface{}) (*structpb.Value, error) {
 		return structpb.NewValue(v)
 	}
 }
+
+func FromStructValue(v *structpb.Struct) Unstructured {
+	if v == nil {
+		return nil
+	}
+
+	u := make(Unstructured, len(v.Fields))
+
+	for k, v := range v.Fields {
+		u[k] = FromValue(v)
+	}
+
+	return u
+}
+
+func FromValue(v *structpb.Value) interface{} {
+	switch v := v.Kind.(type) {
+	case *structpb.Value_NullValue:
+		return nil
+	case *structpb.Value_NumberValue:
+		return v.NumberValue
+	case *structpb.Value_StringValue:
+		return v.StringValue
+	case *structpb.Value_BoolValue:
+		return v.BoolValue
+	case *structpb.Value_StructValue:
+		return FromStructValue(v.StructValue)
+	case *structpb.Value_ListValue:
+		return FromListValue(v.ListValue)
+	default:
+		return nil
+	}
+}
+
+func FromListValue(value *structpb.ListValue) interface{} {
+	var list []interface{}
+
+	for _, v := range value.Values {
+		list = append(list, FromValue(v))
+	}
+
+	return list
+}
