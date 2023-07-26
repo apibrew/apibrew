@@ -686,7 +686,7 @@ func GenerateResourceMappingBodyCode(pkg string, resource *model.Resource, typeN
 }
 
 //line templates/golang/mapping.qtpl:144
-func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model.Resource, property *model.ResourceProperty, valueVarName string, skipOptionalFlag bool) {
+func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model.Resource, property *model.ResourceProperty, valueVarName string, insideCollection bool) {
 //line templates/golang/mapping.qtpl:145
 	if property.Type == model.ResourceProperty_REFERENCE {
 //line templates/golang/mapping.qtpl:145
@@ -799,7 +799,7 @@ func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model
 //line templates/golang/mapping.qtpl:163
 	} else if property.Type == model.ResourceProperty_ENUM {
 //line templates/golang/mapping.qtpl:164
-		if isNullable(property) && !skipOptionalFlag {
+		if isNullable(property) && !insideCollection {
 //line templates/golang/mapping.qtpl:164
 			qw422016.N().S(`        `)
 //line templates/golang/mapping.qtpl:165
@@ -857,7 +857,7 @@ func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model
 		qw422016.N().S(`.GetStructValue().Fields)
         `)
 //line templates/golang/mapping.qtpl:172
-		if property.Required {
+		if property.Required || insideCollection {
 //line templates/golang/mapping.qtpl:172
 			qw422016.N().S(`
         `)
@@ -900,7 +900,7 @@ func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model
 
 `)
 //line templates/golang/mapping.qtpl:184
-		if isNullable(property) && !skipOptionalFlag {
+		if isNullable(property) && !insideCollection {
 //line templates/golang/mapping.qtpl:184
 			qw422016.N().S(`        `)
 //line templates/golang/mapping.qtpl:185
@@ -942,22 +942,22 @@ func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model
 }
 
 //line templates/golang/mapping.qtpl:191
-func WritePreparePropertyFromMapping(qq422016 qtio422016.Writer, resource *model.Resource, property *model.ResourceProperty, valueVarName string, skipOptionalFlag bool) {
+func WritePreparePropertyFromMapping(qq422016 qtio422016.Writer, resource *model.Resource, property *model.ResourceProperty, valueVarName string, insideCollection bool) {
 //line templates/golang/mapping.qtpl:191
 	qw422016 := qt422016.AcquireWriter(qq422016)
 //line templates/golang/mapping.qtpl:191
-	StreamPreparePropertyFromMapping(qw422016, resource, property, valueVarName, skipOptionalFlag)
+	StreamPreparePropertyFromMapping(qw422016, resource, property, valueVarName, insideCollection)
 //line templates/golang/mapping.qtpl:191
 	qt422016.ReleaseWriter(qw422016)
 //line templates/golang/mapping.qtpl:191
 }
 
 //line templates/golang/mapping.qtpl:191
-func PreparePropertyFromMapping(resource *model.Resource, property *model.ResourceProperty, valueVarName string, skipOptionalFlag bool) string {
+func PreparePropertyFromMapping(resource *model.Resource, property *model.ResourceProperty, valueVarName string, insideCollection bool) string {
 //line templates/golang/mapping.qtpl:191
 	qb422016 := qt422016.AcquireByteBuffer()
 //line templates/golang/mapping.qtpl:191
-	WritePreparePropertyFromMapping(qb422016, resource, property, valueVarName, skipOptionalFlag)
+	WritePreparePropertyFromMapping(qb422016, resource, property, valueVarName, insideCollection)
 //line templates/golang/mapping.qtpl:191
 	qs422016 := string(qb422016.B)
 //line templates/golang/mapping.qtpl:191

@@ -7,7 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
-	"github.com/apibrew/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/util/jwt-model"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -15,7 +15,7 @@ type AuthenticationService interface {
 	Init(config *model.AppConfig)
 	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
-	ParseAndVerifyToken(token string) (*util.UserDetails, errors.ServiceError)
+	ParseAndVerifyToken(token string) (*jwt_model.UserDetails, errors.ServiceError)
 	AuthenticationDisabled() bool
 }
 

@@ -15,7 +15,6 @@ import (
 	"github.com/gosimple/slug"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 	"sync"
 )
@@ -83,7 +82,7 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 	}, nil)
 
 	for _, record := range records {
-		util.DeNormalizeRecord(resources.ResourceResource, record)
+		DeNormalizeRecord(resources.ResourceResource, record)
 	}
 
 	r.schema.Resources = mapping.MapFromRecord(records, mapping.ResourceFromRecord)
@@ -95,40 +94,8 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
 	r.prepareSchemaMappings()
 
-	var resourceMap = make(map[string]*model.Resource)
-	for _, resource := range r.schema.Resources {
-		if resource.Id != "" {
-			resourceMap[resource.Id] = resource
-		}
-	}
-
-	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourcePropertyResource, abs.ListRecordParams{
-		ResolveReferences: []string{
-			"resource",
-			"reference_resource",
-		},
-		Limit: 1000000,
-	}, nil)
-
-	for _, record := range propertyRecordList {
-		util.DeNormalizeRecord(resources.ResourcePropertyResource, record)
-	}
-
 	if err != nil {
 		return err
-	}
-
-	for _, propRec := range propertyRecordList {
-		property := mapping.ResourcePropertyFromRecord(propRec)
-		propRes := propRec.Properties["resource"].GetStructValue()
-
-		propResource := resourceMap[propRes.Fields["id"].GetStringValue()]
-
-		if propResource == nil {
-			panic("propResource is null")
-		}
-
-		propResource.Properties = append(propResource.Properties, property)
 	}
 
 	if log.GetLevel() == log.TraceLevel {
@@ -327,98 +294,16 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 }
 
 func (r *resourceService) applyPlan(ctx context.Context, plan *model.ResourceMigrationPlan) errors.ServiceError {
-	var currentPropertyMap = util.GetNamedMap(plan.CurrentResource.Properties)
-	var existingPropertyMap = util.GetNamedMap(plan.ExistingResource.Properties)
+	resourceRecords := []*model.Record{mapping.ResourceToRecord(plan.CurrentResource)}
 
-	for _, step := range plan.Steps {
-		switch sk := step.Kind.(type) {
-		case *model.ResourceMigrationStep_UpdateResource:
-			resourceRecords := []*model.Record{mapping.ResourceToRecord(plan.CurrentResource)}
-
-			for _, record := range resourceRecords {
-				util.PrepareUpdateForRecord(ctx, resources.ResourceResource, record)
-				util.NormalizeRecord(resources.ResourceResource, record)
-			}
-
-			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourceResource, resourceRecords)
-
-			if err != nil {
-				return err
-			}
-		case *model.ResourceMigrationStep_CreateResource:
-		case *model.ResourceMigrationStep_DeleteResource:
-		case *model.ResourceMigrationStep_CreateProperty:
-			propertyCreateRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.CreateProperty.Property], plan.CurrentResource)
-
-			util.InitRecord(ctx, resources.ResourcePropertyResource, propertyCreateRecord)
-			util.NormalizeRecord(resources.ResourcePropertyResource, propertyCreateRecord)
-
-			_, err := r.backendProviderService.GetSystemBackend(ctx).AddRecords(ctx, resources.ResourcePropertyResource, []*model.Record{propertyCreateRecord})
-
-			if err != nil {
-				return err
-			}
-
-			if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
-				return errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exists: " + plan.CurrentResource.Name))
-			}
-
-			if err != nil {
-				return err
-			}
-		case *model.ResourceMigrationStep_DeleteProperty:
-			err := r.backendProviderService.GetSystemBackend(ctx).DeleteRecords(ctx, resources.ResourcePropertyResource, []string{*existingPropertyMap[sk.DeleteProperty.ExistingProperty].Id})
-
-			if err != nil {
-				return err
-			}
-		case *model.ResourceMigrationStep_UpdateProperty:
-			propertyRecord := mapping.ResourcePropertyToRecord(currentPropertyMap[sk.UpdateProperty.Property], plan.CurrentResource)
-			propertyRecord.Id = *existingPropertyMap[sk.UpdateProperty.ExistingProperty].Id
-			util.PrepareUpdateForRecord(ctx, resources.ResourcePropertyResource, propertyRecord)
-			util.NormalizeRecord(resources.ResourcePropertyResource, propertyRecord)
-
-			_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourcePropertyResource, []*model.Record{propertyRecord})
-
-			if err != nil {
-				return err
-			}
-		}
+	for _, record := range resourceRecords {
+		PrepareUpdateForRecord(ctx, resources.ResourceResource, record)
+		NormalizeRecord(resources.ResourceResource, record)
 	}
 
-	resource := plan.CurrentResource
+	_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourceResource, resourceRecords)
 
-	propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
-		return mapping.ResourcePropertyToRecord(property, resource)
-	})
-
-	propertyRecordList, _, err := r.backendProviderService.GetSystemBackend(ctx).ListRecords(ctx, resources.ResourcePropertyResource, abs.ListRecordParams{
-		Query: util.QueryEqualExpression("resource", structpb.NewStringValue(resource.Id)),
-		Limit: 1000000,
-	}, nil)
-
-	if err != nil {
-		return err
-	}
-
-	var propertyNameIdMap = make(map[string]string)
-	for _, prop := range propertyRecordList {
-		propertyNameIdMap[prop.Properties["name"].GetStringValue()] = prop.Properties["id"].GetStringValue()
-	}
-
-	for _, propRecord := range propertyRecords {
-		propRecord.Id = propertyNameIdMap[propRecord.Properties["name"].GetStringValue()]
-		util.PrepareUpdateForRecord(ctx, resources.ResourcePropertyResource, propRecord)
-		util.NormalizeRecord(resources.ResourcePropertyResource, propRecord)
-	}
-
-	_, err = r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourcePropertyResource, propertyRecords)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
@@ -504,8 +389,8 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}()
 	}
 
-	util.InitRecord(ctx, resources.ResourceResource, resourceRecord)
-	util.NormalizeRecord(resources.ResourceResource, resourceRecord)
+	InitRecord(ctx, resources.ResourceResource, resourceRecord)
+	NormalizeRecord(resources.ResourceResource, resourceRecord)
 
 	result, err := systemBackend.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
 
@@ -542,23 +427,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	}
 
 	resource.Id = result[0].Id
-
-	if len(resource.Properties) > 0 {
-		propertyRecords := mapping.MapToRecord(resource.Properties, func(property *model.ResourceProperty) *model.Record {
-			record := mapping.ResourcePropertyToRecord(property, resource)
-
-			util.InitRecord(ctx, resources.ResourcePropertyResource, record)
-			util.NormalizeRecord(resources.ResourcePropertyResource, record)
-
-			return record
-		})
-
-		_, err = systemBackend.AddRecords(txCtx, resources.ResourcePropertyResource, propertyRecords)
-
-		if err != nil {
-			return nil, err
-		}
-	}
 
 	if !resource.Virtual && doMigration {
 		var bck abs.Backend
@@ -714,7 +582,6 @@ func (r *resourceService) Init(config *model.AppConfig) {
 	r.migrateResource(resources.DataSourceResource)
 
 	r.migrateResource(resources.ResourceResource)
-	r.migrateResource(resources.ResourcePropertyResource)
 	r.migrateResource(resources.UserResource)
 	r.migrateResource(resources.RoleResource)
 	r.migrateResource(resources.SecurityConstraintResource)

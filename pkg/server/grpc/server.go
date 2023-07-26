@@ -9,6 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
+	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -107,7 +108,7 @@ func interceptRequest(authenticationService service.AuthenticationService, ctx c
 			return ctx, errors.AuthenticationFailedError
 		}
 
-		ctx = util.WithUserDetails(ctx, *userDetails)
+		ctx = jwt_model.WithUserDetails(ctx, *userDetails)
 
 		ctx = logging.WithLogField(ctx, "User", userDetails.Username)
 	}

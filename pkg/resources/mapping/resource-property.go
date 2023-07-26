@@ -42,7 +42,6 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 		})})
 	}
 
-	properties["resource"] = util.StructKv("id", resource.Id)
 	properties["required"] = structpb.NewBoolValue(property.Required)
 	properties["primary"] = structpb.NewBoolValue(property.Primary)
 	properties["length"] = structpb.NewNumberValue(float64(property.Length))

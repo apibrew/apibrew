@@ -101,7 +101,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	}
 
 	for _, record := range records {
-		util.DeNormalizeRecord(resource, record)
+		DeNormalizeRecord(resource, record)
 	}
 
 	// resolving references
@@ -159,8 +159,8 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	}
 
 	for _, record := range params.Records {
-		util.InitRecord(ctx, resource, record)
-		util.NormalizeRecord(resource, record)
+		InitRecord(ctx, resource, record)
+		NormalizeRecord(resource, record)
 		log.Print("Normalized record: " + record.Id)
 	}
 
@@ -270,7 +270,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 }
 
 func isResourceRelatedResource(resource *model.Resource) bool {
-	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name || resource.Name == resources.ResourcePropertyResource.Name)
+	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name)
 }
 
 func (r *recordService) Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
@@ -396,8 +396,8 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	}
 
 	for _, record := range params.Records {
-		util.PrepareUpdateForRecord(ctx, resource, record)
-		util.NormalizeRecord(resource, record)
+		PrepareUpdateForRecord(ctx, resource, record)
+		NormalizeRecord(resource, record)
 	}
 
 	err = validate.Records(resource, params.Records, true)
@@ -590,7 +590,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
-	util.DeNormalizeRecord(resource, res)
+	DeNormalizeRecord(resource, res)
 
 	// resolving references
 	if err := r.ResolveReferences(ctx, resource, []*model.Record{res}, []string{"*"}); err != nil {

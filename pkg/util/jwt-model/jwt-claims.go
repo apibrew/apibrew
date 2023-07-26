@@ -1,4 +1,4 @@
-package util
+package jwt_model
 
 import (
 	"fmt"

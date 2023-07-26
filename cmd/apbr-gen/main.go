@@ -12,7 +12,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// generate --namespace=system --platform=golang --path=pkg/resource_model --package=github.com/apibrew/apibrew/resource_model --system
-
 }

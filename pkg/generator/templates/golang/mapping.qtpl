@@ -141,7 +141,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
 
 {% endfunc %}
 
-{%- func PreparePropertyFromMapping(resource *model.Resource, property *model.ResourceProperty, valueVarName string, skipOptionalFlag bool) -%}
+{%- func PreparePropertyFromMapping(resource *model.Resource, property *model.ResourceProperty, valueVarName string, insideCollection bool) -%}
 {%- if property.Type == model.ResourceProperty_REFERENCE -%}
         {%s valueVarName %}_mapped := {%= GoName(property.Reference.Resource) %}MapperInstance.FromProperties({%s valueVarName %}.GetStructValue().Fields)
     {%- elseif property.Type == model.ResourceProperty_MAP -%}
@@ -161,7 +161,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
             {%s valueVarName %}_mapped = append({%s valueVarName %}_mapped, {%s subValueVarName %}_mapped)
         }
     {%- elseif property.Type == model.ResourceProperty_ENUM -%}
-        {%- if isNullable(property) && !skipOptionalFlag -%}
+        {%- if isNullable(property) && !insideCollection -%}
         {%s valueVarName %}_mapped := new({%= PropPureGoType(resource, property, property.Name) %})
         *{%s valueVarName %}_mapped = ({%= PropPureGoType(resource, property, property.Name) %})({%s valueVarName %}.GetStringValue())
         {%- else -%}
@@ -169,7 +169,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
         {%- endif -%}
     {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
         var mappedValue = {%= GoName(resource.Name + "_" + *property.TypeRef) %}MapperInstance.FromProperties({%s valueVarName %}.GetStructValue().Fields)
-        {% if property.Required %}
+        {% if property.Required || insideCollection %}
         {%s valueVarName %}_mapped := *mappedValue
         {% else %}
         {%s valueVarName %}_mapped := mappedValue
@@ -181,7 +181,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
             panic(err)
         }
 
-        {%- if isNullable(property) && !skipOptionalFlag -%}
+        {%- if isNullable(property) && !insideCollection -%}
         {%s valueVarName %}_mapped := new({%= PropPureGoType(resource, property, property.Name) %})
         *{%s valueVarName %}_mapped = val.({%= PropPureGoType(resource, property, property.Name) %})
         {%- else -%}
