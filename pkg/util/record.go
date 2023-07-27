@@ -187,10 +187,6 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 		}
 	}
 
-	if parts[1] == "[]" {
-		print("found1")
-	}
-
 	left := parts[0]
 	next := parts[1]
 	right := strings.Join(parts[1:], ".")
@@ -198,7 +194,9 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 	rightProperties := properties[left]
 
 	if rightProperties == nil {
-		return nil, nil
+		return nil, func(val *structpb.Value) {
+			properties[left] = val
+		}
 	}
 
 	if next == "[]" {

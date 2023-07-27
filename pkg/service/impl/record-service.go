@@ -780,7 +780,26 @@ func (r *recordService) ResolveReferences(ctx context.Context, resource *model.R
 					resolvedReferencedRecords[actualReference.Fields["id"].GetStringValue()] = append(resolvedReferencedRecords[actualReference.Fields["id"].GetStringValue()], record)
 				}
 
-				print(resolvedReferencedRecords)
+				for _, record := range records {
+					var _, setter = util.RecordPropertyAccessorByPath(record.Properties, reference.Path)
+
+					if setter == nil {
+						continue
+					}
+
+					var filteredList []*structpb.Value
+					for _, referenceRecord := range list {
+						actualReference := referenceRecord.Properties[reference.Property.BackReference.Property].GetStructValue()
+
+						if actualReference.Fields["id"].GetStringValue() == record.Id {
+							filteredList = append(filteredList, structpb.NewStructValue(&structpb.Struct{Fields: referenceRecord.Properties}))
+						}
+					}
+
+					if len(filteredList) > 0 {
+						setter(structpb.NewListValue(&structpb.ListValue{Values: filteredList}))
+					}
+				}
 			}
 		}
 	}
@@ -884,5 +903,5 @@ func (r *recordService) expandRecords(ctx context.Context, records []*model.Reco
 			}
 		}
 	}
-	return err
+	return nil
 }
