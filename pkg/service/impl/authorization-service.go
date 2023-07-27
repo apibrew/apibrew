@@ -163,7 +163,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 		return false, nil
 	}
 
-	if constraint.User != nil && constraint.User.Username != userDetails.Username {
+	if constraint.User != nil && constraint.User.Id.String() != userDetails.UserId {
 		logger.Tracef("Skipping constraint as username not matched: %v", constraint)
 		return false, nil
 	}

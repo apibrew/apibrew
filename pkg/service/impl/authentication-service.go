@@ -212,15 +212,25 @@ func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Ti
 func (s *authenticationService) collectUserSecurityConstraints(ctx context.Context, user *resource_model.User) ([]*resource_model.SecurityConstraint, errors.ServiceError) {
 	var result []*resource_model.SecurityConstraint
 
-	result = append(result, user.SecurityConstraints...)
+	var userRecord = resource_model.UserMapperInstance.ToRecord(user)
 
-	roleRecords := util.ArrayMap(user.Roles, resource_model.RoleMapperInstance.ToRecord)
-
-	err := s.recordService.ResolveReferences(ctx, resources.RoleResource, roleRecords, []string{"*"})
+	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []*model.Record{userRecord}, []string{"*"})
 
 	if err != nil {
 		return nil, err
 	}
+
+	result = append(result, user.SecurityConstraints...)
+
+	roleRecords := util.ArrayMap(user.Roles, resource_model.RoleMapperInstance.ToRecord)
+
+	err = s.recordService.ResolveReferences(ctx, resources.RoleResource, roleRecords, []string{"*"})
+
+	if err != nil {
+		return nil, err
+	}
+
+	result = append(result, resource_model.UserMapperInstance.FromRecord(userRecord).SecurityConstraints...)
 
 	for _, roleRecord := range roleRecords {
 		role := resource_model.RoleMapperInstance.FromRecord(roleRecord)
