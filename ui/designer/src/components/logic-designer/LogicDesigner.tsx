@@ -54,8 +54,6 @@ export const LogicDesigner: React.FC<LogicDesignerProps> = (props: LogicDesigner
     const [showSdk, setShowSdk] = useState(false)
     const [sdkResource, setSdkResource] = useState<Resource>()
 
-    console.log(resources, locationMap)
-
     const actionPanel = <Box style={{ display: 'flex' }}>
         <Box>
             <Tooltip title={'Add New Item'}>

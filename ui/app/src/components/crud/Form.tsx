@@ -15,7 +15,6 @@ export interface FormProps {
 }
 
 export function Form(props: FormProps) {
-    console.log('Form', props)
     return (
         <ResourceContext.Provider value={props.resource}>
             <RecordContext.Provider value={props.record}>

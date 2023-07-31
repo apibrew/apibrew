@@ -14,7 +14,6 @@ import {TokenService, authenticate} from "@apibrew/ui-lib";
 export function Login(): JSX.Element {
     const isLoggedIn = TokenService.isLoggedIn()
     useEffect(() => {
-        console.log(isLoggedIn)
         if (isLoggedIn) {
             navigate('/dashboard/test')
         }

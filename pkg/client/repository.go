@@ -80,10 +80,6 @@ func (r repository[T]) Get(ctx context.Context, id string) (T, error) {
 func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, error) {
 	instance := r.params.InstanceProvider()
 
-	if params.ResolveReferences == nil {
-		params.ResolveReferences = []string{"*"}
-	}
-
 	resp, err := r.client.GetRecordClient().Search(ctx, &stub.SearchRecordRequest{
 		Token:             r.client.GetToken(),
 		Namespace:         instance.GetNamespace(),

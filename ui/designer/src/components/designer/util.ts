@@ -2,7 +2,6 @@ import { Resource } from '@apibrew/ui-lib';
 import { AppDesignerBoard } from "../../../model/ui/designer-board.ts";
 
 export function checkResourceAllowedOnBoard(board: AppDesignerBoard, resource: Resource): boolean {
-    console.log(board.resourceSelector, board.name, resource.name, resource.namespace)
     if (board.resourceSelector) {
         let found = false
         for (const selector of board.resourceSelector) {

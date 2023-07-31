@@ -26,8 +26,6 @@ export default defineConfig({
                     return false
                 }
 
-                console.log(source, importer, isResolved);
-
                 if (isResolved) {
                     return true
                 }
@@ -36,7 +34,6 @@ export default defineConfig({
             },
             output: {
                 globals: (name) => {
-                    console.log(name);
                     return name
                 },
             },

@@ -15,8 +15,6 @@ class AugmentingLayout extends React.Component {
         const BaseLayout = getComponent("BaseLayout", true)
         const originalOperation = getComponent("operation", true)
 
-        console.log(SwaggerUI)
-
         return (
             <div>
                 <div className="myCustomHeader">
@@ -130,7 +128,6 @@ const req = http.request(options, function (res) {
   });
   res.on("end", function () {
     const body = Buffer.concat(chunks);
-    console.log(body.toString());
   });
 });
 ${reqBody ? `\nreq.write(${stringBody});` : ""}

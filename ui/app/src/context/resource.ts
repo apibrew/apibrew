@@ -1,5 +1,5 @@
+import { Resource } from "@apibrew/client";
 import React from "react";
-import {Resource} from "../model";
 
 export const ResourceContext = React.createContext<Resource | undefined>(undefined)
 

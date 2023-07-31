@@ -17,6 +17,9 @@ import {
 } from "./helper.ts";
 import { Loading } from "../basic/Loading.tsx";
 import { Namespace, Resource, SecurityConstraint } from "@apibrew/client";
+import { BaseLogger } from "../../logging.ts";
+
+const logger = BaseLogger.child({ component: 'SecurityConstraintsInputSimple' })
 
 export interface SecurityConstraintsInputSimpleProps {
     mode: 'role' | 'resource' | 'namespace'
@@ -27,15 +30,17 @@ export interface SecurityConstraintsInputSimpleProps {
 export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSimpleProps) {
     const namespaces = useRecords<Namespace>('namespace', 'system')
     const [resources, setResources] = useState<Resource[]>([])
-    const errorHandler = useErrorHandler()
+
+    logger.trace('render', { namespaces, resources, props })
 
     useEffect(() => {
         async function loadResources() {
             const resp = await ResourceService.list()
             if (!resp) {
-                setResources([])
+                throw new Error('Failed to load resources')
             } else {
                 setResources(resp)
+                logger.debug('loaded resources', { resp })
             }
         }
 
@@ -57,6 +62,8 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
 
             setAccessMap(updatedAccessMap)
             setReady(true)
+
+            logger.debug('updated access map', { updatedAccessMap })
         }
     }, [
         namespaces, resources
@@ -64,6 +71,8 @@ export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSi
 
     useEffect(() => {
         updateConstraints()
+
+        logger.debug('updated constraints', { constraints: props.constraints })
     }, [accessMap])
 
     const updateConstraints = () => {

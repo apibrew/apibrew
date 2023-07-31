@@ -3,11 +3,11 @@ import {ResourcePropertyContext, useResourceProperty} from "../../../context/pro
 import {useValue, ValueContext} from "../../../context/value.ts";
 import {StructElement} from "./StructElement.tsx";
 import {useResource} from "../../../context/resource.ts";
-import {ResourceProperty} from "../../../model/index.ts";
 import {FormItem} from "../../../model/ui/crud.ts";
 import {PropertyPathContext} from "../PropertyPathContext.tsx";
 import {AuthorizationService, Record} from "@apibrew/ui-lib";
 import {useRecord} from "../../../context/record.ts";
+import { ResourceProperty } from "@apibrew/client";
 
 export interface PropertyElementProps {
     properties: ResourceProperty[]
@@ -22,7 +22,6 @@ export function PropertyElement(props: PropertyElementProps) {
     const propertyPath = useContext(PropertyPathContext)
 
     if (!props.properties) {
-        console.log(props)
         throw new Error(`Properties not available in property form item`)
     }
 
@@ -30,13 +29,12 @@ export function PropertyElement(props: PropertyElementProps) {
 
     if (!property && parentProperty?.type == 'OBJECT') {
         property = {
-            name: props.config.propertyPath,
+            name: props.config.propertyPath!,
             type: 'OBJECT',
-        }
+        } as ResourceProperty
     }
 
     if (!property) {
-        console.log(props)
         throw new Error(`Property ${props.config.propertyPath} not found`)
     }
 
@@ -59,7 +57,6 @@ export function PropertyElement(props: PropertyElementProps) {
     // check access
     if (propertyPath === '') { // root property
         accessLevel = AuthorizationService.checkResourcePropertyAccess(resource, property.name, record.id)
-        console.log('accessLevel', accessLevel)
     } else {
         accessLevel = AuthorizationService.AccessLevel.READ_WRITE
     }

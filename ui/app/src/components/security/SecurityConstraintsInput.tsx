@@ -31,8 +31,6 @@ export function SecurityConstraintsInput(props: SecurityConstraintsInputProps) {
         }
     })
 
-    console.log('valueContext.value', valueContext)
-
     return <>
         <Tabs value={tab} onChange={(_, value) => setTab(value)}>
             <Tab label="Simple"/>
@@ -42,7 +40,6 @@ export function SecurityConstraintsInput(props: SecurityConstraintsInputProps) {
             constraints={constraints}
             setConstraints={value => {
                 setConstraints(value)
-                console.trace('change triggered')
                 valueContext.onChange(value)
             }}
             mode={props.mode}/>}
@@ -50,7 +47,6 @@ export function SecurityConstraintsInput(props: SecurityConstraintsInputProps) {
             constraints={constraints}
             setConstraints={value => {
                 setConstraints(value)
-                console.trace('change triggered')
                 valueContext.onChange(value)
             }}
             mode={props.mode}/>}

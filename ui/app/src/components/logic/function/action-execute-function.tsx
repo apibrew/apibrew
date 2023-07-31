@@ -91,7 +91,6 @@ export class ActionExecuteFunction implements ActionComponent<any> {
                         message: JSON.stringify(resp.output)
                     })
                 } else {
-                    console.log(resp.status == 'pending')
                     layoutContext.showAlert({
                         severity: 'error',
                         message: `Function is not executed by engine`

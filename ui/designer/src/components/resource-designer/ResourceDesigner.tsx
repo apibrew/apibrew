@@ -81,8 +81,6 @@ export const ResourceDesigner: React.FC<ResourceDesignerProps> = (props: Resourc
 
         setBoard(board)
 
-        console.log(board)
-
         try {
             const list = (await ResourceService.list()).filter(item => checkResourceAllowedOnBoard(board!, item))
 
@@ -128,8 +126,6 @@ export const ResourceDesigner: React.FC<ResourceDesignerProps> = (props: Resourc
     useEffect(() => {
         load()
     }, [])
-
-    console.log(resources, locationMap)
 
     const actionPanel = <Box style={{ display: 'flex' }}>
         <Box>

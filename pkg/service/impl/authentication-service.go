@@ -214,7 +214,12 @@ func (s *authenticationService) collectUserSecurityConstraints(ctx context.Conte
 
 	var userRecord = resource_model.UserMapperInstance.ToRecord(user)
 
-	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []*model.Record{userRecord}, []string{"*"})
+	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []*model.Record{userRecord}, []string{
+		"$.securityConstraints[]",
+		"$.securityConstraints[].namespace",
+		"$.securityConstraints[].resource",
+		"$.securityConstraints[].user",
+	})
 
 	if err != nil {
 		return nil, err
@@ -224,7 +229,11 @@ func (s *authenticationService) collectUserSecurityConstraints(ctx context.Conte
 
 	roleRecords := util.ArrayMap(user.Roles, resource_model.RoleMapperInstance.ToRecord)
 
-	err = s.recordService.ResolveReferences(ctx, resources.RoleResource, roleRecords, []string{"*"})
+	err = s.recordService.ResolveReferences(ctx, resources.RoleResource, roleRecords, []string{
+		"$.securityConstraints[]",
+		"$.securityConstraints[].namespace",
+		"$.securityConstraints[].resource",
+	})
 
 	if err != nil {
 		return nil, err

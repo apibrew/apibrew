@@ -8,7 +8,6 @@ function walkSearchProperty(obj: any, prop: string): any[] {
     let result: any[] = []
     for (const key in obj) {
         if (key == prop) {
-            console.log(obj, key)
             result.push(obj[key])
         } else if (typeof obj[key] === 'object') {
             result = [...result, ...walkSearchProperty(obj[key], prop)]
@@ -72,7 +71,6 @@ export function resolveSchema(doc: OpenAPIV3_1.Document, schema: OpenAPIV3_1.Sch
 
     if (ref) {
         const [_, resolved] = resolve(doc, schema, ref)
-        console.log('resolved', resolved)
         return resolved
     } else {
         return schema as OpenAPIV3_1.SchemaObject

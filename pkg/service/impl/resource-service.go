@@ -27,6 +27,65 @@ type resourceService struct {
 	authorizationService     service.AuthorizationService
 }
 
+func (r *resourceService) LocateResourceByReference(resource *model.Resource, reference *model.Reference) *model.Resource {
+	if reference == nil {
+		return nil
+	}
+
+	if reference.Namespace != "" {
+		referencedResource, _ := r.GetResourceByName(util.WithSystemContext(context.TODO()), reference.Namespace, reference.Resource)
+
+		return referencedResource
+	} else {
+		referencedResource, _ := r.GetResourceByName(util.WithSystemContext(context.TODO()), resource.Namespace, reference.Resource)
+
+		return referencedResource
+	}
+}
+
+func (r *resourceService) LocateReferences(resource *model.Resource, referencesToResolve []string) []string {
+	references := r.GetSchema().ResourcePropertiesByType[resource.Namespace+"/"+resource.Name][model.ResourceProperty_REFERENCE]
+	var filteredReferences []string
+
+	var existingPathMap = make(map[string]bool)
+
+	for _, reference := range references {
+		var existingReferenceToResolveMap = make(map[string]bool)
+		for _, checkRef := range referencesToResolve {
+			if existingReferenceToResolveMap[checkRef] {
+				continue
+			}
+			existingReferenceToResolveMap[checkRef] = true
+
+			if strings.HasPrefix(checkRef, reference.Path) {
+				if !existingPathMap[reference.Path] {
+					filteredReferences = append(filteredReferences, reference.Path)
+				}
+
+				existingPathMap[reference.Path] = true
+
+				// continue to check deep references
+				if checkRef != reference.Path {
+					referencedResource := r.LocateResourceByReference(resource, reference.Property.Reference)
+
+					nextRefCheck := strings.Replace(checkRef, reference.Path+".", "", 1)
+
+					subReferences := r.LocateReferences(referencedResource, []string{"$." + nextRefCheck})
+
+					for _, subReference := range subReferences {
+						if !existingPathMap[reference.Path+"."+subReference] {
+							filteredReferences = append(filteredReferences, reference.Path+"."+subReference[2:])
+						}
+						existingPathMap[reference.Path+"."+subReference] = true
+					}
+				}
+			}
+		}
+	}
+
+	return filteredReferences
+}
+
 func (r *resourceService) GetSchema() *abs.Schema {
 	return &r.schema
 }

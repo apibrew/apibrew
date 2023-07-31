@@ -24,6 +24,17 @@ func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
 	return list
 }
 
+func ArrayToMap[T interface{}, R interface{}, K comparable](arr []T, keyFunc func(T) K, valueFunc func(T) R) map[K]R {
+	var result = make(map[K]R, 0)
+
+	for _, item := range arr {
+		result[keyFunc(item)] = valueFunc(item)
+
+	}
+
+	return result
+}
+
 type HasId interface {
 	GetId() string
 }

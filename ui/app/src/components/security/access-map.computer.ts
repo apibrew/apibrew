@@ -3,9 +3,13 @@ import { PermissionChecks, AccessMap } from "./model.ts";
 import { namespacePermissions } from "./helper.ts";
 
 import { Namespace, Resource, SecurityConstraint } from "@apibrew/client";
+import { BaseLogger } from "../../logging.ts";
+
+const logger = BaseLogger.child({ component: 'AccessMapComputer' })
 
 function mapConstraintTo(constraint: SecurityConstraint, permissionChecks?: PermissionChecks): boolean {
     if (!permissionChecks) {
+        logger.warn('permissionChecks is undefined')
         return false
     }
 
@@ -32,6 +36,8 @@ function mapConstraintTo(constraint: SecurityConstraint, permissionChecks?: Perm
 
 export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], resources: Resource[], constraints: SecurityConstraint[]) {
     let updatedAccessMap = { ...accessMap }
+
+    logger.debug('prepareAccessMap', { namespaces, resources, constraints })
 
     if (!namespaces.some(item => item.name === 'system')) {
         namespaces.push({
@@ -90,7 +96,7 @@ export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], 
 
     for (const constraint of constraints) {
         if (constraint.propertyMode || constraint.permit == 'REJECT' || constraint.propertyValue || (constraint.recordIds ?? []).length > 0) {
-            console.log('skipping constraint: ', constraint)
+            logger.debug('Skipping constraint', { constraint })
             continue
         }
 
