@@ -39,6 +39,6 @@ type FindParams struct {
 	Offset            uint64
 	UseHistory        bool
 	Annotations       map[string]string
-	ResolveReferences []string // default []string{"*"}
+	ResolveReferences []string
 	Query             *model.BooleanExpression
 }

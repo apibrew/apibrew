@@ -16,7 +16,6 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
-	"strings"
 )
 
 type recordService struct {
@@ -484,6 +483,11 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 				if refProp.Property.BackReference != nil {
 					backRef := refProp.Property.BackReference
 
+					var backRefNewRecords []*model.Record
+					var backRefUpdatedRecords []*model.Record
+
+					var ids []string
+
 					for _, record := range records {
 						getter, _ := util.RecordPropertyAccessorByPath(record.Properties, refProp.Path)
 
@@ -496,9 +500,9 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 							continue
 						}
 
+						ids = append(ids, record.Id)
+
 						if gotVal.GetListValue() != nil {
-							var backRefNewRecords []*model.Record
-							var backRefUpdatedRecords []*model.Record
 
 							for _, item := range gotVal.GetListValue().Values {
 								st := item.GetStructValue()
@@ -517,28 +521,60 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 									})
 								}
 							}
-
-							if len(backRefNewRecords) > 0 {
-								if _, err := r.Create(ctx, service.RecordCreateParams{
-									Namespace: refProp.Property.Reference.Namespace,
-									Resource:  refProp.Property.Reference.Resource,
-									Records:   backRefNewRecords,
-								}); err != nil {
-									return err
-								}
-							}
-
-							if len(backRefUpdatedRecords) > 0 {
-								if _, err := r.Update(ctx, service.RecordUpdateParams{
-									Namespace: refProp.Property.Reference.Namespace,
-									Resource:  refProp.Property.Reference.Resource,
-									Records:   backRefUpdatedRecords,
-								}); err != nil {
-									return err
-								}
-							}
 						}
+					}
 
+					//var keepMark = make(map[string]bool)
+
+					existingRecords, _, err := r.List(ctx, service.RecordListParams{
+						Namespace: refProp.Property.Reference.Namespace,
+						Resource:  refProp.Property.Reference.Resource,
+						Query: util.QueryInExpression(backRef.Property, structpb.NewListValue(&structpb.ListValue{
+							Values: util.ArrayMap(ids, func(t string) *structpb.Value {
+								return structpb.NewStringValue(t)
+							}),
+						})),
+						ResolveReferences: []string{},
+					})
+
+					if err != nil {
+						return err
+					}
+
+					var backRefRecordsRemovalIds []string
+
+					for _, existingRecord := range existingRecords {
+						backRefRecordsRemovalIds = append(backRefRecordsRemovalIds, existingRecord.Id)
+					}
+
+					if len(backRefRecordsRemovalIds) > 0 {
+						if err := r.Delete(ctx, service.RecordDeleteParams{
+							Namespace: refProp.Property.Reference.Namespace,
+							Resource:  refProp.Property.Reference.Resource,
+							Ids:       backRefRecordsRemovalIds,
+						}); err != nil {
+							return err
+						}
+					}
+
+					if len(backRefNewRecords) > 0 {
+						if _, err := r.Create(ctx, service.RecordCreateParams{
+							Namespace: refProp.Property.Reference.Namespace,
+							Resource:  refProp.Property.Reference.Resource,
+							Records:   backRefNewRecords,
+						}); err != nil {
+							return err
+						}
+					}
+
+					if len(backRefUpdatedRecords) > 0 {
+						if _, err := r.Update(ctx, service.RecordUpdateParams{
+							Namespace: refProp.Property.Reference.Namespace,
+							Resource:  refProp.Property.Reference.Resource,
+							Records:   backRefUpdatedRecords,
+						}); err != nil {
+							return err
+						}
 					}
 				}
 			}
@@ -593,7 +629,9 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	DeNormalizeRecord(resource, res)
 
 	// resolving references
-	if err := r.ResolveReferences(ctx, resource, []*model.Record{res}, []string{"*"}); err != nil {
+	if err := r.ResolveReferences(ctx, resource, []*model.Record{res}, []string{
+		"$.securityConstraints",
+	}); err != nil {
 		return nil, err
 	}
 
@@ -625,13 +663,12 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	}
 
 	res, total, err := r.List(ctx, service.RecordListParams{
-		Query:             query,
-		Namespace:         namespace,
-		Resource:          resourceName,
-		Limit:             2,
-		Offset:            0,
-		UseHistory:        false,
-		ResolveReferences: []string{"*"},
+		Query:      query,
+		Namespace:  namespace,
+		Resource:   resourceName,
+		Limit:      2,
+		Offset:     0,
+		UseHistory: false,
 	})
 
 	if err != nil {
@@ -731,177 +768,15 @@ func (r *recordService) ResolveReferences(ctx context.Context, resource *model.R
 	}
 
 	// resolving references
-	references := r.resourceService.GetSchema().ResourcePropertiesByType[resource.Namespace+"/"+resource.Name][model.ResourceProperty_REFERENCE]
+	references := r.resourceService.LocateReferences(resource, referencesToResolve)
 
-	for _, reference := range references {
-		var matches = false
-		for _, referenceToResolve := range referencesToResolve {
-			if referenceToResolve == "*" || strings.HasPrefix(reference.Path, referenceToResolve) {
-				matches = true
-				break
-			}
-		}
-
-		// check if reference should be resolved
-
-		if matches {
-			if reference.Property.BackReference == nil { // normal reference
-				// collect records
-				if err := r.expandRecords(ctx, records, reference); err != nil {
-					return err
-				}
-			} else {
-				// collect records
-				var ids []string
-				for _, record := range records {
-					ids = append(ids, record.Id)
-				}
-
-				// get referenced records
-				list, _, err := r.List(ctx, service.RecordListParams{
-					Namespace: reference.Property.Reference.Namespace,
-					Resource:  reference.Property.Reference.Resource,
-					Query: util.QueryInExpression(reference.Property.BackReference.Property, structpb.NewListValue(&structpb.ListValue{
-						Values: util.ArrayMap(ids, func(t string) *structpb.Value {
-							return structpb.NewStringValue(t)
-						}),
-					})),
-					ResolveReferences: []string{},
-				})
-
-				if err != nil {
-					return err
-				}
-
-				// map records to map
-				var resolvedReferencedRecords = make(map[string][]*model.Record)
-				for _, record := range list {
-					actualReference := record.Properties[reference.Property.BackReference.Property].GetStructValue()
-					resolvedReferencedRecords[actualReference.Fields["id"].GetStringValue()] = append(resolvedReferencedRecords[actualReference.Fields["id"].GetStringValue()], record)
-				}
-
-				for _, record := range records {
-					var _, setter = util.RecordPropertyAccessorByPath(record.Properties, reference.Path)
-
-					if setter == nil {
-						continue
-					}
-
-					var filteredList []*structpb.Value
-					for _, referenceRecord := range list {
-						actualReference := referenceRecord.Properties[reference.Property.BackReference.Property].GetStructValue()
-
-						if actualReference.Fields["id"].GetStringValue() == record.Id {
-							filteredList = append(filteredList, structpb.NewStructValue(&structpb.Struct{Fields: referenceRecord.Properties}))
-						}
-					}
-
-					if len(filteredList) > 0 {
-						setter(structpb.NewListValue(&structpb.ListValue{Values: filteredList}))
-					}
-				}
-			}
-		}
+	var rr = &recordResolver{
+		recordService:   r,
+		resourceService: r.resourceService,
+		resource:        resource,
+		records:         records,
+		paths:           references,
 	}
 
-	return nil
-}
-
-func (r *recordService) expandRecords(ctx context.Context, records []*model.Record, reference abs.PropertyWithPath) errors.ServiceError {
-	var referencedResource, _ = r.resourceService.GetResourceByName(util.WithSystemContext(ctx), reference.Property.Reference.Namespace, reference.Property.Reference.Resource)
-
-	var query *model.BooleanExpression
-
-	var setterMap = make(map[string]func(value *structpb.Value))
-	var getterMap = make(map[string]func() *structpb.Value)
-
-	for _, record := range records {
-		var getter, setter = util.RecordPropertyAccessorByPath(record.Properties, reference.Path)
-
-		if getter == nil {
-			continue
-		}
-
-		var referenceValue = getter()
-
-		getterMap[record.Id] = getter
-		setterMap[record.Id] = setter
-
-		if referenceValue.GetListValue() != nil {
-			for _, value := range referenceValue.GetListValue().Values {
-				subQuery, err := util.RecordIdentifierQuery(referencedResource, value.GetStructValue().Fields)
-
-				if err != nil {
-					return errors.LogicalError.WithDetails(err.Error())
-				}
-
-				if query == nil {
-					query = subQuery
-				} else {
-					query = util.QueryOrExpression(query, subQuery)
-				}
-			}
-		} else {
-			subQuery, err := util.RecordIdentifierQuery(referencedResource, referenceValue.GetStructValue().Fields)
-
-			if err != nil {
-				return errors.LogicalError.WithDetails(err.Error())
-			}
-
-			if query == nil {
-				query = subQuery
-			} else {
-				query = util.QueryOrExpression(query, subQuery)
-			}
-		}
-	}
-
-	list, _, err := r.List(ctx, service.RecordListParams{
-		Namespace:         reference.Property.Reference.Namespace,
-		Resource:          reference.Property.Reference.Resource,
-		Query:             query,
-		ResolveReferences: []string{},
-	})
-
-	if err != nil {
-		return err
-	}
-
-	for _, record := range records {
-		if getterMap[record.Id] == nil {
-			continue
-		}
-		referenceIdentifiableValue := getterMap[record.Id]()
-		for _, referenceRecord := range list {
-
-			if referenceIdentifiableValue.GetListValue() != nil {
-				var list []*structpb.Value
-				for _, value := range referenceIdentifiableValue.GetListValue().Values {
-					matches, err := util.RecordMatchIdentifiableProperties(referencedResource, referenceRecord, value.GetStructValue().Fields)
-
-					if err != nil {
-						return errors.LogicalError.WithDetails(err.Error())
-					}
-
-					if matches {
-						list = append(list, structpb.NewStructValue(&structpb.Struct{Fields: referenceRecord.Properties}))
-						break
-					}
-				}
-				setterMap[record.Id](structpb.NewListValue(&structpb.ListValue{Values: list}))
-			} else {
-				matches, err := util.RecordMatchIdentifiableProperties(referencedResource, referenceRecord, referenceIdentifiableValue.GetStructValue().Fields)
-
-				if err != nil {
-					return errors.LogicalError.WithDetails(err.Error())
-				}
-
-				if matches {
-					setterMap[record.Id](structpb.NewStructValue(&structpb.Struct{Fields: referenceRecord.Properties}))
-					break
-				}
-			}
-		}
-	}
-	return nil
+	return rr.resolveReferences(ctx)
 }
