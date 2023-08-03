@@ -37,6 +37,8 @@ types:
         item:
           type: STRUCT
           typeRef: FormItem
+      - name: apiOptions
+        type: OBJECT
   - name: GridConfig
     properties:
       - name: columns

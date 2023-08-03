@@ -3,7 +3,7 @@ import { Client } from "../client"
 import { Function, FunctionResource, RecordResourceInfo } from "../model"
 import { Lambda, LambdaResource } from "../model/logic/lambda"
 import { getModule, registerModuleChild } from "./module-def"
-import { handleError } from "../service/error"
+import { handleError } from "../api/error"
 
 export interface LambdaParams {
     name: string

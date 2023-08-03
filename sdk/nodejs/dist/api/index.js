@@ -15,9 +15,6 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -26,10 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogicDef = void 0;
-__exportStar(require("./api"), exports);
-__exportStar(require("./repository"), exports);
-__exportStar(require("./model"), exports);
-__exportStar(require("./repository"), exports);
-__exportStar(require("./client"), exports);
-exports.LogicDef = __importStar(require("./logic"));
+exports.ResourceApi = exports.RecordApi = exports.AuthenticationApi = void 0;
+exports.AuthenticationApi = __importStar(require("./authentication"));
+exports.RecordApi = __importStar(require("./record"));
+exports.ResourceApi = __importStar(require("./resource"));

@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Repository = void 0;
-var service_1 = require("./service");
+var api_1 = require("./api");
 var Repository = /** @class */ (function () {
     function Repository(configProvider, recordResourceInfo) {
         this.configProvider = configProvider;
@@ -46,63 +46,63 @@ var Repository = /** @class */ (function () {
     Repository.prototype.create = function (entity) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.create(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)];
+                return [2 /*return*/, api_1.RecordApi.create(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)];
             });
         });
     };
     Repository.prototype.update = function (entity) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.update(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)];
+                return [2 /*return*/, api_1.RecordApi.update(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)];
             });
         });
     };
     Repository.prototype.apply = function (entity) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.apply(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)];
+                return [2 /*return*/, api_1.RecordApi.apply(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)];
             });
         });
     };
     Repository.prototype.list = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.list(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource)];
+                return [2 /*return*/, api_1.RecordApi.list(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource)];
             });
         });
     };
     Repository.prototype.get = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.get(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, id)];
+                return [2 /*return*/, api_1.RecordApi.get(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, id)];
             });
         });
     };
     Repository.prototype.remove = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.remove(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, id)];
+                return [2 /*return*/, api_1.RecordApi.remove(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, id)];
             });
         });
     };
     Repository.prototype.search = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.search(this.configProvider(), params)];
+                return [2 /*return*/, api_1.RecordApi.search(this.configProvider(), params)];
             });
         });
     };
     Repository.prototype.findBy = function (property, value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.findBy(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, property, value)];
+                return [2 /*return*/, api_1.RecordApi.findBy(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, property, value)];
             });
         });
     };
     Repository.prototype.findByMulti = function (conditions) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, service_1.RecordService.findByMulti(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, conditions)];
+                return [2 /*return*/, api_1.RecordApi.findByMulti(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, conditions)];
             });
         });
     };

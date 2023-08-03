@@ -584,7 +584,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 	return nil
 }
 
-func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError) {
+func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
 	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
@@ -629,9 +629,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	DeNormalizeRecord(resource, res)
 
 	// resolving references
-	if err := r.ResolveReferences(ctx, resource, []*model.Record{res}, []string{
-		"$.securityConstraints",
-	}); err != nil {
+	if err := r.ResolveReferences(ctx, resource, []*model.Record{res}, resolveReferences); err != nil {
 		return nil, err
 	}
 
@@ -687,7 +685,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 }
 
 func (r *recordService) Get(ctx context.Context, params service.RecordGetParams) (*model.Record, errors.ServiceError) {
-	return r.GetRecord(ctx, params.Namespace, params.Resource, params.Id)
+	return r.GetRecord(ctx, params.Namespace, params.Resource, params.Id, params.ResolveReferences)
 }
 
 func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteParams) errors.ServiceError {

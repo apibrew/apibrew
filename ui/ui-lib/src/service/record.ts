@@ -2,7 +2,9 @@ import axios from 'axios'
 import { BACKEND_URL } from '../config'
 import * as TokenService from './token'
 import { BooleanExpression } from "../model";
-import { type Resource } from '@apibrew/client';
+import { RecordApi, type Resource } from '@apibrew/client';
+import { GetOptions, ListOptions } from '@apibrew/client/dist/api/record';
+import { ServiceConfigProvider } from './service-config';
 
 export interface Record {
     id?: string
@@ -15,72 +17,30 @@ export namespace RecordService {
         content: T[]
     }
 
-    function resourceUrl(namespace: string, resource: string) {
-        return `${BACKEND_URL}/${namespace.toLowerCase()}-${resource.toLowerCase()}`
-    }
+    export async function list<T>(namespace: string, resource: string, options?: ListOptions): Promise<T[]> {
+        const result = await RecordApi.list<T>(ServiceConfigProvider(), namespace, resource, options)
 
-    export async function list<T>(namespace: string, resource: string): Promise<T[]> {
-
-        const result = await axios.get<RecordListContainer<T>>(`${resourceUrl(namespace, resource)}?resolveReferences=*`, {
-            headers: {
-                Authorization: `Bearer ${TokenService.get()}`
-            }
-        })
-
-        return result.data.content.map(record => record)
-
+        return result.content
     }
 
     export async function create<T>(namespace: string, resource: string, record: T): Promise<T> {
-
-        const result = await axios.post<T>(`${resourceUrl(namespace, resource)}`, record, {
-            headers: {
-                Authorization: `Bearer ${TokenService.get()}`
-            }
-        })
-
-        return result.data
-
+        return RecordApi.create<T>(ServiceConfigProvider(), namespace, resource, record)
     }
 
     export async function update<T extends Record>(namespace: string, resource: string, record: T): Promise<T> {
-        const result = await axios.put<T>(`${resourceUrl(namespace, resource)}/${record.id!}`, record, {
-            headers: {
-                Authorization: `Bearer ${TokenService.get()}`
-            }
-        })
-
-        return result.data
-
+        return RecordApi.update<T>(ServiceConfigProvider(), namespace, resource, record)
     }
 
     export async function remove(namespace: string, resource: string, id: string): Promise<void> {
-
-        await axios.delete(`${resourceUrl(namespace, resource)}/${id}`, {
-            headers: {
-                Authorization: `Bearer ${TokenService.get()}`
-            }
-        })
+        return RecordApi.remove(ServiceConfigProvider(), namespace, resource, id)
     }
 
-    export async function get<T>(namespace: string, resource: string, id: string): Promise<T> {
-        const result = await axios.get<T>(`${resourceUrl(namespace, resource)}/${id}`, {
-            headers: {
-                Authorization: `Bearer ${TokenService.get()}`
-            }
-        })
-
-        return result.data
+    export async function get<T>(namespace: string, resource: string, id: string, options?: GetOptions): Promise<T> {
+        return RecordApi.get<T>(ServiceConfigProvider(), namespace, resource, id, options)
     }
 
     export async function resource(namespace: string, resource: string): Promise<Resource> {
-        const result = await axios.get<Resource>(`${resourceUrl(namespace, resource)}/_resource`, {
-            headers: {
-                Authorization: `Bearer ${TokenService.get()}`
-            }
-        })
-
-        return result.data
+        return RecordApi.resource(ServiceConfigProvider(), namespace, resource)
     }
 
     export async function findBy<T>(namespace: string, resource: string, property: string, value: any): Promise<T | undefined> {
@@ -94,46 +54,10 @@ export namespace RecordService {
         property: string,
         value: any
     }[]): Promise<T | undefined> {
-
-        const query: BooleanExpression = {
-            and: {
-                expressions: conditions.map(condition => ({
-                    equal: {
-                        left: {
-                            property: condition.property
-                        },
-                        right: {
-                            value: condition.value
-                        }
-                    }
-                }))
-            }
-        } as BooleanExpression
-        const result = await axios.post<RecordListContainer<T>>(`${resourceUrl(namespace, resource)}/_search`, {
-            query: query
-        }, {
-            headers: {
-                Authorization: `Bearer ${TokenService.get()}`
-            }
-        })
-
-        if (result.data.content && result.data.content.length > 0) {
-            return result.data.content[0]
-        } else {
-            return undefined
-        }
-
+        return RecordApi.findByMulti<T>(ServiceConfigProvider(), namespace, resource, conditions)
     }
 
     export async function apply<T>(namespace: string, resource: string, record: T): Promise<T> {
-
-        const result = await axios.patch<T>(`${resourceUrl(namespace, resource)}`, record, {
-            headers: {
-                Authorization: `Bearer ${TokenService.get()}`
-            }
-        })
-
-        return result.data
-
+        return RecordApi.apply<T>(ServiceConfigProvider(), namespace, resource, record)
     }
 }

@@ -16,7 +16,7 @@ export declare function findBy<T extends Record<unknown>>(config: ServiceConfig,
 export declare function findByMulti<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string, conditions: {
     property: string;
     value: any;
-}[]): Promise<T | undefined>;
+}[], options?: GetOptions): Promise<T | undefined>;
 export interface SearchRecordParams {
     namespace: string;
     resource: string;

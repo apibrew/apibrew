@@ -50,7 +50,7 @@ function list(config, namespace, resource, options) {
                     url = resourceUrl(config, namespace, resource);
                     if (options) {
                         if (options.resolveReferences && options.resolveReferences.length > 0) {
-                            url += "?resolveReferences=".concat(encodeURIComponent(options.resolveReferences.join(',')));
+                            url += "?resolve-references=".concat(encodeURIComponent(options.resolveReferences.join(',')));
                         }
                     }
                     return [4 /*yield*/, axios_1.default.get(url, {
@@ -131,7 +131,7 @@ function get(config, namespace, resource, id, options) {
                     url = "".concat(resourceUrl(config, namespace, resource), "/").concat(id);
                     if (options) {
                         if (options.resolveReferences && options.resolveReferences.length > 0) {
-                            url += "?resolveReferences=".concat(encodeURIComponent(options.resolveReferences.join(',')));
+                            url += "?resolve-references=".concat(encodeURIComponent(options.resolveReferences.join(',')));
                         }
                     }
                     return [4 /*yield*/, axios_1.default.get(url, {
@@ -158,7 +158,7 @@ function findBy(config, namespace, resource, property, value) {
     });
 }
 exports.findBy = findBy;
-function findByMulti(config, namespace, resource, conditions) {
+function findByMulti(config, namespace, resource, conditions, options) {
     return __awaiter(this, void 0, void 0, function () {
         var query, result;
         return __generator(this, function (_a) {
@@ -178,7 +178,7 @@ function findByMulti(config, namespace, resource, conditions) {
                             }); })
                         }
                     };
-                    return [4 /*yield*/, axios_1.default.post("".concat(resourceUrl(config, namespace, resource), "/_search?resolveReferences=*"), {
+                    return [4 /*yield*/, axios_1.default.post("".concat(resourceUrl(config, namespace, resource), "/_search?resolve-references=*"), {
                             query: query
                         }, {
                             headers: {

@@ -106,27 +106,3 @@ type SearchRecordRequest struct {
 	ResolveReferences []string                 `json:"resolveReferences,omitempty"`
 	Annotations       map[string]string        `json:"annotations,omitempty"`
 }
-
-type ResourceWrapper struct {
-	resource *model.Resource
-}
-
-func (rw *ResourceWrapper) MarshalJSON() ([]byte, error) {
-	return mo.Marshal(rw.resource)
-}
-
-func (rw *ResourceWrapper) UnmarshalJSON(data []byte) error {
-	return umo.Unmarshal(data, rw.resource)
-}
-
-func NewResourceWrapper(resource *model.Resource) *ResourceWrapper {
-	if resource == nil {
-		return nil
-	}
-
-	rw := new(ResourceWrapper)
-
-	rw.resource = resource
-
-	return rw
-}

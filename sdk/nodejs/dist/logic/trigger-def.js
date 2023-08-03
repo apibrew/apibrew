@@ -50,7 +50,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineTrigger = void 0;
 var client_1 = require("../client");
 var model_1 = require("../model");
-var error_1 = require("../service/error");
+var error_1 = require("../api/error");
 var module_def_1 = require("./module-def");
 function defineTrigger(functionTrigger, fn) {
     var client = client_1.Client.getDefaultClient();

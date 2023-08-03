@@ -20,6 +20,7 @@ export interface FormItem {
 
 export interface FormConfig {
      children?: FormItem[];
+     apiOptions?: object;
 
 }
 

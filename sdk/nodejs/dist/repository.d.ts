@@ -1,6 +1,6 @@
 import { Record, RecordListContainer, RecordResourceInfo } from "./model/record";
-import { ServiceConfigProvider } from "./service/config";
-import { SearchRecordParams } from "./service/record";
+import { ServiceConfigProvider } from "./api/config";
+import { SearchRecordParams } from "./api/record";
 export declare class Repository<T extends Record<unknown>> {
     private configProvider;
     private recordResourceInfo;

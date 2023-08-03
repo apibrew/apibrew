@@ -1,0 +1,10 @@
+import { type Resource } from '../model';
+import { ServiceConfig } from './config';
+export declare function list(config: ServiceConfig): Promise<Resource[]>;
+export declare function create(config: ServiceConfig, resource: Resource): Promise<Resource>;
+export declare function update(config: ServiceConfig, resource: Resource): Promise<Resource>;
+export declare function remove(config: ServiceConfig, resource: Resource, forceMigrate: boolean): Promise<void>;
+export declare function get(config: ServiceConfig, resourceId: string): Promise<Resource>;
+export declare function getByName(config: ServiceConfig, resourceName: string, namespace?: string): Promise<Resource>;
+export declare function save(config: ServiceConfig, resource: Resource): Promise<Resource>;
+export declare function apply(config: ServiceConfig, resource: Resource): Promise<Resource>;

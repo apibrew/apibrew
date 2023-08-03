@@ -42,7 +42,7 @@ var model_1 = require("../model");
 var function_1 = require("../model/logic/function");
 var util_1 = require("../util");
 var module_def_1 = require("./module-def");
-var error_1 = require("../service/error");
+var error_1 = require("../api/error");
 function defineFunction(name, args, fn) {
     var client = client_1.Client.getDefaultClient();
     var functionRepository = client.newRepository(function_1.FunctionResource);

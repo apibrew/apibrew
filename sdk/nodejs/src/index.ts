@@ -1,4 +1,4 @@
-export * from './service'
+export * from './api'
 export * from './repository'
 export * from './model'
 export * from './repository'

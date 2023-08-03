@@ -43,7 +43,7 @@ type DataSourceService interface {
 type RecordService interface {
 	Init(config *model.AppConfig)
 	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError)
-	GetRecord(ctx context.Context, namespace, resourceName, id string) (*model.Record, errors.ServiceError)
+	GetRecord(ctx context.Context, namespace, resourceName, id string, references []string) (*model.Record, errors.ServiceError)
 	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError)
 	ResolveReferences(ctx context.Context, resource *model.Resource, records []*model.Record, referencesToResolve []string) errors.ServiceError
 	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
@@ -161,9 +161,10 @@ func (p RecordUpdateParams) ToRequest() *stub.UpdateRecordRequest {
 }
 
 type RecordGetParams struct {
-	Namespace string
-	Resource  string
-	Id        string
+	Namespace         string
+	Resource          string
+	Id                string
+	ResolveReferences []string
 }
 
 type RecordDeleteParams struct {

@@ -4,7 +4,7 @@ import { FunctionExecution, FunctionExecutionResource } from '../model';
 import { Argument, Function, FunctionArgsName, FunctionResource } from '../model/logic/function'
 import { isObjectModified } from '../util';
 import { getModule, registerModuleChild } from './module-def';
-import { handleError } from '../service/error';
+import { handleError } from '../api/error';
 
 export interface FunctionParams {
     [key: string]: any

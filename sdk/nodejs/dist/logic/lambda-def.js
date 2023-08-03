@@ -41,7 +41,7 @@ var client_1 = require("../client");
 var model_1 = require("../model");
 var lambda_1 = require("../model/logic/lambda");
 var module_def_1 = require("./module-def");
-var error_1 = require("../service/error");
+var error_1 = require("../api/error");
 function parseLambdaEventSelectorPattern(eventSelectorPattern) {
     var parts = eventSelectorPattern.split(':');
     var resourceFullName = parts[0];
