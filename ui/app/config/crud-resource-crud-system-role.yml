@@ -14,6 +14,14 @@ properties:
         flex: 1
         title: Name
   formConfig:
+    apiOptions:
+      resolveReferences:
+        [
+          "$.securityConstraints[]",
+          "$.securityConstraints[].namespace",
+          "$.securityConstraints[].resource",
+          "$.securityConstraints[].user",
+        ]
     children:
       - kind: tab
         title: Details
@@ -31,4 +39,4 @@ properties:
               - kind: custom
                 component: CoreUI/SecurityConstraintsInput
                 params:
-                  mode: 'role'
+                  mode: "role"

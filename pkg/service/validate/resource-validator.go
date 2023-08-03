@@ -58,10 +58,7 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Message:  "Reference.Resource should not be empty for reference type",
 					Value:    nil,
 				})
-			} else {
-				// validate if referenced resource exists
-
-			}
+			} // fixme: else validate if referenced resource exists
 		}
 
 		if prop.Type == model.ResourceProperty_LIST {

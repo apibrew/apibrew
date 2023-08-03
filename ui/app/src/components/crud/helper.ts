@@ -5,7 +5,7 @@ import {isSimpleProperty, isSpecialProperty} from "../../util/property";
 import {not} from "../../util/lambda";
 
 export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
-    const name = `ResourceCrud-${resource.namespace}-${resource.name}`
+    const name = `ResourceCrud-${resource.namespace.name}-${resource.name}`
 
     const gridColumns: GridColumnConfig[] = [
         {

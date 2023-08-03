@@ -1,7 +1,6 @@
 import {Button} from "@mui/material"
 import {PageLayout} from "../../layout/PageLayout.tsx"
 import {Api, Delete, Edit, PlusOneOutlined, Search} from "@mui/icons-material"
-import {Resource, ResourceProperty} from "../../model/index.ts"
 import {useNavigate} from "react-router-dom"
 import {DataGrid, GridActionsCellItem, GridColDef, GridRowParams, GridValueGetterParams} from '@mui/x-data-grid';
 import {Record, RecordService, LayoutContext, useBreadCramps} from "@apibrew/ui-lib"
@@ -12,6 +11,7 @@ import {Icon} from "../Icon.tsx";
 import {ModuleService} from "@apibrew/ui-lib";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
 import Box from "@mui/material/Box";
+import { Resource, ResourceProperty } from "@apibrew/client";
 
 export interface ListProps {
     resource: Resource
@@ -26,7 +26,7 @@ export function List(props: ListProps) {
     const layoutContext = useContext(LayoutContext)
 
     const load = () => {
-        RecordService.list<Record>(props.resource.namespace ?? 'default', props.resource.name).then((data) => {
+        RecordService.list<Record>(props.resource.namespace.name ?? 'default', props.resource.name).then((data) => {
             setList(data)
         }, errorHandler)
     }
@@ -103,7 +103,7 @@ export function List(props: ListProps) {
                     navigate(`${params.id}/edit`)
                 }}/>,
                 <GridActionsCellItem label='Delete' icon={<Delete/>} onClick={() => {
-                    RecordService.remove(props.resource.namespace ?? 'default', props.resource.name, params.id as string).then(() => {
+                    RecordService.remove(props.resource.namespace.name ?? 'default', props.resource.name, params.id as string).then(() => {
                         load()
                     })
                 }}/>,
@@ -119,10 +119,10 @@ export function List(props: ListProps) {
             if (props.crudConfig?.gridConfig?.actions) {
                 props.crudConfig.gridConfig.actions.forEach((action) => {
                     actions.push(<GridActionsCellItem
-                        label={action.title}
-                        icon={<Icon name={action.icon}/>}
+                        label={action.title!}
+                        icon={<Icon name={action.icon!}/>}
                         onClick={() => {
-                            ModuleService.executeActionComponent(action.component, params.id as string, layoutContext).then()
+                            ModuleService.executeActionComponent(action.component!, params.id as string, layoutContext).then()
                         }}/>)
                 })
             }

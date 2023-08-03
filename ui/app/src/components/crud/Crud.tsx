@@ -23,11 +23,14 @@ export function Crud(props: CrudProps): JSX.Element {
 
     const [crudConfig, setCrudConfig] = React.useState<CrudModel>()
 
+    console.log('crudConfig', crudConfig)
+
     useEffect(() => {
         if (resource) {
-            const name = `ResourceCrud-${resource.namespace}-${resource.name}`
+            const name = `ResourceCrud-${resource.namespace.name}-${resource.name}`
             RecordService.findBy<CrudModel>('ui', CrudName, 'name', name)
                 .then((record) => {
+                    console.log('RecordService.findBy', record)
                     if (record) {
                         setCrudConfig(record)
                     } else {

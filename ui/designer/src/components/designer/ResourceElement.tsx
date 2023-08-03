@@ -14,7 +14,7 @@ export function ResourceElement(props: ResourceElementProps) {
                     stroke="#34a8a0" />
                 <text fill="#000000" stroke="#000" strokeWidth="0" x="10" y="21" fontSize="16"
                     fontFamily="Noto Sans JP" textAnchor="start" fontWeight="normal" fontStyle="normal">
-                    {props.resource.name} {props.resource.namespace && <>({props.resource.namespace})</>}
+                    {props.resource.name} {props.resource.namespace && <>({props.resource.namespace.name})</>}
                 </text>
             </g>
             <g transform='translate(0, 50)'>
