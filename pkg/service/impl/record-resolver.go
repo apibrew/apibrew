@@ -202,7 +202,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 		if len(pathToOperateNextReference) > 0 {
 			if prop.Type == model.ResourceProperty_STRUCT {
-				err := r._recordListWalkOperator(nil, newPath, prop.Properties, subValues, pathToOperateNextReferenceMap)
+				err := r._recordListWalkOperator(ctx, newPath, prop.Properties, subValues, pathToOperateNextReferenceMap)
 
 				if err != nil {
 					return err
