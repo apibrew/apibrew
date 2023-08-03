@@ -1,6 +1,6 @@
 import { RecordResourceInfo, Record } from "./model";
 import { Repository } from "./repository";
-import { ServiceConfigProvider } from "./service/config";
+import { ServiceConfigProvider } from "./api/config";
 export declare class Client {
     private config;
     private static defaultClient;

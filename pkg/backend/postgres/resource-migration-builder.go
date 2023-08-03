@@ -32,7 +32,6 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 		uniqueStr = "unique"
 	}
 
-	var cols []string
 	var colsEscaped []string
 
 	for _, indexProp := range index.Properties {
@@ -47,8 +46,31 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 			return "", errors.LogicalError.WithDetails("Property not found with name: " + prop.Name)
 		}
 
-		cols = append(cols, prop.Mapping)
 		colsEscaped = append(colsEscaped, r.options.Quote(prop.Mapping))
+	}
+
+	indexName := r.prepareIndexName(index, resource)
+
+	sql := fmt.Sprintf("create %s index %s on %s(%s)", uniqueStr, r.options.Quote(indexName), r.options.Quote(resource.SourceConfig.Entity), strings.Join(colsEscaped, ","))
+	return sql, nil
+}
+
+func (r *resourceMigrationBuilder) prepareIndexName(index *model.ResourceIndex, resource *model.Resource) string {
+	if annotations.Get(index, annotations.SourceIdentity) != "" {
+		return annotations.Get(index, annotations.SourceIdentity)
+	}
+
+	var cols []string
+
+	for _, indexProp := range index.Properties {
+		var prop *model.ResourceProperty
+		for _, prop = range resource.Properties {
+			if prop.Name == indexProp.Name {
+				break
+			}
+		}
+
+		cols = append(cols, prop.Mapping)
 	}
 
 	var indexName = resource.SourceConfig.Entity + "_" + strings.Join(cols, "_")
@@ -58,9 +80,7 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 	} else {
 		indexName = indexName + "_idx"
 	}
-
-	sql := fmt.Sprintf("create %s index %s on %s(%s)", uniqueStr, r.options.Quote(indexName), r.options.Quote(resource.SourceConfig.Entity), strings.Join(colsEscaped, ","))
-	return sql, nil
+	return indexName
 }
 
 func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) (string, errors.ServiceError) {
@@ -308,9 +328,11 @@ func (r *resourceMigrationBuilder) AddIndex(prop *model.ResourceIndex) helper.Re
 	return r
 }
 
-func (r *resourceMigrationBuilder) DeleteIndex(prop *model.ResourceIndex) helper.ResourceMigrationBuilder {
+func (r *resourceMigrationBuilder) DeleteIndex(index *model.ResourceIndex) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
-		sql := fmt.Sprintf("DROP INDEX %s", annotations.Get(prop, annotations.SourceIdentity))
+		var indexName = r.prepareIndexName(index, r.params.MigrationPlan.CurrentResource)
+
+		sql := fmt.Sprintf("DROP INDEX %s", indexName)
 
 		_, sqlError := r.runner.ExecContext(r.ctx, sql)
 		return r.options.handleDbError(r.ctx, sqlError)

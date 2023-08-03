@@ -1,6 +1,6 @@
 import { Client } from "../client";
 import { FunctionResource, FunctionTrigger, FunctionTriggerResource, Record, Function } from "../model";
-import { handleError } from "../service/error";
+import { handleError } from "../api/error";
 import { getModule, registerModuleChild } from "./module-def";
 
 export function defineTrigger<T extends Record<unknown>>(functionTrigger: Partial<FunctionTrigger>, fn: (entity: T) => T) {

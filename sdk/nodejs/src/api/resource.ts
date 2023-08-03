@@ -3,19 +3,15 @@ import { type Resource } from '../model'
 import { ServiceConfig } from './config'
 import { isObjectModified } from '../util'
 
-interface ResourceListContainer {
-    resources: Resource[]
-}
-
 export async function list(config: ServiceConfig): Promise<Resource[]> {
 
-    const result = await axios.get<ResourceListContainer>(`${config.backendUrl}/resources`, {
+    const result = await axios.get<Resource[]>(`${config.backendUrl}/resources`, {
         headers: {
             Authorization: `Bearer ${config.token}`
         }
     })
 
-    return result.data.resources
+    return result.data
 
 }
 
@@ -84,15 +80,13 @@ export async function getByName(config: ServiceConfig, resourceName: string, nam
     }
 
 
-    const result = await axios.get<{
-        resource: Resource
-    }>(`${config.backendUrl}/resources/${namespace}/${resourceName}`, {
+    const result = await axios.get<Resource>(`${config.backendUrl}/resources/${namespace}/${resourceName}`, {
         headers: {
             Authorization: `Bearer ${config.token}`
         }
     })
 
-    return result.data.resource
+    return result.data
 
 }
 

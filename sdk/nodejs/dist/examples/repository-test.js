@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 var repository_1 = require("../repository");
-var service_1 = require("../service");
+var api_1 = require("../api");
 var country_example_1 = require("./country-example");
 function run() {
     return __awaiter(this, void 0, void 0, function () {
@@ -52,7 +52,7 @@ function run() {
                     };
                     configProvider = function () { return config; };
                     _a = config;
-                    return [4 /*yield*/, service_1.AuthenticationService.authenticate(config, 'admin', 'admin', 'LONG').then(function (result) { return result.content; })];
+                    return [4 /*yield*/, api_1.AuthenticationApi.authenticate(config, 'admin', 'admin', 'LONG').then(function (result) { return result.content; })];
                 case 1:
                     _a.token = _b.sent();
                     repository = new repository_1.Repository(configProvider, country_example_1.CountryExampleResource);

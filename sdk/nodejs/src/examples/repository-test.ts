@@ -1,5 +1,5 @@
 import { Repository } from "../repository";
-import { AuthenticationService } from "../service";
+import { AuthenticationApi } from "../api";
 import { CountryExample, CountryExampleResource } from "./country-example";
 
 export async function run() {
@@ -10,7 +10,7 @@ export async function run() {
 
     const configProvider = () => config
 
-    config.token = await AuthenticationService.authenticate(config, 'admin', 'admin', 'LONG').then(result => result.content)
+    config.token = await AuthenticationApi.authenticate(config, 'admin', 'admin', 'LONG').then(result => result.content)
 
     const repository = new Repository<CountryExample>(configProvider, CountryExampleResource)
 

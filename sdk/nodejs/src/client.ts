@@ -1,7 +1,7 @@
 import { RecordResourceInfo, Record } from "./model";
 import { Repository } from "./repository";
-import { AuthenticationService } from "./service";
-import { ServiceConfig, ServiceConfigProvider } from "./service/config";
+import { AuthenticationApi } from "./api";
+import { ServiceConfig, ServiceConfigProvider } from "./api/config";
 
 export class Client {
     private config: ServiceConfig
@@ -15,7 +15,7 @@ export class Client {
     }
 
     public async authenticate(username: string, password: string) {
-        this.config.token = await AuthenticationService.authenticate(this.config, username, password, 'VERY_LONG')
+        this.config.token = await AuthenticationApi.authenticate(this.config, username, password, 'VERY_LONG')
             .then(result => result.content)
     }
 

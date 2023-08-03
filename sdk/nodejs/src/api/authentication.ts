@@ -13,9 +13,11 @@ export async function authenticate(config: ServiceConfig, username: string, pass
     return result.data.token!
 }
 
-export async function refreshToken(config: ServiceConfig, refreshTokenContent: string): Promise<void> {
-    const accessTokenResult = await axios.put<RenewTokenResponse>(`${config.backendUrl}/authentication/token`, {
+export async function refreshToken(config: ServiceConfig, refreshTokenContent: string): Promise<RenewTokenResponse> {
+    const result = await axios.put<RenewTokenResponse>(`${config.backendUrl}/authentication/token`, {
         token: refreshTokenContent,
         term: 'VERY_SHORT'
     } as RenewTokenRequest)
+
+    return result.data
 }

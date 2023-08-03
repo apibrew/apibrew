@@ -35,49 +35,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Client = void 0;
-var repository_1 = require("./repository");
-var api_1 = require("./api");
-var Client = /** @class */ (function () {
-    function Client(backendUrl) {
-        this.config = {
-            backendUrl: backendUrl,
-            token: ''
-        };
-    }
-    Client.prototype.authenticate = function (username, password) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = this.config;
-                        return [4 /*yield*/, api_1.AuthenticationApi.authenticate(this.config, username, password, 'VERY_LONG')
-                                .then(function (result) { return result.content; })];
-                    case 1:
-                        _a.token = _b.sent();
-                        return [2 /*return*/];
-                }
-            });
+exports.refreshToken = exports.authenticate = void 0;
+var axios_1 = __importDefault(require("axios"));
+function authenticate(config, username, password, tokenTerm) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.post("".concat(config.backendUrl, "/authentication/token"), {
+                        username: username,
+                        password: password,
+                        term: tokenTerm
+                    })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, result.data.token];
+            }
         });
-    };
-    Client.prototype.authenticateToken = function (token) {
-        this.config.token = token;
-    };
-    Client.prototype.newRepository = function (recordResourceInfo) {
-        return new repository_1.Repository(this.provider(), recordResourceInfo);
-    };
-    Client.prototype.provider = function () {
-        var _this = this;
-        return function () { return _this.config; };
-    };
-    Client.setDefaultClient = function (client) {
-        Client.defaultClient = client;
-    };
-    Client.getDefaultClient = function () {
-        return Client.defaultClient;
-    };
-    return Client;
-}());
-exports.Client = Client;
+    });
+}
+exports.authenticate = authenticate;
+function refreshToken(config, refreshTokenContent) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.put("".concat(config.backendUrl, "/authentication/token"), {
+                        token: refreshTokenContent,
+                        term: 'VERY_SHORT'
+                    })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, result.data];
+            }
+        });
+    });
+}
+exports.refreshToken = refreshToken;

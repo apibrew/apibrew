@@ -1,8 +1,6 @@
 import { Client } from "../client"
-import { Function, FunctionResource, RecordResourceInfo, Record } from "../model"
-import { Lambda, LambdaResource } from "../model/logic/lambda"
-import { ResourceService } from "../service"
-import { handleError } from "../service/error"
+import { RecordResourceInfo, Record } from "../model"
+import { handleError } from "../api/error"
 
 export function defineRecord<T extends Record<unknown>>(resourceInfo: RecordResourceInfo, record: T) {
     const client = Client.getDefaultClient()

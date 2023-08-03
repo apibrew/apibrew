@@ -53,6 +53,8 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
+	resolveReferences := request.URL.Query().Get("resolve-references")
+
 	// handle query parameters
 
 	queryMap := make(map[string]interface{})
@@ -92,12 +94,13 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	}
 
 	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
-		Query:      query,
-		Namespace:  resource.Namespace,
-		Resource:   resource.Name,
-		Limit:      uint32(limit),
-		Offset:     uint64(offset),
-		UseHistory: getRequestBoolFlag(request, "useHistory"),
+		Query:             query,
+		Namespace:         resource.Namespace,
+		Resource:          resource.Name,
+		Limit:             uint32(limit),
+		Offset:            uint64(offset),
+		UseHistory:        getRequestBoolFlag(request, "useHistory"),
+		ResolveReferences: strings.Split(resolveReferences, ","),
 	})
 
 	ServiceResponder[*stub.ListRecordRequest]().
@@ -175,10 +178,13 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 	id := vars["id"]
 
+	resolveReferences := request.URL.Query().Get("resolve-references")
+
 	record, serviceErr := r.recordService.Get(request.Context(), service.RecordGetParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
-		Id:        id,
+		Namespace:         resource.Namespace,
+		Resource:          resource.Name,
+		Id:                id,
+		ResolveReferences: strings.Split(resolveReferences, ","),
 	})
 
 	ServiceResponder[*stub.GetRecordRequest]().
@@ -278,9 +284,7 @@ func (r *recordApi) handleRecordResource(writer http.ResponseWriter, request *ht
 	ServiceResponder[*stub.ListRecordRequest]().
 		Writer(writer).
 		Request(request).
-		Respond(&ResourceWrapper{
-			resource: resource,
-		}, nil)
+		Respond(resourceTo(resource), nil)
 }
 
 func NewRecordApi(container service.Container) RecordApi {
