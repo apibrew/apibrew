@@ -24,20 +24,14 @@ var SecurityConstraintResource = &model.Resource{
 		{
 			Name:    "namespace",
 			Mapping: "namespace",
-			Type:    model.ResourceProperty_REFERENCE,
-			Reference: &model.Reference{
-				Namespace: NamespaceResource.Namespace,
-				Resource:  NamespaceResource.Name,
-			},
+			Type:    model.ResourceProperty_STRING,
+			Length:  255,
 		},
 		{
 			Name:    "resource",
 			Mapping: "resource",
-			Type:    model.ResourceProperty_REFERENCE,
-			Reference: &model.Reference{
-				Namespace: ResourceResource.Namespace,
-				Resource:  ResourceResource.Name,
-			},
+			Type:    model.ResourceProperty_STRING,
+			Length:  255,
 		},
 		{
 			Name:     "property",

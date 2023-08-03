@@ -11,8 +11,8 @@ type SecurityConstraint struct {
 	UpdatedBy     *string                         `json:"updatedBy,omitempty"`
 	CreatedOn     *time.Time                      `json:"createdOn,omitempty"`
 	UpdatedOn     *time.Time                      `json:"updatedOn,omitempty"`
-	Namespace     *Namespace                      `json:"namespace,omitempty"`
-	Resource      *Resource                       `json:"resource,omitempty"`
+	Namespace     *string                         `json:"namespace,omitempty"`
+	Resource      *string                         `json:"resource,omitempty"`
 	Property      *string                         `json:"property,omitempty"`
 	PropertyValue *string                         `json:"propertyValue,omitempty"`
 	PropertyMode  *SecurityConstraintPropertyMode `json:"propertyMode,omitempty"`
@@ -44,10 +44,10 @@ func (s *SecurityConstraint) GetCreatedOn() *time.Time {
 func (s *SecurityConstraint) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
-func (s *SecurityConstraint) GetNamespace() *Namespace {
+func (s *SecurityConstraint) GetNamespace() *string {
 	return s.Namespace
 }
-func (s *SecurityConstraint) GetResource() *Resource {
+func (s *SecurityConstraint) GetResource() *string {
 	return s.Resource
 }
 func (s *SecurityConstraint) GetProperty() *string {
