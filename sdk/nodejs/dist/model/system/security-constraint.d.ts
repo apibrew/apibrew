@@ -1,5 +1,3 @@
-import { Namespace } from "./namespace";
-import { Resource } from "./resource";
 import { User } from "./user";
 import { Role } from "./role";
 export declare const SecurityConstraintResource: {
@@ -13,8 +11,8 @@ export interface SecurityConstraint {
     updatedBy?: string;
     createdOn: string;
     updatedOn?: string;
-    namespace?: Namespace;
-    resource?: Resource;
+    namespace?: string;
+    resource?: string;
     property?: string;
     propertyValue?: string;
     propertyMode?: 'PROPERTY_MATCH_ONLY' | 'PROPERTY_MATCH_ANY';

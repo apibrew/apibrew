@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { ChevronRight, ExpandMore, MoreVert } from "@mui/icons-material";
-import { Checkbox, Popover, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
+import { ChevronRight, ExpandMore } from "@mui/icons-material";
+import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import { useRecords } from "../../hooks/record.ts";
 import Box from "@mui/material/Box";
 import { ResourceService } from "@apibrew/ui-lib";
-import { useErrorHandler } from "../../hooks/error-handler.tsx";
 import IconButton from "@mui/material/IconButton";
 import { prepareAccessMap, prepareConstraintsFromAccessMap } from "./access-map.computer.ts";
 import { AccessMap, PermissionChecks } from "./model.ts";

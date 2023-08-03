@@ -3,8 +3,6 @@ import { MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow, Tex
 import { SecurityConstraint } from "../../model/system/security-constraint.ts";
 import IconButton from "@mui/material/IconButton";
 import { Add, Delete } from "@mui/icons-material";
-import { Namespace } from "../../model/system/namespace";
-import { Resource } from "../../model/system/resource";
 import { User } from "../../model/system/user.ts";
 import { Role } from "../../model/system/role.ts";
 
@@ -23,15 +21,8 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
     return <Box>
         <IconButton onClick={() => {
             props.setConstraints([...props.constraints, {
-                namespace: {
-                    name: 'namespace-1'
-                },
-                resource: {
-                    namespace: {
-                        name: 'namespace-1'
-                    },
-                    name: 'resource-1'
-                },
+                namespace: 'namespace-1',
+                resource: 'resource-1',
                 operation: 'FULL',
                 permit: 'ALLOW'
             } as SecurityConstraint])
@@ -60,21 +51,17 @@ export function SecurityConstraintsInputAdvanced(props: SecurityConstraintsInput
                 {props.constraints.map((constraint, index) => <TableRow key={index}>
                     <TableCell sx={{ padding: 1 }}>
                         <TextField sx={{ margin: 0 }} disabled={props.mode === 'namespace' || props.mode == 'resource'} size='small'
-                            variant='outlined' value={constraint.namespace?.name} onChange={e => {
+                            variant='outlined' value={constraint.namespace} onChange={e => {
                                 const updatedConstraints = [...props.constraints]
-                                updatedConstraints[index].namespace = {
-                                    name: e.target.value,
-                                } as any as Namespace
+                                updatedConstraints[index].namespace = e.target.value
                                 props.setConstraints(updatedConstraints)
                             }} />
                     </TableCell>
                     <TableCell sx={{ padding: 1 }} >
                         <TextField disabled={props.mode === 'resource'} size='small' variant='outlined'
-                            value={constraint.resource?.name} onChange={e => {
+                            value={constraint.resource} onChange={e => {
                                 const updatedConstraints = [...props.constraints]
-                                updatedConstraints[index].resource = {
-                                    name: e.target.value
-                                } as Resource
+                                updatedConstraints[index].resource = e.target.value
                                 props.setConstraints(updatedConstraints)
                             }} />
                     </TableCell>

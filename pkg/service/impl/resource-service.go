@@ -150,7 +150,8 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 		return err
 	}
 
-	r.prepareSchema()
+	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
+	r.prepareSchemaMappings()
 
 	if err != nil {
 		return err
@@ -164,6 +165,10 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 			fmt.Println(jsonRes)
 			fmt.Println("================")
 		}
+	}
+
+	for _, resource := range r.schema.Resources {
+		r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
 	}
 
 	return nil
@@ -230,10 +235,8 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	if !util.IsSystemContext(ctx) {
-		if err := r.mustModifyResource(resource); err != nil {
-			return err
-		}
+	if err := r.mustModifyResource(resource); err != nil {
+		return err
 	}
 
 	resourceRecords := []*model.Record{mapping.ResourceToRecord(resource)}
@@ -394,10 +397,8 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
-	if !util.IsSystemContext(ctx) {
-		if err := r.mustModifyResource(resource); err != nil {
-			return nil, err
-		}
+	if err := r.mustModifyResource(resource); err != nil {
+		return nil, err
 	}
 
 	if !annotations.IsEnabled(resource, annotations.NormalizedResource) {
@@ -426,7 +427,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 			return nil, err
 		}
 
-		txCtx := context.WithValue(ctx, abs.TransactionContextKey, txk)
+		txCtx = context.WithValue(ctx, abs.TransactionContextKey, txk)
 
 		defer func() {
 			if success {
@@ -540,9 +541,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 	}
 
-	r.schema.Resources = append(r.schema.Resources, insertedResource)
-	r.prepareSchema()
-
 	success = true
 
 	return resource, nil
@@ -635,10 +633,9 @@ func (r *resourceService) GetSystemResourceByName(ctx context.Context, resourceN
 }
 
 func (r *resourceService) Init(config *model.AppConfig) {
-	// init namespace record
-
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
-	r.prepareSchema()
+
+	r.prepareSchemaMappings()
 
 	r.migrateResource(resources.NamespaceResource)
 	r.migrateResource(resources.DataSourceResource)
@@ -666,7 +663,7 @@ func (r *resourceService) Init(config *model.AppConfig) {
 	}
 }
 
-func (r *resourceService) prepareSchema() {
+func (r *resourceService) prepareSchemaMappings() {
 	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
 	r.schema.ResourceBySlug = make(map[string]*model.Resource)
 	r.schema.ResourcePropertiesByType = make(map[string]map[model.ResourceProperty_Type][]abs.PropertyWithPath)
@@ -677,7 +674,6 @@ func (r *resourceService) prepareSchema() {
 		if resource.Namespace == "default" {
 			r.schema.ResourceBySlug[slug.Make(resource.Name)] = resource
 		}
-		r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
 	}
 }
 
@@ -698,7 +694,7 @@ func (r *resourceService) migrateResource(resource *model.Resource) {
 
 	migrationPlan, err := r.resourceMigrationService.PreparePlan(context.TODO(), preparedResource, resource)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	if len(migrationPlan.Steps) == 0 {
@@ -716,13 +712,7 @@ func (r *resourceService) migrateResource(resource *model.Resource) {
 	})
 
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	_, serr := r.Create(util.WithSystemContext(context.TODO()), resource, false, false)
-
-	if serr != nil {
-		log.Fatal(serr)
+		panic(err)
 	}
 }
 
@@ -743,10 +733,8 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			return errors.ResourceNotFoundError.WithDetails("Id: " + resourceId)
 		}
 
-		if !util.IsSystemContext(ctx) {
-			if err = r.mustModifyResource(resource); err != nil {
-				return err
-			}
+		if err = r.mustModifyResource(resource); err != nil {
+			return err
 		}
 
 		if err != nil {

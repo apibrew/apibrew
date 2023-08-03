@@ -110,13 +110,13 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 
 	// check resource constraint matches
 
-	if constraint.Resource != nil && constraint.Resource.Name != params.Resource.Name {
+	if constraint.Resource != nil && *constraint.Resource != params.Resource.Name {
 		// skipping as not related to this resource
 		logger.Tracef("Skipping constraint as not related to this resource: %v", constraint)
 		return false, nil
 	}
 
-	if constraint.Namespace != nil && constraint.Namespace.Name != params.Resource.Namespace {
+	if constraint.Namespace != nil && *constraint.Namespace != params.Resource.Namespace {
 		// skipping as not related to this namespace
 		logger.Tracef("Skipping constraint as not related to this namespace: %v", constraint)
 		return false, nil

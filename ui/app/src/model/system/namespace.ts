@@ -19,7 +19,6 @@ updatedOn?: string;
 name: string;
 description?: string;
 details?: object;
-securityConstraints?: SecurityConstraint[];
 
 }
 // Resource and Property Names
@@ -42,7 +41,5 @@ export const NamespaceNameName = "Name";
 export const NamespaceDescriptionName = "Description";
 
 export const NamespaceDetailsName = "Details";
-
-export const NamespaceSecurityConstraintsName = "SecurityConstraints";
 
 

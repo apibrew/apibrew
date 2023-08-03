@@ -3,9 +3,7 @@ import {SecurityConstraintsInputSimple} from "./SecurityConstraintsInputSimple.t
 import {SecurityConstraintsInputAdvanced} from "./SecurityConstraintsInputAdvanced.tsx";
 import {Tab, Tabs} from "@mui/material";
 import {useValue} from "../../context/value.ts";
-import {useRecord} from "../../context/record.ts";
-import { Resource, SecurityConstraint } from "@apibrew/ui-lib";
-import { Role } from "../../model/system/role.ts";
+import { SecurityConstraint } from "@apibrew/client";
 
 export interface SecurityConstraintsInputProps {
     mode: 'role' | 'resource' | 'namespace'

@@ -3,7 +3,6 @@
 import { Namespace } from "./namespace";
 
 import { DataSource } from "./data-source";
-import { ResourceProperty } from "./resource-property";
 
 
 export const ResourceResource = {
@@ -12,6 +11,55 @@ export const ResourceResource = {
 };
 
 // Sub Types
+
+export interface Property {
+     name: string;
+     type: number;
+     typeRef?: string;
+     mapping: string;
+     primary: boolean;
+     required: boolean;
+     unique: boolean;
+     immutable: boolean;
+     length: number;
+     item?: Property;
+     properties: Property[];
+     reference?: Reference;
+     defaultValue?: object;
+     enumValues?: string[];
+     exampleValue?: object;
+     title?: string;
+     description?: string;
+     annotations?: object;
+
+}
+
+export interface SubType {
+     name: string;
+     properties: Property[];
+
+}
+
+export interface IndexProperty {
+     name: string;
+     order?: 'UNKNOWN' | 'ASC' | 'DESC';
+
+}
+
+export interface Index {
+     properties?: IndexProperty[];
+     indexType?: 'BTREE' | 'HASH';
+     unique?: boolean;
+     annotations?: object;
+
+}
+
+export interface Reference {
+     resource?: Resource;
+     cascade?: boolean;
+     backReference?: string;
+
+}
 
 // Resource Type
 export interface Resource {
@@ -24,17 +72,17 @@ updatedOn?: string;
 name: string;
 namespace: Namespace;
 virtual: boolean;
-types?: object;
+properties: Property[];
+indexes?: Index[];
+types?: SubType[];
 immutable: boolean;
 abstract: boolean;
 dataSource?: DataSource;
 entity?: string;
 catalog?: string;
-annotations?: object;
-indexes?: object;
 title?: string;
 description?: string;
-properties: ResourceProperty[]
+annotations?: object;
 
 }
 // Resource and Property Names
@@ -58,6 +106,10 @@ export const ResourceNamespaceName = "Namespace";
 
 export const ResourceVirtualName = "Virtual";
 
+export const ResourcePropertiesName = "Properties";
+
+export const ResourceIndexesName = "Indexes";
+
 export const ResourceTypesName = "Types";
 
 export const ResourceImmutableName = "Immutable";
@@ -70,12 +122,10 @@ export const ResourceEntityName = "Entity";
 
 export const ResourceCatalogName = "Catalog";
 
-export const ResourceAnnotationsName = "Annotations";
-
-export const ResourceIndexesName = "Indexes";
-
 export const ResourceTitleName = "Title";
 
 export const ResourceDescriptionName = "Description";
+
+export const ResourceAnnotationsName = "Annotations";
 
 

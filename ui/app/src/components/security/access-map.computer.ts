@@ -109,21 +109,21 @@ export function prepareAccessMap(accessMap: AccessMap, namespaces: Namespace[], 
                         }
                     }
                 } else { // namespace level
-                    if (mapConstraintTo(constraint, updatedAccessMap[`namespace-${constraint.namespace.name}`])) {
+                    if (mapConstraintTo(constraint, updatedAccessMap[`namespace-${constraint.namespace}`])) {
                         constraint.localFlags = {
                             imported: true,
                         }
                     }
                 }
             } else { // resource level
-                if (mapConstraintTo(constraint, updatedAccessMap[`resource-${constraint.namespace?.name}/${constraint.resource.name}`])) {
+                if (mapConstraintTo(constraint, updatedAccessMap[`resource-${constraint.namespace}/${constraint.resource}`])) {
                     constraint.localFlags = {
                         imported: true,
                     }
                 }
             }
         } else { // property level constraint
-            if (mapConstraintTo(constraint, updatedAccessMap[`resource-${constraint.namespace?.name}/${constraint.resource}-${constraint.property}`])) {
+            if (mapConstraintTo(constraint, updatedAccessMap[`resource-${constraint.namespace}/${constraint.resource}-${constraint.property}`])) {
                 constraint.localFlags = {
                     imported: true,
                 }
@@ -181,7 +181,7 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
         const namespacePermission = namespacePermissions(accessMap, namespace.name)
 
         const namespaceConstraint = {
-            namespace: namespace,
+            namespace: namespace.name,
             permit: 'ALLOW',
             localFlags: {
                 imported: true,
@@ -224,8 +224,8 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
         const resourcePermission = accessMap[`resource-${resource.namespace.name}/${resource.name}`]
 
         const resourceConstraint = {
-            namespace: resource.namespace,
-            resource: resource,
+            namespace: resource.namespace.name,
+            resource: resource.name,
             permit: 'ALLOW',
             localFlags: {
                 imported: true,
@@ -267,8 +267,8 @@ export function prepareConstraintsFromAccessMap(constraints: SecurityConstraint[
             const propertyPermission = accessMap[`resource-${resource.namespace.name}/${resource.name}-${property.name}`]
 
             const propertyConstraint = {
-                namespace: resource.namespace,
-                resource: resource,
+                namespace: resource.namespace.name,
+                resource: resource.name,
                 property: property.name,
                 permit: 'ALLOW',
                 localFlags: {

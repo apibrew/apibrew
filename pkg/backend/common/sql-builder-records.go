@@ -282,8 +282,9 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, 
 				},
 			},
 		},
-		Limit:  1,
-		Offset: 0,
+		Limit:             1,
+		Offset:            0,
+		ResolveReferences: []string{"*"},
 	}, nil)
 
 	if err != nil {

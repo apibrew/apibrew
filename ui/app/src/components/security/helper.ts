@@ -1,4 +1,4 @@
-import { Namespace, Resource, ResourceProperty } from "@apibrew/client";
+import { Namespace, Resource, Property } from "@apibrew/client";
 import { AccessMap, PermissionChecks } from "./model.ts";
 
 export const computeSystemIndeterminate = (accessMap: AccessMap, namespaces: Namespace[]) => {
@@ -31,11 +31,11 @@ export const computeResourceIndeterminate = (accessMap: AccessMap, resource: Res
     return combine(...resource.properties.map(property => propertyPermissions(accessMap, resource, property)))
 }
 
-export const computeResourcePropertyValue = (accessMap: AccessMap, resource: Resource, property: ResourceProperty) => {
+export const computeResourcePropertyValue = (accessMap: AccessMap, resource: Resource, property: Property) => {
     return combine(computeSystemValue(accessMap), namespacePermissions(accessMap, resource.namespace.name), resourcePermissions(accessMap, resource), propertyPermissions(accessMap, resource, property))
 }
 
-export const propertyPermissions = (accessMap: AccessMap, resource: Resource, property: ResourceProperty) => {
+export const propertyPermissions = (accessMap: AccessMap, resource: Resource, property: Property) => {
     return accessMap[`resource-${resource.namespace.name}/${resource.name}-${property.name}`]
 }
 

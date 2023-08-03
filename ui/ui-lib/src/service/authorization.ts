@@ -12,11 +12,11 @@ export function checkResourcePropertyAccess(resource: Resource, property: string
     const userConstraints = getBody().securityConstraints;
 
     const matchingConstraints = userConstraints.filter(constraint => {
-        if (constraint.namespace && constraint.namespace.name != resource.namespace.name) {
+        if (constraint.namespace && constraint.namespace != resource.namespace.name) {
             return false
         }
 
-        if (constraint.resource && constraint.resource.name != resource.name) {
+        if (constraint.resource && constraint.resource != resource.name) {
             return false
         }
 
