@@ -1,8 +1,8 @@
-import {Box, Drawer, IconButton, Typography} from "@mui/material"
-import React, {useState} from "react"
-import {Resource} from "@apibrew/ui-lib"
-import {Close, KeyboardArrowLeft, KeyboardArrowRight} from "@mui/icons-material"
-import {Sdk} from "./Sdk"
+import { Box, Drawer, IconButton, Typography } from "@mui/material"
+import React, { useState } from "react"
+import { Resource } from "@apibrew/client"
+import { Close, KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
+import { Sdk } from "./Sdk"
 
 type DrawerSize = 'small' | 'medium' | 'large'
 
@@ -20,10 +20,10 @@ export function SdkDrawer(props: SdkDrawerProps): JSX.Element {
 
     return <React.Fragment>
         <Drawer anchor={'right'}
-                BackdropProps={{invisible: true}}
-                ModalProps={{sx: {'& .MuiDrawer-paper': {width: `${width}px`, top: '88px'}}}}
-                onClose={props.onClose}
-                open={props.open}
+            BackdropProps={{ invisible: true }}
+            ModalProps={{ sx: { '& .MuiDrawer-paper': { width: `${width}px`, top: '88px' } } }}
+            onClose={props.onClose}
+            open={props.open}
 
         >
             <Box display='flex' flexDirection={'column'} padding='10px'>
@@ -31,22 +31,22 @@ export function SdkDrawer(props: SdkDrawerProps): JSX.Element {
                     {size !== 'large' && <IconButton onClick={() => {
                         setSize(size === 'small' ? 'medium' : 'large')
                     }}>
-                        <KeyboardArrowLeft/>
+                        <KeyboardArrowLeft />
                     </IconButton>}
                     {size != 'small' && <IconButton onClick={() => {
                         setSize(size === 'medium' ? 'small' : 'medium')
                     }}>
-                        <KeyboardArrowRight/>
+                        <KeyboardArrowRight />
                     </IconButton>}
-                    <Box flexGrow={1}/>
+                    <Box flexGrow={1} />
                     <Typography variant='h6'>SDK</Typography>
-                    <Box flexGrow={1}/>
+                    <Box flexGrow={1} />
                     <IconButton onClick={props.onClose}>
-                        <Close/>
+                        <Close />
                     </IconButton>
                 </Box>
                 <Box>
-                    <Sdk/>
+                    <Sdk />
                 </Box>
             </Box>
         </Drawer>
