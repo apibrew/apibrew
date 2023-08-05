@@ -118,7 +118,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 				var query *model.BooleanExpression
 
 				for _, referenceValue := range subValues {
-					if referenceValue == nil || referenceValue.GetStructValue().Fields == nil {
+					if referenceValue == nil {
 						continue
 					}
 					if referenceValue.GetListValue() != nil {
@@ -135,7 +135,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 								query = util.QueryOrExpression(query, subQuery)
 							}
 						}
-					} else {
+					} else if referenceValue.GetStructValue() != nil {
 						subQuery, err := util.RecordIdentifierQuery(referencedResource, referenceValue.GetStructValue().Fields)
 
 						if err != nil {
@@ -162,7 +162,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 				}
 
 				for recordId, referenceValue := range subValues {
-					if referenceValue == nil || referenceValue.GetStructValue().Fields == nil {
+					if referenceValue == nil {
 						continue
 					}
 
@@ -170,18 +170,20 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 						subValues[recordId] = structpb.NewListValue(&structpb.ListValue{})
 						recordValueMap[recordId].GetStructValue().Fields[prop.Name] = subValues[recordId]
 
-						for _, item := range list {
-							matches, err := util.RecordMatchIdentifiableProperties(referencedResource, item, referenceValue.GetStructValue().Fields)
+						for _, subRefValue := range referenceValue.GetListValue().Values {
+							for _, item := range list {
+								matches, err := util.RecordMatchIdentifiableProperties(referencedResource, item, subRefValue.GetStructValue().Fields)
 
-							if err != nil {
-								return errors.LogicalError.WithDetails(err.Error())
-							}
+								if err != nil {
+									return errors.LogicalError.WithDetails(err.Error())
+								}
 
-							if matches {
-								subValues[recordId].GetListValue().Values = append(subValues[recordId].GetListValue().Values, structpb.NewStructValue(&structpb.Struct{Fields: item.Properties}))
+								if matches {
+									subValues[recordId].GetListValue().Values = append(subValues[recordId].GetListValue().Values, structpb.NewStructValue(&structpb.Struct{Fields: item.Properties}))
+								}
 							}
 						}
-					} else {
+					} else if referenceValue.GetStructValue() != nil {
 						for _, item := range list {
 							matches, err := util.RecordMatchIdentifiableProperties(referencedResource, item, referenceValue.GetStructValue().Fields)
 

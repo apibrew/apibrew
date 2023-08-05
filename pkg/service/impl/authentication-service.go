@@ -215,6 +215,7 @@ func (s *authenticationService) collectUserSecurityConstraints(ctx context.Conte
 	var userRecord = resource_model.UserMapperInstance.ToRecord(user)
 
 	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []*model.Record{userRecord}, []string{
+		"$.roles[]",
 		"$.securityConstraints[]",
 		"$.securityConstraints[].namespace",
 		"$.securityConstraints[].resource",
@@ -224,6 +225,8 @@ func (s *authenticationService) collectUserSecurityConstraints(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+
+	user = resource_model.UserMapperInstance.FromRecord(userRecord)
 
 	result = append(result, user.SecurityConstraints...)
 

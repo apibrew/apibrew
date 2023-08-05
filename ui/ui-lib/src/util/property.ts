@@ -6,5 +6,5 @@ export function isSpecialProperty(property: Property): boolean {
 }
 
 export function isSimpleProperty(property: Property): boolean {
-    return property.type === 'STRING' || property.type === 'INT32' || property.type === 'INT64' || property.type === 'FLOAT32' || property.type === 'FLOAT64';
+    return property.type as any === 'STRING' || property.type as any === 'INT32' || property.type as any === 'INT64' || property.type as any === 'FLOAT32' || property.type as any === 'FLOAT64';
 }
