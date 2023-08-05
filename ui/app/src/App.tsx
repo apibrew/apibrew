@@ -8,7 +8,7 @@ import { RouteContext } from "./context/route-context.ts";
 import { DynamicComponent } from "@apibrew/ui-lib";
 
 import * as Documentation from '@apibrew/documentation'
-// import * as AppDesigner from '@apibrew/designer'
+
 
 Documentation.registerModule()
 // AppDesigner.registerModule()
