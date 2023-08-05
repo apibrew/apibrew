@@ -1,6 +1,6 @@
 // eslint disable
 import React, { Fragment, type ReactNode, useState } from 'react'
-import { type Resource, ResourceService, LayoutContext } from "@apibrew/ui-lib"
+import { type Resource } from "@apibrew/client"
 import { ResourceElement } from '../designer/ResourceElement'
 import { Scale } from '../designer/Scale'
 import { Movable, MovableComponent } from '../designer/Movable'

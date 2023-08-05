@@ -1,4 +1,4 @@
-import { type Resource } from '@apibrew/ui-lib'
+import { type Resource } from '@apibrew/client'
 
 export interface ResourceElementProps {
     resource: Resource
@@ -34,11 +34,11 @@ export function ResourceElement(props: ResourceElementProps) {
                                 fontWeight="normal">
                                 <tspan fontWeight='bold'>{property.name}</tspan>
                                 <tspan>&nbsp; </tspan>
-                                <tspan fill='red'>[{property.type?.toLowerCase()}]</tspan>
+                                {/* <tspan fill='red'>[{property.type?.toLowerCase()}]</tspan> fixme! */} 
                             </text>
                             <line strokeDasharray="2,2" stroke="#000" y2="17.51724" x2="176.55172" y1="17.51724"
                                 x1="0" strokeWidth="0.5" fill="none" />
-                            {property.type === 'REFERENCE' && <g>
+                            {property.type as any === 'REFERENCE' && <g>
                                 <rect className={'left-ref'} stroke="#000" height="7.71414" width="4.87209"
                                     y="6"
                                     x="-3.18594"

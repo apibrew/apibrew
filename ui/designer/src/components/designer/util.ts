@@ -1,5 +1,6 @@
-import { Resource } from '@apibrew/ui-lib';
-import { AppDesignerBoard } from "../../../model/ui/designer-board.ts";
+import { Resource } from '@apibrew/client';
+import { AppDesignerBoard } from '../../model/app-designer-board';
+
 
 export function checkResourceAllowedOnBoard(board: AppDesignerBoard, resource: Resource): boolean {
     if (board.resourceSelector) {
@@ -29,7 +30,7 @@ export function checkResourceAllowedOnBoard(board: AppDesignerBoard, resource: R
                 break
             }
 
-            if (selector === resource.namespace) {
+            if (selector === resource.namespace.name) {
                 found = true
                 break
             }
