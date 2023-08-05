@@ -1,10 +1,10 @@
-import {ResourceProperty} from "../model";
-import {isAnnotationEnabled} from "./annotation";
+import { Property } from "@apibrew/client";
+import { isAnnotationEnabled } from "./annotation";
 
-export function isSpecialProperty(property: ResourceProperty): boolean {
-    return isAnnotationEnabled(property.annotations, 'SpecialProperty');
+export function isSpecialProperty(property: Property): boolean {
+    return isAnnotationEnabled(property.annotations as any, 'SpecialProperty');
 }
 
-export function isSimpleProperty(property: ResourceProperty): boolean {
-    return property.type === 'STRING' || property.type === 'INT32' || property.type === 'INT64' || property.type === 'FLOAT32' || property.type === 'FLOAT64';
+export function isSimpleProperty(property: Property): boolean {
+    return property.type as any === 'STRING' || property.type as any === 'INT32' || property.type as any === 'INT64' || property.type as any === 'FLOAT32' || property.type as any === 'FLOAT64';
 }

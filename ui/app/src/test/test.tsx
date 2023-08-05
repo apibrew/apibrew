@@ -1,6 +1,5 @@
 import { BACKEND_URL } from '../config'
 import Button from '@mui/material/Button'
-import { PlusOneOutlined } from '@mui/icons-material'
 import React, { JSX } from 'react'
 import {PageLayout} from "../layout";
 

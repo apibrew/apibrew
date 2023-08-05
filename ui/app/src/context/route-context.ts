@@ -1,3 +1,3 @@
 import React from "react";
 
-export const RouteContext = React.createContext<string>(null);
+export const RouteContext = React.createContext<string>('');

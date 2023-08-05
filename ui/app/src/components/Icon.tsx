@@ -1,5 +1,3 @@
-import React from "react";
-
 export interface IconProps {
     name: string
     group?: string

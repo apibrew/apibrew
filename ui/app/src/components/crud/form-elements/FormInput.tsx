@@ -9,15 +9,16 @@ import {
     TextFieldProps
 } from "@mui/material"
 
-import React, {useEffect, useMemo, useState} from "react"
-import {Record, RecordService, ResourceProperty} from "@apibrew/ui-lib"
-import {FormItem} from "../../../model/ui/crud.ts";
-import {useResource} from "../../../context/resource.ts";
-import {ListElement} from "./ListElement.tsx";
-import {StructElement} from "./StructElement.tsx";
+import React, { useEffect, useMemo, useState } from "react"
+import { Record, RecordService } from "@apibrew/ui-lib"
+import { FormItem } from "../../../model/ui/crud.ts";
+import { useResource } from "../../../context/resource.ts";
+import { ListElement } from "./ListElement.tsx";
+import { StructElement } from "./StructElement.tsx";
+import { Property } from "@apibrew/client";
 
 export interface FormElementProps {
-    property: ResourceProperty
+    property: Property
     readOnly?: boolean
     config: FormItem
     value: any
@@ -42,7 +43,7 @@ const RegexTextField = (props: TextFieldProps & { pattern: RegExp | string }) =>
                 props.onChange(e)
             }
         }
-    }}/>
+    }} />
 }
 
 const ReferenceField = (props: FieldProps & { namespace: string, referencedResourceName: string }) => {
@@ -88,70 +89,63 @@ const FieldValueConvertWrapper = (Field: FieldComponent, converter: (val: any) =
                 }
             })
         }
-    }}/>
+    }} />
 }
 
 export function FormInput(props: FormElementProps) {
     const title = props.property.title || props.property.name
     const resource = useResource()
 
-    const referencedResourceName = props.property.reference?.referencedResource ?? ''
+    const referencedResourceName = props.property.reference?.resource?.name ?? ''
     const [value, setValue] = useState(props.value)
 
     const Field = useMemo(() => {
-        switch (props.property.type) {
+        switch (props.property.type as any as string) {
             case 'STRING':
                 return TextField
             case 'INT32':
             case 'INT64':
                 return FieldValueConvertWrapper((props: FieldProps) => <RegexTextField type='number'
-                                                                                       pattern={/\d+/} {...props} />, (e) => parseInt(e.target.value))
+                    pattern={/\d+/} {...props} />, (e) => parseInt(e.target.value))
             case 'FLOAT32':
             case 'FLOAT64':
                 return FieldValueConvertWrapper((props: FieldProps) => <TextField
                     type='number' {...props} />, (e) => parseFloat(e.target.value))
             case 'BOOL':
                 return FieldValueConvertWrapper((props: FieldProps) => <Checkbox {...props}
-                                                                                 checked={props.value}/>, (e) => e.target.checked)
+                    checked={props.value} />, (e) => e.target.checked)
             case 'REFERENCE':
-                return (props: FieldProps) => <ReferenceField namespace={resource.namespace ?? 'default'}
-                                                              referencedResourceName={referencedResourceName} {...props} />
+                return (props: FieldProps) => <ReferenceField namespace={resource.namespace.name ?? 'default'}
+                    referencedResourceName={referencedResourceName} {...props} />
             case 'LIST':
-                return (_props: FieldProps) => <ListElement config={props.config} {..._props}/>
+                return (_props: FieldProps) => <ListElement config={props.config} {..._props} />
             case 'STRUCT':
-                let properties = props.property.properties
-
-                if (props.property.typeRef) {
-                    const type = resource.types.find(item => item.name == props.property.typeRef)
-                    properties = type?.properties || []
-                }
-
                 return (_props: FieldProps) => <StructElement properties={props.property.properties}
-                                                              config={props.config}/>
+                    config={props.config} />
         }
 
         return TextField
     }, [props.property.type, referencedResourceName, resource.namespace])
 
     const field = <Field required={props.property.required}
-                         disabled={props.readOnly}
-                         {...props.config.params}
-                         value={value}
-                         onChange={(e) => {
-                             setValue(e.target.value)
-                             props.setValue(e.target.value)
-                         }}/>
+        disabled={props.readOnly}
+        {...props.config.params}
+        value={value}
+        onChange={(e) => {
+            setValue(e.target.value)
+            props.setValue(e.target.value)
+        }} />
 
     const hideLabel = (props.config.params && (props.config.params as any)['hideLabel'])
 
     if (hideLabel) {
-        return <FormControl style={{width: '100%'}}>
+        return <FormControl style={{ width: '100%' }}>
             {field}
         </FormControl>
     }
 
     return (
-        <FormControl style={{width: '100%'}}>
+        <FormControl style={{ width: '100%' }}>
             <FormLabel>{title}</FormLabel>
             {field}
             {props.property.description && <FormHelperText>{props.property.description}</FormHelperText>}

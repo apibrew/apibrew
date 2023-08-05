@@ -1,7 +1,7 @@
-import {Resource} from "../../model/index.ts";
 import React, {JSX, ReactNode, useEffect} from "react";
 import {ResourceContext as ResourceCtx} from "../../context/resource.ts";
 import {ResourceService} from "@apibrew/ui-lib";
+import { Resource } from "@apibrew/client";
 
 export interface ResourceContextComponentProps {
     resource$?: Resource
@@ -11,7 +11,7 @@ export interface ResourceContextComponentProps {
 }
 
 export function ResourceContextComponent(props: ResourceContextComponentProps): JSX.Element {
-    const [resource, setResource] = React.useState<Resource>(props.resource$)
+    const [resource, setResource] = React.useState<Resource | undefined>(props.resource$)
 
     useEffect(() => {
         if (resource) {

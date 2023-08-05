@@ -1,1 +1,1 @@
-export const BACKEND_URL = window['BACKEND_URL']
+export const BACKEND_URL = (window as any)['BACKEND_URL']

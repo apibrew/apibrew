@@ -1,8 +1,8 @@
 import {Crud as CrudModel, FormItem, CrudName, GridColumnConfig} from "../../model/ui/crud";
 import {RecordService} from "@apibrew/ui-lib";
-import {Resource} from "../../model";
 import {isSimpleProperty, isSpecialProperty} from "../../util/property";
 import {not} from "../../util/lambda";
+import { Resource } from "@apibrew/client";
 
 export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
     const name = `ResourceCrud-${resource.namespace.name}-${resource.name}`
@@ -27,7 +27,8 @@ export async function resetCrudForm(resource: Resource): Promise<CrudModel> {
         id: '',
         name: name,
         resource: resource.name,
-        namespace: resource.namespace ?? 'default',
+        namespace: resource.namespace.name ?? 'default',
+        version: 1,
         gridConfig: {
             columns: gridColumns,
             actions: [],

@@ -1,10 +1,10 @@
-import {Resource} from "../../model/index.ts"
 import {Record} from "@apibrew/ui-lib"
 import {FormConfig as CrudFormConfig} from "../../model/ui/crud.ts";
 import {ResourceContext} from "../../context/resource.ts";
 import {ValueContext} from "../../context/value.ts";
 import {RecordContext} from "../../context/record.ts";
 import {StructElement} from "./form-elements/StructElement.tsx";
+import { Resource } from "@apibrew/client";
 
 export interface FormProps {
     resource: Resource

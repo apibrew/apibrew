@@ -17,7 +17,7 @@ import {
     TableRow,
     TextField
 } from '@mui/material'
-import { type Resource, type ResourceProperty } from "@apibrew/ui-lib"
+import { type Resource, type Property } from "@apibrew/ui-lib"
 import { Add, Delete, Edit, Save } from '@mui/icons-material'
 import React from 'react'
 
@@ -27,7 +27,7 @@ export interface ResourceBasicFormProps {
     onChange: (resource: Resource) => void
 }
 
-const handlePropertyFieldOnChange = <K extends keyof ResourceProperty>(resource: Resource, onChange: (resource: Resource) => void, index: number, field: K, value: ResourceProperty[K]) => {
+const handlePropertyFieldOnChange = <K extends keyof Property>(resource: Resource, onChange: (resource: Resource) => void, index: number, field: K, value: Property[K]) => {
     onChange({
         ...resource,
         properties: resource.properties?.map((p, i) => {
@@ -159,7 +159,7 @@ export function ResourceBasicForm(props: ResourceBasicFormProps): JSX.Element {
                                                         props.onChange,
                                                         index,
                                                         'type',
-                                                        e.target.value as ResourceProperty['type']
+                                                        e.target.value as Property['type']
                                                     )
                                                 }}
                                             >

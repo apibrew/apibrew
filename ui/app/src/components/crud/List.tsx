@@ -4,14 +4,13 @@ import {Api, Delete, Edit, PlusOneOutlined, Search} from "@mui/icons-material"
 import {useNavigate} from "react-router-dom"
 import {DataGrid, GridActionsCellItem, GridColDef, GridRowParams, GridValueGetterParams} from '@mui/x-data-grid';
 import {Record, RecordService, LayoutContext, useBreadCramps} from "@apibrew/ui-lib"
-import React, {useContext, useEffect, useState} from "react"
-// import {SdkDrawer} from "../sdk/SdkDrawer"
+import {useContext, useEffect, useState} from "react"
 import {Crud} from "../../model/ui/crud.ts";
 import {Icon} from "../Icon.tsx";
 import {ModuleService} from "@apibrew/ui-lib";
 import {useErrorHandler} from "../../hooks/error-handler.tsx";
 import Box from "@mui/material/Box";
-import { Resource, ResourceProperty } from "@apibrew/client";
+import { Resource, Property } from "@apibrew/client";
 
 export interface ListProps {
     resource: Resource
@@ -33,7 +32,7 @@ export function List(props: ListProps) {
 
     useBreadCramps()
 
-    const resourcePropertyMap = new Map<string, ResourceProperty>()
+    const resourcePropertyMap = new Map<string, Property>()
 
     props.resource.properties.forEach((property) => {
         resourcePropertyMap.set(property.name, property)
@@ -53,7 +52,7 @@ export function List(props: ListProps) {
             valueGetter: (params: GridValueGetterParams<any, any>) => {
                 const prop = props.resource.properties.find((p) => p.name === property.name)!
 
-                if (prop.type === 'REFERENCE' && params.row[property.name]) {
+                if (prop.type as any === 'REFERENCE' && params.row[property.name]) {
                     return params.row[property.name].name
                 }
 
@@ -80,7 +79,7 @@ export function List(props: ListProps) {
                         return 'Unknown column!'
                     }
 
-                    if (prop.type === 'REFERENCE' && params.row[column.name]) {
+                    if (prop.type as any === 'REFERENCE' && params.row[column.name]) {
                         return params.row[column.name].name
                     }
 

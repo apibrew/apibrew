@@ -2,13 +2,13 @@ import * as React from 'react'
 import {Fragment, ReactNode, useContext} from 'react'
 import Box from '@mui/material/Box'
 import Container from "@mui/material/Container";
-import {Breadcrumbs, Drawer, IconButton, Menu, MenuItem, Toolbar, Tooltip} from "@mui/material";
+import {Breadcrumbs, Drawer, IconButton, MenuItem, Tooltip} from "@mui/material";
 import {Icon} from "../components/Icon.tsx";
 import Divider from "@mui/material/Divider";
 import {useRecordByName} from "../hooks/record.ts";
 import {Menu as MenuRecord, MenuItem as RecordMenuItem} from "../model/ui/menu.ts";
 import {Loading} from "../components/basic/Loading.tsx";
-import {Link, Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {Link, Route, Routes, useNavigate} from "react-router-dom";
 import {useRoute} from "../hooks/route.ts";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
@@ -96,8 +96,8 @@ function MainDrawer(props: { menu: MenuRecord }) {
         <Box marginTop={0.5}/>
         <Divider style={{background: 'rgb(50,50,50)'}}/>
         <Box marginTop={5}/>
-        {props.menu.children.map((item, index) => {
-            const active = pathInside(normalizePath(route.path, item.link), route.fullPath)
+        {props.menu.children.map((item) => {
+            const active = pathInside(normalizePath(route.path, item.link!), route.fullPath)
 
             return <Tooltip key={item.title} title={item.title} placement='right'>
                 <IconButton sx={{
@@ -108,11 +108,11 @@ function MainDrawer(props: { menu: MenuRecord }) {
                         backgroundColor: 'rgba(30, 50, 30, 0.5)',
                     },
                 }} onClick={() => {
-                    navigate(item.link)
+                    navigate(item.link!)
                 }}>
                     <Icon
                         color={active ? DashboardLayoutSettings.drawer.mainMenuItemActiveColor : DashboardLayoutSettings.drawer.mainMenuItemColor}
-                        name={item.icon}
+                        name={item.icon!}
                         weight={active ? DashboardLayoutSettings.drawer.mainMenuItemActiveWeight : 400}
                         size={DashboardLayoutSettings.drawer.mainMenuItemSize}/>
                 </IconButton>
@@ -134,18 +134,18 @@ function SecondDrawer(props: { menu: MenuRecord }) {
     const navigate = useNavigate()
     const route = useRoute()
 
-    let activeMenuItem = props.menu.children.find(item => pathInside(normalizePath(route.path, item.link), route.fullPath))
+    let activeMenuItem = props.menu.children.find(item => pathInside(normalizePath(route.path, item.link!), route.fullPath))
 
     if (!activeMenuItem) {
         activeMenuItem = props.menu.children[0]
     }
 
-    const activeMenuPath = normalizePath(route.path, activeMenuItem.link)
+    const activeMenuPath = normalizePath(route.path, activeMenuItem.link!)
 
-    activeMenuItem.children.forEach((item, index) => {
+    activeMenuItem.children?.forEach((item, index) => {
         if (index == 0 && activeMenuPath == route.fullPath && item.link) {
             setTimeout(() => {
-                navigate(normalizePath(activeMenuPath, item.link))
+                navigate(normalizePath(activeMenuPath, item.link!))
             })
         }
     })
@@ -191,8 +191,8 @@ function SecondDrawer(props: { menu: MenuRecord }) {
             <h4>
                 {activeMenuItem.title}
             </h4>
-            {activeMenuItem.children.map((item, index) => {
-                const menuItemPath = normalizePath(activeMenuPath, item.link)
+            {activeMenuItem.children?.map((item) => {
+                const menuItemPath = normalizePath(activeMenuPath, item.link!)
                 let active = pathInside(menuItemPath, route.fullPath)
 
                 const itemSx = prepareMenuItemSx(active, item)
@@ -208,7 +208,7 @@ function SecondDrawer(props: { menu: MenuRecord }) {
                     </MenuItem>
                     <Box paddingLeft={1.6}>
                         {item.children && item.children.map(subItem => {
-                            const subMenuItemPath = normalizePath(normalizePath(activeMenuPath, item.link), subItem.link)
+                            const subMenuItemPath = normalizePath(normalizePath(activeMenuPath, item.link!), subItem.link!)
                             let active = pathInside(route.fullPath, subMenuItemPath)
 
                             const subItemSx = prepareMenuItemSx(active, subItem)
@@ -228,7 +228,6 @@ function SecondDrawer(props: { menu: MenuRecord }) {
 
 function DashboardPage(props: { menuItem: RecordMenuItem, parents: RecordMenuItem[], selfLink: string }) {
     const layoutContext = useContext(LayoutContext)
-    const route = useRoute()
 
     return <Box display='flex' flexDirection='column' sx={{height: '100%'}}>
         <Box sx={{
@@ -256,7 +255,7 @@ function DashboardPage(props: { menuItem: RecordMenuItem, parents: RecordMenuIte
             </Breadcrumbs>
         </Box>
         <Box flexGrow={1} display='flex'>
-            <DynamicComponent component={props.menuItem.component}
+            <DynamicComponent component={props.menuItem.component!}
                               componentProps={props.menuItem.params}/>
         </Box>
     </Box>
@@ -270,7 +269,7 @@ function DashboardRoutes(props: { menu: MenuRecord }) {
             {props.menu.children.map(item => (
                 <Route key={item.link} path={item.link + '/*'}
                        element={<Routes>
-                           {item.children.map(subItem => (
+                           {item.children?.map(subItem => (
                                <Route key={subItem.link}
                                       path={subItem.link + '/*'}
                                       element={
@@ -294,7 +293,7 @@ function DashboardRoutes(props: { menu: MenuRecord }) {
     </>;
 }
 
-export function DashboardLayout(props: DashboardLayoutProps): React.JSX.Element {
+export function DashboardLayout(): React.JSX.Element {
     const route = useRoute()
     const navigate = useNavigate()
 

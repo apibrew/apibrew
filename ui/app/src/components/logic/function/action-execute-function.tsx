@@ -1,13 +1,13 @@
-import {ActionComponent} from "../../../model/component-interfaces.ts";
-import {RecordService, LayoutOptions} from "@apibrew/ui-lib";
-import {Function as Function$} from "../../../model/logic/function.ts";
-import {Button, Card, CardActions, CardContent, CardHeader} from "@mui/material";
+import { ActionComponent } from "../../../model/component-interfaces.ts";
+import { RecordService, LayoutOptions } from "@apibrew/ui-lib";
+import { Function as Function$ } from "../../../model/logic/function.ts";
+import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material";
 import Box from "@mui/material/Box";
-import {FunctionExecution} from "../../../model/logic/function-execution.ts";
-import {useState} from "react";
-import {Form} from "../../crud/Form.tsx";
-import {useResourceByName} from "../../../hooks/resource.ts";
-import {FormConfig} from "../../../model/ui/crud.ts";
+import { FunctionExecution } from "../../../model/logic/function-execution.ts";
+import { useState } from "react";
+import { Form } from "../../crud/Form.tsx";
+import { useResourceByName } from "../../../hooks/resource.ts";
+import { FormConfig } from "../../../model/ui/crud.ts";
 
 export interface ExecuteFunctionFormProps {
     functionRecord: Function$
@@ -16,7 +16,7 @@ export interface ExecuteFunctionFormProps {
 }
 
 export function ExecuteFunctionForm(props: ExecuteFunctionFormProps) {
-    const defaultInput = {}
+    const defaultInput: any = {}
     const args = props.functionRecord.args ?? []
 
     args.forEach(arg => {
@@ -52,12 +52,12 @@ export function ExecuteFunctionForm(props: ExecuteFunctionFormProps) {
     }
 
     return <Card>
-        <CardHeader title={'Execute function ' + props.functionRecord.name}/>
+        <CardHeader title={'Execute function ' + props.functionRecord.name} />
         <CardContent>
             {resource && formConfig && <Form resource={resource}
-                                             record={execution}
-                                             setRecord={setExecution}
-                                             formConfig={formConfig}></Form>}
+                record={execution}
+                setRecord={setExecution as any}
+                formConfig={formConfig}></Form>}
         </CardContent>
         <CardActions>
             <Button onClick={() => {
@@ -121,7 +121,7 @@ export class ActionExecuteFunction implements ActionComponent<any> {
                     cancel={() => {
                         modalConfig.close()
                     }}
-                    functionRecord={functionRecord}/>
+                    functionRecord={functionRecord} />
             </Box>,
         })
 

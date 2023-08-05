@@ -1,20 +1,20 @@
-import {Button, Card, CardActions, CardContent, CardHeader} from "@mui/material";
-import {Form} from "../../components/crud/Form.tsx";
-import {useResourceByName} from "../../hooks/resource.ts";
-import {useRecordBy, useRecordByName} from "../../hooks/record.ts";
-import {Crud} from "../../model/ui/crud.ts";
-import {Loading} from "../../components/basic/Loading.tsx";
-import {RecordService, TokenService} from "@apibrew/ui-lib";
-import {useContext, useEffect, useState} from "react";
-import {User} from "../../model/index.ts";
-import {useErrorHandler} from "../../hooks/error-handler.tsx";
-import {AuthorizationService, LayoutContext} from "@apibrew/ui-lib";
+import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material";
+import { Form } from "../../components/crud/Form.tsx";
+import { useResourceByName } from "../../hooks/resource.ts";
+import { useRecordByName } from "../../hooks/record.ts";
+import { Crud } from "../../model/ui/crud.ts";
+import { Loading } from "../../components/basic/Loading.tsx";
+import { RecordService, TokenService } from "@apibrew/ui-lib";
+import { useContext, useEffect, useState } from "react";
+import { useErrorHandler } from "../../hooks/error-handler.tsx";
+import { AuthorizationService, LayoutContext } from "@apibrew/ui-lib";
+import { User, Record } from "@apibrew/client";
 
 export interface UserProfileProps {
 
 }
 
-export function UserProfile(props: UserProfileProps): JSX.Element {
+export function UserProfile(): JSX.Element {
     const resource = useResourceByName('user', 'system')
     const crudConfig = useRecordByName<Crud>('Crud', 'ui', 'ResourceCrud-system-user')
     const layoutContext = useContext(LayoutContext)
@@ -22,7 +22,7 @@ export function UserProfile(props: UserProfileProps): JSX.Element {
 
     const uid = TokenService.getUid()
 
-    const [record, setRecord] = useState<User>()
+    const [record, setRecord] = useState<Record<User>>()
 
     useEffect(() => {
         RecordService.get<User>('system', 'user', uid).then((record) => {
@@ -31,18 +31,20 @@ export function UserProfile(props: UserProfileProps): JSX.Element {
     }, [uid])
 
     if (!record || !resource || !crudConfig) {
-        return <Loading/>
+        return <Loading />
     }
 
     const formConfig = crudConfig.formConfig
 
     return <Card>
-        <CardHeader title={'User: ' + record.username}/>
+        <CardHeader title={'User: ' + record.username} />
         <CardContent>
             {resource && formConfig && <Form resource={resource}
-                                             record={record}
-                                             setRecord={setRecord}
-                                             formConfig={formConfig}></Form>}
+                record={record}
+                setRecord={record => {
+                    setRecord(record as Record<User>)
+                }}
+                formConfig={formConfig}></Form>}
         </CardContent>
         <CardActions>
             <Button onClick={() => {

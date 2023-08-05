@@ -7,10 +7,10 @@ import {FormItem} from "../../../model/ui/crud.ts";
 import {PropertyPathContext} from "../PropertyPathContext.tsx";
 import {AuthorizationService, Record} from "@apibrew/ui-lib";
 import {useRecord} from "../../../context/record.ts";
-import { ResourceProperty } from "@apibrew/client";
+import { Property } from "@apibrew/client";
 
 export interface PropertyElementProps {
-    properties: ResourceProperty[]
+    properties: Property[]
     config: FormItem
 }
 
@@ -25,13 +25,13 @@ export function PropertyElement(props: PropertyElementProps) {
         throw new Error(`Properties not available in property form item`)
     }
 
-    let property = props.properties.find((property) => property.name === props.config.propertyPath)
+    let property = props.properties.find((property) => property.name === props.config.propertyPath)!
 
-    if (!property && parentProperty?.type == 'OBJECT') {
+    if (!property && parentProperty?.type as any == 'OBJECT') {
         property = {
             name: props.config.propertyPath!,
-            type: 'OBJECT',
-        } as ResourceProperty
+            type: 'OBJECT' as any,
+        } as Property
     }
 
     if (!property) {
@@ -41,12 +41,12 @@ export function PropertyElement(props: PropertyElementProps) {
     let subProperties = property.properties ?? []
 
     if (property.typeRef) {
-        subProperties = resource.types.find(item => item.name == property.typeRef)?.properties
+        subProperties = resource.types!.find(item => item.name == property.typeRef)?.properties || []
     }
 
     let newValue = value.value ? value.value[property.name] : undefined
 
-    if (property.type == 'STRUCT' && !newValue) {
+    if (property.type as any == 'STRUCT' && !newValue) {
         newValue = {}
     }
 

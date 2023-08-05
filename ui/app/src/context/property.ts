@@ -1,13 +1,13 @@
 import React from "react";
-import {ResourceProperty} from "../model";
+import {Property} from "@apibrew/client";
 
-export const ResourcePropertyContext = React.createContext<ResourceProperty | undefined>(undefined)
+export const ResourcePropertyContext = React.createContext<Property | undefined>(undefined)
 
 export function useResourceProperty(required: boolean) {
-    const ResourceProperty = React.useContext(ResourcePropertyContext)
+    const Property = React.useContext(ResourcePropertyContext)
 
-    if (required && !ResourceProperty) {
+    if (required && !Property) {
         throw new Error("useResourceProperty must be used within a ResourcePropertyProvider")
     }
-    return ResourceProperty
+    return Property
 }

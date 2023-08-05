@@ -3,12 +3,12 @@ import IconButton from "@mui/material/IconButton";
 import {Icon} from "../../Icon.tsx";
 import Box from "@mui/material/Box";
 import {FormItem as CrudFormItem} from "../../../model/ui/crud.ts";
-import React from "react";
 import {FormItem} from "./FormItem.tsx";
 import {ValueContext} from "../../../context/value.ts";
 import {Paper} from "@mui/material";
 import {DeleteForever} from "@mui/icons-material";
 import {GenericEvent} from "../../../model/event.ts";
+import { Property } from "@apibrew/client";
 
 export interface ListElementProps {
     required?: boolean
@@ -20,10 +20,10 @@ export interface ListElementProps {
 }
 
 export function ListElement(props: ListElementProps) {
-    const property = useResourceProperty(true)
+    const property = useResourceProperty(true) as Property
     // const [items, setItems] = useState<any[]>(props.value ?? [])
 
-    if (property.type !== 'LIST') {
+    if (property.type as any !== 'LIST') {
         throw new Error('ListFormElements can only be used with a list property')
     }
 
@@ -35,7 +35,7 @@ export function ListElement(props: ListElementProps) {
                 <IconButton onClick={() => {
                     let newItem = {}
 
-                    if (property.item.type === 'STRUCT') {
+                    if (property.item?.type as any === 'STRUCT') {
                         newItem = {}
                     } else {
                         newItem = ''

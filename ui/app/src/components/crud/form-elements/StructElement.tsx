@@ -1,16 +1,13 @@
 import {FormItem as CrudFormItem} from "../../../model/ui/crud.ts";
-import {ResourceProperty} from "../../../model/index.ts";
 import React from "react";
 import Box from "@mui/material/Box";
-import {Tab, Tabs} from "@mui/material";
 import {FormItem} from "./FormItem.tsx";
 import {TabElement} from "./TabElement.tsx";
-import {useResource} from "../../../context/resource.ts";
-import {PropertyPathContext} from "../PropertyPathContext.tsx";
+import { Property } from "@apibrew/client";
 
 export interface StructElementProps {
     config: CrudFormItem
-    properties?: ResourceProperty[]
+    properties?: Property[]
 }
 
 export function StructElement(props: StructElementProps) {

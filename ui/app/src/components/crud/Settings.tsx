@@ -1,7 +1,5 @@
 import {Box, Button} from "@mui/material"
-import {PageLayout} from "../../layout/PageLayout.tsx"
 import {Cancel, Save} from "@mui/icons-material"
-import {Resource} from "../../model/index.ts"
 import {useNavigate, useParams} from "react-router-dom"
 import {Form} from "./Form.tsx"
 import {Record, RecordService, useBreadCramps} from "@apibrew/ui-lib"
@@ -10,6 +8,7 @@ import {Crud, CrudName} from "../../model/ui/crud.ts";
 import {resetCrudForm} from "./helper.ts";
 import {useResourceByName} from "../../hooks/resource.ts";
 import {useRecordByName} from "../../hooks/record.ts";
+import { Resource } from "@apibrew/client"
 
 export interface SettingsProps {
     resource: Resource
@@ -47,7 +46,7 @@ export function Settings(props: SettingsProps): JSX.Element {
         <Box flexDirection='column' display='flex' width='100%' height='100%' padding='20px'>
             <Box flexGrow={1}>
                 {crudResource && <Form resource={crudResource}
-                                       formConfig={selfCrud.formConfig}
+                                       formConfig={selfCrud.formConfig!}
                                        record={crudConfig}
                                        setRecord={setCrudConfig}/>}
             </Box>

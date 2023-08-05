@@ -1,9 +1,9 @@
 import { Link } from './Link'
-import { type Resource, type ResourceProperty } from '@apibrew/ui-lib'
+import { type Resource, type Property } from '@apibrew/ui-lib'
 
 export interface ReferenceLinkProps {
     resource: Resource
-    property: ResourceProperty
+    property: Property
 }
 
 export function ReferenceLink(props: ReferenceLinkProps) {

@@ -1,8 +1,8 @@
-import {Card, CardContent, CardHeader, Grid, Tab, Tabs} from "@mui/material";
+import {Card, CardContent, CardHeader, Grid, Tabs} from "@mui/material";
 import Box from "@mui/material/Box";
 import React from "react";
 import Button from "@mui/material/Button";
-import {CameraRear, ContentCopy, Delete, Group, TableRows, TextFields, Title} from "@mui/icons-material";
+import {CameraRear, ContentCopy, Group, TableRows, TextFields, Title} from "@mui/icons-material";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import {FormConfig} from "../../model/ui/crud.ts";
@@ -11,7 +11,7 @@ export interface CrudSettingsFormConfigProps {
     config: FormConfig
 }
 
-export function CrudSettingsFormConfig(props: CrudSettingsFormConfigProps) {
+export function CrudSettingsFormConfig() {
     return (
         <React.Fragment>
             <Box sx={{flexGrow: 1}} m={2}>

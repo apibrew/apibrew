@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import * as React from 'react'
 import {ReactNode} from 'react'
 
 export interface PageLayoutProps {

@@ -27,7 +27,7 @@ export interface SecurityConstraintsInputSimpleProps {
 }
 
 export function SecurityConstraintsInputSimple(props: SecurityConstraintsInputSimpleProps) {
-    const namespaces = useRecords<Namespace>('namespace', 'system')
+    const namespaces = useRecords<Namespace>('Namespace', 'system')
     const [resources, setResources] = useState<Resource[]>([])
 
     logger.trace('render', { namespaces, resources, props })

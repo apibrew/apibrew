@@ -1,10 +1,8 @@
 import Box from "@mui/material/Box";
 import { MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow, TextField } from "@mui/material";
-import { SecurityConstraint } from "../../model/system/security-constraint.ts";
 import IconButton from "@mui/material/IconButton";
 import { Add, Delete } from "@mui/icons-material";
-import { User } from "../../model/system/user.ts";
-import { Role } from "../../model/system/role.ts";
+import { Role, SecurityConstraint, User } from "@apibrew/client";
 
 type Operation = SecurityConstraint["operation"]
 type Permit = SecurityConstraint["permit"]

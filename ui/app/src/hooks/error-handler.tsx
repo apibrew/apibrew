@@ -1,8 +1,8 @@
-import {useContext} from "react";
-import {AxiosError} from "axios";
-import {Resource, Status} from "../model";
-import {useNavigate} from "react-router-dom";
-import {TokenService, LayoutContext} from "@apibrew/ui-lib";
+import { useContext } from "react";
+import { AxiosError } from "axios";
+import { Status } from "../model";
+import { useNavigate } from "react-router-dom";
+import { TokenService, LayoutContext } from "@apibrew/ui-lib";
 
 export const useErrorHandler = () => {
     const layoutCtx = useContext(LayoutContext);
@@ -12,12 +12,12 @@ export const useErrorHandler = () => {
         throw new Error('LayoutContext not found');
     }
 
-    return (err) => {
+    return (err: Error) => {
         if (err instanceof TokenService.NoTokenAvailableError) {
             navigate('/login')
             return
         } else if (err instanceof AxiosError) {
-            if (err.response.status === 401) {
+            if (err.response?.status === 401) {
                 // TokenService.removeToken()
                 layoutCtx.showAlert({
                     severity: 'error',
@@ -26,7 +26,7 @@ export const useErrorHandler = () => {
                 navigate('/login')
                 return
             }
-            if (err.response.status === 403) {
+            if (err.response?.status === 403) {
                 // navigate('/dashboard/')
                 layoutCtx.showAlert({
                     severity: 'error',
@@ -35,7 +35,7 @@ export const useErrorHandler = () => {
                 return
             }
 
-            const responseData = err.response.data as Status
+            const responseData = err.response?.data as Status
 
             if (responseData.message) {
                 layoutCtx.showAlert({

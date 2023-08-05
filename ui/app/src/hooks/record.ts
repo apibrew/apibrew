@@ -15,7 +15,7 @@ export function useRecordBy<T>(resourceName: string, namespace: string, key: str
             RecordService.findBy<T>(namespace, resourceName, key, value).then(setRecord, errorHandler)
         } catch (e) {
             console.error(e)
-            errorHandler(e)
+            errorHandler(e as Error)
         }
     }, [resourceName, namespace, key, value])
 
