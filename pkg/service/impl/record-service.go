@@ -524,7 +524,9 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 						}
 					}
 
-					//var keepMark = make(map[string]bool)
+					if len(ids) == 0 {
+						continue
+					}
 
 					existingRecords, _, err := r.List(ctx, service.RecordListParams{
 						Namespace: refProp.Property.Reference.Namespace,

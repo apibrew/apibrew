@@ -48,17 +48,20 @@ func prepareInitRecords() []*model.InitRecord {
 				Name: "test_user",
 				SecurityConstraints: []*resource_model.SecurityConstraint{
 					{
-						Resource:  system.UserResourceModel,
+						Namespace: &system.UserResourceModel.Namespace.Name,
+						Resource:  &system.UserResourceModel.Name,
 						Operation: resource_model.SecurityConstraintOperation_READ,
 						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
 					},
 					{
-						Resource:  system.NamespaceResourceModel,
+						Namespace: &system.NamespaceResourceModel.Namespace.Name,
+						Resource:  &system.NamespaceResourceModel.Name,
 						Operation: resource_model.SecurityConstraintOperation_CREATE,
 						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
 					},
 					{
-						Resource:  system.NamespaceResourceModel,
+						Namespace: &system.NamespaceResourceModel.Namespace.Name,
+						Resource:  &system.NamespaceResourceModel.Name,
 						Operation: resource_model.SecurityConstraintOperation_READ,
 						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
 					},

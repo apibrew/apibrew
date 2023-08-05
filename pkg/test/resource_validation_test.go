@@ -129,11 +129,11 @@ func TestCreateResourceWithNonExistingRecordShouldFail(t *testing.T) {
 	}()
 
 	if err == nil {
-		t.Error("Error should be provided for resource is already exits")
+		t.Error("Error should be provided for resource validation error")
 		return
 	}
 
-	if util.GetErrorCode(err) != model.ErrorCode_ALREADY_EXISTS {
+	if util.GetErrorCode(err) != model.ErrorCode_RESOURCE_VALIDATION_ERROR {
 		print(util.GetErrorCode(err))
 		t.Error("Error code should be provided for ErrorCode_RESOURCE_VALIDATION_ERROR: " + util.GetErrorCode(err).String())
 	}
