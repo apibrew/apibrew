@@ -73,14 +73,8 @@ type ResourceMigrationService interface {
 	PreparePlan(ctx context.Context, existingResource *model.Resource, resource *model.Resource) (*model.ResourceMigrationPlan, errors.ServiceError)
 }
 
-type GenericRecordService[T proto.Message] interface {
-	Init(records []T)
-	Create(ctx context.Context, users []T) ([]T, errors.ServiceError)
-	Update(ctx context.Context, users []T) ([]T, errors.ServiceError)
-	Apply(ctx context.Context, users []T) ([]T, errors.ServiceError)
-	Delete(ctx context.Context, ids []string) errors.ServiceError
-	Get(ctx context.Context, id string) (T, errors.ServiceError)
-	List(ctx context.Context, query *model.BooleanExpression, limit uint32, offset uint64) ([]T, errors.ServiceError)
+type MetricsService interface {
+	Init(config *model.AppConfig)
 }
 
 type WatchService interface {
