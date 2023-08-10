@@ -14,6 +14,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
+	"github.com/hashicorp/go-metrics"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -51,6 +52,14 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	}); err != nil {
 		return nil, 0, err
 	}
+
+	// begin metrics
+	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
+		{Name: "operation", Value: "List"},
+		{Name: "resource", Value: params.Resource},
+		{Name: "namespace", Value: params.Namespace},
+	})
+	// end metrics
 
 	var bck abs.Backend
 	var err errors.ServiceError
@@ -148,6 +157,14 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	}); err != nil {
 		return nil, err
 	}
+
+	// begin metrics
+	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
+		{Name: "operation", Value: "Create"},
+		{Name: "resource", Value: params.Resource},
+		{Name: "namespace", Value: params.Namespace},
+	})
+	// end metrics
 
 	if len(params.Records) == 0 {
 		return nil, nil
@@ -381,6 +398,14 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		return nil, err
 	}
 
+	// begin metrics
+	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
+		{Name: "operation", Value: "Update"},
+		{Name: "resource", Value: params.Resource},
+		{Name: "namespace", Value: params.Namespace},
+	})
+	// end metrics
+
 	if len(params.Records) == 0 {
 		return nil, nil
 	}
@@ -609,6 +634,14 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, err
 	}
 
+	// begin metrics
+	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
+		{Name: "operation", Value: "Get"},
+		{Name: "resource", Value: namespace},
+		{Name: "namespace", Value: resourceName},
+	})
+	// end metrics
+
 	var bck abs.Backend
 	var err errors.ServiceError
 
@@ -710,6 +743,14 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 	}); err != nil {
 		return err
 	}
+
+	// begin metrics
+	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
+		{Name: "operation", Value: "Delete"},
+		{Name: "resource", Value: params.Resource},
+		{Name: "namespace", Value: params.Namespace},
+	})
+	// end metrics
 
 	if isResourceRelatedResource(resource) {
 		return errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")

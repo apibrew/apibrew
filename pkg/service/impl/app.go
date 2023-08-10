@@ -23,6 +23,7 @@ type App struct {
 	externalService          service.ExternalService
 	backendEventHandler      backend_event_handler.BackendEventHandler
 	extensionService         service.ExtensionService
+	metricsService           service.MetricsService
 }
 
 func (app *App) GetWatchService() service.WatchService {
@@ -53,6 +54,10 @@ func (app *App) GetExtensionService() service.ExtensionService {
 	return app.extensionService
 }
 
+func (app *App) GetMetricsService() service.MetricsService {
+	return app.metricsService
+}
+
 func (app *App) Init() <-chan interface{} {
 	app.backendEventHandler = backend_event_handler.NewBackendEventHandler()
 
@@ -70,6 +75,7 @@ func (app *App) Init() <-chan interface{} {
 	app.externalService = NewExternalService()
 	app.authenticationService = NewAuthenticationService(app.recordService)
 	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.backendEventHandler, app.externalService)
+	app.metricsService = NewMetricService(app.recordService, app.resourceService)
 
 	initSignal := make(chan interface{})
 	go func() {
@@ -87,6 +93,7 @@ func (app *App) initServices() {
 	app.recordService.Init(app.config)
 	app.dataSourceService.Init(app.config)
 	app.authenticationService.Init(app.config)
+	app.metricsService.Init(app.config)
 }
 
 func (app *App) SetConfig(config *model.AppConfig) {

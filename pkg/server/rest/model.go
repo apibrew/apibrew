@@ -106,3 +106,10 @@ type SearchRecordRequest struct {
 	ResolveReferences []string                 `json:"resolveReferences,omitempty"`
 	Annotations       map[string]string        `json:"annotations,omitempty"`
 }
+
+type HealthResponse struct {
+	Status string `json:"status"`
+}
+
+type MetricsResponse struct {
+}

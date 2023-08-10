@@ -13,6 +13,20 @@ message InitRecord {
   model.Record record = 3;
 }
 
+message InfluxDBConfig {
+  string hostUrl = 1;
+  string token = 2;
+  string database = 3;
+  string organization = 4;
+}
+
+message MetricsConfig {
+  bool enabled = 1;
+  optional int32 interval = 2; // defaults to 10 seconds
+  optional int32 retention = 3; // defaults to 1 day
+  InfluxDBConfig influxdb = 4;
+}
+
 message AppConfig {
   string host = 1;
   int32 port = 2;
@@ -21,7 +35,9 @@ message AppConfig {
   bool disableAuthentication = 5;
   bool disableCache = 6;
   string pluginsPath = 7;
-  model.Record systemDataSource = 8;
-  repeated model.Resource initResources = 9;
-  repeated InitRecord initRecords = 10;
+  MetricsConfig metrics = 8;
+  string serviceId = 9;
+  model.Record systemDataSource = 10;
+  repeated model.Resource initResources = 11;
+  repeated InitRecord initRecords = 12;
 }

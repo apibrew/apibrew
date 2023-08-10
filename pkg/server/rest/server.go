@@ -39,6 +39,8 @@ type server struct {
 	keyFile     string
 	container   service.Container
 	docsApi     docs.Api
+	metricsApi  MetricsApi
+	healthApi   HealthApi
 	recordApi   RecordApi
 	resourceApi ResourceApi
 }
@@ -166,6 +168,8 @@ func (s *server) configureRoutes() {
 
 	s.recordApi.ConfigureRouter(r)
 	s.resourceApi.ConfigureRouter(r)
+	s.metricsApi.ConfigureRouter(r)
+	s.healthApi.ConfigureRouter(r)
 
 	r.PathPrefix("/authentication").Handler(m)
 
@@ -202,5 +206,7 @@ func NewServer(container service.Container) Server {
 		docsApi:     docs.NewApi(container.GetResourceService()),
 		recordApi:   NewRecordApi(container),
 		resourceApi: NewResourceApi(container),
+		metricsApi:  NewMetricsApi(container.GetMetricsService()),
+		healthApi:   NewHealthApi(),
 	}
 }
