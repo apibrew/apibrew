@@ -96,9 +96,6 @@ func (pvw *BooleanExpressionWrapper) UnmarshalJSON(data []byte) error {
 }
 
 type SearchRecordRequest struct {
-	Token             string                   `json:"token,omitempty"`
-	Namespace         string                   `json:"namespace,omitempty"`
-	Resource          string                   `json:"resource,omitempty"`
 	Query             BooleanExpressionWrapper `json:"query,omitempty"`
 	Limit             uint32                   `json:"limit,omitempty"`
 	Offset            uint64                   `json:"offset,omitempty"`

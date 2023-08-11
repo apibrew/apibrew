@@ -56,6 +56,7 @@ var RoleResource = &model.Resource{
 		},
 	},
 	Annotations: map[string]string{
-		annotations.EnableAudit: "true",
+		annotations.EnableAudit:  annotations.Enabled,
+		annotations.OpenApiGroup: OpenApiMeta,
 	},
 }

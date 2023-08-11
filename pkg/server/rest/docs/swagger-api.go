@@ -1,20 +1,13 @@
 package docs
 
 import (
-	"context"
-	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	swaggerFiles "github.com/swaggo/files"
-	"github.com/swaggo/http-swagger"
-	"io"
 	"net/http"
-	"strings"
 )
 
 type SwaggerApi interface {
@@ -26,43 +19,25 @@ type swaggerApi struct {
 }
 
 func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
-	swaggerFiles.Handler.Prefix = "/docs/swagger/"
-
-	file, err := statikFS.Open("/openapi.yaml")
-
-	if err != nil {
-		log.Fatal(err)
+	var oab = &openApiBuilder{
+		resourceService: s.resourceService,
 	}
-
-	openApiData, err := io.ReadAll(file)
 
 	r.HandleFunc("/docs/openapi.json", func(w http.ResponseWriter, req *http.Request) {
-		doc, serviceErr := s.prepareDoc(req.Context(), openApiData)
+		doc, serviceErr := oab.prepareDoc(req.Context(), OpenApiDocPrepareConfig{group: "user"})
 
-		if serviceErr != nil {
-			http.Error(w, serviceErr.GetFullMessage(), 500)
-			return
-		}
-
-		data, err := doc.MarshalJSON()
-
-		if err != nil {
-			http.Error(w, serviceErr.GetFullMessage(), 400)
-			return
-		}
-
-		_, err = w.Write(data)
-
-		if err != nil {
-			log.Error(err)
-		}
+		s.writeDocResult(w, serviceErr, doc)
 	})
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	r.HandleFunc("/docs/openapi/{group}.json", func(w http.ResponseWriter, req *http.Request) {
+		var group = mux.Vars(req)["group"]
 
-	r.HandleFunc("/docs/resources/{namespace}/{resourceName}.json", func(w http.ResponseWriter, req *http.Request) {
+		doc, serviceErr := oab.prepareDoc(req.Context(), OpenApiDocPrepareConfig{group: group})
+
+		s.writeDocResult(w, serviceErr, doc)
+	})
+
+	r.HandleFunc("/docs/resources/jsonschema/{namespace}/{resourceName}.json", func(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 		namespace := vars["namespace"]
 		resourceName := vars["resourceName"]
@@ -74,7 +49,7 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 			return
 		}
 
-		doc := s.prepareResourceSchema(resource)
+		doc := util.PropertiesWithTitleToJsonSchema(resource, resource)
 
 		data, err := doc.MarshalJSON()
 
@@ -90,331 +65,27 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 		}
 
 	})
-
-	r.PathPrefix("/docs/swagger/").HandlerFunc(httpSwagger.Handler(
-		httpSwagger.URL("/docs/openapi.json"), //The url pointing to API definition
-	))
 }
 
-func (s *swaggerApi) prepareDoc(ctx context.Context, openApiData []byte) (*openapi3.T, errors.ServiceError) {
-	loader := openapi3.NewLoader()
+func (s *swaggerApi) writeDocResult(w http.ResponseWriter, serviceErr errors.ServiceError, doc *openapi3.T) {
+	if serviceErr != nil {
+		http.Error(w, serviceErr.GetFullMessage(), 500)
+		return
+	}
 
-	doc, err := loader.LoadFromData(openApiData)
+	data, err := doc.MarshalJSON()
 
 	if err != nil {
-		panic(err)
+		http.Error(w, serviceErr.GetFullMessage(), 400)
+		return
 	}
 
-	list, _ := s.resourceService.List(util.WithSystemContext(ctx))
+	_, err = w.Write(data)
 
-	for _, item := range list {
-		if item.Namespace != "system" {
-			s.appendResourceApis(ctx, doc, item)
-		}
-	}
-
-	// post processing
-	var security = &openapi3.SecurityRequirements{
-		{
-			"bearerAuth": []string{},
-		},
-	}
-
-	for pathKey, path := range doc.Paths {
-		for operationKey, operation := range path.Operations() {
-			if pathKey == "/authentication/token" && operationKey == "POST" {
-				continue
-			}
-
-			operation.Security = security
-		}
-
-		if strings.HasPrefix(pathKey, "/records/") {
-			delete(doc.Paths, pathKey)
-		}
-	}
-
-	return doc, nil
-}
-
-func (s *swaggerApi) appendResourceApis(ctx context.Context, doc *openapi3.T, resource *model.Resource) {
-	jsonSchemaRef := "/docs/resources/" + resource.Namespace + "/" + resource.Name + ".json"
-
-	var tags []string
-	if resource.GetNamespace() == "default" {
-		tags = []string{resource.GetName()}
-	} else {
-		tags = []string{resource.GetNamespace() + " / " + resource.GetName()}
-	}
-
-	title := resource.GetTitle()
-	description := resource.GetDescription()
-
-	if title == "" {
-		title = resource.GetName()
-	}
-
-	if description == "" {
-		description = "Api for " + resource.GetName()
-	}
-
-	doc.Paths["/"+s.getResourceFQN(resource)] = &openapi3.PathItem{
-		Summary:     title,
-		Description: description,
-		Get: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - List items", title),
-			Description: fmt.Sprintf("%s - List items", description),
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Ref: "#/components/schemas/list-" + s.getResourceFQN(resource),
-						}),
-					},
-				},
-			},
-		},
-		Post: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Create new item", title),
-			Description: fmt.Sprintf("%s - Create new item", description),
-			RequestBody: &openapi3.RequestBodyRef{
-				Value: &openapi3.RequestBody{
-					Required: true,
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: jsonSchemaRef,
-					}),
-				},
-			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Ref: jsonSchemaRef,
-						}),
-					},
-				},
-			},
-		},
-		Patch: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Apply an item", title),
-			Description: fmt.Sprintf("%s - Apply an item, it will check id and unique properties, if such item is exists, update operation will be executed, if not create operation is executed. If There are no change between updating record and existing record, nothing will be done", description),
-			RequestBody: &openapi3.RequestBodyRef{
-				Value: &openapi3.RequestBody{
-					Required: true,
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: jsonSchemaRef,
-					}),
-				},
-			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Ref: jsonSchemaRef,
-						}),
-					},
-				},
-			},
-		},
-	}
-
-	doc.Paths["/"+s.getResourceFQN(resource)+"/{id}"] = &openapi3.PathItem{
-		Summary:     title,
-		Description: description,
-		Get: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Get item", title),
-			Description: fmt.Sprintf("%s - Get item", description),
-			Parameters: []*openapi3.ParameterRef{
-				{
-					Value: &openapi3.Parameter{
-						Name:     "id",
-						In:       "path",
-						Required: true,
-						Schema: &openapi3.SchemaRef{
-							Value: &openapi3.Schema{
-								Type: "string",
-							},
-						},
-					},
-				},
-			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Ref: "#/components/schemas/item-" + s.getResourceFQN(resource),
-						}),
-					},
-				},
-			},
-		},
-		Delete: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Delete item", title),
-			Description: fmt.Sprintf("%s - Delete item", description),
-			Parameters: []*openapi3.ParameterRef{
-				{
-					Value: &openapi3.Parameter{
-						Name:     "id",
-						In:       "path",
-						Required: true,
-						Schema: &openapi3.SchemaRef{
-							Value: &openapi3.Schema{
-								Type: "string",
-							},
-						},
-					},
-				},
-			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Ref: "#/components/schemas/item-" + s.getResourceFQN(resource),
-						}),
-					},
-				},
-			},
-		},
-		Put: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Update item", title),
-			Description: fmt.Sprintf("%s - Update item", description),
-			Parameters: []*openapi3.ParameterRef{
-				{
-					Value: &openapi3.Parameter{
-						Name:     "id",
-						In:       "path",
-						Required: true,
-						Schema: &openapi3.SchemaRef{
-							Value: &openapi3.Schema{
-								Type: "string",
-							},
-						},
-					},
-				},
-			},
-			RequestBody: &openapi3.RequestBodyRef{
-				Value: &openapi3.RequestBody{
-					Required: true,
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: jsonSchemaRef,
-					}),
-				},
-			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Ref: jsonSchemaRef,
-						}),
-					},
-				},
-			},
-		},
-	}
-
-	doc.Paths["/"+s.getResourceFQN(resource)+"/_search"] = &openapi3.PathItem{
-		Summary:     title + " - Search",
-		Description: description + " - Search",
-		Post: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Search items", title),
-			Description: fmt.Sprintf("%s - Search items", description),
-			RequestBody: &openapi3.RequestBodyRef{
-				Ref: "#/components/schemas/SearchRecordRequest",
-			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Ref: "#/components/schemas/item-" + s.getResourceFQN(resource),
-						}),
-					},
-				},
-			},
-		},
-	}
-
-	doc.Components.Schemas["list-"+s.getResourceFQN(resource)] = &openapi3.SchemaRef{
-		Value: &openapi3.Schema{
-			Properties: map[string]*openapi3.SchemaRef{
-				"content": {
-					Value: &openapi3.Schema{
-						Type: openapi3.TypeArray,
-						Items: &openapi3.SchemaRef{
-							Ref: jsonSchemaRef,
-						},
-					},
-				},
-			},
-		},
-	}
-
-	doc.Components.Schemas["item-"+s.getResourceFQN(resource)] = &openapi3.SchemaRef{
-		Value: &openapi3.Schema{
-			Properties: map[string]*openapi3.SchemaRef{
-				"content": {
-					Ref: jsonSchemaRef,
-				},
-			},
-		},
-	}
-
-	for _, tag := range tags {
-		doc.Tags = append(doc.Tags, &openapi3.Tag{
-			Name:        tag,
-			Description: "",
-		})
+	if err != nil {
+		log.Error(err)
 	}
 }
-
-func (s *swaggerApi) getResourceFQN(resource *model.Resource) string {
-	if resource.Namespace == "default" {
-		return util.ToDashCase(resource.Name)
-	} else {
-		return util.ToDashCase(resource.Namespace) + "-" + util.ToDashCase(resource.Name)
-	}
-}
-
-func (s *swaggerApi) prepareResourceSchema(resource *model.Resource) *openapi3.Schema {
-	var requiredItems []string
-
-	recordSchema := &openapi3.Schema{
-		Properties: map[string]*openapi3.SchemaRef{},
-	}
-
-	for _, property := range resource.Properties {
-		propSchema := util.ResourcePropertyTypeToJsonSchemaType(property.Type)
-
-		if property.ExampleValue != nil {
-			propSchema.Example = property.ExampleValue.AsInterface()
-		}
-
-		if property.DefaultValue != nil {
-			propSchema.Default = property.DefaultValue.AsInterface()
-		}
-
-		recordSchema.Properties[property.Name] = &openapi3.SchemaRef{
-			Value: propSchema,
-		}
-
-		if property.Required {
-			requiredItems = append(requiredItems, property.Name)
-		}
-	}
-
-	recordSchema.Required = requiredItems
-	recordSchema.Title = resource.GetTitle()
-	recordSchema.Description = resource.GetDescription()
-
-	return recordSchema
-}
-
 func NewSwaggerApi(resourceService service.ResourceService) SwaggerApi {
 	return &swaggerApi{
 		resourceService: resourceService,

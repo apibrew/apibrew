@@ -68,6 +68,7 @@ var DataSourceResource = &model.Resource{
 		},
 	},
 	Annotations: map[string]string{
-		annotations.EnableAudit: "true",
+		annotations.EnableAudit:  "true",
+		annotations.OpenApiGroup: OpenApiInternal,
 	},
 }

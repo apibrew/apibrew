@@ -28,5 +28,6 @@ var RecordResource = &model.Resource{
 
 	Annotations: map[string]string{
 		annotations.SelfContainedProperty: "properties",
+		annotations.RestApiDisabled:       annotations.Enabled,
 	},
 }

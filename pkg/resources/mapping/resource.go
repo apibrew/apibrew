@@ -152,14 +152,23 @@ func ResourceIndexToValue(index *model.ResourceIndex) *structpb.Value {
 }
 
 func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
-	// FIXME
 	var st = val.GetStructValue()
-	return &model.ResourceSubType{
+	rt := &model.ResourceSubType{
 		Name: st.GetFields()["name"].GetStringValue(),
 		Properties: util.ArrayMap(st.GetFields()["properties"].GetListValue().Values, func(t *structpb.Value) *model.ResourceProperty {
 			return ResourcePropertyFromRecord(&model.Record{Properties: t.GetStructValue().Fields})
 		}),
 	}
+
+	if st.GetFields()["title"] != nil {
+		rt.Title = st.GetFields()["title"].GetStringValue()
+	}
+
+	if st.GetFields()["description"] != nil {
+		rt.Description = st.GetFields()["description"].GetStringValue()
+	}
+
+	return rt
 }
 
 func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubType) *structpb.Value {
@@ -171,8 +180,10 @@ func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubTyp
 
 	return structpb.NewStructValue(&structpb.Struct{
 		Fields: map[string]*structpb.Value{
-			"name":       structpb.NewStringValue(subType.Name),
-			"properties": structpb.NewListValue(&structpb.ListValue{Values: propertyStructList}),
+			"name":        structpb.NewStringValue(subType.Name),
+			"title":       structpb.NewStringValue(subType.Title),
+			"description": structpb.NewStringValue(subType.Description),
+			"properties":  structpb.NewListValue(&structpb.ListValue{Values: propertyStructList}),
 		},
 	})
 }

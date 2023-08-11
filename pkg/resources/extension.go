@@ -276,6 +276,7 @@ var ExtensionResource = &model.Resource{
 		special.AnnotationsProperty,
 	},
 	Annotations: map[string]string{
-		annotations.EnableAudit: "true",
+		annotations.EnableAudit:  "true",
+		annotations.OpenApiGroup: OpenApiInternal,
 	},
 }

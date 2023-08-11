@@ -151,6 +151,22 @@ var ResourceResource = &model.Resource{
 					Required: true,
 				},
 				{
+					Name:     "title",
+					Mapping:  "title",
+					Primary:  false,
+					Type:     model.ResourceProperty_STRING,
+					Length:   256,
+					Required: false,
+				},
+				{
+					Name:     "description",
+					Mapping:  "description",
+					Primary:  false,
+					Type:     model.ResourceProperty_STRING,
+					Length:   256,
+					Required: false,
+				},
+				{
 					Name:     "properties",
 					Type:     model.ResourceProperty_LIST,
 					Required: true,
@@ -369,6 +385,7 @@ var ResourceResource = &model.Resource{
 		},
 	},
 	Annotations: map[string]string{
-		annotations.EnableAudit: "true",
+		annotations.EnableAudit:     annotations.Enabled,
+		annotations.RestApiDisabled: annotations.Enabled,
 	},
 }

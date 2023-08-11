@@ -3,6 +3,7 @@ package rest
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
@@ -46,7 +47,17 @@ func (r *recordApi) matchFunc(request *http.Request, match *mux.RouteMatch) bool
 
 	slug := pathParts[1]
 
-	return r.resourceService.GetSchema().ResourceBySlug[slug] != nil
+	resource := r.resourceService.GetSchema().ResourceBySlug[slug]
+
+	if resource == nil {
+		return false
+	}
+
+	if annotations.IsEnabled(resource, annotations.RestApiDisabled) {
+		return false
+	}
+
+	return true
 }
 
 func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.Request) {
@@ -260,12 +271,13 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 	}
 
 	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
-		Query:      listRecordRequest.Query.expr,
-		Namespace:  resource.Namespace,
-		Resource:   resource.Name,
-		Limit:      listRecordRequest.Limit,
-		Offset:     listRecordRequest.Offset,
-		UseHistory: listRecordRequest.UseHistory,
+		Query:             listRecordRequest.Query.expr,
+		Namespace:         resource.Namespace,
+		Resource:          resource.Name,
+		Limit:             listRecordRequest.Limit,
+		Offset:            listRecordRequest.Offset,
+		UseHistory:        listRecordRequest.UseHistory,
+		ResolveReferences: listRecordRequest.ResolveReferences,
 	})
 
 	ServiceResponder[*stub.ListRecordRequest]().

@@ -39,3 +39,9 @@ const UseJoinTable = "UseJoinTable"
 const TypeName = "TypeName"
 const SelfContainedProperty = "SelfContainedProperty"
 const AllowEmptyPrimitive = "AllowEmptyPrimitive"
+
+// restapi
+const RestApiDisabled = "RestApiDisabled"
+
+// openapi
+const OpenApiGroup = "OpenApiGroup"
