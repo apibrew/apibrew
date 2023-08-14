@@ -30,7 +30,6 @@ type grpcServer struct {
 	recordService            service.RecordService
 	authenticationService    service.AuthenticationService
 	dataSourceService        service.DataSourceService
-	config                   *model.AppConfig
 	watchService             service.WatchService
 }
 
@@ -38,7 +37,7 @@ func (g *grpcServer) Stop() {
 	g.grpcServer.Stop()
 }
 
-func (g *grpcServer) Init(appConfig *model.AppConfig) {
+func (g *grpcServer) Init(_ *model.AppConfig) {
 	var opts = []grpc.ServerOption{
 		grpc.UnaryInterceptor(g.grpcIntercept),
 		grpc.StreamInterceptor(g.grpcStreamIntercept),
@@ -62,7 +61,7 @@ func (g *grpcServer) Serve(lis net.Listener) {
 	}
 }
 
-func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	ctx, err := interceptRequest(g.authenticationService, ctx, req)
 
 	if err != nil {
@@ -72,7 +71,7 @@ func (g *grpcServer) grpcIntercept(ctx context.Context, req interface{}, info *g
 	return handler(ctx, req)
 }
 
-func (g *grpcServer) grpcStreamIntercept(req interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+func (g *grpcServer) grpcStreamIntercept(req interface{}, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	return handler(req, ss)
 }
 

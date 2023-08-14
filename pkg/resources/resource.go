@@ -387,5 +387,6 @@ var ResourceResource = &model.Resource{
 	Annotations: map[string]string{
 		annotations.EnableAudit:     annotations.Enabled,
 		annotations.RestApiDisabled: annotations.Enabled,
+		annotations.OpenApiGroup:    OpenApiMeta,
 	},
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strings"
 )
 
 type SwaggerApi interface {
@@ -24,15 +25,21 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 	}
 
 	r.HandleFunc("/docs/openapi.json", func(w http.ResponseWriter, req *http.Request) {
-		doc, serviceErr := oab.prepareDoc(req.Context(), OpenApiDocPrepareConfig{group: "user"})
+		config := OpenApiDocPrepareConfig{group: "user"}
 
-		s.writeDocResult(w, serviceErr, doc)
-	})
+		if req.URL.Query().Get("group") != "" {
+			config.group = req.URL.Query().Get("group")
+		}
 
-	r.HandleFunc("/docs/openapi/{group}.json", func(w http.ResponseWriter, req *http.Request) {
-		var group = mux.Vars(req)["group"]
+		if req.URL.Query().Get("namespace") != "" {
+			config.namespaces = strings.Split(req.URL.Query().Get("namespace"), ",")
+		}
 
-		doc, serviceErr := oab.prepareDoc(req.Context(), OpenApiDocPrepareConfig{group: group})
+		if req.URL.Query().Get("resource") != "" {
+			config.resources = strings.Split(req.URL.Query().Get("resource"), ",")
+		}
+
+		doc, serviceErr := oab.prepareDoc(req.Context(), config)
 
 		s.writeDocResult(w, serviceErr, doc)
 	})

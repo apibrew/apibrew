@@ -117,7 +117,7 @@ func PropNodejsType(resource *model.Resource, prop *model.ResourceProperty) stri
 		return strings.Join(enumValues, " | ")
 	}
 
-	return util.ResourcePropertyTypeToJsonSchemaType(resource, prop).Type
+	return util.ResourcePropertyTypeToJsonSchemaType(resource, prop).Value.Type
 }
 
 func IsNullable(prop *model.ResourceProperty) bool {

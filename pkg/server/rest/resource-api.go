@@ -75,7 +75,6 @@ func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *
 
 func (r *resourceApi) handleResourceGet(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
-	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 	id := vars["id"]
 
 	resource, serviceErr := r.resourceService.Get(request.Context(), id)
@@ -88,7 +87,6 @@ func (r *resourceApi) handleResourceGet(writer http.ResponseWriter, request *htt
 
 func (r *resourceApi) handleResourceByName(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
-	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 	namespace := vars["namespace"]
 	name := vars["name"]
 
@@ -102,7 +100,6 @@ func (r *resourceApi) handleResourceByName(writer http.ResponseWriter, request *
 
 func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
-	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 	id := vars["id"]
 
 	resourceForUpdate := new(resource_model.Resource)
@@ -114,9 +111,19 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 		return
 	}
 
+	resource, serviceErr := r.resourceService.Get(request.Context(), id)
+
+	if serviceErr != nil {
+		ServiceResponder[*stub.UpdateResourceRequest]().
+			Writer(writer).
+			Request(request).
+			Respond(nil, serviceErr)
+		return
+	}
+
 	resource.Id = id
 
-	serviceErr := r.resourceService.Update(request.Context(), resourceFrom(resourceForUpdate), true, false)
+	serviceErr = r.resourceService.Update(request.Context(), resourceFrom(resourceForUpdate), true, false)
 
 	if serviceErr != nil {
 		resource = nil

@@ -19,7 +19,266 @@ type openApiBuilder struct {
 }
 
 type OpenApiDocPrepareConfig struct {
-	group string
+	group      string
+	namespaces []string
+	resources  []string
+}
+
+var authenticationTokenApi = &openapi3.PathItem{
+	Post: &openapi3.Operation{
+		Tags:        []string{"Authentication"},
+		OperationID: "getAuthenticationToken",
+		Summary:     "This endpoint is used to authenticate the user and get the access token.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		RequestBody: &openapi3.RequestBodyRef{
+			Value: &openapi3.RequestBody{
+				Required: true,
+				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+					Ref: "#/components/schemas/AuthenticationRequest",
+				}),
+			},
+		},
+		Responses: map[string]*openapi3.ResponseRef{
+			"200": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Authentication Response"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/AuthenticationResponse",
+					}),
+				},
+			},
+			"401": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Unauthorized"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/Error",
+					}),
+				},
+			},
+			"400": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Bad Request"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/Error",
+					}),
+				},
+			},
+		},
+	},
+	Put: &openapi3.Operation{
+		Tags:        []string{"Authentication"},
+		OperationID: "refreshAuthenticationToken",
+		Summary:     "This endpoint is used to refresh the access token.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		RequestBody: &openapi3.RequestBodyRef{
+			Value: &openapi3.RequestBody{
+				Required: true,
+				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+					Ref: "#/components/schemas/RefreshTokenRequest",
+				}),
+			},
+		},
+		Responses: map[string]*openapi3.ResponseRef{
+			"200": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Authentication Response"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/RefreshTokenResponse",
+					}),
+				},
+			},
+			"401": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Unauthorized"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/Error",
+					}),
+				},
+			},
+			"400": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Bad Request"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/Error",
+					}),
+				},
+			},
+		},
+	},
+}
+
+var resourcesApi = &openapi3.PathItem{
+	Get: &openapi3.Operation{
+		Tags:        []string{"Resources"},
+		OperationID: "getResources",
+		Summary:     "This endpoint is used to get the list of resources.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		Responses: map[string]*openapi3.ResponseRef{
+			"200": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("List of resources"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Value: &openapi3.Schema{
+							Type: openapi3.TypeArray,
+							Items: &openapi3.SchemaRef{
+								Ref: "#/components/schemas/SystemResource",
+							},
+						},
+					}),
+				},
+			},
+		},
+	},
+	Post: &openapi3.Operation{
+		Tags:        []string{"Resources"},
+		OperationID: "createResource",
+		Summary:     "This endpoint is used to create a new resource.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		RequestBody: &openapi3.RequestBodyRef{
+			Value: &openapi3.RequestBody{
+				Required: true,
+				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+					Ref: "#/components/schemas/SystemResource",
+				}),
+			},
+		},
+		Responses: map[string]*openapi3.ResponseRef{
+			"200": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Created resource"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/SystemResource",
+					}),
+				},
+			},
+		},
+	},
+}
+
+var resourceItemApi = &openapi3.PathItem{
+	Get: &openapi3.Operation{
+		Tags:        []string{"Resources"},
+		OperationID: "getResource",
+		Summary:     "This endpoint is used to get a resource.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		Parameters: []*openapi3.ParameterRef{
+			{
+				Value: &openapi3.Parameter{
+					Name:     "id",
+					In:       "path",
+					Required: true,
+					Schema: &openapi3.SchemaRef{
+						Value: &openapi3.Schema{
+							Type: "string",
+						},
+					},
+				},
+			},
+		},
+		Responses: map[string]*openapi3.ResponseRef{
+			"200": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Resource"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/SystemResource",
+					}),
+				},
+			},
+		},
+	},
+	Put: &openapi3.Operation{
+		Tags:        []string{"Resources"},
+		OperationID: "updateResource",
+		Summary:     "This endpoint is used to update a resource.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		Parameters: []*openapi3.ParameterRef{
+			{
+				Value: &openapi3.Parameter{
+					Name:     "id",
+					In:       "path",
+					Required: true,
+					Schema: &openapi3.SchemaRef{
+						Value: &openapi3.Schema{
+							Type: "string",
+						},
+					},
+				},
+			},
+		},
+		RequestBody: &openapi3.RequestBodyRef{
+			Value: &openapi3.RequestBody{
+				Required: true,
+				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+					Ref: "#/components/schemas/SystemResource",
+				}),
+			},
+		},
+	},
+	Delete: &openapi3.Operation{
+		Tags:        []string{"Resources"},
+		OperationID: "deleteResource",
+		Summary:     "This endpoint is used to delete a resource.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		Parameters: []*openapi3.ParameterRef{
+			{
+				Value: &openapi3.Parameter{
+					Name:     "id",
+					In:       "path",
+					Required: true,
+					Schema: &openapi3.SchemaRef{
+						Value: &openapi3.Schema{
+							Type: "string",
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
+var resourceItemByNameApi = &openapi3.PathItem{
+	Get: &openapi3.Operation{
+		Tags:        []string{"Resources"},
+		OperationID: "getResourceByName",
+		Summary:     "This endpoint is used to get a resource by name.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		Parameters: []*openapi3.ParameterRef{
+			{
+				Value: &openapi3.Parameter{
+					Name:     "namespace",
+					In:       "path",
+					Required: true,
+					Schema: &openapi3.SchemaRef{
+						Value: &openapi3.Schema{
+							Type: "string",
+						},
+					},
+				},
+			},
+			{
+				Value: &openapi3.Parameter{
+					Name:     "name",
+					In:       "path",
+					Required: true,
+					Schema: &openapi3.SchemaRef{
+						Value: &openapi3.Schema{
+							Type: "string",
+						},
+					},
+				},
+			},
+		},
+		Responses: map[string]*openapi3.ResponseRef{
+			"200": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Resource"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/SystemResource",
+					}),
+				},
+			},
+		},
+	},
 }
 
 func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepareConfig) (*openapi3.T, errors.ServiceError) {
@@ -38,88 +297,7 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 			},
 		},
 		Paths: openapi3.Paths{
-			"/authentication/token": &openapi3.PathItem{
-				Post: &openapi3.Operation{
-					Tags:        []string{"Authentication"},
-					OperationID: "getAuthenticationToken",
-					Summary:     "This endpoint is used to authenticate the user and get the access token.",
-					Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-					RequestBody: &openapi3.RequestBodyRef{
-						Value: &openapi3.RequestBody{
-							Required: true,
-							Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-								Ref: "#/components/schemas/AuthenticationRequest",
-							}),
-						},
-					},
-					Responses: map[string]*openapi3.ResponseRef{
-						"200": {
-							Value: &openapi3.Response{
-								Description: util.Pointer("Authentication Response"),
-								Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-									Ref: "#/components/schemas/AuthenticationResponse",
-								}),
-							},
-						},
-						"401": {
-							Value: &openapi3.Response{
-								Description: util.Pointer("Unauthorized"),
-								Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-									Ref: "#/components/schemas/Error",
-								}),
-							},
-						},
-						"400": {
-							Value: &openapi3.Response{
-								Description: util.Pointer("Bad Request"),
-								Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-									Ref: "#/components/schemas/Error",
-								}),
-							},
-						},
-					},
-				},
-				Put: &openapi3.Operation{
-					Tags:        []string{"Authentication"},
-					OperationID: "refreshAuthenticationToken",
-					Summary:     "This endpoint is used to refresh the access token.",
-					Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-					RequestBody: &openapi3.RequestBodyRef{
-						Value: &openapi3.RequestBody{
-							Required: true,
-							Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-								Ref: "#/components/schemas/RefreshTokenRequest",
-							}),
-						},
-					},
-					Responses: map[string]*openapi3.ResponseRef{
-						"200": {
-							Value: &openapi3.Response{
-								Description: util.Pointer("Authentication Response"),
-								Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-									Ref: "#/components/schemas/RefreshTokenResponse",
-								}),
-							},
-						},
-						"401": {
-							Value: &openapi3.Response{
-								Description: util.Pointer("Unauthorized"),
-								Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-									Ref: "#/components/schemas/Error",
-								}),
-							},
-						},
-						"400": {
-							Value: &openapi3.Response{
-								Description: util.Pointer("Bad Request"),
-								Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-									Ref: "#/components/schemas/Error",
-								}),
-							},
-						},
-					},
-				},
-			},
+			"/authentication/token": authenticationTokenApi,
 		},
 		Components: openapi3.Components{
 			Schemas: openapi3.Schemas{
@@ -308,10 +486,20 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 		},
 	}
 
+	if checkResourceAllowed(config, resources.ResourceResource, false) {
+		doc.Paths["/resources"] = resourcesApi
+		doc.Paths["/resources/{id}"] = resourceItemApi
+		doc.Paths["/resources/by-name/{namespace}/{name}"] = resourceItemByNameApi
+	}
+
 	list, _ := s.resourceService.List(util.WithSystemContext(ctx))
 
 	for _, item := range list {
-		if !checkResourceAllowed(config, item) {
+		if annotations.IsEnabled(item, annotations.RestApiDisabled) {
+			continue
+		}
+
+		if !checkResourceAllowed(config, item, false) {
 			continue
 		}
 
@@ -340,7 +528,7 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 	}
 
 	for _, item := range list {
-		if !checkResourceAllowed(config, item) {
+		if !checkResourceAllowed(config, item, true) {
 			continue
 		}
 
@@ -360,15 +548,31 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 	return doc, nil
 }
 
-func checkResourceAllowed(config OpenApiDocPrepareConfig, resource *model.Resource) bool {
-	if annotations.IsEnabled(resource, annotations.RestApiDisabled) {
-		return false
+func checkResourceAllowed(config OpenApiDocPrepareConfig, resource *model.Resource, forResource bool) bool {
+	if len(config.namespaces) > 0 {
+		if !util.ArrayContains(config.namespaces, resource.Namespace) {
+			return false
+		}
+	}
+
+	if len(config.resources) > 0 {
+		if !util.ArrayContains(config.resources, resource.Name) {
+			return false
+		}
+	}
+
+	if config.group == "full" {
+		return true
 	}
 
 	resourceApiGroup := annotations.Get(resource, annotations.OpenApiGroup)
 
 	if resourceApiGroup == "" {
 		resourceApiGroup = "user"
+	}
+
+	if forResource && resource.Namespace == "system" && config.group == "meta" {
+		return true
 	}
 
 	return resourceApiGroup == config.group

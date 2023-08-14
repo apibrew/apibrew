@@ -28,9 +28,8 @@ func ServiceResponder[T proto.Message]() ServiceCaller[T] {
 }
 
 type ServiceCaller[T proto.Message] struct {
-	request        *http.Request
-	writer         http.ResponseWriter
-	responseMapper func(response proto.Message) proto.Message
+	request *http.Request
+	writer  http.ResponseWriter
 }
 
 func (s ServiceCaller[T]) Request(request *http.Request) ServiceCaller[T] {
@@ -62,7 +61,7 @@ func (s ServiceCaller[T]) Respond(result interface{}, serviceError errors.Servic
 		log.Error(err)
 	}
 
-	s.writer.Write(body)
+	_, _ = s.writer.Write(body)
 }
 
 func handleServiceError(writer http.ResponseWriter, err errors.ServiceError) {
@@ -75,22 +74,14 @@ func handleServiceError(writer http.ResponseWriter, err errors.ServiceError) {
 		return
 	}
 
-	writer.Write(body)
+	_, _ = writer.Write(body)
 }
 
 func handleClientError(writer http.ResponseWriter, err error) {
 	if err != nil {
 		log.Error(err)
 		writer.WriteHeader(400)
-		writer.Write([]byte(err.Error()))
-	}
-}
-
-func handleClientErrorText(writer http.ResponseWriter, err string) {
-	if err != "" {
-		log.Error(err)
-		writer.WriteHeader(400)
-		writer.Write([]byte(err))
+		_, _ = writer.Write([]byte(err.Error()))
 	}
 }
 
@@ -115,12 +106,4 @@ var errorCodeHttpStatusMap = map[model.ErrorCode]int{
 
 func getRequestBoolFlag(request *http.Request, s string) bool {
 	return request.URL.Query().Has(s)
-}
-
-func toProtoError(err errors.ServiceError) *model.Error {
-	if err == nil {
-		return nil
-	}
-
-	return err.ProtoError()
 }
