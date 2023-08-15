@@ -86,6 +86,29 @@ func (r *resourceService) LocateReferences(resource *model.Resource, referencesT
 	return filteredReferences
 }
 
+func (r *resourceService) LocateLocalReferences(resource *model.Resource) []string {
+	references := r.GetSchema().ResourcePropertiesByType[resource.Namespace+"/"+resource.Name][model.ResourceProperty_REFERENCE]
+	var filteredReferences []string
+
+	var existingPathMap = make(map[string]bool)
+
+	for _, reference := range references {
+		var existingReferenceToResolveMap = make(map[string]bool)
+		if existingReferenceToResolveMap[reference.Path] {
+			continue
+		}
+		existingReferenceToResolveMap[reference.Path] = true
+
+		if !existingPathMap[reference.Path] {
+			filteredReferences = append(filteredReferences, reference.Path)
+		}
+
+		existingPathMap[reference.Path] = true
+	}
+
+	return filteredReferences
+}
+
 func (r *resourceService) GetSchema() *abs.Schema {
 	return &r.schema
 }

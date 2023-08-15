@@ -8,5 +8,9 @@ func IsPropertyOmitted(property *model.ResourceProperty) bool {
 		return true
 	}
 
+	if property.BackReference != nil {
+		return true
+	}
+
 	return false
 }

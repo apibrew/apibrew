@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -204,6 +205,139 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 		if len(pathToOperateNextReference) > 0 {
 			if prop.Type == model.ResourceProperty_STRUCT {
+				err := r._recordListWalkCheckOperator(ctx, newPath, prop.Properties, subValues, pathToOperateNextReferenceMap)
+
+				if err != nil {
+					return err
+				}
+			}
+
+			if prop.Type == model.ResourceProperty_REFERENCE {
+				var referencedResource = r.resourceService.LocateResourceByReference(r.resource, prop.Reference)
+
+				subRefRecordResolver := &recordResolver{
+					recordService:   r.recordService,
+					resourceService: r.resourceService,
+					resource:        referencedResource,
+					records:         referenceRecords,
+					paths:           pathToOperateNextReference,
+				}
+
+				err := subRefRecordResolver.resolveReferences(ctx)
+
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) errors.ServiceError {
+	for _, prop := range properties {
+		var newPath = path + "." + prop.Name
+
+		if prop.Type == model.ResourceProperty_LIST || prop.Type == model.ResourceProperty_MAP {
+			newPath = newPath + "[]"
+			theProp := prop
+			prop = prop.Item
+			prop.Name = theProp.Name
+		}
+
+		if !pathsToOperate[newPath] {
+			continue
+		}
+
+		var subValues = make(map[string]*structpb.Value, len(recordValueMap))
+
+		for recordId, value := range recordValueMap {
+			valueSt := value.GetStructValue()
+			if valueSt.Fields[prop.Name] == nil {
+				continue
+			}
+			subValues[recordId] = valueSt.Fields[prop.Name]
+		}
+
+		if len(recordValueMap) == 0 {
+			continue
+		}
+
+		var pathToOperateNextReference []string
+		var pathToOperateNextReferenceMap = make(map[string]bool)
+
+		for pathToOperate := range pathsToOperate {
+			if !strings.HasPrefix(pathToOperate, newPath) {
+				continue
+			}
+			rightPath := pathToOperate[len(newPath):]
+			if rightPath == "" {
+				continue
+			}
+			pathToOperateNextReference = append(pathToOperateNextReference, "$"+rightPath)
+			pathToOperateNextReferenceMap["$"+rightPath] = true
+		}
+
+		var referenceRecords []*model.Record
+
+		if prop.Type == model.ResourceProperty_REFERENCE {
+			if prop.BackReference != nil {
+				continue
+			}
+
+			var referencedResource = r.resourceService.LocateResourceByReference(r.resource, prop.Reference)
+			var query *model.BooleanExpression
+
+			for _, referenceValue := range subValues {
+				if referenceValue.GetListValue() != nil {
+					for _, value := range referenceValue.GetListValue().Values {
+						subQuery, err := util.RecordIdentifierQuery(referencedResource, value.GetStructValue().Fields)
+
+						if err != nil {
+							return errors.LogicalError.WithDetails(err.Error())
+						}
+
+						if query == nil {
+							query = subQuery
+						} else {
+							query = util.QueryOrExpression(query, subQuery)
+						}
+					}
+				} else if referenceValue.GetStructValue() != nil {
+					subQuery, err := util.RecordIdentifierQuery(referencedResource, referenceValue.GetStructValue().Fields)
+
+					if err != nil {
+						return errors.LogicalError.WithDetails(err.Error())
+					}
+
+					if query == nil {
+						query = subQuery
+					} else {
+						query = util.QueryOrExpression(query, subQuery)
+					}
+				}
+			}
+
+			_, count, err := r.recordService.List(ctx, service.RecordListParams{
+				Namespace:         prop.Reference.Namespace,
+				Resource:          prop.Reference.Resource,
+				Query:             query,
+				ResolveReferences: []string{},
+			})
+
+			if err != nil {
+				return err
+			}
+
+			if count < uint32(len(subValues)) {
+				return errors.ReferenceViolation.WithDetails(
+					fmt.Sprintf("Resolved reference count does not match: required %d reference but found %d reference", count, len(subValues)))
+			}
+		}
+
+		if len(pathToOperateNextReference) > 0 {
+			if prop.Type == model.ResourceProperty_STRUCT {
 				err := r._recordListWalkOperator(ctx, newPath, prop.Properties, subValues, pathToOperateNextReferenceMap)
 
 				if err != nil {
@@ -232,4 +366,20 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 	}
 
 	return nil
+}
+
+func (r *recordResolver) checkReferences(ctx context.Context) errors.ServiceError {
+	var pathMap = make(map[string]bool)
+
+	for _, path := range r.paths {
+		pathMap[path] = true
+	}
+
+	var recordValues = util.ArrayToMap(r.records, func(t *model.Record) string {
+		return t.GetId()
+	}, func(t *model.Record) *structpb.Value {
+		return structpb.NewStructValue(&structpb.Struct{Fields: t.Properties})
+	})
+
+	return r._recordListWalkCheckOperator(ctx, "$", r.resource.Properties, recordValues, pathMap)
 }

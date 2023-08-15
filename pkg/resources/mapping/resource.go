@@ -3,6 +3,7 @@ package mapping
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -20,6 +21,7 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	properties["virtual"] = structpb.NewBoolValue(resource.Virtual)
 	properties["abstract"] = structpb.NewBoolValue(resource.Abstract)
 	properties["immutable"] = structpb.NewBoolValue(resource.Immutable)
+	properties["checkReferences"] = structpb.NewBoolValue(resource.CheckReferences)
 	if resource.SourceConfig != nil {
 		properties["dataSource"] = util.StructKv("name", resource.SourceConfig.DataSource)
 		properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
@@ -70,12 +72,13 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 	}
 
 	var resource = &model.Resource{
-		Id:        record.Id,
-		Name:      record.Properties["name"].GetStringValue(),
-		Namespace: record.Properties["namespace"].GetStructValue().GetFields()["name"].GetStringValue(),
-		Virtual:   record.Properties["virtual"].GetBoolValue(),
-		Abstract:  record.Properties["abstract"].GetBoolValue(),
-		Immutable: record.Properties["immutable"].GetBoolValue(),
+		Id:              record.Id,
+		Name:            record.Properties["name"].GetStringValue(),
+		Namespace:       record.Properties["namespace"].GetStructValue().GetFields()["name"].GetStringValue(),
+		Virtual:         record.Properties["virtual"].GetBoolValue(),
+		Abstract:        record.Properties["abstract"].GetBoolValue(),
+		Immutable:       record.Properties["immutable"].GetBoolValue(),
+		CheckReferences: record.Properties["checkReferences"].GetBoolValue(),
 		SourceConfig: &model.ResourceSourceConfig{
 			DataSource: record.Properties["dataSource"].GetStructValue().GetFields()["name"].GetStringValue(),
 			Entity:     record.Properties["entity"].GetStringValue(),
@@ -136,6 +139,10 @@ func ResourceIndexFromValue(val *structpb.Value) *model.ResourceIndex {
 
 	if st.Fields["unique"] != nil {
 		ri.Unique = st.Fields["unique"].GetBoolValue()
+	}
+
+	if st.Fields["properties"] != nil {
+		log.Print("I am found")
 	}
 
 	return ri

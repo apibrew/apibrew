@@ -184,6 +184,12 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		return nil, err
 	}
 
+	if resource.CheckReferences {
+		if err = r.checkReferences(ctx, resource, params.Records); err != nil {
+			return nil, err
+		}
+	}
+
 	// prepare default values
 	var defaultValueMap = make(map[string]*structpb.Value)
 	for _, prop := range resource.Properties {
@@ -424,11 +430,16 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		NormalizeRecord(resource, record)
 	}
 
-	err = validate.Records(resource, params.Records, true)
-
-	if err != nil {
+	if err = validate.Records(resource, params.Records, true); err != nil {
 		success = false
 		return nil, err
+	}
+
+	if resource.CheckReferences {
+		if err = r.checkReferences(ctx, resource, params.Records); err != nil {
+			success = false
+			return nil, err
+		}
 	}
 
 	var records []*model.Record
@@ -820,4 +831,28 @@ func (r *recordService) ResolveReferences(ctx context.Context, resource *model.R
 	}
 
 	return rr.resolveReferences(ctx)
+}
+
+func (r *recordService) checkReferences(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
+	log.Debug("Begin record-service ResolveReferences: " + resource.Namespace + "/" + resource.Name)
+
+	defer func() {
+		log.Debug("End record-service ResolveReferences: " + resource.Namespace + "/" + resource.Name)
+	}()
+	if len(records) == 0 {
+		return nil
+	}
+
+	// resolving references
+	references := r.resourceService.LocateLocalReferences(resource)
+
+	var rr = &recordResolver{
+		recordService:   r,
+		resourceService: r.resourceService,
+		resource:        resource,
+		records:         records,
+		paths:           references,
+	}
+
+	return rr.checkReferences(ctx)
 }

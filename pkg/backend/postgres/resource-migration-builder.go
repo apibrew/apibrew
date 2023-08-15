@@ -125,7 +125,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 		propertyType := types.ByResourcePropertyType(property.Type)
 		val, _ := propertyType.UnPack(property.DefaultValue)
 
-		def = append(def, fmt.Sprintf("DEFAULT '%s'", val))
+		def = append(def, fmt.Sprintf("DEFAULT '%v'", val))
 	}
 
 	return strings.Join(def, " "), nil

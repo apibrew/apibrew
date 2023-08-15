@@ -134,6 +134,7 @@ message Resource {
   bool virtual = 11; // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.
   bool immutable = 12; // if true, delete and update will not be allowed on this resource
   bool abstract = 13; // if abstract, resource is only available to internal and extension side operations
+  bool checkReferences = 16;
   optional string title = 14;
   optional string description = 15;
 

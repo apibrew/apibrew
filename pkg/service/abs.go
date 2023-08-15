@@ -66,6 +66,7 @@ type ResourceService interface {
 	GetSchema() *abs.Schema
 	PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError)
 	LocateReferences(resource *model.Resource, resolve []string) []string
+	LocateLocalReferences(resource *model.Resource) []string
 	LocateResourceByReference(resource *model.Resource, reference *model.Reference) *model.Resource
 }
 

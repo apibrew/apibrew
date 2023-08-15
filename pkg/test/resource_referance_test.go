@@ -19,6 +19,7 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 				Catalog:    "",
 				Entity:     "author",
 			},
+			CheckReferences: true,
 			Properties: []*model.ResourceProperty{
 				{
 					Name:     "name",
@@ -39,7 +40,8 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 			},
 		},
 		{
-			Name: "book",
+			Name:            "book",
+			CheckReferences: true,
 			SourceConfig: &model.ResourceSourceConfig{
 				DataSource: setup.DhTest.Name,
 				Catalog:    "",

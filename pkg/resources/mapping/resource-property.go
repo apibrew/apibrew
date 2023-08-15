@@ -111,8 +111,10 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 			reference.Cascade = referenceProperties["cascade"].GetBoolValue()
 		}
 
-		backReference = &model.BackReference{
-			Property: record.Properties["backReference"].GetStringValue(),
+		if record.Properties["backReference"] != nil && record.Properties["backReference"].GetStringValue() != "" {
+			backReference = &model.BackReference{
+				Property: record.Properties["backReference"].GetStringValue(),
+			}
 		}
 	}
 
