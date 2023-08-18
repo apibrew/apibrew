@@ -16,7 +16,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	if property.Description != nil {
 		properties["description"] = structpb.NewStringValue(*property.Description)
 	}
-	properties["type"] = structpb.NewNumberValue(float64(property.Type.Number()))
+	properties["type"] = structpb.NewStringValue(property.Type.String())
 
 	if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
 		properties["item"] = structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(property.Item, resource).Properties})
@@ -121,7 +121,7 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	var resourceProperty = &model.ResourceProperty{
 		Id:            &record.Id,
 		Name:          record.Properties["name"].GetStringValue(),
-		Type:          model.ResourceProperty_Type(record.Properties["type"].GetNumberValue()),
+		Type:          model.ResourceProperty_Type(model.ResourceProperty_Type_value[record.Properties["type"].GetStringValue()]),
 		Mapping:       record.Properties["mapping"].GetStringValue(),
 		Primary:       record.Properties["primary"].GetBoolValue(),
 		Required:      record.Properties["required"].GetBoolValue(),

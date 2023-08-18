@@ -14,7 +14,7 @@ export const ResourceResource = {
 
 export interface Property {
      name: string;
-     type: number;
+     type: 'BOOL' | 'STRING' | 'FLOAT32' | 'FLOAT64' | 'INT32' | 'INT64' | 'BYTES' | 'UUID' | 'DATE' | 'TIME' | 'TIMESTAMP' | 'OBJECT' | 'MAP' | 'LIST' | 'REFERENCE' | 'ENUM' | 'STRUCT';
      typeRef?: string;
      mapping: string;
      primary: boolean;
@@ -36,6 +36,8 @@ export interface Property {
 
 export interface SubType {
      name: string;
+     title?: string;
+     description?: string;
      properties: Property[];
 
 }
@@ -77,6 +79,7 @@ indexes?: Index[];
 types?: SubType[];
 immutable: boolean;
 abstract: boolean;
+checkReferences: boolean;
 dataSource?: DataSource;
 entity?: string;
 catalog?: string;
@@ -115,6 +118,8 @@ export const ResourceTypesName = "Types";
 export const ResourceImmutableName = "Immutable";
 
 export const ResourceAbstractName = "Abstract";
+
+export const ResourceCheckReferencesName = "CheckReferences";
 
 export const ResourceDataSourceName = "DataSource";
 

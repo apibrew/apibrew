@@ -17,6 +17,9 @@ func StripSpaces(str string) string {
 }
 
 func Capitalize(str string) string {
+	if len(str) == 0 {
+		return str
+	}
 	runes := []rune(str)
 	runes[0] = unicode.ToUpper(runes[0])
 	return string(runes)
