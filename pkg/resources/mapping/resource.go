@@ -60,6 +60,10 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 
 	MapSpecialColumnsToRecord(resource, &properties)
 
+	if resource.Id != "" {
+		properties["id"] = structpb.NewStringValue(resource.Id)
+	}
+
 	return &model.Record{
 		Id:         resource.Id,
 		Properties: properties,

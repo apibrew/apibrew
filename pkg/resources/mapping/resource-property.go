@@ -79,14 +79,9 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 		return v
 	}))
 
-	if property.Id == nil {
-		property.Id = new(string)
-	}
-
 	MapSpecialColumnsToRecord(property, &properties)
 
 	return &model.Record{
-		Id:         *property.Id,
 		Properties: properties,
 	}
 }
@@ -119,7 +114,6 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	var resourceProperty = &model.ResourceProperty{
-		Id:            &record.Id,
 		Name:          record.Properties["name"].GetStringValue(),
 		Type:          model.ResourceProperty_Type(model.ResourceProperty_Type_value[record.Properties["type"].GetStringValue()]),
 		Mapping:       record.Properties["mapping"].GetStringValue(),

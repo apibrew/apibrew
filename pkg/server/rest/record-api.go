@@ -142,13 +142,18 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		Records:   []*model.Record{record1.toRecord()},
 	})
 
+	var createdRecord *model.Record = nil
+
+	if len(res) > 0 {
+		createdRecord = res[0]
+	}
+
+	createdRecordRw := NewRecordWrapper(createdRecord)
+
 	ServiceResponder[*stub.CreateRecordRequest]().
 		Writer(writer).
 		Request(request).
-		Respond(&RecordList{
-			Total:   uint64(len(res)),
-			Records: util.ArrayMap(res, NewRecordWrapper),
-		}, serviceErr)
+		Respond(createdRecordRw, serviceErr)
 }
 
 func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.Request) {

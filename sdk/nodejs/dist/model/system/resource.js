@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResourceAnnotationsName = exports.ResourceDescriptionName = exports.ResourceTitleName = exports.ResourceCatalogName = exports.ResourceEntityName = exports.ResourceDataSourceName = exports.ResourceAbstractName = exports.ResourceImmutableName = exports.ResourceTypesName = exports.ResourceIndexesName = exports.ResourcePropertiesName = exports.ResourceVirtualName = exports.ResourceNamespaceName = exports.ResourceNameName = exports.ResourceUpdatedOnName = exports.ResourceCreatedOnName = exports.ResourceUpdatedByName = exports.ResourceCreatedByName = exports.ResourceVersionName = exports.ResourceIdName = exports.ResourceName = exports.ResourceResource = void 0;
+exports.ResourceAnnotationsName = exports.ResourceDescriptionName = exports.ResourceTitleName = exports.ResourceCatalogName = exports.ResourceEntityName = exports.ResourceDataSourceName = exports.ResourceCheckReferencesName = exports.ResourceAbstractName = exports.ResourceImmutableName = exports.ResourceTypesName = exports.ResourceIndexesName = exports.ResourcePropertiesName = exports.ResourceVirtualName = exports.ResourceNamespaceName = exports.ResourceNameName = exports.ResourceUpdatedOnName = exports.ResourceCreatedOnName = exports.ResourceUpdatedByName = exports.ResourceCreatedByName = exports.ResourceVersionName = exports.ResourceIdName = exports.ResourceName = exports.ResourceResource = void 0;
 exports.ResourceResource = {
     resource: "Resource",
     namespace: "system",
@@ -21,6 +21,7 @@ exports.ResourceIndexesName = "Indexes";
 exports.ResourceTypesName = "Types";
 exports.ResourceImmutableName = "Immutable";
 exports.ResourceAbstractName = "Abstract";
+exports.ResourceCheckReferencesName = "CheckReferences";
 exports.ResourceDataSourceName = "DataSource";
 exports.ResourceEntityName = "Entity";
 exports.ResourceCatalogName = "Catalog";

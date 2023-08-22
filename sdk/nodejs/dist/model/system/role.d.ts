@@ -1,4 +1,4 @@
-import { SecurityConstraint } from ".";
+import { SecurityConstraint } from "./security-constraint";
 export declare const RoleResource: {
     resource: string;
     namespace: string;

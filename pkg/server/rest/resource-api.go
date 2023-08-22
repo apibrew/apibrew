@@ -46,11 +46,17 @@ func (r *resourceApi) handleResourceList(writer http.ResponseWriter, request *ht
 }
 
 func resourceTo(resource *model.Resource) *resource_model.Resource {
+	if resource == nil {
+		return nil
+	}
 	resourceRec := mapping.ResourceToRecord(resource)
 	return resource_model.ResourceMapperInstance.FromRecord(resourceRec)
 }
 
 func resourceFrom(resource *resource_model.Resource) *model.Resource {
+	if resource == nil {
+		return nil
+	}
 	resourceRec := resource_model.ResourceMapperInstance.ToRecord(resource)
 	return mapping.ResourceFromRecord(resourceRec)
 }

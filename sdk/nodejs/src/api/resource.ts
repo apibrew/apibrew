@@ -17,11 +17,7 @@ export async function list(config: ServiceConfig): Promise<Resource[]> {
 
 export async function create(config: ServiceConfig, resource: Resource): Promise<Resource> {
 
-    const result = await axios.post<Resource>(`${config.backendUrl}/resources`, {
-        resources: [resource],
-        doMigration: true,
-        forceMigration: true
-    }, {
+    const result = await axios.post<Resource>(`${config.backendUrl}/resources`, resource, {
         headers: {
             Authorization: `Bearer ${config.token}`
         }
@@ -33,11 +29,7 @@ export async function create(config: ServiceConfig, resource: Resource): Promise
 
 export async function update(config: ServiceConfig, resource: Resource): Promise<Resource> {
 
-    const result = await axios.put<Resource>(`${config.backendUrl}/resources`, {
-        resources: [resource],
-        doMigration: true,
-        forceMigration: true
-    }, {
+    const result = await axios.put<Resource>(`${config.backendUrl}/resources/${resource.id}`, resource, {
         headers: {
             Authorization: `Bearer ${config.token}`
         }
@@ -80,7 +72,7 @@ export async function getByName(config: ServiceConfig, resourceName: string, nam
     }
 
 
-    const result = await axios.get<Resource>(`${config.backendUrl}/resources/${namespace}/${resourceName}`, {
+    const result = await axios.get<Resource>(`${config.backendUrl}/resources/by-name/${namespace}/${resourceName}`, {
         headers: {
             Authorization: `Bearer ${config.token}`
         }

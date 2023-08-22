@@ -36,7 +36,6 @@ message ResourceProperty {
     ENUM = 16;
     STRUCT = 17;
   }
-  optional string id = 1 [(model.hcl_ignore) = true];
   /*
     property name
    */

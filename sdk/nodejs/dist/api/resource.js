@@ -65,11 +65,7 @@ function create(config, resource) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.post("".concat(config.backendUrl, "/resources"), {
-                        resources: [resource],
-                        doMigration: true,
-                        forceMigration: true
-                    }, {
+                case 0: return [4 /*yield*/, axios_1.default.post("".concat(config.backendUrl, "/resources"), resource, {
                         headers: {
                             Authorization: "Bearer ".concat(config.token)
                         }
@@ -87,11 +83,7 @@ function update(config, resource) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.put("".concat(config.backendUrl, "/resources"), {
-                        resources: [resource],
-                        doMigration: true,
-                        forceMigration: true
-                    }, {
+                case 0: return [4 /*yield*/, axios_1.default.put("".concat(config.backendUrl, "/resources/").concat(resource.id), resource, {
                         headers: {
                             Authorization: "Bearer ".concat(config.token)
                         }
@@ -153,7 +145,7 @@ function getByName(config, resourceName, namespace) {
                     if (!namespace) {
                         namespace = 'default';
                     }
-                    return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/resources/").concat(namespace, "/").concat(resourceName), {
+                    return [4 /*yield*/, axios_1.default.get("".concat(config.backendUrl, "/resources/by-name/").concat(namespace, "/").concat(resourceName), {
                             headers: {
                                 Authorization: "Bearer ".concat(config.token)
                             }

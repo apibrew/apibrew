@@ -1,3 +1,4 @@
+import { Resource } from "./resource";
 
 
 
@@ -55,7 +56,7 @@ export interface Event {
      actionSummary?: string;
      actionDescription?: string;
      resource?: Resource;
-     records?: Record[];
+     records?: any[];
      ids?: string[];
      finalizes?: boolean;
      sync?: boolean;

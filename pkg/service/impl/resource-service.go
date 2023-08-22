@@ -243,12 +243,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 				prop.Mapping = util.ToSnakeCase(prop.Name)
 			}
 		}
-
-		if prop.Id == nil || *prop.Id == "" {
-			if existingPropertiesNamedMap[prop.Name] != nil {
-				prop.Id = existingPropertiesNamedMap[prop.Name].Id
-			}
-		}
 	}
 
 	resource.Version = existingResource.Version
@@ -272,9 +266,18 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	// running migration through existing resource
-	//reload schema for comparing
-	if err := r.reloadSchema(ctx); err != nil {
+	defer func() {
+		if err := r.reloadSchema(ctx); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	for _, record := range resourceRecords {
+		PrepareUpdateForRecord(ctx, resources.ResourceResource, record)
+		NormalizeRecord(resources.ResourceResource, record)
+	}
+
+	if _, err = r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourceResource, resourceRecords); err != nil {
 		return err
 	}
 
@@ -323,10 +326,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		}()
 	}
 
-	if err := r.applyPlan(txCtx, plan); err != nil {
-		return err
-	}
-
 	if !resource.Virtual && doMigration {
 		var bck abs.Backend
 		bck, err = r.backendProviderService.GetBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
@@ -373,19 +372,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	success = true
 
 	return nil
-}
-
-func (r *resourceService) applyPlan(ctx context.Context, plan *model.ResourceMigrationPlan) errors.ServiceError {
-	resourceRecords := []*model.Record{mapping.ResourceToRecord(plan.CurrentResource)}
-
-	for _, record := range resourceRecords {
-		PrepareUpdateForRecord(ctx, resources.ResourceResource, record)
-		NormalizeRecord(resources.ResourceResource, record)
-	}
-
-	_, err := r.backendProviderService.GetSystemBackend(ctx).UpdateRecords(ctx, resources.ResourceResource, resourceRecords)
-
-	return err
 }
 
 func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {

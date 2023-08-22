@@ -11,6 +11,10 @@ func (p postgreSqlBackendOptions) TypeModifier(propertyType model.ResourceProper
 }
 
 func (p postgreSqlBackendOptions) GetSqlTypeFromProperty(propertyType model.ResourceProperty_Type, length uint32) string {
+	if propertyType == model.ResourceProperty_STRING && length == 0 {
+		length = 255
+	}
+
 	switch propertyType {
 	case model.ResourceProperty_INT32:
 		return "INT"
