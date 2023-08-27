@@ -186,7 +186,7 @@ func applyLocal(inputFilePath string, doMigration bool, dataOnly bool, force boo
 
 			errorFieldsJson, _ := json.MarshalIndent(errorFields, "", "  ")
 
-			errorStr := fmt.Sprintf("errorCode: %s, errorFields: \n%s", errorCode, string(errorFieldsJson))
+			errorStr := fmt.Sprintf("message: %s, errorCode: %s, errorFields: \n%s", util.GetErrorMessage(err), errorCode, string(errorFieldsJson))
 
 			return errors.New(errorStr)
 		} else {
