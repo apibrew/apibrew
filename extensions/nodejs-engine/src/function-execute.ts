@@ -1,9 +1,8 @@
 import { NodeVM } from "vm2"
 import { functionMap, functionNameIdMap } from "./function-registry"
-import { Function } from './model/function'
 import { FN_DIR } from "./config"
 import { apbrClient } from "./client"
-import { Lambda } from "./model/lambda"
+import { Lambda, Function } from "@apibrew/client"
 
 export function locateFunction(packageName: string, name: string): Function {
     return functionMap[packageName + '/' + name]

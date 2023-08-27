@@ -1,7 +1,5 @@
-import { Client, Extension, Function, FunctionResource, FunctionTrigger, FunctionTriggerResource, Module, ModuleResource, ResourceRule, ResourceRuleResource } from '@apibrew/client'
+import { Client, Extension, Function, FunctionExecutionEngine, FunctionExecutionEngineResource, FunctionResource, FunctionTrigger, FunctionTriggerResource, Lambda, LambdaResource, Module, ModuleResource, ResourceRule, ResourceRuleResource } from '@apibrew/client'
 import { APBR_ADDR, TOKEN } from './config'
-import { Lambda, LambdaResource } from './model/lambda'
-import { FunctionExecutionEngine, FunctionExecutionEngineResource } from './model/function-execution-engine'
 
 
 export const apbrClient = new Client(`http://${APBR_ADDR}`)

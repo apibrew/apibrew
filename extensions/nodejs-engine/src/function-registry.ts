@@ -1,20 +1,13 @@
-import { Function, FunctionName } from "./model/function";
-import { FunctionTrigger, FunctionTriggerName } from "./model/function-trigger";
-import { ResourceRule, ResourceRuleName } from "./model/resource-rule";
 import { ENGINE_REMOTE_ADDR, EXTENSION_NAME, FN_DIR } from "./config";
 import { registerExtensions } from "./registrator";
-import { Extension } from "./model";
-import { components } from './model/base-schema'
-import { Module, ModuleName } from "./model/module";
 import { scriptFunctionTemplate, moduleFunctionTemplate, moduleInitTemplate } from "./function-template";
 import * as fs from 'fs'
 import path from "path";
 import { PassThrough } from "stream";
 import { Extract, extract } from 'tar-fs'
 import { initModule } from "./module-init";
-import { Lambda, LambdaNameName, LambdaResource } from "./model/lambda";
 import { functionRepository, lambdaRepository, moduleRepository, resourceRuleRpository, triggerRepository } from "./client";
-import { FunctionExecution } from "@apibrew/client";
+import { EventSelector, Extension, ExternalCall, Function, FunctionExecution, FunctionTrigger, HttpCall, Lambda, Module, ResourceRule } from "@apibrew/client";
 var mkdirp = require('mkdirp');
 
 
@@ -134,8 +127,8 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
     const extension = {} as Extension
     extension.name = `${EXTENSION_NAME}_trigger_${trigger.namespace}_${trigger.resource}`
     extension.sync = !trigger.async
-    const call = {} as components['schemas']['ExternalCall']
-    const hCall = {} as components['schemas']['HttpCall']
+    const call = {} as ExternalCall
+    const hCall = {} as HttpCall
     hCall.method = 'POST'
     hCall.uri = `${ENGINE_REMOTE_ADDR}/call/trigger`
     call.httpCall = hCall
@@ -163,7 +156,7 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
         extension.order = 200
     }
 
-    const eventSelector = {} as components['schemas']['EventSelector']
+    const eventSelector = {} as EventSelector
     eventSelector.namespaces = [trigger.namespace]
     eventSelector.resources = [trigger.resource]
     let action: "CREATE" | "UPDATE" | "DELETE" | "GET" | "LIST" | "OPERATE"
@@ -180,7 +173,7 @@ function prepareExtensionFromTrigger(trigger: FunctionTrigger): Extension {
         default:
             throw new Error('Unknown action: ' + trigger.action)
     }
-    eventSelector.actions = [action]
+    eventSelector.actions = [action] as any
     extension.selector = eventSelector
 
     return extension
@@ -208,8 +201,8 @@ function prepareExtensionFromLambda(lambda: Lambda): Extension {
     const extension = {} as Extension
     extension.name = `${EXTENSION_NAME}_lambda_${lambda.id}`
     extension.sync = true
-    const call = {} as components['schemas']['ExternalCall']
-    const hCall = {} as components['schemas']['HttpCall']
+    const call = {} as ExternalCall
+    const hCall = {} as HttpCall
     hCall.method = 'POST'
     hCall.uri = `${ENGINE_REMOTE_ADDR}/call/lambda/${lambda.id}`
     call.httpCall = hCall
@@ -218,10 +211,10 @@ function prepareExtensionFromLambda(lambda: Lambda): Extension {
     extension.finalizes = true
     extension.responds = true
 
-    const eventSelector = {} as components['schemas']['EventSelector']
+    const eventSelector = {} as EventSelector
     eventSelector.namespaces = [resourceNamespace]
     eventSelector.resources = [resourceName]
-    eventSelector.actions = ['CREATE']
+    eventSelector.actions = ['CREATE'] as any
     extension.selector = eventSelector
 
     return extension
@@ -231,18 +224,18 @@ function prepareExtensionFromRule(rule: ResourceRule): Extension {
     const extension = {} as Extension
     extension.name = `${EXTENSION_NAME}_rule_${rule.namespace}_${rule.resource}`
     extension.sync = true
-    const call = {} as components['schemas']['ExternalCall']
-    const hCall = {} as components['schemas']['HttpCall']
+    const call = {} as ExternalCall
+    const hCall = {} as HttpCall
     hCall.method = 'POST'
     hCall.uri = `${ENGINE_REMOTE_ADDR}/call/rule`
     call.httpCall = hCall
     extension.call = call
     extension.order = 85
 
-    const eventSelector = {} as components['schemas']['EventSelector']
+    const eventSelector = {} as EventSelector
     eventSelector.namespaces = [rule.namespace]
     eventSelector.resources = [rule.resource]
-    eventSelector.actions = ['CREATE', 'UPDATE']
+    eventSelector.actions = ['CREATE', 'UPDATE'] as any
     extension.selector = eventSelector
 
     return extension

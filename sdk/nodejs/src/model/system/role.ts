@@ -1,7 +1,6 @@
 import { SecurityConstraint } from "./security-constraint";
 
 
-
 export const RoleResource = {
     resource: "Role",
     namespace: "system",

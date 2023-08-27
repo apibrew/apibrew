@@ -824,7 +824,7 @@ func (s *openApiBuilder) getResourceFQN(resource *model.Resource) string {
 	}
 
 	if resource.Namespace == "default" {
-		return slug.Make(resource.Namespace)
+		return slug.Make(resource.Name)
 	} else {
 		return slug.Make(resource.Namespace + "/" + resource.Name)
 	}

@@ -1,5 +1,7 @@
-type: namespace
-name: logic
+type: Namespace
+namespace: system
+properties:
+  name: logic
 ---
 type: resource
 name: FunctionExecutionEngine

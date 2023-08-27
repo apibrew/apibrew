@@ -48,7 +48,11 @@ func (rw *RecordWrapper) toRecord() *model.Record {
 	record.Properties = make(map[string]*structpb.Value)
 
 	for key, value := range rw.properties {
-		record.Properties[key] = value.Value
+		if value == nil {
+			record.Properties[key] = nil
+		} else {
+			record.Properties[key] = value.Value
+		}
 	}
 
 	return record

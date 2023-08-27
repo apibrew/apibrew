@@ -45,11 +45,13 @@ export * from './record'
 
 export * from './logic/function'
 export * from './logic/function-execution'
+export * from './logic/function-execution-engine'
 export * from './logic/function-trigger'
 export * from './logic/logic-code'
 export * from './logic/module'
 export * from './logic/resource-rule'
 export * from './logic/schedule'
+export * from './logic/lambda'
 
 export * from './system'
 

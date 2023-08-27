@@ -96,10 +96,9 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	}
 
 	records, total, err := bck.ListRecords(ctx, resource, abs.ListRecordParams{
-		Query:             params.Query,
-		Limit:             params.Limit,
-		Offset:            params.Offset,
-		ResolveReferences: params.ResolveReferences,
+		Query:  params.Query,
+		Limit:  params.Limit,
+		Offset: params.Offset,
 	}, params.ResultChan)
 
 	// todo implement params.PackRecords

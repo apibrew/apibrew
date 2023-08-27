@@ -1,8 +1,8 @@
 
 
-import { FunctionExecutionEngine } from "./function-execution-engine";
-
 import { Module } from "./module";
+
+import { FunctionExecutionEngine } from "./function-execution-engine";
 
 
 export const FunctionResource = {
@@ -29,11 +29,11 @@ export interface Function {
 package: string;
 name: string;
 script?: string;
+module?: Module;
 engine: FunctionExecutionEngine;
 options?: Options;
-version: number;
 args?: Argument[];
-module?: Module;
+version: number;
 
 }
 // Resource and Property Names
@@ -47,14 +47,14 @@ export const FunctionNameName = "Name";
 
 export const FunctionScriptName = "Script";
 
+export const FunctionModuleName = "Module";
+
 export const FunctionEngineName = "Engine";
 
 export const FunctionOptionsName = "Options";
 
-export const FunctionVersionName = "Version";
-
 export const FunctionArgsName = "Args";
 
-export const FunctionModuleName = "Module";
+export const FunctionVersionName = "Version";
 
 

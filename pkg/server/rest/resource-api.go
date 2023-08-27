@@ -129,7 +129,7 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 
 	resource.Id = id
 
-	serviceErr = r.resourceService.Update(request.Context(), resourceFrom(resourceForUpdate), true, false)
+	serviceErr = r.resourceService.Update(request.Context(), resourceFrom(resourceForUpdate), true, true)
 
 	if serviceErr != nil {
 		resource = nil

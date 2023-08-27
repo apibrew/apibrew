@@ -231,7 +231,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			return serviceError
 		}
 
-		if property.Type == model.ResourceProperty_REFERENCE {
+		if val != nil && property.Type == model.ResourceProperty_REFERENCE {
 			referenceNamespace := property.Reference.Namespace
 			if referenceNamespace == "" {
 				referenceNamespace = resource.Namespace
@@ -253,13 +253,13 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 	result, sqlErr := runner.ExecContext(ctx, sqlQuery, args...)
 
 	if sqlErr != nil {
-		return p.handleDbError(ctx, err)
+		return p.handleDbError(ctx, sqlErr)
 	}
 
 	affected, sqlErr := result.RowsAffected()
 
 	if sqlErr != nil {
-		return p.handleDbError(ctx, err)
+		return p.handleDbError(ctx, sqlErr)
 	}
 
 	if affected == 0 {
@@ -279,9 +279,8 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, 
 				},
 			},
 		},
-		Limit:             1,
-		Offset:            0,
-		ResolveReferences: []string{"*"},
+		Limit:  1,
+		Offset: 0,
 	}, nil)
 
 	if err != nil {
