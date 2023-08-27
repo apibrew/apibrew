@@ -1,9 +1,7 @@
 import { ENGINE_REMOTE_ADDR, EXTENSION_NAME, TOKEN } from "./config";
 import { initFunctionRegistry } from "./function-registry";
-import { FunctionExecutionEngine } from "./model/function-execution-engine";
-import { Extension } from "./model";
-import { components } from "./model/base-schema";
 import { extensionRepository, functionExecutionEngineRepository } from "./client";
+import { EventSelector, Extension, ExternalCall, FunctionExecutionEngine, HttpCall } from "@apibrew/client";
 
 export let engineId: string
 
@@ -69,8 +67,8 @@ function prepareFunctionExtension(): Extension {
     const extension = {} as Extension
     extension.name = (EXTENSION_NAME)
     extension.sync = (true)
-    const call = {} as components['schemas']['ExternalCall']
-    const hCall = {} as components['schemas']['HttpCall']
+    const call = {} as ExternalCall
+    const hCall = {} as HttpCall
     hCall.method = 'POST'
     hCall.uri = `${ENGINE_REMOTE_ADDR}/reload`
     call.httpCall = hCall
@@ -78,9 +76,9 @@ function prepareFunctionExtension(): Extension {
     extension.order = (10000)
     extension.responds = (false)
     extension.sync = (false)
-    const eventSelector = {} as components['schemas']['EventSelector']
+    const eventSelector = {} as EventSelector
     eventSelector.namespaces = (['logic'])
-    eventSelector.actions = ['CREATE', 'UPDATE', 'DELETE']
+    eventSelector.actions = ['CREATE', 'UPDATE', 'DELETE'] as any
     extension.selector = (eventSelector)
 
     return extension
@@ -90,8 +88,8 @@ function prepareFunctionExecutionExtension(): Extension {
     const extension = {} as Extension
     extension.name = (`${EXTENSION_NAME}-execution`)
     extension.sync = (true)
-    const call = {} as components['schemas']['ExternalCall']
-    const hCall = {} as components['schemas']['HttpCall']
+    const call = {} as ExternalCall
+    const hCall = {} as HttpCall
     hCall.method = 'POST'
     hCall.uri = `${ENGINE_REMOTE_ADDR}/call/function`
     call.httpCall = hCall
@@ -99,7 +97,7 @@ function prepareFunctionExecutionExtension(): Extension {
     extension.order = (10)
     extension.responds = (true)
     extension.finalizes = (true)
-    const eventSelector = {} as components['schemas']['EventSelector']
+    const eventSelector = {} as EventSelector
     eventSelector.resources = (['FunctionExecution'])
     eventSelector.namespaces = (['logic'])
     extension.selector = (eventSelector)

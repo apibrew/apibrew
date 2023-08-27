@@ -1,12 +1,9 @@
 import { functionIdMap, functionMap, lambdaIdMap, registerFunction, registerFunctionTrigger, registerLambda, registerModule, registerResourceRule } from "./function-registry";
-import { ResourceRule, ResourceRuleName } from "./model/resource-rule";
-import { FunctionTrigger, FunctionTriggerName } from "./model/function-trigger";
-import { components } from "./model/base-schema";
 import { executeFunction, executeLambda, locateFunction } from "./function-execute";
-import { Lambda, LambdaResource } from "./model/lambda";
-import { functionRepository, functionTriggerRepository, lambdaRepository, moduleRepository, resourceRuleRpository } from "./client";
 
-type Event = components['schemas']['Event']
+import { Event, ResourceRule, ResourceRuleName, Lambda, LambdaResource, Function, Module } from "@apibrew/client"
+
+import { functionRepository, functionTriggerRepository, lambdaRepository, moduleRepository, resourceRuleRpository } from "./client";
 
 const { VM } = require('vm2');
 

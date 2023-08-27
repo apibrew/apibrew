@@ -1,6 +1,6 @@
 import { NodeVM } from "vm2"
 import { moduleInitTemplate } from "./function-template"
-import { Module } from "./model/module"
+import { Module } from "@apibrew/client"
 import * as fs from 'fs'
 import path from "path"
 import { FN_DIR } from "./config"

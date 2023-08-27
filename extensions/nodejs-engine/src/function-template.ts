@@ -1,5 +1,4 @@
-import { Function } from "./model/function"
-import { Module } from "./model/module"
+import { Function, Module } from "@apibrew/client"
 
 export const functionInitTemplate = `
 const apbrClient = require('@apibrew/client')
