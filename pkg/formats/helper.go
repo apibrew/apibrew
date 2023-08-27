@@ -12,8 +12,6 @@ func FixResourceForApply(resource *model.Resource) *model.Resource {
 
 	var newProperties []*model.ResourceProperty
 	for _, property := range resource.Properties {
-		property.Id = nil
-
 		// if property has special annotation, remove it
 		if !annotations.IsEnabled(property, annotations.SpecialProperty) {
 			newProperties = append(newProperties, property)
