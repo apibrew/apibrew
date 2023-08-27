@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )
@@ -85,6 +86,8 @@ func Records(resource *model.Resource, list []*model.Record, isUpdate bool) erro
 	if len(fieldErrors) == 0 {
 		return nil
 	}
+
+	log.Debug("Record validation errors: ", fieldErrors)
 
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }

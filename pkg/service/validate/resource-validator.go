@@ -3,6 +3,7 @@ package validate
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -122,5 +123,10 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 			errorFields = append(errorFields, PropertyPackedValue(resource, prop, resource.Id, "", prop.ExampleValue)...)
 		}
 	}
+
+	if len(errorFields) > 0 {
+		log.Warnf("Resource %s has errors: %v", resource.Name, errorFields)
+	}
+
 	return errorFields
 }
