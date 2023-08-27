@@ -28,7 +28,8 @@ COPY --from=builder /app/apibrew /bin/apibrew
 
 EXPOSE 9009
 
-CMD ["/bin/apibrew", "-init", "/app/config.json"]
+CMD ["/bin/apibrew", "-config", "/app/config.json", "-log-level=debug"]
+
 
 FROM golang:1.19-alpine as app-full
 WORKDIR /
