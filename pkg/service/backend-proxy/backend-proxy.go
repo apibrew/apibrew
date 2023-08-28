@@ -86,7 +86,7 @@ func (b backendProxy) GetRecord(ctx context.Context, resource *model.Resource, i
 		Ids:      []string{id},
 	}),
 		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
-			result, err := b.backend.GetRecord(ctx, resource, id, nil)
+			result, err := b.backend.GetRecord(ctx, resource, id, resolveReferences)
 
 			passedEvent.Records = []*model.Record{result}
 
