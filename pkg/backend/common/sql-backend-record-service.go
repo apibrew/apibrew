@@ -90,11 +90,11 @@ func (p *sqlBackend) UpdateRecords(ctx context.Context, resource *model.Resource
 	return records, nil
 }
 
-func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
 	var record *model.Record = nil
 	err := p.withBackend(ctx, true, func(tx helper.QueryRunner) errors.ServiceError {
 		var err errors.ServiceError
-		record, err = p.readRecord(ctx, tx, resource, id)
+		record, err = p.readRecord(ctx, tx, resource, id, resolveReferences)
 
 		if err == sql.ErrNoRows {
 			return errors.RecordNotFoundError.WithDetails(fmt.Sprintf("namespace %s; resource %s; id %v", resource.Namespace, resource.Name, id))

@@ -116,7 +116,7 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 	return records, nil
 }
 
-func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
 	res := r.getCollection(resource).FindOne(ctx, bson.M{
 		"id": id,
 	})

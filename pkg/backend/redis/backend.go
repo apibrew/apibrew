@@ -79,7 +79,7 @@ func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 	return records, nil
 }
 
-func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
 	recData, err := r.rdb.Get(ctx, r.getKey(resource, id)).Bytes()
 
 	if err != nil {

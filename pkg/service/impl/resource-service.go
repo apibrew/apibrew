@@ -482,7 +482,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	txCtx = annotations.SetWithContext(txCtx, annotations.UseJoinTable, "true")
 
-	insertedRecord, err := systemBackend.GetRecord(txCtx, resources.ResourceResource, result[0].Id)
+	insertedRecord, err := systemBackend.GetRecord(txCtx, resources.ResourceResource, result[0].Id, nil)
 
 	if err != nil {
 		return nil, err

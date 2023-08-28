@@ -79,14 +79,14 @@ func (b backendProxy) UpdateRecords(ctx context.Context, resource *model.Resourc
 	return endEvent.Records, nil
 }
 
-func (b backendProxy) GetRecord(ctx context.Context, resource *model.Resource, id string) (*model.Record, errors.ServiceError) {
+func (b backendProxy) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
 	endEvent, err := b.eventHandler.HandleInternalOperation(ctx, b.eventHandler.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_GET,
 		Resource: resource,
 		Ids:      []string{id},
 	}),
 		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
-			result, err := b.backend.GetRecord(ctx, resource, id)
+			result, err := b.backend.GetRecord(ctx, resource, id, nil)
 
 			passedEvent.Records = []*model.Record{result}
 
