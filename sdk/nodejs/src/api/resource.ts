@@ -39,14 +39,9 @@ export async function update(config: ServiceConfig, resource: Resource): Promise
 
 }
 
-export async function remove(config: ServiceConfig, resource: Resource, forceMigrate: boolean): Promise<void> {
+export async function remove(config: ServiceConfig, resource: Resource): Promise<void> {
 
-    await axios.delete(`${config.backendUrl}/resources`, {
-        data: {
-            doMigration: true,
-            forceMigration: forceMigrate,
-            ids: [resource.id]
-        },
+    await axios.delete(`${config.backendUrl}/resources/${resource.id}`, {
         headers: {
             Authorization: `Bearer ${config.token}`
         }

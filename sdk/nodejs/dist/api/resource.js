@@ -96,16 +96,11 @@ function update(config, resource) {
     });
 }
 exports.update = update;
-function remove(config, resource, forceMigrate) {
+function remove(config, resource) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.delete("".concat(config.backendUrl, "/resources"), {
-                        data: {
-                            doMigration: true,
-                            forceMigration: forceMigrate,
-                            ids: [resource.id]
-                        },
+                case 0: return [4 /*yield*/, axios_1.default.delete("".concat(config.backendUrl, "/resources/").concat(resource.id), {
                         headers: {
                             Authorization: "Bearer ".concat(config.token)
                         }
