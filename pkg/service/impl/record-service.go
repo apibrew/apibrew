@@ -665,9 +665,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		}
 	}
 
-	res, err := bck.GetRecord(ctx, resource, id, []string{
-		"*",
-	})
+	res, err := bck.GetRecord(ctx, resource, id, nil)
 
 	if err != nil {
 		return nil, err
