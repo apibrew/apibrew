@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -261,7 +262,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
 		Records:   &resourceRecords,
-		Operation: model.OperationType_OPERATION_TYPE_UPDATE,
+		Operation: resource_model.SecurityConstraintOperation_UPDATE,
 	}); err != nil {
 		return err
 	}
@@ -419,7 +420,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
 		Records:   &[]*model.Record{resourceRecord},
-		Operation: model.OperationType_OPERATION_TYPE_CREATE,
+		Operation: resource_model.SecurityConstraintOperation_CREATE,
 	}); err != nil {
 		return nil, err
 	}
@@ -627,9 +628,14 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 
 			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 				Resource:  resources.ResourceResource,
-				Operation: model.OperationType_OPERATION_TYPE_READ,
+				Operation: resource_model.SecurityConstraintOperation_READ,
 			}); err != nil {
-				return nil, err
+				if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+					Resource:  item,
+					Operation: resource_model.SecurityConstraintOperation_READ,
+				}); err != nil {
+					return nil, err
+				}
 			}
 
 			return item, nil
@@ -755,7 +761,7 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 		if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 			Resource:  resources.ResourceResource,
 			Records:   &[]*model.Record{{Id: resourceId}},
-			Operation: model.OperationType_OPERATION_TYPE_DELETE,
+			Operation: resource_model.SecurityConstraintOperation_DELETE,
 		}); err != nil {
 			return err
 		}
@@ -822,12 +828,22 @@ func (r *resourceService) mustModifyResource(resource *model.Resource) errors.Se
 func (r *resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
-		Operation: model.OperationType_OPERATION_TYPE_READ,
-	}); err != nil {
-		return nil, err
+		Operation: resource_model.SecurityConstraintOperation_READ,
+	}); err == nil {
+		return r.schema.Resources, nil
 	}
 
-	return r.schema.Resources, nil
+	var filteredResources []*model.Resource
+	for _, resource := range r.schema.Resources {
+		if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+			Resource:  resource,
+			Operation: resource_model.SecurityConstraintOperation_READ,
+		}); err == nil {
+			filteredResources = append(filteredResources, resource)
+		}
+	}
+
+	return filteredResources, nil
 }
 
 func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError) {
@@ -837,9 +853,14 @@ func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, 
 			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 				Resource:  resources.ResourceResource,
 				Records:   &[]*model.Record{{Id: id}},
-				Operation: model.OperationType_OPERATION_TYPE_READ,
+				Operation: resource_model.SecurityConstraintOperation_READ,
 			}); err != nil {
-				return nil, err
+				if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+					Resource:  item,
+					Operation: resource_model.SecurityConstraintOperation_READ,
+				}); err != nil {
+					return nil, err
+				}
 			}
 
 			return item, nil

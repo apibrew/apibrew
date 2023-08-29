@@ -39,6 +39,11 @@ export interface RenewTokenResponse {
 }
 
 
+export interface ResourceIdentifier {
+    namespace: string;
+    resource: string;
+}
+
 
 export * from './annotations'
 export * from './record'

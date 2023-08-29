@@ -148,7 +148,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 		}
 	}
 
-	if constraint.GetOperation() != resource_model.SecurityConstraintOperation_FULL && string(constraint.Operation) != params.Operation.String() {
+	if constraint.GetOperation() != resource_model.SecurityConstraintOperation_FULL && constraint.Operation != params.Operation {
 		logger.Tracef("Skipping constraint as operation not matched: %v", constraint)
 		return false, nil
 	}

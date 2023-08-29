@@ -94,7 +94,7 @@ type ExtensionService interface {
 type CheckRecordAccessParams struct {
 	Resource  *model.Resource
 	Records   *[]*model.Record
-	Operation model.OperationType
+	Operation resource_model.SecurityConstraintOperation
 }
 
 type WatchParams struct {

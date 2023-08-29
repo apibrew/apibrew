@@ -32,6 +32,10 @@ export interface RenewTokenRequest {
 export interface RenewTokenResponse {
     token?: Token;
 }
+export interface ResourceIdentifier {
+    namespace: string;
+    resource: string;
+}
 export * from './annotations';
 export * from './record';
 export * from './logic/function';

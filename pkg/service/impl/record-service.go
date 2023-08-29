@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
@@ -48,7 +49,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
-		Operation: model.OperationType_OPERATION_TYPE_READ,
+		Operation: resource_model.SecurityConstraintOperation_READ,
 	}); err != nil {
 		return nil, 0, err
 	}
@@ -119,7 +120,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &records,
-		Operation: model.OperationType_OPERATION_TYPE_READ,
+		Operation: resource_model.SecurityConstraintOperation_READ,
 	}); err != nil {
 		return nil, 0, err
 	}
@@ -152,7 +153,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &params.Records,
-		Operation: model.OperationType_OPERATION_TYPE_CREATE,
+		Operation: resource_model.SecurityConstraintOperation_CREATE,
 	}); err != nil {
 		return nil, err
 	}
@@ -398,7 +399,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &params.Records,
-		Operation: model.OperationType_OPERATION_TYPE_UPDATE,
+		Operation: resource_model.SecurityConstraintOperation_UPDATE,
 	}); err != nil {
 		return nil, err
 	}
@@ -639,7 +640,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 				Id: id,
 			},
 		},
-		Operation: model.OperationType_OPERATION_TYPE_READ,
+		Operation: resource_model.SecurityConstraintOperation_READ,
 	}); err != nil {
 		return nil, err
 	}
@@ -749,7 +750,7 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &recordForCheck,
-		Operation: model.OperationType_OPERATION_TYPE_DELETE,
+		Operation: resource_model.SecurityConstraintOperation_DELETE,
 	}); err != nil {
 		return err
 	}
