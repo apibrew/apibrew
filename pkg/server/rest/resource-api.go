@@ -71,7 +71,7 @@ func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *
 		return
 	}
 
-	res, serviceErr := r.resourceService.Create(request.Context(), resourceFrom(rw), true, false)
+	res, serviceErr := r.resourceService.Create(request.Context(), resourceFrom(rw), true, true)
 
 	ServiceResponder[*stub.CreateResourceRequest]().
 		Writer(writer).
@@ -145,7 +145,7 @@ func (r *resourceApi) handleResourceDelete(writer http.ResponseWriter, request *
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	serviceErr := r.resourceService.Delete(request.Context(), []string{id}, true, false)
+	serviceErr := r.resourceService.Delete(request.Context(), []string{id}, true, true)
 
 	ServiceResponder[*stub.DeleteResourceRequest]().
 		Writer(writer).

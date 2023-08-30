@@ -100,16 +100,6 @@ var ResourcePropertyProperties = []*model.ResourceProperty{
 		TypeRef:  util.Pointer("Property"),
 	},
 	{
-		Name:     "properties",
-		Mapping:  "properties",
-		Type:     model.ResourceProperty_LIST,
-		Required: true,
-		Item: &model.ResourceProperty{
-			Type:    model.ResourceProperty_STRUCT,
-			TypeRef: util.Pointer("Property"),
-		},
-	},
-	{
 		Name:    "reference",
 		Type:    model.ResourceProperty_STRUCT,
 		TypeRef: util.Pointer("Reference"),

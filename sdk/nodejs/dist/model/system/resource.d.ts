@@ -15,7 +15,6 @@ export interface Property {
     immutable: boolean;
     length: number;
     item?: Property;
-    properties: Property[];
     reference?: Reference;
     defaultValue?: object;
     enumValues?: string[];

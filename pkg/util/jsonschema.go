@@ -127,11 +127,7 @@ func ResourcePropertyTypeToJsonSchemaType(resource *model.Resource, property *mo
 			Format: "base64",
 		}
 	case model.ResourceProperty_STRUCT:
-		if property.TypeRef != nil {
-			propSchemaRef.Ref = "#/components/schemas/" + ResourceJsonSchemaName(resource) + *property.TypeRef
-		} else {
-			propSchemaRef.Value = PropertiesWithTitleToJsonSchema(resource, property)
-		}
+		propSchemaRef.Ref = "#/components/schemas/" + ResourceJsonSchemaName(resource) + *property.TypeRef
 	default:
 		panic("unknown property type: " + property.String())
 	}

@@ -211,23 +211,22 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 		var errorFields []*model.ErrorField
 
 		if structValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
-			var properties = property.Properties
-			if property.TypeRef != nil {
-				// locating type
-				typeDef := util.LocateArrayElement(resource.Types, func(elem *model.ResourceSubType) bool {
-					return elem.Name == *property.TypeRef
-				})
+			var properties []*model.ResourceProperty
 
-				if typeDef == nil {
-					errorFields = append(errorFields, &model.ErrorField{
-						RecordId: recordId,
-						Property: propertyPath,
-						Message:  fmt.Sprintf("type %s not found", *property.TypeRef),
-						Value:    value,
-					})
-				} else {
-					properties = typeDef.Properties
-				}
+			// locating type
+			typeDef := util.LocateArrayElement(resource.Types, func(elem *model.ResourceSubType) bool {
+				return elem.Name == *property.TypeRef
+			})
+
+			if typeDef == nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: recordId,
+					Property: propertyPath,
+					Message:  fmt.Sprintf("type %s not found", *property.TypeRef),
+					Value:    value,
+				})
+			} else {
+				properties = typeDef.Properties
 			}
 
 			for _, Item := range properties {

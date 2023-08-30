@@ -1,11 +1,90 @@
 package validate
 
 import (
+	"fmt"
+	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
+	"strings"
 )
+
+func ValidateResource(resource *model.Resource) errors.ServiceError {
+	var errorFields []*model.ErrorField
+
+	if resource.Name == "" {
+		errorFields = append(errorFields, &model.ErrorField{
+			RecordId: resource.Id,
+			Property: "Name",
+			Message:  "should not be empty",
+			Value:    nil,
+		})
+	} else if !NamePattern.MatchString(resource.Name) {
+		errorFields = append(errorFields, &model.ErrorField{
+			RecordId: resource.Id,
+			Property: "Name",
+			Message:  "should match pattern " + NamePattern.String(),
+			Value:    structpb.NewStringValue(resource.Name),
+		})
+	}
+
+	if !resource.Virtual {
+		if resource.SourceConfig == nil {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: "SourceConfig",
+				Message:  "should not be nil",
+				Value:    nil,
+			})
+		} else {
+			if resource.SourceConfig.DataSource == "" {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: "SourceConfig.DataSource",
+					Message:  "should not be blank",
+					Value:    nil,
+				})
+			}
+
+			if resource.SourceConfig.Entity == "" {
+				errorFields = append(errorFields, &model.ErrorField{
+					RecordId: resource.Id,
+					Property: "SourceConfig.Entity",
+					Message:  "should not be blank",
+					Value:    nil,
+				})
+			}
+		}
+	}
+
+	errorFields = append(errorFields, ValidateResourceProperties(resource, "", 0, resource.Properties, false)...)
+
+	for _, subType := range resource.Types {
+		if !NamePattern.MatchString(subType.Name) {
+			errorFields = append(errorFields, &model.ErrorField{
+				RecordId: resource.Id,
+				Property: "subType.Name",
+				Message:  "should match pattern " + NamePattern.String(),
+				Value:    structpb.NewStringValue(subType.Name),
+			})
+		}
+		errorFields = append(errorFields, ValidateResourceProperties(resource, subType.Name+".", 1, subType.Properties, false)...)
+	}
+
+	if len(errorFields) > 0 {
+		var details []string
+
+		for _, errorField := range errorFields {
+			details = append(details, fmt.Sprintf("%s: %s", errorField.Property, errorField.Message))
+		}
+
+		return errors.ResourceValidationError.WithDetails(strings.Join(details, ";")).WithErrorFields(errorFields)
+	}
+
+	return nil
+}
 
 func ValidateResourceProperties(resource *model.Resource, path string, depth int, properties []*model.ResourceProperty, wrapped bool) []*model.ErrorField {
 	var errorFields []*model.ErrorField
@@ -16,12 +95,20 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 			propertyPrefix = path + propertyPrefix
 		}
 
-		if !wrapped && prop.Name == "" {
-			errorFields = append(errorFields, &model.ErrorField{
-				Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
-				Message:  "should not be blank",
-				Value:    nil,
-			})
+		if !wrapped {
+			if prop.Name == "" {
+				errorFields = append(errorFields, &model.ErrorField{
+					Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
+					Message:  "should not be blank",
+					Value:    nil,
+				})
+			} else if !NamePattern.MatchString(prop.Name) {
+				errorFields = append(errorFields, &model.ErrorField{
+					Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
+					Message:  "should match pattern " + NamePattern.String(),
+					Value:    structpb.NewStringValue(prop.Name),
+				})
+			}
 		}
 
 		if prop.Type == model.ResourceProperty_ENUM {
@@ -87,15 +174,13 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 		}
 
 		if prop.Type == model.ResourceProperty_STRUCT {
-			if prop.TypeRef == nil && prop.Properties == nil {
+			if prop.TypeRef == nil {
 				errorFields = append(errorFields, &model.ErrorField{
 					Property: propertyPrefix + "Properties",
-					Message:  "Properties or TypeRef should not be empty for struct type",
+					Message:  "TypeRef should not be empty for struct type",
 					Value:    nil,
 				})
-			}
-
-			if prop.TypeRef != nil {
+			} else {
 				// locate type
 				typeRef := util.LocateArrayElement(resource.Types, func(elem *model.ResourceSubType) bool {
 					return elem.Name == *prop.TypeRef
@@ -108,10 +193,6 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 						Value:    nil,
 					})
 				}
-			}
-
-			if prop.Properties != nil {
-				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Properties", depth+1, prop.Properties, false)...)
 			}
 		}
 

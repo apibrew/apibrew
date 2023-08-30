@@ -23,17 +23,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	}
 
 	if property.Type == model.ResourceProperty_STRUCT {
-		var propertyValues []*structpb.Value
-
-		for _, Item := range property.Properties {
-			propertyValues = append(propertyValues, structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(Item, resource).Properties}))
-		}
-
-		properties["properties"] = structpb.NewListValue(&structpb.ListValue{Values: propertyValues})
-
-		if property.TypeRef != nil {
-			properties["typeRef"] = structpb.NewStringValue(*property.TypeRef)
-		}
+		properties["typeRef"] = structpb.NewStringValue(*property.TypeRef)
 	}
 
 	if property.Type == model.ResourceProperty_ENUM {
@@ -148,20 +138,8 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_STRUCT {
-		var properties []*model.ResourceProperty
-
-		for _, propertyValue := range record.Properties["properties"].GetListValue().GetValues() {
-			properties = append(properties, ResourcePropertyFromRecord(&model.Record{
-				Properties: propertyValue.GetStructValue().GetFields(),
-			}))
-		}
-
-		resourceProperty.Properties = properties
-
-		if record.Properties["typeRef"] != nil {
-			resourceProperty.TypeRef = new(string)
-			*resourceProperty.TypeRef = record.Properties["typeRef"].GetStringValue()
-		}
+		resourceProperty.TypeRef = new(string)
+		*resourceProperty.TypeRef = record.Properties["typeRef"].GetStringValue()
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_ENUM {

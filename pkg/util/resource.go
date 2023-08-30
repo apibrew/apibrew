@@ -173,8 +173,6 @@ func resourceWalkPropertiesRecursive(resource *model.Resource, path string, prop
 
 		if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
 			resourceWalkPropertiesRecursive(resource, newName+"[]", []*model.ResourceProperty{property.Item}, true, callback)
-		} else if property.Type == model.ResourceProperty_STRUCT {
-			resourceWalkPropertiesRecursive(resource, newName, property.Properties, false, callback)
 		}
 	}
 }

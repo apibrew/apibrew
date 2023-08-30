@@ -249,7 +249,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	resource.Version = existingResource.Version
 	resource.AuditData = existingResource.AuditData
 
-	if err := validateResource(resource); err != nil {
+	if err := validate.ValidateResource(resource); err != nil {
 		return err
 	}
 
@@ -403,7 +403,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 	}
 
-	if err := validateResource(resource); err != nil {
+	if err := validate.ValidateResource(resource); err != nil {
 		return nil, err
 	}
 
@@ -556,66 +556,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	success = true
 
 	return resource, nil
-}
-
-func validateResource(resource *model.Resource) errors.ServiceError {
-	var errorFields []*model.ErrorField
-
-	if resource.Name == "" {
-		errorFields = append(errorFields, &model.ErrorField{
-			RecordId: resource.Id,
-			Property: "Name",
-			Message:  "should not be empty",
-			Value:    nil,
-		})
-	}
-
-	if !resource.Virtual {
-		if resource.SourceConfig == nil {
-			errorFields = append(errorFields, &model.ErrorField{
-				RecordId: resource.Id,
-				Property: "SourceConfig",
-				Message:  "should not be nil",
-				Value:    nil,
-			})
-		} else {
-			if resource.SourceConfig.DataSource == "" {
-				errorFields = append(errorFields, &model.ErrorField{
-					RecordId: resource.Id,
-					Property: "SourceConfig.DataSource",
-					Message:  "should not be blank",
-					Value:    nil,
-				})
-			}
-
-			if resource.SourceConfig.Entity == "" {
-				errorFields = append(errorFields, &model.ErrorField{
-					RecordId: resource.Id,
-					Property: "SourceConfig.Entity",
-					Message:  "should not be blank",
-					Value:    nil,
-				})
-			}
-		}
-	}
-
-	errorFields = append(errorFields, validate.ValidateResourceProperties(resource, "", 0, resource.Properties, false)...)
-
-	for _, subType := range resource.Types {
-		errorFields = append(errorFields, validate.ValidateResourceProperties(resource, subType.Name+".", 1, subType.Properties, false)...)
-	}
-
-	if len(errorFields) > 0 {
-		var details []string
-
-		for _, errorField := range errorFields {
-			details = append(details, fmt.Sprintf("%s: %s", errorField.Property, errorField.Message))
-		}
-
-		return errors.ResourceValidationError.WithDetails(strings.Join(details, ";")).WithErrorFields(errorFields)
-	}
-
-	return nil
 }
 
 func (r *resourceService) GetResourceByName(ctx context.Context, namespace string, resourceName string) (*model.Resource, errors.ServiceError) {

@@ -205,7 +205,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 		if len(pathToOperateNextReference) > 0 {
 			if prop.Type == model.ResourceProperty_STRUCT {
-				err := r._recordListWalkCheckOperator(ctx, newPath, prop.Properties, subValues, pathToOperateNextReferenceMap)
+				err := r._recordListWalkCheckOperator(ctx, newPath, r.getTypeProperties(*prop.TypeRef), subValues, pathToOperateNextReferenceMap)
 
 				if err != nil {
 					return err
@@ -233,6 +233,18 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 	}
 
 	return nil
+}
+
+func (r *recordResolver) getTypeProperties(typeRef string) []*model.ResourceProperty {
+	var properties []*model.ResourceProperty
+
+	for _, typ := range r.resource.Types {
+		if typ.Name == typeRef {
+			properties = typ.Properties
+			break
+		}
+	}
+	return properties
 }
 
 func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) errors.ServiceError {
@@ -338,7 +350,7 @@ func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path 
 
 		if len(pathToOperateNextReference) > 0 {
 			if prop.Type == model.ResourceProperty_STRUCT {
-				err := r._recordListWalkOperator(ctx, newPath, prop.Properties, subValues, pathToOperateNextReferenceMap)
+				err := r._recordListWalkOperator(ctx, newPath, r.getTypeProperties(*prop.TypeRef), subValues, pathToOperateNextReferenceMap)
 
 				if err != nil {
 					return err

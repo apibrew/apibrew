@@ -17,7 +17,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./data-source"), exports);
 __exportStar(require("./extension"), exports);
 __exportStar(require("./namespace"), exports);
-__exportStar(require("./resource-property"), exports);
 __exportStar(require("./resource"), exports);
 __exportStar(require("./role"), exports);
 __exportStar(require("./security-constraint"), exports);
