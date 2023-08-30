@@ -186,10 +186,10 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 
 		r.colList = append(r.colList, colDetails{
 			resource:     resource,
-			colName:      prop.Mapping,
-			path:         path + "_" + prop.Mapping,
-			def:          path + "." + fmt.Sprintf(`"%s"`, prop.Mapping),
-			alias:        fmt.Sprintf(`"%s"`, path+"_"+prop.Mapping),
+			colName:      prop.Name,
+			path:         path + "_" + prop.Name,
+			def:          r.quote(path) + "." + r.quote(prop.Name),
+			alias:        r.quote(path + "_" + prop.Name),
 			property:     prop,
 			required:     prop.Required && !isInner,
 			propertyType: prop.Type,
@@ -210,20 +210,24 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 					referenceNamespace = resource.Namespace
 				}
 				referencedResource := r.backend.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+prop.Reference.Resource]
-				newPath := path + "__" + prop.Mapping
+				newPath := path + "__" + prop.Name
 
 				// add to joins
 				r.joins = append(r.joins, joinDetails{
 					targetTable:      referencedResource.SourceConfig.Entity,
 					targetTableAlias: newPath,
 					targetColumn:     "id",
-					sourcePath:       path + "." + prop.Mapping,
+					sourcePath:       r.quote(path) + "." + r.quote(prop.Name),
 				})
 
 				r.expandProps(newPath, referencedResource)
 			}
 		}
 	}
+}
+
+func (r *recordLister) quote(path string) string {
+	return r.backend.options.Quote(path)
 }
 
 func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.ServiceError {
@@ -293,7 +297,7 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 			if helper.IsPropertyOmitted(prop) {
 				continue
 			}
-			if pathPrefix+prop.Mapping == cd.path {
+			if pathPrefix+prop.Name == cd.path {
 
 				if prop.Type == model.ResourceProperty_REFERENCE {
 					resolveReference := false
@@ -310,7 +314,7 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 					referencedResource := r.backend.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+prop.Reference.Resource]
 
 					if referencedResource != nil && resolveReference {
-						nv, err := r.mapRecordProperties(recordId, referencedResource, pathPrefix+"_"+prop.Mapping+"_", propertyPointers)
+						nv, err := r.mapRecordProperties(recordId, referencedResource, pathPrefix+"_"+prop.Name+"_", propertyPointers)
 						if err != nil {
 							return nil, err
 						}
@@ -485,7 +489,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 			return "", errors.PropertyNotFoundError.WithDetails(propEx.Property)
 		}
 
-		return fmt.Sprintf("t." + property.Mapping), nil
+		return fmt.Sprintf("t." + property.Name), nil
 	}
 
 	if propEx, ok := query.Expression.(*model.Expression_Value); ok {

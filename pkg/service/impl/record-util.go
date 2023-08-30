@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
@@ -46,7 +47,7 @@ func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Recor
 	var idParts []string
 	for _, prop := range resource.Properties {
 		val := record.Properties[prop.Name]
-		if val != nil && prop.Primary {
+		if val != nil && annotations.IsEnabled(prop, annotations.PrimaryProperty) {
 			typ := types.ByResourcePropertyType(prop.Type)
 			unpacked, err := typ.UnPack(val)
 			if err != nil {

@@ -22,8 +22,6 @@ var RoleResource = &model.Resource{
 		special.AuditProperties[3],
 		{
 			Name:     "name",
-			Mapping:  "name",
-			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: true,
@@ -33,9 +31,8 @@ var RoleResource = &model.Resource{
 			},
 		},
 		{
-			Name:    "securityConstraints",
-			Mapping: "security_constraints",
-			Type:    model.ResourceProperty_LIST,
+			Name: "securityConstraints",
+			Type: model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
 				Type: model.ResourceProperty_REFERENCE,
 				Reference: &model.Reference{
@@ -51,8 +48,7 @@ var RoleResource = &model.Resource{
 		{
 			Name: "details",
 
-			Mapping: "details",
-			Type:    model.ResourceProperty_OBJECT,
+			Type: model.ResourceProperty_OBJECT,
 		},
 	},
 	Annotations: map[string]string{

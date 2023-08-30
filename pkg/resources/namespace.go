@@ -22,8 +22,6 @@ var NamespaceResource = &model.Resource{
 		special.AuditProperties[3],
 		{
 			Name:      "name",
-			Mapping:   "name",
-			Primary:   false,
 			Type:      model.ResourceProperty_STRING,
 			Length:    256,
 			Required:  true,
@@ -35,16 +33,12 @@ var NamespaceResource = &model.Resource{
 		},
 		{
 			Name:     "description",
-			Mapping:  "description",
-			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
 			Name:     "details",
-			Mapping:  "details",
-			Primary:  false,
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},

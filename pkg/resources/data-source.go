@@ -22,9 +22,7 @@ var DataSourceResource = &model.Resource{
 		special.AuditProperties[3],
 		{
 			Name:     "name",
-			Mapping:  "name",
 			Length:   64,
-			Primary:  false,
 			Unique:   true,
 			Type:     model.ResourceProperty_STRING,
 			Required: true,
@@ -34,9 +32,7 @@ var DataSourceResource = &model.Resource{
 		},
 		{
 			Name:     "description",
-			Mapping:  "description",
 			Length:   64,
-			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Required: false,
 			Annotations: map[string]string{
@@ -45,8 +41,6 @@ var DataSourceResource = &model.Resource{
 		},
 		{
 			Name:     "backend",
-			Mapping:  "backend",
-			Primary:  false,
 			Type:     model.ResourceProperty_ENUM,
 			Required: true,
 			EnumValues: []string{
@@ -58,8 +52,6 @@ var DataSourceResource = &model.Resource{
 		},
 		{
 			Name:     "options",
-			Mapping:  "options",
-			Primary:  false,
 			Required: true,
 			Type:     model.ResourceProperty_MAP,
 			Item: &model.ResourceProperty{

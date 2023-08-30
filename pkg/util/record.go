@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
@@ -42,7 +43,7 @@ func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[
 	identifierProps := make(map[string]*structpb.Value)
 
 	for _, prop := range resource.Properties {
-		if !prop.Primary {
+		if !special.IsIdProperty(prop) {
 			continue
 		}
 
@@ -68,7 +69,7 @@ func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[
 		identifierProps[prop.Name] = val
 	}
 
-	return identifierProps, true
+	return identifierProps, len(identifierProps) > 0
 }
 
 func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {

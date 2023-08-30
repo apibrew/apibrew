@@ -63,12 +63,62 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 
 			return nil
 		}, func(e, u *model.ResourceProperty) errors.ServiceError { // update
-			plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, u, e)...)
+			plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, u, e, "")...)
 
 			return nil
 		}, func(prop *model.ResourceProperty) errors.ServiceError { // delete
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteProperty{DeleteProperty: &model.ResourceMigrationDeleteProperty{
 				ExistingProperty: prop.Name,
+			}}})
+
+			return nil
+		})
+
+	// types
+	_ = util.ArrayDiffer(existingResource.Types,
+		resource.Types,
+		func(a, b *model.ResourceSubType) bool {
+			return a.Name == b.Name
+		},
+		func(a, b *model.ResourceSubType) bool {
+			return false // to check properties always
+		},
+		func(subType *model.ResourceSubType) errors.ServiceError { // new
+			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_CreateSubType{CreateSubType: &model.ResourceMigrationCreateSubType{
+				Name: subType.Name,
+			}}})
+
+			return nil
+		}, func(e, u *model.ResourceSubType) errors.ServiceError { // update
+			// check properties
+			_ = util.ArrayDiffer(e.Properties,
+				u.Properties,
+				util.IsSameIdentifiedResourceProperty,
+				util.IsSameResourceProperty,
+				func(prop *model.ResourceProperty) errors.ServiceError { // new
+					plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_CreateProperty{CreateProperty: &model.ResourceMigrationCreateProperty{
+						Property: prop.Name,
+						SubType:  u.Name,
+					}}})
+
+					return nil
+				}, func(ep, up *model.ResourceProperty) errors.ServiceError { // update
+					plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, up, ep, u.Name)...)
+
+					return nil
+				}, func(prop *model.ResourceProperty) errors.ServiceError { // delete
+					plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteProperty{DeleteProperty: &model.ResourceMigrationDeleteProperty{
+						ExistingProperty: prop.Name,
+						SubType:          u.Name,
+					}}})
+
+					return nil
+				})
+
+			return nil
+		}, func(subType *model.ResourceSubType) errors.ServiceError { // delete
+			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteSubType{DeleteSubType: &model.ResourceMigrationDeleteSubType{
+				Name: subType.Name,
 			}}})
 
 			return nil
@@ -162,7 +212,7 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResource(resource, e
 	return steps
 }
 
-func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(resource, existingResource *model.Resource, resourceProperty, existingResourceProperty *model.ResourceProperty) []*model.ResourceMigrationStep {
+func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(resource, existingResource *model.Resource, resourceProperty, existingResourceProperty *model.ResourceProperty, subType string) []*model.ResourceMigrationStep {
 	var steps []*model.ResourceMigrationStep
 
 	resourcePropertyRecord := mapping.ResourcePropertyToRecord(resourceProperty, resource)
@@ -191,6 +241,7 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(res
 				ExistingProperty: existingResourceProperty.Name,
 				Property:         resourceProperty.Name,
 				ChangedFields:    changedFields,
+				SubType:          subType,
 			}},
 		})
 	}

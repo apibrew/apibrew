@@ -11,16 +11,13 @@ import (
 var ResourcePropertyProperties = []*model.ResourceProperty{
 	{
 		Name:     "name",
-		Mapping:  "name",
-		Primary:  false,
 		Type:     model.ResourceProperty_STRING,
 		Length:   256,
 		Required: true,
 	},
 	{
-		Name:    "type",
-		Mapping: "type",
-		Type:    model.ResourceProperty_ENUM,
+		Name: "type",
+		Type: model.ResourceProperty_ENUM,
 		EnumValues: []string{
 			"BOOL",
 			"STRING",
@@ -44,57 +41,48 @@ var ResourcePropertyProperties = []*model.ResourceProperty{
 	},
 	{
 		Name:     "typeRef",
-		Mapping:  "type_ref",
-		Primary:  false,
 		Type:     model.ResourceProperty_STRING,
 		Length:   256,
 		Required: false,
 	},
 	{
 		Name:     "mapping",
-		Mapping:  "mapping",
 		Type:     model.ResourceProperty_STRING,
 		Length:   64,
 		Required: true,
 	},
 	{
 		Name:         "primary",
-		Mapping:      "primary",
 		Type:         model.ResourceProperty_BOOL,
 		Required:     true,
 		DefaultValue: structpb.NewBoolValue(false),
 	},
 	{
 		Name:         "required",
-		Mapping:      "required",
 		Type:         model.ResourceProperty_BOOL,
 		Required:     true,
 		DefaultValue: structpb.NewBoolValue(false),
 	},
 	{
 		Name:         "unique",
-		Mapping:      "unique",
 		Type:         model.ResourceProperty_BOOL,
 		Required:     true,
 		DefaultValue: structpb.NewBoolValue(false),
 	},
 	{
 		Name:         "immutable",
-		Mapping:      "immutable",
 		Type:         model.ResourceProperty_BOOL,
 		Required:     true,
 		DefaultValue: structpb.NewBoolValue(false),
 	},
 	{
 		Name:         "length",
-		Mapping:      "length",
 		Type:         model.ResourceProperty_INT32,
 		Required:     true,
 		DefaultValue: structpb.NewNumberValue(256),
 	},
 	{
 		Name:     "item",
-		Mapping:  "item",
 		Type:     model.ResourceProperty_STRUCT,
 		Required: false,
 		TypeRef:  util.Pointer("Property"),
@@ -106,14 +94,12 @@ var ResourcePropertyProperties = []*model.ResourceProperty{
 	},
 	{
 		Name:     "defaultValue",
-		Mapping:  "default_value",
 		Type:     model.ResourceProperty_OBJECT,
 		Required: false,
 	},
 	{
-		Name:    "enumValues",
-		Mapping: "enum_values",
-		Type:    model.ResourceProperty_LIST,
+		Name: "enumValues",
+		Type: model.ResourceProperty_LIST,
 		Item: &model.ResourceProperty{
 			Type: model.ResourceProperty_STRING,
 		},
@@ -121,22 +107,17 @@ var ResourcePropertyProperties = []*model.ResourceProperty{
 	},
 	{
 		Name:     "exampleValue",
-		Mapping:  "example_value",
 		Type:     model.ResourceProperty_OBJECT,
 		Required: false,
 	},
 	{
 		Name:     "title",
-		Mapping:  "title",
-		Primary:  false,
 		Type:     model.ResourceProperty_STRING,
 		Length:   256,
 		Required: false,
 	},
 	{
 		Name:     "description",
-		Mapping:  "description",
-		Primary:  false,
 		Type:     model.ResourceProperty_STRING,
 		Length:   256,
 		Required: false,
@@ -166,16 +147,12 @@ var ResourceResource = &model.Resource{
 				},
 				{
 					Name:     "title",
-					Mapping:  "title",
-					Primary:  false,
 					Type:     model.ResourceProperty_STRING,
 					Length:   256,
 					Required: false,
 				},
 				{
 					Name:     "description",
-					Mapping:  "description",
-					Primary:  false,
 					Type:     model.ResourceProperty_STRING,
 					Length:   256,
 					Required: false,
@@ -269,8 +246,6 @@ var ResourceResource = &model.Resource{
 		special.AuditProperties[3],
 		{
 			Name:     "name",
-			Mapping:  "name",
-			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: true,
@@ -281,7 +256,6 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name:     "namespace",
-			Mapping:  "namespace",
 			Type:     model.ResourceProperty_REFERENCE,
 			Required: true,
 			Reference: &model.Reference{
@@ -292,15 +266,12 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name:         "virtual",
-			Mapping:      "virtual",
-			Primary:      false,
 			Type:         model.ResourceProperty_BOOL,
 			Required:     true,
 			DefaultValue: structpb.NewBoolValue(false),
 		},
 		{
 			Name:     "properties",
-			Mapping:  "properties",
 			Type:     model.ResourceProperty_LIST,
 			Required: true,
 			Item: &model.ResourceProperty{
@@ -310,7 +281,6 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name:     "indexes",
-			Mapping:  "indexes",
 			Type:     model.ResourceProperty_LIST,
 			Required: false,
 			Item: &model.ResourceProperty{
@@ -320,8 +290,6 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name:     "types",
-			Mapping:  "types",
-			Primary:  false,
 			Type:     model.ResourceProperty_LIST,
 			Required: false,
 			Item: &model.ResourceProperty{
@@ -331,30 +299,24 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name:         "immutable",
-			Mapping:      "immutable",
-			Primary:      false,
 			Type:         model.ResourceProperty_BOOL,
 			Required:     true,
 			DefaultValue: structpb.NewBoolValue(false),
 		},
 		{
 			Name:         "abstract",
-			Mapping:      "abstract",
-			Primary:      false,
 			Type:         model.ResourceProperty_BOOL,
 			Required:     true,
 			DefaultValue: structpb.NewBoolValue(false),
 		},
 		{
 			Name:         "checkReferences",
-			Mapping:      "check_references",
 			Type:         model.ResourceProperty_BOOL,
 			Required:     true,
 			DefaultValue: structpb.NewBoolValue(false),
 		},
 		{
 			Name:     "dataSource",
-			Mapping:  "source_data_source",
 			Type:     model.ResourceProperty_REFERENCE,
 			Required: false,
 			Reference: &model.Reference{
@@ -365,30 +327,24 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name:     "entity",
-			Mapping:  "mapping",
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
 			Name:     "catalog",
-			Mapping:  "source_catalog",
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
 			Name:     "title",
-			Mapping:  "title",
-			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
 			Name:     "description",
-			Mapping:  "description",
-			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,

@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -76,7 +77,7 @@ func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.R
 		val, exists := record.Properties[prop.Name]
 
 		if exists {
-			data[prop.Mapping] = val.AsInterface()
+			data[prop.Name] = val.AsInterface()
 		}
 	}
 
@@ -91,18 +92,18 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 		update["$set"] = set
 
 		for _, prop := range resource.Properties {
-			if prop.Primary {
+			if annotations.IsEnabled(prop, annotations.PrimaryProperty) {
 				if record.Properties[prop.Name] == nil {
-					filter[prop.Mapping] = nil
+					filter[prop.Name] = nil
 				} else {
-					filter[prop.Mapping] = record.Properties[prop.Name].AsInterface()
+					filter[prop.Name] = record.Properties[prop.Name].AsInterface()
 				}
 			}
 
 			val, exists := record.Properties[prop.Name]
 
 			if exists {
-				set[prop.Mapping] = val.AsInterface()
+				set[prop.Name] = val.AsInterface()
 			}
 		}
 

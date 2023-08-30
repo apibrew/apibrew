@@ -91,7 +91,7 @@ func (h RecordSpecialColumnHelper) SetUpdatedOn(updatedOn *timestamppb.Timestamp
 
 func (h RecordSpecialColumnHelper) HasIdSpecialProperty() bool {
 	for _, prop := range h.Resource.Properties {
-		if prop.Name == "id" && prop.Type == model.ResourceProperty_UUID && prop.Primary {
+		if prop.Name == "id" && prop.Type == model.ResourceProperty_UUID {
 			return true
 		}
 	}

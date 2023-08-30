@@ -47,12 +47,8 @@ message ResourceProperty {
   // type ref
   optional string typeRef = 17; // type ref, is only applicable to Struct
 
-  // mapping is like a column name, it is binding name to entity. For abstraction purposes property name is not used while communicating to resource backend. Instead mapping is used as a key of property
-  string mapping = 4;
-
   // this is to mark property as required
   bool required = 5;
-  bool primary = 6; // this is to mark property as primary. Primary properties is like a part of primary key. Primary property(s) is used in to identify record.
   uint32 length = 7; // length property is only valid and required for String typed properties
   bool unique = 8;
   bool immutable = 9; // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded

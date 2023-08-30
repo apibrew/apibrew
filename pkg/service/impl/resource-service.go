@@ -234,18 +234,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		util.NormalizeResource(resource)
 	}
 
-	existingPropertiesNamedMap := util.GetNamedMap(existingResource.Properties)
-	for _, prop := range resource.Properties {
-
-		if prop.Mapping == "" {
-			if existingPropertiesNamedMap[prop.Name] != nil {
-				prop.Mapping = existingPropertiesNamedMap[prop.Name].Mapping
-			} else {
-				prop.Mapping = util.ToSnakeCase(prop.Name)
-			}
-		}
-	}
-
 	resource.Version = existingResource.Version
 	resource.AuditData = existingResource.AuditData
 
@@ -290,6 +278,10 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 
 	if plan.Steps == nil && !forceMigration {
 		return nil
+	}
+
+	if err := r.validateMigration(ctx, resource, plan); err != nil {
+		return err
 	}
 
 	systemBackend := r.backendProviderService.GetSystemBackend(ctx)
@@ -395,12 +387,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	if resource.SourceConfig.Entity == "" {
 		resource.SourceConfig.Entity = util.ToSnakeCase(resource.Name)
-	}
-
-	for _, prop := range resource.Properties {
-		if prop.Mapping == "" {
-			prop.Mapping = util.ToSnakeCase(prop.Name)
-		}
 	}
 
 	if err := validate.ValidateResource(resource); err != nil {
@@ -821,6 +807,12 @@ func (r *resourceService) mapPropertiesByType(resource *model.Resource) map[mode
 	})
 
 	return result
+}
+
+func (r *resourceService) validateMigration(ctx context.Context, resource *model.Resource, plan *model.ResourceMigrationPlan) errors.ServiceError {
+	log.Print(plan)
+
+	return nil
 }
 
 func NewResourceService(backendProviderService service.BackendProviderService, resourceMigrationService service.ResourceMigrationService, authorizationService service.AuthorizationService) service.ResourceService {

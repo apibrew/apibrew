@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/types"
 	"strings"
@@ -46,7 +47,7 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 			return "", errors.LogicalError.WithDetails("Property not found with name: " + prop.Name)
 		}
 
-		colsEscaped = append(colsEscaped, r.options.Quote(prop.Mapping))
+		colsEscaped = append(colsEscaped, r.options.Quote(prop.Name))
 	}
 
 	indexName := r.prepareIndexName(index, resource)
@@ -70,7 +71,7 @@ func (r *resourceMigrationBuilder) prepareIndexName(index *model.ResourceIndex, 
 			}
 		}
 
-		cols = append(cols, prop.Mapping)
+		cols = append(cols, prop.Name)
 	}
 
 	var indexName = resource.SourceConfig.Entity + "_" + strings.Join(cols, "_")
@@ -98,7 +99,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 		sqlType = property.Annotations[annotations.SQLType]
 	}
 
-	var def = []string{r.options.Quote(property.Mapping), sqlType, nullModifier, uniqModifier}
+	var def = []string{r.options.Quote(property.Name), sqlType, nullModifier, uniqModifier}
 
 	if property.Type == model.ResourceProperty_REFERENCE {
 		if property.Reference != nil {
@@ -116,7 +117,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 				return "", errors.LogicalError.WithDetails("Referenced resource not exists with name: " + referenceNamespace + "/" + property.Reference.Resource)
 			}
 
-			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Mapping+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
+			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
 
 		}
 	}
@@ -134,7 +135,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
 	var pk []string
 	for _, prop := range resource.Properties {
-		if prop.Primary {
+		if special.IsIdProperty(prop) || annotations.IsEnabled(prop, annotations.PrimaryProperty) {
 			var typ = r.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
 
 			if prop.Annotations != nil && prop.Annotations[annotations.SQLType] != "" {
@@ -149,8 +150,8 @@ func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resour
 				}
 			}
 
-			builder.Define(r.options.Quote(prop.Mapping), typ, "NOT NULL")
-			pk = append(pk, r.options.Quote(prop.Mapping))
+			builder.Define(r.options.Quote(prop.Name), typ, "NOT NULL")
+			pk = append(pk, r.options.Quote(prop.Name))
 		}
 	}
 
@@ -239,27 +240,27 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 				sqlType = property.Annotations[annotations.SQLType]
 			}
 
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", r.options.Quote(property.Mapping), sqlType))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", r.options.Quote(property.Name), sqlType))
 			changes++
 		}
 
 		if prevProperty.Required && !property.Required {
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", r.options.Quote(property.Mapping)))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", r.options.Quote(property.Name)))
 			changes++
 		}
 
 		if !prevProperty.Required && property.Required {
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", r.options.Quote(property.Mapping)))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", r.options.Quote(property.Name)))
 			changes++
 		}
 
 		if prevProperty.Unique && !property.Unique {
-			sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT IF EXISTS %s", r.options.Quote(property.Mapping+"_uniq")))
+			sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT IF EXISTS %s", r.options.Quote(property.Name+"_uniq")))
 			changes++
 		}
 
 		if !prevProperty.Unique && property.Unique {
-			sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s UNIQUE (%s)", r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Mapping+"_uniq"), r.options.Quote(property.Mapping)))
+			sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s UNIQUE (%s)", r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_uniq"), r.options.Quote(property.Name)))
 			changes++
 		}
 
@@ -277,7 +278,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 				}
 
-				sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Mapping+"_fk"), r.options.Quote(property.Mapping), r.options.Quote(referencedResource.SourceConfig.Entity), r.options.Quote("id")))
+				sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(property.Name), r.options.Quote(referencedResource.SourceConfig.Entity), r.options.Quote("id")))
 				changes++
 			}
 		}
@@ -298,7 +299,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 
 func (r *resourceMigrationBuilder) DeleteProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
-		sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN \"%s\"", r.tableName, prop.Mapping)
+		sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN \"%s\"", r.tableName, prop.Name)
 
 		_, sqlError := r.runner.ExecContext(r.ctx, sql)
 

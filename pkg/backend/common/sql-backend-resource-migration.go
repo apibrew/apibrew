@@ -128,8 +128,6 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 			Name: util.SnakeCaseToCamelCase(*columnName),
 			Type: typ,
 
-			Mapping:     *columnName,
-			Primary:     *isPrimary,
 			Required:    !*isNullable,
 			Unique:      *isUnique,
 			Length:      uint32(**columnLength),
@@ -184,7 +182,7 @@ func (p *sqlBackend) resourcePrepareIndexes(ctx context.Context, runner helper.Q
 		for _, col := range cols {
 			var prop *model.ResourceProperty
 			for _, prop = range resource.Properties {
-				if prop.Mapping == col {
+				if prop.Name == col {
 					break
 				}
 			}

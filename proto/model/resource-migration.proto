@@ -24,16 +24,19 @@ message ResourceMigrationUpdateResource {
 
 message ResourceMigrationCreateProperty {
   string property = 1;
+  string subType = 2;
 }
 
 message ResourceMigrationDeleteProperty {
   string existingProperty = 1;
+  string subType = 2;
 }
 
 message ResourceMigrationUpdateProperty {
   string existingProperty = 1;
   string property = 2;
   repeated string changedFields = 3;
+  string subType = 4;
 }
 
 message ResourceMigrationCreateIndex {
@@ -42,6 +45,14 @@ message ResourceMigrationCreateIndex {
 
 message ResourceMigrationDeleteIndex {
   uint32 existingIndex = 1;
+}
+
+message ResourceMigrationCreateSubType {
+  string name = 1;
+}
+
+message ResourceMigrationDeleteSubType {
+  string name = 1;
 }
 
 message ResourceMigrationStep {
@@ -54,6 +65,8 @@ message ResourceMigrationStep {
     ResourceMigrationUpdateProperty updateProperty = 6;
     ResourceMigrationCreateIndex createIndex = 7;
     ResourceMigrationDeleteIndex deleteIndex = 8;
+    ResourceMigrationCreateSubType createSubType = 9;
+    ResourceMigrationDeleteSubType deleteSubType = 10;
   }
 }
 

@@ -60,6 +60,16 @@ func Enable(resource Annotated, names ...string) {
 	}
 }
 
+func EnableWith(annotations map[string]string, names ...string) map[string]string {
+	if annotations == nil {
+		annotations = make(map[string]string)
+	}
+	for _, name := range names {
+		annotations[name] = "true"
+	}
+	return annotations
+}
+
 func Set(resource Annotated, name, value string) {
 	resource.GetAnnotations()[name] = value
 }

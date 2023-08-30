@@ -22,8 +22,6 @@ var UserResource = &model.Resource{
 		special.AuditProperties[3],
 		{
 			Name:     "username",
-			Mapping:  "username",
-			Primary:  false,
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: true,
@@ -34,15 +32,13 @@ var UserResource = &model.Resource{
 		},
 		{
 			Name:     "password",
-			Mapping:  "password",
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
 		},
 		{
-			Name:    "roles",
-			Mapping: "roles",
-			Type:    model.ResourceProperty_LIST,
+			Name: "roles",
+			Type: model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
 				Type: model.ResourceProperty_REFERENCE,
 				Reference: &model.Reference{
@@ -52,9 +48,8 @@ var UserResource = &model.Resource{
 			},
 		},
 		{
-			Name:    "securityConstraints",
-			Mapping: "security_constraints",
-			Type:    model.ResourceProperty_LIST,
+			Name: "securityConstraints",
+			Type: model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
 				Type: model.ResourceProperty_REFERENCE,
 				Reference: &model.Reference{
@@ -68,9 +63,8 @@ var UserResource = &model.Resource{
 			Required: false,
 		},
 		{
-			Name:    "details",
-			Mapping: "details",
-			Type:    model.ResourceProperty_OBJECT,
+			Name: "details",
+			Type: model.ResourceProperty_OBJECT,
 		},
 	},
 	Annotations: map[string]string{

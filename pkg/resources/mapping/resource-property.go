@@ -33,12 +33,9 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	}
 
 	properties["required"] = structpb.NewBoolValue(property.Required)
-	properties["primary"] = structpb.NewBoolValue(property.Primary)
 	properties["length"] = structpb.NewNumberValue(float64(property.Length))
 	properties["unique"] = structpb.NewBoolValue(property.Unique)
 	properties["immutable"] = structpb.NewBoolValue(property.Immutable)
-
-	properties["mapping"] = structpb.NewStringValue(property.Mapping)
 
 	if property.Reference != nil {
 		referenceNamespace := property.Reference.Namespace
@@ -106,8 +103,6 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	var resourceProperty = &model.ResourceProperty{
 		Name:          record.Properties["name"].GetStringValue(),
 		Type:          model.ResourceProperty_Type(model.ResourceProperty_Type_value[record.Properties["type"].GetStringValue()]),
-		Mapping:       record.Properties["mapping"].GetStringValue(),
-		Primary:       record.Properties["primary"].GetBoolValue(),
 		Required:      record.Properties["required"].GetBoolValue(),
 		Length:        uint32(record.Properties["length"].GetNumberValue()),
 		Unique:        record.Properties["unique"].GetBoolValue(),

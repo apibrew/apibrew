@@ -63,7 +63,7 @@ func (p *sqlBackend) prepareResourceRecordCols(resource *model.Resource) []strin
 			continue
 		}
 
-		col := p.options.Quote(property.Mapping)
+		col := p.options.Quote(property.Name)
 		cols = append(cols, col)
 	}
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -52,7 +53,7 @@ func Records(resource *model.Resource, list []*model.Record, isUpdate bool) erro
 			isEmpty := propertyType.IsEmpty(val)
 
 			if isEmpty {
-				if property.Primary && isUpdate {
+				if annotations.IsEnabled(property, annotations.PrimaryProperty) && isUpdate {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
 						RecordId: record.Id,
 						Property: property.Name,
@@ -61,7 +62,7 @@ func Records(resource *model.Resource, list []*model.Record, isUpdate bool) erro
 					})
 				}
 
-				if !property.Primary && property.Required && (exists || !isUpdate) {
+				if !annotations.IsEnabled(property, annotations.PrimaryProperty) && property.Required && (exists || !isUpdate) {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
 						RecordId: record.Id,
 						Property: property.Name,

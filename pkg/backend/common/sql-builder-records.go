@@ -154,7 +154,7 @@ func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record *
 				return "", errors.LogicalError.WithDetails(err.Error())
 			}
 
-			return fmt.Sprintf("%s=%s", idProp.Mapping, argPlaceHolder(unpacked)), nil
+			return fmt.Sprintf("%s=%s", idProp.Name, argPlaceHolder(unpacked)), nil
 		}
 	}
 
@@ -242,9 +242,9 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			if err != nil {
 				return err
 			}
-			updateBuilder.SetMore(fmt.Sprintf("%s=%s", p.options.Quote(property.Mapping), item))
+			updateBuilder.SetMore(fmt.Sprintf("%s=%s", p.options.Quote(property.Name), item))
 		} else {
-			updateBuilder.SetMore(updateBuilder.Equal(p.options.Quote(property.Mapping), val))
+			updateBuilder.SetMore(updateBuilder.Equal(p.options.Quote(property.Name), val))
 		}
 	}
 
@@ -301,8 +301,8 @@ func (p *sqlBackend) deleteRecords(ctx context.Context, runner helper.QueryRunne
 
 	var primaryFound = false
 	for _, prop := range resource.Properties {
-		if prop.Primary {
-			deleteBuilder.Where(deleteBuilder.In(prop.Mapping, util.ArrayMapToInterface(ids)...))
+		if annotations.IsEnabled(prop, annotations.PrimaryProperty) {
+			deleteBuilder.Where(deleteBuilder.In(prop.Name, util.ArrayMapToInterface(ids)...))
 			primaryFound = true
 			break
 		}
