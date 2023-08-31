@@ -16,7 +16,7 @@ message InitRecord {
 message InfluxDBConfig {
   string hostUrl = 1;
   string token = 2;
-  string database = 3;
+  string bucket = 3;
   string organization = 4;
 }
 

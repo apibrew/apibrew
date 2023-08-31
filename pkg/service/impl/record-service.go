@@ -648,8 +648,8 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	// begin metrics
 	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
 		{Name: "operation", Value: "Get"},
-		{Name: "resource", Value: namespace},
-		{Name: "namespace", Value: resourceName},
+		{Name: "resource", Value: resourceName},
+		{Name: "namespace", Value: namespace},
 	})
 	// end metrics
 

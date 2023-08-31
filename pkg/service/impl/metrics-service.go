@@ -2,42 +2,62 @@ package impl
 
 import (
 	"context"
-	"github.com/InfluxCommunity/influxdb3-go/influx"
+	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/hashicorp/go-metrics"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
 
 type metricService struct {
-	recordService   service.RecordService
-	resourceService service.ResourceService
+	recordService    service.RecordService
+	resourceService  service.ResourceService
+	influxBucketName string
+	influxQueryApi   api.QueryAPI
+	serviceId        string
+}
+
+func (m *metricService) GetMetrics(req service.MetricsRequest) ([]service.MetricsResponseItem, errors.ServiceError) {
+	var query = `from(bucket:"apibrew")
+					|> range(start: -100m)
+					|> filter(fn: (r) => r._measurement == "` + m.serviceId + `.RecordService" and r._field == "count")
+					`
+	it, err := m.influxQueryApi.Query(context.Background(), query)
+
+	var result []service.MetricsResponseItem
+
+	if err != nil {
+		return nil, errors.InternalError.WithDetails(err.Error())
+	}
+
+	for it.Next() {
+		var item service.MetricsResponseItem
+		var rec = it.Record()
+		var values = rec.Values()
+
+		item.Namespace = values["namespace"].(string)
+		item.Resource = values["resource"].(string)
+		item.Operation = service.MetricsOperation(values["operation"].(string))
+		item.Count = uint64(values["_value"].(int64))
+
+		item.Time = values["_time"].(time.Time)
+
+		result = append(result, item)
+	}
+
+	return result, nil
 }
 
 type metricsServiceInfluxEncoder struct {
-	config *model.InfluxDBConfig
-	client *influx.Client
-}
-
-func (m *metricsServiceInfluxEncoder) Init() {
-	// Create a new client using an InfluxDB server base URL and an authentication token
-	client, err := influx.New(influx.Configs{
-		HostURL:      m.config.HostUrl,
-		AuthToken:    m.config.Token,
-		Organization: "apibrew",
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	m.client = client
+	writer api.WriteAPIBlocking
 }
 
 func (m *metricsServiceInfluxEncoder) Encode(i interface{}) error {
 	if metricsSummary, ok := i.(metrics.MetricsSummary); ok {
-		var points []*influx.Point
 
 		// Timestamp
 		timestamp, err := time.Parse("2006-01-02 15:04:05 +0000 UTC", metricsSummary.Timestamp)
@@ -47,34 +67,49 @@ func (m *metricsServiceInfluxEncoder) Encode(i interface{}) error {
 
 		// Gauges
 		for _, gauge := range metricsSummary.Gauges {
-			point := influx.NewPoint(gauge.Name,
+			point := write.NewPoint(gauge.Name,
 				gauge.DisplayLabels,
 				map[string]interface{}{"value": gauge.Value},
 				timestamp)
-			points = append(points, point)
+
+			err = m.writer.WritePoint(context.TODO(), point)
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		// Precision Gauges
 		for _, pgauge := range metricsSummary.PrecisionGauges {
-			point := influx.NewPoint(pgauge.Name,
+			point := write.NewPoint(pgauge.Name,
 				pgauge.DisplayLabels,
 				map[string]interface{}{"value": pgauge.Value},
 				timestamp)
-			points = append(points, point)
+
+			err = m.writer.WritePoint(context.TODO(), point)
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		// Points
 		for _, pointValue := range metricsSummary.Points {
-			point := influx.NewPoint(pointValue.Name,
+			point := write.NewPoint(pointValue.Name,
 				nil,
 				map[string]interface{}{"points": pointValue.Points},
 				timestamp)
-			points = append(points, point)
+
+			err = m.writer.WritePoint(context.TODO(), point)
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		// Counters
 		for _, counter := range metricsSummary.Counters {
-			point := influx.NewPoint(counter.Name,
+			point := write.NewPoint(counter.Name,
 				counter.DisplayLabels,
 				map[string]interface{}{
 					"count":  counter.Count,
@@ -86,12 +121,17 @@ func (m *metricsServiceInfluxEncoder) Encode(i interface{}) error {
 					"stddev": counter.Stddev,
 				},
 				timestamp)
-			points = append(points, point)
+
+			err = m.writer.WritePoint(context.TODO(), point)
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		// Samples
 		for _, sample := range metricsSummary.Samples {
-			point := influx.NewPoint(sample.Name,
+			point := write.NewPoint(sample.Name,
 				sample.DisplayLabels,
 				map[string]interface{}{
 					"count":  sample.Count,
@@ -103,10 +143,15 @@ func (m *metricsServiceInfluxEncoder) Encode(i interface{}) error {
 					"stddev": sample.Stddev,
 				},
 				timestamp)
-			points = append(points, point)
+
+			err = m.writer.WritePoint(context.TODO(), point)
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
-		err = m.client.WritePoints(context.TODO(), m.config.Database, points...)
+		err = m.writer.Flush(context.TODO())
 
 		if err != nil {
 			log.Fatal(err)
@@ -143,9 +188,16 @@ func (m *metricService) Init(config *model.AppConfig) {
 
 	go func() {
 		if config.Metrics.Influxdb != nil {
-			encoder := &metricsServiceInfluxEncoder{config: config.Metrics.Influxdb}
+			influxClient := influxdb2.NewClient(config.Metrics.Influxdb.HostUrl, config.Metrics.Influxdb.Token)
 
-			encoder.Init()
+			writer := influxClient.WriteAPIBlocking(config.Metrics.Influxdb.Organization, config.Metrics.Influxdb.Bucket)
+			writer.EnableBatching()
+
+			encoder := &metricsServiceInfluxEncoder{writer: writer}
+			m.influxBucketName = config.Metrics.Influxdb.Bucket
+			m.serviceId = config.ServiceId
+
+			m.influxQueryApi = influxClient.QueryAPI(config.Metrics.Influxdb.Organization)
 
 			inm.Stream(context.TODO(), encoder)
 		}

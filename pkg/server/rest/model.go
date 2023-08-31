@@ -111,6 +111,3 @@ type SearchRecordRequest struct {
 type HealthResponse struct {
 	Status string `json:"status"`
 }
-
-type MetricsResponse struct {
-}
