@@ -39,3 +39,4 @@ jobs:
           docker push tislib/apibrew:full-${version}
           docker push tislib/apibrew:latest
           docker push tislib/apibrew:full-latest
+
