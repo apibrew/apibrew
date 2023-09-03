@@ -1,7 +1,7 @@
 FROM golang:1.21-alpine as buildenv
 
 WORKDIR /app/
-RUN apk add build-base
+#RUN apk add build-base
 
 COPY go.mod go.mod
 COPY go.sum go.sum
@@ -10,12 +10,10 @@ RUN go mod download
 COPY cmd cmd
 COPY pkg pkg
 
-FROM golang:1.21-alpine as lint
+FROM buildenv as lint
 WORKDIR /app/
 
 RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
-
-COPY --from=buildenv /app/* /app/
 
 RUN golangci-lint run --timeout 5m --verbose
 
