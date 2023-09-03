@@ -30,7 +30,7 @@ jobs:
       - name: Build the Docker image
         uses: actions/checkout@v3
       - run: |
-          version=$(cat ../version)
+          version=$(cat version)
           docker build . --progress=plain --no-cache --target=app -t tislib/apibrew:${version}
           docker build . --progress=plain --no-cache --target=app-full -t tislib/apibrew:full-${version}
           docker tag tislib/apibrew:${version} tislib/apibrew:latest
