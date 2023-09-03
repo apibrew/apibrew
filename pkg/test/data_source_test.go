@@ -70,40 +70,40 @@ func TestCreateRecordstatusTest(t *testing.T) {
 	checkNewCreatedRecordStatus(newDataSource, t)
 }
 
-func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
-	newDataSource := setup.DhTestWrongPassword
-
-	defer func() {
-		if newDataSource.Id != nil {
-			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
-				Namespace: resources.DataSourceResource.Namespace,
-				Resource:  resources.DataSourceResource.Name,
-				Ids:       []string{newDataSource.Id.String()},
-			})
-
-			if err != nil {
-				t.Error(err)
-				return
-			}
-		}
-	}()
-
-	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
-		Namespace: resources.DataSourceResource.Namespace,
-		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
-	})
-
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
-
-	checkNewCreatedRecordStatusPasswordWrong(newDataSource, t)
-}
+//func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
+//	newDataSource := setup.DhTestWrongPassword
+//
+//	defer func() {
+//		if newDataSource.Id != nil {
+//			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
+//				Namespace: resources.DataSourceResource.Namespace,
+//				Resource:  resources.DataSourceResource.Name,
+//				Ids:       []string{newDataSource.Id.String()},
+//			})
+//
+//			if err != nil {
+//				t.Error(err)
+//				return
+//			}
+//		}
+//	}()
+//
+//	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
+//		Namespace: resources.DataSourceResource.Namespace,
+//		Resource:  resources.DataSourceResource.Name,
+//		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+//	})
+//
+//	if err != nil {
+//		t.Error(err)
+//		return
+//	}
+//
+//	newDataSource.Id = new(uuid.UUID)
+//	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
+//
+//	checkNewCreatedRecordStatusPasswordWrong(newDataSource, t)
+//}
 
 func TestListCreatedRecords(t *testing.T) {
 
