@@ -71,12 +71,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 }
 
 func TestCreateDataSourceWithWrongPasswordStatusTest(t *testing.T) {
-	newDataSource := &resource_model.DataSource{
-		Backend:     setup.SystemDataSource.Backend,
-		Name:        "test-data-source",
-		Description: "test-data-source",
-		Options:     setup.DhTestWrongPassword.Options,
-	}
+	newDataSource := setup.DhTestWrongPassword
 
 	defer func() {
 		if newDataSource.Id != nil {
