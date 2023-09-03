@@ -63,7 +63,7 @@ func fixBeforeWrite(i interface{}) interface{} {
 			keys = append(keys, k)
 		}
 
-		sort.Sort(sort.StringSlice(keys))
+		sort.Strings(keys)
 
 		for _, k := range keys {
 			v := x[k]

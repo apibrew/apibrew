@@ -15,7 +15,6 @@ import (
 var authenticationClient stub.AuthenticationClient
 var resourceClient stub.ResourceClient
 var recordClient stub.RecordClient
-var dataSourceClient stub.DataSourceClient
 
 var container service.Container
 
@@ -75,5 +74,4 @@ func initClient() {
 	authenticationClient = dhClient.GetAuthenticationClient()
 	resourceClient = dhClient.GetResourceClient()
 	recordClient = dhClient.GetRecordClient()
-	dataSourceClient = dhClient.GetDataSourceClient()
 }

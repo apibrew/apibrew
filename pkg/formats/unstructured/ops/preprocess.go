@@ -147,7 +147,6 @@ func (p *preprocessor) runPreprocessExtend(un unstructured.Unstructured) (unstru
 
 	namespace := extend["$namespace"].(string)
 	resource := extend["$resource"].(string)
-	match := extend["$match"].(unstructured.Unstructured)
 
 	if namespace != "" {
 		namespace = "ui" //default
@@ -155,7 +154,8 @@ func (p *preprocessor) runPreprocessExtend(un unstructured.Unstructured) (unstru
 
 	var filters = make(map[string]string)
 
-	if match != nil {
+	if extend["$match"] != nil {
+		match := extend["$match"].(unstructured.Unstructured)
 		for key, value := range match {
 			filters[key] = value.(string)
 		}
@@ -175,7 +175,7 @@ func (p *preprocessor) runPreprocessExtend(un unstructured.Unstructured) (unstru
 	ref := extend["$ref"].(string)
 
 	if len(resp.Content) == 0 {
-		return un, errors.New(fmt.Sprintf("no record found for %s/%s/%v", namespace, resource, match))
+		return un, fmt.Errorf("no record found for %s/%s/%v", namespace, resource, extend["$match"])
 	}
 
 	recordUn, err := p.writer.WriteRecord(namespace, resource, resp.Content[0])
@@ -293,7 +293,7 @@ func (p *preprocessor) runPreprocessProperties(un unstructured.Unstructured) (un
 			if typeId, ok := model.ResourceProperty_Type_value[strings.ToUpper(typeStr)]; ok {
 				property.Type = model.ResourceProperty_Type(typeId)
 			} else {
-				return nil, errors.New(fmt.Sprintf("invalid property type %s", typeStr))
+				return nil, fmt.Errorf("invalid property type %s", typeStr)
 			}
 			err := unstructured.FromProtoMessage(propertyUn, property)
 
@@ -303,7 +303,7 @@ func (p *preprocessor) runPreprocessProperties(un unstructured.Unstructured) (un
 		} else if valueUn, ok := value.(unstructured.Unstructured); ok {
 			propertyUn = valueUn
 		} else {
-			return nil, errors.New(fmt.Sprintf("invalid property type %s", value))
+			return nil, fmt.Errorf("invalid property type %s", value)
 		}
 
 		propertyUn["name"] = key

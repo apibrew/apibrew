@@ -215,7 +215,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 						return false, []*model.ErrorField{
 							{
 								Property: *constraint.Property,
-								Message:  fmt.Sprintf("Property '%s' is not allowed", constraint.Property),
+								Message:  fmt.Sprintf("Property '%s' is not allowed", *constraint.Property),
 							},
 						}
 					}

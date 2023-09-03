@@ -6,16 +6,12 @@ import (
 	"github.com/apibrew/apibrew/pkg/formats"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured/ops"
-	"github.com/apibrew/apibrew/pkg/model"
 	"gopkg.in/yaml.v3"
 	"io"
 )
 
 type executor struct {
 	params               ExecutorParams
-	resources            []*model.Resource
-	resourceNameMap      map[string]*model.Resource
-	resourcePropertyMap  map[string]*model.ResourceProperty
 	unstructuredExecutor *ops.Executor
 }
 

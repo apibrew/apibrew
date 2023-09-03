@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine as buildenv
+FROM golang:1.21-alpine as buildenv
 
 WORKDIR /app/
 RUN apk add build-base
@@ -10,6 +10,15 @@ RUN go mod download
 COPY cmd cmd
 COPY pkg pkg
 
+FROM golang:1.21-alpine as lint
+WORKDIR /app/
+
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
+
+COPY --from=buildenv /app/* /app/
+
+RUN GO111MODULE=off golangci-lint run --timeout 5m --verbose
+
 FROM buildenv as apbr
 
 RUN go build -o apbr cmd/apbr/main.go
@@ -20,7 +29,7 @@ FROM buildenv as builder
 
 RUN go build -o apibrew cmd/apbr-server/main.go
 
-FROM golang:1.19-alpine as app
+FROM golang:1.21-alpine as app
 WORKDIR /
 
 RUN apk --update --no-cache add curl
@@ -31,7 +40,7 @@ EXPOSE 9009
 CMD ["/bin/apibrew", "-config", "/app/config.json", "-log-level=debug"]
 
 
-FROM golang:1.19-alpine as app-full
+FROM golang:1.21-alpine as app-full
 WORKDIR /
 
 RUN apk add postgresql

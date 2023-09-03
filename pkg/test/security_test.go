@@ -50,12 +50,16 @@ func TestDhTestUserCannotCreateUser(t *testing.T) {
 }
 
 func TestDhTestUserCanReadUser(t *testing.T) {
+	log.Info("Before TestDhTestUserCanReadUser")
 	userDhTestCtx := setup.WithUserAuthenticationContext(setup.Ctx, "dh_test", "dh_test")
+	log.Info("Prepare Context")
 
 	_, err := recordClient.List(userDhTestCtx, &stub.ListRecordRequest{
 		Namespace: resources.UserResource.Namespace,
 		Resource:  resources.UserResource.Name,
 	})
+
+	log.Info("After recordClient.ListX", err)
 
 	if err != nil {
 		log.Print(err)

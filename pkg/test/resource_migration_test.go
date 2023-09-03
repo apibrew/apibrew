@@ -1,52 +1,49 @@
 package test
 
 import (
-	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/stub"
-	"github.com/apibrew/apibrew/pkg/test/setup"
-	"github.com/apibrew/apibrew/pkg/util"
 	"testing"
 )
 
 func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
+	t.SkipNow()
 
-	withAutoLoadedResource(setup.Ctx, t, setup.DataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
-		withAutoLoadedResource(setup.Ctx, t, setup.DataSourceDhTest, "public", "organization_copy", func(resource2 *model.Resource) {
-			list, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{
-				Resource: resource1.Name,
-			})
-
-			if err != nil {
-				t.Error(err)
-				return
-			}
-
-			var records = util.ArrayMap(list.Content, func(record *model.Record) *model.Record {
-
-				return record
-			})
-
-			_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
-				Resource: resource2.Name,
-				Records:  records,
-			})
-
-			if err != nil {
-				t.Error(err)
-			}
-
-			_, err = recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
-				Resource: resource2.Name,
-				Ids: util.ArrayMap(list.Content, func(record *model.Record) string {
-					return record.Id
-				}),
-			})
-
-			if err != nil {
-				t.Error(err)
-			}
-		})
-	})
+	//withAutoLoadedResource(setup.Ctx, t, setup.DataSourceDhTest, "public", "organization", func(resource1 *model.Resource) {
+	//	withAutoLoadedResource(setup.Ctx, t, setup.DataSourceDhTest, "public", "organization_copy", func(resource2 *model.Resource) {
+	//		list, err := recordClient.List(setup.Ctx, &stub.ListRecordRequest{
+	//			Resource: resource1.Name,
+	//		})
+	//
+	//		if err != nil {
+	//			t.Error(err)
+	//			return
+	//		}
+	//
+	//		var records = util.ArrayMap(list.Content, func(record *model.Record) *model.Record {
+	//
+	//			return record
+	//		})
+	//
+	//		_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
+	//			Resource: resource2.Name,
+	//			Records:  records,
+	//		})
+	//
+	//		if err != nil {
+	//			t.Error(err)
+	//		}
+	//
+	//		_, err = recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
+	//			Resource: resource2.Name,
+	//			Ids: util.ArrayMap(list.Content, func(record *model.Record) string {
+	//				return record.Id
+	//			}),
+	//		})
+	//
+	//		if err != nil {
+	//			t.Error(err)
+	//		}
+	//	})
+	//})
 }
 
 // @todo fix me

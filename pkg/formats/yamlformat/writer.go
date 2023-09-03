@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/formats/unstructured/ops"
 	"github.com/apibrew/apibrew/pkg/model"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v3"
 	"io"
 )
@@ -33,6 +32,10 @@ func (w *writer) WriteRecord(namespace string, resourceName string, records ...*
 
 		w.writePrefix()
 		_, err = w.output.Write(body)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -52,11 +55,6 @@ func (w *writer) WriteRecordsChan(resource *model.Resource, total uint32, record
 
 func (w *writer) IsBinary() bool {
 	return false
-}
-
-var jsonMo = protojson.MarshalOptions{
-	Multiline:       true,
-	EmitUnpopulated: false,
 }
 
 func (w *writer) WriteResource(resources ...*model.Resource) error {

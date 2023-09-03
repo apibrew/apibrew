@@ -99,14 +99,12 @@ func PrepareRichResource1() *model.Resource {
 				Name: "int32_o",
 				Type: model.ResourceProperty_INT32,
 
-				Mapping:  "int32_o",
 				Required: false,
 			},
 			{
 				Name: "int32",
 				Type: model.ResourceProperty_INT32,
 
-				Mapping:  "int32",
 				Required: true,
 			},
 
@@ -114,7 +112,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "int64",
 				Type: model.ResourceProperty_INT64,
 
-				Mapping:  "int64",
 				Required: true,
 			},
 
@@ -122,7 +119,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "float",
 				Type: model.ResourceProperty_FLOAT32,
 
-				Mapping:  "float",
 				Required: true,
 			},
 
@@ -130,7 +126,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "double",
 				Type: model.ResourceProperty_FLOAT64,
 
-				Mapping:  "double",
 				Required: true,
 			},
 
@@ -138,7 +133,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "text",
 				Type: model.ResourceProperty_STRING,
 
-				Mapping:  "text",
 				Length:   255,
 				Required: true,
 			},
@@ -147,7 +141,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "string",
 				Type: model.ResourceProperty_STRING,
 
-				Mapping:  "string",
 				Required: true,
 				Length:   255,
 			},
@@ -155,7 +148,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "uuid",
 				Type: model.ResourceProperty_UUID,
 
-				Mapping:  "uuid",
 				Required: true,
 			},
 
@@ -163,7 +155,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "date",
 				Type: model.ResourceProperty_DATE,
 
-				Mapping:  "date",
 				Required: true,
 			},
 
@@ -171,7 +162,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "time",
 				Type: model.ResourceProperty_TIME,
 
-				Mapping:  "time",
 				Required: true,
 			},
 
@@ -179,7 +169,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "timestamp",
 				Type: model.ResourceProperty_TIMESTAMP,
 
-				Mapping:  "timestamp",
 				Required: true,
 			},
 
@@ -187,7 +176,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "bool",
 				Type: model.ResourceProperty_BOOL,
 
-				Mapping:  "bool",
 				Required: true,
 			},
 
@@ -195,7 +183,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "object",
 				Type: model.ResourceProperty_OBJECT,
 
-				Mapping:  "object",
 				Required: true,
 				Annotations: map[string]string{
 					annotations.HclBlock: "object",
@@ -206,7 +193,6 @@ func PrepareRichResource1() *model.Resource {
 				Name: "bytes",
 				Type: model.ResourceProperty_BYTES,
 
-				Mapping:  "bytes",
 				Required: false,
 			},
 		},
@@ -225,7 +211,6 @@ var SimpleVirtualResource1 = &model.Resource{
 			Name: "name",
 			Type: model.ResourceProperty_STRING,
 
-			Mapping:  "name",
 			Length:   255,
 			Required: true,
 		},
@@ -233,7 +218,6 @@ var SimpleVirtualResource1 = &model.Resource{
 			Name: "description",
 			Type: model.ResourceProperty_STRING,
 
-			Mapping:  "description",
 			Length:   255,
 			Required: false,
 		},

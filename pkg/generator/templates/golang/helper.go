@@ -37,11 +37,7 @@ func getResourceSpecificImports(resource *model.Resource) []string {
 }
 
 func getAllSubTypes(resource *model.Resource) []*model.ResourceSubType {
-	var subTypes []*model.ResourceSubType
-	for _, subType := range resource.Types {
-		subTypes = append(subTypes, subType)
-	}
-	return subTypes
+	return resource.Types
 }
 
 func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
@@ -122,11 +118,11 @@ func NormalizePointer(prop *model.ResourceProperty, varName string, collectionIt
 }
 
 func StreamNormalizePointer(qw422016 *qt422016.Writer, prop *model.ResourceProperty, varName string, collectionItem bool, mustHavePointer bool) {
-	qw422016.W().Write([]byte(NormalizePointer(prop, varName, collectionItem, mustHavePointer)))
+	_, _ = qw422016.W().Write([]byte(NormalizePointer(prop, varName, collectionItem, mustHavePointer)))
 }
 
 func StreamPropertyType(qw422016 *qt422016.Writer, resource *model.Resource, prop *model.ResourceProperty) {
-	qw422016.W().Write([]byte(PropertyType(resource, prop)))
+	_, _ = qw422016.W().Write([]byte(PropertyType(resource, prop)))
 }
 
 func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actualName string) string {
@@ -143,11 +139,7 @@ func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actu
 	} else if prop.Type == model.ResourceProperty_LIST {
 		typeVal = "[]" + PropPureGoType(resource, prop.Item, prop.Name)
 	} else if prop.Type == model.ResourceProperty_STRUCT {
-		if prop.TypeRef != nil {
-			typeVal = strcase.ToCamel(resource.Name + "_" + *prop.TypeRef)
-		} else {
-			typeVal = GenerateInlineStructCode(resource, prop.Properties)
-		}
+		typeVal = strcase.ToCamel(resource.Name + "_" + *prop.TypeRef)
 	} else if prop.Type == model.ResourceProperty_OBJECT {
 		typeVal = "unstructured.Unstructured"
 	} else if prop.Type == model.ResourceProperty_ENUM {
@@ -162,11 +154,11 @@ func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actu
 }
 
 func StreamPropPureGoType(qw422016 *qt422016.Writer, resource *model.Resource, prop *model.ResourceProperty, actualName string) {
-	qw422016.W().Write([]byte(PropPureGoType(resource, prop, actualName)))
+	_, _ = qw422016.W().Write([]byte(PropPureGoType(resource, prop, actualName)))
 }
 
 func StreamGoTypeRaw(qw422016 *qt422016.Writer, prop *model.ResourceProperty) {
-	qw422016.W().Write([]byte(GoTypeRaw(prop)))
+	_, _ = qw422016.W().Write([]byte(GoTypeRaw(prop)))
 }
 
 func GoTypeRaw(prop *model.ResourceProperty) string {
@@ -181,7 +173,7 @@ func GoName(name string) string {
 }
 
 func StreamGoName(qw422016 *qt422016.Writer, name string) {
-	qw422016.W().Write([]byte(GoName(name)))
+	_, _ = qw422016.W().Write([]byte(GoName(name)))
 }
 
 func GoVarName(name string) string {
@@ -189,7 +181,7 @@ func GoVarName(name string) string {
 }
 
 func StreamGoVarName(qw422016 *qt422016.Writer, name string) {
-	qw422016.W().Write([]byte(GoVarName(name)))
+	_, _ = qw422016.W().Write([]byte(GoVarName(name)))
 }
 
 /*

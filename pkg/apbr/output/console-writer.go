@@ -59,7 +59,7 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(w)
-	table.SetHeader([]string{"Name", "Mapping", "Type", "Required", "Unique", "Primary", "Length", "Annotations"})
+	table.SetHeader([]string{"Name", "Type", "Required", "Unique", "Length", "Annotations"})
 	c.configureTable(table)
 
 	for _, item := range resource.Properties {
@@ -68,11 +68,9 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 
 		data = append(data, []string{
 			item.Name,
-			item.Mapping,
 			typeStr,
 			strconv.FormatBool(item.Required),
 			strconv.FormatBool(item.Unique),
-			strconv.FormatBool(item.Primary),
 			strconv.Itoa(int(item.Length)),
 			annotations.ToString(item),
 		})

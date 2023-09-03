@@ -49,7 +49,6 @@ func ArrayDiffer[T interface{}](existing []T, updated []T, hasSameId func(a, b T
 
 			if hasSameId(e, u) {
 				if !isEqual(e, u) && !isUpdated(e) {
-					updated = append(passedToUpdated, e)
 					err := onUpdate(e, u)
 
 					if err != nil {

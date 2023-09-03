@@ -109,7 +109,7 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 	selectBuilder.Select(r.prepareCols()...)
 
 	for _, jd := range r.joins {
-		selectBuilder.JoinWithOption(sqlbuilder.LeftJoin, fmt.Sprintf("\"%s\" as \"%s\"", jd.targetTable, jd.targetTableAlias), fmt.Sprintf("\"%s\".\"%s\" = %s", jd.targetTableAlias, jd.targetColumn, jd.sourcePath))
+		selectBuilder.JoinWithOption(sqlbuilder.LeftJoin, fmt.Sprintf("%s as %s", r.quote(jd.targetTable), r.quote(jd.targetTableAlias)), fmt.Sprintf("%s.%s = %s", r.quote(jd.targetTableAlias), r.quote(jd.targetColumn), jd.sourcePath))
 	}
 
 	sqlQuery, args := selectBuilder.Build()
@@ -474,7 +474,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 		return "", errors.RecordValidationError.WithDetails("Empty expression is sent")
 	}
 
-	panic("unknown boolean expression type: " + query.String())
+	return "", errors.LogicalError.WithDetails("Unknown boolean expression type: " + query.String())
 }
 
 func (r *recordLister) applyExpression(resource *model.Resource, query *model.Expression) (string, errors.ServiceError) {
@@ -489,7 +489,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 			return "", errors.PropertyNotFoundError.WithDetails(propEx.Property)
 		}
 
-		return fmt.Sprintf("t." + property.Name), nil
+		return fmt.Sprintf("t." + r.quote(property.Name)), nil
 	}
 
 	if propEx, ok := query.Expression.(*model.Expression_Value); ok {
@@ -517,7 +517,7 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 		return innerSql, nil
 	}
 
-	panic("unknown expression type: " + query.String())
+	return "", errors.LogicalError.WithDetails("Unknown boolean expression type: " + query.String())
 }
 
 func (r *recordLister) prepareCols() []string {

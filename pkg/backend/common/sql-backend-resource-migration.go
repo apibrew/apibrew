@@ -125,7 +125,7 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 		}
 
 		property := &model.ResourceProperty{
-			Name: util.SnakeCaseToCamelCase(*columnName),
+			Name: *columnName,
 			Type: typ,
 
 			Required:    !*isNullable,

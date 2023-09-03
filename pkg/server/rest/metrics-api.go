@@ -27,7 +27,7 @@ func (m metricsApi) handleMetrics(writer http.ResponseWriter, request *http.Requ
 	req, err := m.parseMetricsRequest(request)
 
 	if err != nil {
-		writer.Write([]byte(err.Error()))
+		_, _ = writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -39,7 +39,7 @@ func (m metricsApi) handleMetrics(writer http.ResponseWriter, request *http.Requ
 	if err != nil {
 		log.Print(err)
 
-		writer.Write([]byte(err.Error()))
+		_, _ = writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}

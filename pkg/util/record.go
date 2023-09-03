@@ -168,9 +168,7 @@ func RecordMatchIdentifiableProperties(resource *model.Resource, record *model.R
 func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path string) (getter func() *structpb.Value, setter func(val *structpb.Value)) {
 	path = strings.ReplaceAll(path, "[]", ".[]")
 
-	if strings.HasPrefix(path, "$.") {
-		path = path[2:]
-	}
+	path = strings.TrimPrefix(path, "$.")
 
 	parts := strings.Split(path, ".")
 

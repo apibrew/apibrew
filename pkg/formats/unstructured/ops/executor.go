@@ -22,7 +22,6 @@ type Executor struct {
 	resources           []*model.Resource
 	resourceNameMap     map[string]*model.Resource
 	resourcePropertyMap map[string]*model.ResourceProperty
-	parser              ParserFunc
 	preprocessor        preprocessor
 }
 

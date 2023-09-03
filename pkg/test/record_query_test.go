@@ -39,7 +39,7 @@ func TestListRecord1(t *testing.T) {
 								Expression: &model.BooleanExpression_Equal{
 									Equal: &model.PairExpression{
 										Left: &model.Expression{
-											Expression: &model.Expression_Property{Property: "foundedOnPrecision"},
+											Expression: &model.Expression_Property{Property: "founded_on_precision"},
 										},
 										Right: &model.Expression{
 											Expression: &model.Expression_Value{Value: val1},
@@ -51,7 +51,7 @@ func TestListRecord1(t *testing.T) {
 								Expression: &model.BooleanExpression_Equal{
 									Equal: &model.PairExpression{
 										Left: &model.Expression{
-											Expression: &model.Expression_Property{Property: "numEmployeesEnum"},
+											Expression: &model.Expression_Property{Property: "num_employees_enum"},
 										},
 										Right: &model.Expression{
 											Expression: &model.Expression_Value{Value: val2},

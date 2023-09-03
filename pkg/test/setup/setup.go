@@ -271,6 +271,7 @@ func WithUserAuthenticationContext(ctx context.Context, username, password strin
 		panic(err)
 	}
 
+	//nolint:all
 	ctx = context.WithValue(ctx, "token", resp.Token.Content)
 
 	return metadata.AppendToOutgoingContext(ctx, "token", resp.Token.Content)

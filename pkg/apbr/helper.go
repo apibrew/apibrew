@@ -39,20 +39,6 @@ func check(err error) {
 	}
 }
 
-func check2[T any](val T, err error) T {
-	if err != nil {
-		st, isStatus := status.FromError(err)
-
-		if isStatus {
-			log.Fatalf(st.Message())
-		} else {
-			log.Fatal(err)
-		}
-	}
-
-	return val
-}
-
 func getFlag(cmd *cobra.Command, commandName string, required bool) string {
 	o, err := cmd.Flags().GetString(commandName)
 	check(err)
@@ -62,14 +48,4 @@ func getFlag(cmd *cobra.Command, commandName string, required bool) string {
 	}
 
 	return o
-}
-
-func contains[T comparable](arr []T, item T) bool {
-	for _, a := range arr {
-		if a == item {
-			return true
-		}
-	}
-
-	return false
 }

@@ -10,7 +10,6 @@ import (
 
 type protobufWriter struct {
 	batchWriter batch.Writer
-	annotations map[string]string
 }
 
 func (c *protobufWriter) IsBinary() bool {

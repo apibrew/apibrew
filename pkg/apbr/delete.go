@@ -16,14 +16,6 @@ var deleteResourceForce *bool
 var deleteResourceId *string
 var deleteResourceName *string
 var deleteResourceNamespace *string
-var deleteDataSourceId *string
-var deleteDataSourceName *string
-var deleteNamespaceId *string
-var deleteNamespaceName *string
-var deleteUserId *string
-var deleteUserName *string
-var deleteExtensionId *string
-var deleteExtensionName *string
 
 var deleteResource = &cobra.Command{
 	Use: "resource",

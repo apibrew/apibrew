@@ -337,31 +337,42 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 			&model.ResourceProperty{
 				Name:     propNames[0],
 				Type:     typ,
-				Mapping:  propNames[0],
 				Required: false,
-				Primary:  false,
 				Length:   length,
 				Unique:   false,
 			},
 			&model.ResourceProperty{
 				Name:     propNames[1],
 				Type:     typ,
-				Mapping:  propNames[1],
 				Required: true,
-				Primary:  false,
 				Length:   length,
 				Unique:   false,
 			},
 			&model.ResourceProperty{
 				Name:     propNames[2],
 				Type:     typ,
-				Mapping:  propNames[2],
 				Required: false,
-				Primary:  false,
 				Length:   length,
 				Unique:   checkUnique,
 			},
 		)
+
+		resource.Types = []*model.ResourceSubType{
+			{
+				Name: "SampleResource",
+				Properties: []*model.ResourceProperty{
+					{
+						Name:     "field-1",
+						Required: true,
+						Type:     model.ResourceProperty_STRING,
+					},
+					{
+						Name: "field-2",
+						Type: model.ResourceProperty_INT32,
+					},
+				},
+			},
+		}
 
 		for _, prop := range resource.Properties {
 			switch typ {
@@ -376,17 +387,7 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 					Type: model.ResourceProperty_STRING,
 				}
 			case model.ResourceProperty_STRUCT:
-				prop.Properties = []*model.ResourceProperty{
-					{
-						Name:     "field-1",
-						Required: true,
-						Type:     model.ResourceProperty_STRING,
-					},
-					{
-						Name: "field-2",
-						Type: model.ResourceProperty_INT32,
-					},
-				}
+				prop.TypeRef = util.Pointer("SampleResource")
 			}
 		}
 

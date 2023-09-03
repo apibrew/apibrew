@@ -58,7 +58,7 @@ func generateResource(params GenerateResourceCodeParams, resource *model.Resourc
 	existingFile, err := os.ReadFile(fileName)
 
 	if err == nil {
-		if util.StripSpaces(string(existingFile)) == util.StripSpaces(string(b.Bytes())) {
+		if util.StripSpaces(string(existingFile)) == util.StripSpaces(b.String()) {
 			return nil
 		}
 	}
@@ -89,22 +89,7 @@ func PropNodejsType(resource *model.Resource, prop *model.ResourceProperty) stri
 	}
 
 	if prop.Type == model.ResourceProperty_STRUCT {
-		if prop.TypeRef != nil {
-			return strcase.ToCamel(*prop.TypeRef)
-		}
-
-		var b bytes.Buffer
-		br := io.Writer(&b)
-
-		err := structTmpl.ExecuteTemplate(br, "struct", map[string]interface{}{
-			"Properties": prop.Properties,
-		})
-
-		if err != nil {
-			panic(err)
-		}
-
-		return string(b.Bytes())
+		return strcase.ToCamel(*prop.TypeRef)
 	}
 
 	if prop.Type == model.ResourceProperty_ENUM {
@@ -131,7 +116,6 @@ func ReferenceProps(prop *model.Resource) []*model.ResourceProperty {
 }
 
 var resourceTmpl *template.Template
-var structTmpl *template.Template
 
 func init() {
 	statikFS, err := fs.NewWithNamespace(statik.GeneratorNodejs)
@@ -141,12 +125,6 @@ func init() {
 	}
 
 	resourceTmpl, err = loadTemplate(statikFS, "resource")
-
-	if err != nil {
-		panic(err)
-	}
-
-	structTmpl, err = loadTemplate(statikFS, "struct")
 
 	if err != nil {
 		panic(err)

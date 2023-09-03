@@ -50,30 +50,6 @@ func generaMappingCode(pkg string, resources []*model.Resource, path string, res
 	return nil
 }
 
-func generaDefCode(pkg string, resources []*model.Resource, path string, resource *model.Resource) error {
-	rawCode := GenerateResourceDefCode(pkg, resource)
-
-	code, err := format.Source([]byte(rawCode))
-	if err != nil {
-		code = []byte(rawCode)
-
-		log.Warn(err)
-	}
-
-	resourceFileName := slug.Make(resource.Name) + "-def.go"
-
-	if err := os.MkdirAll(path, 0777); err != nil {
-		log.Fatal(err)
-	}
-
-	err = os.WriteFile(path+"/"+resourceFileName, code, 0777)
-
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func generateResourceCode(pkg string, resource *model.Resource, path string) error {
 	rawCode := GenerateResourceCode(pkg, resource)
 

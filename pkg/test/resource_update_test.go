@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -24,19 +25,19 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-1",
 			}, {
 				Name:     "prop-2",
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-2",
+				Annotations: map[string]string{
+					annotations.SourceMatchKey: "prop-2",
+				},
 			}, {
 				Name:     "prop-3",
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-3",
 			},
 		},
 	}
@@ -71,21 +72,21 @@ func TestPrepareResourceMigrationPlan(t *testing.T) {
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-1",
 			},
 			{
 				Name:     "prop-2a",
 				Type:     model.ResourceProperty_FLOAT32,
 				Length:   128,
 				Required: false,
-				Mapping:  "prop-2",
+				Annotations: map[string]string{
+					annotations.SourceMatchKey: "prop-2",
+				},
 			},
 			{
 				Name:     "prop-5",
 				Type:     model.ResourceProperty_STRING,
 				Length:   127,
 				Required: false,
-				Mapping:  "prop-5",
 			},
 		},
 	}
@@ -136,7 +137,6 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-1",
 			},
 		},
 	}
@@ -185,14 +185,12 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-1",
 			},
 			{
 				Name:     "prop-2",
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: false,
-				Mapping:  "prop-2",
 			},
 		},
 	}
@@ -234,14 +232,12 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-1",
 			},
 			{
 				Name:     "prop-2",
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-2",
 			},
 		},
 	}
@@ -293,7 +289,6 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 				Type:     model.ResourceProperty_STRING,
 				Length:   128,
 				Required: true,
-				Mapping:  "prop-1",
 			},
 		},
 	}

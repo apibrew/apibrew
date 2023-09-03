@@ -25,14 +25,12 @@ func prepareTestResourceHistoryResources() []*model.Resource {
 				{
 					Name:     "name",
 					Type:     model.ResourceProperty_STRING,
-					Mapping:  "name",
 					Required: true,
 					Length:   255,
 				},
 				{
 					Name:         "description",
 					Type:         model.ResourceProperty_STRING,
-					Mapping:      "description",
 					Required:     true,
 					Length:       255,
 					DefaultValue: structpb.NewStringValue("no-description"),

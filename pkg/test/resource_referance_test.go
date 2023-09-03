@@ -24,15 +24,14 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 				{
 					Name:     "name",
 					Type:     model.ResourceProperty_STRING,
-					Mapping:  "name",
 					Required: true,
 					Unique:   true,
 					Length:   255,
 				},
 				{
-					Name:         "description",
-					Type:         model.ResourceProperty_STRING,
-					Mapping:      "description",
+					Name: "description",
+					Type: model.ResourceProperty_STRING,
+
 					Required:     true,
 					Length:       255,
 					DefaultValue: structpb.NewStringValue("no-description"),
@@ -51,14 +50,13 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 				{
 					Name:     "name",
 					Type:     model.ResourceProperty_STRING,
-					Mapping:  "name",
 					Required: true,
 					Length:   255,
 				},
 				{
-					Name:         "description",
-					Type:         model.ResourceProperty_STRING,
-					Mapping:      "description",
+					Name: "description",
+					Type: model.ResourceProperty_STRING,
+
 					Required:     true,
 					Length:       255,
 					DefaultValue: structpb.NewStringValue("no-description"),
@@ -66,7 +64,6 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 				{
 					Name:     "author",
 					Type:     model.ResourceProperty_REFERENCE,
-					Mapping:  "author",
 					Required: true,
 					Reference: &model.Reference{
 						Resource: "author",
