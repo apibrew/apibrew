@@ -17,7 +17,7 @@ RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
 
 COPY --from=buildenv /app/* /app/
 
-RUN GO111MODULE=off golangci-lint run --timeout 5m --verbose
+RUN golangci-lint run --timeout 5m --verbose
 
 FROM buildenv as apbr
 
