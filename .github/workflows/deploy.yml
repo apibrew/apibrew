@@ -34,7 +34,9 @@ jobs:
           docker build . --progress=plain --no-cache --target=app -t tislib/apibrew:${version}
           docker build . --progress=plain --no-cache --target=apbr -t tislib/apbr:${version}
           docker tag tislib/apibrew:${version} tislib/apibrew:latest
+          docker tag tislib/apbr:${version} tislib/apibrew:latest
           docker push tislib/apibrew:${version}
           docker push tislib/apbr:${version}
           docker push tislib/apibrew:latest
+          docker push tislib/apbr:latest
 
