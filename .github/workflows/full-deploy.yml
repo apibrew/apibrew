@@ -1,13 +1,8 @@
-name: deploy
+name: full-deploy
 on:
   push:
     tags:
       - v*
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -32,9 +27,11 @@ jobs:
       - run: |
           version=$(cat version)
           docker build . --progress=plain --no-cache --target=app -t tislib/apibrew:${version}
-          docker build . --progress=plain --no-cache --target=apbr -t tislib/apbr:${version}
+          docker build . --progress=plain --no-cache --target=app-full -t tislib/apibrew:full-${version}
           docker tag tislib/apibrew:${version} tislib/apibrew:latest
+          docker tag tislib/apibrew:full-${version} tislib/apibrew:full-latest
           docker push tislib/apibrew:${version}
-          docker push tislib/apbr:${version}
+          docker push tislib/apibrew:full-${version}
           docker push tislib/apibrew:latest
+          docker push tislib/apibrew:full-latest
 
