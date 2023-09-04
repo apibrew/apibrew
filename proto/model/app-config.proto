@@ -40,4 +40,5 @@ message AppConfig {
   model.Record systemDataSource = 10;
   repeated model.Resource initResources = 11;
   repeated InitRecord initRecords = 12;
+  repeated string applyPaths = 13;
 }

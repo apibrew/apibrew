@@ -55,14 +55,13 @@ type ExecutorParams struct {
 	Input          io.Reader
 	DhClient       client.DhClient
 	OverrideConfig OverrideConfig
-	Token          string
 	DoMigration    bool
 	ForceMigration bool
 	DataOnly       bool
 	Recursive      bool
 }
 
-func NewExecutor(params ExecutorParams) (formats.Executor, error) {
+func NewExecutor(params ExecutorParams, ctx context.Context) (formats.Executor, error) {
 	unstructuredExecutor := &ops.Executor{
 		Params: ops.ExecutorParams{
 			DhClient: params.DhClient,
@@ -70,14 +69,13 @@ func NewExecutor(params ExecutorParams) (formats.Executor, error) {
 				Namespace:  params.OverrideConfig.Namespace,
 				DataSource: params.OverrideConfig.DataSource,
 			},
-			Token:          params.Token,
 			DoMigration:    params.DoMigration,
 			ForceMigration: params.ForceMigration,
 			DataOnly:       params.DataOnly,
 		},
 	}
 
-	err := unstructuredExecutor.Init()
+	err := unstructuredExecutor.Init(ctx)
 
 	if err != nil {
 		return nil, err

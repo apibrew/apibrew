@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest/docs"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -27,7 +26,7 @@ type Router interface {
 }
 
 type Server interface {
-	Init(config *model.AppConfig)
+	Init()
 	ServeH2C(lis net.Listener)
 	ServeHttp(lis net.Listener)
 	ServeHttp2Tls(tls net.Listener)
@@ -45,7 +44,7 @@ type server struct {
 	resourceApi ResourceApi
 }
 
-func (s *server) Init(config *model.AppConfig) {
+func (s *server) Init() {
 	s.configureRoutes()
 }
 

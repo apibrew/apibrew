@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -21,6 +22,18 @@ type dhClient struct {
 	resourceClient       stub.ResourceClient
 	dataSourceClient     stub.DataSourceClient
 	genericClient        stub.GenericClient
+}
+
+func (d *dhClient) ListResources(ctx context.Context) ([]*model.Resource, error) {
+	resp, err := d.resourceClient.List(ctx, &stub.ListResourceRequest{
+		Token: d.GetToken(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Resources, nil
 }
 
 func (d *dhClient) UpdateTokenFromContext(ctx context.Context) {

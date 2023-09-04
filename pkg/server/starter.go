@@ -75,9 +75,9 @@ func Run() {
 	http2Tls := tcpm.Match(cmux.TLS())
 
 	grpcServer := grpc.NewGrpcServer(app)
-	grpcServer.Init(appConfig)
+	grpcServer.Init()
 	restServer := rest.NewServer(app)
-	restServer.Init(appConfig)
+	restServer.Init()
 
 	go grpcServer.Serve(grpcl)
 	go restServer.ServeHttp(httpl)

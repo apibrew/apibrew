@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gopkg.in/yaml.v3"
@@ -158,16 +157,14 @@ func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructur
 
 	return nil
 }
-func (e *Executor) Init() error {
-	resp, err := e.Params.DhClient.GetResourceClient().List(context.TODO(), &stub.ListResourceRequest{
-		Token: e.Params.Token,
-	})
+func (e *Executor) Init(ctx context.Context) error {
+	resources, err := e.Params.DhClient.ListResources(ctx)
 
 	if err != nil {
 		return err
 	}
 
-	e.resources = resp.Resources
+	e.resources = resources
 	e.resourceNameMap = make(map[string]*model.Resource)
 	e.resourcePropertyMap = make(map[string]*model.ResourceProperty)
 
@@ -199,7 +196,6 @@ type OverrideConfig struct {
 type ExecutorParams struct {
 	DhClient       client.DhClient
 	OverrideConfig OverrideConfig
-	Token          string
 	DoMigration    bool
 	ForceMigration bool
 	DataOnly       bool

@@ -2,21 +2,11 @@ package apbr
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/formats"
-	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
-	"github.com/apibrew/apibrew/pkg/util"
-	log "github.com/sirupsen/logrus"
-	"github.com/yargevad/filepathx"
-	"google.golang.org/grpc/status"
-	"os"
-	"strings"
-
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
-	"github.com/apibrew/apibrew/pkg/formats/batch"
-	"github.com/apibrew/apibrew/pkg/formats/hclformat"
+	"github.com/apibrew/apibrew/pkg/formats/apply"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -55,33 +45,15 @@ var applyCmd = &cobra.Command{
 			return fmt.Errorf("failed to get format flag: %w", err)
 		}
 
+		overrideConfig := new(flags.OverrideConfig)
+		overrideFlags.Parse(overrideConfig, cmd, args)
+
+		applier := apply.NewApplier(GetDhClient(), doMigration, dataOnly, force, *overrideConfig)
+
 		for _, inputFilePath := range inputFilePathArr {
-			log.Info("Apply pattern: ", inputFilePath, " ...")
-			if strings.Contains(inputFilePath, "*") {
-				filenames, err := filepathx.Glob(inputFilePath)
-
-				if err != nil {
-					log.Fatalf("failed to get files: %s", err)
-					return nil
-				}
-
-				for _, filename := range filenames {
-					log.Info("Apply file: ", filename)
-					err = applyLocal(filename, doMigration, dataOnly, force, format, cmd, args)
-
-					if err != nil {
-						log.Fatalf("failed to apply file: %s", err)
-						return nil
-					}
-				}
-			} else {
-				log.Info("Apply file: ", inputFilePath)
-				err := applyLocal(inputFilePath, doMigration, dataOnly, force, format, cmd, args)
-
-				if err != nil {
-					log.Fatalf("failed to apply file: %s", err)
-					return nil
-				}
+			err = applier.ApplyWithPattern(context.TODO(), inputFilePath, format)
+			if err != nil {
+				log.Error(err)
 			}
 		}
 
@@ -89,112 +61,6 @@ var applyCmd = &cobra.Command{
 
 		return nil
 	},
-}
-
-func applyLocal(inputFilePath string, doMigration bool, dataOnly bool, force bool, format string, cmd *cobra.Command, args []string) error {
-	if strings.HasSuffix(inputFilePath, ".hcl") {
-		format = "hcl"
-	} else if strings.HasSuffix(inputFilePath, ".pbe") {
-		format = "pbe"
-	} else if strings.HasSuffix(inputFilePath, ".yaml") || strings.HasSuffix(inputFilePath, ".yml") {
-		format = "yaml"
-	}
-
-	if format == "yml" {
-		format = "yaml"
-	}
-
-	overrideConfig := new(flags.OverrideConfig)
-	overrideFlags.Parse(overrideConfig, cmd, args)
-
-	var executor formats.Executor
-	switch {
-	case format == "hcl":
-		in, err := os.Open(inputFilePath)
-		if err != nil {
-			return fmt.Errorf("failed to open HCL file: %w", err)
-		}
-		defer in.Close()
-
-		executor, err = hclformat.NewExecutor(hclformat.ExecutorParams{
-			Input:          in,
-			Token:          GetDhClient().GetToken(),
-			DhClient:       GetDhClient(),
-			DoMigration:    doMigration,
-			ForceMigration: force,
-			OverrideConfig: hclformat.OverrideConfig{
-				Namespace:  overrideConfig.Namespace,
-				DataSource: overrideConfig.DataSource,
-			},
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create HCL executor: %w", err)
-		}
-
-	case format == "pbe":
-		in, err := os.Open(inputFilePath)
-		if err != nil {
-			return fmt.Errorf("failed to open PBE file: %w", err)
-		}
-		defer in.Close()
-
-		executor = batch.NewExecutor(batch.ExecutorParams{
-			Input:          in,
-			Token:          GetDhClient().GetToken(),
-			ResourceClient: GetDhClient().GetResourceClient(),
-			RecordClient:   GetDhClient().GetRecordClient(),
-			DataOnly:       dataOnly,
-			OverrideConfig: batch.OverrideConfig{
-				Namespace:  overrideConfig.Namespace,
-				DataSource: overrideConfig.DataSource,
-			},
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create PBE executor: %w", err)
-		}
-
-	case format == "yaml":
-		in, err := os.Open(inputFilePath)
-		if err != nil {
-			return fmt.Errorf("failed to open YAML file: %w", err)
-		}
-		defer in.Close()
-
-		executor, err = yamlformat.NewExecutor(yamlformat.ExecutorParams{
-			Input:          in,
-			DhClient:       GetDhClient(),
-			DoMigration:    doMigration,
-			ForceMigration: force,
-			Token:          GetDhClient().GetToken(),
-			OverrideConfig: yamlformat.OverrideConfig{
-				Namespace:  overrideConfig.Namespace,
-				DataSource: overrideConfig.DataSource,
-			},
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create YAML executor: %w", err)
-		}
-
-	default:
-		return fmt.Errorf("unsupported file format: %s", inputFilePath)
-	}
-
-	if err := executor.Restore(context.Background()); err != nil {
-		if _, found := status.FromError(err); found {
-			errorCode := util.GetErrorCode(err)
-			errorFields := util.GetErrorFields(err)
-
-			errorFieldsJson, _ := json.MarshalIndent(errorFields, "", "  ")
-
-			errorStr := fmt.Sprintf("message: %s, errorCode: %s, errorFields: \n%s", util.GetErrorMessage(err), errorCode, string(errorFieldsJson))
-
-			return errors.New(errorStr)
-		} else {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func init() {

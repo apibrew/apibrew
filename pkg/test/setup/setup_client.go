@@ -49,7 +49,7 @@ func initClient() {
 	<-application.Init()
 
 	grpcServer := grpc2.NewGrpcServer(application)
-	grpcServer.Init(config)
+	grpcServer.Init()
 
 	container = application
 

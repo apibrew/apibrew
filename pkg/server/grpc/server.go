@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -19,7 +18,7 @@ import (
 
 type Server interface {
 	Serve(lis net.Listener)
-	Init(config *model.AppConfig)
+	Init()
 	Stop()
 }
 
@@ -37,7 +36,7 @@ func (g *grpcServer) Stop() {
 	g.grpcServer.Stop()
 }
 
-func (g *grpcServer) Init(_ *model.AppConfig) {
+func (g *grpcServer) Init() {
 	var opts = []grpc.ServerOption{
 		grpc.UnaryInterceptor(g.grpcIntercept),
 		grpc.StreamInterceptor(g.grpcStreamIntercept),
