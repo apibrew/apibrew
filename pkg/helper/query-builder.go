@@ -1,7 +1,6 @@
 package helper
 
 import (
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -141,30 +140,30 @@ func (sq EnumQueryBuilder) Equals(val string) *model.BooleanExpression {
 	return nil
 }
 
-type ReferenceQueryBuilder[RefType abs.Entity[RefType]] struct {
-	PropName string
-}
-
-func (r ReferenceQueryBuilder[RefType]) Equals(val RefType) *model.BooleanExpression {
-	properties := val.ToProperties()
-
-	return &model.BooleanExpression{
-		Expression: &model.BooleanExpression_Equal{
-			Equal: &model.PairExpression{
-				Left: &model.Expression{
-					Expression: &model.Expression_Property{Property: r.PropName},
-				},
-				Right: &model.Expression{
-					Expression: &model.Expression_RefValue{RefValue: &model.RefValue{
-						Namespace:  val.GetNamespace(),
-						Resource:   val.GetResourceName(),
-						Properties: properties,
-					}},
-				},
-			},
-		},
-	}
-}
+//type ReferenceQueryBuilder[RefType abs.Entity[RefType]] struct {
+//	PropName string
+//}
+//
+//func (r ReferenceQueryBuilder[RefType]) Equals(val RefType) *model.BooleanExpression {
+//	properties := val.ToProperties()
+//
+//	return &model.BooleanExpression{
+//		Expression: &model.BooleanExpression_Equal{
+//			Equal: &model.PairExpression{
+//				Left: &model.Expression{
+//					Expression: &model.Expression_Property{Property: r.PropName},
+//				},
+//				Right: &model.Expression{
+//					Expression: &model.Expression_RefValue{RefValue: &model.RefValue{
+//						Namespace:  val.GetNamespace(),
+//						Resource:   val.GetResourceName(),
+//						Properties: properties,
+//					}},
+//				},
+//			},
+//		},
+//	}
+//}
 
 type UuidQueryBuilder struct {
 	PropName string

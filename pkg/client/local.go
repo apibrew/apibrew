@@ -12,6 +12,11 @@ type localClient struct {
 	container service.Container
 }
 
+func (l localClient) NewExtension(host string, remoteHost string) Extension {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (l localClient) DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error {
 	//TODO implement me
 	panic("implement me")
@@ -34,10 +39,6 @@ func (l localClient) AuthenticateWithToken(token string) {
 }
 
 func (l localClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
-	panic("Unsupported")
-}
-
-func (l localClient) NewExtension(host string) Extension {
 	panic("Unsupported")
 }
 

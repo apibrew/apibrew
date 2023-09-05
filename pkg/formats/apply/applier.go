@@ -3,7 +3,6 @@ package apply
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/client"
@@ -92,15 +91,13 @@ func (a *Applier) Apply(ctx context.Context, inputFilePath string, format string
 			errorCode := util.GetErrorCode(err)
 			errorFields := util.GetErrorFields(err)
 
-			errorFieldsJson, err := json.MarshalIndent(errorFields, "", "  ")
+			errorFieldsJson, err2 := json.MarshalIndent(errorFields, "", "  ")
 
-			if err != nil {
-				return err
+			if err2 != nil {
+				return err2
 			}
 
-			errorStr := fmt.Sprintf("message: %s, errorCode: %s, errorFields: \n%s", util.GetErrorMessage(err), errorCode, string(errorFieldsJson))
-
-			return errors.New(errorStr)
+			return fmt.Errorf("message: %s, errorCode: %s, errorFields: \n%s", util.GetErrorMessage(err), errorCode, string(errorFieldsJson))
 		} else {
 			return err
 		}

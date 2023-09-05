@@ -114,6 +114,7 @@ func (b *backendEventHandler) filterHandlersForEvent(incoming *model.Event) []Ha
 
 	for _, handler := range b.handlers {
 		if b.SelectorMatches(incoming, handler.Selector) {
+			log.Tracef("Handler matches: %s [%v]", handler.Id, handler)
 			result = append(result, handler)
 		}
 	}

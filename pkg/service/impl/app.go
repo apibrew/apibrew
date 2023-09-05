@@ -99,6 +99,7 @@ func (app *App) initServices() {
 	app.dataSourceService.Init(app.config)
 	app.authenticationService.Init(app.config)
 	app.metricsService.Init(app.config)
+	app.extensionService.Init(app.config)
 
 	// run apply paths
 

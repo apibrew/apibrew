@@ -95,7 +95,16 @@ func (d *extensionService) prepareExtensionHandler(extension *resource_model.Ext
 	return backend_event_handler.Handler{
 		Id:   "extension-" + extension.Id.String(),
 		Name: "extension-" + extension.Name,
-		//Selector:  extension.Selector,
+		Selector: &model.EventSelector{
+			Actions: util.ArrayMap(extension.Selector.Actions, func(s resource_model.EventAction) model.Event_Action {
+				return model.Event_Action(model.Event_Action_value[string(s)])
+			}),
+			RecordSelector: nil,
+			Namespaces:     extension.Selector.Namespaces,
+			Resources:      extension.Selector.Resources,
+			Ids:            extension.Selector.Ids,
+			Annotations:    extension.Selector.Annotations,
+		},
 		Order:     int(extension.Order),
 		Finalizes: extension.Finalizes,
 		Sync:      extension.Sync,

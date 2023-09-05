@@ -21,7 +21,7 @@ func TestComplexPayload1Fail(t *testing.T) {
 	})
 
 	if err == nil {
-		t.Error("Save should fail")
+		t.Error("Apply should fail")
 		return
 	}
 

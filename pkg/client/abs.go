@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 )
@@ -14,7 +15,7 @@ type DhClient interface {
 	ApplyInterface
 	AuthenticateWithToken(token string)
 	AuthenticateWithUsernameAndPassword(username string, password string) error
-	NewExtension(host string) Extension
+	NewExtension(host string, remoteHost string) Extension
 	UpdateTokenFromContext(ctx context.Context)
 
 	// record
@@ -32,9 +33,10 @@ type DhClient interface {
 }
 
 type Repository[Entity interface{}] interface {
+	Mapper() abs.EntityMapper[Entity]
 	Create(ctx context.Context, entity Entity) (Entity, error)
 	Update(ctx context.Context, entity Entity) (Entity, error)
-	Save(ctx context.Context, entity Entity) (Entity, error)
+	Apply(ctx context.Context, entity Entity) (Entity, error)
 	Get(ctx context.Context, id string) (Entity, error)
 	Find(ctx context.Context, params FindParams) ([]Entity, uint32, error)
 }

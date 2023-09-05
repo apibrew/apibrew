@@ -36,7 +36,7 @@ func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
 	return updatedEntity, nil
 }
 
-func (r repository[T]) Save(ctx context.Context, entity T) (T, error) {
+func (r repository[T]) Apply(ctx context.Context, entity T) (T, error) {
 	resp, err := r.client.ApplyRecord(ctx, r.mapper.ResourceIdentity().Namespace, r.mapper.ResourceIdentity().Name, r.mapper.ToRecord(entity))
 
 	if err != nil {
@@ -84,6 +84,14 @@ func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, uint32
 	}
 
 	return result, total, nil
+}
+
+func (r repository[T]) Mapper() abs.EntityMapper[T] {
+	return r.mapper
+}
+
+func R[Entity interface{}](client DhClient, mapper abs.EntityMapper[Entity]) Repository[Entity] {
+	return NewRepository(client, mapper)
 }
 
 func NewRepository[Entity interface{}](client DhClient, mapper abs.EntityMapper[Entity]) Repository[Entity] {

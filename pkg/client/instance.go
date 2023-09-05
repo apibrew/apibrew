@@ -168,6 +168,7 @@ func (d *dhClient) ListResources(ctx context.Context) ([]*model.Resource, error)
 
 func (d *dhClient) UpdateTokenFromContext(ctx context.Context) {
 	d.params.Token = ctx.Value("token").(string)
+	d.token = ctx.Value("token").(string)
 }
 
 func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
@@ -182,12 +183,14 @@ func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password
 	}
 
 	d.params.Token = authResp.Token.Content
+	d.token = authResp.Token.Content
 
 	return nil
 }
 
 func (d *dhClient) AuthenticateWithToken(token string) {
 	d.params.Token = token
+	d.token = token
 }
 
 func NewDhClient(params DhClientParams) (DhClient, error) {
