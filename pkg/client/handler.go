@@ -69,6 +69,7 @@ func (h handler[Entity]) Lambda(action string, processor LambdaProcessFunc[Entit
 	h.finalizes = true
 	h.order = 1
 	h.action = resource_model.EventAction_CREATE
+	h.name = h.prepareName() + "_" + action
 	h.prepareExtension()
 
 	h.ext.RegisterFunction(h.prepareName(), h.prepareLambdaProcessFunc(action, processor))
@@ -77,6 +78,7 @@ func (h handler[Entity]) Lambda(action string, processor LambdaProcessFunc[Entit
 }
 
 func (h handler[Entity]) handle(processFunc RecordProcessFunc[Entity]) {
+	h.name = h.prepareName()
 	h.prepareExtension()
 
 	h.ext.RegisterFunction(h.prepareName(), h.prepareProcessFunc(processFunc))
@@ -181,8 +183,6 @@ func (h handler[Entity]) Delete(processFunc RecordProcessFunc[Entity]) Handler[E
 
 func (h handler[Entity]) prepareExtension() {
 	ri := h.mapper.ResourceIdentity()
-
-	h.name = h.prepareName()
 
 	extension := &resource_model.Extension{
 		Name:        h.name,
