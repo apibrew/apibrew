@@ -85,7 +85,9 @@ func (p *sqlBackend) CommitTransaction(ctx context.Context) (serviceError errors
 
 	logger.Debugf("CommitTransaction %s", transactionKey)
 
+	p.mu.Lock()
 	txDataInstance := p.transactionMap[transactionKey.(string)]
+	p.mu.Unlock()
 
 	if txDataInstance == nil {
 		return errors.LogicalError.WithDetails("Transaction not found: " + transactionKey.(string))
@@ -110,7 +112,9 @@ func (p *sqlBackend) RollbackTransaction(ctx context.Context) (serviceError erro
 
 	logger.Debugf("RollbackTransaction %s", transactionKey)
 
+	p.mu.Lock()
 	txDataInstance := p.transactionMap[transactionKey.(string)]
+	p.mu.Unlock()
 
 	if txDataInstance == nil {
 		return errors.LogicalError.WithDetails("Transaction not found: " + transactionKey.(string))
