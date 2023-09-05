@@ -1,7 +1,6 @@
 package test
 
 import (
-	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"github.com/apibrew/apibrew/pkg/test/setup"
@@ -23,7 +22,7 @@ func apbrApply(inputFilePath string) error {
 		DhClient:       dhClient,
 		DoMigration:    true,
 		ForceMigration: true,
-	}, context.TODO())
+	}, setup.Ctx)
 	if err != nil {
 		return fmt.Errorf("failed to create YAML executor: %w", err)
 	}

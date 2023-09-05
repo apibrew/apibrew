@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
-	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -13,18 +12,95 @@ type localClient struct {
 	container service.Container
 }
 
-func (l localClient) ListResources(ctx context.Context) ([]*model.Resource, error) {
-	return l.container.GetResourceService().List(ctx)
+func (l localClient) DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error {
+	//TODO implement me
+	panic("implement me")
 }
 
-func (l localClient) ApplyRecord(ctx context.Context, resource *model.Resource, record *model.Record) error {
-	_, err := l.container.GetRecordService().Apply(ctx, service.RecordUpdateParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
+func (l localClient) ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
+	return l.container.GetRecordService().List(ctx, params)
+}
+
+func (l localClient) GetResourceByName(ctx context.Context, namespace string, getType string) (*model.Resource, error) {
+	return l.container.GetResourceService().GetResourceByName(ctx, namespace, getType)
+}
+
+func (l localClient) ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error {
+	panic("Unsupported")
+}
+
+func (l localClient) AuthenticateWithToken(token string) {
+	panic("Unsupported")
+}
+
+func (l localClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
+	panic("Unsupported")
+}
+
+func (l localClient) NewExtension(host string) Extension {
+	panic("Unsupported")
+}
+
+func (l localClient) UpdateTokenFromContext(ctx context.Context) {
+	panic("Unsupported")
+}
+
+func (l localClient) ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+	resp, err := l.container.GetRecordService().Apply(ctx, service.RecordUpdateParams{
+		Namespace: namespace,
+		Resource:  resource,
 		Records:   []*model.Record{record},
 	})
 
-	return err
+	if err != nil {
+		return nil, err
+	}
+
+	return resp[0], err
+}
+
+func (l localClient) CreateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+	resp, err := l.container.GetRecordService().Create(ctx, service.RecordCreateParams{
+		Namespace: namespace,
+		Resource:  resource,
+		Records:   []*model.Record{record},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp[0], err
+}
+
+func (l localClient) UpdateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+	resp, err := l.container.GetRecordService().Update(ctx, service.RecordUpdateParams{
+		Namespace: namespace,
+		Resource:  resource,
+		Records:   []*model.Record{record},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp[0], err
+}
+
+func (l localClient) GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error) {
+	return l.container.GetRecordService().Get(ctx, service.RecordGetParams{
+		Namespace: namespace,
+		Resource:  resource,
+		Id:        id,
+	})
+}
+
+func (l localClient) FindRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
+	return l.container.GetRecordService().List(ctx, params)
+}
+
+func (l localClient) ListResources(ctx context.Context) ([]*model.Resource, error) {
+	return l.container.GetResourceService().List(ctx)
 }
 
 func (l localClient) ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error {
@@ -56,46 +132,6 @@ func (l localClient) ApplyResource(ctx context.Context, resource *model.Resource
 
 		return nil
 	}
-}
-
-func (l localClient) GetAuthenticationClient() stub.AuthenticationClient {
-	panic("not supported")
-}
-
-func (l localClient) GetDataSourceClient() stub.DataSourceClient {
-	panic("not supported")
-}
-
-func (l localClient) GetResourceClient() stub.ResourceClient {
-	panic("not supported")
-}
-
-func (l localClient) GetRecordClient() stub.RecordClient {
-	panic("not supported")
-}
-
-func (l localClient) GetGenericClient() stub.GenericClient {
-	panic("not supported")
-}
-
-func (l localClient) GetToken() string {
-	panic("not supported")
-}
-
-func (l localClient) AuthenticateWithToken(token string) {
-	panic("not supported")
-}
-
-func (l localClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
-	panic("not supported")
-}
-
-func (l localClient) NewExtension(host string) Extension {
-	panic("not supported")
-}
-
-func (l localClient) UpdateTokenFromContext(ctx context.Context) {
-	panic("not supported")
 }
 
 func NewLocalClient(container service.Container) DhClient {

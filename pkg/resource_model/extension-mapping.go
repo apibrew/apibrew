@@ -5,6 +5,7 @@
 package resource_model
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -26,6 +27,13 @@ func (m *ExtensionMapper) New() *Extension {
 	return &Extension{}
 }
 
+func (m *ExtensionMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
 func (m *ExtensionMapper) ToRecord(extension *Extension) *model.Record {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(extension)
@@ -44,188 +52,188 @@ func (m *ExtensionMapper) FromRecord(record *model.Record) *Extension {
 func (m *ExtensionMapper) ToProperties(extension *Extension) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_6810086c5088 := extension.Id
+	var_Id := extension.Id
 
-	if var_6810086c5088 != nil {
-		var var_6810086c5088_mapped *structpb.Value
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
 
-		var var_6810086c5088_err error
-		var_6810086c5088_mapped, var_6810086c5088_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_6810086c5088)
-		if var_6810086c5088_err != nil {
-			panic(var_6810086c5088_err)
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
 		}
-		properties["id"] = var_6810086c5088_mapped
+		properties["id"] = var_Id_mapped
 	}
 
-	var_2c62d247e951 := extension.Version
+	var_Version := extension.Version
 
-	var var_2c62d247e951_mapped *structpb.Value
+	var var_Version_mapped *structpb.Value
 
-	var var_2c62d247e951_err error
-	var_2c62d247e951_mapped, var_2c62d247e951_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_2c62d247e951)
-	if var_2c62d247e951_err != nil {
-		panic(var_2c62d247e951_err)
+	var var_Version_err error
+	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
+	if var_Version_err != nil {
+		panic(var_Version_err)
 	}
-	properties["version"] = var_2c62d247e951_mapped
+	properties["version"] = var_Version_mapped
 
-	var_2b59bdde4f7f := extension.CreatedBy
+	var_CreatedBy := extension.CreatedBy
 
-	if var_2b59bdde4f7f != nil {
-		var var_2b59bdde4f7f_mapped *structpb.Value
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped *structpb.Value
 
-		var var_2b59bdde4f7f_err error
-		var_2b59bdde4f7f_mapped, var_2b59bdde4f7f_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_2b59bdde4f7f)
-		if var_2b59bdde4f7f_err != nil {
-			panic(var_2b59bdde4f7f_err)
+		var var_CreatedBy_err error
+		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
+		if var_CreatedBy_err != nil {
+			panic(var_CreatedBy_err)
 		}
-		properties["createdBy"] = var_2b59bdde4f7f_mapped
+		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_95d6767fdf1f := extension.UpdatedBy
+	var_UpdatedBy := extension.UpdatedBy
 
-	if var_95d6767fdf1f != nil {
-		var var_95d6767fdf1f_mapped *structpb.Value
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped *structpb.Value
 
-		var var_95d6767fdf1f_err error
-		var_95d6767fdf1f_mapped, var_95d6767fdf1f_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_95d6767fdf1f)
-		if var_95d6767fdf1f_err != nil {
-			panic(var_95d6767fdf1f_err)
+		var var_UpdatedBy_err error
+		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
+		if var_UpdatedBy_err != nil {
+			panic(var_UpdatedBy_err)
 		}
-		properties["updatedBy"] = var_95d6767fdf1f_mapped
+		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_6cd768533788 := extension.CreatedOn
+	var_CreatedOn := extension.CreatedOn
 
-	if var_6cd768533788 != nil {
-		var var_6cd768533788_mapped *structpb.Value
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped *structpb.Value
 
-		var var_6cd768533788_err error
-		var_6cd768533788_mapped, var_6cd768533788_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_6cd768533788)
-		if var_6cd768533788_err != nil {
-			panic(var_6cd768533788_err)
+		var var_CreatedOn_err error
+		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
+		if var_CreatedOn_err != nil {
+			panic(var_CreatedOn_err)
 		}
-		properties["createdOn"] = var_6cd768533788_mapped
+		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_38c32356e995 := extension.UpdatedOn
+	var_UpdatedOn := extension.UpdatedOn
 
-	if var_38c32356e995 != nil {
-		var var_38c32356e995_mapped *structpb.Value
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped *structpb.Value
 
-		var var_38c32356e995_err error
-		var_38c32356e995_mapped, var_38c32356e995_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_38c32356e995)
-		if var_38c32356e995_err != nil {
-			panic(var_38c32356e995_err)
+		var var_UpdatedOn_err error
+		var_UpdatedOn_mapped, var_UpdatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_UpdatedOn)
+		if var_UpdatedOn_err != nil {
+			panic(var_UpdatedOn_err)
 		}
-		properties["updatedOn"] = var_38c32356e995_mapped
+		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_e3b22e6de0ad := extension.Name
+	var_Name := extension.Name
 
-	var var_e3b22e6de0ad_mapped *structpb.Value
+	var var_Name_mapped *structpb.Value
 
-	var var_e3b22e6de0ad_err error
-	var_e3b22e6de0ad_mapped, var_e3b22e6de0ad_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_e3b22e6de0ad)
-	if var_e3b22e6de0ad_err != nil {
-		panic(var_e3b22e6de0ad_err)
+	var var_Name_err error
+	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
+	if var_Name_err != nil {
+		panic(var_Name_err)
 	}
-	properties["name"] = var_e3b22e6de0ad_mapped
+	properties["name"] = var_Name_mapped
 
-	var_ec67562700d4 := extension.Description
+	var_Description := extension.Description
 
-	if var_ec67562700d4 != nil {
-		var var_ec67562700d4_mapped *structpb.Value
+	if var_Description != nil {
+		var var_Description_mapped *structpb.Value
 
-		var var_ec67562700d4_err error
-		var_ec67562700d4_mapped, var_ec67562700d4_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ec67562700d4)
-		if var_ec67562700d4_err != nil {
-			panic(var_ec67562700d4_err)
+		var var_Description_err error
+		var_Description_mapped, var_Description_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Description)
+		if var_Description_err != nil {
+			panic(var_Description_err)
 		}
-		properties["description"] = var_ec67562700d4_mapped
+		properties["description"] = var_Description_mapped
 	}
 
-	var_c15d3ea1cbaf := extension.Selector
+	var_Selector := extension.Selector
 
-	if var_c15d3ea1cbaf != nil {
-		var var_c15d3ea1cbaf_mapped *structpb.Value
+	if var_Selector != nil {
+		var var_Selector_mapped *structpb.Value
 
-		var_c15d3ea1cbaf_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionEventSelectorMapperInstance.ToProperties(var_c15d3ea1cbaf)})
-		properties["selector"] = var_c15d3ea1cbaf_mapped
+		var_Selector_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionEventSelectorMapperInstance.ToProperties(var_Selector)})
+		properties["selector"] = var_Selector_mapped
 	}
 
-	var_8ac69a92f346 := extension.Order
+	var_Order := extension.Order
 
-	var var_8ac69a92f346_mapped *structpb.Value
+	var var_Order_mapped *structpb.Value
 
-	var var_8ac69a92f346_err error
-	var_8ac69a92f346_mapped, var_8ac69a92f346_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_8ac69a92f346)
-	if var_8ac69a92f346_err != nil {
-		panic(var_8ac69a92f346_err)
+	var var_Order_err error
+	var_Order_mapped, var_Order_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Order)
+	if var_Order_err != nil {
+		panic(var_Order_err)
 	}
-	properties["order"] = var_8ac69a92f346_mapped
+	properties["order"] = var_Order_mapped
 
-	var_c7f95bacdc79 := extension.Finalizes
+	var_Finalizes := extension.Finalizes
 
-	var var_c7f95bacdc79_mapped *structpb.Value
+	var var_Finalizes_mapped *structpb.Value
 
-	var var_c7f95bacdc79_err error
-	var_c7f95bacdc79_mapped, var_c7f95bacdc79_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_c7f95bacdc79)
-	if var_c7f95bacdc79_err != nil {
-		panic(var_c7f95bacdc79_err)
+	var var_Finalizes_err error
+	var_Finalizes_mapped, var_Finalizes_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Finalizes)
+	if var_Finalizes_err != nil {
+		panic(var_Finalizes_err)
 	}
-	properties["finalizes"] = var_c7f95bacdc79_mapped
+	properties["finalizes"] = var_Finalizes_mapped
 
-	var_1a32ed7a11f9 := extension.Sync
+	var_Sync := extension.Sync
 
-	var var_1a32ed7a11f9_mapped *structpb.Value
+	var var_Sync_mapped *structpb.Value
 
-	var var_1a32ed7a11f9_err error
-	var_1a32ed7a11f9_mapped, var_1a32ed7a11f9_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_1a32ed7a11f9)
-	if var_1a32ed7a11f9_err != nil {
-		panic(var_1a32ed7a11f9_err)
+	var var_Sync_err error
+	var_Sync_mapped, var_Sync_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Sync)
+	if var_Sync_err != nil {
+		panic(var_Sync_err)
 	}
-	properties["sync"] = var_1a32ed7a11f9_mapped
+	properties["sync"] = var_Sync_mapped
 
-	var_2b8421d5fe05 := extension.Responds
+	var_Responds := extension.Responds
 
-	var var_2b8421d5fe05_mapped *structpb.Value
+	var var_Responds_mapped *structpb.Value
 
-	var var_2b8421d5fe05_err error
-	var_2b8421d5fe05_mapped, var_2b8421d5fe05_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_2b8421d5fe05)
-	if var_2b8421d5fe05_err != nil {
-		panic(var_2b8421d5fe05_err)
+	var var_Responds_err error
+	var_Responds_mapped, var_Responds_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Responds)
+	if var_Responds_err != nil {
+		panic(var_Responds_err)
 	}
-	properties["responds"] = var_2b8421d5fe05_mapped
+	properties["responds"] = var_Responds_mapped
 
-	var_351f2de155fc := extension.Call
+	var_Call := extension.Call
 
-	var var_351f2de155fc_mapped *structpb.Value
+	var var_Call_mapped *structpb.Value
 
-	var_351f2de155fc_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExternalCallMapperInstance.ToProperties(&var_351f2de155fc)})
-	properties["call"] = var_351f2de155fc_mapped
+	var_Call_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExternalCallMapperInstance.ToProperties(&var_Call)})
+	properties["call"] = var_Call_mapped
 
-	var_5051e3dad0a5 := extension.Annotations
+	var_Annotations := extension.Annotations
 
-	if var_5051e3dad0a5 != nil {
-		var var_5051e3dad0a5_mapped *structpb.Value
+	if var_Annotations != nil {
+		var var_Annotations_mapped *structpb.Value
 
-		var var_5051e3dad0a5_st *structpb.Struct = new(structpb.Struct)
-		var_5051e3dad0a5_st.Fields = make(map[string]*structpb.Value)
-		for key, value := range var_5051e3dad0a5 {
+		var var_Annotations_st *structpb.Struct = new(structpb.Struct)
+		var_Annotations_st.Fields = make(map[string]*structpb.Value)
+		for key, value := range var_Annotations {
 
-			var_d496d222e022 := value
-			var var_d496d222e022_mapped *structpb.Value
+			var_1x := value
+			var var_1x_mapped *structpb.Value
 
-			var var_d496d222e022_err error
-			var_d496d222e022_mapped, var_d496d222e022_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_d496d222e022)
-			if var_d496d222e022_err != nil {
-				panic(var_d496d222e022_err)
+			var var_1x_err error
+			var_1x_mapped, var_1x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_1x)
+			if var_1x_err != nil {
+				panic(var_1x_err)
 			}
 
-			var_5051e3dad0a5_st.Fields[key] = var_d496d222e022_mapped
+			var_Annotations_st.Fields[key] = var_1x_mapped
 		}
-		var_5051e3dad0a5_mapped = structpb.NewStructValue(var_5051e3dad0a5_st)
-		properties["annotations"] = var_5051e3dad0a5_mapped
+		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
+		properties["annotations"] = var_Annotations_mapped
 	}
 	return properties
 }
@@ -234,203 +242,203 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 	var s = m.New()
 	if properties["id"] != nil {
 
-		var_7b579cf8edb5 := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_7b579cf8edb5)
+		var_Id := properties["id"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_7b579cf8edb5_mapped := new(uuid.UUID)
-		*var_7b579cf8edb5_mapped = val.(uuid.UUID)
+		var_Id_mapped := new(uuid.UUID)
+		*var_Id_mapped = val.(uuid.UUID)
 
-		s.Id = var_7b579cf8edb5_mapped
+		s.Id = var_Id_mapped
 	}
 	if properties["version"] != nil {
 
-		var_3c537872d44c := properties["version"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_3c537872d44c)
+		var_Version := properties["version"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_3c537872d44c_mapped := val.(int32)
+		var_Version_mapped := val.(int32)
 
-		s.Version = var_3c537872d44c_mapped
+		s.Version = var_Version_mapped
 	}
 	if properties["createdBy"] != nil {
 
-		var_6c2e6782c14d := properties["createdBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_6c2e6782c14d)
+		var_CreatedBy := properties["createdBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_6c2e6782c14d_mapped := new(string)
-		*var_6c2e6782c14d_mapped = val.(string)
+		var_CreatedBy_mapped := new(string)
+		*var_CreatedBy_mapped = val.(string)
 
-		s.CreatedBy = var_6c2e6782c14d_mapped
+		s.CreatedBy = var_CreatedBy_mapped
 	}
 	if properties["updatedBy"] != nil {
 
-		var_518ea8579af8 := properties["updatedBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_518ea8579af8)
+		var_UpdatedBy := properties["updatedBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_518ea8579af8_mapped := new(string)
-		*var_518ea8579af8_mapped = val.(string)
+		var_UpdatedBy_mapped := new(string)
+		*var_UpdatedBy_mapped = val.(string)
 
-		s.UpdatedBy = var_518ea8579af8_mapped
+		s.UpdatedBy = var_UpdatedBy_mapped
 	}
 	if properties["createdOn"] != nil {
 
-		var_dafca37c434d := properties["createdOn"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_dafca37c434d)
+		var_CreatedOn := properties["createdOn"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_dafca37c434d_mapped := new(time.Time)
-		*var_dafca37c434d_mapped = val.(time.Time)
+		var_CreatedOn_mapped := new(time.Time)
+		*var_CreatedOn_mapped = val.(time.Time)
 
-		s.CreatedOn = var_dafca37c434d_mapped
+		s.CreatedOn = var_CreatedOn_mapped
 	}
 	if properties["updatedOn"] != nil {
 
-		var_813d41a60bb9 := properties["updatedOn"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_813d41a60bb9)
+		var_UpdatedOn := properties["updatedOn"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_UpdatedOn)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_813d41a60bb9_mapped := new(time.Time)
-		*var_813d41a60bb9_mapped = val.(time.Time)
+		var_UpdatedOn_mapped := new(time.Time)
+		*var_UpdatedOn_mapped = val.(time.Time)
 
-		s.UpdatedOn = var_813d41a60bb9_mapped
+		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	if properties["name"] != nil {
 
-		var_50cf70429bd6 := properties["name"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_50cf70429bd6)
+		var_Name := properties["name"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_50cf70429bd6_mapped := val.(string)
+		var_Name_mapped := val.(string)
 
-		s.Name = var_50cf70429bd6_mapped
+		s.Name = var_Name_mapped
 	}
 	if properties["description"] != nil {
 
-		var_77f807bc6f80 := properties["description"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_77f807bc6f80)
+		var_Description := properties["description"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Description)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_77f807bc6f80_mapped := new(string)
-		*var_77f807bc6f80_mapped = val.(string)
+		var_Description_mapped := new(string)
+		*var_Description_mapped = val.(string)
 
-		s.Description = var_77f807bc6f80_mapped
+		s.Description = var_Description_mapped
 	}
 	if properties["selector"] != nil {
 
-		var_f3df9a882008 := properties["selector"]
-		var mappedValue = ExtensionEventSelectorMapperInstance.FromProperties(var_f3df9a882008.GetStructValue().Fields)
+		var_Selector := properties["selector"]
+		var mappedValue = ExtensionEventSelectorMapperInstance.FromProperties(var_Selector.GetStructValue().Fields)
 
-		var_f3df9a882008_mapped := mappedValue
+		var_Selector_mapped := mappedValue
 
-		s.Selector = var_f3df9a882008_mapped
+		s.Selector = var_Selector_mapped
 	}
 	if properties["order"] != nil {
 
-		var_9e081277ed34 := properties["order"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_9e081277ed34)
+		var_Order := properties["order"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Order)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_9e081277ed34_mapped := val.(int32)
+		var_Order_mapped := val.(int32)
 
-		s.Order = var_9e081277ed34_mapped
+		s.Order = var_Order_mapped
 	}
 	if properties["finalizes"] != nil {
 
-		var_613db345398b := properties["finalizes"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_613db345398b)
+		var_Finalizes := properties["finalizes"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Finalizes)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_613db345398b_mapped := val.(bool)
+		var_Finalizes_mapped := val.(bool)
 
-		s.Finalizes = var_613db345398b_mapped
+		s.Finalizes = var_Finalizes_mapped
 	}
 	if properties["sync"] != nil {
 
-		var_913879263cf7 := properties["sync"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_913879263cf7)
+		var_Sync := properties["sync"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Sync)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_913879263cf7_mapped := val.(bool)
+		var_Sync_mapped := val.(bool)
 
-		s.Sync = var_913879263cf7_mapped
+		s.Sync = var_Sync_mapped
 	}
 	if properties["responds"] != nil {
 
-		var_29e58ece9d05 := properties["responds"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_29e58ece9d05)
+		var_Responds := properties["responds"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Responds)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_29e58ece9d05_mapped := val.(bool)
+		var_Responds_mapped := val.(bool)
 
-		s.Responds = var_29e58ece9d05_mapped
+		s.Responds = var_Responds_mapped
 	}
 	if properties["call"] != nil {
 
-		var_4ec2ec98e2f1 := properties["call"]
-		var mappedValue = ExtensionExternalCallMapperInstance.FromProperties(var_4ec2ec98e2f1.GetStructValue().Fields)
+		var_Call := properties["call"]
+		var mappedValue = ExtensionExternalCallMapperInstance.FromProperties(var_Call.GetStructValue().Fields)
 
-		var_4ec2ec98e2f1_mapped := *mappedValue
+		var_Call_mapped := *mappedValue
 
-		s.Call = var_4ec2ec98e2f1_mapped
+		s.Call = var_Call_mapped
 	}
 	if properties["annotations"] != nil {
 
-		var_8bde83e17028 := properties["annotations"]
-		var_8bde83e17028_mapped := make(map[string]string)
-		for k, v := range var_8bde83e17028.GetStructValue().Fields {
+		var_Annotations := properties["annotations"]
+		var_Annotations_mapped := make(map[string]string)
+		for k, v := range var_Annotations.GetStructValue().Fields {
 
-			var_4866a1cfc18b := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4866a1cfc18b)
+			var_3x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_4866a1cfc18b_mapped := val.(string)
+			var_3x_mapped := val.(string)
 
-			var_8bde83e17028_mapped[k] = var_4866a1cfc18b_mapped
+			var_Annotations_mapped[k] = var_3x_mapped
 		}
 
-		s.Annotations = var_8bde83e17028_mapped
+		s.Annotations = var_Annotations_mapped
 	}
 	return s
 }
@@ -446,6 +454,13 @@ var ExtensionBooleanExpressionMapperInstance = NewExtensionBooleanExpressionMapp
 
 func (m *ExtensionBooleanExpressionMapper) New() *ExtensionBooleanExpression {
 	return &ExtensionBooleanExpression{}
+}
+
+func (m *ExtensionBooleanExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
 }
 
 func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpression *ExtensionBooleanExpression) map[string]*structpb.Value {
@@ -472,30 +487,37 @@ func (m *ExtensionFunctionCallMapper) New() *ExtensionFunctionCall {
 	return &ExtensionFunctionCall{}
 }
 
+func (m *ExtensionFunctionCallMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
 func (m *ExtensionFunctionCallMapper) ToProperties(extensionFunctionCall *ExtensionFunctionCall) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_424c37ed3f75 := extensionFunctionCall.Host
+	var_Host := extensionFunctionCall.Host
 
-	var var_424c37ed3f75_mapped *structpb.Value
+	var var_Host_mapped *structpb.Value
 
-	var var_424c37ed3f75_err error
-	var_424c37ed3f75_mapped, var_424c37ed3f75_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_424c37ed3f75)
-	if var_424c37ed3f75_err != nil {
-		panic(var_424c37ed3f75_err)
+	var var_Host_err error
+	var_Host_mapped, var_Host_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Host)
+	if var_Host_err != nil {
+		panic(var_Host_err)
 	}
-	properties["host"] = var_424c37ed3f75_mapped
+	properties["host"] = var_Host_mapped
 
-	var_52248b3f0a6c := extensionFunctionCall.FunctionName
+	var_FunctionName := extensionFunctionCall.FunctionName
 
-	var var_52248b3f0a6c_mapped *structpb.Value
+	var var_FunctionName_mapped *structpb.Value
 
-	var var_52248b3f0a6c_err error
-	var_52248b3f0a6c_mapped, var_52248b3f0a6c_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_52248b3f0a6c)
-	if var_52248b3f0a6c_err != nil {
-		panic(var_52248b3f0a6c_err)
+	var var_FunctionName_err error
+	var_FunctionName_mapped, var_FunctionName_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_FunctionName)
+	if var_FunctionName_err != nil {
+		panic(var_FunctionName_err)
 	}
-	properties["functionName"] = var_52248b3f0a6c_mapped
+	properties["functionName"] = var_FunctionName_mapped
 	return properties
 }
 
@@ -503,29 +525,29 @@ func (m *ExtensionFunctionCallMapper) FromProperties(properties map[string]*stru
 	var s = m.New()
 	if properties["host"] != nil {
 
-		var_7a3157959f70 := properties["host"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_7a3157959f70)
+		var_Host := properties["host"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Host)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_7a3157959f70_mapped := val.(string)
+		var_Host_mapped := val.(string)
 
-		s.Host = var_7a3157959f70_mapped
+		s.Host = var_Host_mapped
 	}
 	if properties["functionName"] != nil {
 
-		var_daf342bc5956 := properties["functionName"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_daf342bc5956)
+		var_FunctionName := properties["functionName"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_FunctionName)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_daf342bc5956_mapped := val.(string)
+		var_FunctionName_mapped := val.(string)
 
-		s.FunctionName = var_daf342bc5956_mapped
+		s.FunctionName = var_FunctionName_mapped
 	}
 	return s
 }
@@ -543,30 +565,37 @@ func (m *ExtensionHttpCallMapper) New() *ExtensionHttpCall {
 	return &ExtensionHttpCall{}
 }
 
+func (m *ExtensionHttpCallMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
 func (m *ExtensionHttpCallMapper) ToProperties(extensionHttpCall *ExtensionHttpCall) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_8cdb569d4d02 := extensionHttpCall.Uri
+	var_Uri := extensionHttpCall.Uri
 
-	var var_8cdb569d4d02_mapped *structpb.Value
+	var var_Uri_mapped *structpb.Value
 
-	var var_8cdb569d4d02_err error
-	var_8cdb569d4d02_mapped, var_8cdb569d4d02_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_8cdb569d4d02)
-	if var_8cdb569d4d02_err != nil {
-		panic(var_8cdb569d4d02_err)
+	var var_Uri_err error
+	var_Uri_mapped, var_Uri_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Uri)
+	if var_Uri_err != nil {
+		panic(var_Uri_err)
 	}
-	properties["uri"] = var_8cdb569d4d02_mapped
+	properties["uri"] = var_Uri_mapped
 
-	var_236d4cfdfefd := extensionHttpCall.Method
+	var_Method := extensionHttpCall.Method
 
-	var var_236d4cfdfefd_mapped *structpb.Value
+	var var_Method_mapped *structpb.Value
 
-	var var_236d4cfdfefd_err error
-	var_236d4cfdfefd_mapped, var_236d4cfdfefd_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_236d4cfdfefd)
-	if var_236d4cfdfefd_err != nil {
-		panic(var_236d4cfdfefd_err)
+	var var_Method_err error
+	var_Method_mapped, var_Method_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Method)
+	if var_Method_err != nil {
+		panic(var_Method_err)
 	}
-	properties["method"] = var_236d4cfdfefd_mapped
+	properties["method"] = var_Method_mapped
 	return properties
 }
 
@@ -574,29 +603,29 @@ func (m *ExtensionHttpCallMapper) FromProperties(properties map[string]*structpb
 	var s = m.New()
 	if properties["uri"] != nil {
 
-		var_94b5ecdd7cae := properties["uri"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_94b5ecdd7cae)
+		var_Uri := properties["uri"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Uri)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_94b5ecdd7cae_mapped := val.(string)
+		var_Uri_mapped := val.(string)
 
-		s.Uri = var_94b5ecdd7cae_mapped
+		s.Uri = var_Uri_mapped
 	}
 	if properties["method"] != nil {
 
-		var_5b8fa17e81db := properties["method"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_5b8fa17e81db)
+		var_Method := properties["method"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Method)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_5b8fa17e81db_mapped := val.(string)
+		var_Method_mapped := val.(string)
 
-		s.Method = var_5b8fa17e81db_mapped
+		s.Method = var_Method_mapped
 	}
 	return s
 }
@@ -614,25 +643,32 @@ func (m *ExtensionExternalCallMapper) New() *ExtensionExternalCall {
 	return &ExtensionExternalCall{}
 }
 
+func (m *ExtensionExternalCallMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
 func (m *ExtensionExternalCallMapper) ToProperties(extensionExternalCall *ExtensionExternalCall) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_f4e98d8ab1a8 := extensionExternalCall.FunctionCall
+	var_FunctionCall := extensionExternalCall.FunctionCall
 
-	if var_f4e98d8ab1a8 != nil {
-		var var_f4e98d8ab1a8_mapped *structpb.Value
+	if var_FunctionCall != nil {
+		var var_FunctionCall_mapped *structpb.Value
 
-		var_f4e98d8ab1a8_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionFunctionCallMapperInstance.ToProperties(var_f4e98d8ab1a8)})
-		properties["functionCall"] = var_f4e98d8ab1a8_mapped
+		var_FunctionCall_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionFunctionCallMapperInstance.ToProperties(var_FunctionCall)})
+		properties["functionCall"] = var_FunctionCall_mapped
 	}
 
-	var_09346a062ea2 := extensionExternalCall.HttpCall
+	var_HttpCall := extensionExternalCall.HttpCall
 
-	if var_09346a062ea2 != nil {
-		var var_09346a062ea2_mapped *structpb.Value
+	if var_HttpCall != nil {
+		var var_HttpCall_mapped *structpb.Value
 
-		var_09346a062ea2_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionHttpCallMapperInstance.ToProperties(var_09346a062ea2)})
-		properties["httpCall"] = var_09346a062ea2_mapped
+		var_HttpCall_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionHttpCallMapperInstance.ToProperties(var_HttpCall)})
+		properties["httpCall"] = var_HttpCall_mapped
 	}
 	return properties
 }
@@ -641,21 +677,21 @@ func (m *ExtensionExternalCallMapper) FromProperties(properties map[string]*stru
 	var s = m.New()
 	if properties["functionCall"] != nil {
 
-		var_1eed6855f6ff := properties["functionCall"]
-		var mappedValue = ExtensionFunctionCallMapperInstance.FromProperties(var_1eed6855f6ff.GetStructValue().Fields)
+		var_FunctionCall := properties["functionCall"]
+		var mappedValue = ExtensionFunctionCallMapperInstance.FromProperties(var_FunctionCall.GetStructValue().Fields)
 
-		var_1eed6855f6ff_mapped := mappedValue
+		var_FunctionCall_mapped := mappedValue
 
-		s.FunctionCall = var_1eed6855f6ff_mapped
+		s.FunctionCall = var_FunctionCall_mapped
 	}
 	if properties["httpCall"] != nil {
 
-		var_fff273d78171 := properties["httpCall"]
-		var mappedValue = ExtensionHttpCallMapperInstance.FromProperties(var_fff273d78171.GetStructValue().Fields)
+		var_HttpCall := properties["httpCall"]
+		var mappedValue = ExtensionHttpCallMapperInstance.FromProperties(var_HttpCall.GetStructValue().Fields)
 
-		var_fff273d78171_mapped := mappedValue
+		var_HttpCall_mapped := mappedValue
 
-		s.HttpCall = var_fff273d78171_mapped
+		s.HttpCall = var_HttpCall_mapped
 	}
 	return s
 }
@@ -673,132 +709,139 @@ func (m *ExtensionEventSelectorMapper) New() *ExtensionEventSelector {
 	return &ExtensionEventSelector{}
 }
 
+func (m *ExtensionEventSelectorMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
 func (m *ExtensionEventSelectorMapper) ToProperties(extensionEventSelector *ExtensionEventSelector) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_827aeab85683 := extensionEventSelector.Actions
+	var_Actions := extensionEventSelector.Actions
 
-	if var_827aeab85683 != nil {
-		var var_827aeab85683_mapped *structpb.Value
+	if var_Actions != nil {
+		var var_Actions_mapped *structpb.Value
 
-		var var_827aeab85683_l []*structpb.Value
-		for _, value := range var_827aeab85683 {
+		var var_Actions_l []*structpb.Value
+		for _, value := range var_Actions {
 
-			var_6c1a593653f4 := value
-			var var_6c1a593653f4_mapped *structpb.Value
+			var_5x := value
+			var var_5x_mapped *structpb.Value
 
-			var var_6c1a593653f4_err error
-			var_6c1a593653f4_mapped, var_6c1a593653f4_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_6c1a593653f4))
-			if var_6c1a593653f4_err != nil {
-				panic(var_6c1a593653f4_err)
+			var var_5x_err error
+			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_5x))
+			if var_5x_err != nil {
+				panic(var_5x_err)
 			}
 
-			var_827aeab85683_l = append(var_827aeab85683_l, var_6c1a593653f4_mapped)
+			var_Actions_l = append(var_Actions_l, var_5x_mapped)
 		}
-		var_827aeab85683_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_827aeab85683_l})
-		properties["actions"] = var_827aeab85683_mapped
+		var_Actions_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Actions_l})
+		properties["actions"] = var_Actions_mapped
 	}
 
-	var_29a28ca6064a := extensionEventSelector.RecordSelector
+	var_RecordSelector := extensionEventSelector.RecordSelector
 
-	if var_29a28ca6064a != nil {
-		var var_29a28ca6064a_mapped *structpb.Value
+	if var_RecordSelector != nil {
+		var var_RecordSelector_mapped *structpb.Value
 
-		var_29a28ca6064a_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(var_29a28ca6064a)})
-		properties["recordSelector"] = var_29a28ca6064a_mapped
+		var_RecordSelector_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(var_RecordSelector)})
+		properties["recordSelector"] = var_RecordSelector_mapped
 	}
 
-	var_cdc4dae55ec8 := extensionEventSelector.Namespaces
+	var_Namespaces := extensionEventSelector.Namespaces
 
-	if var_cdc4dae55ec8 != nil {
-		var var_cdc4dae55ec8_mapped *structpb.Value
+	if var_Namespaces != nil {
+		var var_Namespaces_mapped *structpb.Value
 
-		var var_cdc4dae55ec8_l []*structpb.Value
-		for _, value := range var_cdc4dae55ec8 {
+		var var_Namespaces_l []*structpb.Value
+		for _, value := range var_Namespaces {
 
-			var_173879beb580 := value
-			var var_173879beb580_mapped *structpb.Value
+			var_5x := value
+			var var_5x_mapped *structpb.Value
 
-			var var_173879beb580_err error
-			var_173879beb580_mapped, var_173879beb580_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_173879beb580)
-			if var_173879beb580_err != nil {
-				panic(var_173879beb580_err)
+			var var_5x_err error
+			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
+			if var_5x_err != nil {
+				panic(var_5x_err)
 			}
 
-			var_cdc4dae55ec8_l = append(var_cdc4dae55ec8_l, var_173879beb580_mapped)
+			var_Namespaces_l = append(var_Namespaces_l, var_5x_mapped)
 		}
-		var_cdc4dae55ec8_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_cdc4dae55ec8_l})
-		properties["namespaces"] = var_cdc4dae55ec8_mapped
+		var_Namespaces_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Namespaces_l})
+		properties["namespaces"] = var_Namespaces_mapped
 	}
 
-	var_6bdf5552c8cd := extensionEventSelector.Resources
+	var_Resources := extensionEventSelector.Resources
 
-	if var_6bdf5552c8cd != nil {
-		var var_6bdf5552c8cd_mapped *structpb.Value
+	if var_Resources != nil {
+		var var_Resources_mapped *structpb.Value
 
-		var var_6bdf5552c8cd_l []*structpb.Value
-		for _, value := range var_6bdf5552c8cd {
+		var var_Resources_l []*structpb.Value
+		for _, value := range var_Resources {
 
-			var_d1a2cf50e331 := value
-			var var_d1a2cf50e331_mapped *structpb.Value
+			var_5x := value
+			var var_5x_mapped *structpb.Value
 
-			var var_d1a2cf50e331_err error
-			var_d1a2cf50e331_mapped, var_d1a2cf50e331_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_d1a2cf50e331)
-			if var_d1a2cf50e331_err != nil {
-				panic(var_d1a2cf50e331_err)
+			var var_5x_err error
+			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
+			if var_5x_err != nil {
+				panic(var_5x_err)
 			}
 
-			var_6bdf5552c8cd_l = append(var_6bdf5552c8cd_l, var_d1a2cf50e331_mapped)
+			var_Resources_l = append(var_Resources_l, var_5x_mapped)
 		}
-		var_6bdf5552c8cd_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_6bdf5552c8cd_l})
-		properties["resources"] = var_6bdf5552c8cd_mapped
+		var_Resources_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Resources_l})
+		properties["resources"] = var_Resources_mapped
 	}
 
-	var_7ea1b9753128 := extensionEventSelector.Ids
+	var_Ids := extensionEventSelector.Ids
 
-	if var_7ea1b9753128 != nil {
-		var var_7ea1b9753128_mapped *structpb.Value
+	if var_Ids != nil {
+		var var_Ids_mapped *structpb.Value
 
-		var var_7ea1b9753128_l []*structpb.Value
-		for _, value := range var_7ea1b9753128 {
+		var var_Ids_l []*structpb.Value
+		for _, value := range var_Ids {
 
-			var_aad97639de33 := value
-			var var_aad97639de33_mapped *structpb.Value
+			var_5x := value
+			var var_5x_mapped *structpb.Value
 
-			var var_aad97639de33_err error
-			var_aad97639de33_mapped, var_aad97639de33_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_aad97639de33)
-			if var_aad97639de33_err != nil {
-				panic(var_aad97639de33_err)
+			var var_5x_err error
+			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
+			if var_5x_err != nil {
+				panic(var_5x_err)
 			}
 
-			var_7ea1b9753128_l = append(var_7ea1b9753128_l, var_aad97639de33_mapped)
+			var_Ids_l = append(var_Ids_l, var_5x_mapped)
 		}
-		var_7ea1b9753128_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_7ea1b9753128_l})
-		properties["ids"] = var_7ea1b9753128_mapped
+		var_Ids_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Ids_l})
+		properties["ids"] = var_Ids_mapped
 	}
 
-	var_2bdebf7b08d1 := extensionEventSelector.Annotations
+	var_Annotations := extensionEventSelector.Annotations
 
-	if var_2bdebf7b08d1 != nil {
-		var var_2bdebf7b08d1_mapped *structpb.Value
+	if var_Annotations != nil {
+		var var_Annotations_mapped *structpb.Value
 
-		var var_2bdebf7b08d1_st *structpb.Struct = new(structpb.Struct)
-		var_2bdebf7b08d1_st.Fields = make(map[string]*structpb.Value)
-		for key, value := range var_2bdebf7b08d1 {
+		var var_Annotations_st *structpb.Struct = new(structpb.Struct)
+		var_Annotations_st.Fields = make(map[string]*structpb.Value)
+		for key, value := range var_Annotations {
 
-			var_f54d9027d6c3 := value
-			var var_f54d9027d6c3_mapped *structpb.Value
+			var_1x := value
+			var var_1x_mapped *structpb.Value
 
-			var var_f54d9027d6c3_err error
-			var_f54d9027d6c3_mapped, var_f54d9027d6c3_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_f54d9027d6c3)
-			if var_f54d9027d6c3_err != nil {
-				panic(var_f54d9027d6c3_err)
+			var var_1x_err error
+			var_1x_mapped, var_1x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_1x)
+			if var_1x_err != nil {
+				panic(var_1x_err)
 			}
 
-			var_2bdebf7b08d1_st.Fields[key] = var_f54d9027d6c3_mapped
+			var_Annotations_st.Fields[key] = var_1x_mapped
 		}
-		var_2bdebf7b08d1_mapped = structpb.NewStructValue(var_2bdebf7b08d1_st)
-		properties["annotations"] = var_2bdebf7b08d1_mapped
+		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
+		properties["annotations"] = var_Annotations_mapped
 	}
 	return properties
 }
@@ -807,106 +850,106 @@ func (m *ExtensionEventSelectorMapper) FromProperties(properties map[string]*str
 	var s = m.New()
 	if properties["actions"] != nil {
 
-		var_4825a8f3530c := properties["actions"]
-		var_4825a8f3530c_mapped := []EventAction{}
-		for _, v := range var_4825a8f3530c.GetListValue().Values {
+		var_Actions := properties["actions"]
+		var_Actions_mapped := []EventAction{}
+		for _, v := range var_Actions.GetListValue().Values {
 
-			var_4d04b023ed7e := v
-			var_4d04b023ed7e_mapped := (EventAction)(var_4d04b023ed7e.GetStringValue())
+			var_4x := v
+			var_4x_mapped := (EventAction)(var_4x.GetStringValue())
 
-			var_4825a8f3530c_mapped = append(var_4825a8f3530c_mapped, var_4d04b023ed7e_mapped)
+			var_Actions_mapped = append(var_Actions_mapped, var_4x_mapped)
 		}
 
-		s.Actions = var_4825a8f3530c_mapped
+		s.Actions = var_Actions_mapped
 	}
 	if properties["recordSelector"] != nil {
 
-		var_d1e8fbf7105c := properties["recordSelector"]
-		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_d1e8fbf7105c.GetStructValue().Fields)
+		var_RecordSelector := properties["recordSelector"]
+		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_RecordSelector.GetStructValue().Fields)
 
-		var_d1e8fbf7105c_mapped := mappedValue
+		var_RecordSelector_mapped := mappedValue
 
-		s.RecordSelector = var_d1e8fbf7105c_mapped
+		s.RecordSelector = var_RecordSelector_mapped
 	}
 	if properties["namespaces"] != nil {
 
-		var_e6048a00c005 := properties["namespaces"]
-		var_e6048a00c005_mapped := []string{}
-		for _, v := range var_e6048a00c005.GetListValue().Values {
+		var_Namespaces := properties["namespaces"]
+		var_Namespaces_mapped := []string{}
+		for _, v := range var_Namespaces.GetListValue().Values {
 
-			var_8f8644a3fd62 := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_8f8644a3fd62)
+			var_4x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_8f8644a3fd62_mapped := val.(string)
+			var_4x_mapped := val.(string)
 
-			var_e6048a00c005_mapped = append(var_e6048a00c005_mapped, var_8f8644a3fd62_mapped)
+			var_Namespaces_mapped = append(var_Namespaces_mapped, var_4x_mapped)
 		}
 
-		s.Namespaces = var_e6048a00c005_mapped
+		s.Namespaces = var_Namespaces_mapped
 	}
 	if properties["resources"] != nil {
 
-		var_17ea0cd2fc5a := properties["resources"]
-		var_17ea0cd2fc5a_mapped := []string{}
-		for _, v := range var_17ea0cd2fc5a.GetListValue().Values {
+		var_Resources := properties["resources"]
+		var_Resources_mapped := []string{}
+		for _, v := range var_Resources.GetListValue().Values {
 
-			var_33fd32285fad := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_33fd32285fad)
+			var_4x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_33fd32285fad_mapped := val.(string)
+			var_4x_mapped := val.(string)
 
-			var_17ea0cd2fc5a_mapped = append(var_17ea0cd2fc5a_mapped, var_33fd32285fad_mapped)
+			var_Resources_mapped = append(var_Resources_mapped, var_4x_mapped)
 		}
 
-		s.Resources = var_17ea0cd2fc5a_mapped
+		s.Resources = var_Resources_mapped
 	}
 	if properties["ids"] != nil {
 
-		var_9a585c0fb8ab := properties["ids"]
-		var_9a585c0fb8ab_mapped := []string{}
-		for _, v := range var_9a585c0fb8ab.GetListValue().Values {
+		var_Ids := properties["ids"]
+		var_Ids_mapped := []string{}
+		for _, v := range var_Ids.GetListValue().Values {
 
-			var_0b70f123c301 := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_0b70f123c301)
+			var_4x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_0b70f123c301_mapped := val.(string)
+			var_4x_mapped := val.(string)
 
-			var_9a585c0fb8ab_mapped = append(var_9a585c0fb8ab_mapped, var_0b70f123c301_mapped)
+			var_Ids_mapped = append(var_Ids_mapped, var_4x_mapped)
 		}
 
-		s.Ids = var_9a585c0fb8ab_mapped
+		s.Ids = var_Ids_mapped
 	}
 	if properties["annotations"] != nil {
 
-		var_3bb1f4309ab6 := properties["annotations"]
-		var_3bb1f4309ab6_mapped := make(map[string]string)
-		for k, v := range var_3bb1f4309ab6.GetStructValue().Fields {
+		var_Annotations := properties["annotations"]
+		var_Annotations_mapped := make(map[string]string)
+		for k, v := range var_Annotations.GetStructValue().Fields {
 
-			var_a78617068a86 := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_a78617068a86)
+			var_3x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_a78617068a86_mapped := val.(string)
+			var_3x_mapped := val.(string)
 
-			var_3bb1f4309ab6_mapped[k] = var_a78617068a86_mapped
+			var_Annotations_mapped[k] = var_3x_mapped
 		}
 
-		s.Annotations = var_3bb1f4309ab6_mapped
+		s.Annotations = var_Annotations_mapped
 	}
 	return s
 }
@@ -924,65 +967,72 @@ func (m *ExtensionRecordSearchParamsMapper) New() *ExtensionRecordSearchParams {
 	return &ExtensionRecordSearchParams{}
 }
 
+func (m *ExtensionRecordSearchParamsMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
 func (m *ExtensionRecordSearchParamsMapper) ToProperties(extensionRecordSearchParams *ExtensionRecordSearchParams) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_223995396678 := extensionRecordSearchParams.Query
+	var_Query := extensionRecordSearchParams.Query
 
-	if var_223995396678 != nil {
-		var var_223995396678_mapped *structpb.Value
+	if var_Query != nil {
+		var var_Query_mapped *structpb.Value
 
-		var_223995396678_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(var_223995396678)})
-		properties["query"] = var_223995396678_mapped
+		var_Query_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(var_Query)})
+		properties["query"] = var_Query_mapped
 	}
 
-	var_554aa081b6d0 := extensionRecordSearchParams.Limit
+	var_Limit := extensionRecordSearchParams.Limit
 
-	if var_554aa081b6d0 != nil {
-		var var_554aa081b6d0_mapped *structpb.Value
+	if var_Limit != nil {
+		var var_Limit_mapped *structpb.Value
 
-		var var_554aa081b6d0_err error
-		var_554aa081b6d0_mapped, var_554aa081b6d0_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(*var_554aa081b6d0)
-		if var_554aa081b6d0_err != nil {
-			panic(var_554aa081b6d0_err)
+		var var_Limit_err error
+		var_Limit_mapped, var_Limit_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(*var_Limit)
+		if var_Limit_err != nil {
+			panic(var_Limit_err)
 		}
-		properties["limit"] = var_554aa081b6d0_mapped
+		properties["limit"] = var_Limit_mapped
 	}
 
-	var_3a0f08370f1d := extensionRecordSearchParams.Offset
+	var_Offset := extensionRecordSearchParams.Offset
 
-	if var_3a0f08370f1d != nil {
-		var var_3a0f08370f1d_mapped *structpb.Value
+	if var_Offset != nil {
+		var var_Offset_mapped *structpb.Value
 
-		var var_3a0f08370f1d_err error
-		var_3a0f08370f1d_mapped, var_3a0f08370f1d_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(*var_3a0f08370f1d)
-		if var_3a0f08370f1d_err != nil {
-			panic(var_3a0f08370f1d_err)
+		var var_Offset_err error
+		var_Offset_mapped, var_Offset_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(*var_Offset)
+		if var_Offset_err != nil {
+			panic(var_Offset_err)
 		}
-		properties["offset"] = var_3a0f08370f1d_mapped
+		properties["offset"] = var_Offset_mapped
 	}
 
-	var_69a9e03cc66c := extensionRecordSearchParams.ResolveReferences
+	var_ResolveReferences := extensionRecordSearchParams.ResolveReferences
 
-	if var_69a9e03cc66c != nil {
-		var var_69a9e03cc66c_mapped *structpb.Value
+	if var_ResolveReferences != nil {
+		var var_ResolveReferences_mapped *structpb.Value
 
-		var var_69a9e03cc66c_l []*structpb.Value
-		for _, value := range var_69a9e03cc66c {
+		var var_ResolveReferences_l []*structpb.Value
+		for _, value := range var_ResolveReferences {
 
-			var_240e00906e83 := value
-			var var_240e00906e83_mapped *structpb.Value
+			var_5x := value
+			var var_5x_mapped *structpb.Value
 
-			var var_240e00906e83_err error
-			var_240e00906e83_mapped, var_240e00906e83_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_240e00906e83)
-			if var_240e00906e83_err != nil {
-				panic(var_240e00906e83_err)
+			var var_5x_err error
+			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
+			if var_5x_err != nil {
+				panic(var_5x_err)
 			}
 
-			var_69a9e03cc66c_l = append(var_69a9e03cc66c_l, var_240e00906e83_mapped)
+			var_ResolveReferences_l = append(var_ResolveReferences_l, var_5x_mapped)
 		}
-		var_69a9e03cc66c_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_69a9e03cc66c_l})
-		properties["resolveReferences"] = var_69a9e03cc66c_mapped
+		var_ResolveReferences_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_ResolveReferences_l})
+		properties["resolveReferences"] = var_ResolveReferences_mapped
 	}
 	return properties
 }
@@ -991,60 +1041,60 @@ func (m *ExtensionRecordSearchParamsMapper) FromProperties(properties map[string
 	var s = m.New()
 	if properties["query"] != nil {
 
-		var_4cb4306295b2 := properties["query"]
-		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_4cb4306295b2.GetStructValue().Fields)
+		var_Query := properties["query"]
+		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_Query.GetStructValue().Fields)
 
-		var_4cb4306295b2_mapped := mappedValue
+		var_Query_mapped := mappedValue
 
-		s.Query = var_4cb4306295b2_mapped
+		s.Query = var_Query_mapped
 	}
 	if properties["limit"] != nil {
 
-		var_d81f2817912e := properties["limit"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_d81f2817912e)
+		var_Limit := properties["limit"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Limit)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_d81f2817912e_mapped := new(int32)
-		*var_d81f2817912e_mapped = val.(int32)
+		var_Limit_mapped := new(int32)
+		*var_Limit_mapped = val.(int32)
 
-		s.Limit = var_d81f2817912e_mapped
+		s.Limit = var_Limit_mapped
 	}
 	if properties["offset"] != nil {
 
-		var_7df63e7395bf := properties["offset"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_7df63e7395bf)
+		var_Offset := properties["offset"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Offset)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_7df63e7395bf_mapped := new(int32)
-		*var_7df63e7395bf_mapped = val.(int32)
+		var_Offset_mapped := new(int32)
+		*var_Offset_mapped = val.(int32)
 
-		s.Offset = var_7df63e7395bf_mapped
+		s.Offset = var_Offset_mapped
 	}
 	if properties["resolveReferences"] != nil {
 
-		var_1ba2ed985cea := properties["resolveReferences"]
-		var_1ba2ed985cea_mapped := []string{}
-		for _, v := range var_1ba2ed985cea.GetListValue().Values {
+		var_ResolveReferences := properties["resolveReferences"]
+		var_ResolveReferences_mapped := []string{}
+		for _, v := range var_ResolveReferences.GetListValue().Values {
 
-			var_1573f0bf3cfb := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_1573f0bf3cfb)
+			var_4x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_1573f0bf3cfb_mapped := val.(string)
+			var_4x_mapped := val.(string)
 
-			var_1ba2ed985cea_mapped = append(var_1ba2ed985cea_mapped, var_1573f0bf3cfb_mapped)
+			var_ResolveReferences_mapped = append(var_ResolveReferences_mapped, var_4x_mapped)
 		}
 
-		s.ResolveReferences = var_1ba2ed985cea_mapped
+		s.ResolveReferences = var_ResolveReferences_mapped
 	}
 	return s
 }
@@ -1062,180 +1112,187 @@ func (m *ExtensionEventMapper) New() *ExtensionEvent {
 	return &ExtensionEvent{}
 }
 
+func (m *ExtensionEventMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
 func (m *ExtensionEventMapper) ToProperties(extensionEvent *ExtensionEvent) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_5ebfee42d623 := extensionEvent.Id
+	var_Id := extensionEvent.Id
 
-	if var_5ebfee42d623 != nil {
-		var var_5ebfee42d623_mapped *structpb.Value
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
 
-		var var_5ebfee42d623_err error
-		var_5ebfee42d623_mapped, var_5ebfee42d623_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_5ebfee42d623)
-		if var_5ebfee42d623_err != nil {
-			panic(var_5ebfee42d623_err)
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
 		}
-		properties["id"] = var_5ebfee42d623_mapped
+		properties["id"] = var_Id_mapped
 	}
 
-	var_65581234f3a4 := extensionEvent.Action
+	var_Action := extensionEvent.Action
 
-	var var_65581234f3a4_mapped *structpb.Value
+	var var_Action_mapped *structpb.Value
 
-	var var_65581234f3a4_err error
-	var_65581234f3a4_mapped, var_65581234f3a4_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_65581234f3a4))
-	if var_65581234f3a4_err != nil {
-		panic(var_65581234f3a4_err)
+	var var_Action_err error
+	var_Action_mapped, var_Action_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Action))
+	if var_Action_err != nil {
+		panic(var_Action_err)
 	}
-	properties["action"] = var_65581234f3a4_mapped
+	properties["action"] = var_Action_mapped
 
-	var_1c27ee513c46 := extensionEvent.RecordSearchParams
+	var_RecordSearchParams := extensionEvent.RecordSearchParams
 
-	if var_1c27ee513c46 != nil {
-		var var_1c27ee513c46_mapped *structpb.Value
+	if var_RecordSearchParams != nil {
+		var var_RecordSearchParams_mapped *structpb.Value
 
-		var_1c27ee513c46_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionRecordSearchParamsMapperInstance.ToProperties(var_1c27ee513c46)})
-		properties["recordSearchParams"] = var_1c27ee513c46_mapped
+		var_RecordSearchParams_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionRecordSearchParamsMapperInstance.ToProperties(var_RecordSearchParams)})
+		properties["recordSearchParams"] = var_RecordSearchParams_mapped
 	}
 
-	var_8cbd2d1ea12b := extensionEvent.ActionSummary
+	var_ActionSummary := extensionEvent.ActionSummary
 
-	if var_8cbd2d1ea12b != nil {
-		var var_8cbd2d1ea12b_mapped *structpb.Value
+	if var_ActionSummary != nil {
+		var var_ActionSummary_mapped *structpb.Value
 
-		var var_8cbd2d1ea12b_err error
-		var_8cbd2d1ea12b_mapped, var_8cbd2d1ea12b_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_8cbd2d1ea12b)
-		if var_8cbd2d1ea12b_err != nil {
-			panic(var_8cbd2d1ea12b_err)
+		var var_ActionSummary_err error
+		var_ActionSummary_mapped, var_ActionSummary_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ActionSummary)
+		if var_ActionSummary_err != nil {
+			panic(var_ActionSummary_err)
 		}
-		properties["actionSummary"] = var_8cbd2d1ea12b_mapped
+		properties["actionSummary"] = var_ActionSummary_mapped
 	}
 
-	var_0090c2e919de := extensionEvent.ActionDescription
+	var_ActionDescription := extensionEvent.ActionDescription
 
-	if var_0090c2e919de != nil {
-		var var_0090c2e919de_mapped *structpb.Value
+	if var_ActionDescription != nil {
+		var var_ActionDescription_mapped *structpb.Value
 
-		var var_0090c2e919de_err error
-		var_0090c2e919de_mapped, var_0090c2e919de_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_0090c2e919de)
-		if var_0090c2e919de_err != nil {
-			panic(var_0090c2e919de_err)
+		var var_ActionDescription_err error
+		var_ActionDescription_mapped, var_ActionDescription_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ActionDescription)
+		if var_ActionDescription_err != nil {
+			panic(var_ActionDescription_err)
 		}
-		properties["actionDescription"] = var_0090c2e919de_mapped
+		properties["actionDescription"] = var_ActionDescription_mapped
 	}
 
-	var_1d0575cdcb1d := extensionEvent.Resource
+	var_Resource := extensionEvent.Resource
 
-	if var_1d0575cdcb1d != nil {
-		var var_1d0575cdcb1d_mapped *structpb.Value
+	if var_Resource != nil {
+		var var_Resource_mapped *structpb.Value
 
-		var_1d0575cdcb1d_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ResourceMapperInstance.ToProperties(var_1d0575cdcb1d)})
-		properties["resource"] = var_1d0575cdcb1d_mapped
+		var_Resource_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ResourceMapperInstance.ToProperties(var_Resource)})
+		properties["resource"] = var_Resource_mapped
 	}
 
-	var_49f6dc5b79b3 := extensionEvent.Records
+	var_Records := extensionEvent.Records
 
-	if var_49f6dc5b79b3 != nil {
-		var var_49f6dc5b79b3_mapped *structpb.Value
+	if var_Records != nil {
+		var var_Records_mapped *structpb.Value
 
-		var var_49f6dc5b79b3_l []*structpb.Value
-		for _, value := range var_49f6dc5b79b3 {
+		var var_Records_l []*structpb.Value
+		for _, value := range var_Records {
 
-			var_0036ac7d86c9 := value
-			var var_0036ac7d86c9_mapped *structpb.Value
+			var_5x := value
+			var var_5x_mapped *structpb.Value
 
-			var_0036ac7d86c9_mapped = structpb.NewStructValue(&structpb.Struct{Fields: RecordMapperInstance.ToProperties(var_0036ac7d86c9)})
+			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: RecordMapperInstance.ToProperties(var_5x)})
 
-			var_49f6dc5b79b3_l = append(var_49f6dc5b79b3_l, var_0036ac7d86c9_mapped)
+			var_Records_l = append(var_Records_l, var_5x_mapped)
 		}
-		var_49f6dc5b79b3_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_49f6dc5b79b3_l})
-		properties["records"] = var_49f6dc5b79b3_mapped
+		var_Records_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Records_l})
+		properties["records"] = var_Records_mapped
 	}
 
-	var_7d5829957e17 := extensionEvent.Ids
+	var_Ids := extensionEvent.Ids
 
-	if var_7d5829957e17 != nil {
-		var var_7d5829957e17_mapped *structpb.Value
+	if var_Ids != nil {
+		var var_Ids_mapped *structpb.Value
 
-		var var_7d5829957e17_l []*structpb.Value
-		for _, value := range var_7d5829957e17 {
+		var var_Ids_l []*structpb.Value
+		for _, value := range var_Ids {
 
-			var_2a5751b25734 := value
-			var var_2a5751b25734_mapped *structpb.Value
+			var_5x := value
+			var var_5x_mapped *structpb.Value
 
-			var var_2a5751b25734_err error
-			var_2a5751b25734_mapped, var_2a5751b25734_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_2a5751b25734)
-			if var_2a5751b25734_err != nil {
-				panic(var_2a5751b25734_err)
+			var var_5x_err error
+			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
+			if var_5x_err != nil {
+				panic(var_5x_err)
 			}
 
-			var_7d5829957e17_l = append(var_7d5829957e17_l, var_2a5751b25734_mapped)
+			var_Ids_l = append(var_Ids_l, var_5x_mapped)
 		}
-		var_7d5829957e17_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_7d5829957e17_l})
-		properties["ids"] = var_7d5829957e17_mapped
+		var_Ids_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Ids_l})
+		properties["ids"] = var_Ids_mapped
 	}
 
-	var_8483992e13b3 := extensionEvent.Finalizes
+	var_Finalizes := extensionEvent.Finalizes
 
-	if var_8483992e13b3 != nil {
-		var var_8483992e13b3_mapped *structpb.Value
+	if var_Finalizes != nil {
+		var var_Finalizes_mapped *structpb.Value
 
-		var var_8483992e13b3_err error
-		var_8483992e13b3_mapped, var_8483992e13b3_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(*var_8483992e13b3)
-		if var_8483992e13b3_err != nil {
-			panic(var_8483992e13b3_err)
+		var var_Finalizes_err error
+		var_Finalizes_mapped, var_Finalizes_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(*var_Finalizes)
+		if var_Finalizes_err != nil {
+			panic(var_Finalizes_err)
 		}
-		properties["finalizes"] = var_8483992e13b3_mapped
+		properties["finalizes"] = var_Finalizes_mapped
 	}
 
-	var_6b85d59514a6 := extensionEvent.Sync
+	var_Sync := extensionEvent.Sync
 
-	if var_6b85d59514a6 != nil {
-		var var_6b85d59514a6_mapped *structpb.Value
+	if var_Sync != nil {
+		var var_Sync_mapped *structpb.Value
 
-		var var_6b85d59514a6_err error
-		var_6b85d59514a6_mapped, var_6b85d59514a6_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(*var_6b85d59514a6)
-		if var_6b85d59514a6_err != nil {
-			panic(var_6b85d59514a6_err)
+		var var_Sync_err error
+		var_Sync_mapped, var_Sync_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(*var_Sync)
+		if var_Sync_err != nil {
+			panic(var_Sync_err)
 		}
-		properties["sync"] = var_6b85d59514a6_mapped
+		properties["sync"] = var_Sync_mapped
 	}
 
-	var_7a93c4caeb1a := extensionEvent.Time
+	var_Time := extensionEvent.Time
 
-	if var_7a93c4caeb1a != nil {
-		var var_7a93c4caeb1a_mapped *structpb.Value
+	if var_Time != nil {
+		var var_Time_mapped *structpb.Value
 
-		var var_7a93c4caeb1a_err error
-		var_7a93c4caeb1a_mapped, var_7a93c4caeb1a_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_7a93c4caeb1a)
-		if var_7a93c4caeb1a_err != nil {
-			panic(var_7a93c4caeb1a_err)
+		var var_Time_err error
+		var_Time_mapped, var_Time_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_Time)
+		if var_Time_err != nil {
+			panic(var_Time_err)
 		}
-		properties["time"] = var_7a93c4caeb1a_mapped
+		properties["time"] = var_Time_mapped
 	}
 
-	var_d6038fbbfebf := extensionEvent.Annotations
+	var_Annotations := extensionEvent.Annotations
 
-	if var_d6038fbbfebf != nil {
-		var var_d6038fbbfebf_mapped *structpb.Value
+	if var_Annotations != nil {
+		var var_Annotations_mapped *structpb.Value
 
-		var var_d6038fbbfebf_st *structpb.Struct = new(structpb.Struct)
-		var_d6038fbbfebf_st.Fields = make(map[string]*structpb.Value)
-		for key, value := range var_d6038fbbfebf {
+		var var_Annotations_st *structpb.Struct = new(structpb.Struct)
+		var_Annotations_st.Fields = make(map[string]*structpb.Value)
+		for key, value := range var_Annotations {
 
-			var_9b4ec8c2e7f0 := value
-			var var_9b4ec8c2e7f0_mapped *structpb.Value
+			var_1x := value
+			var var_1x_mapped *structpb.Value
 
-			var var_9b4ec8c2e7f0_err error
-			var_9b4ec8c2e7f0_mapped, var_9b4ec8c2e7f0_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_9b4ec8c2e7f0)
-			if var_9b4ec8c2e7f0_err != nil {
-				panic(var_9b4ec8c2e7f0_err)
+			var var_1x_err error
+			var_1x_mapped, var_1x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_1x)
+			if var_1x_err != nil {
+				panic(var_1x_err)
 			}
 
-			var_d6038fbbfebf_st.Fields[key] = var_9b4ec8c2e7f0_mapped
+			var_Annotations_st.Fields[key] = var_1x_mapped
 		}
-		var_d6038fbbfebf_mapped = structpb.NewStructValue(var_d6038fbbfebf_st)
-		properties["annotations"] = var_d6038fbbfebf_mapped
+		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
+		properties["annotations"] = var_Annotations_mapped
 	}
 	return properties
 }
@@ -1244,164 +1301,164 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 	var s = m.New()
 	if properties["id"] != nil {
 
-		var_b9c00bd19e44 := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_b9c00bd19e44)
+		var_Id := properties["id"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_b9c00bd19e44_mapped := new(uuid.UUID)
-		*var_b9c00bd19e44_mapped = val.(uuid.UUID)
+		var_Id_mapped := new(uuid.UUID)
+		*var_Id_mapped = val.(uuid.UUID)
 
-		s.Id = var_b9c00bd19e44_mapped
+		s.Id = var_Id_mapped
 	}
 	if properties["action"] != nil {
 
-		var_0b845027cf96 := properties["action"]
-		var_0b845027cf96_mapped := (EventAction)(var_0b845027cf96.GetStringValue())
+		var_Action := properties["action"]
+		var_Action_mapped := (EventAction)(var_Action.GetStringValue())
 
-		s.Action = var_0b845027cf96_mapped
+		s.Action = var_Action_mapped
 	}
 	if properties["recordSearchParams"] != nil {
 
-		var_4f5b83c4ecf3 := properties["recordSearchParams"]
-		var mappedValue = ExtensionRecordSearchParamsMapperInstance.FromProperties(var_4f5b83c4ecf3.GetStructValue().Fields)
+		var_RecordSearchParams := properties["recordSearchParams"]
+		var mappedValue = ExtensionRecordSearchParamsMapperInstance.FromProperties(var_RecordSearchParams.GetStructValue().Fields)
 
-		var_4f5b83c4ecf3_mapped := mappedValue
+		var_RecordSearchParams_mapped := mappedValue
 
-		s.RecordSearchParams = var_4f5b83c4ecf3_mapped
+		s.RecordSearchParams = var_RecordSearchParams_mapped
 	}
 	if properties["actionSummary"] != nil {
 
-		var_84e926edb665 := properties["actionSummary"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_84e926edb665)
+		var_ActionSummary := properties["actionSummary"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ActionSummary)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_84e926edb665_mapped := new(string)
-		*var_84e926edb665_mapped = val.(string)
+		var_ActionSummary_mapped := new(string)
+		*var_ActionSummary_mapped = val.(string)
 
-		s.ActionSummary = var_84e926edb665_mapped
+		s.ActionSummary = var_ActionSummary_mapped
 	}
 	if properties["actionDescription"] != nil {
 
-		var_581161483c31 := properties["actionDescription"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_581161483c31)
+		var_ActionDescription := properties["actionDescription"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ActionDescription)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_581161483c31_mapped := new(string)
-		*var_581161483c31_mapped = val.(string)
+		var_ActionDescription_mapped := new(string)
+		*var_ActionDescription_mapped = val.(string)
 
-		s.ActionDescription = var_581161483c31_mapped
+		s.ActionDescription = var_ActionDescription_mapped
 	}
 	if properties["resource"] != nil {
 
-		var_45dd48b7c17c := properties["resource"]
-		var_45dd48b7c17c_mapped := ResourceMapperInstance.FromProperties(var_45dd48b7c17c.GetStructValue().Fields)
+		var_Resource := properties["resource"]
+		var_Resource_mapped := ResourceMapperInstance.FromProperties(var_Resource.GetStructValue().Fields)
 
-		s.Resource = var_45dd48b7c17c_mapped
+		s.Resource = var_Resource_mapped
 	}
 	if properties["records"] != nil {
 
-		var_b975fcee4597 := properties["records"]
-		var_b975fcee4597_mapped := []*Record{}
-		for _, v := range var_b975fcee4597.GetListValue().Values {
+		var_Records := properties["records"]
+		var_Records_mapped := []*Record{}
+		for _, v := range var_Records.GetListValue().Values {
 
-			var_e3330c71c607 := v
-			var_e3330c71c607_mapped := RecordMapperInstance.FromProperties(var_e3330c71c607.GetStructValue().Fields)
+			var_4x := v
+			var_4x_mapped := RecordMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
 
-			var_b975fcee4597_mapped = append(var_b975fcee4597_mapped, var_e3330c71c607_mapped)
+			var_Records_mapped = append(var_Records_mapped, var_4x_mapped)
 		}
 
-		s.Records = var_b975fcee4597_mapped
+		s.Records = var_Records_mapped
 	}
 	if properties["ids"] != nil {
 
-		var_57817a28aa5f := properties["ids"]
-		var_57817a28aa5f_mapped := []string{}
-		for _, v := range var_57817a28aa5f.GetListValue().Values {
+		var_Ids := properties["ids"]
+		var_Ids_mapped := []string{}
+		for _, v := range var_Ids.GetListValue().Values {
 
-			var_875021f2a293 := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_875021f2a293)
+			var_4x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_875021f2a293_mapped := val.(string)
+			var_4x_mapped := val.(string)
 
-			var_57817a28aa5f_mapped = append(var_57817a28aa5f_mapped, var_875021f2a293_mapped)
+			var_Ids_mapped = append(var_Ids_mapped, var_4x_mapped)
 		}
 
-		s.Ids = var_57817a28aa5f_mapped
+		s.Ids = var_Ids_mapped
 	}
 	if properties["finalizes"] != nil {
 
-		var_dbc966d77ca2 := properties["finalizes"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_dbc966d77ca2)
+		var_Finalizes := properties["finalizes"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Finalizes)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_dbc966d77ca2_mapped := new(bool)
-		*var_dbc966d77ca2_mapped = val.(bool)
+		var_Finalizes_mapped := new(bool)
+		*var_Finalizes_mapped = val.(bool)
 
-		s.Finalizes = var_dbc966d77ca2_mapped
+		s.Finalizes = var_Finalizes_mapped
 	}
 	if properties["sync"] != nil {
 
-		var_52de5e9aa11e := properties["sync"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_52de5e9aa11e)
+		var_Sync := properties["sync"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Sync)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_52de5e9aa11e_mapped := new(bool)
-		*var_52de5e9aa11e_mapped = val.(bool)
+		var_Sync_mapped := new(bool)
+		*var_Sync_mapped = val.(bool)
 
-		s.Sync = var_52de5e9aa11e_mapped
+		s.Sync = var_Sync_mapped
 	}
 	if properties["time"] != nil {
 
-		var_afbcf7cab677 := properties["time"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_afbcf7cab677)
+		var_Time := properties["time"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_Time)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_afbcf7cab677_mapped := new(time.Time)
-		*var_afbcf7cab677_mapped = val.(time.Time)
+		var_Time_mapped := new(time.Time)
+		*var_Time_mapped = val.(time.Time)
 
-		s.Time = var_afbcf7cab677_mapped
+		s.Time = var_Time_mapped
 	}
 	if properties["annotations"] != nil {
 
-		var_5b892e0519c3 := properties["annotations"]
-		var_5b892e0519c3_mapped := make(map[string]string)
-		for k, v := range var_5b892e0519c3.GetStructValue().Fields {
+		var_Annotations := properties["annotations"]
+		var_Annotations_mapped := make(map[string]string)
+		for k, v := range var_Annotations.GetStructValue().Fields {
 
-			var_3fb2e47938bb := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3fb2e47938bb)
+			var_3x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
 
 			if err != nil {
 				panic(err)
 			}
 
-			var_3fb2e47938bb_mapped := val.(string)
+			var_3x_mapped := val.(string)
 
-			var_5b892e0519c3_mapped[k] = var_3fb2e47938bb_mapped
+			var_Annotations_mapped[k] = var_3x_mapped
 		}
 
-		s.Annotations = var_5b892e0519c3_mapped
+		s.Annotations = var_Annotations_mapped
 	}
 	return s
 }

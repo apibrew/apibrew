@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util/jwt-model"
-	"google.golang.org/protobuf/proto"
 	"time"
 )
 
@@ -117,7 +116,7 @@ type RecordListParams struct {
 	Filters           map[string]string
 }
 
-func (p RecordListParams) ToRequest() proto.Message {
+func (p RecordListParams) ToRequest() *stub.ListRecordRequest {
 	return &stub.ListRecordRequest{
 		Namespace:         p.Namespace,
 		Resource:          p.Resource,

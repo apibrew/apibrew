@@ -10,8 +10,8 @@ import (
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/validate"
-	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -161,7 +161,7 @@ func (p *preprocessor) runPreprocessExtend(un unstructured.Unstructured) (unstru
 		}
 	}
 
-	resp, err := p.dhClient.GetRecordClient().List(context.TODO(), &stub.ListRecordRequest{
+	records, _, err := p.dhClient.ListRecords(context.TODO(), service.RecordListParams{
 		Namespace: namespace,
 		Resource:  resource,
 		Filters:   filters,
@@ -174,11 +174,11 @@ func (p *preprocessor) runPreprocessExtend(un unstructured.Unstructured) (unstru
 
 	ref := extend["$ref"].(string)
 
-	if len(resp.Content) == 0 {
+	if len(records) == 0 {
 		return un, fmt.Errorf("no record found for %s/%s/%v", namespace, resource, extend["$match"])
 	}
 
-	recordUn, err := p.writer.WriteRecord(namespace, resource, resp.Content[0])
+	recordUn, err := p.writer.WriteRecord(namespace, resource, records[0])
 
 	if err != nil {
 		reportError(un, err)

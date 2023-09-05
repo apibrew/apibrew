@@ -4,11 +4,10 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"io"
 	"strings"
 )
 
@@ -37,15 +36,13 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 	}
 
 	if getType == "all" || getType == "*" {
-		resp, err := s.client().GetResourceClient().List(cmd.Context(), &stub.ListResourceRequest{
-			Token: s.client().GetToken(),
-		})
+		resources, err := s.client().ListResources(cmd.Context())
 
 		check(err)
 
-		result.Resources = resp.Resources
+		result.Resources = resources
 
-		for _, resource := range resp.Resources {
+		for _, resource := range resources {
 			log.Println(resource.Name)
 			if resource.Virtual {
 				continue
@@ -66,16 +63,14 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 			}(resource)
 		}
 	} else if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
-		resp, err := s.client().GetResourceClient().List(cmd.Context(), &stub.ListResourceRequest{
-			Token: s.client().GetToken(),
-		})
+		resources, err := s.client().ListResources(cmd.Context())
 
 		check(err)
 
 		var filteredResources []*model.Resource
 
 		if name != "" {
-			for _, item := range resp.Resources {
+			for _, item := range resources {
 				if item.Name == name {
 					if namespace == "" || item.Namespace == namespace {
 						filteredResources = append(filteredResources, item)
@@ -84,7 +79,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 			}
 		} else if names != "" {
 			for _, ni := range strings.Split(names, ",") {
-				for _, item := range resp.Resources {
+				for _, item := range resources {
 					if item.Name == ni {
 						if namespace == "" || item.Namespace == namespace {
 							filteredResources = append(filteredResources, item)
@@ -93,7 +88,7 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 				}
 			}
 		} else {
-			for _, item := range resp.Resources {
+			for _, item := range resources {
 				if namespace == "" || item.Namespace == namespace {
 					filteredResources = append(filteredResources, item)
 				}
@@ -102,22 +97,18 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 
 		result.Resources = filteredResources
 	} else {
-		resourceResp, err := s.client().GetResourceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
-			Token:     s.client().GetToken(),
-			Namespace: namespace,
-			Name:      getType,
-		})
+		resource, err := s.client().GetResourceByName(cmd.Context(), namespace, getType)
 
 		check(err)
 
-		if backup && annotations.IsEnabled(resourceResp.Resource, annotations.DisableBackup) {
-			log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resourceResp.Resource.Namespace, resourceResp.Resource.Name)
+		if backup && annotations.IsEnabled(resource, annotations.DisableBackup) {
+			log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resource.Namespace, resource.Name)
 			return
 		}
 
 		result.RecordProviders = []func() SelectedRecordData{
 			func() SelectedRecordData {
-				return s.readSelectData3(cmd.Context(), resourceResp.Resource, backup, limit, offset)
+				return s.readSelectData3(cmd.Context(), resource, backup, limit, offset)
 			},
 		}
 	}
@@ -138,8 +129,7 @@ type SelectedRecordsResult struct {
 func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, backup bool, limit int64, offset int64) SelectedRecordData {
 	log.Println("readSelectData3 1 " + resource.Name)
 
-	countRes, err := s.client().GetRecordClient().List(ctx, &stub.ListRecordRequest{
-		Token:     s.client().GetToken(),
+	_, total, err := s.client().ListRecords(ctx, service.RecordListParams{
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
 		Limit:     1,
@@ -148,51 +138,22 @@ func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Reso
 
 	check(err)
 
-	log.Println("readSelectData3 2")
-	resp, err := s.client().GetRecordClient().ReadStream(ctx, &stub.ReadStreamRequest{
-		Token:       s.client().GetToken(),
+	recordsChan := make(chan *model.Record)
+
+	err = s.client().ReadRecordStream(ctx, service.RecordListParams{
 		Namespace:   resource.Namespace,
 		Resource:    resource.Name,
 		Limit:       uint32(limit),
 		Offset:      uint64(offset),
 		PackRecords: backup,
-	})
-
+	}, recordsChan)
 	check(err)
 
-	log.Println("readSelectData3 3")
 	var res = SelectedRecordData{
 		Resource: resource,
-		Total:    countRes.Total,
-		Records:  make(chan *model.Record),
+		Total:    total,
+		Records:  recordsChan,
 	}
-
-	go func() {
-		defer func() {
-			close(res.Records)
-			err := resp.CloseSend()
-
-			if err != nil {
-				log.Fatal(err)
-			}
-		}()
-
-		for {
-			record := new(model.Record)
-
-			err = resp.RecvMsg(record)
-
-			if err == io.EOF {
-				break
-			}
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			res.Records <- record
-		}
-	}()
 
 	return res
 }

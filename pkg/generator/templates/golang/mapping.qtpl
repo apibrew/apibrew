@@ -1,5 +1,4 @@
 {% import "github.com/apibrew/apibrew/pkg/model" %}
-{% import "github.com/apibrew/apibrew/pkg/util" %}
 {% import "strings" %}
 
 {%- func PropertyTo(resource *model.Resource, property *model.ResourceProperty, isCollectionItem bool, varName string) -%}
@@ -17,7 +16,7 @@
         var {%s varName %}_st *structpb.Struct = new(structpb.Struct)
         {%s varName %}_st.Fields = make(map[string]*structpb.Value)
         for key, value := range {%s varName %} {
-            {% code subVarName := "var_" + util.RandomHex(6) %}
+            {% code subVarName := "var_1x" %}
             {%s subVarName %} := value
             {%= PropertyTo(resource, property.Item, true, subVarName) %}
             {%s varName %}_st.Fields[key] = {%s subVarName %}_mapped
@@ -26,7 +25,7 @@
     {%- elseif property.Type == model.ResourceProperty_LIST -%}
         var {%s varName %}_l []*structpb.Value
         for _, value := range {%s varName %} {
-            {% code subVarName := "var_" + util.RandomHex(6) %}
+            {% code subVarName := "var_5x"  %}
             {%s subVarName %} := value
             {%= PropertyTo(resource, property.Item, true, subVarName) %}
             {%s varName %}_l = append({%s varName %}_l, {%s subVarName %}_mapped)
@@ -71,6 +70,7 @@ import (
     "github.com/apibrew/apibrew/pkg/model"
     "github.com/apibrew/apibrew/pkg/types"
     "google.golang.org/protobuf/types/known/structpb"
+    "github.com/apibrew/apibrew/pkg/abs"
 )
 
 {%- for _, importLine := range getImports(resource) -%}
@@ -90,6 +90,13 @@ var {%s typeName %}MapperInstance = New{%s typeName %}Mapper()
 
 func (m *{%s typeName %}Mapper) New() *{%s typeName %} {
     return &{%s typeName %}{}
+}
+
+func (m *{%s typeName %}Mapper) ResourceIdentity() abs.ResourceIdentity {
+    return abs.ResourceIdentity{
+       Namespace: "{%s resource.Namespace %}",
+       Name: "{%s resource.Name %}",
+    }
 }
 
 {% if typeName == resource.Name %}
@@ -113,7 +120,7 @@ func (m *{%s typeName %}Mapper) ToProperties({%= GoVarName(typeName)%} *{%s type
     var properties = make(map[string]*structpb.Value)
 
     {%- for _, property := range properties -%}
-    {% code varName := "var_" + util.RandomHex(6) %}
+    {% code varName := "var_" + GoName(property.Name) %}
     {%s varName %} := {%= GoVarName(typeName) %}.{%= GoName(property.Name) %}
 
         {%- if isNullable(property) -%}
@@ -133,7 +140,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
     var s = m.New()
 {%- for _, property := range properties -%}
     if properties["{%s property.Name %}"] != nil {
-        {% code valueVarName := "var_" + util.RandomHex(6) %}
+        {% code valueVarName := "var_" + GoName(property.Name) %}
         {%s valueVarName %} := properties["{%s property.Name %}"]
         {%= PreparePropertyFromMapping(resource, property, valueVarName, false) %}
         s.{%= GoName(property.Name) %} = {%s valueVarName %}_mapped
@@ -150,7 +157,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
     {%- elseif property.Type == model.ResourceProperty_MAP -%}
         {%s valueVarName %}_mapped := make({%= PropPureGoType(resource, property, property.Name) %})
         for k, v := range {%s valueVarName %}.GetStructValue().Fields {
-            {% code subValueVarName := "var_" + util.RandomHex(6) %}
+            {% code subValueVarName := "var_3x" %}
             {%s subValueVarName %} := v
             {%= PreparePropertyFromMapping(resource, property.Item, subValueVarName, true) %}
             {%s valueVarName %}_mapped[k] = {%s subValueVarName %}_mapped
@@ -158,7 +165,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
     {%- elseif property.Type == model.ResourceProperty_LIST -%}
         {%s valueVarName %}_mapped := []{%= PropPureGoType(resource, property.Item, property.Name) %}{}
         for _, v := range {%s valueVarName %}.GetListValue().Values {
-            {% code subValueVarName := "var_" + util.RandomHex(6) %}
+            {% code subValueVarName := "var_4x" %}
             {%s subValueVarName %} := v
             {%= PreparePropertyFromMapping(resource, property.Item, subValueVarName, true) %}
             {%s valueVarName %}_mapped = append({%s valueVarName %}_mapped, {%s subValueVarName %}_mapped)

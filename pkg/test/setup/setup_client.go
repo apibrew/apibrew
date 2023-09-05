@@ -8,13 +8,16 @@ import (
 	"github.com/apibrew/apibrew/pkg/service/impl"
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"time"
 )
 
-var authenticationClient stub.AuthenticationClient
-var resourceClient stub.ResourceClient
-var recordClient stub.RecordClient
+var AuthenticationClient stub.AuthenticationClient
+var ResourceClient stub.ResourceClient
+var RecordClient stub.RecordClient
+var DataSourceClient stub.DataSourceClient
 
 var container service.Container
 
@@ -71,7 +74,17 @@ func initClient() {
 		log.Fatal(err)
 	}
 
-	authenticationClient = dhClient.GetAuthenticationClient()
-	resourceClient = dhClient.GetResourceClient()
-	recordClient = dhClient.GetRecordClient()
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	conn, err := grpc.Dial(addr, opts...)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	AuthenticationClient = stub.NewAuthenticationClient(conn)
+	ResourceClient = stub.NewResourceClient(conn)
+	RecordClient = stub.NewRecordClient(conn)
+	DataSourceClient = stub.NewDataSourceClient(conn)
 }

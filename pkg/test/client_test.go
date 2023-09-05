@@ -15,10 +15,9 @@ var dataSourceClient stub.DataSourceClient
 var container service.Container
 
 func init() {
-	dhClient := setup.GetTestDhClient()
-	recordClient = dhClient.GetRecordClient()
-	authenticationClient = dhClient.GetAuthenticationClient()
-	resourceClient = dhClient.GetResourceClient()
-	dataSourceClient = dhClient.GetDataSourceClient()
+	recordClient = setup.RecordClient
+	authenticationClient = setup.AuthenticationClient
+	resourceClient = setup.ResourceClient
+	dataSourceClient = setup.DataSourceClient
 	container = setup.GetContainer()
 }

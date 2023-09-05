@@ -9,7 +9,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -157,7 +156,7 @@ func (e *executor) ApplyBlock(ctx context.Context, block *hcl.Block) error {
 			return err
 		}
 
-		err = e.params.DhClient.ApplyRecord(ctx, resource, record)
+		_, err = e.params.DhClient.ApplyRecord(ctx, namespace, resourceName, record)
 
 		if err != nil {
 			log.Errorf("Cannot Apply record: %v (%s/%s)", record, resource.Namespace, resource.Name)
@@ -176,7 +175,7 @@ func (e *executor) ApplyBlock(ctx context.Context, block *hcl.Block) error {
 					return err
 				}
 
-				err = e.params.DhClient.ApplyRecord(ctx, resource, record)
+				_, err = e.params.DhClient.ApplyRecord(ctx, resource.Namespace, resource.Name, record)
 
 				if err != nil {
 					log.Errorf("Cannot Apply record: %v (%s/%s)", record, resource.Namespace, resource.Name)
@@ -532,13 +531,13 @@ func (e *executor) init() error {
 }
 
 func (e *executor) prepareResources() error {
-	resp, err := e.params.DhClient.GetResourceClient().List(context.TODO(), &stub.ListResourceRequest{})
+	resources, err := e.params.DhClient.ListResources(context.TODO())
 
 	if err != nil {
 		return err
 	}
 
-	e.resources = resp.Resources
+	e.resources = resources
 	return nil
 }
 
@@ -566,7 +565,6 @@ type ExecutorParams struct {
 	Input          io.Reader
 	DhClient       client.DhClient
 	OverrideConfig OverrideConfig
-	Token          string
 	DoMigration    bool
 	ForceMigration bool
 	DataOnly       bool

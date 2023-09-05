@@ -19,7 +19,6 @@ import (
 type Executor struct {
 	Params              ExecutorParams
 	resources           []*model.Resource
-	resourceNameMap     map[string]*model.Resource
 	resourcePropertyMap map[string]*model.ResourceProperty
 	preprocessor        preprocessor
 }
@@ -90,14 +89,6 @@ func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructur
 			return errors.New("resource field is required on record yaml definition")
 		}
 
-		var resource = e.resourceNameMap[namespace+"/"+resourceName]
-
-		if resource == nil {
-			return errors.New("Resource not found: " + namespace + "/" + resourceName)
-		}
-
-		// locating resource
-
 		var record = new(model.Record)
 
 		if _, exists := body["properties"]; !exists {
@@ -148,7 +139,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructur
 			}
 		}
 
-		err = e.Params.DhClient.ApplyRecord(ctx, resource, record)
+		_, err = e.Params.DhClient.ApplyRecord(ctx, namespace, resourceName, record)
 
 		if err != nil {
 			return err
@@ -165,7 +156,6 @@ func (e *Executor) Init(ctx context.Context) error {
 	}
 
 	e.resources = resources
-	e.resourceNameMap = make(map[string]*model.Resource)
 	e.resourcePropertyMap = make(map[string]*model.ResourceProperty)
 
 	if len(e.resources) == 0 {
@@ -173,8 +163,6 @@ func (e *Executor) Init(ctx context.Context) error {
 	}
 
 	for _, item := range e.resources {
-		e.resourceNameMap[item.Namespace+"/"+item.Name] = item
-
 		for _, field := range item.Properties {
 			e.resourcePropertyMap[item.Namespace+"/"+item.Name+"/"+field.Name] = field
 		}

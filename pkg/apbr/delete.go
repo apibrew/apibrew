@@ -1,7 +1,6 @@
 package apbr
 
 import (
-	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -25,25 +24,16 @@ var deleteResource = &cobra.Command{
 		}
 
 		if *deleteResourceId == "" {
-			resp, err := GetDhClient().GetResourceClient().GetByName(cmd.Context(), &stub.GetResourceByNameRequest{
-				Token:     GetDhClient().GetToken(),
-				Namespace: *deleteResourceNamespace,
-				Name:      *deleteResourceName,
-			})
+			resource, err := GetDhClient().GetResourceByName(cmd.Context(), *deleteResourceNamespace, *deleteResourceName)
 
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			*deleteResourceId = resp.Resource.Id
+			*deleteResourceId = resource.Id
 		}
 
-		_, err := GetDhClient().GetResourceClient().Delete(cmd.Context(), &stub.DeleteResourceRequest{
-			Token:          GetDhClient().GetToken(),
-			Ids:            []string{*deleteResourceId},
-			DoMigration:    *deleteResourceMigrate,
-			ForceMigration: *deleteResourceForce,
-		})
+		err := GetDhClient().DeleteResource(cmd.Context(), *deleteResourceId, *deleteResourceMigrate, *deleteResourceForce)
 
 		if err != nil {
 			log.Fatal(err)

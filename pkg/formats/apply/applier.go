@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats"
-	"github.com/apibrew/apibrew/pkg/formats/batch"
 	"github.com/apibrew/apibrew/pkg/formats/hclformat"
 	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -51,7 +50,6 @@ func (a *Applier) Apply(ctx context.Context, inputFilePath string, format string
 
 		executor, err = hclformat.NewExecutor(hclformat.ExecutorParams{
 			Input:          in,
-			Token:          a.dhClient.GetToken(),
 			DhClient:       a.dhClient,
 			DoMigration:    a.doMigration,
 			ForceMigration: a.force,
@@ -62,28 +60,6 @@ func (a *Applier) Apply(ctx context.Context, inputFilePath string, format string
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create HCL executor: %w", err)
-		}
-
-	case format == "pbe":
-		in, err := os.Open(inputFilePath)
-		if err != nil {
-			return fmt.Errorf("failed to open PBE file: %w", err)
-		}
-		defer in.Close()
-
-		executor = batch.NewExecutor(batch.ExecutorParams{
-			Input:          in,
-			Token:          a.dhClient.GetToken(),
-			ResourceClient: a.dhClient.GetResourceClient(),
-			RecordClient:   a.dhClient.GetRecordClient(),
-			DataOnly:       a.dataOnly,
-			OverrideConfig: batch.OverrideConfig{
-				Namespace:  a.overrideConfig.Namespace,
-				DataSource: a.overrideConfig.DataSource,
-			},
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create PBE executor: %w", err)
 		}
 
 	case format == "yaml":

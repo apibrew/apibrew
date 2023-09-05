@@ -3,129 +3,89 @@ package client
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/stub"
-	"github.com/apibrew/apibrew/pkg/util"
+	"github.com/apibrew/apibrew/pkg/service"
 )
 
-type repository[T abs.Entity[T]] struct {
-	client DhClient
-	params RepositoryParams[T]
+type repository[Entity interface{}] struct {
+	client             DhClient
+	UpdateCheckVersion bool
+	mapper             abs.EntityMapper[Entity]
 }
 
 func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
-	resp, err := r.client.GetRecordClient().Create(ctx, &stub.CreateRecordRequest{
-		Token:     r.client.GetToken(),
-		Namespace: entity.GetNamespace(),
-		Resource:  entity.GetResourceName(),
-		Record:    entity.ToRecord(),
-	})
+	resp, err := r.client.CreateRecord(ctx, r.mapper.ResourceIdentity().Namespace, r.mapper.ResourceIdentity().Name, r.mapper.ToRecord(entity))
 
 	if err != nil {
 		return entity, err
 	}
 
-	entity.FromRecord(resp.Record)
+	updatedEntity := r.mapper.FromRecord(resp)
 
-	return entity, nil
+	return updatedEntity, nil
 }
 
 func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
-	resp, err := r.client.GetRecordClient().Update(annotations.SetWithContext(util.SystemContext, annotations.CheckVersion, annotations.Enabled), &stub.UpdateRecordRequest{
-		Token:     r.client.GetToken(),
-		Namespace: entity.GetNamespace(),
-		Resource:  entity.GetResourceName(),
-		Record:    entity.ToRecord(),
-	})
+	resp, err := r.client.UpdateRecord(ctx, r.mapper.ResourceIdentity().Namespace, r.mapper.ResourceIdentity().Name, r.mapper.ToRecord(entity))
 
 	if err != nil {
 		return entity, err
 	}
 
-	entity.FromRecord(resp.Record)
+	updatedEntity := r.mapper.FromRecord(resp)
 
-	return entity, nil
+	return updatedEntity, nil
 }
 
 func (r repository[T]) Save(ctx context.Context, entity T) (T, error) {
-	resource, err := r.loadResource(ctx)
+	resp, err := r.client.ApplyRecord(ctx, r.mapper.ResourceIdentity().Namespace, r.mapper.ResourceIdentity().Name, r.mapper.ToRecord(entity))
 
 	if err != nil {
 		return entity, err
 	}
 
-	return entity, r.client.ApplyRecord(ctx, resource, entity.ToRecord())
+	updatedEntity := r.mapper.FromRecord(resp)
+
+	return updatedEntity, nil
 }
 
 func (r repository[T]) Get(ctx context.Context, id string) (T, error) {
-	instance := r.params.InstanceProvider()
-
-	resp, err := r.client.GetRecordClient().Get(ctx, &stub.GetRecordRequest{
-		Token:     r.client.GetToken(),
-		Namespace: instance.GetNamespace(),
-		Resource:  instance.GetResourceName(),
-		Id:        id,
-	})
+	resp, err := r.client.GetRecord(ctx, r.mapper.ResourceIdentity().Namespace, r.mapper.ResourceIdentity().Name, id)
 
 	if err != nil {
-		return instance, err
+		return r.mapper.New(), err
 	}
 
-	instance.FromRecord(resp.Record)
+	updatedEntity := r.mapper.FromRecord(resp)
 
-	return instance, nil
+	return updatedEntity, nil
 }
 
-func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, error) {
-	instance := r.params.InstanceProvider()
-
-	resp, err := r.client.GetRecordClient().Search(ctx, &stub.SearchRecordRequest{
-		Token:             r.client.GetToken(),
-		Namespace:         instance.GetNamespace(),
-		Resource:          instance.GetResourceName(),
+func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, uint32, error) {
+	listParams := service.RecordListParams{
+		Namespace:         r.mapper.ResourceIdentity().Namespace,
+		Resource:          r.mapper.ResourceIdentity().Name,
 		Query:             params.Query,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
-		Annotations:       params.Annotations,
-	})
-
-	if err != nil {
-		return []T{}, err
 	}
 
-	return util.ArrayMap(resp.Content, func(record *model.Record) T {
-		var newInstance = r.params.InstanceProvider()
-
-		newInstance.FromRecord(record)
-
-		return newInstance
-	}), nil
-}
-
-func (r repository[T]) loadResource(ctx context.Context) (*model.Resource, error) {
-	instance := r.params.InstanceProvider()
-
-	resp, err := r.client.GetResourceClient().GetByName(ctx, &stub.GetResourceByNameRequest{
-		Token:     r.client.GetToken(),
-		Namespace: instance.GetNamespace(),
-		Name:      instance.GetResourceName(),
-	})
+	resp, total, err := r.client.ListRecords(ctx, listParams)
 
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return resp.Resource, nil
+	var result = make([]T, len(resp))
+
+	for i, record := range resp {
+		result[i] = r.mapper.FromRecord(record)
+	}
+
+	return result, total, nil
 }
 
-type RepositoryParams[T abs.Entity[T]] struct {
-	UpdateCheckVersion bool
-	InstanceProvider   func() T
-}
-
-func NewRepository[T abs.Entity[T]](client DhClient, params RepositoryParams[T]) Repository[T] {
-	return repository[T]{client: client, params: params}
+func NewRepository[Entity interface{}](client DhClient, mapper abs.EntityMapper[Entity]) Repository[Entity] {
+	return repository[Entity]{client: client, mapper: mapper}
 }

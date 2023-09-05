@@ -36,7 +36,7 @@ func init() {
 
 func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 	// creating data sources
-	listDataSourceResp, err := recordClient.List(ctx, &stub.ListRecordRequest{
+	listDataSourceResp, err := RecordClient.List(ctx, &stub.ListRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
 	})
@@ -65,7 +65,7 @@ func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 	}
 
 	if len(RecordsForCreate) > 0 {
-		createRes, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
+		createRes, err := RecordClient.Create(ctx, &stub.CreateRecordRequest{
 			Namespace: resources.DataSourceResource.Namespace,
 			Resource:  resources.DataSourceResource.Name,
 			Records:   util.ArrayMap(RecordsForCreate, resource_model.DataSourceMapperInstance.ToRecord),
@@ -106,7 +106,7 @@ func PrepareResourcesForTest(t *testing.T, resources []*model.Resource) func() {
 
 func ResourcesWithErrorHandler(ctx context.Context, resources []*model.Resource, eh func(err error)) func() {
 	// creating data sources
-	listResourceResp, err := resourceClient.List(ctx, &stub.ListResourceRequest{})
+	listResourceResp, err := ResourceClient.List(ctx, &stub.ListResourceRequest{})
 
 	if err != nil {
 		panic(err)
@@ -120,8 +120,7 @@ func ResourcesWithErrorHandler(ctx context.Context, resources []*model.Resource,
 		if !exists {
 			return
 		}
-		_, err := resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
-			Token: GetTestDhClient().GetToken(),
+		_, err := ResourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 			Ids: util.ArrayMap[*model.Resource, string](resources, func(t *model.Resource) string {
 				return t.Id
 			}),
@@ -152,7 +151,7 @@ func ResourcesWithErrorHandler(ctx context.Context, resources []*model.Resource,
 	}
 
 	if len(resourcesForUpdate) > 0 {
-		updatedRes, err := resourceClient.Update(ctx, &stub.UpdateResourceRequest{
+		updatedRes, err := ResourceClient.Update(ctx, &stub.UpdateResourceRequest{
 			Resources:      resourcesForUpdate,
 			DoMigration:    true,
 			ForceMigration: true,
@@ -187,7 +186,7 @@ func ResourcesWithErrorHandler(ctx context.Context, resources []*model.Resource,
 	}
 
 	if len(resourcesForCreate) > 0 {
-		createRes, err := resourceClient.Create(ctx, &stub.CreateResourceRequest{
+		createRes, err := ResourceClient.Create(ctx, &stub.CreateResourceRequest{
 			Resources:      resourcesForCreate,
 			DoMigration:    true,
 			ForceMigration: true,
@@ -231,8 +230,7 @@ func SetupResources(ctx context.Context, resources []*model.Resource) {
 }
 
 func DestroyResources(ctx context.Context, resources []*model.Resource) {
-	_, err := resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
-		Token: GetTestDhClient().GetToken(),
+	_, err := ResourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 		Ids: util.ArrayMap[*model.Resource, string](resources, func(t *model.Resource) string {
 			return t.Id
 		}),
@@ -261,7 +259,7 @@ func initTextContext() {
 }
 
 func WithUserAuthenticationContext(ctx context.Context, username, password string) context.Context {
-	resp, err := authenticationClient.Authenticate(ctx, &stub.AuthenticationRequest{
+	resp, err := AuthenticationClient.Authenticate(ctx, &stub.AuthenticationRequest{
 		Username: username,
 		Password: password,
 		Term:     model.TokenTerm_MIDDLE,

@@ -2,37 +2,41 @@ package client
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/stub"
+	"github.com/apibrew/apibrew/pkg/service"
 )
 
 type ApplyInterface interface {
-	ApplyRecord(ctx context.Context, resource *model.Resource, record *model.Record) error
 	ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error
 }
 
 type DhClient interface {
 	ApplyInterface
-	GetAuthenticationClient() stub.AuthenticationClient
-	GetDataSourceClient() stub.DataSourceClient
-	GetResourceClient() stub.ResourceClient
-	GetRecordClient() stub.RecordClient
-	GetGenericClient() stub.GenericClient
-	GetToken() string
 	AuthenticateWithToken(token string)
 	AuthenticateWithUsernameAndPassword(username string, password string) error
 	NewExtension(host string) Extension
 	UpdateTokenFromContext(ctx context.Context)
+
+	// record
+	CreateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
+	UpdateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
+	ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
+	GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error)
+	ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error)
+
+	// resource
+	GetResourceByName(ctx context.Context, namespace string, getType string) (*model.Resource, error)
 	ListResources(ctx context.Context) ([]*model.Resource, error)
+	ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error
+	DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error
 }
 
-type Repository[T abs.Entity[T]] interface {
-	Create(ctx context.Context, entity T) (T, error)
-	Update(ctx context.Context, entity T) (T, error)
-	Save(ctx context.Context, entity T) (T, error)
-	Get(ctx context.Context, id string) (T, error)
-	Find(ctx context.Context, params FindParams) ([]T, error)
+type Repository[Entity interface{}] interface {
+	Create(ctx context.Context, entity Entity) (Entity, error)
+	Update(ctx context.Context, entity Entity) (Entity, error)
+	Save(ctx context.Context, entity Entity) (Entity, error)
+	Get(ctx context.Context, id string) (Entity, error)
+	Find(ctx context.Context, params FindParams) ([]Entity, uint32, error)
 }
 
 type FindParams struct {
