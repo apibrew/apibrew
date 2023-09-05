@@ -10,7 +10,6 @@ import (
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 type extensionService struct {
@@ -23,18 +22,12 @@ type extensionService struct {
 	backendEventHandler    backend_event_handler.BackendEventHandler
 }
 
-func (d *extensionService) Init(config *model.AppConfig) {
+func (d *extensionService) Reload() {
 	d.runConfigureExtensions()
-
-	go d.keepExtensionsRunning()
 }
 
-func (d *extensionService) keepExtensionsRunning() {
-	for {
-		time.Sleep(10 * time.Second)
-
-		d.runConfigureExtensions()
-	}
+func (d *extensionService) Init(config *model.AppConfig) {
+	d.runConfigureExtensions()
 }
 
 func (d *extensionService) runConfigureExtensions() {

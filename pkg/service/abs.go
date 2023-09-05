@@ -91,6 +91,7 @@ type ExtensionService interface {
 	RegisterExtension(*resource_model.Extension)
 	UnRegisterExtension(*resource_model.Extension)
 	Init(config *model.AppConfig)
+	Reload()
 }
 
 type CheckRecordAccessParams struct {

@@ -33,15 +33,17 @@ func (b *backendEventHandler) PrepareInternalEvent(ctx context.Context, event *m
 func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextEvent *model.Event, actualHandler HandlerFunc) (*model.Event, errors.ServiceError) {
 	handlers := b.filterHandlersForEvent(nextEvent)
 
-	handlers = append(handlers, Handler{
-		Id:        "actualHandler",
-		Name:      "actualHandler",
-		Fn:        actualHandler,
-		Order:     NaturalOrder,
-		Finalizes: false,
-		Sync:      true,
-		Responds:  true,
-	})
+	if !nextEvent.Resource.Virtual {
+		handlers = append(handlers, Handler{
+			Id:        "actualHandler",
+			Name:      "actualHandler",
+			Fn:        actualHandler,
+			Order:     NaturalOrder,
+			Finalizes: false,
+			Sync:      true,
+			Responds:  true,
+		})
+	}
 
 	sort.Sort(ByOrder(handlers))
 
@@ -127,7 +129,7 @@ func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *m
 		return true
 	}
 
-	if selector.Resources != nil {
+	if len(selector.Resources) > 0 {
 		var found = false
 		for _, resource := range selector.Resources {
 			if resource == incoming.Resource.Name {
@@ -141,7 +143,7 @@ func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *m
 		}
 	}
 
-	if selector.Actions != nil {
+	if len(selector.Actions) > 0 {
 		var found = false
 		for _, action := range selector.Actions {
 			if action == incoming.Action {
@@ -155,7 +157,7 @@ func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *m
 		}
 	}
 
-	if selector.Ids != nil {
+	if len(selector.Ids) > 0 {
 		var found = false
 		for _, id := range selector.Ids {
 			if id == incoming.Id {
@@ -169,7 +171,7 @@ func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *m
 		}
 	}
 
-	if selector.Namespaces != nil {
+	if len(selector.Namespaces) > 0 {
 		var found = false
 		for _, namespace := range selector.Namespaces {
 			if namespace == incoming.Resource.Namespace {
@@ -183,7 +185,7 @@ func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *m
 		}
 	}
 
-	if selector.Annotations != nil {
+	if len(selector.Annotations) > 0 {
 		for key, value := range selector.Annotations {
 			if incoming.Resource.Annotations[key] == value {
 				break
