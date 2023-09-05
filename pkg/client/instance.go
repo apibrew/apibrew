@@ -193,6 +193,17 @@ func (d *dhClient) AuthenticateWithToken(token string) {
 	d.token = token
 }
 
+func (d *dhClient) DeleteRecord(ctx context.Context, namespace string, name string, id string) error {
+	_, err := d.recordClient.Delete(ctx, &stub.DeleteRecordRequest{
+		Token:     d.token,
+		Namespace: namespace,
+		Resource:  name,
+		Ids:       []string{id},
+	})
+
+	return err
+}
+
 func NewDhClient(params DhClientParams) (DhClient, error) {
 	var opts []grpc.DialOption
 	if params.Insecure {
