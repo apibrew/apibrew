@@ -159,7 +159,7 @@ func (s *server) configureRoutes() {
 		AllowedHeaders:   []string{"*"},
 	})
 
-	if log.GetLevel() >= log.DebugLevel {
+	if log.GetLevel() >= log.TraceLevel {
 		c.Log = log.New()
 	}
 
