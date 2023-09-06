@@ -1,6 +1,7 @@
 package apbr
 
 import (
+	"github.com/apibrew/apibrew/pkg/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -26,4 +27,12 @@ func parseRootFlags(cmd *cobra.Command) {
 	} else {
 		log.SetLevel(log.InfoLevel)
 	}
+
+	var err error
+	dhClient, err = client.NewDhClientLocal(server)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

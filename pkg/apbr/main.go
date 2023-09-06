@@ -1,8 +1,18 @@
 package apbr
 
 import (
+	"github.com/apibrew/apibrew/pkg/apbr/flags"
+	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/spf13/cobra"
 )
+
+var selectorFlags = flags.NewSelectorFlags(GetDhClient)
+var overrideFlags = flags.NewOverrideFlags()
+var dhClient client.DhClient
+
+func GetDhClient() client.DhClient {
+	return dhClient
+}
 
 var rootCmd = &cobra.Command{
 	Use:   "apbr",

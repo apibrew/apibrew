@@ -227,3 +227,45 @@ func NewDhClient(params DhClientParams) (DhClient, error) {
 		token:                params.Token,
 	}, nil
 }
+
+func NewDhClientLocal(serverName string) (DhClient, error) {
+	configServer := locateConfigServer(serverName)
+
+	var params = DhClientParams{
+		Addr:     configServer.Host,
+		Insecure: true,
+	}
+	var opts []grpc.DialOption
+	if params.Insecure {
+		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	}
+
+	conn, err := grpc.Dial(params.Addr, opts...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var dhc = &dhClient{
+		conn:                 conn,
+		params:               params,
+		recordClient:         stub.NewRecordClient(conn),
+		authenticationClient: stub.NewAuthenticationClient(conn),
+		resourceClient:       stub.NewResourceClient(conn),
+		dataSourceClient:     stub.NewDataSourceClient(conn),
+		genericClient:        stub.NewGenericClient(conn),
+		token:                params.Token,
+	}
+
+	if configServer.Authentication.Token != "" {
+		dhc.AuthenticateWithToken(configServer.Authentication.Token)
+	} else {
+		err = dhc.AuthenticateWithUsernameAndPassword(configServer.Authentication.Username, configServer.Authentication.Password)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return dhc, nil
+}
