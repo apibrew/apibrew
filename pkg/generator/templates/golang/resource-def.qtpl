@@ -26,7 +26,7 @@ var {%= GoName(resource.Name) %}Resource = &model.Resource{
 	},
 	{%- endif -%}
 	Types: []*model.ResourceSubType{
-		sub_types.SecurityConstraint,
+		sub_types.Permission,
 	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,

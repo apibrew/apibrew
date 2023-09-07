@@ -16,7 +16,7 @@ type Role struct {
 	CreatedOn           *time.Time                 `json:"createdOn,omitempty"`
 	UpdatedOn           *time.Time                 `json:"updatedOn,omitempty"`
 	Name                string                     `json:"name,omitempty"`
-	SecurityConstraints []*SecurityConstraint      `json:"securityConstraints,omitempty"`
+	SecurityConstraints []*Permission              `json:"securityConstraints,omitempty"`
 	Details             *unstructured.Unstructured `json:"details,omitempty"`
 }
 
@@ -41,7 +41,7 @@ func (s *Role) GetUpdatedOn() *time.Time {
 func (s *Role) GetName() string {
 	return s.Name
 }
-func (s *Role) GetSecurityConstraints() []*SecurityConstraint {
+func (s *Role) GetSecurityConstraints() []*Permission {
 	return s.SecurityConstraints
 }
 func (s *Role) GetDetails() *unstructured.Unstructured {

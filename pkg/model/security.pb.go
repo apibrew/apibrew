@@ -169,8 +169,8 @@ func (SecurityConstraint_PropertyMode) EnumDescriptor() ([]byte, []int) {
 	return file_model_security_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// SecurityConstraint is a rule
-type SecurityConstraint struct {
+// Permission is a rule
+type Permission struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -193,8 +193,8 @@ type SecurityConstraint struct {
 	LocalFlags *structpb.Value `protobuf:"bytes,11,opt,name=localFlags,proto3,oneof" json:"localFlags,omitempty"`          // optional, local flags
 }
 
-func (x *SecurityConstraint) Reset() {
-	*x = SecurityConstraint{}
+func (x *Permission) Reset() {
+	*x = Permission{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_model_security_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -202,13 +202,13 @@ func (x *SecurityConstraint) Reset() {
 	}
 }
 
-func (x *SecurityConstraint) String() string {
+func (x *Permission) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SecurityConstraint) ProtoMessage() {}
+func (*Permission) ProtoMessage() {}
 
-func (x *SecurityConstraint) ProtoReflect() protoreflect.Message {
+func (x *Permission) ProtoReflect() protoreflect.Message {
 	mi := &file_model_security_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -220,96 +220,96 @@ func (x *SecurityConstraint) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SecurityConstraint.ProtoReflect.Descriptor instead.
-func (*SecurityConstraint) Descriptor() ([]byte, []int) {
+// Deprecated: Use Permission.ProtoReflect.Descriptor instead.
+func (*Permission) Descriptor() ([]byte, []int) {
 	return file_model_security_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *SecurityConstraint) GetNamespace() string {
+func (x *Permission) GetNamespace() string {
 	if x != nil {
 		return x.Namespace
 	}
 	return ""
 }
 
-func (x *SecurityConstraint) GetResource() string {
+func (x *Permission) GetResource() string {
 	if x != nil {
 		return x.Resource
 	}
 	return ""
 }
 
-func (x *SecurityConstraint) GetProperty() string {
+func (x *Permission) GetProperty() string {
 	if x != nil {
 		return x.Property
 	}
 	return ""
 }
 
-func (x *SecurityConstraint) GetPropertyValue() string {
+func (x *Permission) GetPropertyValue() string {
 	if x != nil && x.PropertyValue != nil {
 		return *x.PropertyValue
 	}
 	return ""
 }
 
-func (x *SecurityConstraint) GetPropertyMode() SecurityConstraint_PropertyMode {
+func (x *Permission) GetPropertyMode() SecurityConstraint_PropertyMode {
 	if x != nil {
 		return x.PropertyMode
 	}
 	return SecurityConstraint_PROPERTY_MATCH_ONLY
 }
 
-func (x *SecurityConstraint) GetOperation() OperationType {
+func (x *Permission) GetOperation() OperationType {
 	if x != nil {
 		return x.Operation
 	}
 	return OperationType_OPERATION_TYPE_READ
 }
 
-func (x *SecurityConstraint) GetRecordIds() []string {
+func (x *Permission) GetRecordIds() []string {
 	if x != nil {
 		return x.RecordIds
 	}
 	return nil
 }
 
-func (x *SecurityConstraint) GetBefore() *timestamppb.Timestamp {
+func (x *Permission) GetBefore() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Before
 	}
 	return nil
 }
 
-func (x *SecurityConstraint) GetAfter() *timestamppb.Timestamp {
+func (x *Permission) GetAfter() *timestamppb.Timestamp {
 	if x != nil {
 		return x.After
 	}
 	return nil
 }
 
-func (x *SecurityConstraint) GetUsername() string {
+func (x *Permission) GetUsername() string {
 	if x != nil && x.Username != nil {
 		return *x.Username
 	}
 	return ""
 }
 
-func (x *SecurityConstraint) GetRole() string {
+func (x *Permission) GetRole() string {
 	if x != nil && x.Role != nil {
 		return *x.Role
 	}
 	return ""
 }
 
-func (x *SecurityConstraint) GetPermit() PermitType {
+func (x *Permission) GetPermit() PermitType {
 	if x != nil {
 		return x.Permit
 	}
 	return PermitType_PERMIT_TYPE_ALLOW
 }
 
-func (x *SecurityConstraint) GetLocalFlags() *structpb.Value {
+func (x *Permission) GetLocalFlags() *structpb.Value {
 	if x != nil {
 		return x.LocalFlags
 	}
@@ -404,18 +404,18 @@ var file_model_security_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_model_security_proto_goTypes = []interface{}{
 	(OperationType)(0),                   // 0: model.OperationType
 	(PermitType)(0),                      // 1: model.PermitType
-	(SecurityConstraint_PropertyMode)(0), // 2: model.SecurityConstraint.PropertyMode
-	(*SecurityConstraint)(nil),           // 3: model.SecurityConstraint
+	(SecurityConstraint_PropertyMode)(0), // 2: model.Permission.PropertyMode
+	(*Permission)(nil),                   // 3: model.Permission
 	(*timestamppb.Timestamp)(nil),        // 4: google.protobuf.Timestamp
 	(*structpb.Value)(nil),               // 5: google.protobuf.Value
 }
 var file_model_security_proto_depIdxs = []int32{
-	2, // 0: model.SecurityConstraint.propertyMode:type_name -> model.SecurityConstraint.PropertyMode
-	0, // 1: model.SecurityConstraint.operation:type_name -> model.OperationType
-	4, // 2: model.SecurityConstraint.before:type_name -> google.protobuf.Timestamp
-	4, // 3: model.SecurityConstraint.after:type_name -> google.protobuf.Timestamp
-	1, // 4: model.SecurityConstraint.permit:type_name -> model.PermitType
-	5, // 5: model.SecurityConstraint.localFlags:type_name -> google.protobuf.Value
+	2, // 0: model.Permission.propertyMode:type_name -> model.Permission.PropertyMode
+	0, // 1: model.Permission.operation:type_name -> model.OperationType
+	4, // 2: model.Permission.before:type_name -> google.protobuf.Timestamp
+	4, // 3: model.Permission.after:type_name -> google.protobuf.Timestamp
+	1, // 4: model.Permission.permit:type_name -> model.PermitType
+	5, // 5: model.Permission.localFlags:type_name -> google.protobuf.Value
 	6, // [6:6] is the sub-list for method output_type
 	6, // [6:6] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
@@ -431,7 +431,7 @@ func file_model_security_proto_init() {
 	file_model_hcl_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_model_security_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SecurityConstraint); i {
+			switch v := v.(*Permission); i {
 			case 0:
 				return &v.state
 			case 1:

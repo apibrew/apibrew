@@ -84,7 +84,7 @@ var `)
 	}
 //line templates/golang/resource-def.qtpl:27
 	qw422016.N().S(`	Types: []*model.ResourceSubType{
-		sub_types.SecurityConstraint,
+		sub_types.Permission,
 	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,

@@ -1,4 +1,4 @@
-import { SecurityConstraint } from "./security-constraint";
+import { Permission } from "./permission";
 
 
 
@@ -18,7 +18,7 @@ updatedBy?: string;
 createdOn: string;
 updatedOn?: string;
 name: string;
-securityConstraints?: SecurityConstraint[];
+securityConstraints?: Permission[];
 details?: object;
 
 }

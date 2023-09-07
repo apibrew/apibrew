@@ -54,7 +54,7 @@ var UserResource = &model.Resource{
 				Type: model.ResourceProperty_REFERENCE,
 				Reference: &model.Reference{
 					Namespace: "system",
-					Resource:  "SecurityConstraint",
+					Resource:  "Permission",
 				},
 				BackReference: &model.BackReference{
 					Property: "user",

@@ -10,7 +10,7 @@ func init() {
 	*rootRoleName = "root"
 }
 
-var SecurityContextDisallowAll = []*model.SecurityConstraint{
+var SecurityContextDisallowAll = []*model.Permission{
 	{
 		Operation: model.OperationType_FULL,
 		Role:      rootRoleName,

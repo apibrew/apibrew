@@ -24,36 +24,36 @@ func NewSecurityConstraintMapper() *SecurityConstraintMapper {
 
 var SecurityConstraintMapperInstance = NewSecurityConstraintMapper()
 
-func (m *SecurityConstraintMapper) New() *SecurityConstraint {
-	return &SecurityConstraint{}
+func (m *SecurityConstraintMapper) New() *Permission {
+	return &Permission{}
 }
 
 func (m *SecurityConstraintMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
 		Namespace: "system",
-		Name:      "SecurityConstraint",
+		Name:      "Permission",
 	}
 }
 
-func (m *SecurityConstraintMapper) ToRecord(securityConstraint *SecurityConstraint) *model.Record {
+func (m *SecurityConstraintMapper) ToRecord(permission *Permission) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(securityConstraint)
+	rec.Properties = m.ToProperties(permission)
 
-	if securityConstraint.Id != nil {
-		rec.Id = securityConstraint.Id.String()
+	if permission.Id != nil {
+		rec.Id = permission.Id.String()
 	}
 
 	return rec
 }
 
-func (m *SecurityConstraintMapper) FromRecord(record *model.Record) *SecurityConstraint {
+func (m *SecurityConstraintMapper) FromRecord(record *model.Record) *Permission {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityConstraint) map[string]*structpb.Value {
+func (m *SecurityConstraintMapper) ToProperties(permission *Permission) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := securityConstraint.Id
+	var_Id := permission.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -66,7 +66,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := securityConstraint.Version
+	var_Version := permission.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -77,7 +77,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := securityConstraint.CreatedBy
+	var_CreatedBy := permission.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -90,7 +90,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := securityConstraint.UpdatedBy
+	var_UpdatedBy := permission.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -103,7 +103,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := securityConstraint.CreatedOn
+	var_CreatedOn := permission.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -116,7 +116,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := securityConstraint.UpdatedOn
+	var_UpdatedOn := permission.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -129,7 +129,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Namespace := securityConstraint.Namespace
+	var_Namespace := permission.Namespace
 
 	if var_Namespace != nil {
 		var var_Namespace_mapped *structpb.Value
@@ -142,7 +142,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["namespace"] = var_Namespace_mapped
 	}
 
-	var_Resource := securityConstraint.Resource
+	var_Resource := permission.Resource
 
 	if var_Resource != nil {
 		var var_Resource_mapped *structpb.Value
@@ -155,7 +155,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["resource"] = var_Resource_mapped
 	}
 
-	var_Property := securityConstraint.Property
+	var_Property := permission.Property
 
 	if var_Property != nil {
 		var var_Property_mapped *structpb.Value
@@ -168,7 +168,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["property"] = var_Property_mapped
 	}
 
-	var_PropertyValue := securityConstraint.PropertyValue
+	var_PropertyValue := permission.PropertyValue
 
 	if var_PropertyValue != nil {
 		var var_PropertyValue_mapped *structpb.Value
@@ -181,7 +181,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["propertyValue"] = var_PropertyValue_mapped
 	}
 
-	var_PropertyMode := securityConstraint.PropertyMode
+	var_PropertyMode := permission.PropertyMode
 
 	if var_PropertyMode != nil {
 		var var_PropertyMode_mapped *structpb.Value
@@ -194,7 +194,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["propertyMode"] = var_PropertyMode_mapped
 	}
 
-	var_Operation := securityConstraint.Operation
+	var_Operation := permission.Operation
 
 	var var_Operation_mapped *structpb.Value
 
@@ -205,7 +205,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 	}
 	properties["operation"] = var_Operation_mapped
 
-	var_RecordIds := securityConstraint.RecordIds
+	var_RecordIds := permission.RecordIds
 
 	if var_RecordIds != nil {
 		var var_RecordIds_mapped *structpb.Value
@@ -228,7 +228,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["recordIds"] = var_RecordIds_mapped
 	}
 
-	var_Before := securityConstraint.Before
+	var_Before := permission.Before
 
 	if var_Before != nil {
 		var var_Before_mapped *structpb.Value
@@ -241,7 +241,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["before"] = var_Before_mapped
 	}
 
-	var_After := securityConstraint.After
+	var_After := permission.After
 
 	if var_After != nil {
 		var var_After_mapped *structpb.Value
@@ -254,7 +254,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["after"] = var_After_mapped
 	}
 
-	var_User := securityConstraint.User
+	var_User := permission.User
 
 	if var_User != nil {
 		var var_User_mapped *structpb.Value
@@ -263,7 +263,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["user"] = var_User_mapped
 	}
 
-	var_Role := securityConstraint.Role
+	var_Role := permission.Role
 
 	if var_Role != nil {
 		var var_Role_mapped *structpb.Value
@@ -272,7 +272,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 		properties["role"] = var_Role_mapped
 	}
 
-	var_Permit := securityConstraint.Permit
+	var_Permit := permission.Permit
 
 	var var_Permit_mapped *structpb.Value
 
@@ -283,7 +283,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 	}
 	properties["permit"] = var_Permit_mapped
 
-	var_LocalFlags := securityConstraint.LocalFlags
+	var_LocalFlags := permission.LocalFlags
 
 	if var_LocalFlags != nil {
 		var var_LocalFlags_mapped *structpb.Value
@@ -298,7 +298,7 @@ func (m *SecurityConstraintMapper) ToProperties(securityConstraint *SecurityCons
 	return properties
 }
 
-func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structpb.Value) *SecurityConstraint {
+func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structpb.Value) *Permission {
 	var s = m.New()
 	if properties["id"] != nil {
 

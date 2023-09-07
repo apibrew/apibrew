@@ -18,7 +18,7 @@ type User struct {
 	Username            string                     `json:"username,omitempty"`
 	Password            *string                    `json:"password,omitempty"`
 	Roles               []*Role                    `json:"roles,omitempty"`
-	SecurityConstraints []*SecurityConstraint      `json:"securityConstraints,omitempty"`
+	SecurityConstraints []*Permission              `json:"securityConstraints,omitempty"`
 	Details             *unstructured.Unstructured `json:"details,omitempty"`
 }
 
@@ -49,7 +49,7 @@ func (s *User) GetPassword() *string {
 func (s *User) GetRoles() []*Role {
 	return s.Roles
 }
-func (s *User) GetSecurityConstraints() []*SecurityConstraint {
+func (s *User) GetSecurityConstraints() []*Permission {
 	return s.SecurityConstraints
 }
 func (s *User) GetDetails() *unstructured.Unstructured {

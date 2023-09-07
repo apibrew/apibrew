@@ -8,7 +8,7 @@ import "github.com/google/uuid"
 import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
-type SecurityConstraint struct {
+type Permission struct {
 	Id            *uuid.UUID                      `json:"id,omitempty"`
 	Version       int32                           `json:"version,omitempty"`
 	CreatedBy     *string                         `json:"createdBy,omitempty"`
@@ -30,61 +30,61 @@ type SecurityConstraint struct {
 	LocalFlags    *unstructured.Unstructured      `json:"localFlags,omitempty"`
 }
 
-func (s *SecurityConstraint) GetId() *uuid.UUID {
+func (s *Permission) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *SecurityConstraint) GetVersion() int32 {
+func (s *Permission) GetVersion() int32 {
 	return s.Version
 }
-func (s *SecurityConstraint) GetCreatedBy() *string {
+func (s *Permission) GetCreatedBy() *string {
 	return s.CreatedBy
 }
-func (s *SecurityConstraint) GetUpdatedBy() *string {
+func (s *Permission) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
-func (s *SecurityConstraint) GetCreatedOn() *time.Time {
+func (s *Permission) GetCreatedOn() *time.Time {
 	return s.CreatedOn
 }
-func (s *SecurityConstraint) GetUpdatedOn() *time.Time {
+func (s *Permission) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
-func (s *SecurityConstraint) GetNamespace() *string {
+func (s *Permission) GetNamespace() *string {
 	return s.Namespace
 }
-func (s *SecurityConstraint) GetResource() *string {
+func (s *Permission) GetResource() *string {
 	return s.Resource
 }
-func (s *SecurityConstraint) GetProperty() *string {
+func (s *Permission) GetProperty() *string {
 	return s.Property
 }
-func (s *SecurityConstraint) GetPropertyValue() *string {
+func (s *Permission) GetPropertyValue() *string {
 	return s.PropertyValue
 }
-func (s *SecurityConstraint) GetPropertyMode() *SecurityConstraintPropertyMode {
+func (s *Permission) GetPropertyMode() *SecurityConstraintPropertyMode {
 	return s.PropertyMode
 }
-func (s *SecurityConstraint) GetOperation() SecurityConstraintOperation {
+func (s *Permission) GetOperation() SecurityConstraintOperation {
 	return s.Operation
 }
-func (s *SecurityConstraint) GetRecordIds() []string {
+func (s *Permission) GetRecordIds() []string {
 	return s.RecordIds
 }
-func (s *SecurityConstraint) GetBefore() *time.Time {
+func (s *Permission) GetBefore() *time.Time {
 	return s.Before
 }
-func (s *SecurityConstraint) GetAfter() *time.Time {
+func (s *Permission) GetAfter() *time.Time {
 	return s.After
 }
-func (s *SecurityConstraint) GetUser() *User {
+func (s *Permission) GetUser() *User {
 	return s.User
 }
-func (s *SecurityConstraint) GetRole() *Role {
+func (s *Permission) GetRole() *Role {
 	return s.Role
 }
-func (s *SecurityConstraint) GetPermit() SecurityConstraintPermit {
+func (s *Permission) GetPermit() SecurityConstraintPermit {
 	return s.Permit
 }
-func (s *SecurityConstraint) GetLocalFlags() *unstructured.Unstructured {
+func (s *Permission) GetLocalFlags() *unstructured.Unstructured {
 	return s.LocalFlags
 }
 

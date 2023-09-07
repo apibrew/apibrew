@@ -6,14 +6,14 @@ import { Role } from "./role";
 
 
 export const SecurityConstraintResource = {
-    resource: "SecurityConstraint",
+    resource: "Permission",
     namespace: "system",
 };
 
 // Sub Types
 
 // Resource Type
-export interface SecurityConstraint {
+export interface Permission {
     id: string;
 version: number;
 createdBy: string;
@@ -36,7 +36,7 @@ localFlags?: object;
 
 }
 // Resource and Property Names
-export const SecurityConstraintName = "SecurityConstraint";
+export const SecurityConstraintName = "Permission";
 
 export const SecurityConstraintIdName = "Id";
 

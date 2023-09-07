@@ -8,7 +8,7 @@ import (
 )
 
 var SecurityConstraintResource = &model.Resource{
-	Name:      "SecurityConstraint",
+	Name:      "Permission",
 	Namespace: "system",
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",

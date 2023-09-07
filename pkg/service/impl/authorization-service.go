@@ -29,7 +29,7 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 		return errors.AccessDeniedError.WithDetails("Public access is denied")
 	}
 
-	var constraints []*resource_model.SecurityConstraint
+	var constraints []*resource_model.Permission
 
 	//for _, constraint := range params.Resource.SecurityConstraints {
 	//	constraint.Resource = params.Resource.Name
@@ -48,7 +48,7 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 	}
 }
 
-func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, constraints []*resource_model.SecurityConstraint, userDetails *jwt_model.UserDetails) []*model.ErrorField {
+func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, constraints []*resource_model.Permission, userDetails *jwt_model.UserDetails) []*model.ErrorField {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	now := time.Now()
@@ -105,7 +105,7 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 	return errorFields
 }
 
-func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, constraint *resource_model.SecurityConstraint, now time.Time, userDetails *jwt_model.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
+func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, constraint *resource_model.Permission, now time.Time, userDetails *jwt_model.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	// check resource constraint matches

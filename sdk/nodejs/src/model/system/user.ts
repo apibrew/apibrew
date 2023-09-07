@@ -1,5 +1,5 @@
 import { Role } from "./role";
-import { SecurityConstraint } from "./security-constraint";
+import { Permission } from "./permission";
 
 
 
@@ -21,7 +21,7 @@ updatedOn?: string;
 username: string;
 password?: string;
 roles?: Role[];
-securityConstraints?: SecurityConstraint[];
+securityConstraints?: Permission[];
 details?: object;
 
 }

@@ -1036,7 +1036,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Record'
-        SecurityConstraint:
+        Permission:
             type: object
             properties:
                 namespace:
@@ -1069,7 +1069,7 @@ components:
                 constraints:
                     type: array
                     items:
-                        $ref: '#/components/schemas/SecurityConstraint'
+                        $ref: '#/components/schemas/Permission'
         Status:
             type: object
             properties:

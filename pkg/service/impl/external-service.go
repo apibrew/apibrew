@@ -9,9 +9,11 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/service"
+	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"io"
@@ -48,6 +50,17 @@ func (e *externalService) CallFunction(ctx context.Context, call *resource_model
 	}
 
 	functionService := e.functionClientMap[call.Host+"/"+call.FunctionName]
+
+	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
+
+	mdMap := map[string]string{}
+
+	if userDetails != nil {
+		mdMap["user"] = userDetails.Username
+		mdMap["userId"] = userDetails.UserId
+	}
+
+	ctx = metadata.NewOutgoingContext(ctx, metadata.New(mdMap))
 
 	result, err := functionService.FunctionCall(ctx, &ext.FunctionCallRequest{
 		Name:  call.FunctionName,

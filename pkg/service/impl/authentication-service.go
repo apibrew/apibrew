@@ -209,8 +209,8 @@ func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Ti
 	}
 }
 
-func (s *authenticationService) collectUserSecurityConstraints(ctx context.Context, user *resource_model.User) ([]*resource_model.SecurityConstraint, errors.ServiceError) {
-	var result []*resource_model.SecurityConstraint
+func (s *authenticationService) collectUserSecurityConstraints(ctx context.Context, user *resource_model.User) ([]*resource_model.Permission, errors.ServiceError) {
+	var result []*resource_model.Permission
 
 	var userRecord = resource_model.UserMapperInstance.ToRecord(user)
 

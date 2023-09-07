@@ -275,7 +275,7 @@ func (m *RoleMapper) FromProperties(properties map[string]*structpb.Value) *Role
 	if properties["securityConstraints"] != nil {
 
 		var_SecurityConstraints := properties["securityConstraints"]
-		var_SecurityConstraints_mapped := []*SecurityConstraint{}
+		var_SecurityConstraints_mapped := []*Permission{}
 		for _, v := range var_SecurityConstraints.GetListValue().Values {
 
 			var_4x := v

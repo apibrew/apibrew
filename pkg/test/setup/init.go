@@ -33,7 +33,7 @@ func prepareInitRecords() []*model.InitRecord {
 			Resource:  resources.RoleResource.Name,
 			Record: resource_model.RoleMapperInstance.ToRecord(&resource_model.Role{
 				Name: "root",
-				SecurityConstraints: []*resource_model.SecurityConstraint{
+				SecurityConstraints: []*resource_model.Permission{
 					{
 						Operation: resource_model.SecurityConstraintOperation_FULL,
 						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
@@ -46,7 +46,7 @@ func prepareInitRecords() []*model.InitRecord {
 			Resource:  resources.RoleResource.Name,
 			Record: resource_model.RoleMapperInstance.ToRecord(&resource_model.Role{
 				Name: "test_user",
-				SecurityConstraints: []*resource_model.SecurityConstraint{
+				SecurityConstraints: []*resource_model.Permission{
 					{
 						Namespace: &system.UserResourceModel.Namespace.Name,
 						Resource:  &system.UserResourceModel.Name,
