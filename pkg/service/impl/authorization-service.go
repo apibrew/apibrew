@@ -29,17 +29,17 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 		return errors.AccessDeniedError.WithDetails("Public access is denied")
 	}
 
-	var constraints []*resource_model.Permission
+	var permissions []*resource_model.Permission
 
-	//for _, constraint := range params.Resource.SecurityConstraints {
-	//	constraint.Resource = params.Resource.Name
-	//	constraint.Namespace = params.Resource.Namespace
+	//for _, permission := range params.Resource.Permissions {
+	//	permission.Resource = params.Resource.Name
+	//	permission.Namespace = params.Resource.Namespace
 	//}
 
-	//constraints = append(constraints, params.Resource.SecurityConstraints...)
-	constraints = append(constraints, userDetails.SecurityConstraints...)
+	//permissions = append(permissions, params.Resource.Permissions...)
+	permissions = append(permissions, userDetails.Permissions...)
 
-	errorFields := a.evaluateConstraints(ctx, params, constraints, userDetails)
+	errorFields := a.evaluateConstraints(ctx, params, permissions, userDetails)
 
 	if len(errorFields) == 0 {
 		return nil
@@ -48,14 +48,14 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 	}
 }
 
-func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, constraints []*resource_model.Permission, userDetails *jwt_model.UserDetails) []*model.ErrorField {
+func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, permissions []*resource_model.Permission, userDetails *jwt_model.UserDetails) []*model.ErrorField {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	now := time.Now()
 	var errorFields []*model.ErrorField
 
 	/*
-	  Default policy for checking constraints are like that
+	  Default policy for checking permissions are like that
 	  1. If anyone rejects, then reject
 	  2. If none rejects and anyone allows, then allow
 	*/
@@ -68,9 +68,9 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 		remainingPropertyCheck[property.Name] = true
 	}
 
-	for _, constraint := range constraints {
-		logger.Tracef("Evaluating constraint: %v", constraint)
-		hasAllowFlagLocal, errorFieldsLocal := a.evaluateConstraint(ctx, params, constraint, now, userDetails, &remainingPropertyCheck)
+	for _, permission := range permissions {
+		logger.Tracef("Evaluating permission: %v", permission)
+		hasAllowFlagLocal, errorFieldsLocal := a.evaluateConstraint(ctx, params, permission, now, userDetails, &remainingPropertyCheck)
 
 		logger.Tracef("Constraint evaluation result: %v, %v", hasAllowFlagLocal, errorFieldsLocal)
 
@@ -98,39 +98,39 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 	if !hasAllowFlag {
 		errorFields = append(errorFields, &model.ErrorField{
 			Property: "resource",
-			Message:  "No constraints matched",
+			Message:  "No permissions matched",
 		})
 	}
 
 	return errorFields
 }
 
-func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, constraint *resource_model.Permission, now time.Time, userDetails *jwt_model.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
+func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, permission *resource_model.Permission, now time.Time, userDetails *jwt_model.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	// check resource constraint matches
+	// check resource permission matches
 
-	if constraint.Resource != nil && *constraint.Resource != params.Resource.Name {
+	if permission.Resource != nil && *permission.Resource != params.Resource.Name {
 		// skipping as not related to this resource
-		logger.Tracef("Skipping constraint as not related to this resource: %v", constraint)
+		logger.Tracef("Skipping permission as not related to this resource: %v", permission)
 		return false, nil
 	}
 
-	if constraint.Namespace != nil && *constraint.Namespace != params.Resource.Namespace {
+	if permission.Namespace != nil && *permission.Namespace != params.Resource.Namespace {
 		// skipping as not related to this namespace
-		logger.Tracef("Skipping constraint as not related to this namespace: %v", constraint)
+		logger.Tracef("Skipping permission as not related to this namespace: %v", permission)
 		return false, nil
 	}
 
-	if constraint.GetRecordIds() != nil {
+	if permission.GetRecordIds() != nil {
 		var found = false
 
 	mainLoop:
-		for _, id := range constraint.GetRecordIds() {
+		for _, id := range permission.GetRecordIds() {
 			id = a.processValue(id, userDetails)
 
 			if params.Records == nil {
-				logger.Tracef("Skipping constraint as records not found: %v", constraint)
+				logger.Tracef("Skipping permission as records not found: %v", permission)
 				return false, nil
 			}
 
@@ -143,54 +143,54 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 		}
 
 		if !found {
-			logger.Tracef("Skipping constraint as record id not matched: %v", constraint)
+			logger.Tracef("Skipping permission as record id not matched: %v", permission)
 			return false, nil
 		}
 	}
 
-	if constraint.GetOperation() != resource_model.SecurityConstraintOperation_FULL && constraint.Operation != params.Operation {
-		logger.Tracef("Skipping constraint as operation not matched: %v", constraint)
+	if permission.GetOperation() != resource_model.SecurityConstraintOperation_FULL && permission.Operation != params.Operation {
+		logger.Tracef("Skipping permission as operation not matched: %v", permission)
 		return false, nil
 	}
 
-	if constraint.Before != nil && constraint.Before.After(now) {
-		logger.Tracef("Skipping constraint as before time not matched: %v", constraint)
+	if permission.Before != nil && permission.Before.After(now) {
+		logger.Tracef("Skipping permission as before time not matched: %v", permission)
 		return false, nil
 	}
 
-	if constraint.After != nil && constraint.Before.After(now) {
-		logger.Tracef("Skipping constraint as after time not matched: %v", constraint)
+	if permission.After != nil && permission.Before.After(now) {
+		logger.Tracef("Skipping permission as after time not matched: %v", permission)
 		return false, nil
 	}
 
-	if constraint.User != nil && constraint.User.Id.String() != userDetails.UserId {
-		logger.Tracef("Skipping constraint as username not matched: %v", constraint)
+	if permission.User != nil && permission.User.Id.String() != userDetails.UserId {
+		logger.Tracef("Skipping permission as username not matched: %v", permission)
 		return false, nil
 	}
 
-	if constraint.Property != nil {
-		if constraint.PropertyMode != nil && *constraint.PropertyMode == resource_model.SecurityConstraintPropertyMode_PROPERTYMATCHONLY {
-			if constraint.PropertyValue != nil {
+	if permission.Property != nil {
+		if permission.PropertyMode != nil && *permission.PropertyMode == resource_model.SecurityConstraintPropertyMode_PROPERTYMATCHONLY {
+			if permission.PropertyValue != nil {
 				for _, record := range *params.Records {
 					for key := range record.Properties {
 						if key == "id" {
 							continue
 						}
-						if key != *constraint.Property {
+						if key != *permission.Property {
 							continue
 						}
 
 						(*remainingPropertyCheck)[key] = false
 
-						if constraint.PropertyValue != nil {
-							var value = *constraint.PropertyValue
+						if permission.PropertyValue != nil {
+							var value = *permission.PropertyValue
 
 							value = a.processValue(value, userDetails)
 
-							strActualVal := fmt.Sprintf("%v", record.Properties[*constraint.Property].AsInterface())
+							strActualVal := fmt.Sprintf("%v", record.Properties[*permission.Property].AsInterface())
 
 							if strActualVal != value {
-								logger.Tracef("Skipping constraint as property value not matched: %v", constraint)
+								logger.Tracef("Skipping permission as property value not matched: %v", permission)
 								return false, nil
 							}
 						}
@@ -198,24 +198,24 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 				}
 			}
 		} else {
-			var value = *constraint.PropertyValue
+			var value = *permission.PropertyValue
 
 			value = a.processValue(value, userDetails)
 
 			if params.Records != nil {
 				for _, record := range *params.Records {
-					if record.Properties[*constraint.Property] == nil {
-						logger.Tracef("Skipping constraint as property not found: %v", constraint)
+					if record.Properties[*permission.Property] == nil {
+						logger.Tracef("Skipping permission as property not found: %v", permission)
 						return false, nil
 					}
 
-					strActualVal := fmt.Sprintf("%v", record.Properties[*constraint.Property].AsInterface())
+					strActualVal := fmt.Sprintf("%v", record.Properties[*permission.Property].AsInterface())
 
 					if strActualVal != value {
 						return false, []*model.ErrorField{
 							{
-								Property: *constraint.Property,
-								Message:  fmt.Sprintf("Property '%s' is not allowed", *constraint.Property),
+								Property: *permission.Property,
+								Message:  fmt.Sprintf("Property '%s' is not allowed", *permission.Property),
 							},
 						}
 					}

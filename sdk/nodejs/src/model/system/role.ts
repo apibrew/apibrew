@@ -18,7 +18,7 @@ updatedBy?: string;
 createdOn: string;
 updatedOn?: string;
 name: string;
-securityConstraints?: Permission[];
+permissions?: Permission[];
 details?: object;
 
 }
@@ -39,7 +39,7 @@ export const RoleUpdatedOnName = "UpdatedOn";
 
 export const RoleNameName = "Name";
 
-export const RoleSecurityConstraintsName = "SecurityConstraints";
+export const RoleSecurityConstraintsName = "Permissions";
 
 export const RoleDetailsName = "Details";
 

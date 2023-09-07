@@ -17,7 +17,7 @@ func GetAllSystemResources() []*model.Resource {
 		ExtensionResource,
 		ResourceResource,
 		RoleResource,
-		SecurityConstraintResource,
+		PermissionResource,
 		RecordResource,
 	}
 }

@@ -140,7 +140,7 @@ func (m *RoleMapper) ToProperties(role *Role) map[string]*structpb.Value {
 	}
 	properties["name"] = var_Name_mapped
 
-	var_SecurityConstraints := role.SecurityConstraints
+	var_SecurityConstraints := role.Permissions
 
 	if var_SecurityConstraints != nil {
 		var var_SecurityConstraints_mapped *structpb.Value
@@ -156,7 +156,7 @@ func (m *RoleMapper) ToProperties(role *Role) map[string]*structpb.Value {
 			var_SecurityConstraints_l = append(var_SecurityConstraints_l, var_5x_mapped)
 		}
 		var_SecurityConstraints_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_SecurityConstraints_l})
-		properties["securityConstraints"] = var_SecurityConstraints_mapped
+		properties["permissions"] = var_SecurityConstraints_mapped
 	}
 
 	var_Details := role.Details
@@ -272,9 +272,9 @@ func (m *RoleMapper) FromProperties(properties map[string]*structpb.Value) *Role
 
 		s.Name = var_Name_mapped
 	}
-	if properties["securityConstraints"] != nil {
+	if properties["permissions"] != nil {
 
-		var_SecurityConstraints := properties["securityConstraints"]
+		var_SecurityConstraints := properties["permissions"]
 		var_SecurityConstraints_mapped := []*Permission{}
 		for _, v := range var_SecurityConstraints.GetListValue().Values {
 
@@ -284,7 +284,7 @@ func (m *RoleMapper) FromProperties(properties map[string]*structpb.Value) *Role
 			var_SecurityConstraints_mapped = append(var_SecurityConstraints_mapped, var_4x_mapped)
 		}
 
-		s.SecurityConstraints = var_SecurityConstraints_mapped
+		s.Permissions = var_SecurityConstraints_mapped
 	}
 	if properties["details"] != nil {
 

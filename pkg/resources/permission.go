@@ -7,12 +7,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-var SecurityConstraintResource = &model.Resource{
+var PermissionResource = &model.Resource{
 	Name:      "Permission",
 	Namespace: "system",
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
-		Entity:     "security_constraint",
+		Entity:     "permission",
 	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,

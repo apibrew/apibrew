@@ -21,7 +21,7 @@ updatedOn?: string;
 username: string;
 password?: string;
 roles?: Role[];
-securityConstraints?: Permission[];
+permissions?: Permission[];
 details?: object;
 
 }
@@ -46,7 +46,7 @@ export const UserPasswordName = "Password";
 
 export const UserRolesName = "Roles";
 
-export const UserSecurityConstraintsName = "SecurityConstraints";
+export const UserSecurityConstraintsName = "Permissions";
 
 export const UserDetailsName = "Details";
 

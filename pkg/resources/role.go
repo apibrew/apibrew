@@ -31,7 +31,7 @@ var RoleResource = &model.Resource{
 			},
 		},
 		{
-			Name: "securityConstraints",
+			Name: "permissions",
 			Type: model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
 				Type: model.ResourceProperty_REFERENCE,

@@ -26,16 +26,16 @@ func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.Service
 	}
 
 	claims := &JwtUserClaims{
-		Issuer:              params.Issuer,
-		Subject:             params.UserDetails.Username,
-		Audience:            []string{params.Issuer},
-		ExpiresAt:           jwt.NewNumericDate(params.ExpiresAt),
-		NotBefore:           jwt.NewNumericDate(time.Now()),
-		IssuedAt:            jwt.NewNumericDate(time.Now()),
-		ID:                  jit.String(),
-		Username:            params.UserDetails.Username,
-		SecurityConstraints: params.UserDetails.SecurityConstraints,
-		UserId:              params.UserDetails.UserId,
+		Issuer:      params.Issuer,
+		Subject:     params.UserDetails.Username,
+		Audience:    []string{params.Issuer},
+		ExpiresAt:   jwt.NewNumericDate(params.ExpiresAt),
+		NotBefore:   jwt.NewNumericDate(time.Now()),
+		IssuedAt:    jwt.NewNumericDate(time.Now()),
+		ID:          jit.String(),
+		Username:    params.UserDetails.Username,
+		Permissions: params.UserDetails.Permissions,
+		UserId:      params.UserDetails.UserId,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
@@ -65,8 +65,8 @@ func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*Use
 	}
 
 	return &UserDetails{
-		UserId:              claims.UserId,
-		Username:            claims.Username,
-		SecurityConstraints: claims.SecurityConstraints,
+		UserId:      claims.UserId,
+		Username:    claims.Username,
+		Permissions: claims.Permissions,
 	}, nil
 }

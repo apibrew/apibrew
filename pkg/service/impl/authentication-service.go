@@ -70,9 +70,9 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 	token, err := jwt_model.JwtUserDetailsSign(jwt_model.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: jwt_model.UserDetails{
-			UserId:              user.Id.String(),
-			Username:            user.Username,
-			SecurityConstraints: sc,
+			UserId:      user.Id.String(),
+			Username:    user.Username,
+			Permissions: sc,
 		},
 		ExpiresAt: expiration,
 		Issuer:    "github.com/apibrew/apibrew",
@@ -216,10 +216,10 @@ func (s *authenticationService) collectUserSecurityConstraints(ctx context.Conte
 
 	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []*model.Record{userRecord}, []string{
 		"$.roles[]",
-		"$.securityConstraints[]",
-		"$.securityConstraints[].namespace",
-		"$.securityConstraints[].resource",
-		"$.securityConstraints[].user",
+		"$.permissions[]",
+		"$.permissions[].namespace",
+		"$.permissions[].resource",
+		"$.permissions[].user",
 	})
 
 	if err != nil {
@@ -228,25 +228,25 @@ func (s *authenticationService) collectUserSecurityConstraints(ctx context.Conte
 
 	user = resource_model.UserMapperInstance.FromRecord(userRecord)
 
-	result = append(result, user.SecurityConstraints...)
+	result = append(result, user.Permissions...)
 
 	roleRecords := util.ArrayMap(user.Roles, resource_model.RoleMapperInstance.ToRecord)
 
 	err = s.recordService.ResolveReferences(ctx, resources.RoleResource, roleRecords, []string{
-		"$.securityConstraints[]",
-		"$.securityConstraints[].namespace",
-		"$.securityConstraints[].resource",
+		"$.permissions[]",
+		"$.permissions[].namespace",
+		"$.permissions[].resource",
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	result = append(result, resource_model.UserMapperInstance.FromRecord(userRecord).SecurityConstraints...)
+	result = append(result, resource_model.UserMapperInstance.FromRecord(userRecord).Permissions...)
 
 	for _, roleRecord := range roleRecords {
 		role := resource_model.RoleMapperInstance.FromRecord(roleRecord)
-		result = append(result, role.SecurityConstraints...)
+		result = append(result, role.Permissions...)
 	}
 
 	return result, nil
