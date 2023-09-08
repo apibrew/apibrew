@@ -71,6 +71,9 @@ func Run() {
 		cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"),
 		cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc+protohelper"),
 	)
+
+	unMatchedLis := tcpm.Match(cmux.Any())
+
 	http2 := tcpm.Match(cmux.HTTP2())
 	http2Tls := tcpm.Match(cmux.TLS())
 
@@ -88,8 +91,24 @@ func Run() {
 		log.Println(http.ListenAndServe("localhost:6060", nil))
 	}()
 
+	go handleUnmatchedListener(unMatchedLis)
+
 	if err = tcpm.Serve(); err != nil {
 		grpcServer.Stop()
 		log.Fatal(err)
+	}
+}
+
+func handleUnmatchedListener(lis net.Listener) {
+	srv := &http.Server{
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			log.Warnf("unmatched request: %s", r.URL.String())
+			log.Warn(r.Header)
+			w.WriteHeader(http.StatusNotFound)
+		}),
+	}
+
+	if err := srv.Serve(lis); err != nil {
+		panic(err)
 	}
 }
