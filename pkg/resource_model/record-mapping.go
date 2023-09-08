@@ -103,7 +103,7 @@ func (m *RecordMapper) ToProperties(record *Record) map[string]*structpb.Value {
 
 func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Record {
 	var s = m.New()
-	if properties["id"] != nil {
+	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
 		var_Id := properties["id"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
@@ -117,14 +117,14 @@ func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Re
 
 		s.Id = var_Id_mapped
 	}
-	if properties["properties"] != nil {
+	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
 
 		var_Properties := properties["properties"]
 		var_Properties_mapped := unstructured.FromStructValue(var_Properties.GetStructValue())
 
 		s.Properties = var_Properties_mapped
 	}
-	if properties["packedProperties"] != nil {
+	if properties["packedProperties"] != nil && properties["packedProperties"].AsInterface() != nil {
 
 		var_PackedProperties := properties["packedProperties"]
 		var_PackedProperties_mapped := []unstructured.Unstructured{}

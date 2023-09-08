@@ -25,6 +25,12 @@ func Records(resource *model.Resource, list []*model.Record, isUpdate bool) erro
 		for _, property := range resource.Properties {
 
 			packedVal, exists := record.Properties[property.Name]
+
+			if !exists && property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
+				packedVal = property.DefaultValue
+				exists = true
+			}
+
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
@@ -232,7 +238,11 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 
 			for _, Item := range properties {
 				subType := types.ByResourcePropertyType(Item.Type)
-				packedVal := structValue.StructValue.Fields[Item.Name]
+				packedVal, exists := structValue.StructValue.Fields[Item.Name]
+
+				if !exists && Item.DefaultValue != nil && Item.DefaultValue.AsInterface() != nil {
+					packedVal = Item.DefaultValue
+				}
 
 				var val interface{}
 				var err error
@@ -252,16 +262,14 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 					}
 				}
 
-				if subType.IsEmpty(val) {
-					if Item.Required {
-						errorFields = append(errorFields, &model.ErrorField{
-							RecordId: recordId,
-							Property: propertyPath + Item.Name,
-							Message:  fmt.Sprintf("required field is empty: %v[%s]", Item.Name, Item.Name),
-							Value:    value,
-						})
-						continue
-					}
+				if subType.IsEmpty(val) && Item.Required {
+					errorFields = append(errorFields, &model.ErrorField{
+						RecordId: recordId,
+						Property: propertyPath + Item.Name,
+						Message:  fmt.Sprintf("required field is empty: %v[%s]", Item.Name, Item.Name),
+						Value:    value,
+					})
+					continue
 				}
 
 				errorFields = append(errorFields, PropertyPackedValue(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)

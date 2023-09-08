@@ -187,7 +187,7 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]*stru
 
 func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value) *DataSource {
 	var s = m.New()
-	if properties["id"] != nil {
+	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
 		var_Id := properties["id"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
@@ -201,7 +201,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Id = var_Id_mapped
 	}
-	if properties["version"] != nil {
+	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 
 		var_Version := properties["version"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
@@ -214,7 +214,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Version = var_Version_mapped
 	}
-	if properties["createdBy"] != nil {
+	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
 
 		var_CreatedBy := properties["createdBy"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
@@ -228,7 +228,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.CreatedBy = var_CreatedBy_mapped
 	}
-	if properties["updatedBy"] != nil {
+	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
 
 		var_UpdatedBy := properties["updatedBy"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
@@ -242,7 +242,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.UpdatedBy = var_UpdatedBy_mapped
 	}
-	if properties["createdOn"] != nil {
+	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
 
 		var_CreatedOn := properties["createdOn"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
@@ -256,7 +256,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.CreatedOn = var_CreatedOn_mapped
 	}
-	if properties["updatedOn"] != nil {
+	if properties["updatedOn"] != nil && properties["updatedOn"].AsInterface() != nil {
 
 		var_UpdatedOn := properties["updatedOn"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_UpdatedOn)
@@ -270,7 +270,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
-	if properties["name"] != nil {
+	if properties["name"] != nil && properties["name"].AsInterface() != nil {
 
 		var_Name := properties["name"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
@@ -283,7 +283,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Name = var_Name_mapped
 	}
-	if properties["description"] != nil {
+	if properties["description"] != nil && properties["description"].AsInterface() != nil {
 
 		var_Description := properties["description"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Description)
@@ -296,14 +296,14 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Description = var_Description_mapped
 	}
-	if properties["backend"] != nil {
+	if properties["backend"] != nil && properties["backend"].AsInterface() != nil {
 
 		var_Backend := properties["backend"]
 		var_Backend_mapped := (DataSourceBackend)(var_Backend.GetStringValue())
 
 		s.Backend = var_Backend_mapped
 	}
-	if properties["options"] != nil {
+	if properties["options"] != nil && properties["options"].AsInterface() != nil {
 
 		var_Options := properties["options"]
 		var_Options_mapped := make(map[string]string)

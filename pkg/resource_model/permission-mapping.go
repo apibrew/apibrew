@@ -15,27 +15,27 @@ import "github.com/google/uuid"
 import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
-type SecurityConstraintMapper struct {
+type PermissionMapper struct {
 }
 
-func NewSecurityConstraintMapper() *SecurityConstraintMapper {
-	return &SecurityConstraintMapper{}
+func NewPermissionMapper() *PermissionMapper {
+	return &PermissionMapper{}
 }
 
-var SecurityConstraintMapperInstance = NewSecurityConstraintMapper()
+var PermissionMapperInstance = NewPermissionMapper()
 
-func (m *SecurityConstraintMapper) New() *Permission {
+func (m *PermissionMapper) New() *Permission {
 	return &Permission{}
 }
 
-func (m *SecurityConstraintMapper) ResourceIdentity() abs.ResourceIdentity {
+func (m *PermissionMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
 		Namespace: "system",
 		Name:      "Permission",
 	}
 }
 
-func (m *SecurityConstraintMapper) ToRecord(permission *Permission) *model.Record {
+func (m *PermissionMapper) ToRecord(permission *Permission) *model.Record {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(permission)
 
@@ -46,11 +46,11 @@ func (m *SecurityConstraintMapper) ToRecord(permission *Permission) *model.Recor
 	return rec
 }
 
-func (m *SecurityConstraintMapper) FromRecord(record *model.Record) *Permission {
+func (m *PermissionMapper) FromRecord(record *model.Record) *Permission {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *SecurityConstraintMapper) ToProperties(permission *Permission) map[string]*structpb.Value {
+func (m *PermissionMapper) ToProperties(permission *Permission) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
 	var_Id := permission.Id
@@ -298,9 +298,9 @@ func (m *SecurityConstraintMapper) ToProperties(permission *Permission) map[stri
 	return properties
 }
 
-func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structpb.Value) *Permission {
+func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value) *Permission {
 	var s = m.New()
-	if properties["id"] != nil {
+	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
 		var_Id := properties["id"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
@@ -314,7 +314,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.Id = var_Id_mapped
 	}
-	if properties["version"] != nil {
+	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 
 		var_Version := properties["version"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
@@ -327,7 +327,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.Version = var_Version_mapped
 	}
-	if properties["createdBy"] != nil {
+	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
 
 		var_CreatedBy := properties["createdBy"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
@@ -341,7 +341,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.CreatedBy = var_CreatedBy_mapped
 	}
-	if properties["updatedBy"] != nil {
+	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
 
 		var_UpdatedBy := properties["updatedBy"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
@@ -355,7 +355,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.UpdatedBy = var_UpdatedBy_mapped
 	}
-	if properties["createdOn"] != nil {
+	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
 
 		var_CreatedOn := properties["createdOn"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
@@ -369,7 +369,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.CreatedOn = var_CreatedOn_mapped
 	}
-	if properties["updatedOn"] != nil {
+	if properties["updatedOn"] != nil && properties["updatedOn"].AsInterface() != nil {
 
 		var_UpdatedOn := properties["updatedOn"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_UpdatedOn)
@@ -383,7 +383,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
-	if properties["namespace"] != nil {
+	if properties["namespace"] != nil && properties["namespace"].AsInterface() != nil {
 
 		var_Namespace := properties["namespace"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Namespace)
@@ -397,7 +397,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.Namespace = var_Namespace_mapped
 	}
-	if properties["resource"] != nil {
+	if properties["resource"] != nil && properties["resource"].AsInterface() != nil {
 
 		var_Resource := properties["resource"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Resource)
@@ -411,7 +411,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.Resource = var_Resource_mapped
 	}
-	if properties["property"] != nil {
+	if properties["property"] != nil && properties["property"].AsInterface() != nil {
 
 		var_Property := properties["property"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Property)
@@ -425,7 +425,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.Property = var_Property_mapped
 	}
-	if properties["propertyValue"] != nil {
+	if properties["propertyValue"] != nil && properties["propertyValue"].AsInterface() != nil {
 
 		var_PropertyValue := properties["propertyValue"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_PropertyValue)
@@ -439,22 +439,22 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.PropertyValue = var_PropertyValue_mapped
 	}
-	if properties["propertyMode"] != nil {
+	if properties["propertyMode"] != nil && properties["propertyMode"].AsInterface() != nil {
 
 		var_PropertyMode := properties["propertyMode"]
-		var_PropertyMode_mapped := new(SecurityConstraintPropertyMode)
-		*var_PropertyMode_mapped = (SecurityConstraintPropertyMode)(var_PropertyMode.GetStringValue())
+		var_PropertyMode_mapped := new(PermissionPropertyMode)
+		*var_PropertyMode_mapped = (PermissionPropertyMode)(var_PropertyMode.GetStringValue())
 
 		s.PropertyMode = var_PropertyMode_mapped
 	}
-	if properties["operation"] != nil {
+	if properties["operation"] != nil && properties["operation"].AsInterface() != nil {
 
 		var_Operation := properties["operation"]
-		var_Operation_mapped := (SecurityConstraintOperation)(var_Operation.GetStringValue())
+		var_Operation_mapped := (PermissionOperation)(var_Operation.GetStringValue())
 
 		s.Operation = var_Operation_mapped
 	}
-	if properties["recordIds"] != nil {
+	if properties["recordIds"] != nil && properties["recordIds"].AsInterface() != nil {
 
 		var_RecordIds := properties["recordIds"]
 		var_RecordIds_mapped := []string{}
@@ -474,7 +474,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.RecordIds = var_RecordIds_mapped
 	}
-	if properties["before"] != nil {
+	if properties["before"] != nil && properties["before"].AsInterface() != nil {
 
 		var_Before := properties["before"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_Before)
@@ -488,7 +488,7 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.Before = var_Before_mapped
 	}
-	if properties["after"] != nil {
+	if properties["after"] != nil && properties["after"].AsInterface() != nil {
 
 		var_After := properties["after"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_After)
@@ -502,28 +502,28 @@ func (m *SecurityConstraintMapper) FromProperties(properties map[string]*structp
 
 		s.After = var_After_mapped
 	}
-	if properties["user"] != nil {
+	if properties["user"] != nil && properties["user"].AsInterface() != nil {
 
 		var_User := properties["user"]
 		var_User_mapped := UserMapperInstance.FromProperties(var_User.GetStructValue().Fields)
 
 		s.User = var_User_mapped
 	}
-	if properties["role"] != nil {
+	if properties["role"] != nil && properties["role"].AsInterface() != nil {
 
 		var_Role := properties["role"]
 		var_Role_mapped := RoleMapperInstance.FromProperties(var_Role.GetStructValue().Fields)
 
 		s.Role = var_Role_mapped
 	}
-	if properties["permit"] != nil {
+	if properties["permit"] != nil && properties["permit"].AsInterface() != nil {
 
 		var_Permit := properties["permit"]
-		var_Permit_mapped := (SecurityConstraintPermit)(var_Permit.GetStringValue())
+		var_Permit_mapped := (PermissionPermit)(var_Permit.GetStringValue())
 
 		s.Permit = var_Permit_mapped
 	}
-	if properties["localFlags"] != nil {
+	if properties["localFlags"] != nil && properties["localFlags"].AsInterface() != nil {
 
 		var_LocalFlags := properties["localFlags"]
 		var_LocalFlags_mapped := new(unstructured.Unstructured)

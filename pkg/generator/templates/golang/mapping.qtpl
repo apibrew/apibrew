@@ -139,7 +139,7 @@ func (m *{%s typeName %}Mapper) ToProperties({%= GoVarName(typeName)%} *{%s type
 func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.Value) *{%s typeName %}  {
     var s = m.New()
 {%- for _, property := range properties -%}
-    if properties["{%s property.Name %}"] != nil {
+    if properties["{%s property.Name %}"] != nil && properties["{%s property.Name %}"].AsInterface() != nil {
         {% code valueVarName := "var_" + GoName(property.Name) %}
         {%s valueVarName %} := properties["{%s property.Name %}"]
         {%= PreparePropertyFromMapping(resource, property, valueVarName, false) %}

@@ -637,7 +637,11 @@ func (m *`)
 //line templates/golang/mapping.qtpl:142
 		qw422016.E().S(property.Name)
 //line templates/golang/mapping.qtpl:142
-		qw422016.N().S(`"] != nil {
+		qw422016.N().S(`"] != nil && properties["`)
+//line templates/golang/mapping.qtpl:142
+		qw422016.E().S(property.Name)
+//line templates/golang/mapping.qtpl:142
+		qw422016.N().S(`"].AsInterface() != nil {
         `)
 //line templates/golang/mapping.qtpl:143
 		valueVarName := "var_" + GoName(property.Name)

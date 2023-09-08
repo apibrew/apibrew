@@ -35,8 +35,8 @@ func prepareInitRecords() []*model.InitRecord {
 				Name: "root",
 				Permissions: []*resource_model.Permission{
 					{
-						Operation: resource_model.SecurityConstraintOperation_FULL,
-						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
+						Operation: resource_model.PermissionOperation_FULL,
+						Permit:    resource_model.PermissionPermit_ALLOW,
 					},
 				},
 			}),
@@ -50,20 +50,20 @@ func prepareInitRecords() []*model.InitRecord {
 					{
 						Namespace: &system.UserResourceModel.Namespace.Name,
 						Resource:  &system.UserResourceModel.Name,
-						Operation: resource_model.SecurityConstraintOperation_READ,
-						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
+						Operation: resource_model.PermissionOperation_READ,
+						Permit:    resource_model.PermissionPermit_ALLOW,
 					},
 					{
 						Namespace: &system.NamespaceResourceModel.Namespace.Name,
 						Resource:  &system.NamespaceResourceModel.Name,
-						Operation: resource_model.SecurityConstraintOperation_CREATE,
-						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
+						Operation: resource_model.PermissionOperation_CREATE,
+						Permit:    resource_model.PermissionPermit_ALLOW,
 					},
 					{
 						Namespace: &system.NamespaceResourceModel.Namespace.Name,
 						Resource:  &system.NamespaceResourceModel.Name,
-						Operation: resource_model.SecurityConstraintOperation_READ,
-						Permit:    resource_model.SecurityConstraintPermit_ALLOW,
+						Operation: resource_model.PermissionOperation_READ,
+						Permit:    resource_model.PermissionPermit_ALLOW,
 					},
 				},
 			}),

@@ -148,7 +148,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 		}
 	}
 
-	if permission.GetOperation() != resource_model.SecurityConstraintOperation_FULL && permission.Operation != params.Operation {
+	if permission.GetOperation() != resource_model.PermissionOperation_FULL && permission.Operation != params.Operation {
 		logger.Tracef("Skipping permission as operation not matched: %v", permission)
 		return false, nil
 	}
@@ -169,7 +169,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 	}
 
 	if permission.Property != nil {
-		if permission.PropertyMode != nil && *permission.PropertyMode == resource_model.SecurityConstraintPropertyMode_PROPERTYMATCHONLY {
+		if permission.PropertyMode != nil && *permission.PropertyMode == resource_model.PermissionPropertyMode_PROPERTYMATCHONLY {
 			if permission.PropertyValue != nil {
 				for _, record := range *params.Records {
 					for key := range record.Properties {

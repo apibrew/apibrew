@@ -41,7 +41,7 @@ func (s *Role) GetUpdatedOn() *time.Time {
 func (s *Role) GetName() string {
 	return s.Name
 }
-func (s *Role) GetSecurityConstraints() []*Permission {
+func (s *Role) GetPermissions() []*Permission {
 	return s.Permissions
 }
 func (s *Role) GetDetails() *unstructured.Unstructured {

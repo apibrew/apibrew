@@ -250,7 +250,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
 		Records:   &resourceRecords,
-		Operation: resource_model.SecurityConstraintOperation_UPDATE,
+		Operation: resource_model.PermissionOperation_UPDATE,
 	}); err != nil {
 		return err
 	}
@@ -406,7 +406,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
 		Records:   &[]*model.Record{resourceRecord},
-		Operation: resource_model.SecurityConstraintOperation_CREATE,
+		Operation: resource_model.PermissionOperation_CREATE,
 	}); err != nil {
 		return nil, err
 	}
@@ -554,11 +554,11 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 
 			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 				Resource:  resources.ResourceResource,
-				Operation: resource_model.SecurityConstraintOperation_READ,
+				Operation: resource_model.PermissionOperation_READ,
 			}); err != nil {
 				if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 					Resource:  item,
-					Operation: resource_model.SecurityConstraintOperation_READ,
+					Operation: resource_model.PermissionOperation_READ,
 				}); err != nil {
 					return nil, err
 				}
@@ -687,7 +687,7 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 		if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 			Resource:  resources.ResourceResource,
 			Records:   &[]*model.Record{{Id: resourceId}},
-			Operation: resource_model.SecurityConstraintOperation_DELETE,
+			Operation: resource_model.PermissionOperation_DELETE,
 		}); err != nil {
 			return err
 		}
@@ -754,7 +754,7 @@ func (r *resourceService) mustModifyResource(resource *model.Resource) errors.Se
 func (r *resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
-		Operation: resource_model.SecurityConstraintOperation_READ,
+		Operation: resource_model.PermissionOperation_READ,
 	}); err == nil {
 		return r.schema.Resources, nil
 	}
@@ -763,7 +763,7 @@ func (r *resourceService) List(ctx context.Context) ([]*model.Resource, errors.S
 	for _, resource := range r.schema.Resources {
 		if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 			Resource:  resource,
-			Operation: resource_model.SecurityConstraintOperation_READ,
+			Operation: resource_model.PermissionOperation_READ,
 		}); err == nil {
 			filteredResources = append(filteredResources, resource)
 		}
@@ -779,11 +779,11 @@ func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, 
 			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 				Resource:  resources.ResourceResource,
 				Records:   &[]*model.Record{{Id: id}},
-				Operation: resource_model.SecurityConstraintOperation_READ,
+				Operation: resource_model.PermissionOperation_READ,
 			}); err != nil {
 				if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 					Resource:  item,
-					Operation: resource_model.SecurityConstraintOperation_READ,
+					Operation: resource_model.PermissionOperation_READ,
 				}); err != nil {
 					return nil, err
 				}

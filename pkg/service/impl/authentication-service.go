@@ -61,7 +61,7 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 	// Prepare token
 	expiration := s.ExpirationFromTerm(term)
 
-	sc, err := s.collectUserSecurityConstraints(ctx, user)
+	sc, err := s.collectUserPermissions(ctx, user)
 
 	if err != nil {
 		return nil, err
@@ -209,7 +209,7 @@ func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Ti
 	}
 }
 
-func (s *authenticationService) collectUserSecurityConstraints(ctx context.Context, user *resource_model.User) ([]*resource_model.Permission, errors.ServiceError) {
+func (s *authenticationService) collectUserPermissions(ctx context.Context, user *resource_model.User) ([]*resource_model.Permission, errors.ServiceError) {
 	var result []*resource_model.Permission
 
 	var userRecord = resource_model.UserMapperInstance.ToRecord(user)

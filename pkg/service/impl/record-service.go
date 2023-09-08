@@ -49,7 +49,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
-		Operation: resource_model.SecurityConstraintOperation_READ,
+		Operation: resource_model.PermissionOperation_READ,
 	}); err != nil {
 		return nil, 0, err
 	}
@@ -120,7 +120,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &records,
-		Operation: resource_model.SecurityConstraintOperation_READ,
+		Operation: resource_model.PermissionOperation_READ,
 	}); err != nil {
 		return nil, 0, err
 	}
@@ -153,7 +153,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &params.Records,
-		Operation: resource_model.SecurityConstraintOperation_CREATE,
+		Operation: resource_model.PermissionOperation_CREATE,
 	}); err != nil {
 		return nil, err
 	}
@@ -399,7 +399,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &params.Records,
-		Operation: resource_model.SecurityConstraintOperation_UPDATE,
+		Operation: resource_model.PermissionOperation_UPDATE,
 	}); err != nil {
 		return nil, err
 	}
@@ -640,7 +640,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 				Id: id,
 			},
 		},
-		Operation: resource_model.SecurityConstraintOperation_READ,
+		Operation: resource_model.PermissionOperation_READ,
 	}); err != nil {
 		return nil, err
 	}
@@ -750,7 +750,7 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &recordForCheck,
-		Operation: resource_model.SecurityConstraintOperation_DELETE,
+		Operation: resource_model.PermissionOperation_DELETE,
 	}); err != nil {
 		return err
 	}

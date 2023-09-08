@@ -49,7 +49,7 @@ func (s *User) GetPassword() *string {
 func (s *User) GetRoles() []*Role {
 	return s.Roles
 }
-func (s *User) GetSecurityConstraints() []*Permission {
+func (s *User) GetPermissions() []*Permission {
 	return s.Permissions
 }
 func (s *User) GetDetails() *unstructured.Unstructured {

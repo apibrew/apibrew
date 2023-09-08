@@ -240,7 +240,7 @@ func (m *ExtensionMapper) ToProperties(extension *Extension) map[string]*structp
 
 func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) *Extension {
 	var s = m.New()
-	if properties["id"] != nil {
+	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
 		var_Id := properties["id"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
@@ -254,7 +254,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Id = var_Id_mapped
 	}
-	if properties["version"] != nil {
+	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 
 		var_Version := properties["version"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
@@ -267,7 +267,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Version = var_Version_mapped
 	}
-	if properties["createdBy"] != nil {
+	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
 
 		var_CreatedBy := properties["createdBy"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
@@ -281,7 +281,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.CreatedBy = var_CreatedBy_mapped
 	}
-	if properties["updatedBy"] != nil {
+	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
 
 		var_UpdatedBy := properties["updatedBy"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
@@ -295,7 +295,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.UpdatedBy = var_UpdatedBy_mapped
 	}
-	if properties["createdOn"] != nil {
+	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
 
 		var_CreatedOn := properties["createdOn"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
@@ -309,7 +309,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.CreatedOn = var_CreatedOn_mapped
 	}
-	if properties["updatedOn"] != nil {
+	if properties["updatedOn"] != nil && properties["updatedOn"].AsInterface() != nil {
 
 		var_UpdatedOn := properties["updatedOn"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_UpdatedOn)
@@ -323,7 +323,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
-	if properties["name"] != nil {
+	if properties["name"] != nil && properties["name"].AsInterface() != nil {
 
 		var_Name := properties["name"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
@@ -336,7 +336,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Name = var_Name_mapped
 	}
-	if properties["description"] != nil {
+	if properties["description"] != nil && properties["description"].AsInterface() != nil {
 
 		var_Description := properties["description"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Description)
@@ -350,7 +350,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Description = var_Description_mapped
 	}
-	if properties["selector"] != nil {
+	if properties["selector"] != nil && properties["selector"].AsInterface() != nil {
 
 		var_Selector := properties["selector"]
 		var mappedValue = ExtensionEventSelectorMapperInstance.FromProperties(var_Selector.GetStructValue().Fields)
@@ -359,7 +359,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Selector = var_Selector_mapped
 	}
-	if properties["order"] != nil {
+	if properties["order"] != nil && properties["order"].AsInterface() != nil {
 
 		var_Order := properties["order"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Order)
@@ -372,7 +372,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Order = var_Order_mapped
 	}
-	if properties["finalizes"] != nil {
+	if properties["finalizes"] != nil && properties["finalizes"].AsInterface() != nil {
 
 		var_Finalizes := properties["finalizes"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Finalizes)
@@ -385,7 +385,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Finalizes = var_Finalizes_mapped
 	}
-	if properties["sync"] != nil {
+	if properties["sync"] != nil && properties["sync"].AsInterface() != nil {
 
 		var_Sync := properties["sync"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Sync)
@@ -398,7 +398,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Sync = var_Sync_mapped
 	}
-	if properties["responds"] != nil {
+	if properties["responds"] != nil && properties["responds"].AsInterface() != nil {
 
 		var_Responds := properties["responds"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Responds)
@@ -411,7 +411,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Responds = var_Responds_mapped
 	}
-	if properties["call"] != nil {
+	if properties["call"] != nil && properties["call"].AsInterface() != nil {
 
 		var_Call := properties["call"]
 		var mappedValue = ExtensionExternalCallMapperInstance.FromProperties(var_Call.GetStructValue().Fields)
@@ -420,7 +420,7 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 
 		s.Call = var_Call_mapped
 	}
-	if properties["annotations"] != nil {
+	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
 
 		var_Annotations := properties["annotations"]
 		var_Annotations_mapped := make(map[string]string)
@@ -523,7 +523,7 @@ func (m *ExtensionFunctionCallMapper) ToProperties(extensionFunctionCall *Extens
 
 func (m *ExtensionFunctionCallMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionFunctionCall {
 	var s = m.New()
-	if properties["host"] != nil {
+	if properties["host"] != nil && properties["host"].AsInterface() != nil {
 
 		var_Host := properties["host"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Host)
@@ -536,7 +536,7 @@ func (m *ExtensionFunctionCallMapper) FromProperties(properties map[string]*stru
 
 		s.Host = var_Host_mapped
 	}
-	if properties["functionName"] != nil {
+	if properties["functionName"] != nil && properties["functionName"].AsInterface() != nil {
 
 		var_FunctionName := properties["functionName"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_FunctionName)
@@ -601,7 +601,7 @@ func (m *ExtensionHttpCallMapper) ToProperties(extensionHttpCall *ExtensionHttpC
 
 func (m *ExtensionHttpCallMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionHttpCall {
 	var s = m.New()
-	if properties["uri"] != nil {
+	if properties["uri"] != nil && properties["uri"].AsInterface() != nil {
 
 		var_Uri := properties["uri"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Uri)
@@ -614,7 +614,7 @@ func (m *ExtensionHttpCallMapper) FromProperties(properties map[string]*structpb
 
 		s.Uri = var_Uri_mapped
 	}
-	if properties["method"] != nil {
+	if properties["method"] != nil && properties["method"].AsInterface() != nil {
 
 		var_Method := properties["method"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Method)
@@ -675,7 +675,7 @@ func (m *ExtensionExternalCallMapper) ToProperties(extensionExternalCall *Extens
 
 func (m *ExtensionExternalCallMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionExternalCall {
 	var s = m.New()
-	if properties["functionCall"] != nil {
+	if properties["functionCall"] != nil && properties["functionCall"].AsInterface() != nil {
 
 		var_FunctionCall := properties["functionCall"]
 		var mappedValue = ExtensionFunctionCallMapperInstance.FromProperties(var_FunctionCall.GetStructValue().Fields)
@@ -684,7 +684,7 @@ func (m *ExtensionExternalCallMapper) FromProperties(properties map[string]*stru
 
 		s.FunctionCall = var_FunctionCall_mapped
 	}
-	if properties["httpCall"] != nil {
+	if properties["httpCall"] != nil && properties["httpCall"].AsInterface() != nil {
 
 		var_HttpCall := properties["httpCall"]
 		var mappedValue = ExtensionHttpCallMapperInstance.FromProperties(var_HttpCall.GetStructValue().Fields)
@@ -848,7 +848,7 @@ func (m *ExtensionEventSelectorMapper) ToProperties(extensionEventSelector *Exte
 
 func (m *ExtensionEventSelectorMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionEventSelector {
 	var s = m.New()
-	if properties["actions"] != nil {
+	if properties["actions"] != nil && properties["actions"].AsInterface() != nil {
 
 		var_Actions := properties["actions"]
 		var_Actions_mapped := []EventAction{}
@@ -862,7 +862,7 @@ func (m *ExtensionEventSelectorMapper) FromProperties(properties map[string]*str
 
 		s.Actions = var_Actions_mapped
 	}
-	if properties["recordSelector"] != nil {
+	if properties["recordSelector"] != nil && properties["recordSelector"].AsInterface() != nil {
 
 		var_RecordSelector := properties["recordSelector"]
 		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_RecordSelector.GetStructValue().Fields)
@@ -871,7 +871,7 @@ func (m *ExtensionEventSelectorMapper) FromProperties(properties map[string]*str
 
 		s.RecordSelector = var_RecordSelector_mapped
 	}
-	if properties["namespaces"] != nil {
+	if properties["namespaces"] != nil && properties["namespaces"].AsInterface() != nil {
 
 		var_Namespaces := properties["namespaces"]
 		var_Namespaces_mapped := []string{}
@@ -891,7 +891,7 @@ func (m *ExtensionEventSelectorMapper) FromProperties(properties map[string]*str
 
 		s.Namespaces = var_Namespaces_mapped
 	}
-	if properties["resources"] != nil {
+	if properties["resources"] != nil && properties["resources"].AsInterface() != nil {
 
 		var_Resources := properties["resources"]
 		var_Resources_mapped := []string{}
@@ -911,7 +911,7 @@ func (m *ExtensionEventSelectorMapper) FromProperties(properties map[string]*str
 
 		s.Resources = var_Resources_mapped
 	}
-	if properties["ids"] != nil {
+	if properties["ids"] != nil && properties["ids"].AsInterface() != nil {
 
 		var_Ids := properties["ids"]
 		var_Ids_mapped := []string{}
@@ -931,7 +931,7 @@ func (m *ExtensionEventSelectorMapper) FromProperties(properties map[string]*str
 
 		s.Ids = var_Ids_mapped
 	}
-	if properties["annotations"] != nil {
+	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
 
 		var_Annotations := properties["annotations"]
 		var_Annotations_mapped := make(map[string]string)
@@ -1039,7 +1039,7 @@ func (m *ExtensionRecordSearchParamsMapper) ToProperties(extensionRecordSearchPa
 
 func (m *ExtensionRecordSearchParamsMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionRecordSearchParams {
 	var s = m.New()
-	if properties["query"] != nil {
+	if properties["query"] != nil && properties["query"].AsInterface() != nil {
 
 		var_Query := properties["query"]
 		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_Query.GetStructValue().Fields)
@@ -1048,7 +1048,7 @@ func (m *ExtensionRecordSearchParamsMapper) FromProperties(properties map[string
 
 		s.Query = var_Query_mapped
 	}
-	if properties["limit"] != nil {
+	if properties["limit"] != nil && properties["limit"].AsInterface() != nil {
 
 		var_Limit := properties["limit"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Limit)
@@ -1062,7 +1062,7 @@ func (m *ExtensionRecordSearchParamsMapper) FromProperties(properties map[string
 
 		s.Limit = var_Limit_mapped
 	}
-	if properties["offset"] != nil {
+	if properties["offset"] != nil && properties["offset"].AsInterface() != nil {
 
 		var_Offset := properties["offset"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Offset)
@@ -1076,7 +1076,7 @@ func (m *ExtensionRecordSearchParamsMapper) FromProperties(properties map[string
 
 		s.Offset = var_Offset_mapped
 	}
-	if properties["resolveReferences"] != nil {
+	if properties["resolveReferences"] != nil && properties["resolveReferences"].AsInterface() != nil {
 
 		var_ResolveReferences := properties["resolveReferences"]
 		var_ResolveReferences_mapped := []string{}
@@ -1299,7 +1299,7 @@ func (m *ExtensionEventMapper) ToProperties(extensionEvent *ExtensionEvent) map[
 
 func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionEvent {
 	var s = m.New()
-	if properties["id"] != nil {
+	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
 		var_Id := properties["id"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
@@ -1313,14 +1313,14 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.Id = var_Id_mapped
 	}
-	if properties["action"] != nil {
+	if properties["action"] != nil && properties["action"].AsInterface() != nil {
 
 		var_Action := properties["action"]
 		var_Action_mapped := (EventAction)(var_Action.GetStringValue())
 
 		s.Action = var_Action_mapped
 	}
-	if properties["recordSearchParams"] != nil {
+	if properties["recordSearchParams"] != nil && properties["recordSearchParams"].AsInterface() != nil {
 
 		var_RecordSearchParams := properties["recordSearchParams"]
 		var mappedValue = ExtensionRecordSearchParamsMapperInstance.FromProperties(var_RecordSearchParams.GetStructValue().Fields)
@@ -1329,7 +1329,7 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.RecordSearchParams = var_RecordSearchParams_mapped
 	}
-	if properties["actionSummary"] != nil {
+	if properties["actionSummary"] != nil && properties["actionSummary"].AsInterface() != nil {
 
 		var_ActionSummary := properties["actionSummary"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ActionSummary)
@@ -1343,7 +1343,7 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.ActionSummary = var_ActionSummary_mapped
 	}
-	if properties["actionDescription"] != nil {
+	if properties["actionDescription"] != nil && properties["actionDescription"].AsInterface() != nil {
 
 		var_ActionDescription := properties["actionDescription"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ActionDescription)
@@ -1357,14 +1357,14 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.ActionDescription = var_ActionDescription_mapped
 	}
-	if properties["resource"] != nil {
+	if properties["resource"] != nil && properties["resource"].AsInterface() != nil {
 
 		var_Resource := properties["resource"]
 		var_Resource_mapped := ResourceMapperInstance.FromProperties(var_Resource.GetStructValue().Fields)
 
 		s.Resource = var_Resource_mapped
 	}
-	if properties["records"] != nil {
+	if properties["records"] != nil && properties["records"].AsInterface() != nil {
 
 		var_Records := properties["records"]
 		var_Records_mapped := []*Record{}
@@ -1378,7 +1378,7 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.Records = var_Records_mapped
 	}
-	if properties["ids"] != nil {
+	if properties["ids"] != nil && properties["ids"].AsInterface() != nil {
 
 		var_Ids := properties["ids"]
 		var_Ids_mapped := []string{}
@@ -1398,7 +1398,7 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.Ids = var_Ids_mapped
 	}
-	if properties["finalizes"] != nil {
+	if properties["finalizes"] != nil && properties["finalizes"].AsInterface() != nil {
 
 		var_Finalizes := properties["finalizes"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Finalizes)
@@ -1412,7 +1412,7 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.Finalizes = var_Finalizes_mapped
 	}
-	if properties["sync"] != nil {
+	if properties["sync"] != nil && properties["sync"].AsInterface() != nil {
 
 		var_Sync := properties["sync"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Sync)
@@ -1426,7 +1426,7 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.Sync = var_Sync_mapped
 	}
-	if properties["time"] != nil {
+	if properties["time"] != nil && properties["time"].AsInterface() != nil {
 
 		var_Time := properties["time"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_Time)
@@ -1440,7 +1440,7 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 
 		s.Time = var_Time_mapped
 	}
-	if properties["annotations"] != nil {
+	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
 
 		var_Annotations := properties["annotations"]
 		var_Annotations_mapped := make(map[string]string)

@@ -123,49 +123,49 @@ func (PermitType) EnumDescriptor() ([]byte, []int) {
 	return file_model_security_proto_rawDescGZIP(), []int{1}
 }
 
-type SecurityConstraint_PropertyMode int32
+type Permission_PropertyMode int32
 
 const (
-	SecurityConstraint_PROPERTY_MATCH_ONLY SecurityConstraint_PropertyMode = 0
-	SecurityConstraint_PROPERTY_MATCH_ANY  SecurityConstraint_PropertyMode = 1
+	Permission_PROPERTY_MATCH_ONLY Permission_PropertyMode = 0
+	Permission_PROPERTY_MATCH_ANY  Permission_PropertyMode = 1
 )
 
-// Enum value maps for SecurityConstraint_PropertyMode.
+// Enum value maps for Permission_PropertyMode.
 var (
-	SecurityConstraint_PropertyMode_name = map[int32]string{
+	Permission_PropertyMode_name = map[int32]string{
 		0: "PROPERTY_MATCH_ONLY",
 		1: "PROPERTY_MATCH_ANY",
 	}
-	SecurityConstraint_PropertyMode_value = map[string]int32{
+	Permission_PropertyMode_value = map[string]int32{
 		"PROPERTY_MATCH_ONLY": 0,
 		"PROPERTY_MATCH_ANY":  1,
 	}
 )
 
-func (x SecurityConstraint_PropertyMode) Enum() *SecurityConstraint_PropertyMode {
-	p := new(SecurityConstraint_PropertyMode)
+func (x Permission_PropertyMode) Enum() *Permission_PropertyMode {
+	p := new(Permission_PropertyMode)
 	*p = x
 	return p
 }
 
-func (x SecurityConstraint_PropertyMode) String() string {
+func (x Permission_PropertyMode) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (SecurityConstraint_PropertyMode) Descriptor() protoreflect.EnumDescriptor {
+func (Permission_PropertyMode) Descriptor() protoreflect.EnumDescriptor {
 	return file_model_security_proto_enumTypes[2].Descriptor()
 }
 
-func (SecurityConstraint_PropertyMode) Type() protoreflect.EnumType {
+func (Permission_PropertyMode) Type() protoreflect.EnumType {
 	return &file_model_security_proto_enumTypes[2]
 }
 
-func (x SecurityConstraint_PropertyMode) Number() protoreflect.EnumNumber {
+func (x Permission_PropertyMode) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use SecurityConstraint_PropertyMode.Descriptor instead.
-func (SecurityConstraint_PropertyMode) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use Permission_PropertyMode.Descriptor instead.
+func (Permission_PropertyMode) EnumDescriptor() ([]byte, []int) {
 	return file_model_security_proto_rawDescGZIP(), []int{0, 0}
 }
 
@@ -176,13 +176,13 @@ type Permission struct {
 	unknownFields protoimpl.UnknownFields
 
 	// match part
-	Namespace     string                          `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`                                                    //  namespace name where it will be applied
-	Resource      string                          `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`                                                      // resource name where it will be applied
-	Property      string                          `protobuf:"bytes,3,opt,name=property,proto3" json:"property,omitempty"`                                                      // property name where it will be applied
-	PropertyValue *string                         `protobuf:"bytes,4,opt,name=propertyValue,proto3,oneof" json:"propertyValue,omitempty"`                                      // property value where it will be applied
-	PropertyMode  SecurityConstraint_PropertyMode `protobuf:"varint,15,opt,name=propertyMode,proto3,enum=model.SecurityConstraint_PropertyMode" json:"propertyMode,omitempty"` // property mode
-	Operation     OperationType                   `protobuf:"varint,13,opt,name=operation,proto3,enum=model.OperationType" json:"operation,omitempty"`                         // operation name which it is applied to
-	RecordIds     []string                        `protobuf:"bytes,9,rep,name=recordIds,proto3" json:"recordIds,omitempty"`                                                    // list of record ids which it is applied to
+	Namespace     string                  `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`                                            //  namespace name where it will be applied
+	Resource      string                  `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`                                              // resource name where it will be applied
+	Property      string                  `protobuf:"bytes,3,opt,name=property,proto3" json:"property,omitempty"`                                              // property name where it will be applied
+	PropertyValue *string                 `protobuf:"bytes,4,opt,name=propertyValue,proto3,oneof" json:"propertyValue,omitempty"`                              // property value where it will be applied
+	PropertyMode  Permission_PropertyMode `protobuf:"varint,15,opt,name=propertyMode,proto3,enum=model.Permission_PropertyMode" json:"propertyMode,omitempty"` // property mode
+	Operation     OperationType           `protobuf:"varint,13,opt,name=operation,proto3,enum=model.OperationType" json:"operation,omitempty"`                 // operation name which it is applied to
+	RecordIds     []string                `protobuf:"bytes,9,rep,name=recordIds,proto3" json:"recordIds,omitempty"`                                            // list of record ids which it is applied to
 	// time part
 	Before *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=before,proto3" json:"before,omitempty"` // before it is valid
 	After  *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=after,proto3" json:"after,omitempty"`   // after it is valid
@@ -253,11 +253,11 @@ func (x *Permission) GetPropertyValue() string {
 	return ""
 }
 
-func (x *Permission) GetPropertyMode() SecurityConstraint_PropertyMode {
+func (x *Permission) GetPropertyMode() Permission_PropertyMode {
 	if x != nil {
 		return x.PropertyMode
 	}
-	return SecurityConstraint_PROPERTY_MATCH_ONLY
+	return Permission_PROPERTY_MATCH_ONLY
 }
 
 func (x *Permission) GetOperation() OperationType {
@@ -402,12 +402,12 @@ func file_model_security_proto_rawDescGZIP() []byte {
 var file_model_security_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_model_security_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_model_security_proto_goTypes = []interface{}{
-	(OperationType)(0),                   // 0: model.OperationType
-	(PermitType)(0),                      // 1: model.PermitType
-	(SecurityConstraint_PropertyMode)(0), // 2: model.Permission.PropertyMode
-	(*Permission)(nil),                   // 3: model.Permission
-	(*timestamppb.Timestamp)(nil),        // 4: google.protobuf.Timestamp
-	(*structpb.Value)(nil),               // 5: google.protobuf.Value
+	(OperationType)(0),            // 0: model.OperationType
+	(PermitType)(0),               // 1: model.PermitType
+	(Permission_PropertyMode)(0),  // 2: model.Permission.PropertyMode
+	(*Permission)(nil),            // 3: model.Permission
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*structpb.Value)(nil),        // 5: google.protobuf.Value
 }
 var file_model_security_proto_depIdxs = []int32{
 	2, // 0: model.Permission.propertyMode:type_name -> model.Permission.PropertyMode
