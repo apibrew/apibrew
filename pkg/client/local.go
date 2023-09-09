@@ -12,6 +12,11 @@ type localClient struct {
 	container service.Container
 }
 
+func (l localClient) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (l localClient) NewExtension(host string, remoteHost string) Extension {
 	//TODO implement me
 	panic("implement me")
