@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 )
 
@@ -84,6 +85,18 @@ func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, uint32
 	}
 
 	return result, total, nil
+}
+
+func (r repository[T]) Listen(ctx context.Context, consumer func(records []T)) error {
+	return r.client.ListenRecords(ctx, r.mapper.ResourceIdentity().Namespace, r.mapper.ResourceIdentity().Name, func(records []*model.Record) {
+		var result = make([]T, len(records))
+
+		for i, record := range records {
+			result[i] = r.mapper.FromRecord(record)
+		}
+
+		consumer(result)
+	})
 }
 
 func (r repository[T]) Mapper() abs.EntityMapper[T] {

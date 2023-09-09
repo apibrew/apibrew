@@ -5,8 +5,10 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"time"
 )
 
 type DhClientParams struct {
@@ -23,7 +25,68 @@ type dhClient struct {
 	resourceClient       stub.ResourceClient
 	dataSourceClient     stub.DataSourceClient
 	genericClient        stub.GenericClient
+	watchClient          stub.WatchClient
 	token                string
+}
+
+func (d *dhClient) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
+	resp, err := d.watchClient.Watch(ctx, &stub.WatchRequest{
+		Token: d.token,
+		Selector: &model.EventSelector{
+			Actions:    []model.Event_Action{model.Event_CREATE, model.Event_DELETE, model.Event_UPDATE},
+			Namespaces: []string{namespace},
+			Resources:  []string{resource},
+		},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		defer func() {
+			_ = resp.CloseSend()
+
+			time.Sleep(1 * time.Second)
+
+			log.Println("Reconnecting to watch stream")
+
+			err := d.ListenRecords(ctx, namespace, resource, consumer)
+
+			if err != nil {
+				panic(err) // need to improve
+			}
+		}()
+		for {
+			_, err := resp.Recv()
+
+			if err != nil {
+				break
+			}
+
+			list, _, err := d.ListRecords(ctx, service.RecordListParams{
+				Namespace: namespace,
+				Resource:  resource,
+				Limit:     10000,
+			})
+
+			if err != nil {
+				log.Error(err)
+				break
+			}
+
+			consumer(list)
+
+			select {
+			case <-ctx.Done():
+				break
+			default:
+				continue
+			}
+		}
+	}()
+
+	return nil
 }
 
 func (d *dhClient) DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error {
@@ -145,7 +208,11 @@ func (d *dhClient) GetRecord(ctx context.Context, namespace string, resource str
 }
 
 func (d *dhClient) ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
-	resp, err := d.recordClient.List(ctx, params.ToRequest())
+	req := params.ToRequest()
+
+	req.Token = d.token
+
+	resp, err := d.recordClient.List(ctx, req)
 
 	if err != nil {
 		return nil, 0, err
@@ -254,6 +321,7 @@ func NewDhClientLocal(serverName string) (DhClient, error) {
 		resourceClient:       stub.NewResourceClient(conn),
 		dataSourceClient:     stub.NewDataSourceClient(conn),
 		genericClient:        stub.NewGenericClient(conn),
+		watchClient:          stub.NewWatchClient(conn),
 		token:                params.Token,
 	}
 

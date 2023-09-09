@@ -24,6 +24,7 @@ type DhClient interface {
 	ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
 	GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error)
 	ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error)
+	ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error
 
 	// resource
 	GetResourceByName(ctx context.Context, namespace string, getType string) (*model.Resource, error)
@@ -39,6 +40,7 @@ type Repository[Entity interface{}] interface {
 	Apply(ctx context.Context, entity Entity) (Entity, error)
 	Get(ctx context.Context, id string) (Entity, error)
 	Find(ctx context.Context, params FindParams) ([]Entity, uint32, error)
+	Listen(ctx context.Context, consumer func(records []Entity)) error
 }
 
 type FindParams struct {
