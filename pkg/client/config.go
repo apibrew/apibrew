@@ -15,6 +15,7 @@ type ConfigServer struct {
 	Host           string
 	Name           string
 	Authentication ConfigServerAuthentication
+	Insecure       bool
 }
 
 type Config struct {

@@ -24,7 +24,6 @@ type dhClient struct {
 	authenticationClient stub.AuthenticationClient
 	resourceClient       stub.ResourceClient
 	dataSourceClient     stub.DataSourceClient
-	genericClient        stub.GenericClient
 	watchClient          stub.WatchClient
 	token                string
 }
@@ -290,7 +289,6 @@ func NewDhClient(params DhClientParams) (DhClient, error) {
 		authenticationClient: stub.NewAuthenticationClient(conn),
 		resourceClient:       stub.NewResourceClient(conn),
 		dataSourceClient:     stub.NewDataSourceClient(conn),
-		genericClient:        stub.NewGenericClient(conn),
 		token:                params.Token,
 	}, nil
 }
@@ -300,7 +298,7 @@ func NewDhClientLocal(serverName string) (DhClient, error) {
 
 	var params = DhClientParams{
 		Addr:     configServer.Host,
-		Insecure: true,
+		Insecure: configServer.Insecure,
 	}
 	var opts []grpc.DialOption
 	if params.Insecure {
@@ -320,7 +318,6 @@ func NewDhClientLocal(serverName string) (DhClient, error) {
 		authenticationClient: stub.NewAuthenticationClient(conn),
 		resourceClient:       stub.NewResourceClient(conn),
 		dataSourceClient:     stub.NewDataSourceClient(conn),
-		genericClient:        stub.NewGenericClient(conn),
 		watchClient:          stub.NewWatchClient(conn),
 		token:                params.Token,
 	}
