@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"time"
 )
@@ -303,6 +304,10 @@ func NewDhClientLocal(serverName string) (DhClient, error) {
 	var opts []grpc.DialOption
 	if params.Insecure {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	} else {
+		creds := credentials.NewClientTLSFromCert(nil, "")
+
+		opts = append(opts, grpc.WithTransportCredentials(creds))
 	}
 
 	conn, err := grpc.Dial(params.Addr, opts...)
