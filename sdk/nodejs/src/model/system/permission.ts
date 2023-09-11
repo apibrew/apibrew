@@ -5,7 +5,7 @@ import { User } from "./user";
 import { Role } from "./role";
 
 
-export const SecurityConstraintResource = {
+export const PermissionResource = {
     resource: "Permission",
     namespace: "system",
 };
@@ -36,44 +36,44 @@ localFlags?: object;
 
 }
 // Resource and Property Names
-export const SecurityConstraintName = "Permission";
+export const PermissionName = "Permission";
 
-export const SecurityConstraintIdName = "Id";
+export const PermissionIdName = "Id";
 
-export const SecurityConstraintVersionName = "Version";
+export const PermissionVersionName = "Version";
 
-export const SecurityConstraintCreatedByName = "CreatedBy";
+export const PermissionCreatedByName = "CreatedBy";
 
-export const SecurityConstraintUpdatedByName = "UpdatedBy";
+export const PermissionUpdatedByName = "UpdatedBy";
 
-export const SecurityConstraintCreatedOnName = "CreatedOn";
+export const PermissionCreatedOnName = "CreatedOn";
 
-export const SecurityConstraintUpdatedOnName = "UpdatedOn";
+export const PermissionUpdatedOnName = "UpdatedOn";
 
-export const SecurityConstraintNamespaceName = "Namespace";
+export const PermissionNamespaceName = "Namespace";
 
-export const SecurityConstraintResourceName = "Resource";
+export const PermissionResourceName = "Resource";
 
-export const SecurityConstraintPropertyName = "Property";
+export const PermissionPropertyName = "Property";
 
-export const SecurityConstraintPropertyValueName = "PropertyValue";
+export const PermissionPropertyValueName = "PropertyValue";
 
-export const SecurityConstraintPropertyModeName = "PropertyMode";
+export const PermissionPropertyModeName = "PropertyMode";
 
-export const SecurityConstraintOperationName = "Operation";
+export const PermissionOperationName = "Operation";
 
-export const SecurityConstraintRecordIdsName = "RecordIds";
+export const PermissionRecordIdsName = "RecordIds";
 
-export const SecurityConstraintBeforeName = "Before";
+export const PermissionBeforeName = "Before";
 
-export const SecurityConstraintAfterName = "After";
+export const PermissionAfterName = "After";
 
-export const SecurityConstraintUserName = "User";
+export const PermissionUserName = "User";
 
-export const SecurityConstraintRoleName = "Role";
+export const PermissionRoleName = "Role";
 
-export const SecurityConstraintPermitName = "Permit";
+export const PermissionPermitName = "Permit";
 
-export const SecurityConstraintLocalFlagsName = "LocalFlags";
+export const PermissionLocalFlagsName = "LocalFlags";
 
 

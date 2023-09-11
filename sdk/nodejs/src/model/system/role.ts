@@ -39,7 +39,7 @@ export const RoleUpdatedOnName = "UpdatedOn";
 
 export const RoleNameName = "Name";
 
-export const RoleSecurityConstraintsName = "Permissions";
+export const RolePermissionsName = "Permissions";
 
 export const RoleDetailsName = "Details";
 

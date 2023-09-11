@@ -1,5 +1,5 @@
-import { Role } from "./role";
 import { Permission } from "./permission";
+import { Role } from "./role";
 
 
 
@@ -46,7 +46,7 @@ export const UserPasswordName = "Password";
 
 export const UserRolesName = "Roles";
 
-export const UserSecurityConstraintsName = "Permissions";
+export const UserPermissionsName = "Permissions";
 
 export const UserDetailsName = "Details";
 
