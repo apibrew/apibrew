@@ -69,6 +69,7 @@ var ExtensionResource = &model.Resource{
 					Name: "actions",
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{
+						Name: "action",
 						Type: model.ResourceProperty_ENUM,
 						EnumValues: []string{
 							"CREATE",
@@ -136,7 +137,7 @@ var ExtensionResource = &model.Resource{
 			Properties: []*model.ResourceProperty{
 				special.IdProperty,
 				{
-					Name: "action",
+					Name: "EventAction",
 					Type: model.ResourceProperty_ENUM,
 					EnumValues: []string{
 						"CREATE",

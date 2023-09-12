@@ -8,7 +8,7 @@ import (
 )
 
 type repository[Entity interface{}] struct {
-	client             DhClient
+	client             Client
 	UpdateCheckVersion bool
 	mapper             abs.EntityMapper[Entity]
 }
@@ -103,10 +103,10 @@ func (r repository[T]) Mapper() abs.EntityMapper[T] {
 	return r.mapper
 }
 
-func R[Entity interface{}](client DhClient, mapper abs.EntityMapper[Entity]) Repository[Entity] {
+func R[Entity interface{}](client Client, mapper abs.EntityMapper[Entity]) Repository[Entity] {
 	return NewRepository(client, mapper)
 }
 
-func NewRepository[Entity interface{}](client DhClient, mapper abs.EntityMapper[Entity]) Repository[Entity] {
+func NewRepository[Entity interface{}](client Client, mapper abs.EntityMapper[Entity]) Repository[Entity] {
 	return repository[Entity]{client: client, mapper: mapper}
 }

@@ -215,7 +215,7 @@ func (s *Income) Same(other *Income) bool {
 	return s.Equals(other)
 }
 
-func NewIncomeRepository(dhClient client.DhClient) client.Repository[*Income] {
+func NewIncomeRepository(dhClient client.Client) client.Repository[*Income] {
 	return client.NewRepository[*Income](dhClient, client.RepositoryParams[*Income]{InstanceProvider: func() *Income {
 		return new(Income)
 	}})

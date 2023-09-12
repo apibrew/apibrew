@@ -21,9 +21,9 @@ var DataSourceClient stub.DataSourceClient
 
 var container service.Container
 
-var dhClient client.DhClient
+var dhClient client.Client
 
-func GetTestDhClient() client.DhClient {
+func GetTestDhClient() client.Client {
 	return dhClient
 }
 

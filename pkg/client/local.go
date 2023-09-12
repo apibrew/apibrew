@@ -140,6 +140,6 @@ func (l localClient) ApplyResource(ctx context.Context, resource *model.Resource
 	}
 }
 
-func NewLocalClient(container service.Container) DhClient {
+func NewLocalClient(container service.Container) Client {
 	return &localClient{container: container}
 }

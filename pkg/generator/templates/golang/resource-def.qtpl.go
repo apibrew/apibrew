@@ -121,7 +121,7 @@ var `)
 				Type: model.ResourceProperty_STRING,
 			},
 		},
-		special.PermissionsProperty,
+		special.SecurityConstraintsProperty,
 		{
 			Name:    "details",
 			Mapping: "details",

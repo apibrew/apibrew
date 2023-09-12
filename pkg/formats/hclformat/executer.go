@@ -563,7 +563,7 @@ type OverrideConfig struct {
 
 type ExecutorParams struct {
 	Input          io.Reader
-	DhClient       client.DhClient
+	DhClient       client.Client
 	OverrideConfig OverrideConfig
 	DoMigration    bool
 	ForceMigration bool

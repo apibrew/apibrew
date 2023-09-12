@@ -172,7 +172,7 @@ func (s *City) Same(other *City) bool {
 	return s.Equals(other)
 }
 
-func NewCityRepository(dhClient client.DhClient) client.Repository[*City] {
+func NewCityRepository(dhClient client.Client) client.Repository[*City] {
 	return client.NewRepository[*City](dhClient, client.RepositoryParams[*City]{InstanceProvider: func() *City {
 		return new(City)
 	}})

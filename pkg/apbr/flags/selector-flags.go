@@ -12,7 +12,7 @@ import (
 )
 
 type selectorFlags struct {
-	client func() client.DhClient
+	client func() client.Client
 }
 
 func (s selectorFlags) Declare(cmd *cobra.Command) {
@@ -158,6 +158,6 @@ func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Reso
 	return res
 }
 
-func NewSelectorFlags(clientGetter func() client.DhClient) FlagHelper[*SelectedRecordsResult] {
+func NewSelectorFlags(clientGetter func() client.Client) FlagHelper[*SelectedRecordsResult] {
 	return &selectorFlags{client: clientGetter}
 }

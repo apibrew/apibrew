@@ -8,9 +8,9 @@ import (
 
 var selectorFlags = flags.NewSelectorFlags(GetDhClient)
 var overrideFlags = flags.NewOverrideFlags()
-var dhClient client.DhClient
+var dhClient client.Client
 
-func GetDhClient() client.DhClient {
+func GetDhClient() client.Client {
 	return dhClient
 }
 

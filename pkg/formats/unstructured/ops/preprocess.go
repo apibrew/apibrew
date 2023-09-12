@@ -19,7 +19,7 @@ import (
 )
 
 type preprocessor struct {
-	dhClient client.DhClient
+	dhClient client.Client
 	writer   *Writer
 }
 

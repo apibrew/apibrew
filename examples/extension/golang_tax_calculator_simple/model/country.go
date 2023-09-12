@@ -211,7 +211,7 @@ func (s *Country) Same(other *Country) bool {
 	return s.Equals(other)
 }
 
-func NewCountryRepository(dhClient client.DhClient) client.Repository[*Country] {
+func NewCountryRepository(dhClient client.Client) client.Repository[*Country] {
 	return client.NewRepository[*Country](dhClient, client.RepositoryParams[*Country]{InstanceProvider: func() *Country {
 		return new(Country)
 	}})

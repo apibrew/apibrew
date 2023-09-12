@@ -1,0 +1,98 @@
+{% import "github.com/apibrew/apibrew/pkg/model" %}
+
+{%- func GenerateClassCode(pkg string, resource *model.Resource) -%}
+package {%s pkg %};
+
+import java.util.Objects;
+import io.apibrew.lib.EntityInfo;
+import io.apibrew.lib.Entity;
+
+public class {%s javaClassName(resource.Name) %} extends Entity {
+    {%- for _, property := range resource.Properties -%}
+    private {%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %};
+    {%- endfor -%}
+
+    public static final EntityInfo<{%s javaClassName(resource.Name) %}> entityInfo = new EntityInfo<>("{%s resource.Namespace %}", "{%s resource.Name %}", {%s javaClassName(resource.Name) %}.class);
+
+    {%- for _, subType := range resource.Types -%}
+    public static class {%s javaClassName(subType.Name) %} {
+        {%- for _, property := range subType.Properties -%}
+        private {%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %};
+        {%- endfor -%}
+
+        {%- for _, property := range subType.Properties -%}
+        public {%s= getJavaType(resource, property, false) %} get{%s= javaClassName(property.Name) %}() {
+            return {%s= propertyName(property) %};
+        }
+
+        public void set{%s= javaClassName(property.Name) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
+            this.{%s= propertyName(property) %} = {%s= propertyName(property) %};
+        }
+        {%- endfor -%}
+    }
+    {%- endfor -%}
+
+    {%- for _, enum := range getAllEnums(resource) -%}
+    public static enum {%s javaClassName(enum.Name) %} {
+        {%- for index, enumValue := range enum.EnumValues -%}
+        {%s= enumName(enumValue) %}("{%s enumValue %}"){% if index < len(enum.EnumValues) - 1 %},{% else %};{% endif %}
+        {%- endfor -%}
+
+        private final String value;
+
+        {%s javaClassName(enum.Name) %}(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+    {%- endfor -%}
+
+    public {%s javaClassName(resource.Name) %}() {
+    }
+
+    public EntityInfo<{%s javaClassName(resource.Name) %}> getEntityInfo() {
+        return entityInfo;
+    }
+
+    {%- for _, property := range resource.Properties -%}
+    public {%s= getJavaType(resource, property, false) %} get{%s= javaClassName(property.Name) %}() {
+        return {%s= propertyName(property) %};
+    }
+
+    public void set{%s= javaClassName(property.Name) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
+        this.{%s= propertyName(property) %} = {%s= propertyName(property) %};
+    }
+    {%- endfor -%}
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof {%s javaClassName(resource.Name) %})) {
+            return false;
+        }
+
+        {%s javaClassName(resource.Name) %} obj = ({%s javaClassName(resource.Name) %}) o;
+
+        {%- for _, property := range resource.Properties -%}
+        if (!Objects.equals(this.{%s= propertyName(property) %}, obj.{%s= propertyName(property) %})) {
+            return false;
+        }
+        {%- endfor -%}
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        if (id == null) {
+            return super.hashCode();
+        }
+
+        return id.hashCode();
+    }
+}
+
+
+{%- endfunc -%}

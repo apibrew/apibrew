@@ -32,7 +32,7 @@ type Handler[Entity interface{}] interface {
 type handler[Entity interface{}] struct {
 	ext           Extension
 	mapper        abs.EntityMapper[Entity]
-	dhClient      DhClient
+	dhClient      Client
 	extensionRepo Repository[*resource_model.Extension]
 	action        resource_model.EventAction
 	order         int32
@@ -226,7 +226,7 @@ func (h handler[Entity]) prepareName() string {
 	return h.name
 }
 
-func NewHandler[Entity interface{}](dhClient DhClient, ext Extension, mapper abs.EntityMapper[Entity]) Handler[Entity] {
+func NewHandler[Entity interface{}](dhClient Client, ext Extension, mapper abs.EntityMapper[Entity]) Handler[Entity] {
 	extensionRepo := R[*resource_model.Extension](dhClient, resource_model.ExtensionMapperInstance)
 
 	return handler[Entity]{

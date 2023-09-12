@@ -271,7 +271,7 @@ func (d *dhClient) DeleteRecord(ctx context.Context, namespace string, name stri
 	return err
 }
 
-func NewDhClient(params DhClientParams) (DhClient, error) {
+func NewDhClient(params DhClientParams) (Client, error) {
 	var opts []grpc.DialOption
 	if params.Insecure {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -294,7 +294,7 @@ func NewDhClient(params DhClientParams) (DhClient, error) {
 	}, nil
 }
 
-func NewDhClientLocal(serverName string) (DhClient, error) {
+func NewDhClientLocal(serverName string) (Client, error) {
 	configServer := locateConfigServer(serverName)
 
 	var params = DhClientParams{

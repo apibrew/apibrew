@@ -229,7 +229,7 @@ func (s *TaxRate) Same(other *TaxRate) bool {
 	return s.Equals(other)
 }
 
-func NewTaxRateRepository(dhClient client.DhClient) client.Repository[*TaxRate] {
+func NewTaxRateRepository(dhClient client.Client) client.Repository[*TaxRate] {
 	return client.NewRepository[*TaxRate](dhClient, client.RepositoryParams[*TaxRate]{InstanceProvider: func() *TaxRate {
 		return new(TaxRate)
 	}})

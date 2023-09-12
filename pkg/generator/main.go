@@ -5,6 +5,7 @@ package generator
 import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/generator/templates/golang"
+	"github.com/apibrew/apibrew/pkg/generator/templates/java"
 	"github.com/apibrew/apibrew/pkg/generator/typescript"
 	"github.com/apibrew/apibrew/pkg/model"
 )
@@ -13,7 +14,8 @@ func GenerateResourceCodes(platform string, pkg string, resources []*model.Resou
 	switch platform {
 	case "golang":
 		return golang.GenerateGoResourceCode(pkg, resources, path, namespace)
-
+	case "java":
+		return java.GenerateResourceCode(pkg, resources, path, namespace)
 	case "typescript":
 		return typescript.GenerateResourceCode(typescript.GenerateResourceCodeParams{
 			Namespace: namespace,

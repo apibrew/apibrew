@@ -11,7 +11,7 @@ type ApplyInterface interface {
 	ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error
 }
 
-type DhClient interface {
+type Client interface {
 	ApplyInterface
 	AuthenticateWithToken(token string)
 	AuthenticateWithUsernameAndPassword(username string, password string) error

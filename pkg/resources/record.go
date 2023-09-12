@@ -14,8 +14,11 @@ var RecordResource = &model.Resource{
 		special.IdProperty,
 		{
 			Name:     "properties",
-			Type:     model.ResourceProperty_OBJECT,
+			Type:     model.ResourceProperty_MAP,
 			Required: true,
+			Item: &model.ResourceProperty{
+				Type: model.ResourceProperty_OBJECT,
+			},
 		},
 		{
 			Name: "packedProperties",

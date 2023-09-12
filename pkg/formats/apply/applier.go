@@ -18,7 +18,7 @@ import (
 )
 
 type Applier struct {
-	dhClient       client.DhClient
+	dhClient       client.Client
 	doMigration    bool
 	dataOnly       bool
 	force          bool
@@ -136,7 +136,7 @@ func (a *Applier) ApplyWithPattern(ctx context.Context, inputFilePath string, fo
 	return nil
 }
 
-func NewApplier(dhClient client.DhClient, doMigration bool, dataOnly bool, force bool, overrideConfig flags.OverrideConfig) *Applier {
+func NewApplier(dhClient client.Client, doMigration bool, dataOnly bool, force bool, overrideConfig flags.OverrideConfig) *Applier {
 	return &Applier{
 		dhClient:       dhClient,
 		doMigration:    doMigration,

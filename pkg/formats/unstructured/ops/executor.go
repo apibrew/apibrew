@@ -182,7 +182,7 @@ type OverrideConfig struct {
 }
 
 type ExecutorParams struct {
-	DhClient       client.DhClient
+	DhClient       client.Client
 	OverrideConfig OverrideConfig
 	DoMigration    bool
 	ForceMigration bool

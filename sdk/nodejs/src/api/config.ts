@@ -4,3 +4,4 @@ export interface ServiceConfig {
 }
 
 export type ServiceConfigProvider = () => ServiceConfig
+
