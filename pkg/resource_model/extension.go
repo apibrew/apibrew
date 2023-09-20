@@ -6,6 +6,7 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Extension struct {
 	Id          *uuid.UUID              `json:"id,omitempty"`
@@ -159,8 +160,8 @@ func (s *ExtensionRecordSearchParams) GetResolveReferences() []string {
 }
 
 type ExtensionEvent struct {
-	Id                 *uuid.UUID                   `json:"id,omitempty"`
-	Action             EventAction                  `json:"action,omitempty"`
+	Id                 string                       `json:"id,omitempty"`
+	Action             ExtensionAction              `json:"action,omitempty"`
 	RecordSearchParams *ExtensionRecordSearchParams `json:"recordSearchParams,omitempty"`
 	ActionSummary      *string                      `json:"actionSummary,omitempty"`
 	ActionDescription  *string                      `json:"actionDescription,omitempty"`
@@ -173,10 +174,10 @@ type ExtensionEvent struct {
 	Annotations        map[string]string            `json:"annotations,omitempty"`
 }
 
-func (s *ExtensionEvent) GetId() *uuid.UUID {
+func (s *ExtensionEvent) GetId() string {
 	return s.Id
 }
-func (s *ExtensionEvent) GetAction() EventAction {
+func (s *ExtensionEvent) GetAction() ExtensionAction {
 	return s.Action
 }
 func (s *ExtensionEvent) GetRecordSearchParams() *ExtensionRecordSearchParams {
@@ -210,6 +211,42 @@ func (s *ExtensionEvent) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 
+type ExtensionErrorField struct {
+	RecordId *string                    `json:"recordId,omitempty"`
+	Property *string                    `json:"property,omitempty"`
+	Message  *string                    `json:"message,omitempty"`
+	Value    *unstructured.Unstructured `json:"value,omitempty"`
+}
+
+func (s *ExtensionErrorField) GetRecordId() *string {
+	return s.RecordId
+}
+func (s *ExtensionErrorField) GetProperty() *string {
+	return s.Property
+}
+func (s *ExtensionErrorField) GetMessage() *string {
+	return s.Message
+}
+func (s *ExtensionErrorField) GetValue() *unstructured.Unstructured {
+	return s.Value
+}
+
+type ExtensionError struct {
+	Code    *ExtensionCode        `json:"code,omitempty"`
+	Message *string               `json:"message,omitempty"`
+	Fields  []ExtensionErrorField `json:"fields,omitempty"`
+}
+
+func (s *ExtensionError) GetCode() *ExtensionCode {
+	return s.Code
+}
+func (s *ExtensionError) GetMessage() *string {
+	return s.Message
+}
+func (s *ExtensionError) GetFields() []ExtensionErrorField {
+	return s.Fields
+}
+
 type EventAction string
 
 const (
@@ -219,4 +256,37 @@ const (
 	EventAction_GET     EventAction = "GET"
 	EventAction_LIST    EventAction = "LIST"
 	EventAction_OPERATE EventAction = "OPERATE"
+)
+
+type ExtensionAction string
+
+const (
+	ExtensionAction_CREATE  ExtensionAction = "CREATE"
+	ExtensionAction_UPDATE  ExtensionAction = "UPDATE"
+	ExtensionAction_DELETE  ExtensionAction = "DELETE"
+	ExtensionAction_GET     ExtensionAction = "GET"
+	ExtensionAction_LIST    ExtensionAction = "LIST"
+	ExtensionAction_OPERATE ExtensionAction = "OPERATE"
+)
+
+type ExtensionCode string
+
+const (
+	ExtensionCode_UNKNOWNERROR                      ExtensionCode = "UNKNOWN_ERROR"
+	ExtensionCode_RECORDNOTFOUND                    ExtensionCode = "RECORD_NOT_FOUND"
+	ExtensionCode_UNABLETOLOCATEPRIMARYKEY          ExtensionCode = "UNABLE_TO_LOCATE_PRIMARY_KEY"
+	ExtensionCode_INTERNALERROR                     ExtensionCode = "INTERNAL_ERROR"
+	ExtensionCode_PROPERTYNOTFOUND                  ExtensionCode = "PROPERTY_NOT_FOUND"
+	ExtensionCode_RECORDVALIDATIONERROR             ExtensionCode = "RECORD_VALIDATION_ERROR"
+	ExtensionCode_RESOURCEVALIDATIONERROR           ExtensionCode = "RESOURCE_VALIDATION_ERROR"
+	ExtensionCode_AUTHENTICATIONFAILED              ExtensionCode = "AUTHENTICATION_FAILED"
+	ExtensionCode_ALREADYEXISTS                     ExtensionCode = "ALREADY_EXISTS"
+	ExtensionCode_ACCESSDENIED                      ExtensionCode = "ACCESS_DENIED"
+	ExtensionCode_BACKENDERROR                      ExtensionCode = "BACKEND_ERROR"
+	ExtensionCode_UNIQUEVIOLATION                   ExtensionCode = "UNIQUE_VIOLATION"
+	ExtensionCode_REFERENCEVIOLATION                ExtensionCode = "REFERENCE_VIOLATION"
+	ExtensionCode_RESOURCENOTFOUND                  ExtensionCode = "RESOURCE_NOT_FOUND"
+	ExtensionCode_UNSUPPORTEDOPERATION              ExtensionCode = "UNSUPPORTED_OPERATION"
+	ExtensionCode_EXTERNALBACKENDCOMMUNICATIONERROR ExtensionCode = "EXTERNAL_BACKEND_COMMUNICATION_ERROR"
+	ExtensionCode_EXTERNALBACKENDERROR              ExtensionCode = "EXTERNAL_BACKEND_ERROR"
 )

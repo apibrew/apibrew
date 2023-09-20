@@ -14,11 +14,8 @@ var RecordResource = &model.Resource{
 		special.IdProperty,
 		{
 			Name:     "properties",
-			Type:     model.ResourceProperty_MAP,
+			Type:     model.ResourceProperty_OBJECT,
 			Required: true,
-			Item: &model.ResourceProperty{
-				Type: model.ResourceProperty_OBJECT,
-			},
 		},
 		{
 			Name: "packedProperties",
@@ -30,7 +27,7 @@ var RecordResource = &model.Resource{
 	},
 
 	Annotations: map[string]string{
-		annotations.SelfContainedProperty: "properties",
-		annotations.RestApiDisabled:       annotations.Enabled,
+		//annotations.SelfContainedProperty: "properties",
+		annotations.RestApiDisabled: annotations.Enabled,
 	},
 }

@@ -3,19 +3,21 @@ package io.apibrew.lib.model;
 import java.util.Objects;
 import io.apibrew.lib.EntityInfo;
 import io.apibrew.lib.Entity;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Role extends Entity {
     private java.util.UUID id;
     private int version;
     private String createdBy;
     private String updatedBy;
-    private java.time.LocalDateTime createdOn;
-    private java.time.LocalDateTime updatedOn;
+    private java.time.Instant createdOn;
+    private java.time.Instant updatedOn;
     private String name;
     private java.util.List<Permission> permissions;
     private Object details;
 
-    public static final EntityInfo<Role> entityInfo = new EntityInfo<>("system", "Role", Role.class);
+    public static final EntityInfo<Role> entityInfo = new EntityInfo<>("system", "Role", Role.class, "system-role");
 
 
 
@@ -54,18 +56,18 @@ public class Role extends Entity {
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
-    public java.time.LocalDateTime getCreatedOn() {
+    public java.time.Instant getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(java.time.LocalDateTime createdOn) {
+    public void setCreatedOn(java.time.Instant createdOn) {
         this.createdOn = createdOn;
     }
-    public java.time.LocalDateTime getUpdatedOn() {
+    public java.time.Instant getUpdatedOn() {
         return updatedOn;
     }
 
-    public void setUpdatedOn(java.time.LocalDateTime updatedOn) {
+    public void setUpdatedOn(java.time.Instant updatedOn) {
         this.updatedOn = updatedOn;
     }
     public String getName() {

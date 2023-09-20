@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/server/grpc"
@@ -18,6 +19,8 @@ import (
 	"golang.org/x/net/http2/h2c"
 	"net"
 	"net/http"
+	"net/http/httptest"
+	"net/http/httputil"
 	"strings"
 )
 
@@ -149,6 +152,9 @@ func (s *server) ServeHttp2Tls(tls net.Listener) {
 func (s *server) configureRoutes() {
 	r := mux.NewRouter()
 
+	if log.GetLevel() >= log.TraceLevel {
+		r.Use(s.TraceLogMiddleWare)
+	}
 	r.Use(s.AuthenticationMiddleWare)
 	r.Use(s.TrackingMiddleWare)
 
@@ -196,6 +202,25 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 		}
 
 		next.ServeHTTP(w, req)
+	})
+}
+
+func (s *server) TraceLogMiddleWare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		x, err := httputil.DumpRequest(req, true)
+		if err != nil {
+			http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
+			return
+		}
+		log.Tracef(fmt.Sprintf("Request: \n===============\n%s\n===============", string(x)))
+		rec := httptest.NewRecorder()
+
+		next.ServeHTTP(rec, req)
+
+		w.WriteHeader(rec.Code)
+		w.Write(rec.Body.Bytes())
+
+		log.Tracef(fmt.Sprintf("Response: \n===============\n%s\n===============", string(rec.Body.Bytes())))
 	})
 }
 

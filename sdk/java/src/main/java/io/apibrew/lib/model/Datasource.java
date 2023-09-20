@@ -3,20 +3,22 @@ package io.apibrew.lib.model;
 import java.util.Objects;
 import io.apibrew.lib.EntityInfo;
 import io.apibrew.lib.Entity;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class DataSource extends Entity {
     private java.util.UUID id;
     private int version;
     private String createdBy;
     private String updatedBy;
-    private java.time.LocalDateTime createdOn;
-    private java.time.LocalDateTime updatedOn;
+    private java.time.Instant createdOn;
+    private java.time.Instant updatedOn;
     private String name;
     private String description;
     private DataSource.Backend backend;
     private java.util.Map<String, String> options;
 
-    public static final EntityInfo<DataSource> entityInfo = new EntityInfo<>("system", "DataSource", DataSource.class);
+    public static final EntityInfo<DataSource> entityInfo = new EntityInfo<>("system", "DataSource", DataSource.class, "system-datasource");
 
 
     public static enum Backend {
@@ -31,6 +33,7 @@ public class DataSource extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -71,18 +74,18 @@ public class DataSource extends Entity {
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
-    public java.time.LocalDateTime getCreatedOn() {
+    public java.time.Instant getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(java.time.LocalDateTime createdOn) {
+    public void setCreatedOn(java.time.Instant createdOn) {
         this.createdOn = createdOn;
     }
-    public java.time.LocalDateTime getUpdatedOn() {
+    public java.time.Instant getUpdatedOn() {
         return updatedOn;
     }
 
-    public void setUpdatedOn(java.time.LocalDateTime updatedOn) {
+    public void setUpdatedOn(java.time.Instant updatedOn) {
         this.updatedOn = updatedOn;
     }
     public String getName() {

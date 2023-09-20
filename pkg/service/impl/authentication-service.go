@@ -70,8 +70,11 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 	token, err := jwt_model.JwtUserDetailsSign(jwt_model.JwtUserDetailsSignParams{
 		Key: *s.privateKey,
 		UserDetails: jwt_model.UserDetails{
-			UserId:      user.Id.String(),
-			Username:    user.Username,
+			UserId:   user.Id.String(),
+			Username: user.Username,
+			Roles: util.ArrayMap(user.Roles, func(t *resource_model.Role) string {
+				return t.Name
+			}),
 			Permissions: sc,
 		},
 		ExpiresAt: expiration,

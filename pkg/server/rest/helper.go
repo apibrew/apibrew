@@ -6,7 +6,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 	"io"
 	"net/http"
 )
@@ -23,28 +22,22 @@ func parseRequestMessage[T interface{}](request *http.Request, msg T) error {
 	return err
 }
 
-func ServiceResponder[T proto.Message]() ServiceCaller[T] {
-	return ServiceCaller[T]{}
+func ServiceResponder() ServiceCaller {
+	return ServiceCaller{}
 }
 
-type ServiceCaller[T proto.Message] struct {
+type ServiceCaller struct {
 	request *http.Request
 	writer  http.ResponseWriter
 }
 
-func (s ServiceCaller[T]) Request(request *http.Request) ServiceCaller[T] {
-	s.request = request
-
-	return s
-}
-
-func (s ServiceCaller[T]) Writer(writer http.ResponseWriter) ServiceCaller[T] {
+func (s ServiceCaller) Writer(writer http.ResponseWriter) ServiceCaller {
 	s.writer = writer
 
 	return s
 }
 
-func (s ServiceCaller[T]) Respond(result interface{}, serviceError errors.ServiceError) {
+func (s ServiceCaller) Respond(result interface{}, serviceError errors.ServiceError) {
 	s.writer.Header().Set("Content-Type", "application/json")
 
 	isSuccess := serviceError == nil

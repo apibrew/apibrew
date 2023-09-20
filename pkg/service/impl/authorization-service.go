@@ -25,8 +25,12 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 
 	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
 
-	if userDetails == nil && !annotations.IsEnabled(params.Resource, annotations.AllowPublicAccess) {
-		return errors.AccessDeniedError.WithDetails("Public access is denied")
+	if userDetails == nil {
+		if !annotations.IsEnabled(params.Resource, annotations.AllowPublicAccess) {
+			return errors.AccessDeniedError.WithDetails("Public access is denied")
+		} else {
+			return nil
+		}
 	}
 
 	var permissions []*resource_model.Permission

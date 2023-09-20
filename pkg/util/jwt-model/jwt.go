@@ -34,6 +34,7 @@ func JwtUserDetailsSign(params JwtUserDetailsSignParams) (string, errors.Service
 		IssuedAt:    jwt.NewNumericDate(time.Now()),
 		ID:          jit.String(),
 		Username:    params.UserDetails.Username,
+		Roles:       params.UserDetails.Roles,
 		Permissions: params.UserDetails.Permissions,
 		UserId:      params.UserDetails.UserId,
 	}
@@ -67,6 +68,7 @@ func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*Use
 	return &UserDetails{
 		UserId:      claims.UserId,
 		Username:    claims.Username,
+		Roles:       claims.Roles,
 		Permissions: claims.Permissions,
 	}, nil
 }

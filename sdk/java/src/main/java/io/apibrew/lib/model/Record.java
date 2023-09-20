@@ -3,13 +3,15 @@ package io.apibrew.lib.model;
 import java.util.Objects;
 import io.apibrew.lib.EntityInfo;
 import io.apibrew.lib.Entity;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Record extends Entity {
     private java.util.UUID id;
     private Object properties;
     private java.util.List<Object> packedProperties;
 
-    public static final EntityInfo<Record> entityInfo = new EntityInfo<>("system", "Record", Record.class);
+    public static final EntityInfo<Record> entityInfo = new EntityInfo<>("system", "Record", Record.class, "system-record");
 
 
 

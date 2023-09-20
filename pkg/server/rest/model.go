@@ -23,7 +23,16 @@ type PropertyValueWrapper struct {
 }
 
 func (pvw *PropertyValueWrapper) MarshalJSON() ([]byte, error) {
-	return mo.Marshal(pvw.Value)
+	if pvw.Value == nil {
+		return []byte("null"), nil
+	}
+	data, err := mo.Marshal(pvw.Value)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, err
 }
 
 func (pvw *PropertyValueWrapper) UnmarshalJSON(data []byte) error {

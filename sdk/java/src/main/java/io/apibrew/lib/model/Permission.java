@@ -3,14 +3,16 @@ package io.apibrew.lib.model;
 import java.util.Objects;
 import io.apibrew.lib.EntityInfo;
 import io.apibrew.lib.Entity;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Permission extends Entity {
     private java.util.UUID id;
     private int version;
     private String createdBy;
     private String updatedBy;
-    private java.time.LocalDateTime createdOn;
-    private java.time.LocalDateTime updatedOn;
+    private java.time.Instant createdOn;
+    private java.time.Instant updatedOn;
     private String namespace;
     private String resource;
     private String property;
@@ -18,14 +20,14 @@ public class Permission extends Entity {
     private Permission.PropertyMode propertyMode;
     private Permission.Operation operation;
     private java.util.List<String> recordIds;
-    private java.time.LocalDateTime before;
-    private java.time.LocalDateTime after;
+    private java.time.Instant before;
+    private java.time.Instant after;
     private User user;
     private Role role;
     private Permission.Permit permit;
     private Object localFlags;
 
-    public static final EntityInfo<Permission> entityInfo = new EntityInfo<>("system", "Permission", Permission.class);
+    public static final EntityInfo<Permission> entityInfo = new EntityInfo<>("system", "Permission", Permission.class, "system-permission");
 
 
     public static enum PropertyMode {
@@ -38,6 +40,7 @@ public class Permission extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -55,6 +58,7 @@ public class Permission extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -69,6 +73,7 @@ public class Permission extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -109,18 +114,18 @@ public class Permission extends Entity {
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
-    public java.time.LocalDateTime getCreatedOn() {
+    public java.time.Instant getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(java.time.LocalDateTime createdOn) {
+    public void setCreatedOn(java.time.Instant createdOn) {
         this.createdOn = createdOn;
     }
-    public java.time.LocalDateTime getUpdatedOn() {
+    public java.time.Instant getUpdatedOn() {
         return updatedOn;
     }
 
-    public void setUpdatedOn(java.time.LocalDateTime updatedOn) {
+    public void setUpdatedOn(java.time.Instant updatedOn) {
         this.updatedOn = updatedOn;
     }
     public String getNamespace() {
@@ -172,18 +177,18 @@ public class Permission extends Entity {
     public void setRecordIds(java.util.List<String> recordIds) {
         this.recordIds = recordIds;
     }
-    public java.time.LocalDateTime getBefore() {
+    public java.time.Instant getBefore() {
         return before;
     }
 
-    public void setBefore(java.time.LocalDateTime before) {
+    public void setBefore(java.time.Instant before) {
         this.before = before;
     }
-    public java.time.LocalDateTime getAfter() {
+    public java.time.Instant getAfter() {
         return after;
     }
 
-    public void setAfter(java.time.LocalDateTime after) {
+    public void setAfter(java.time.Instant after) {
         this.after = after;
     }
     public User getUser() {
