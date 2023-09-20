@@ -3,14 +3,16 @@ package io.apibrew.lib.model;
 import java.util.Objects;
 import io.apibrew.lib.EntityInfo;
 import io.apibrew.lib.Entity;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Extension extends Entity {
     private java.util.UUID id;
     private int version;
     private String createdBy;
     private String updatedBy;
-    private java.time.LocalDateTime createdOn;
-    private java.time.LocalDateTime updatedOn;
+    private java.time.Instant createdOn;
+    private java.time.Instant updatedOn;
     private String name;
     private String description;
     private Extension.EventSelector selector;
@@ -21,13 +23,15 @@ public class Extension extends Entity {
     private Extension.ExternalCall call;
     private java.util.Map<String, String> annotations;
 
-    public static final EntityInfo<Extension> entityInfo = new EntityInfo<>("system", "Extension", Extension.class);
+    public static final EntityInfo<Extension> entityInfo = new EntityInfo<>("system", "Extension", Extension.class, "system-extension");
 
     public static class BooleanExpression {
 
     }
     public static class FunctionCall {
+        
         private String host;
+        
         private String functionName;
 
         public String getHost() {
@@ -46,7 +50,9 @@ public class Extension extends Entity {
         }
     }
     public static class HttpCall {
+        
         private String uri;
+        
         private String method;
 
         public String getUri() {
@@ -65,7 +71,9 @@ public class Extension extends Entity {
         }
     }
     public static class ExternalCall {
+        
         private Extension.FunctionCall functionCall;
+        
         private Extension.HttpCall httpCall;
 
         public Extension.FunctionCall getFunctionCall() {
@@ -84,18 +92,24 @@ public class Extension extends Entity {
         }
     }
     public static class EventSelector {
-        private java.util.List<Extension.> actions;
+        
+        private java.util.List<Extension.Action> actions;
+        
         private Extension.BooleanExpression recordSelector;
+        
         private java.util.List<String> namespaces;
+        
         private java.util.List<String> resources;
+        
         private java.util.List<String> ids;
+        
         private java.util.Map<String, String> annotations;
 
-        public java.util.List<Extension.> getActions() {
+        public java.util.List<Extension.Action> getActions() {
             return actions;
         }
 
-        public void setActions(java.util.List<Extension.> actions) {
+        public void setActions(java.util.List<Extension.Action> actions) {
             this.actions = actions;
         }
         public Extension.BooleanExpression getRecordSelector() {
@@ -135,9 +149,13 @@ public class Extension extends Entity {
         }
     }
     public static class RecordSearchParams {
+        
         private Extension.BooleanExpression query;
+        
         private Integer limit;
+        
         private Integer offset;
+        
         private java.util.List<String> resolveReferences;
 
         public Extension.BooleanExpression getQuery() {
@@ -170,24 +188,36 @@ public class Extension extends Entity {
         }
     }
     public static class Event {
-        private java.util.UUID id;
+        
+        private String id;
+        
         private Extension.Action action;
+        
         private Extension.RecordSearchParams recordSearchParams;
+        
         private String actionSummary;
+        
         private String actionDescription;
+        
         private Resource resource;
+        
         private java.util.List<Record> records;
+        
         private java.util.List<String> ids;
+        
         private Boolean finalizes;
+        
         private Boolean sync;
-        private java.time.LocalDateTime time;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
+        private java.time.Instant time;
+        
         private java.util.Map<String, String> annotations;
 
-        public java.util.UUID getId() {
+        public String getId() {
             return id;
         }
 
-        public void setId(java.util.UUID id) {
+        public void setId(String id) {
             this.id = id;
         }
         public Extension.Action getAction() {
@@ -253,11 +283,11 @@ public class Extension extends Entity {
         public void setSync(Boolean sync) {
             this.sync = sync;
         }
-        public java.time.LocalDateTime getTime() {
+        public java.time.Instant getTime() {
             return time;
         }
 
-        public void setTime(java.time.LocalDateTime time) {
+        public void setTime(java.time.Instant time) {
             this.time = time;
         }
         public java.util.Map<String, String> getAnnotations() {
@@ -269,24 +299,6 @@ public class Extension extends Entity {
         }
     }
 
-    public static enum  {
-        CREATE("CREATE"),
-        UPDATE("UPDATE"),
-        DELETE("DELETE"),
-        GET("GET"),
-        LIST("LIST"),
-        OPERATE("OPERATE");
-
-        private final String value;
-
-        (String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
     public static enum Action {
         CREATE("CREATE"),
         UPDATE("UPDATE"),
@@ -301,6 +313,7 @@ public class Extension extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -341,18 +354,18 @@ public class Extension extends Entity {
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
-    public java.time.LocalDateTime getCreatedOn() {
+    public java.time.Instant getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(java.time.LocalDateTime createdOn) {
+    public void setCreatedOn(java.time.Instant createdOn) {
         this.createdOn = createdOn;
     }
-    public java.time.LocalDateTime getUpdatedOn() {
+    public java.time.Instant getUpdatedOn() {
         return updatedOn;
     }
 
-    public void setUpdatedOn(java.time.LocalDateTime updatedOn) {
+    public void setUpdatedOn(java.time.Instant updatedOn) {
         this.updatedOn = updatedOn;
     }
     public String getName() {

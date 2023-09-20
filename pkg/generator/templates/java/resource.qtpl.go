@@ -32,288 +32,307 @@ func StreamGenerateClassCode(qw422016 *qt422016.Writer, pkg string, resource *mo
 import java.util.Objects;
 import io.apibrew.lib.EntityInfo;
 import io.apibrew.lib.Entity;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class `)
-//line templates/java/resource.qtpl:10
+//line templates/java/resource.qtpl:13
 	qw422016.E().S(javaClassName(resource.Name))
-//line templates/java/resource.qtpl:10
+//line templates/java/resource.qtpl:13
 	qw422016.N().S(` extends Entity {
 `)
-//line templates/java/resource.qtpl:11
+//line templates/java/resource.qtpl:14
 	for _, property := range resource.Properties {
-//line templates/java/resource.qtpl:11
-		qw422016.N().S(`    private `)
-//line templates/java/resource.qtpl:12
+//line templates/java/resource.qtpl:14
+		qw422016.N().S(`    `)
+//line templates/java/resource.qtpl:15
+		qw422016.N().S(getJavaPropertyAnnotations(resource, property))
+//line templates/java/resource.qtpl:15
+		qw422016.N().S(`
+    private `)
+//line templates/java/resource.qtpl:16
 		qw422016.N().S(getJavaType(resource, property, false))
-//line templates/java/resource.qtpl:12
+//line templates/java/resource.qtpl:16
 		qw422016.N().S(` `)
-//line templates/java/resource.qtpl:12
+//line templates/java/resource.qtpl:16
 		qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:12
+//line templates/java/resource.qtpl:16
 		qw422016.N().S(`;
 `)
-//line templates/java/resource.qtpl:13
+//line templates/java/resource.qtpl:17
 	}
-//line templates/java/resource.qtpl:13
+//line templates/java/resource.qtpl:17
 	qw422016.N().S(`
+    @JsonIgnore
     public static final EntityInfo<`)
-//line templates/java/resource.qtpl:15
+//line templates/java/resource.qtpl:20
 	qw422016.E().S(javaClassName(resource.Name))
-//line templates/java/resource.qtpl:15
+//line templates/java/resource.qtpl:20
 	qw422016.N().S(`> entityInfo = new EntityInfo<>("`)
-//line templates/java/resource.qtpl:15
+//line templates/java/resource.qtpl:20
 	qw422016.E().S(resource.Namespace)
-//line templates/java/resource.qtpl:15
+//line templates/java/resource.qtpl:20
 	qw422016.N().S(`", "`)
-//line templates/java/resource.qtpl:15
+//line templates/java/resource.qtpl:20
 	qw422016.E().S(resource.Name)
-//line templates/java/resource.qtpl:15
+//line templates/java/resource.qtpl:20
 	qw422016.N().S(`", `)
-//line templates/java/resource.qtpl:15
+//line templates/java/resource.qtpl:20
 	qw422016.E().S(javaClassName(resource.Name))
-//line templates/java/resource.qtpl:15
-	qw422016.N().S(`.class);
+//line templates/java/resource.qtpl:20
+	qw422016.N().S(`.class, "`)
+//line templates/java/resource.qtpl:20
+	qw422016.E().S(getRestPath(resource))
+//line templates/java/resource.qtpl:20
+	qw422016.N().S(`");
 
 `)
-//line templates/java/resource.qtpl:17
+//line templates/java/resource.qtpl:22
 	for _, subType := range resource.Types {
-//line templates/java/resource.qtpl:17
+//line templates/java/resource.qtpl:22
 		qw422016.N().S(`    public static class `)
-//line templates/java/resource.qtpl:18
+//line templates/java/resource.qtpl:23
 		qw422016.E().S(javaClassName(subType.Name))
-//line templates/java/resource.qtpl:18
+//line templates/java/resource.qtpl:23
 		qw422016.N().S(` {
 `)
-//line templates/java/resource.qtpl:19
+//line templates/java/resource.qtpl:24
 		for _, property := range subType.Properties {
-//line templates/java/resource.qtpl:19
-			qw422016.N().S(`        private `)
-//line templates/java/resource.qtpl:20
+//line templates/java/resource.qtpl:24
+			qw422016.N().S(`        `)
+//line templates/java/resource.qtpl:25
+			qw422016.N().S(getJavaPropertyAnnotations(resource, property))
+//line templates/java/resource.qtpl:25
+			qw422016.N().S(`
+        private `)
+//line templates/java/resource.qtpl:26
 			qw422016.N().S(getJavaType(resource, property, false))
-//line templates/java/resource.qtpl:20
+//line templates/java/resource.qtpl:26
 			qw422016.N().S(` `)
-//line templates/java/resource.qtpl:20
+//line templates/java/resource.qtpl:26
 			qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:20
+//line templates/java/resource.qtpl:26
 			qw422016.N().S(`;
 `)
-//line templates/java/resource.qtpl:21
+//line templates/java/resource.qtpl:27
 		}
-//line templates/java/resource.qtpl:21
+//line templates/java/resource.qtpl:27
 		qw422016.N().S(`
 `)
-//line templates/java/resource.qtpl:23
+//line templates/java/resource.qtpl:29
 		for _, property := range subType.Properties {
-//line templates/java/resource.qtpl:23
+//line templates/java/resource.qtpl:29
 			qw422016.N().S(`        public `)
-//line templates/java/resource.qtpl:24
+//line templates/java/resource.qtpl:30
 			qw422016.N().S(getJavaType(resource, property, false))
-//line templates/java/resource.qtpl:24
+//line templates/java/resource.qtpl:30
 			qw422016.N().S(` get`)
-//line templates/java/resource.qtpl:24
+//line templates/java/resource.qtpl:30
 			qw422016.N().S(javaClassName(property.Name))
-//line templates/java/resource.qtpl:24
+//line templates/java/resource.qtpl:30
 			qw422016.N().S(`() {
             return `)
-//line templates/java/resource.qtpl:25
+//line templates/java/resource.qtpl:31
 			qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:25
+//line templates/java/resource.qtpl:31
 			qw422016.N().S(`;
         }
 
         public void set`)
-//line templates/java/resource.qtpl:28
+//line templates/java/resource.qtpl:34
 			qw422016.N().S(javaClassName(property.Name))
-//line templates/java/resource.qtpl:28
+//line templates/java/resource.qtpl:34
 			qw422016.N().S(`(`)
-//line templates/java/resource.qtpl:28
+//line templates/java/resource.qtpl:34
 			qw422016.N().S(getJavaType(resource, property, false))
-//line templates/java/resource.qtpl:28
+//line templates/java/resource.qtpl:34
 			qw422016.N().S(` `)
-//line templates/java/resource.qtpl:28
+//line templates/java/resource.qtpl:34
 			qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:28
+//line templates/java/resource.qtpl:34
 			qw422016.N().S(`) {
             this.`)
-//line templates/java/resource.qtpl:29
+//line templates/java/resource.qtpl:35
 			qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:29
+//line templates/java/resource.qtpl:35
 			qw422016.N().S(` = `)
-//line templates/java/resource.qtpl:29
+//line templates/java/resource.qtpl:35
 			qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:29
+//line templates/java/resource.qtpl:35
 			qw422016.N().S(`;
         }
 `)
-//line templates/java/resource.qtpl:31
+//line templates/java/resource.qtpl:37
 		}
-//line templates/java/resource.qtpl:31
+//line templates/java/resource.qtpl:37
 		qw422016.N().S(`    }
 `)
-//line templates/java/resource.qtpl:33
+//line templates/java/resource.qtpl:39
 	}
-//line templates/java/resource.qtpl:33
+//line templates/java/resource.qtpl:39
 	qw422016.N().S(`
 `)
-//line templates/java/resource.qtpl:35
+//line templates/java/resource.qtpl:41
 	for _, enum := range getAllEnums(resource) {
-//line templates/java/resource.qtpl:35
+//line templates/java/resource.qtpl:41
 		qw422016.N().S(`    public static enum `)
-//line templates/java/resource.qtpl:36
+//line templates/java/resource.qtpl:42
 		qw422016.E().S(javaClassName(enum.Name))
-//line templates/java/resource.qtpl:36
+//line templates/java/resource.qtpl:42
 		qw422016.N().S(` {
 `)
-//line templates/java/resource.qtpl:37
+//line templates/java/resource.qtpl:43
 		for index, enumValue := range enum.EnumValues {
-//line templates/java/resource.qtpl:37
+//line templates/java/resource.qtpl:43
 			qw422016.N().S(`        `)
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 			qw422016.N().S(enumName(enumValue))
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 			qw422016.N().S(`("`)
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 			qw422016.E().S(enumValue)
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 			qw422016.N().S(`")`)
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 			if index < len(enum.EnumValues)-1 {
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 				qw422016.N().S(`,`)
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 			} else {
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 				qw422016.N().S(`;`)
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 			}
-//line templates/java/resource.qtpl:38
+//line templates/java/resource.qtpl:44
 			qw422016.N().S(`
 `)
-//line templates/java/resource.qtpl:39
+//line templates/java/resource.qtpl:45
 		}
-//line templates/java/resource.qtpl:39
+//line templates/java/resource.qtpl:45
 		qw422016.N().S(`
         private final String value;
 
         `)
-//line templates/java/resource.qtpl:43
+//line templates/java/resource.qtpl:49
 		qw422016.E().S(javaClassName(enum.Name))
-//line templates/java/resource.qtpl:43
+//line templates/java/resource.qtpl:49
 		qw422016.N().S(`(String value) {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
     }
 `)
-//line templates/java/resource.qtpl:51
+//line templates/java/resource.qtpl:58
 	}
-//line templates/java/resource.qtpl:51
+//line templates/java/resource.qtpl:58
 	qw422016.N().S(`
     public `)
-//line templates/java/resource.qtpl:53
+//line templates/java/resource.qtpl:60
 	qw422016.E().S(javaClassName(resource.Name))
-//line templates/java/resource.qtpl:53
+//line templates/java/resource.qtpl:60
 	qw422016.N().S(`() {
     }
 
     public EntityInfo<`)
-//line templates/java/resource.qtpl:56
+//line templates/java/resource.qtpl:63
 	qw422016.E().S(javaClassName(resource.Name))
-//line templates/java/resource.qtpl:56
+//line templates/java/resource.qtpl:63
 	qw422016.N().S(`> getEntityInfo() {
         return entityInfo;
     }
 
 `)
-//line templates/java/resource.qtpl:60
+//line templates/java/resource.qtpl:67
 	for _, property := range resource.Properties {
-//line templates/java/resource.qtpl:60
+//line templates/java/resource.qtpl:67
 		qw422016.N().S(`    public `)
-//line templates/java/resource.qtpl:61
+//line templates/java/resource.qtpl:68
 		qw422016.N().S(getJavaType(resource, property, false))
-//line templates/java/resource.qtpl:61
+//line templates/java/resource.qtpl:68
 		qw422016.N().S(` get`)
-//line templates/java/resource.qtpl:61
+//line templates/java/resource.qtpl:68
 		qw422016.N().S(javaClassName(property.Name))
-//line templates/java/resource.qtpl:61
+//line templates/java/resource.qtpl:68
 		qw422016.N().S(`() {
         return `)
-//line templates/java/resource.qtpl:62
+//line templates/java/resource.qtpl:69
 		qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:62
+//line templates/java/resource.qtpl:69
 		qw422016.N().S(`;
     }
 
     public void set`)
-//line templates/java/resource.qtpl:65
+//line templates/java/resource.qtpl:72
 		qw422016.N().S(javaClassName(property.Name))
-//line templates/java/resource.qtpl:65
+//line templates/java/resource.qtpl:72
 		qw422016.N().S(`(`)
-//line templates/java/resource.qtpl:65
+//line templates/java/resource.qtpl:72
 		qw422016.N().S(getJavaType(resource, property, false))
-//line templates/java/resource.qtpl:65
+//line templates/java/resource.qtpl:72
 		qw422016.N().S(` `)
-//line templates/java/resource.qtpl:65
+//line templates/java/resource.qtpl:72
 		qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:65
+//line templates/java/resource.qtpl:72
 		qw422016.N().S(`) {
         this.`)
-//line templates/java/resource.qtpl:66
+//line templates/java/resource.qtpl:73
 		qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:66
+//line templates/java/resource.qtpl:73
 		qw422016.N().S(` = `)
-//line templates/java/resource.qtpl:66
+//line templates/java/resource.qtpl:73
 		qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:66
+//line templates/java/resource.qtpl:73
 		qw422016.N().S(`;
     }
 `)
-//line templates/java/resource.qtpl:68
+//line templates/java/resource.qtpl:75
 	}
-//line templates/java/resource.qtpl:68
+//line templates/java/resource.qtpl:75
 	qw422016.N().S(`
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof `)
-//line templates/java/resource.qtpl:72
+//line templates/java/resource.qtpl:79
 	qw422016.E().S(javaClassName(resource.Name))
-//line templates/java/resource.qtpl:72
+//line templates/java/resource.qtpl:79
 	qw422016.N().S(`)) {
             return false;
         }
 
         `)
-//line templates/java/resource.qtpl:76
+//line templates/java/resource.qtpl:83
 	qw422016.E().S(javaClassName(resource.Name))
-//line templates/java/resource.qtpl:76
+//line templates/java/resource.qtpl:83
 	qw422016.N().S(` obj = (`)
-//line templates/java/resource.qtpl:76
+//line templates/java/resource.qtpl:83
 	qw422016.E().S(javaClassName(resource.Name))
-//line templates/java/resource.qtpl:76
+//line templates/java/resource.qtpl:83
 	qw422016.N().S(`) o;
 
 `)
-//line templates/java/resource.qtpl:78
+//line templates/java/resource.qtpl:85
 	for _, property := range resource.Properties {
-//line templates/java/resource.qtpl:78
+//line templates/java/resource.qtpl:85
 		qw422016.N().S(`        if (!Objects.equals(this.`)
-//line templates/java/resource.qtpl:79
+//line templates/java/resource.qtpl:86
 		qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:79
+//line templates/java/resource.qtpl:86
 		qw422016.N().S(`, obj.`)
-//line templates/java/resource.qtpl:79
+//line templates/java/resource.qtpl:86
 		qw422016.N().S(propertyName(property))
-//line templates/java/resource.qtpl:79
+//line templates/java/resource.qtpl:86
 		qw422016.N().S(`)) {
             return false;
         }
 `)
-//line templates/java/resource.qtpl:82
+//line templates/java/resource.qtpl:89
 	}
-//line templates/java/resource.qtpl:82
+//line templates/java/resource.qtpl:89
 	qw422016.N().S(`
         return true;
     }
@@ -330,31 +349,31 @@ public class `)
 
 
 `)
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 }
 
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 func WriteGenerateClassCode(qq422016 qtio422016.Writer, pkg string, resource *model.Resource) {
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 	StreamGenerateClassCode(qw422016, pkg, resource)
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 	qt422016.ReleaseWriter(qw422016)
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 }
 
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 func GenerateClassCode(pkg string, resource *model.Resource) string {
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 	qb422016 := qt422016.AcquireByteBuffer()
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 	WriteGenerateClassCode(qb422016, pkg, resource)
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 	qs422016 := string(qb422016.B)
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 	qt422016.ReleaseByteBuffer(qb422016)
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 	return qs422016
-//line templates/java/resource.qtpl:98
+//line templates/java/resource.qtpl:105
 }

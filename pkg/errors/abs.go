@@ -116,6 +116,6 @@ func getErrorCode(err error) model.ErrorCode {
 	return a.GetCode()
 }
 
-func newServiceError(code model.ErrorCode, message string, grpcErrorCode codes.Code) ServiceError {
+func NewServiceError(code model.ErrorCode, message string, grpcErrorCode codes.Code) ServiceError {
 	return &serviceError{code: code, message: message, grpcErrorCode: grpcErrorCode}
 }

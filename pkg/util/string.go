@@ -32,3 +32,11 @@ func Pointer[T interface{}](val T) *T {
 
 	return pointer
 }
+
+func DePointer[T interface{}](val *T, defaultValue T) T {
+	if val == nil {
+		return defaultValue
+	}
+
+	return *val
+}

@@ -6,4 +6,5 @@ type UserDetails struct {
 	UserId      string
 	Username    string
 	Permissions []*resource_model.Permission
+	Roles       []string
 }

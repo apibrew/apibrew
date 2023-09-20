@@ -4,7 +4,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -114,9 +113,8 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		ResolveReferences: strings.Split(resolveReferences, ","),
 	})
 
-	ServiceResponder[*stub.ListRecordRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(&RecordList{
 			Total:   uint64(total),
 			Records: util.ArrayMap(result, NewRecordWrapper),
@@ -150,9 +148,8 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 
 	createdRecordRw := NewRecordWrapper(createdRecord)
 
-	ServiceResponder[*stub.CreateRecordRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(createdRecordRw, serviceErr)
 }
 
@@ -180,9 +177,8 @@ func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.
 		Records:   []*model.Record{record1.toRecord()},
 	})
 
-	ServiceResponder[*stub.CreateRecordRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(&RecordList{
 			Total:   uint64(len(res)),
 			Records: util.ArrayMap(res, NewRecordWrapper),
@@ -203,9 +199,8 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 		ResolveReferences: strings.Split(resolveReferences, ","),
 	})
 
-	ServiceResponder[*stub.GetRecordRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(NewRecordWrapper(record), serviceErr)
 }
 
@@ -239,9 +234,8 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 		updatedRecord = result[0]
 	}
 
-	ServiceResponder[*stub.UpdateRecordRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(NewRecordWrapper(updatedRecord), serviceErr)
 }
 
@@ -256,9 +250,8 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 		Ids:       []string{id},
 	})
 
-	ServiceResponder[*stub.DeleteRecordRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(nil, serviceErr)
 }
 
@@ -285,9 +278,8 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		ResolveReferences: listRecordRequest.ResolveReferences,
 	})
 
-	ServiceResponder[*stub.ListRecordRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(&RecordList{
 			Total:   uint64(total),
 			Records: util.ArrayMap(result, NewRecordWrapper),
@@ -298,9 +290,8 @@ func (r *recordApi) handleRecordResource(writer http.ResponseWriter, request *ht
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
-	ServiceResponder[*stub.ListRecordRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(resourceTo(resource), nil)
 }
 

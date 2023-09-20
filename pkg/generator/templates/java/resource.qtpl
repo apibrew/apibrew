@@ -6,17 +6,23 @@ package {%s pkg %};
 import java.util.Objects;
 import io.apibrew.lib.EntityInfo;
 import io.apibrew.lib.Entity;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class {%s javaClassName(resource.Name) %} extends Entity {
     {%- for _, property := range resource.Properties -%}
+    {%s= getJavaPropertyAnnotations(resource, property) %}
     private {%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %};
     {%- endfor -%}
 
-    public static final EntityInfo<{%s javaClassName(resource.Name) %}> entityInfo = new EntityInfo<>("{%s resource.Namespace %}", "{%s resource.Name %}", {%s javaClassName(resource.Name) %}.class);
+    @JsonIgnore
+    public static final EntityInfo<{%s javaClassName(resource.Name) %}> entityInfo = new EntityInfo<>("{%s resource.Namespace %}", "{%s resource.Name %}", {%s javaClassName(resource.Name) %}.class, "{%s getRestPath(resource) %}");
 
     {%- for _, subType := range resource.Types -%}
     public static class {%s javaClassName(subType.Name) %} {
         {%- for _, property := range subType.Properties -%}
+        {%s= getJavaPropertyAnnotations(resource, property) %}
         private {%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %};
         {%- endfor -%}
 
@@ -44,6 +50,7 @@ public class {%s javaClassName(resource.Name) %} extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }

@@ -24,6 +24,20 @@ func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
 	return list
 }
 
+func ArrayMapX[T interface{}, R interface{}](arr []*T, mapper func(*T) *R) []*R {
+	var list = make([]*R, 0)
+
+	for _, item := range arr {
+		if arr != nil {
+			list = append(list, mapper(item))
+		} else {
+			list = append(list, nil)
+		}
+	}
+
+	return list
+}
+
 func ArrayToMap[T interface{}, R interface{}, K comparable](arr []T, keyFunc func(T) K, valueFunc func(T) R) map[K]R {
 	var result = make(map[K]R, 0)
 

@@ -3,14 +3,16 @@ package io.apibrew.lib.model;
 import java.util.Objects;
 import io.apibrew.lib.EntityInfo;
 import io.apibrew.lib.Entity;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Resource extends Entity {
     private java.util.UUID id;
     private int version;
     private String createdBy;
     private String updatedBy;
-    private java.time.LocalDateTime createdOn;
-    private java.time.LocalDateTime updatedOn;
+    private java.time.Instant createdOn;
+    private java.time.Instant updatedOn;
     private String name;
     private Namespace namespace;
     private boolean virtual;
@@ -27,25 +29,42 @@ public class Resource extends Entity {
     private String description;
     private java.util.Map<String, String> annotations;
 
-    public static final EntityInfo<Resource> entityInfo = new EntityInfo<>("system", "Resource", Resource.class);
+    public static final EntityInfo<Resource> entityInfo = new EntityInfo<>("system", "Resource", Resource.class, "system-resource");
 
     public static class Property {
+        
         private String name;
+        
         private Resource.Type type;
+        
         private String typeRef;
+        
         private String mapping;
+        
         private boolean primary;
+        
         private boolean required;
+        
         private boolean unique;
+        
         private boolean immutable;
+        
         private int length;
+        
         private Resource.Property item;
+        
         private Resource.Reference reference;
+        
         private Object defaultValue;
+        
         private java.util.List<String> enumValues;
+        
         private Object exampleValue;
+        
         private String title;
+        
         private String description;
+        
         private java.util.Map<String, String> annotations;
 
         public String getName() {
@@ -169,9 +188,13 @@ public class Resource extends Entity {
         }
     }
     public static class SubType {
+        
         private String name;
+        
         private String title;
+        
         private String description;
+        
         private java.util.List<Resource.Property> properties;
 
         public String getName() {
@@ -204,7 +227,9 @@ public class Resource extends Entity {
         }
     }
     public static class IndexProperty {
+        
         private String name;
+        
         private Resource.Order order;
 
         public String getName() {
@@ -223,9 +248,13 @@ public class Resource extends Entity {
         }
     }
     public static class Index {
+        
         private java.util.List<Resource.IndexProperty> properties;
+        
         private Resource.IndexType indexType;
+        
         private Boolean unique;
+        
         private java.util.Map<String, String> annotations;
 
         public java.util.List<Resource.IndexProperty> getProperties() {
@@ -258,8 +287,11 @@ public class Resource extends Entity {
         }
     }
     public static class Reference {
+        
         private Resource resource;
+        
         private Boolean cascade;
+        
         private String backReference;
 
         public Resource getResource() {
@@ -310,6 +342,7 @@ public class Resource extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -325,6 +358,7 @@ public class Resource extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -339,6 +373,7 @@ public class Resource extends Entity {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -379,18 +414,18 @@ public class Resource extends Entity {
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
-    public java.time.LocalDateTime getCreatedOn() {
+    public java.time.Instant getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(java.time.LocalDateTime createdOn) {
+    public void setCreatedOn(java.time.Instant createdOn) {
         this.createdOn = createdOn;
     }
-    public java.time.LocalDateTime getUpdatedOn() {
+    public java.time.Instant getUpdatedOn() {
         return updatedOn;
     }
 
-    public void setUpdatedOn(java.time.LocalDateTime updatedOn) {
+    public void setUpdatedOn(java.time.Instant updatedOn) {
         this.updatedOn = updatedOn;
     }
     public String getName() {

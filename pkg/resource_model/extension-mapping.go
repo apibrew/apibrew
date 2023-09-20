@@ -13,6 +13,7 @@ import (
 
 import "github.com/google/uuid"
 import "time"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type ExtensionMapper struct {
 }
@@ -1124,16 +1125,14 @@ func (m *ExtensionEventMapper) ToProperties(extensionEvent *ExtensionEvent) map[
 
 	var_Id := extensionEvent.Id
 
-	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
+	var var_Id_mapped *structpb.Value
 
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
-		properties["id"] = var_Id_mapped
+	var var_Id_err error
+	var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Id)
+	if var_Id_err != nil {
+		panic(var_Id_err)
 	}
+	properties["id"] = var_Id_mapped
 
 	var_Action := extensionEvent.Action
 
@@ -1302,21 +1301,20 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
 		var_Id := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Id)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_Id_mapped := new(uuid.UUID)
-		*var_Id_mapped = val.(uuid.UUID)
+		var_Id_mapped := val.(string)
 
 		s.Id = var_Id_mapped
 	}
 	if properties["action"] != nil && properties["action"].AsInterface() != nil {
 
 		var_Action := properties["action"]
-		var_Action_mapped := (EventAction)(var_Action.GetStringValue())
+		var_Action_mapped := (ExtensionAction)(var_Action.GetStringValue())
 
 		s.Action = var_Action_mapped
 	}
@@ -1459,6 +1457,251 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 		}
 
 		s.Annotations = var_Annotations_mapped
+	}
+	return s
+}
+
+type ExtensionErrorFieldMapper struct {
+}
+
+func NewExtensionErrorFieldMapper() *ExtensionErrorFieldMapper {
+	return &ExtensionErrorFieldMapper{}
+}
+
+var ExtensionErrorFieldMapperInstance = NewExtensionErrorFieldMapper()
+
+func (m *ExtensionErrorFieldMapper) New() *ExtensionErrorField {
+	return &ExtensionErrorField{}
+}
+
+func (m *ExtensionErrorFieldMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
+func (m *ExtensionErrorFieldMapper) ToProperties(extensionErrorField *ExtensionErrorField) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_RecordId := extensionErrorField.RecordId
+
+	if var_RecordId != nil {
+		var var_RecordId_mapped *structpb.Value
+
+		var var_RecordId_err error
+		var_RecordId_mapped, var_RecordId_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_RecordId)
+		if var_RecordId_err != nil {
+			panic(var_RecordId_err)
+		}
+		properties["recordId"] = var_RecordId_mapped
+	}
+
+	var_Property := extensionErrorField.Property
+
+	if var_Property != nil {
+		var var_Property_mapped *structpb.Value
+
+		var var_Property_err error
+		var_Property_mapped, var_Property_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Property)
+		if var_Property_err != nil {
+			panic(var_Property_err)
+		}
+		properties["property"] = var_Property_mapped
+	}
+
+	var_Message := extensionErrorField.Message
+
+	if var_Message != nil {
+		var var_Message_mapped *structpb.Value
+
+		var var_Message_err error
+		var_Message_mapped, var_Message_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Message)
+		if var_Message_err != nil {
+			panic(var_Message_err)
+		}
+		properties["message"] = var_Message_mapped
+	}
+
+	var_Value := extensionErrorField.Value
+
+	if var_Value != nil {
+		var var_Value_mapped *structpb.Value
+
+		var var_Value_err error
+		var_Value_mapped, var_Value_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(*var_Value)
+		if var_Value_err != nil {
+			panic(var_Value_err)
+		}
+		properties["value"] = var_Value_mapped
+	}
+	return properties
+}
+
+func (m *ExtensionErrorFieldMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionErrorField {
+	var s = m.New()
+	if properties["recordId"] != nil && properties["recordId"].AsInterface() != nil {
+
+		var_RecordId := properties["recordId"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_RecordId)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_RecordId_mapped := new(string)
+		*var_RecordId_mapped = val.(string)
+
+		s.RecordId = var_RecordId_mapped
+	}
+	if properties["property"] != nil && properties["property"].AsInterface() != nil {
+
+		var_Property := properties["property"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Property)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Property_mapped := new(string)
+		*var_Property_mapped = val.(string)
+
+		s.Property = var_Property_mapped
+	}
+	if properties["message"] != nil && properties["message"].AsInterface() != nil {
+
+		var_Message := properties["message"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Message)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Message_mapped := new(string)
+		*var_Message_mapped = val.(string)
+
+		s.Message = var_Message_mapped
+	}
+	if properties["value"] != nil && properties["value"].AsInterface() != nil {
+
+		var_Value := properties["value"]
+		var_Value_mapped := new(unstructured.Unstructured)
+		*var_Value_mapped = unstructured.FromStructValue(var_Value.GetStructValue())
+
+		s.Value = var_Value_mapped
+	}
+	return s
+}
+
+type ExtensionErrorMapper struct {
+}
+
+func NewExtensionErrorMapper() *ExtensionErrorMapper {
+	return &ExtensionErrorMapper{}
+}
+
+var ExtensionErrorMapperInstance = NewExtensionErrorMapper()
+
+func (m *ExtensionErrorMapper) New() *ExtensionError {
+	return &ExtensionError{}
+}
+
+func (m *ExtensionErrorMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
+func (m *ExtensionErrorMapper) ToProperties(extensionError *ExtensionError) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_Code := extensionError.Code
+
+	if var_Code != nil {
+		var var_Code_mapped *structpb.Value
+
+		var var_Code_err error
+		var_Code_mapped, var_Code_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(*var_Code))
+		if var_Code_err != nil {
+			panic(var_Code_err)
+		}
+		properties["code"] = var_Code_mapped
+	}
+
+	var_Message := extensionError.Message
+
+	if var_Message != nil {
+		var var_Message_mapped *structpb.Value
+
+		var var_Message_err error
+		var_Message_mapped, var_Message_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Message)
+		if var_Message_err != nil {
+			panic(var_Message_err)
+		}
+		properties["message"] = var_Message_mapped
+	}
+
+	var_Fields := extensionError.Fields
+
+	if var_Fields != nil {
+		var var_Fields_mapped *structpb.Value
+
+		var var_Fields_l []*structpb.Value
+		for _, value := range var_Fields {
+
+			var_5x := value
+			var var_5x_mapped *structpb.Value
+
+			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionErrorFieldMapperInstance.ToProperties(&var_5x)})
+
+			var_Fields_l = append(var_Fields_l, var_5x_mapped)
+		}
+		var_Fields_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Fields_l})
+		properties["fields"] = var_Fields_mapped
+	}
+	return properties
+}
+
+func (m *ExtensionErrorMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionError {
+	var s = m.New()
+	if properties["code"] != nil && properties["code"].AsInterface() != nil {
+
+		var_Code := properties["code"]
+		var_Code_mapped := new(ExtensionCode)
+		*var_Code_mapped = (ExtensionCode)(var_Code.GetStringValue())
+
+		s.Code = var_Code_mapped
+	}
+	if properties["message"] != nil && properties["message"].AsInterface() != nil {
+
+		var_Message := properties["message"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Message)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Message_mapped := new(string)
+		*var_Message_mapped = val.(string)
+
+		s.Message = var_Message_mapped
+	}
+	if properties["fields"] != nil && properties["fields"].AsInterface() != nil {
+
+		var_Fields := properties["fields"]
+		var_Fields_mapped := []ExtensionErrorField{}
+		for _, v := range var_Fields.GetListValue().Values {
+
+			var_4x := v
+			var mappedValue = ExtensionErrorFieldMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
+
+			var_4x_mapped := *mappedValue
+
+			var_Fields_mapped = append(var_Fields_mapped, var_4x_mapped)
+		}
+
+		s.Fields = var_Fields_mapped
 	}
 	return s
 }

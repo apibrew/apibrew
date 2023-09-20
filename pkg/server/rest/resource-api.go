@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
-	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -39,9 +38,8 @@ func (r *resourceApi) ConfigureRouter(router *mux.Router) {
 func (r *resourceApi) handleResourceList(writer http.ResponseWriter, request *http.Request) {
 	var resources, err = r.resourceService.List(request.Context())
 
-	ServiceResponder[*stub.ListResourceRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(util.ArrayMap(resources, resourceTo), err)
 }
 
@@ -73,9 +71,8 @@ func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *
 
 	res, serviceErr := r.resourceService.Create(request.Context(), resourceFrom(rw), true, true)
 
-	ServiceResponder[*stub.CreateResourceRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(resourceTo(res), serviceErr)
 }
 
@@ -85,9 +82,8 @@ func (r *resourceApi) handleResourceGet(writer http.ResponseWriter, request *htt
 
 	resource, serviceErr := r.resourceService.Get(request.Context(), id)
 
-	ServiceResponder[*stub.GetResourceRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(resourceTo(resource), serviceErr)
 }
 
@@ -98,9 +94,8 @@ func (r *resourceApi) handleResourceByName(writer http.ResponseWriter, request *
 
 	resource, serviceErr := r.resourceService.GetResourceByName(request.Context(), namespace, name)
 
-	ServiceResponder[*stub.GetResourceRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(resourceTo(resource), serviceErr)
 }
 
@@ -120,9 +115,8 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 	resource, serviceErr := r.resourceService.Get(request.Context(), id)
 
 	if serviceErr != nil {
-		ServiceResponder[*stub.UpdateResourceRequest]().
+		ServiceResponder().
 			Writer(writer).
-			Request(request).
 			Respond(nil, serviceErr)
 		return
 	}
@@ -135,9 +129,8 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 		resource = nil
 	}
 
-	ServiceResponder[*stub.UpdateResourceRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(resourceTo(resource), serviceErr)
 }
 
@@ -147,9 +140,8 @@ func (r *resourceApi) handleResourceDelete(writer http.ResponseWriter, request *
 
 	serviceErr := r.resourceService.Delete(request.Context(), []string{id}, true, true)
 
-	ServiceResponder[*stub.DeleteResourceRequest]().
+	ServiceResponder().
 		Writer(writer).
-		Request(request).
 		Respond(nil, serviceErr)
 }
 

@@ -3,6 +3,7 @@ package java
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
+	"github.com/gosimple/slug"
 	"strings"
 )
 
@@ -12,6 +13,27 @@ func propertyName(property *model.ResourceProperty) string {
 	}
 
 	return property.Name
+}
+
+func getRestPath(resource *model.Resource) string {
+	if resource.Namespace == "" || resource.Namespace == "default" {
+		return slug.Make(resource.Name)
+	} else {
+		return slug.Make(resource.Namespace + "/" + resource.Name)
+	}
+}
+
+func getJavaPropertyAnnotations(resource *model.Resource, property *model.ResourceProperty) string {
+	switch property.Type {
+	case model.ResourceProperty_TIME:
+		return "@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = \"UTC\")"
+	case model.ResourceProperty_DATE:
+		return "@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = \"UTC\")"
+	case model.ResourceProperty_TIMESTAMP:
+		return "@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = \"UTC\")"
+	}
+
+	return ""
 }
 
 func getJavaType(resource *model.Resource, property *model.ResourceProperty, nonPrimitive bool) string {
@@ -65,7 +87,7 @@ func getJavaType(resource *model.Resource, property *model.ResourceProperty, non
 	case model.ResourceProperty_DATE:
 		return "java.time.LocalDate"
 	case model.ResourceProperty_TIMESTAMP:
-		return "java.time.LocalDateTime"
+		return "java.time.Instant"
 	case model.ResourceProperty_UUID:
 		return "java.util.UUID"
 	case model.ResourceProperty_STRUCT:

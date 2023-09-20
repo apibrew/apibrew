@@ -135,9 +135,14 @@ var ExtensionResource = &model.Resource{
 		{
 			Name: "Event",
 			Properties: []*model.ResourceProperty{
-				special.IdProperty,
 				{
-					Name: "EventAction",
+					Name:      "id",
+					Type:      model.ResourceProperty_STRING,
+					Required:  true,
+					Immutable: true,
+				},
+				{
+					Name: "action",
 					Type: model.ResourceProperty_ENUM,
 					EnumValues: []string{
 						"CREATE",
@@ -148,9 +153,6 @@ var ExtensionResource = &model.Resource{
 						"OPERATE",
 					},
 					Required: true,
-					Annotations: map[string]string{
-						annotations.TypeName: "EventAction",
-					},
 				},
 				{
 					Name:    "recordSearchParams",
@@ -202,6 +204,67 @@ var ExtensionResource = &model.Resource{
 					Type: model.ResourceProperty_TIMESTAMP,
 				},
 				special.AnnotationsProperty,
+			},
+		},
+		{
+			Name: "ErrorField",
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "recordId",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "property",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "message",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "value",
+					Type: model.ResourceProperty_OBJECT,
+				},
+			},
+		},
+		{
+			Name: "Error",
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "code",
+					Type: model.ResourceProperty_ENUM,
+					EnumValues: []string{
+						"UNKNOWN_ERROR",
+						"RECORD_NOT_FOUND",
+						"UNABLE_TO_LOCATE_PRIMARY_KEY",
+						"INTERNAL_ERROR",
+						"PROPERTY_NOT_FOUND",
+						"RECORD_VALIDATION_ERROR",
+						"RESOURCE_VALIDATION_ERROR",
+						"AUTHENTICATION_FAILED",
+						"ALREADY_EXISTS",
+						"ACCESS_DENIED",
+						"BACKEND_ERROR",
+						"UNIQUE_VIOLATION",
+						"REFERENCE_VIOLATION",
+						"RESOURCE_NOT_FOUND",
+						"UNSUPPORTED_OPERATION",
+						"EXTERNAL_BACKEND_COMMUNICATION_ERROR",
+						"EXTERNAL_BACKEND_ERROR",
+					},
+				},
+				{
+					Name: "message",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "fields",
+					Type: model.ResourceProperty_LIST,
+					Item: &model.ResourceProperty{
+						Type:    model.ResourceProperty_STRUCT,
+						TypeRef: util.Pointer("ErrorField"),
+					},
+				},
 			},
 		},
 	},
