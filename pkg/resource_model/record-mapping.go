@@ -120,18 +120,18 @@ func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Re
 	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
 
 		var_Properties := properties["properties"]
-		var_Properties_mapped := unstructured.FromStructValue(var_Properties.GetStructValue())
+		var_Properties_mapped := unstructured.FromValue(var_Properties)
 
 		s.Properties = var_Properties_mapped
 	}
 	if properties["packedProperties"] != nil && properties["packedProperties"].AsInterface() != nil {
 
 		var_PackedProperties := properties["packedProperties"]
-		var_PackedProperties_mapped := []unstructured.Unstructured{}
+		var_PackedProperties_mapped := []interface{}{}
 		for _, v := range var_PackedProperties.GetListValue().Values {
 
 			var_4x := v
-			var_4x_mapped := unstructured.FromStructValue(var_4x.GetStructValue())
+			var_4x_mapped := unstructured.FromValue(var_4x)
 
 			var_PackedProperties_mapped = append(var_PackedProperties_mapped, var_4x_mapped)
 		}

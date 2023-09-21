@@ -289,7 +289,7 @@ func (m *PermissionMapper) ToProperties(permission *Permission) map[string]*stru
 		var var_LocalFlags_mapped *structpb.Value
 
 		var var_LocalFlags_err error
-		var_LocalFlags_mapped, var_LocalFlags_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(*var_LocalFlags)
+		var_LocalFlags_mapped, var_LocalFlags_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_LocalFlags)
 		if var_LocalFlags_err != nil {
 			panic(var_LocalFlags_err)
 		}
@@ -526,8 +526,8 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 	if properties["localFlags"] != nil && properties["localFlags"].AsInterface() != nil {
 
 		var_LocalFlags := properties["localFlags"]
-		var_LocalFlags_mapped := new(unstructured.Unstructured)
-		*var_LocalFlags_mapped = unstructured.FromStructValue(var_LocalFlags.GetStructValue())
+		var_LocalFlags_mapped := new(interface{})
+		*var_LocalFlags_mapped = unstructured.FromValue(var_LocalFlags)
 
 		s.LocalFlags = var_LocalFlags_mapped
 	}

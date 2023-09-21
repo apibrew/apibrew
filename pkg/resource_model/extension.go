@@ -6,7 +6,6 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Extension struct {
 	Id          *uuid.UUID              `json:"id,omitempty"`
@@ -73,6 +72,107 @@ func (s *Extension) GetAnnotations() map[string]string {
 }
 
 type ExtensionBooleanExpression struct {
+	And                []ExtensionBooleanExpression   `json:"and,omitempty"`
+	Or                 []ExtensionBooleanExpression   `json:"or,omitempty"`
+	Not                *ExtensionBooleanExpression    `json:"not,omitempty"`
+	Equal              *ExtensionPairExpression       `json:"equal,omitempty"`
+	LessThan           *ExtensionPairExpression       `json:"lessThan,omitempty"`
+	GreaterThan        *ExtensionPairExpression       `json:"greaterThan,omitempty"`
+	LessThanOrEqual    *ExtensionPairExpression       `json:"lessThanOrEqual,omitempty"`
+	GreaterThanOrEqual *ExtensionPairExpression       `json:"greaterThanOrEqual,omitempty"`
+	In                 *ExtensionPairExpression       `json:"in,omitempty"`
+	IsNull             *ExtensionExpression           `json:"isNull,omitempty"`
+	RegexMatch         *ExtensionRegexMatchExpression `json:"regexMatch,omitempty"`
+}
+
+func (s *ExtensionBooleanExpression) GetAnd() []ExtensionBooleanExpression {
+	return s.And
+}
+func (s *ExtensionBooleanExpression) GetOr() []ExtensionBooleanExpression {
+	return s.Or
+}
+func (s *ExtensionBooleanExpression) GetNot() *ExtensionBooleanExpression {
+	return s.Not
+}
+func (s *ExtensionBooleanExpression) GetEqual() *ExtensionPairExpression {
+	return s.Equal
+}
+func (s *ExtensionBooleanExpression) GetLessThan() *ExtensionPairExpression {
+	return s.LessThan
+}
+func (s *ExtensionBooleanExpression) GetGreaterThan() *ExtensionPairExpression {
+	return s.GreaterThan
+}
+func (s *ExtensionBooleanExpression) GetLessThanOrEqual() *ExtensionPairExpression {
+	return s.LessThanOrEqual
+}
+func (s *ExtensionBooleanExpression) GetGreaterThanOrEqual() *ExtensionPairExpression {
+	return s.GreaterThanOrEqual
+}
+func (s *ExtensionBooleanExpression) GetIn() *ExtensionPairExpression {
+	return s.In
+}
+func (s *ExtensionBooleanExpression) GetIsNull() *ExtensionExpression {
+	return s.IsNull
+}
+func (s *ExtensionBooleanExpression) GetRegexMatch() *ExtensionRegexMatchExpression {
+	return s.RegexMatch
+}
+
+type ExtensionPairExpression struct {
+	Left  *ExtensionExpression `json:"left,omitempty"`
+	Right *ExtensionExpression `json:"right,omitempty"`
+}
+
+func (s *ExtensionPairExpression) GetLeft() *ExtensionExpression {
+	return s.Left
+}
+func (s *ExtensionPairExpression) GetRight() *ExtensionExpression {
+	return s.Right
+}
+
+type ExtensionRefValue struct {
+	Namespace  *string                `json:"namespace,omitempty"`
+	Resource   *string                `json:"resource,omitempty"`
+	Properties map[string]interface{} `json:"properties,omitempty"`
+}
+
+func (s *ExtensionRefValue) GetNamespace() *string {
+	return s.Namespace
+}
+func (s *ExtensionRefValue) GetResource() *string {
+	return s.Resource
+}
+func (s *ExtensionRefValue) GetProperties() map[string]interface{} {
+	return s.Properties
+}
+
+type ExtensionRegexMatchExpression struct {
+	Pattern    *string              `json:"pattern,omitempty"`
+	Expression *ExtensionExpression `json:"expression,omitempty"`
+}
+
+func (s *ExtensionRegexMatchExpression) GetPattern() *string {
+	return s.Pattern
+}
+func (s *ExtensionRegexMatchExpression) GetExpression() *ExtensionExpression {
+	return s.Expression
+}
+
+type ExtensionExpression struct {
+	Property *string            `json:"property,omitempty"`
+	Value    interface{}        `json:"value,omitempty"`
+	RefValue *ExtensionRefValue `json:"refValue,omitempty"`
+}
+
+func (s *ExtensionExpression) GetProperty() *string {
+	return s.Property
+}
+func (s *ExtensionExpression) GetValue() interface{} {
+	return s.Value
+}
+func (s *ExtensionExpression) GetRefValue() *ExtensionRefValue {
+	return s.RefValue
 }
 
 type ExtensionFunctionCall struct {
@@ -212,10 +312,10 @@ func (s *ExtensionEvent) GetAnnotations() map[string]string {
 }
 
 type ExtensionErrorField struct {
-	RecordId *string                    `json:"recordId,omitempty"`
-	Property *string                    `json:"property,omitempty"`
-	Message  *string                    `json:"message,omitempty"`
-	Value    *unstructured.Unstructured `json:"value,omitempty"`
+	RecordId *string     `json:"recordId,omitempty"`
+	Property *string     `json:"property,omitempty"`
+	Message  *string     `json:"message,omitempty"`
+	Value    interface{} `json:"value,omitempty"`
 }
 
 func (s *ExtensionErrorField) GetRecordId() *string {
@@ -227,7 +327,7 @@ func (s *ExtensionErrorField) GetProperty() *string {
 func (s *ExtensionErrorField) GetMessage() *string {
 	return s.Message
 }
-func (s *ExtensionErrorField) GetValue() *unstructured.Unstructured {
+func (s *ExtensionErrorField) GetValue() interface{} {
 	return s.Value
 }
 

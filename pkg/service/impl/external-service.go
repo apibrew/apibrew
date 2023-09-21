@@ -9,7 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/ext"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
-	"github.com/apibrew/apibrew/pkg/resources/mapping"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
@@ -20,12 +20,9 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/types/known/structpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
 	"net/http"
 	"strings"
-	"time"
 )
 
 type externalService struct {
@@ -103,7 +100,7 @@ func (e *externalService) CallFunction(ctx context.Context, call *resource_model
 }
 
 func (e *externalService) CallHttp(ctx context.Context, call *resource_model.ExtensionHttpCall, event *model.Event) (*model.Event, errors.ServiceError) {
-	body, err := json.Marshal(e.eventTo(event))
+	body, err := json.Marshal(extramappings.EventFromProto(event))
 
 	if err != nil {
 		log.Error(err)
@@ -156,7 +153,7 @@ func (e *externalService) CallHttp(ctx context.Context, call *resource_model.Ext
 		return e.reportHttpError(err, responseData)
 	}
 
-	return e.eventFrom(result), nil
+	return extramappings.EventToProto(result), nil
 }
 
 func (e *externalService) toServiceError(result *resource_model.ExtensionError) errors.ServiceError {
@@ -184,86 +181,6 @@ func (e *externalService) reportHttpError(err error, responseData []byte) (*mode
 	}
 
 	return nil, errors.RecordValidationError.WithDetails(responseError.Message)
-}
-
-func (e *externalService) eventFrom(result *resource_model.ExtensionEvent) *model.Event {
-	var event = new(model.Event)
-
-	event.Id = result.Id
-	event.Action = model.Event_Action(model.Event_Action_value[string(result.Action)])
-	event.Ids = result.Ids
-	if result.Time != nil {
-		event.Time = timestamppb.New(*result.Time)
-	}
-	if result.ActionDescription != nil {
-		event.ActionDescription = *result.ActionDescription
-	}
-	if result.ActionSummary != nil {
-		event.ActionSummary = *result.ActionSummary
-	}
-	event.Annotations = result.Annotations
-	if result.Finalizes != nil {
-		event.Finalizes = *result.Finalizes
-	}
-	if result.Sync != nil {
-		event.Sync = *result.Sync
-	}
-	// event.RecordSearchParams = // fixme
-	event.Records = util.ArrayMapX(result.Records, func(t *resource_model.Record) *model.Record {
-		return &model.Record{
-			Properties: resource_model.RecordMapperInstance.ToRecord(t).Properties["properties"].GetStructValue().Fields,
-		}
-	})
-
-	event.Resource = e.resourceFrom(result.Resource)
-
-	return event
-}
-
-func (e *externalService) eventTo(event *model.Event) *resource_model.ExtensionEvent {
-	extensionEvent := new(resource_model.ExtensionEvent)
-	extensionEvent.Id = event.Id
-	extensionEvent.Action = resource_model.ExtensionAction(model.Event_Action_name[int32(event.Action)])
-	extensionEvent.Ids = event.Ids
-	if event.Time != nil {
-		extensionEvent.Time = new(time.Time)
-		*extensionEvent.Time = event.Time.AsTime()
-	}
-	extensionEvent.ActionDescription = &event.ActionDescription
-	extensionEvent.ActionSummary = &event.ActionSummary
-	extensionEvent.Annotations = event.Annotations
-	extensionEvent.Finalizes = &event.Finalizes
-	extensionEvent.Sync = &event.Sync
-	// extensionEvent.RecordSearchParams = // fixme
-	extensionEvent.Records = util.ArrayMapX(event.Records, func(item *model.Record) *resource_model.Record {
-		return resource_model.RecordMapperInstance.FromRecord(&model.Record{
-			Id: item.Id,
-			Properties: map[string]*structpb.Value{
-				"id":         item.Properties["id"],
-				"properties": structpb.NewStructValue(&structpb.Struct{Fields: item.Properties}),
-			},
-		})
-	})
-
-	extensionEvent.Resource = e.resourceTo(event.Resource)
-
-	return extensionEvent
-}
-
-func (e *externalService) resourceTo(resource *model.Resource) *resource_model.Resource {
-	if resource == nil {
-		return nil
-	}
-	resourceRec := mapping.ResourceToRecord(resource)
-	return resource_model.ResourceMapperInstance.FromRecord(resourceRec)
-}
-
-func (e *externalService) resourceFrom(resource *resource_model.Resource) *model.Resource {
-	if resource == nil {
-		return nil
-	}
-	resourceRec := resource_model.ResourceMapperInstance.ToRecord(resource)
-	return mapping.ResourceFromRecord(resourceRec)
 }
 
 func NewExternalService() service.ExternalService {

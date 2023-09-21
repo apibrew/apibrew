@@ -774,7 +774,7 @@ func (m *ResourcePropertyMapper) ToProperties(resourceProperty *ResourceProperty
 		var var_DefaultValue_mapped *structpb.Value
 
 		var var_DefaultValue_err error
-		var_DefaultValue_mapped, var_DefaultValue_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(*var_DefaultValue)
+		var_DefaultValue_mapped, var_DefaultValue_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_DefaultValue)
 		if var_DefaultValue_err != nil {
 			panic(var_DefaultValue_err)
 		}
@@ -810,7 +810,7 @@ func (m *ResourcePropertyMapper) ToProperties(resourceProperty *ResourceProperty
 		var var_ExampleValue_mapped *structpb.Value
 
 		var var_ExampleValue_err error
-		var_ExampleValue_mapped, var_ExampleValue_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(*var_ExampleValue)
+		var_ExampleValue_mapped, var_ExampleValue_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_ExampleValue)
 		if var_ExampleValue_err != nil {
 			panic(var_ExampleValue_err)
 		}
@@ -1004,8 +1004,8 @@ func (m *ResourcePropertyMapper) FromProperties(properties map[string]*structpb.
 	if properties["defaultValue"] != nil && properties["defaultValue"].AsInterface() != nil {
 
 		var_DefaultValue := properties["defaultValue"]
-		var_DefaultValue_mapped := new(unstructured.Unstructured)
-		*var_DefaultValue_mapped = unstructured.FromStructValue(var_DefaultValue.GetStructValue())
+		var_DefaultValue_mapped := new(interface{})
+		*var_DefaultValue_mapped = unstructured.FromValue(var_DefaultValue)
 
 		s.DefaultValue = var_DefaultValue_mapped
 	}
@@ -1032,8 +1032,8 @@ func (m *ResourcePropertyMapper) FromProperties(properties map[string]*structpb.
 	if properties["exampleValue"] != nil && properties["exampleValue"].AsInterface() != nil {
 
 		var_ExampleValue := properties["exampleValue"]
-		var_ExampleValue_mapped := new(unstructured.Unstructured)
-		*var_ExampleValue_mapped = unstructured.FromStructValue(var_ExampleValue.GetStructValue())
+		var_ExampleValue_mapped := new(interface{})
+		*var_ExampleValue_mapped = unstructured.FromValue(var_ExampleValue)
 
 		s.ExampleValue = var_ExampleValue_mapped
 	}

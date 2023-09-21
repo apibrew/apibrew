@@ -6,18 +6,17 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Namespace struct {
-	Id          *uuid.UUID                 `json:"id,omitempty"`
-	Version     int32                      `json:"version,omitempty"`
-	CreatedBy   *string                    `json:"createdBy,omitempty"`
-	UpdatedBy   *string                    `json:"updatedBy,omitempty"`
-	CreatedOn   *time.Time                 `json:"createdOn,omitempty"`
-	UpdatedOn   *time.Time                 `json:"updatedOn,omitempty"`
-	Name        string                     `json:"name,omitempty"`
-	Description *string                    `json:"description,omitempty"`
-	Details     *unstructured.Unstructured `json:"details,omitempty"`
+	Id          *uuid.UUID  `json:"id,omitempty"`
+	Version     int32       `json:"version,omitempty"`
+	CreatedBy   *string     `json:"createdBy,omitempty"`
+	UpdatedBy   *string     `json:"updatedBy,omitempty"`
+	CreatedOn   *time.Time  `json:"createdOn,omitempty"`
+	UpdatedOn   *time.Time  `json:"updatedOn,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Description *string     `json:"description,omitempty"`
+	Details     interface{} `json:"details,omitempty"`
 }
 
 func (s *Namespace) GetId() *uuid.UUID {
@@ -44,6 +43,6 @@ func (s *Namespace) GetName() string {
 func (s *Namespace) GetDescription() *string {
 	return s.Description
 }
-func (s *Namespace) GetDetails() *unstructured.Unstructured {
+func (s *Namespace) GetDetails() interface{} {
 	return s.Details
 }

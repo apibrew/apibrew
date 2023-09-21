@@ -366,7 +366,7 @@ import (
 
 `)
 //line templates/golang/mapping.qtpl:76
-	for _, importLine := range getImports(resource) {
+	for _, importLine := range getImportsForMapping(resource) {
 //line templates/golang/mapping.qtpl:76
 		qw422016.N().S(`import "`)
 //line templates/golang/mapping.qtpl:77
@@ -914,16 +914,16 @@ func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model
 //line templates/golang/mapping.qtpl:189
 			qw422016.E().S(valueVarName)
 //line templates/golang/mapping.qtpl:189
-			qw422016.N().S(`_mapped := new(unstructured.Unstructured)
+			qw422016.N().S(`_mapped := new(interface{})
             *`)
 //line templates/golang/mapping.qtpl:190
 			qw422016.E().S(valueVarName)
 //line templates/golang/mapping.qtpl:190
-			qw422016.N().S(`_mapped = unstructured.FromStructValue(`)
+			qw422016.N().S(`_mapped = unstructured.FromValue(`)
 //line templates/golang/mapping.qtpl:190
 			qw422016.E().S(valueVarName)
 //line templates/golang/mapping.qtpl:190
-			qw422016.N().S(`.GetStructValue())
+			qw422016.N().S(`)
 `)
 //line templates/golang/mapping.qtpl:191
 		} else {
@@ -932,11 +932,11 @@ func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model
 //line templates/golang/mapping.qtpl:192
 			qw422016.E().S(valueVarName)
 //line templates/golang/mapping.qtpl:192
-			qw422016.N().S(`_mapped := unstructured.FromStructValue(`)
+			qw422016.N().S(`_mapped := unstructured.FromValue(`)
 //line templates/golang/mapping.qtpl:192
 			qw422016.E().S(valueVarName)
 //line templates/golang/mapping.qtpl:192
-			qw422016.N().S(`.GetStructValue())
+			qw422016.N().S(`)
 `)
 //line templates/golang/mapping.qtpl:193
 		}

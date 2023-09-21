@@ -159,7 +159,7 @@ func (m *NamespaceMapper) ToProperties(namespace *Namespace) map[string]*structp
 		var var_Details_mapped *structpb.Value
 
 		var var_Details_err error
-		var_Details_mapped, var_Details_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(*var_Details)
+		var_Details_mapped, var_Details_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Details)
 		if var_Details_err != nil {
 			panic(var_Details_err)
 		}
@@ -283,8 +283,8 @@ func (m *NamespaceMapper) FromProperties(properties map[string]*structpb.Value) 
 	if properties["details"] != nil && properties["details"].AsInterface() != nil {
 
 		var_Details := properties["details"]
-		var_Details_mapped := new(unstructured.Unstructured)
-		*var_Details_mapped = unstructured.FromStructValue(var_Details.GetStructValue())
+		var_Details_mapped := new(interface{})
+		*var_Details_mapped = unstructured.FromValue(var_Details)
 
 		s.Details = var_Details_mapped
 	}

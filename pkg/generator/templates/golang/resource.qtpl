@@ -9,7 +9,7 @@
 //go:build !codeanalysis
 package {%s pkgName %}
 
-{%- for _, importLine := range getImports(resource) -%}
+{%- for _, importLine := range getImportsForResource(resource) -%}
 import "{%s importLine %}"
 {%- endfor -%}
 {%- for _, importLine := range getResourceSpecificImports(resource) -%}

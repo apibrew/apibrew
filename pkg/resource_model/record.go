@@ -5,20 +5,19 @@
 package resource_model
 
 import "github.com/google/uuid"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Record struct {
-	Id               *uuid.UUID                  `json:"id,omitempty"`
-	Properties       unstructured.Unstructured   `json:"properties,omitempty"`
-	PackedProperties []unstructured.Unstructured `json:"packedProperties,omitempty"`
+	Id               *uuid.UUID    `json:"id,omitempty"`
+	Properties       interface{}   `json:"properties,omitempty"`
+	PackedProperties []interface{} `json:"packedProperties,omitempty"`
 }
 
 func (s *Record) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Record) GetProperties() unstructured.Unstructured {
+func (s *Record) GetProperties() interface{} {
 	return s.Properties
 }
-func (s *Record) GetPackedProperties() []unstructured.Unstructured {
+func (s *Record) GetPackedProperties() []interface{} {
 	return s.PackedProperties
 }

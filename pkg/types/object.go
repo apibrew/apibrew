@@ -19,6 +19,10 @@ func (o objectType) Equals(a, b interface{}) bool {
 }
 
 func (o objectType) Pack(value interface{}) (*structpb.Value, error) {
+	if nv, ok := value.(*interface{}); ok {
+		return o.Pack(*nv)
+	}
+
 	return structpb.NewValue(value)
 }
 

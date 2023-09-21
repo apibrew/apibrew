@@ -6,7 +6,6 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Resource struct {
 	Id              *uuid.UUID         `json:"id,omitempty"`
@@ -97,23 +96,23 @@ func (s *Resource) GetAnnotations() map[string]string {
 }
 
 type ResourceProperty struct {
-	Name         string                     `json:"name,omitempty"`
-	Type         ResourceType               `json:"type,omitempty"`
-	TypeRef      *string                    `json:"typeRef,omitempty"`
-	Mapping      string                     `json:"mapping,omitempty"`
-	Primary      bool                       `json:"primary,omitempty"`
-	Required     bool                       `json:"required,omitempty"`
-	Unique       bool                       `json:"unique,omitempty"`
-	Immutable    bool                       `json:"immutable,omitempty"`
-	Length       int32                      `json:"length,omitempty"`
-	Item         *ResourceProperty          `json:"item,omitempty"`
-	Reference    *ResourceReference         `json:"reference,omitempty"`
-	DefaultValue *unstructured.Unstructured `json:"defaultValue,omitempty"`
-	EnumValues   []string                   `json:"enumValues,omitempty"`
-	ExampleValue *unstructured.Unstructured `json:"exampleValue,omitempty"`
-	Title        *string                    `json:"title,omitempty"`
-	Description  *string                    `json:"description,omitempty"`
-	Annotations  map[string]string          `json:"annotations,omitempty"`
+	Name         string             `json:"name,omitempty"`
+	Type         ResourceType       `json:"type,omitempty"`
+	TypeRef      *string            `json:"typeRef,omitempty"`
+	Mapping      string             `json:"mapping,omitempty"`
+	Primary      bool               `json:"primary,omitempty"`
+	Required     bool               `json:"required,omitempty"`
+	Unique       bool               `json:"unique,omitempty"`
+	Immutable    bool               `json:"immutable,omitempty"`
+	Length       int32              `json:"length,omitempty"`
+	Item         *ResourceProperty  `json:"item,omitempty"`
+	Reference    *ResourceReference `json:"reference,omitempty"`
+	DefaultValue interface{}        `json:"defaultValue,omitempty"`
+	EnumValues   []string           `json:"enumValues,omitempty"`
+	ExampleValue interface{}        `json:"exampleValue,omitempty"`
+	Title        *string            `json:"title,omitempty"`
+	Description  *string            `json:"description,omitempty"`
+	Annotations  map[string]string  `json:"annotations,omitempty"`
 }
 
 func (s *ResourceProperty) GetName() string {
@@ -149,13 +148,13 @@ func (s *ResourceProperty) GetItem() *ResourceProperty {
 func (s *ResourceProperty) GetReference() *ResourceReference {
 	return s.Reference
 }
-func (s *ResourceProperty) GetDefaultValue() *unstructured.Unstructured {
+func (s *ResourceProperty) GetDefaultValue() interface{} {
 	return s.DefaultValue
 }
 func (s *ResourceProperty) GetEnumValues() []string {
 	return s.EnumValues
 }
-func (s *ResourceProperty) GetExampleValue() *unstructured.Unstructured {
+func (s *ResourceProperty) GetExampleValue() interface{} {
 	return s.ExampleValue
 }
 func (s *ResourceProperty) GetTitle() *string {

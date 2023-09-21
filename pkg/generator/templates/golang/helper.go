@@ -11,7 +11,20 @@ import (
 	"strings"
 )
 
-func getImports(resource *model.Resource) []string {
+func getImportsForResource(resource *model.Resource) []string {
+	imports := []string{}
+	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
+		if prop.Type == model.ResourceProperty_UUID {
+			imports = append(imports, "github.com/google/uuid")
+		} else if prop.Type == model.ResourceProperty_TIMESTAMP || prop.Type == model.ResourceProperty_TIME || prop.Type == model.ResourceProperty_DATE {
+			imports = append(imports, "time")
+		}
+	})
+
+	return util.ArrayUnique(imports)
+}
+
+func getImportsForMapping(resource *model.Resource) []string {
 	imports := []string{}
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
 		if prop.Type == model.ResourceProperty_UUID {
@@ -80,7 +93,7 @@ func isNullable(prop *model.ResourceProperty) bool {
 }
 
 func isSelfNullable(prop *model.ResourceProperty) bool {
-	return prop.Type == model.ResourceProperty_REFERENCE || prop.Type == model.ResourceProperty_LIST || prop.Type == model.ResourceProperty_MAP
+	return prop.Type == model.ResourceProperty_REFERENCE || prop.Type == model.ResourceProperty_LIST || prop.Type == model.ResourceProperty_MAP || prop.Type == model.ResourceProperty_OBJECT
 }
 
 func PropertyType(resource *model.Resource, prop *model.ResourceProperty) string {
@@ -96,7 +109,7 @@ func HasPointer(prop *model.ResourceProperty, collectionItem bool) bool {
 		return true
 	}
 
-	if collectionItem {
+	if collectionItem || isSelfNullable(prop) {
 		return false
 	}
 
@@ -141,7 +154,7 @@ func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actu
 	} else if prop.Type == model.ResourceProperty_STRUCT {
 		typeVal = strcase.ToCamel(resource.Name + "_" + *prop.TypeRef)
 	} else if prop.Type == model.ResourceProperty_OBJECT {
-		typeVal = "unstructured.Unstructured"
+		typeVal = "interface{}"
 	} else if prop.Type == model.ResourceProperty_ENUM {
 		typeVal = strcase.ToCamel(resource.Name + "_" + actualName)
 

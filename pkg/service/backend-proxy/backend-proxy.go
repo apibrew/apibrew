@@ -136,7 +136,12 @@ func (b backendProxy) ListRecords(ctx context.Context, resource *model.Resource,
 		},
 	}),
 		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
-			result, localTotal, err := b.backend.ListRecords(ctx, resource, params, resultChan)
+			result, localTotal, err := b.backend.ListRecords(ctx, resource, abs.ListRecordParams{
+				Query:             passedEvent.RecordSearchParams.Query,
+				Limit:             passedEvent.RecordSearchParams.Limit,
+				Offset:            passedEvent.RecordSearchParams.Offset,
+				ResolveReferences: passedEvent.RecordSearchParams.ResolveReferences,
+			}, resultChan)
 
 			if localTotal != 0 {
 				total = localTotal

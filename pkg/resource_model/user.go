@@ -6,20 +6,19 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type User struct {
-	Id          *uuid.UUID                 `json:"id,omitempty"`
-	Version     int32                      `json:"version,omitempty"`
-	CreatedBy   *string                    `json:"createdBy,omitempty"`
-	UpdatedBy   *string                    `json:"updatedBy,omitempty"`
-	CreatedOn   *time.Time                 `json:"createdOn,omitempty"`
-	UpdatedOn   *time.Time                 `json:"updatedOn,omitempty"`
-	Username    string                     `json:"username,omitempty"`
-	Password    *string                    `json:"password,omitempty"`
-	Roles       []*Role                    `json:"roles,omitempty"`
-	Permissions []*Permission              `json:"permissions,omitempty"`
-	Details     *unstructured.Unstructured `json:"details,omitempty"`
+	Id          *uuid.UUID    `json:"id,omitempty"`
+	Version     int32         `json:"version,omitempty"`
+	CreatedBy   *string       `json:"createdBy,omitempty"`
+	UpdatedBy   *string       `json:"updatedBy,omitempty"`
+	CreatedOn   *time.Time    `json:"createdOn,omitempty"`
+	UpdatedOn   *time.Time    `json:"updatedOn,omitempty"`
+	Username    string        `json:"username,omitempty"`
+	Password    *string       `json:"password,omitempty"`
+	Roles       []*Role       `json:"roles,omitempty"`
+	Permissions []*Permission `json:"permissions,omitempty"`
+	Details     interface{}   `json:"details,omitempty"`
 }
 
 func (s *User) GetId() *uuid.UUID {
@@ -52,6 +51,6 @@ func (s *User) GetRoles() []*Role {
 func (s *User) GetPermissions() []*Permission {
 	return s.Permissions
 }
-func (s *User) GetDetails() *unstructured.Unstructured {
+func (s *User) GetDetails() interface{} {
 	return s.Details
 }

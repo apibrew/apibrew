@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -268,8 +269,14 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		return
 	}
 
+	var query *model.BooleanExpression
+
+	if listRecordRequest.Query != nil {
+		query = extramappings.BooleanExpressionToProto(*listRecordRequest.Query)
+	}
+
 	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
-		Query:             listRecordRequest.Query.expr,
+		Query:             query,
 		Namespace:         resource.Namespace,
 		Resource:          resource.Name,
 		Limit:             listRecordRequest.Limit,

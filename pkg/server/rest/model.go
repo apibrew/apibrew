@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -95,26 +96,13 @@ type RecordList struct {
 	Records []*RecordWrapper `json:"content"`
 }
 
-type BooleanExpressionWrapper struct {
-	expr *model.BooleanExpression
-}
-
-func (pvw *BooleanExpressionWrapper) MarshalJSON() ([]byte, error) {
-	return mo.Marshal(pvw.expr)
-}
-
-func (pvw *BooleanExpressionWrapper) UnmarshalJSON(data []byte) error {
-	pvw.expr = new(model.BooleanExpression)
-	return umo.Unmarshal(data, pvw.expr)
-}
-
 type SearchRecordRequest struct {
-	Query             BooleanExpressionWrapper `json:"query,omitempty"`
-	Limit             uint32                   `json:"limit,omitempty"`
-	Offset            uint64                   `json:"offset,omitempty"`
-	UseHistory        bool                     `json:"useHistory,omitempty"`
-	ResolveReferences []string                 `json:"resolveReferences,omitempty"`
-	Annotations       map[string]string        `json:"annotations,omitempty"`
+	Query             *resource_model.ExtensionBooleanExpression `json:"query,omitempty"`
+	Limit             uint32                                     `json:"limit,omitempty"`
+	Offset            uint64                                     `json:"offset,omitempty"`
+	UseHistory        bool                                       `json:"useHistory,omitempty"`
+	ResolveReferences []string                                   `json:"resolveReferences,omitempty"`
+	Annotations       map[string]string                          `json:"annotations,omitempty"`
 }
 
 type HealthResponse struct {

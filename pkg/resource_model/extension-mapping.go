@@ -467,11 +467,601 @@ func (m *ExtensionBooleanExpressionMapper) ResourceIdentity() abs.ResourceIdenti
 func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpression *ExtensionBooleanExpression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
+	var_And := extensionBooleanExpression.And
+
+	if var_And != nil {
+		var var_And_mapped *structpb.Value
+
+		var var_And_l []*structpb.Value
+		for _, value := range var_And {
+
+			var_5x := value
+			var var_5x_mapped *structpb.Value
+
+			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(&var_5x)})
+
+			var_And_l = append(var_And_l, var_5x_mapped)
+		}
+		var_And_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_And_l})
+		properties["and"] = var_And_mapped
+	}
+
+	var_Or := extensionBooleanExpression.Or
+
+	if var_Or != nil {
+		var var_Or_mapped *structpb.Value
+
+		var var_Or_l []*structpb.Value
+		for _, value := range var_Or {
+
+			var_5x := value
+			var var_5x_mapped *structpb.Value
+
+			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(&var_5x)})
+
+			var_Or_l = append(var_Or_l, var_5x_mapped)
+		}
+		var_Or_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Or_l})
+		properties["or"] = var_Or_mapped
+	}
+
+	var_Not := extensionBooleanExpression.Not
+
+	if var_Not != nil {
+		var var_Not_mapped *structpb.Value
+
+		var_Not_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(var_Not)})
+		properties["not"] = var_Not_mapped
+	}
+
+	var_Equal := extensionBooleanExpression.Equal
+
+	if var_Equal != nil {
+		var var_Equal_mapped *structpb.Value
+
+		var_Equal_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_Equal)})
+		properties["equal"] = var_Equal_mapped
+	}
+
+	var_LessThan := extensionBooleanExpression.LessThan
+
+	if var_LessThan != nil {
+		var var_LessThan_mapped *structpb.Value
+
+		var_LessThan_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_LessThan)})
+		properties["lessThan"] = var_LessThan_mapped
+	}
+
+	var_GreaterThan := extensionBooleanExpression.GreaterThan
+
+	if var_GreaterThan != nil {
+		var var_GreaterThan_mapped *structpb.Value
+
+		var_GreaterThan_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_GreaterThan)})
+		properties["greaterThan"] = var_GreaterThan_mapped
+	}
+
+	var_LessThanOrEqual := extensionBooleanExpression.LessThanOrEqual
+
+	if var_LessThanOrEqual != nil {
+		var var_LessThanOrEqual_mapped *structpb.Value
+
+		var_LessThanOrEqual_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_LessThanOrEqual)})
+		properties["lessThanOrEqual"] = var_LessThanOrEqual_mapped
+	}
+
+	var_GreaterThanOrEqual := extensionBooleanExpression.GreaterThanOrEqual
+
+	if var_GreaterThanOrEqual != nil {
+		var var_GreaterThanOrEqual_mapped *structpb.Value
+
+		var_GreaterThanOrEqual_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_GreaterThanOrEqual)})
+		properties["greaterThanOrEqual"] = var_GreaterThanOrEqual_mapped
+	}
+
+	var_In := extensionBooleanExpression.In
+
+	if var_In != nil {
+		var var_In_mapped *structpb.Value
+
+		var_In_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_In)})
+		properties["in"] = var_In_mapped
+	}
+
+	var_IsNull := extensionBooleanExpression.IsNull
+
+	if var_IsNull != nil {
+		var var_IsNull_mapped *structpb.Value
+
+		var_IsNull_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExpressionMapperInstance.ToProperties(var_IsNull)})
+		properties["isNull"] = var_IsNull_mapped
+	}
+
+	var_RegexMatch := extensionBooleanExpression.RegexMatch
+
+	if var_RegexMatch != nil {
+		var var_RegexMatch_mapped *structpb.Value
+
+		var_RegexMatch_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionRegexMatchExpressionMapperInstance.ToProperties(var_RegexMatch)})
+		properties["regexMatch"] = var_RegexMatch_mapped
+	}
 	return properties
 }
 
 func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionBooleanExpression {
 	var s = m.New()
+	if properties["and"] != nil && properties["and"].AsInterface() != nil {
+
+		var_And := properties["and"]
+		var_And_mapped := []ExtensionBooleanExpression{}
+		for _, v := range var_And.GetListValue().Values {
+
+			var_4x := v
+			var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
+
+			var_4x_mapped := *mappedValue
+
+			var_And_mapped = append(var_And_mapped, var_4x_mapped)
+		}
+
+		s.And = var_And_mapped
+	}
+	if properties["or"] != nil && properties["or"].AsInterface() != nil {
+
+		var_Or := properties["or"]
+		var_Or_mapped := []ExtensionBooleanExpression{}
+		for _, v := range var_Or.GetListValue().Values {
+
+			var_4x := v
+			var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
+
+			var_4x_mapped := *mappedValue
+
+			var_Or_mapped = append(var_Or_mapped, var_4x_mapped)
+		}
+
+		s.Or = var_Or_mapped
+	}
+	if properties["not"] != nil && properties["not"].AsInterface() != nil {
+
+		var_Not := properties["not"]
+		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_Not.GetStructValue().Fields)
+
+		var_Not_mapped := mappedValue
+
+		s.Not = var_Not_mapped
+	}
+	if properties["equal"] != nil && properties["equal"].AsInterface() != nil {
+
+		var_Equal := properties["equal"]
+		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_Equal.GetStructValue().Fields)
+
+		var_Equal_mapped := mappedValue
+
+		s.Equal = var_Equal_mapped
+	}
+	if properties["lessThan"] != nil && properties["lessThan"].AsInterface() != nil {
+
+		var_LessThan := properties["lessThan"]
+		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_LessThan.GetStructValue().Fields)
+
+		var_LessThan_mapped := mappedValue
+
+		s.LessThan = var_LessThan_mapped
+	}
+	if properties["greaterThan"] != nil && properties["greaterThan"].AsInterface() != nil {
+
+		var_GreaterThan := properties["greaterThan"]
+		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_GreaterThan.GetStructValue().Fields)
+
+		var_GreaterThan_mapped := mappedValue
+
+		s.GreaterThan = var_GreaterThan_mapped
+	}
+	if properties["lessThanOrEqual"] != nil && properties["lessThanOrEqual"].AsInterface() != nil {
+
+		var_LessThanOrEqual := properties["lessThanOrEqual"]
+		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_LessThanOrEqual.GetStructValue().Fields)
+
+		var_LessThanOrEqual_mapped := mappedValue
+
+		s.LessThanOrEqual = var_LessThanOrEqual_mapped
+	}
+	if properties["greaterThanOrEqual"] != nil && properties["greaterThanOrEqual"].AsInterface() != nil {
+
+		var_GreaterThanOrEqual := properties["greaterThanOrEqual"]
+		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_GreaterThanOrEqual.GetStructValue().Fields)
+
+		var_GreaterThanOrEqual_mapped := mappedValue
+
+		s.GreaterThanOrEqual = var_GreaterThanOrEqual_mapped
+	}
+	if properties["in"] != nil && properties["in"].AsInterface() != nil {
+
+		var_In := properties["in"]
+		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_In.GetStructValue().Fields)
+
+		var_In_mapped := mappedValue
+
+		s.In = var_In_mapped
+	}
+	if properties["isNull"] != nil && properties["isNull"].AsInterface() != nil {
+
+		var_IsNull := properties["isNull"]
+		var mappedValue = ExtensionExpressionMapperInstance.FromProperties(var_IsNull.GetStructValue().Fields)
+
+		var_IsNull_mapped := mappedValue
+
+		s.IsNull = var_IsNull_mapped
+	}
+	if properties["regexMatch"] != nil && properties["regexMatch"].AsInterface() != nil {
+
+		var_RegexMatch := properties["regexMatch"]
+		var mappedValue = ExtensionRegexMatchExpressionMapperInstance.FromProperties(var_RegexMatch.GetStructValue().Fields)
+
+		var_RegexMatch_mapped := mappedValue
+
+		s.RegexMatch = var_RegexMatch_mapped
+	}
+	return s
+}
+
+type ExtensionPairExpressionMapper struct {
+}
+
+func NewExtensionPairExpressionMapper() *ExtensionPairExpressionMapper {
+	return &ExtensionPairExpressionMapper{}
+}
+
+var ExtensionPairExpressionMapperInstance = NewExtensionPairExpressionMapper()
+
+func (m *ExtensionPairExpressionMapper) New() *ExtensionPairExpression {
+	return &ExtensionPairExpression{}
+}
+
+func (m *ExtensionPairExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
+func (m *ExtensionPairExpressionMapper) ToProperties(extensionPairExpression *ExtensionPairExpression) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_Left := extensionPairExpression.Left
+
+	if var_Left != nil {
+		var var_Left_mapped *structpb.Value
+
+		var_Left_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExpressionMapperInstance.ToProperties(var_Left)})
+		properties["left"] = var_Left_mapped
+	}
+
+	var_Right := extensionPairExpression.Right
+
+	if var_Right != nil {
+		var var_Right_mapped *structpb.Value
+
+		var_Right_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExpressionMapperInstance.ToProperties(var_Right)})
+		properties["right"] = var_Right_mapped
+	}
+	return properties
+}
+
+func (m *ExtensionPairExpressionMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionPairExpression {
+	var s = m.New()
+	if properties["left"] != nil && properties["left"].AsInterface() != nil {
+
+		var_Left := properties["left"]
+		var mappedValue = ExtensionExpressionMapperInstance.FromProperties(var_Left.GetStructValue().Fields)
+
+		var_Left_mapped := mappedValue
+
+		s.Left = var_Left_mapped
+	}
+	if properties["right"] != nil && properties["right"].AsInterface() != nil {
+
+		var_Right := properties["right"]
+		var mappedValue = ExtensionExpressionMapperInstance.FromProperties(var_Right.GetStructValue().Fields)
+
+		var_Right_mapped := mappedValue
+
+		s.Right = var_Right_mapped
+	}
+	return s
+}
+
+type ExtensionRefValueMapper struct {
+}
+
+func NewExtensionRefValueMapper() *ExtensionRefValueMapper {
+	return &ExtensionRefValueMapper{}
+}
+
+var ExtensionRefValueMapperInstance = NewExtensionRefValueMapper()
+
+func (m *ExtensionRefValueMapper) New() *ExtensionRefValue {
+	return &ExtensionRefValue{}
+}
+
+func (m *ExtensionRefValueMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
+func (m *ExtensionRefValueMapper) ToProperties(extensionRefValue *ExtensionRefValue) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_Namespace := extensionRefValue.Namespace
+
+	if var_Namespace != nil {
+		var var_Namespace_mapped *structpb.Value
+
+		var var_Namespace_err error
+		var_Namespace_mapped, var_Namespace_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Namespace)
+		if var_Namespace_err != nil {
+			panic(var_Namespace_err)
+		}
+		properties["namespace"] = var_Namespace_mapped
+	}
+
+	var_Resource := extensionRefValue.Resource
+
+	if var_Resource != nil {
+		var var_Resource_mapped *structpb.Value
+
+		var var_Resource_err error
+		var_Resource_mapped, var_Resource_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Resource)
+		if var_Resource_err != nil {
+			panic(var_Resource_err)
+		}
+		properties["resource"] = var_Resource_mapped
+	}
+
+	var_Properties := extensionRefValue.Properties
+
+	if var_Properties != nil {
+		var var_Properties_mapped *structpb.Value
+
+		var var_Properties_st *structpb.Struct = new(structpb.Struct)
+		var_Properties_st.Fields = make(map[string]*structpb.Value)
+		for key, value := range var_Properties {
+
+			var_1x := value
+			var var_1x_mapped *structpb.Value
+
+			var var_1x_err error
+			var_1x_mapped, var_1x_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_1x)
+			if var_1x_err != nil {
+				panic(var_1x_err)
+			}
+
+			var_Properties_st.Fields[key] = var_1x_mapped
+		}
+		var_Properties_mapped = structpb.NewStructValue(var_Properties_st)
+		properties["properties"] = var_Properties_mapped
+	}
+	return properties
+}
+
+func (m *ExtensionRefValueMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionRefValue {
+	var s = m.New()
+	if properties["namespace"] != nil && properties["namespace"].AsInterface() != nil {
+
+		var_Namespace := properties["namespace"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Namespace)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Namespace_mapped := new(string)
+		*var_Namespace_mapped = val.(string)
+
+		s.Namespace = var_Namespace_mapped
+	}
+	if properties["resource"] != nil && properties["resource"].AsInterface() != nil {
+
+		var_Resource := properties["resource"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Resource)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Resource_mapped := new(string)
+		*var_Resource_mapped = val.(string)
+
+		s.Resource = var_Resource_mapped
+	}
+	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
+
+		var_Properties := properties["properties"]
+		var_Properties_mapped := make(map[string]interface{})
+		for k, v := range var_Properties.GetStructValue().Fields {
+
+			var_3x := v
+			var_3x_mapped := unstructured.FromValue(var_3x)
+
+			var_Properties_mapped[k] = var_3x_mapped
+		}
+
+		s.Properties = var_Properties_mapped
+	}
+	return s
+}
+
+type ExtensionRegexMatchExpressionMapper struct {
+}
+
+func NewExtensionRegexMatchExpressionMapper() *ExtensionRegexMatchExpressionMapper {
+	return &ExtensionRegexMatchExpressionMapper{}
+}
+
+var ExtensionRegexMatchExpressionMapperInstance = NewExtensionRegexMatchExpressionMapper()
+
+func (m *ExtensionRegexMatchExpressionMapper) New() *ExtensionRegexMatchExpression {
+	return &ExtensionRegexMatchExpression{}
+}
+
+func (m *ExtensionRegexMatchExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
+func (m *ExtensionRegexMatchExpressionMapper) ToProperties(extensionRegexMatchExpression *ExtensionRegexMatchExpression) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_Pattern := extensionRegexMatchExpression.Pattern
+
+	if var_Pattern != nil {
+		var var_Pattern_mapped *structpb.Value
+
+		var var_Pattern_err error
+		var_Pattern_mapped, var_Pattern_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Pattern)
+		if var_Pattern_err != nil {
+			panic(var_Pattern_err)
+		}
+		properties["pattern"] = var_Pattern_mapped
+	}
+
+	var_Expression := extensionRegexMatchExpression.Expression
+
+	if var_Expression != nil {
+		var var_Expression_mapped *structpb.Value
+
+		var_Expression_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExpressionMapperInstance.ToProperties(var_Expression)})
+		properties["expression"] = var_Expression_mapped
+	}
+	return properties
+}
+
+func (m *ExtensionRegexMatchExpressionMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionRegexMatchExpression {
+	var s = m.New()
+	if properties["pattern"] != nil && properties["pattern"].AsInterface() != nil {
+
+		var_Pattern := properties["pattern"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Pattern)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Pattern_mapped := new(string)
+		*var_Pattern_mapped = val.(string)
+
+		s.Pattern = var_Pattern_mapped
+	}
+	if properties["expression"] != nil && properties["expression"].AsInterface() != nil {
+
+		var_Expression := properties["expression"]
+		var mappedValue = ExtensionExpressionMapperInstance.FromProperties(var_Expression.GetStructValue().Fields)
+
+		var_Expression_mapped := mappedValue
+
+		s.Expression = var_Expression_mapped
+	}
+	return s
+}
+
+type ExtensionExpressionMapper struct {
+}
+
+func NewExtensionExpressionMapper() *ExtensionExpressionMapper {
+	return &ExtensionExpressionMapper{}
+}
+
+var ExtensionExpressionMapperInstance = NewExtensionExpressionMapper()
+
+func (m *ExtensionExpressionMapper) New() *ExtensionExpression {
+	return &ExtensionExpression{}
+}
+
+func (m *ExtensionExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
+func (m *ExtensionExpressionMapper) ToProperties(extensionExpression *ExtensionExpression) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_Property := extensionExpression.Property
+
+	if var_Property != nil {
+		var var_Property_mapped *structpb.Value
+
+		var var_Property_err error
+		var_Property_mapped, var_Property_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Property)
+		if var_Property_err != nil {
+			panic(var_Property_err)
+		}
+		properties["property"] = var_Property_mapped
+	}
+
+	var_Value := extensionExpression.Value
+
+	if var_Value != nil {
+		var var_Value_mapped *structpb.Value
+
+		var var_Value_err error
+		var_Value_mapped, var_Value_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Value)
+		if var_Value_err != nil {
+			panic(var_Value_err)
+		}
+		properties["value"] = var_Value_mapped
+	}
+
+	var_RefValue := extensionExpression.RefValue
+
+	if var_RefValue != nil {
+		var var_RefValue_mapped *structpb.Value
+
+		var_RefValue_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionRefValueMapperInstance.ToProperties(var_RefValue)})
+		properties["refValue"] = var_RefValue_mapped
+	}
+	return properties
+}
+
+func (m *ExtensionExpressionMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionExpression {
+	var s = m.New()
+	if properties["property"] != nil && properties["property"].AsInterface() != nil {
+
+		var_Property := properties["property"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Property)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Property_mapped := new(string)
+		*var_Property_mapped = val.(string)
+
+		s.Property = var_Property_mapped
+	}
+	if properties["value"] != nil && properties["value"].AsInterface() != nil {
+
+		var_Value := properties["value"]
+		var_Value_mapped := new(interface{})
+		*var_Value_mapped = unstructured.FromValue(var_Value)
+
+		s.Value = var_Value_mapped
+	}
+	if properties["refValue"] != nil && properties["refValue"].AsInterface() != nil {
+
+		var_RefValue := properties["refValue"]
+		var mappedValue = ExtensionRefValueMapperInstance.FromProperties(var_RefValue.GetStructValue().Fields)
+
+		var_RefValue_mapped := mappedValue
+
+		s.RefValue = var_RefValue_mapped
+	}
 	return s
 }
 
@@ -1529,7 +2119,7 @@ func (m *ExtensionErrorFieldMapper) ToProperties(extensionErrorField *ExtensionE
 		var var_Value_mapped *structpb.Value
 
 		var var_Value_err error
-		var_Value_mapped, var_Value_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(*var_Value)
+		var_Value_mapped, var_Value_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Value)
 		if var_Value_err != nil {
 			panic(var_Value_err)
 		}
@@ -1585,8 +2175,8 @@ func (m *ExtensionErrorFieldMapper) FromProperties(properties map[string]*struct
 	if properties["value"] != nil && properties["value"].AsInterface() != nil {
 
 		var_Value := properties["value"]
-		var_Value_mapped := new(unstructured.Unstructured)
-		*var_Value_mapped = unstructured.FromStructValue(var_Value.GetStructValue())
+		var_Value_mapped := new(interface{})
+		*var_Value_mapped = unstructured.FromValue(var_Value)
 
 		s.Value = var_Value_mapped
 	}

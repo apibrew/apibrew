@@ -6,18 +6,17 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Role struct {
-	Id          *uuid.UUID                 `json:"id,omitempty"`
-	Version     int32                      `json:"version,omitempty"`
-	CreatedBy   *string                    `json:"createdBy,omitempty"`
-	UpdatedBy   *string                    `json:"updatedBy,omitempty"`
-	CreatedOn   *time.Time                 `json:"createdOn,omitempty"`
-	UpdatedOn   *time.Time                 `json:"updatedOn,omitempty"`
-	Name        string                     `json:"name,omitempty"`
-	Permissions []*Permission              `json:"permissions,omitempty"`
-	Details     *unstructured.Unstructured `json:"details,omitempty"`
+	Id          *uuid.UUID    `json:"id,omitempty"`
+	Version     int32         `json:"version,omitempty"`
+	CreatedBy   *string       `json:"createdBy,omitempty"`
+	UpdatedBy   *string       `json:"updatedBy,omitempty"`
+	CreatedOn   *time.Time    `json:"createdOn,omitempty"`
+	UpdatedOn   *time.Time    `json:"updatedOn,omitempty"`
+	Name        string        `json:"name,omitempty"`
+	Permissions []*Permission `json:"permissions,omitempty"`
+	Details     interface{}   `json:"details,omitempty"`
 }
 
 func (s *Role) GetId() *uuid.UUID {
@@ -44,6 +43,6 @@ func (s *Role) GetName() string {
 func (s *Role) GetPermissions() []*Permission {
 	return s.Permissions
 }
-func (s *Role) GetDetails() *unstructured.Unstructured {
+func (s *Role) GetDetails() interface{} {
 	return s.Details
 }

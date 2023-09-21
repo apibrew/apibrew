@@ -73,7 +73,7 @@ import (
     "github.com/apibrew/apibrew/pkg/abs"
 )
 
-{%- for _, importLine := range getImports(resource) -%}
+{%- for _, importLine := range getImportsForMapping(resource) -%}
 import "{%s importLine %}"
 {%- endfor -%}
 {%- endfunc -%}
@@ -186,10 +186,10 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
         {% endif %}
     {%- elseif property.Type == model.ResourceProperty_OBJECT -%}
         {%- if isNullable(property) && !insideCollection -%}
-            {%s valueVarName %}_mapped := new(unstructured.Unstructured)
-            *{%s valueVarName %}_mapped = unstructured.FromStructValue({%s valueVarName %}.GetStructValue())
+            {%s valueVarName %}_mapped := new(interface{})
+            *{%s valueVarName %}_mapped = unstructured.FromValue({%s valueVarName %})
         {%- else -%}
-            {%s valueVarName %}_mapped := unstructured.FromStructValue({%s valueVarName %}.GetStructValue())
+            {%s valueVarName %}_mapped := unstructured.FromValue({%s valueVarName %})
         {%- endif -%}
     {%- else -%}
         val, err := types.ByResourcePropertyType(model.ResourceProperty_{%s property.Type.String() %}).UnPack({%s valueVarName %})

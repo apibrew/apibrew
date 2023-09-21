@@ -6,28 +6,27 @@ package resource_model
 
 import "github.com/google/uuid"
 import "time"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type Permission struct {
-	Id            *uuid.UUID                 `json:"id,omitempty"`
-	Version       int32                      `json:"version,omitempty"`
-	CreatedBy     *string                    `json:"createdBy,omitempty"`
-	UpdatedBy     *string                    `json:"updatedBy,omitempty"`
-	CreatedOn     *time.Time                 `json:"createdOn,omitempty"`
-	UpdatedOn     *time.Time                 `json:"updatedOn,omitempty"`
-	Namespace     *string                    `json:"namespace,omitempty"`
-	Resource      *string                    `json:"resource,omitempty"`
-	Property      *string                    `json:"property,omitempty"`
-	PropertyValue *string                    `json:"propertyValue,omitempty"`
-	PropertyMode  *PermissionPropertyMode    `json:"propertyMode,omitempty"`
-	Operation     PermissionOperation        `json:"operation,omitempty"`
-	RecordIds     []string                   `json:"recordIds,omitempty"`
-	Before        *time.Time                 `json:"before,omitempty"`
-	After         *time.Time                 `json:"after,omitempty"`
-	User          *User                      `json:"user,omitempty"`
-	Role          *Role                      `json:"role,omitempty"`
-	Permit        PermissionPermit           `json:"permit,omitempty"`
-	LocalFlags    *unstructured.Unstructured `json:"localFlags,omitempty"`
+	Id            *uuid.UUID              `json:"id,omitempty"`
+	Version       int32                   `json:"version,omitempty"`
+	CreatedBy     *string                 `json:"createdBy,omitempty"`
+	UpdatedBy     *string                 `json:"updatedBy,omitempty"`
+	CreatedOn     *time.Time              `json:"createdOn,omitempty"`
+	UpdatedOn     *time.Time              `json:"updatedOn,omitempty"`
+	Namespace     *string                 `json:"namespace,omitempty"`
+	Resource      *string                 `json:"resource,omitempty"`
+	Property      *string                 `json:"property,omitempty"`
+	PropertyValue *string                 `json:"propertyValue,omitempty"`
+	PropertyMode  *PermissionPropertyMode `json:"propertyMode,omitempty"`
+	Operation     PermissionOperation     `json:"operation,omitempty"`
+	RecordIds     []string                `json:"recordIds,omitempty"`
+	Before        *time.Time              `json:"before,omitempty"`
+	After         *time.Time              `json:"after,omitempty"`
+	User          *User                   `json:"user,omitempty"`
+	Role          *Role                   `json:"role,omitempty"`
+	Permit        PermissionPermit        `json:"permit,omitempty"`
+	LocalFlags    interface{}             `json:"localFlags,omitempty"`
 }
 
 func (s *Permission) GetId() *uuid.UUID {
@@ -84,7 +83,7 @@ func (s *Permission) GetRole() *Role {
 func (s *Permission) GetPermit() PermissionPermit {
 	return s.Permit
 }
-func (s *Permission) GetLocalFlags() *unstructured.Unstructured {
+func (s *Permission) GetLocalFlags() interface{} {
 	return s.LocalFlags
 }
 

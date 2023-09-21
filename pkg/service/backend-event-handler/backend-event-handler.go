@@ -30,7 +30,9 @@ func (b *backendEventHandler) PrepareInternalEvent(ctx context.Context, event *m
 	return event
 }
 
-func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextEvent *model.Event, actualHandler HandlerFunc) (*model.Event, errors.ServiceError) {
+func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, originalEvent *model.Event, actualHandler HandlerFunc) (*model.Event, errors.ServiceError) {
+	nextEvent := originalEvent
+
 	handlers := b.filterHandlersForEvent(nextEvent)
 
 	if !nextEvent.Resource.Virtual {
@@ -51,6 +53,8 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, nextE
 
 	logger.Debugf("Starting handler chain: %d", len(handlers))
 	for _, handler := range handlers {
+		nextEvent.Resource = originalEvent.Resource
+
 		logger.Debugf("Calling handler: %s", handler.Name)
 		if !handler.Sync {
 			nextEvent.Sync = false

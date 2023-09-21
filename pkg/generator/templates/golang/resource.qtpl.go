@@ -43,7 +43,7 @@ package `)
 
 `)
 //line templates/golang/resource.qtpl:12
-	for _, importLine := range getImports(resource) {
+	for _, importLine := range getImportsForResource(resource) {
 //line templates/golang/resource.qtpl:12
 		qw422016.N().S(`import "`)
 //line templates/golang/resource.qtpl:13

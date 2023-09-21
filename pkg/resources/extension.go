@@ -17,6 +17,10 @@ var ExtensionResource = &model.Resource{
 	},
 	Types: []*model.ResourceSubType{
 		sub_types.BooleanExpression,
+		sub_types.PairExpression,
+		sub_types.RefValue,
+		sub_types.RegexMatchExpression,
+		sub_types.Expression,
 		{
 			Name: "FunctionCall",
 			Properties: []*model.ResourceProperty{
