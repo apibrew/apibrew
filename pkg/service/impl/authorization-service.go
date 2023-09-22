@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -16,6 +17,17 @@ import (
 )
 
 type authorizationService struct {
+}
+
+func (a *authorizationService) CheckIsExtensionController(ctx context.Context) errors.ServiceError {
+	if err := a.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+		Resource:  resources.ExtensionResource,
+		Operation: resource_model.PermissionOperation_FULL,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *authorizationService) CheckRecordAccess(ctx context.Context, params service.CheckRecordAccessParams) errors.ServiceError {

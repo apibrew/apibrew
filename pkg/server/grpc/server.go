@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
@@ -14,6 +15,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"net"
+	"strings"
 )
 
 type Server interface {
@@ -96,6 +98,17 @@ func interceptRequest(authenticationService service.AuthenticationService, ctx c
 				token = md.Get("Token")[0]
 			}
 		}
+
+		for k, v := range md {
+			if len(v) > 0 {
+				for ext, exists := range annotations.ClientAllowedAnnotations {
+					if exists && strings.ToLower(k) == strings.ToLower(ext) {
+						ctx = annotations.SetWithContext(ctx, ext, v[0])
+					}
+				}
+			}
+		}
+
 	}
 
 	if authenticationService.AuthenticationDisabled() {

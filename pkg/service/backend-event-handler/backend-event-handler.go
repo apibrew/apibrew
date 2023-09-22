@@ -5,6 +5,8 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
@@ -20,7 +22,8 @@ type BackendEventHandler interface {
 }
 
 type backendEventHandler struct {
-	handlers []Handler
+	handlers             []Handler
+	authorizationService service.AuthorizationService
 }
 
 func (b *backendEventHandler) PrepareInternalEvent(ctx context.Context, event *model.Event) *model.Event {
@@ -33,7 +36,17 @@ func (b *backendEventHandler) PrepareInternalEvent(ctx context.Context, event *m
 func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, originalEvent *model.Event, actualHandler HandlerFunc) (*model.Event, errors.ServiceError) {
 	nextEvent := originalEvent
 
-	handlers := b.filterHandlersForEvent(nextEvent)
+	var handlers []Handler
+
+	if !annotations.IsEnabled(annotations.FromCtx(ctx), annotations.BypassExtensions) {
+		handlers = b.filterHandlersForEvent(nextEvent)
+	} else {
+		err := b.authorizationService.CheckIsExtensionController(ctx)
+
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	if !nextEvent.Resource.Virtual {
 		handlers = append(handlers, Handler{
@@ -275,6 +288,6 @@ func resolve(incoming *model.Event, left *model.Expression) proto.Message {
 	return nil
 }
 
-func NewBackendEventHandler() BackendEventHandler {
-	return &backendEventHandler{}
+func NewBackendEventHandler(authorizationService service.AuthorizationService) BackendEventHandler {
+	return &backendEventHandler{authorizationService: authorizationService}
 }

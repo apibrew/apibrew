@@ -21,6 +21,7 @@ type AuthenticationService interface {
 
 type AuthorizationService interface {
 	CheckRecordAccess(ctx context.Context, params CheckRecordAccessParams) errors.ServiceError
+	CheckIsExtensionController(ctx context.Context) errors.ServiceError
 }
 
 type BackendProviderService interface {

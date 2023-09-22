@@ -73,9 +73,10 @@ func (app *App) GetMetricsService() service.MetricsService {
 }
 
 func (app *App) Init() <-chan interface{} {
-	app.backendEventHandler = backend_event_handler.NewBackendEventHandler()
-
 	app.authorizationService = NewAuthorizationService()
+
+	app.backendEventHandler = backend_event_handler.NewBackendEventHandler(app.authorizationService)
+
 	app.backendProviderService = NewBackendProviderService(app.backendEventHandler)
 	app.resourceMigrationService = NewResourceMigrationService()
 

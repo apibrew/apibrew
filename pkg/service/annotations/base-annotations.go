@@ -49,3 +49,10 @@ const OpenApiGroup = "OpenApiGroup"
 
 // service
 const ServiceKey = "ServiceKey"
+
+// bypass extensions
+const BypassExtensions = "BypassExtensions"
+
+var ClientAllowedAnnotations = map[string]bool{
+	BypassExtensions: true,
+}

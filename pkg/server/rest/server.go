@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest/docs"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
@@ -158,6 +159,7 @@ func (s *server) configureRoutes() {
 	}
 	r.Use(s.AuthenticationMiddleWare)
 	r.Use(s.TrackingMiddleWare)
+	r.Use(s.AnnotationsMiddleWare)
 
 	c := cors.New(cors.Options{
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
@@ -202,6 +204,27 @@ func (s *server) TrackingMiddleWare(next http.Handler) http.Handler {
 		if req.Header.Get("ClientTrackId") != "" {
 			req = req.WithContext(logging.WithLogField(req.Context(), "ClientTrackId", req.Header.Get("ClientTrackId")))
 		}
+
+		next.ServeHTTP(w, req)
+	})
+}
+
+func (s *server) AnnotationsMiddleWare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+
+		ctx := req.Context()
+
+		for k, v := range req.Header {
+			if len(v) > 0 {
+				for ext, exists := range annotations.ClientAllowedAnnotations {
+					if exists && strings.ToLower(k) == strings.ToLower(ext) {
+						ctx = annotations.SetWithContext(ctx, ext, v[0])
+					}
+				}
+			}
+		}
+
+		req = req.WithContext(ctx)
 
 		next.ServeHTTP(w, req)
 	})
