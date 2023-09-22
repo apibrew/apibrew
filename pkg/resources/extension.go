@@ -52,6 +52,16 @@ var ExtensionResource = &model.Resource{
 			},
 		},
 		{
+			Name: "ChannelCall",
+			Properties: []*model.ResourceProperty{
+				{
+					Name:     "channelKey",
+					Type:     model.ResourceProperty_STRING,
+					Required: true,
+				},
+			},
+		},
+		{
 			Name: "ExternalCall",
 			Properties: []*model.ResourceProperty{
 				{
@@ -63,6 +73,11 @@ var ExtensionResource = &model.Resource{
 					Name:    "httpCall",
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: util.Pointer("HttpCall"),
+				},
+				{
+					Name:    "channelCall",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("ChannelCall"),
 				},
 			},
 		},
@@ -208,6 +223,11 @@ var ExtensionResource = &model.Resource{
 					Type: model.ResourceProperty_TIMESTAMP,
 				},
 				special.AnnotationsProperty,
+				{
+					Name:    "error",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("Error"),
+				},
 			},
 		},
 		{

@@ -80,7 +80,13 @@ type MetricsService interface {
 }
 
 type WatchService interface {
-	Watch(ctx context.Context, params WatchParams) <-chan *model.Event
+	Watch(ctx context.Context, params WatchParams) (<-chan *model.Event, errors.ServiceError)
+}
+
+type EventChannelService interface {
+	Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, errors.ServiceError)
+	PollEvents(ctx context.Context, channelKey string) (chan *model.Event, errors.ServiceError)
+	WriteEvent(ctx context.Context, key string, proto *model.Event) errors.ServiceError
 }
 
 type ExternalService interface {

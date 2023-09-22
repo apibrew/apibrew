@@ -29,6 +29,15 @@ type App struct {
 	backendEventHandler      backend_event_handler.BackendEventHandler
 	extensionService         service.ExtensionService
 	metricsService           service.MetricsService
+	eventChannelService      service.EventChannelService
+}
+
+func (app *App) GetAuthorizationService() service.AuthorizationService {
+	return app.authorizationService
+}
+
+func (app *App) GetEventChannelService() service.EventChannelService {
+	return app.eventChannelService
 }
 
 func (app *App) GetWatchService() service.WatchService {
@@ -74,7 +83,8 @@ func (app *App) Init() <-chan interface{} {
 	app.recordService = NewRecordService(app.resourceService, app.backendProviderService, app.authorizationService)
 
 	app.dataSourceService = NewDataSourceService(app.resourceService, app.recordService, app.backendProviderService)
-	app.externalService = NewExternalService()
+	app.eventChannelService = NewEventChannelService(app.authorizationService)
+	app.externalService = NewExternalService(app.eventChannelService)
 	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.backendEventHandler, app.externalService)
 
 	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler, app.backendProviderService, app.extensionService)

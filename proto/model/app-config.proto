@@ -27,6 +27,11 @@ message MetricsConfig {
   InfluxDBConfig influxdb = 4;
 }
 
+message EventChannelConfig {
+  int32 maxChannelSize = 1;
+  int32 maxWaitTime = 2;
+}
+
 message AppConfig {
   string host = 1;
   int32 port = 2;
@@ -41,4 +46,5 @@ message AppConfig {
   repeated model.Resource initResources = 11;
   repeated InitRecord initRecords = 12;
   repeated string applyPaths = 13;
+  EventChannelConfig eventChannelConfig = 14;
 }

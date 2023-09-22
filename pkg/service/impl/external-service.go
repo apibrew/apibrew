@@ -11,11 +11,9 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
-	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -26,7 +24,8 @@ import (
 )
 
 type externalService struct {
-	functionClientMap map[string]ext.FunctionClient
+	functionClientMap   map[string]ext.FunctionClient
+	eventChannelService service.EventChannelService
 }
 
 func (e *externalService) Call(ctx context.Context, call resource_model.ExtensionExternalCall, event *model.Event) (*model.Event, errors.ServiceError) {
@@ -46,6 +45,8 @@ func (e *externalService) Call(ctx context.Context, call resource_model.Extensio
 		return e.CallFunction(ctx, call.GetFunctionCall(), event)
 	} else if call.GetHttpCall() != nil {
 		return e.CallHttp(ctx, call.GetHttpCall(), event)
+	} else if call.GetChannelCall() != nil {
+		return e.CallChannel(ctx, call.GetChannelCall(), event)
 	} else {
 		return nil, errors.LogicalError.WithMessage("Both function call and http call is empty")
 	}
@@ -138,7 +139,7 @@ func (e *externalService) CallHttp(ctx context.Context, call *resource_model.Ext
 			return e.reportHttpError(err, responseData)
 		}
 
-		return nil, e.toServiceError(result)
+		return nil, errors.FromProtoError(extramappings.ErrorToProto(*result))
 	}
 
 	if len(responseData) == 0 {
@@ -156,21 +157,6 @@ func (e *externalService) CallHttp(ctx context.Context, call *resource_model.Ext
 	return extramappings.EventToProto(result), nil
 }
 
-func (e *externalService) toServiceError(result *resource_model.ExtensionError) errors.ServiceError {
-	serviceErr := errors.NewServiceError(model.ErrorCode(model.ErrorCode_value[string(util.DePointer(result.Code, "UNKNOWN_ERROR"))]), util.DePointer(result.Message, ""), codes.Aborted)
-
-	for _, field := range result.Fields {
-		serviceErr = serviceErr.WithErrorFields([]*model.ErrorField{
-			{
-				Property: util.DePointer(field.Property, ""),
-				Message:  util.DePointer(field.Message, ""),
-			},
-		})
-	}
-
-	return serviceErr
-}
-
 func (e *externalService) reportHttpError(err error, responseData []byte) (*model.Event, errors.ServiceError) {
 	var responseError = &model.Error{}
 
@@ -183,8 +169,13 @@ func (e *externalService) reportHttpError(err error, responseData []byte) (*mode
 	return nil, errors.RecordValidationError.WithDetails(responseError.Message)
 }
 
-func NewExternalService() service.ExternalService {
+func (e *externalService) CallChannel(ctx context.Context, call *resource_model.ExtensionChannelCall, event *model.Event) (*model.Event, errors.ServiceError) {
+	return e.eventChannelService.Exec(ctx, call.ChannelKey, event)
+}
+
+func NewExternalService(eventChannelService service.EventChannelService) service.ExternalService {
 	return &externalService{
-		functionClientMap: make(map[string]ext.FunctionClient),
+		functionClientMap:   make(map[string]ext.FunctionClient),
+		eventChannelService: eventChannelService,
 	}
 }

@@ -54,6 +54,10 @@ func EventToProto(result *resource_model.ExtensionEvent) *model.Event {
 
 	event.Resource = resourceFrom(result.Resource)
 
+	if result.Error != nil {
+		event.Error = ErrorToProto(*result.Error)
+	}
+
 	return event
 }
 
@@ -96,6 +100,10 @@ func EventFromProto(event *model.Event) *resource_model.ExtensionEvent {
 	})
 
 	extensionEvent.Resource = resourceTo(event.Resource)
+
+	if event.Error != nil {
+		extensionEvent.Error = util.Pointer(ErrorFromProto(event.Error))
+	}
 
 	return extensionEvent
 }

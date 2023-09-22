@@ -30,6 +30,7 @@ type grpcServer struct {
 	authenticationService    service.AuthenticationService
 	dataSourceService        service.DataSourceService
 	watchService             service.WatchService
+	eventChannelService      service.EventChannelService
 }
 
 func (g *grpcServer) Stop() {
@@ -51,6 +52,7 @@ func (g *grpcServer) Init() {
 	stub.RegisterDataSourceServer(g.grpcServer, NewDataSourceServer(g.dataSourceService))
 	stub.RegisterRecordServer(g.grpcServer, NewRecordServer(g.recordService, g.authenticationService))
 	stub.RegisterWatchServer(g.grpcServer, NewWatchServer(g.watchService))
+	stub.RegisterEventChannelServer(g.grpcServer, NewEventChannelGrpcService(g.eventChannelService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) {
@@ -132,5 +134,6 @@ func NewGrpcServer(container service.Container) Server {
 		watchService:             container.GetWatchService(),
 		authenticationService:    container.GetAuthenticationService(),
 		dataSourceService:        container.GetDataSourceService(),
+		eventChannelService:      container.GetEventChannelService(),
 	}
 }

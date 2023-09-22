@@ -7,6 +7,7 @@ option go_package = "github.com/apibrew/apibrew/pkg/model";
 import "model/resource.proto";
 import "model/record.proto";
 import "model/query.proto";
+import "model/error.proto";
 import 'google/protobuf/timestamp.proto';
 
 message Event {
@@ -62,6 +63,8 @@ message Event {
     Request annotations
    */
   map<string, string> annotations = 103;
+
+  model.Error error = 104;
 }
 
 /*

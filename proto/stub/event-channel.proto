@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package stub;
+
+option go_package = "github.com/apibrew/apibrew/pkg/stub";
+
+import 'model/event.proto';
+import 'model/query.proto';
+
+// Watch service watching operations on records
+service EventChannel {
+  // Sends a greeting
+  rpc Poll (EventPollRequest) returns (stream model.Event) {}
+  rpc Write (EventWriteRequest) returns (EventWriteResponse) {}
+}
+
+message EventPollRequest {
+  string token = 1;
+
+  string channelKey = 2;
+}
+
+message EventWriteRequest {
+  string token = 1;
+
+  string channelKey = 2;
+
+  model.Event event = 3;
+}
+
+message EventWriteResponse {
+  string token = 1;
+
+  string channelKey = 2;
+
+  model.Event event = 3;
+}

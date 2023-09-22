@@ -18,10 +18,14 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchSer
 		cancel()
 	}()
 
-	out := w.watchService.Watch(localCtx, service.WatchParams{
+	out, err := w.watchService.Watch(localCtx, service.WatchParams{
 		Selector:   req.Selector,
 		BufferSize: 500,
 	})
+
+	if err != nil {
+		return err
+	}
 
 	for message := range out {
 		err := res.Send(message)

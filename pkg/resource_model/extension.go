@@ -199,9 +199,18 @@ func (s *ExtensionHttpCall) GetMethod() string {
 	return s.Method
 }
 
+type ExtensionChannelCall struct {
+	ChannelKey string `json:"channelKey,omitempty"`
+}
+
+func (s *ExtensionChannelCall) GetChannelKey() string {
+	return s.ChannelKey
+}
+
 type ExtensionExternalCall struct {
 	FunctionCall *ExtensionFunctionCall `json:"functionCall,omitempty"`
 	HttpCall     *ExtensionHttpCall     `json:"httpCall,omitempty"`
+	ChannelCall  *ExtensionChannelCall  `json:"channelCall,omitempty"`
 }
 
 func (s *ExtensionExternalCall) GetFunctionCall() *ExtensionFunctionCall {
@@ -209,6 +218,9 @@ func (s *ExtensionExternalCall) GetFunctionCall() *ExtensionFunctionCall {
 }
 func (s *ExtensionExternalCall) GetHttpCall() *ExtensionHttpCall {
 	return s.HttpCall
+}
+func (s *ExtensionExternalCall) GetChannelCall() *ExtensionChannelCall {
+	return s.ChannelCall
 }
 
 type ExtensionEventSelector struct {
@@ -272,6 +284,7 @@ type ExtensionEvent struct {
 	Sync               *bool                        `json:"sync,omitempty"`
 	Time               *time.Time                   `json:"time,omitempty"`
 	Annotations        map[string]string            `json:"annotations,omitempty"`
+	Error              *ExtensionError              `json:"error,omitempty"`
 }
 
 func (s *ExtensionEvent) GetId() string {
@@ -309,6 +322,9 @@ func (s *ExtensionEvent) GetTime() *time.Time {
 }
 func (s *ExtensionEvent) GetAnnotations() map[string]string {
 	return s.Annotations
+}
+func (s *ExtensionEvent) GetError() *ExtensionError {
+	return s.Error
 }
 
 type ExtensionErrorField struct {

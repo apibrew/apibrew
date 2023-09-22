@@ -36,15 +36,16 @@ type Server interface {
 }
 
 type server struct {
-	handler     http.Handler
-	certFile    string
-	keyFile     string
-	container   service.Container
-	docsApi     docs.Api
-	metricsApi  MetricsApi
-	healthApi   HealthApi
-	recordApi   RecordApi
-	resourceApi ResourceApi
+	handler         http.Handler
+	certFile        string
+	keyFile         string
+	container       service.Container
+	docsApi         docs.Api
+	metricsApi      MetricsApi
+	healthApi       HealthApi
+	recordApi       RecordApi
+	resourceApi     ResourceApi
+	eventChannelApi EventChannelApi
 }
 
 func (s *server) Init() {
@@ -175,6 +176,7 @@ func (s *server) configureRoutes() {
 	s.resourceApi.ConfigureRouter(r)
 	s.metricsApi.ConfigureRouter(r)
 	s.healthApi.ConfigureRouter(r)
+	s.eventChannelApi.ConfigureRouter(r)
 
 	r.PathPrefix("/authentication").Handler(m)
 
@@ -226,11 +228,12 @@ func (s *server) TraceLogMiddleWare(next http.Handler) http.Handler {
 
 func NewServer(container service.Container) Server {
 	return &server{
-		container:   container,
-		docsApi:     docs.NewApi(container.GetResourceService()),
-		recordApi:   NewRecordApi(container),
-		resourceApi: NewResourceApi(container),
-		metricsApi:  NewMetricsApi(container.GetMetricsService()),
-		healthApi:   NewHealthApi(),
+		container:       container,
+		docsApi:         docs.NewApi(container.GetResourceService()),
+		recordApi:       NewRecordApi(container),
+		resourceApi:     NewResourceApi(container),
+		metricsApi:      NewMetricsApi(container.GetMetricsService()),
+		healthApi:       NewHealthApi(),
+		eventChannelApi: NewEventChannelApi(container),
 	}
 }

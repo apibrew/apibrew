@@ -119,3 +119,13 @@ func getErrorCode(err error) model.ErrorCode {
 func NewServiceError(code model.ErrorCode, message string, grpcErrorCode codes.Code) ServiceError {
 	return &serviceError{code: code, message: message, grpcErrorCode: grpcErrorCode}
 }
+
+func FromProtoError(err *model.Error) ServiceError {
+	return &serviceError{
+		code:          err.Code,
+		message:       err.Message,
+		details:       "",
+		errorFields:   err.Fields,
+		grpcErrorCode: codes.Aborted,
+	}
+}

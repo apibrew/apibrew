@@ -1221,6 +1221,60 @@ func (m *ExtensionHttpCallMapper) FromProperties(properties map[string]*structpb
 	return s
 }
 
+type ExtensionChannelCallMapper struct {
+}
+
+func NewExtensionChannelCallMapper() *ExtensionChannelCallMapper {
+	return &ExtensionChannelCallMapper{}
+}
+
+var ExtensionChannelCallMapperInstance = NewExtensionChannelCallMapper()
+
+func (m *ExtensionChannelCallMapper) New() *ExtensionChannelCall {
+	return &ExtensionChannelCall{}
+}
+
+func (m *ExtensionChannelCallMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Extension",
+	}
+}
+
+func (m *ExtensionChannelCallMapper) ToProperties(extensionChannelCall *ExtensionChannelCall) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_ChannelKey := extensionChannelCall.ChannelKey
+
+	var var_ChannelKey_mapped *structpb.Value
+
+	var var_ChannelKey_err error
+	var_ChannelKey_mapped, var_ChannelKey_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_ChannelKey)
+	if var_ChannelKey_err != nil {
+		panic(var_ChannelKey_err)
+	}
+	properties["channelKey"] = var_ChannelKey_mapped
+	return properties
+}
+
+func (m *ExtensionChannelCallMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionChannelCall {
+	var s = m.New()
+	if properties["channelKey"] != nil && properties["channelKey"].AsInterface() != nil {
+
+		var_ChannelKey := properties["channelKey"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ChannelKey)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_ChannelKey_mapped := val.(string)
+
+		s.ChannelKey = var_ChannelKey_mapped
+	}
+	return s
+}
+
 type ExtensionExternalCallMapper struct {
 }
 
@@ -1261,6 +1315,15 @@ func (m *ExtensionExternalCallMapper) ToProperties(extensionExternalCall *Extens
 		var_HttpCall_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionHttpCallMapperInstance.ToProperties(var_HttpCall)})
 		properties["httpCall"] = var_HttpCall_mapped
 	}
+
+	var_ChannelCall := extensionExternalCall.ChannelCall
+
+	if var_ChannelCall != nil {
+		var var_ChannelCall_mapped *structpb.Value
+
+		var_ChannelCall_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionChannelCallMapperInstance.ToProperties(var_ChannelCall)})
+		properties["channelCall"] = var_ChannelCall_mapped
+	}
 	return properties
 }
 
@@ -1283,6 +1346,15 @@ func (m *ExtensionExternalCallMapper) FromProperties(properties map[string]*stru
 		var_HttpCall_mapped := mappedValue
 
 		s.HttpCall = var_HttpCall_mapped
+	}
+	if properties["channelCall"] != nil && properties["channelCall"].AsInterface() != nil {
+
+		var_ChannelCall := properties["channelCall"]
+		var mappedValue = ExtensionChannelCallMapperInstance.FromProperties(var_ChannelCall.GetStructValue().Fields)
+
+		var_ChannelCall_mapped := mappedValue
+
+		s.ChannelCall = var_ChannelCall_mapped
 	}
 	return s
 }
@@ -1883,6 +1955,15 @@ func (m *ExtensionEventMapper) ToProperties(extensionEvent *ExtensionEvent) map[
 		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
 		properties["annotations"] = var_Annotations_mapped
 	}
+
+	var_Error := extensionEvent.Error
+
+	if var_Error != nil {
+		var var_Error_mapped *structpb.Value
+
+		var_Error_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionErrorMapperInstance.ToProperties(var_Error)})
+		properties["error"] = var_Error_mapped
+	}
 	return properties
 }
 
@@ -2047,6 +2128,15 @@ func (m *ExtensionEventMapper) FromProperties(properties map[string]*structpb.Va
 		}
 
 		s.Annotations = var_Annotations_mapped
+	}
+	if properties["error"] != nil && properties["error"].AsInterface() != nil {
+
+		var_Error := properties["error"]
+		var mappedValue = ExtensionErrorMapperInstance.FromProperties(var_Error.GetStructValue().Fields)
+
+		var_Error_mapped := mappedValue
+
+		s.Error = var_Error_mapped
 	}
 	return s
 }

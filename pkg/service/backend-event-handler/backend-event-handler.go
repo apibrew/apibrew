@@ -84,6 +84,11 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 				break
 			}
 
+			if nextEvent.Error != nil {
+				logger.Warnf("Handler [%s] responded with error: %v", handler.Name, nextEvent.Error)
+				return nil, errors.FromProtoError(nextEvent.Error)
+			}
+
 			if handler.Finalizes {
 				logger.Debugf("Handler [%s] finalizes", handler.Name)
 				break

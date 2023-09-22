@@ -225,30 +225,86 @@ func (x *MetricsConfig) GetInfluxdb() *InfluxDBConfig {
 	return nil
 }
 
+type EventChannelConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	MaxChannelSize int32 `protobuf:"varint,1,opt,name=maxChannelSize,proto3" json:"maxChannelSize,omitempty"`
+	MaxWaitTime    int32 `protobuf:"varint,2,opt,name=maxWaitTime,proto3" json:"maxWaitTime,omitempty"`
+}
+
+func (x *EventChannelConfig) Reset() {
+	*x = EventChannelConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_model_app_config_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventChannelConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventChannelConfig) ProtoMessage() {}
+
+func (x *EventChannelConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_model_app_config_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EventChannelConfig.ProtoReflect.Descriptor instead.
+func (*EventChannelConfig) Descriptor() ([]byte, []int) {
+	return file_model_app_config_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *EventChannelConfig) GetMaxChannelSize() int32 {
+	if x != nil {
+		return x.MaxChannelSize
+	}
+	return 0
+}
+
+func (x *EventChannelConfig) GetMaxWaitTime() int32 {
+	if x != nil {
+		return x.MaxWaitTime
+	}
+	return 0
+}
+
 type AppConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Host                  string         `protobuf:"bytes,1,opt,name=host,proto3" json:"host,omitempty"`
-	Port                  int32          `protobuf:"varint,2,opt,name=port,proto3" json:"port,omitempty"`
-	JwtPrivateKey         string         `protobuf:"bytes,3,opt,name=jwtPrivateKey,proto3" json:"jwtPrivateKey,omitempty"`
-	JwtPublicKey          string         `protobuf:"bytes,4,opt,name=jwtPublicKey,proto3" json:"jwtPublicKey,omitempty"`
-	DisableAuthentication bool           `protobuf:"varint,5,opt,name=disableAuthentication,proto3" json:"disableAuthentication,omitempty"`
-	DisableCache          bool           `protobuf:"varint,6,opt,name=disableCache,proto3" json:"disableCache,omitempty"`
-	PluginsPath           string         `protobuf:"bytes,7,opt,name=pluginsPath,proto3" json:"pluginsPath,omitempty"`
-	Metrics               *MetricsConfig `protobuf:"bytes,8,opt,name=metrics,proto3" json:"metrics,omitempty"`
-	ServiceId             string         `protobuf:"bytes,9,opt,name=serviceId,proto3" json:"serviceId,omitempty"`
-	SystemDataSource      *Record        `protobuf:"bytes,10,opt,name=systemDataSource,proto3" json:"systemDataSource,omitempty"`
-	InitResources         []*Resource    `protobuf:"bytes,11,rep,name=initResources,proto3" json:"initResources,omitempty"`
-	InitRecords           []*InitRecord  `protobuf:"bytes,12,rep,name=initRecords,proto3" json:"initRecords,omitempty"`
-	ApplyPaths            []string       `protobuf:"bytes,13,rep,name=applyPaths,proto3" json:"applyPaths,omitempty"`
+	Host                  string              `protobuf:"bytes,1,opt,name=host,proto3" json:"host,omitempty"`
+	Port                  int32               `protobuf:"varint,2,opt,name=port,proto3" json:"port,omitempty"`
+	JwtPrivateKey         string              `protobuf:"bytes,3,opt,name=jwtPrivateKey,proto3" json:"jwtPrivateKey,omitempty"`
+	JwtPublicKey          string              `protobuf:"bytes,4,opt,name=jwtPublicKey,proto3" json:"jwtPublicKey,omitempty"`
+	DisableAuthentication bool                `protobuf:"varint,5,opt,name=disableAuthentication,proto3" json:"disableAuthentication,omitempty"`
+	DisableCache          bool                `protobuf:"varint,6,opt,name=disableCache,proto3" json:"disableCache,omitempty"`
+	PluginsPath           string              `protobuf:"bytes,7,opt,name=pluginsPath,proto3" json:"pluginsPath,omitempty"`
+	Metrics               *MetricsConfig      `protobuf:"bytes,8,opt,name=metrics,proto3" json:"metrics,omitempty"`
+	ServiceId             string              `protobuf:"bytes,9,opt,name=serviceId,proto3" json:"serviceId,omitempty"`
+	SystemDataSource      *Record             `protobuf:"bytes,10,opt,name=systemDataSource,proto3" json:"systemDataSource,omitempty"`
+	InitResources         []*Resource         `protobuf:"bytes,11,rep,name=initResources,proto3" json:"initResources,omitempty"`
+	InitRecords           []*InitRecord       `protobuf:"bytes,12,rep,name=initRecords,proto3" json:"initRecords,omitempty"`
+	ApplyPaths            []string            `protobuf:"bytes,13,rep,name=applyPaths,proto3" json:"applyPaths,omitempty"`
+	EventChannelConfig    *EventChannelConfig `protobuf:"bytes,14,opt,name=eventChannelConfig,proto3" json:"eventChannelConfig,omitempty"`
 }
 
 func (x *AppConfig) Reset() {
 	*x = AppConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_model_app_config_proto_msgTypes[3]
+		mi := &file_model_app_config_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -261,7 +317,7 @@ func (x *AppConfig) String() string {
 func (*AppConfig) ProtoMessage() {}
 
 func (x *AppConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_model_app_config_proto_msgTypes[3]
+	mi := &file_model_app_config_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -274,7 +330,7 @@ func (x *AppConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppConfig.ProtoReflect.Descriptor instead.
 func (*AppConfig) Descriptor() ([]byte, []int) {
-	return file_model_app_config_proto_rawDescGZIP(), []int{3}
+	return file_model_app_config_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AppConfig) GetHost() string {
@@ -368,6 +424,13 @@ func (x *AppConfig) GetApplyPaths() []string {
 	return nil
 }
 
+func (x *AppConfig) GetEventChannelConfig() *EventChannelConfig {
+	if x != nil {
+		return x.EventChannelConfig
+	}
+	return nil
+}
+
 var File_model_app_config_proto protoreflect.FileDescriptor
 
 var file_model_app_config_proto_rawDesc = []byte{
@@ -402,7 +465,13 @@ var file_model_app_config_proto_rawDesc = []byte{
 	0x2e, 0x49, 0x6e, 0x66, 0x6c, 0x75, 0x78, 0x44, 0x42, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52,
 	0x08, 0x69, 0x6e, 0x66, 0x6c, 0x75, 0x78, 0x64, 0x62, 0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x69, 0x6e,
 	0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x42, 0x0c, 0x0a, 0x0a, 0x5f, 0x72, 0x65, 0x74, 0x65, 0x6e,
-	0x74, 0x69, 0x6f, 0x6e, 0x22, 0x8e, 0x04, 0x0a, 0x09, 0x41, 0x70, 0x70, 0x43, 0x6f, 0x6e, 0x66,
+	0x74, 0x69, 0x6f, 0x6e, 0x22, 0x5e, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x68, 0x61,
+	0x6e, 0x6e, 0x65, 0x6c, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x26, 0x0a, 0x0e, 0x6d, 0x61,
+	0x78, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x53, 0x69, 0x7a, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x0e, 0x6d, 0x61, 0x78, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x53, 0x69,
+	0x7a, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x6d, 0x61, 0x78, 0x57, 0x61, 0x69, 0x74, 0x54, 0x69, 0x6d,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0b, 0x6d, 0x61, 0x78, 0x57, 0x61, 0x69, 0x74,
+	0x54, 0x69, 0x6d, 0x65, 0x22, 0xd9, 0x04, 0x0a, 0x09, 0x41, 0x70, 0x70, 0x43, 0x6f, 0x6e, 0x66,
 	0x69, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x6f, 0x72, 0x74, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x24, 0x0a, 0x0d, 0x6a, 0x77,
@@ -435,10 +504,14 @@ var file_model_app_config_proto_rawDesc = []byte{
 	0x69, 0x74, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x0b, 0x69, 0x6e, 0x69, 0x74, 0x52, 0x65,
 	0x63, 0x6f, 0x72, 0x64, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x61, 0x70, 0x70, 0x6c, 0x79, 0x50, 0x61,
 	0x74, 0x68, 0x73, 0x18, 0x0d, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0a, 0x61, 0x70, 0x70, 0x6c, 0x79,
-	0x50, 0x61, 0x74, 0x68, 0x73, 0x42, 0x26, 0x5a, 0x24, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x72, 0x65, 0x77, 0x2f, 0x61, 0x70, 0x69, 0x62,
-	0x72, 0x65, 0x77, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x50, 0x61, 0x74, 0x68, 0x73, 0x12, 0x49, 0x0a, 0x12, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x68,
+	0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x0e, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x19, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43,
+	0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x12, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x42, 0x26, 0x5a, 0x24, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61,
+	0x70, 0x69, 0x62, 0x72, 0x65, 0x77, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x72, 0x65, 0x77, 0x2f, 0x70,
+	0x6b, 0x67, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -453,27 +526,29 @@ func file_model_app_config_proto_rawDescGZIP() []byte {
 	return file_model_app_config_proto_rawDescData
 }
 
-var file_model_app_config_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_model_app_config_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_model_app_config_proto_goTypes = []interface{}{
-	(*InitRecord)(nil),     // 0: model.InitRecord
-	(*InfluxDBConfig)(nil), // 1: model.InfluxDBConfig
-	(*MetricsConfig)(nil),  // 2: model.MetricsConfig
-	(*AppConfig)(nil),      // 3: model.AppConfig
-	(*Record)(nil),         // 4: model.Record
-	(*Resource)(nil),       // 5: model.Resource
+	(*InitRecord)(nil),         // 0: model.InitRecord
+	(*InfluxDBConfig)(nil),     // 1: model.InfluxDBConfig
+	(*MetricsConfig)(nil),      // 2: model.MetricsConfig
+	(*EventChannelConfig)(nil), // 3: model.EventChannelConfig
+	(*AppConfig)(nil),          // 4: model.AppConfig
+	(*Record)(nil),             // 5: model.Record
+	(*Resource)(nil),           // 6: model.Resource
 }
 var file_model_app_config_proto_depIdxs = []int32{
-	4, // 0: model.InitRecord.record:type_name -> model.Record
+	5, // 0: model.InitRecord.record:type_name -> model.Record
 	1, // 1: model.MetricsConfig.influxdb:type_name -> model.InfluxDBConfig
 	2, // 2: model.AppConfig.metrics:type_name -> model.MetricsConfig
-	4, // 3: model.AppConfig.systemDataSource:type_name -> model.Record
-	5, // 4: model.AppConfig.initResources:type_name -> model.Resource
+	5, // 3: model.AppConfig.systemDataSource:type_name -> model.Record
+	6, // 4: model.AppConfig.initResources:type_name -> model.Resource
 	0, // 5: model.AppConfig.initRecords:type_name -> model.InitRecord
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	3, // 6: model.AppConfig.eventChannelConfig:type_name -> model.EventChannelConfig
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_model_app_config_proto_init() }
@@ -521,6 +596,18 @@ func file_model_app_config_proto_init() {
 			}
 		}
 		file_model_app_config_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventChannelConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_model_app_config_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AppConfig); i {
 			case 0:
 				return &v.state
@@ -540,7 +627,7 @@ func file_model_app_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_model_app_config_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
