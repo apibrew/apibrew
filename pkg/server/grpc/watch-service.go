@@ -9,11 +9,14 @@ import (
 
 type watchGrpcService struct {
 	stub.WatchServer
-	watchService service.WatchService
+	watchService          service.WatchService
+	authenticationService service.AuthenticationService
 }
 
 func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchServer) error {
-	localCtx, cancel := context.WithCancel(res.Context())
+	ictx, err := interceptRequest(w.authenticationService, res.Context(), req)
+
+	localCtx, cancel := context.WithCancel(ictx)
 	defer func() {
 		cancel()
 	}()
@@ -40,6 +43,6 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchSer
 	return nil
 }
 
-func NewWatchServer(service service.WatchService) stub.WatchServer {
-	return &watchGrpcService{watchService: service}
+func NewWatchServer(service service.WatchService, authenticationService service.AuthenticationService) stub.WatchServer {
+	return &watchGrpcService{watchService: service, authenticationService: authenticationService}
 }

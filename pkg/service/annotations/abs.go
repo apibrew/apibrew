@@ -12,7 +12,26 @@ type Annotated interface {
 const ctxValue = "annotationsCtx"
 
 func WithContext(parent context.Context, annotated Annotated) context.Context {
-	return context.WithValue(parent, ctxValue, annotated)
+	existingAnnotations := FromCtx(parent).GetAnnotations()
+	return context.WithValue(parent, ctxValue, merge(existingAnnotations, annotated.GetAnnotations()))
+}
+
+func merge(annotations map[string]string, annotations2 map[string]string) Annotated {
+	if annotations == nil {
+		annotations = make(map[string]string)
+	}
+
+	if annotations2 == nil {
+		annotations2 = make(map[string]string)
+	}
+
+	for key, value := range annotations2 {
+		annotations[key] = value
+	}
+
+	return &annotated{
+		annotations: annotations,
+	}
 }
 
 func SetWithContext(parent context.Context, name, value string) context.Context {

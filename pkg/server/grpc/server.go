@@ -53,7 +53,7 @@ func (g *grpcServer) Init() {
 	stub.RegisterAuthenticationServer(g.grpcServer, NewAuthenticationServer(g.authenticationService))
 	stub.RegisterDataSourceServer(g.grpcServer, NewDataSourceServer(g.dataSourceService))
 	stub.RegisterRecordServer(g.grpcServer, NewRecordServer(g.recordService, g.authenticationService))
-	stub.RegisterWatchServer(g.grpcServer, NewWatchServer(g.watchService))
+	stub.RegisterWatchServer(g.grpcServer, NewWatchServer(g.watchService, g.authenticationService))
 	stub.RegisterEventChannelServer(g.grpcServer, NewEventChannelGrpcService(g.eventChannelService))
 }
 
