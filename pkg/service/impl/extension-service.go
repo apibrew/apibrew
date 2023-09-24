@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -103,6 +104,12 @@ func (d *extensionService) prepareExtensionHandler(extension *resource_model.Ext
 		Sync:      extension.Sync,
 		Responds:  extension.Responds,
 		Fn: func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+			if event.Annotations == nil {
+				event.Annotations = make(map[string]string)
+			}
+
+			event.Annotations[annotations.ExtensionId] = extension.Id.String()
+
 			return d.externalService.Call(ctx, extension.Call, event)
 		},
 	}

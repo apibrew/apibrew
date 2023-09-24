@@ -50,6 +50,9 @@ const OpenApiGroup = "OpenApiGroup"
 // service
 const ServiceKey = "ServiceKey"
 
+// extensionId
+const ExtensionId = "ExtensionId"
+
 // bypass extensions
 const BypassExtensions = "BypassExtensions"
 
