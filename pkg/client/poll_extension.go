@@ -19,8 +19,11 @@ type pollExtension struct {
 }
 
 func (e *pollExtension) PrepareCall(extension *resource_model.Extension) resource_model.ExtensionExternalCall {
-	//TODO implement me
-	panic("implement me")
+	return resource_model.ExtensionExternalCall{
+		ChannelCall: &resource_model.ExtensionChannelCall{
+			ChannelKey: e.channelKey,
+		},
+	}
 }
 
 func (e *pollExtension) getServiceKey() string {
