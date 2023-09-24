@@ -15,7 +15,8 @@ type Client interface {
 	ApplyInterface
 	AuthenticateWithToken(token string)
 	AuthenticateWithUsernameAndPassword(username string, password string) error
-	NewExtension(host string, remoteHost string) Extension
+	NewRemoteExtension(host string, remoteHost string) Extension
+	NewPollExtension() Extension
 	UpdateTokenFromContext(ctx context.Context)
 
 	// record
@@ -31,6 +32,9 @@ type Client interface {
 	ListResources(ctx context.Context) ([]*model.Resource, error)
 	ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error
 	DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error
+
+	PollEvents(ctx context.Context, key string) (<-chan *model.Event, error)
+	WriteEvent(ctx context.Context, key string, event *model.Event) error
 }
 
 type Repository[Entity interface{}] interface {

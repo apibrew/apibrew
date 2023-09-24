@@ -3,13 +3,13 @@ package backend_event_handler
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
 )
@@ -22,8 +22,9 @@ type BackendEventHandler interface {
 }
 
 type backendEventHandler struct {
-	handlers             []Handler
-	authorizationService service.AuthorizationService
+	handlers                      []Handler
+	authorizationService          service.AuthorizationService
+	extensionEventSelectorMatcher *helper.ExtensionEventSelectorMatcher
 }
 
 func (b *backendEventHandler) PrepareInternalEvent(ctx context.Context, event *model.Event) *model.Event {
@@ -142,7 +143,7 @@ func (b *backendEventHandler) filterHandlersForEvent(incoming *model.Event) []Ha
 	var result []Handler
 
 	for _, handler := range b.handlers {
-		if b.SelectorMatches(incoming, handler.Selector) {
+		if b.extensionEventSelectorMatcher.SelectorMatches(incoming, handler.Selector) {
 			log.Tracef("Handler matches: %s [%v]", handler.Id, handler)
 			result = append(result, handler)
 		}
@@ -151,148 +152,6 @@ func (b *backendEventHandler) filterHandlersForEvent(incoming *model.Event) []Ha
 	return result
 }
 
-func (b *backendEventHandler) SelectorMatches(incoming *model.Event, selector *model.EventSelector) bool {
-	if selector == nil {
-		return true
-	}
-
-	if len(selector.Resources) > 0 {
-		var found = false
-		for _, resource := range selector.Resources {
-			if resource == incoming.Resource.Name {
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			return false
-		}
-	}
-
-	if len(selector.Actions) > 0 {
-		var found = false
-		for _, action := range selector.Actions {
-			if action == incoming.Action {
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			return false
-		}
-	}
-
-	if len(selector.Ids) > 0 {
-		var found = false
-		for _, id := range selector.Ids {
-			if id == incoming.Id {
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			return false
-		}
-	}
-
-	if len(selector.Namespaces) > 0 {
-		var found = false
-		for _, namespace := range selector.Namespaces {
-			if namespace == incoming.Resource.Namespace {
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			return false
-		}
-	}
-
-	if len(selector.Annotations) > 0 {
-		for key, value := range selector.Annotations {
-			if incoming.Resource.Annotations[key] == value {
-				break
-			}
-
-			if value == "*" {
-				if _, ok := incoming.Resource.Annotations[key]; ok {
-					break
-				}
-			}
-
-			return false
-		}
-	}
-
-	if selector.RecordSelector != nil {
-		return recordSelectorMatches(incoming, selector.RecordSelector)
-	}
-
-	return true
-}
-
-func recordSelectorMatches(incoming *model.Event, selector *model.BooleanExpression) bool {
-	if selector == nil {
-		return true
-	}
-
-	if selector.GetAnd() != nil {
-		for _, child := range selector.GetAnd().Expressions {
-			if !recordSelectorMatches(incoming, child) {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	if selector.GetOr() != nil {
-		for _, child := range selector.GetOr().Expressions {
-			if recordSelectorMatches(incoming, child) {
-				return true
-			}
-		}
-
-		return false
-	}
-
-	if selector.GetNot() != nil {
-		return !recordSelectorMatches(incoming, selector.GetNot())
-	}
-
-	if selector.GetEqual() != nil {
-		left := resolve(incoming, selector.GetEqual().Left)
-		right := resolve(incoming, selector.GetEqual().Right)
-
-		return proto.Equal(left, right)
-	}
-
-	return true
-}
-
-func resolve(incoming *model.Event, left *model.Expression) proto.Message {
-	if left.GetProperty() != "" {
-		if len(incoming.Records) == 0 {
-			return nil
-		}
-		return incoming.Records[0].Properties[left.GetProperty()]
-	}
-
-	if left.GetRefValue() != nil {
-		return left.GetRefValue()
-	}
-
-	if left.GetValue() != nil {
-		return left.GetValue()
-	}
-
-	return nil
-}
-
 func NewBackendEventHandler(authorizationService service.AuthorizationService) BackendEventHandler {
-	return &backendEventHandler{authorizationService: authorizationService}
+	return &backendEventHandler{authorizationService: authorizationService, extensionEventSelectorMatcher: &helper.ExtensionEventSelectorMatcher{}}
 }

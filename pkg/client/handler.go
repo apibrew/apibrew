@@ -196,16 +196,12 @@ func (h handler[Entity]) prepareExtension() {
 		Finalizes: h.finalizes,
 		Sync:      h.sync,
 		Responds:  h.responds,
-		Call: resource_model.ExtensionExternalCall{
-			FunctionCall: &resource_model.ExtensionFunctionCall{
-				Host:         h.ext.GetRemoteHost(),
-				FunctionName: h.name,
-			},
-		},
 		Annotations: map[string]string{
 			annotations.ServiceKey: h.ext.getServiceKey(),
 		},
 	}
+
+	extension.Call = h.ext.PrepareCall(extension)
 
 	newExtension, err := h.extensionRepo.Apply(context.TODO(), extension)
 

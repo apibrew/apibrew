@@ -17,8 +17,21 @@ func (l localClient) ListenRecords(ctx context.Context, namespace string, resour
 	panic("implement me")
 }
 
-func (l localClient) NewExtension(host string, remoteHost string) Extension {
+func (l localClient) NewRemoteExtension(host string, remoteHost string) Extension {
 	//TODO implement me
+	panic("implement me")
+}
+
+func (l localClient) NewPollExtension() Extension {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (l localClient) PollEvents(ctx context.Context, key string) (<-chan *model.Event, error) {
+	panic("implement me")
+}
+
+func (l localClient) WriteEvent(ctx context.Context, key string, event *model.Event) error {
 	panic("implement me")
 }
 

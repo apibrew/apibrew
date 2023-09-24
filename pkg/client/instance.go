@@ -26,6 +26,7 @@ type dhClient struct {
 	resourceClient       stub.ResourceClient
 	dataSourceClient     stub.DataSourceClient
 	watchClient          stub.WatchClient
+	eventChannelClient   stub.EventChannelClient
 	token                string
 }
 
@@ -271,6 +272,61 @@ func (d *dhClient) DeleteRecord(ctx context.Context, namespace string, name stri
 	return err
 }
 
+func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *model.Event, error) {
+	var eventChan = make(chan *model.Event)
+
+	for ctx.Err() == nil {
+		resp, err := d.eventChannelClient.Poll(ctx, &stub.EventPollRequest{
+			Token:      d.token,
+			ChannelKey: channelKey,
+		})
+
+		if err != nil {
+			log.Warn("Error while polling events: ", err)
+			continue
+		}
+
+		go func() {
+			defer func() {
+				_ = resp.CloseSend()
+			}()
+			for {
+				event, err := resp.Recv()
+
+				if err != nil {
+					break
+				}
+
+				if event.Id == "heartbeat-message" {
+					continue
+				}
+
+				log.Debug("Received event: ", event.Id)
+
+				select {
+				case <-ctx.Done():
+					break
+				default:
+				}
+
+				eventChan <- event
+			}
+		}()
+	}
+
+	return eventChan, nil
+}
+
+func (d *dhClient) WriteEvent(ctx context.Context, key string, event *model.Event) error {
+	_, err := d.eventChannelClient.Write(ctx, &stub.EventWriteRequest{
+		Token:      d.token,
+		ChannelKey: key,
+		Event:      event,
+	})
+
+	return err
+}
+
 func NewDhClient(params DhClientParams) (Client, error) {
 	var opts []grpc.DialOption
 	if params.Insecure {
@@ -324,6 +380,7 @@ func NewDhClientLocal(serverName string) (Client, error) {
 		resourceClient:       stub.NewResourceClient(conn),
 		dataSourceClient:     stub.NewDataSourceClient(conn),
 		watchClient:          stub.NewWatchClient(conn),
+		eventChannelClient:   stub.NewEventChannelClient(conn),
 		token:                params.Token,
 	}
 
