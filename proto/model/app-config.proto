@@ -29,7 +29,7 @@ message MetricsConfig {
 
 message EventChannelConfig {
   int32 maxChannelSize = 1;
-  int32 maxWaitTime = 2;
+  int32 maxWaitTimeMs = 2;
 }
 
 message AppConfig {

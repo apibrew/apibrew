@@ -24,6 +24,23 @@ type eventChannelService struct {
 	eventSignalMap       map[string]map[string]eventSignal
 	mu                   sync.Mutex
 	authorizationService service.AuthorizationService
+	config               *model.EventChannelConfig
+}
+
+func (e *eventChannelService) Init(config *model.AppConfig) {
+	e.config = config.EventChannelConfig
+
+	if e.config == nil {
+		e.config = &model.EventChannelConfig{}
+	}
+
+	if config.EventChannelConfig == nil || config.EventChannelConfig.MaxWaitTimeMs == 0 {
+		e.config.MaxWaitTimeMs = 5000
+	}
+
+	if config.EventChannelConfig == nil || config.EventChannelConfig.MaxChannelSize == 0 {
+		e.config.MaxChannelSize = 100
+	}
 }
 
 func (e *eventChannelService) WriteEvent(ctx context.Context, channelKey string, event *model.Event) errors.ServiceError {
@@ -74,7 +91,7 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 					log.Warn("Event not found or already discarted: " + eventId)
 					releaseEvent(e, channelKey, eventId)
 				}
-			case <-time.After(5 * time.Second):
+			case <-time.After(time.Duration(e.config.MaxWaitTimeMs) * time.Millisecond):
 				eventChan <- &model.Event{
 					Id:   "heartbeat-message",
 					Time: timestamppb.Now(),
@@ -94,7 +111,7 @@ func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event
 
 	var handler = make(chan *model.Event)
 
-	cctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	cctx, cancel := context.WithTimeout(ctx, time.Duration(e.config.MaxWaitTimeMs)*time.Millisecond)
 
 	defer cancel()
 	defer releaseEvent(e, channelKey, event.Id)

@@ -111,6 +111,7 @@ func (app *App) initServices() {
 	app.authenticationService.Init(app.config)
 	app.metricsService.Init(app.config)
 	app.extensionService.Init(app.config)
+	app.eventChannelService.Init(app.config)
 
 	// run apply paths
 
