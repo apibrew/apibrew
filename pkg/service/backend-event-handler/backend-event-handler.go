@@ -88,6 +88,11 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 				return nil, err
 			}
 
+			if result != nil && result.Error != nil {
+				logger.Warnf("Handler [%s] responded with error: %v", handler.Name, result.Error)
+				return nil, errors.FromProtoError(result.Error)
+			}
+
 			if handler.Responds {
 				logger.Debugf("Handler [%s] responded with result", handler.Name)
 				nextEvent = result
