@@ -101,3 +101,9 @@ var errorCodeHttpStatusMap = map[model.ErrorCode]int{
 func getRequestBoolFlag(request *http.Request, s string) bool {
 	return request.URL.Query().Has(s)
 }
+
+func respondSuccess(writer http.ResponseWriter, data interface{}) {
+	ServiceResponder().
+		Writer(writer).
+		Respond(data, nil)
+}

@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -114,12 +115,20 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		ResolveReferences: strings.Split(resolveReferences, ","),
 	})
 
-	ServiceResponder().
-		Writer(writer).
-		Respond(&RecordList{
-			Total:   uint64(total),
-			Records: util.ArrayMap(result, NewRecordWrapper),
-		}, serviceErr)
+	if serviceErr != nil {
+		handleServiceError(writer, serviceErr)
+		return
+	}
+
+	if len(result) == 0 {
+		handleServiceError(writer, errors.LogicalError.WithMessage("Record not found"))
+		return
+	}
+
+	respondSuccess(writer, &RecordList{
+		Total:   uint64(total),
+		Records: util.ArrayMap(result, NewRecordWrapper),
+	})
 }
 
 func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http.Request) {
@@ -141,17 +150,18 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		Records:   []*model.Record{record1.toRecord()},
 	})
 
+	if serviceErr != nil {
+		handleServiceError(writer, serviceErr)
+		return
+	}
+
 	var createdRecord *model.Record = nil
 
 	if len(res) > 0 {
 		createdRecord = res[0]
 	}
 
-	createdRecordRw := NewRecordWrapper(createdRecord)
-
-	ServiceResponder().
-		Writer(writer).
-		Respond(createdRecordRw, serviceErr)
+	respondSuccess(writer, NewRecordWrapper(createdRecord))
 }
 
 func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.Request) {
@@ -178,12 +188,18 @@ func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.
 		Records:   []*model.Record{record1.toRecord()},
 	})
 
-	ServiceResponder().
-		Writer(writer).
-		Respond(&RecordList{
-			Total:   uint64(len(res)),
-			Records: util.ArrayMap(res, NewRecordWrapper),
-		}, serviceErr)
+	if serviceErr != nil {
+		handleServiceError(writer, serviceErr)
+		return
+	}
+
+	var appliedRecord *model.Record = nil
+
+	if len(res) > 0 {
+		appliedRecord = res[0]
+	}
+
+	respondSuccess(writer, NewRecordWrapper(appliedRecord))
 }
 
 func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Request) {
@@ -200,9 +216,12 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 		ResolveReferences: strings.Split(resolveReferences, ","),
 	})
 
-	ServiceResponder().
-		Writer(writer).
-		Respond(NewRecordWrapper(record), serviceErr)
+	if serviceErr != nil {
+		handleServiceError(writer, serviceErr)
+		return
+	}
+
+	respondSuccess(writer, NewRecordWrapper(record))
 }
 
 func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http.Request) {
@@ -229,15 +248,18 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 		Records:   []*model.Record{record},
 	})
 
+	if serviceErr != nil {
+		handleServiceError(writer, serviceErr)
+		return
+	}
+
 	var updatedRecord *model.Record = nil
 
 	if len(result) == 1 {
 		updatedRecord = result[0]
 	}
 
-	ServiceResponder().
-		Writer(writer).
-		Respond(NewRecordWrapper(updatedRecord), serviceErr)
+	respondSuccess(writer, NewRecordWrapper(updatedRecord))
 }
 
 func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http.Request) {
@@ -285,12 +307,15 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		ResolveReferences: listRecordRequest.ResolveReferences,
 	})
 
-	ServiceResponder().
-		Writer(writer).
-		Respond(&RecordList{
-			Total:   uint64(total),
-			Records: util.ArrayMap(result, NewRecordWrapper),
-		}, serviceErr)
+	if serviceErr != nil {
+		handleServiceError(writer, serviceErr)
+		return
+	}
+
+	respondSuccess(writer, &RecordList{
+		Total:   uint64(total),
+		Records: util.ArrayMap(result, NewRecordWrapper),
+	})
 }
 
 func (r *recordApi) handleRecordResource(writer http.ResponseWriter, request *http.Request) {
