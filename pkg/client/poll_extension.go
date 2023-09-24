@@ -14,14 +14,13 @@ type pollExtension struct {
 	client                        *dhClient
 	functions                     map[string]ExternalFunction
 	registeredExtensions          []*resource_model.Extension
-	channelKey                    string
 	extensionEventSelectorMatcher *helper.ExtensionEventSelectorMatcher
 }
 
 func (e *pollExtension) PrepareCall(extension *resource_model.Extension) resource_model.ExtensionExternalCall {
 	return resource_model.ExtensionExternalCall{
 		ChannelCall: &resource_model.ExtensionChannelCall{
-			ChannelKey: e.channelKey,
+			ChannelKey: e.serviceKey,
 		},
 	}
 }
@@ -45,7 +44,7 @@ func (e *pollExtension) WithServiceKey(serviceKey string) Extension {
 }
 
 func (e *pollExtension) Run(ctx context.Context) error {
-	eventsChan, err := e.client.PollEvents(ctx, e.channelKey)
+	eventsChan, err := e.client.PollEvents(ctx, e.serviceKey)
 
 	if err != nil {
 		return err
@@ -96,7 +95,7 @@ func (e *pollExtension) processEvent(originalEvent *model.Event) {
 				}
 			}
 
-			err = e.client.WriteEvent(context.TODO(), e.channelKey, processedEvent)
+			err = e.client.WriteEvent(context.TODO(), e.serviceKey, processedEvent)
 
 			if err != nil {
 				log.Error("Error while writing event: ", err)
