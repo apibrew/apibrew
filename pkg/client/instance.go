@@ -9,7 +9,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
-	"sync"
 	"time"
 )
 
@@ -277,24 +276,20 @@ func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *m
 	log.Infof("Polling events for channel: %v", channelKey)
 	var eventChan = make(chan *model.Event, 1000)
 
-	for ctx.Err() == nil {
-		resp, err := d.eventChannelClient.Poll(ctx, &stub.EventPollRequest{
-			Token:      d.token,
-			ChannelKey: channelKey,
-		})
+	go func() {
+		for ctx.Err() == nil {
+			resp, err := d.eventChannelClient.Poll(ctx, &stub.EventPollRequest{
+				Token:      d.token,
+				ChannelKey: channelKey,
+			})
 
-		if err != nil {
-			log.Warn("Error while polling events: ", err)
-			continue
-		}
+			if err != nil {
+				log.Warn("Error while polling events: ", err)
+				continue
+			}
 
-		wg := sync.WaitGroup{}
-
-		wg.Add(1)
-		go func() {
 			defer func() {
 				_ = resp.CloseSend()
-				wg.Done()
 			}()
 			for {
 				event, err := resp.Recv()
@@ -317,12 +312,10 @@ func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *m
 
 				eventChan <- event
 			}
-		}()
+		}
 
-		wg.Wait()
-	}
-
-	log.Infof("Polling events for channel: %v - done", channelKey)
+		log.Infof("Polling events for channel: %v - done", channelKey)
+	}()
 
 	return eventChan, nil
 }
