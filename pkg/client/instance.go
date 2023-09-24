@@ -275,7 +275,7 @@ func (d *dhClient) DeleteRecord(ctx context.Context, namespace string, name stri
 
 func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *model.Event, error) {
 	log.Infof("Polling events for channel: %v", channelKey)
-	var eventChan = make(chan *model.Event)
+	var eventChan = make(chan *model.Event, 1000)
 
 	for ctx.Err() == nil {
 		resp, err := d.eventChannelClient.Poll(ctx, &stub.EventPollRequest{
