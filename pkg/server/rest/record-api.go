@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -117,11 +116,6 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 
 	if serviceErr != nil {
 		handleServiceError(writer, serviceErr)
-		return
-	}
-
-	if len(result) == 0 {
-		handleServiceError(writer, errors.LogicalError.WithMessage("Record not found"))
 		return
 	}
 
