@@ -54,7 +54,7 @@ func (g *grpcServer) Init() {
 	stub.RegisterDataSourceServer(g.grpcServer, NewDataSourceServer(g.dataSourceService))
 	stub.RegisterRecordServer(g.grpcServer, NewRecordServer(g.recordService, g.authenticationService))
 	stub.RegisterWatchServer(g.grpcServer, NewWatchServer(g.watchService, g.authenticationService))
-	stub.RegisterEventChannelServer(g.grpcServer, NewEventChannelGrpcService(g.eventChannelService))
+	stub.RegisterEventChannelServer(g.grpcServer, NewEventChannelGrpcService(g.eventChannelService, g.authenticationService))
 }
 
 func (g *grpcServer) Serve(lis net.Listener) {

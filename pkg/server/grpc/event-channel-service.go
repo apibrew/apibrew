@@ -9,11 +9,14 @@ import (
 
 type eventChannelGrpcService struct {
 	stub.EventChannelServer
-	eventChannelService service.EventChannelService
+	eventChannelService   service.EventChannelService
+	authenticationService service.AuthenticationService
 }
 
 func (e *eventChannelGrpcService) Poll(req *stub.EventPollRequest, srv stub.EventChannel_PollServer) error {
-	localCtx, cancel := context.WithCancel(srv.Context())
+	ictx, err := interceptRequest(e.authenticationService, srv.Context(), req)
+
+	localCtx, cancel := context.WithCancel(ictx)
 	defer func() {
 		cancel()
 	}()
@@ -48,6 +51,6 @@ func (e *eventChannelGrpcService) Write(ctx context.Context, req *stub.EventWrit
 	return &stub.EventWriteResponse{}, nil
 }
 
-func NewEventChannelGrpcService(service service.EventChannelService) stub.EventChannelServer {
-	return &eventChannelGrpcService{eventChannelService: service}
+func NewEventChannelGrpcService(service service.EventChannelService, authenticationService service.AuthenticationService) stub.EventChannelServer {
+	return &eventChannelGrpcService{eventChannelService: service, authenticationService: authenticationService}
 }
