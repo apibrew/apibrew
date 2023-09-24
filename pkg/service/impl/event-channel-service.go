@@ -47,6 +47,7 @@ func (e *eventChannelService) WriteEvent(ctx context.Context, channelKey string,
 }
 
 func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string) (chan *model.Event, errors.ServiceError) {
+	log.Infof("Polling events for channel: %v", channelKey)
 	if err := e.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ExtensionResource,
 		Operation: resource_model.PermissionOperation_FULL,
@@ -81,6 +82,8 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 			}
 		}
 	}()
+
+	log.Infof("Polling events for channel: %v - done", channelKey)
 
 	return eventChan, nil
 }

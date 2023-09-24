@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+	"sync"
 	"time"
 )
 
@@ -273,6 +274,7 @@ func (d *dhClient) DeleteRecord(ctx context.Context, namespace string, name stri
 }
 
 func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *model.Event, error) {
+	log.Infof("Polling events for channel: %v", channelKey)
 	var eventChan = make(chan *model.Event)
 
 	for ctx.Err() == nil {
@@ -286,9 +288,13 @@ func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *m
 			continue
 		}
 
+		wg := sync.WaitGroup{}
+
+		wg.Add(1)
 		go func() {
 			defer func() {
 				_ = resp.CloseSend()
+				wg.Done()
 			}()
 			for {
 				event, err := resp.Recv()
@@ -312,7 +318,11 @@ func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *m
 				eventChan <- event
 			}
 		}()
+
+		wg.Wait()
 	}
+
+	log.Infof("Polling events for channel: %v - done", channelKey)
 
 	return eventChan, nil
 }
