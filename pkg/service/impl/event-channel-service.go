@@ -36,7 +36,7 @@ func (e *eventChannelService) WriteEvent(ctx context.Context, channelKey string,
 
 	e.ensureChannel(channelKey)
 
-	if e.eventSignalMap[channelKey][event.Id].ctx.Err() != nil || e.eventMap[channelKey][event.Id] == nil {
+	if e.eventMap[channelKey][event.Id] == nil || e.eventSignalMap[channelKey][event.Id].ctx.Err() != nil {
 		log.Warn("Event is not exists or already discarded: " + event.Id)
 		return errors.LogicalError.WithMessage("Event is not exists or already discarded: " + event.Id)
 	}
