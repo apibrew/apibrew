@@ -19,21 +19,12 @@ import _ "net/http/pprof"
 
 func Run() {
 	init := flag.String("config", "", "Config file")
-	logLevelStr := flag.String("log-level", "info", "Debug flag")
 	flag.Parse()
 	//grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
 
-	logLevel, err := log.ParseLevel(*logLevelStr)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.SetReportCaller(logLevel == log.TraceLevel)
-	log.SetLevel(logLevel)
-
 	flag.Parse()
 
+	var err error
 	appConfig := &model.AppConfig{}
 
 	if strings.HasSuffix(*init, "pb") {
@@ -46,6 +37,22 @@ func Run() {
 
 	if err != nil {
 		log.Fatalf("failed to load init data: %v", err)
+	}
+
+	if appConfig.LoggingConfig != nil {
+		log.SetLevel(log.Level(appConfig.LoggingConfig.Level))
+		log.SetReportCaller(appConfig.LoggingConfig.ReportCaller)
+
+		switch appConfig.LoggingConfig.Format {
+		case model.LogFormat_JSON:
+			log.SetFormatter(&log.JSONFormatter{})
+		case model.LogFormat_TEXT:
+			log.SetFormatter(&log.TextFormatter{})
+		}
+	} else {
+		log.SetLevel(log.InfoLevel)
+		log.SetReportCaller(false)
+		log.SetFormatter(&log.TextFormatter{})
 	}
 
 	app := new(impl.App)

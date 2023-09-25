@@ -32,6 +32,27 @@ message EventChannelConfig {
   int32 maxWaitTimeMs = 2;
 }
 
+message LoggingConfig {
+  LogLevel level = 1;
+  LogFormat format = 2;
+  bool reportCaller = 3;
+}
+
+enum LogLevel {
+  PANIC = 0;
+  FATAL = 1;
+  ERROR = 2;
+  WARN = 3;
+  INFO = 4;
+  DEBUG = 5;
+  TRACE = 6;
+}
+
+enum LogFormat {
+  TEXT = 0;
+  JSON = 1;
+}
+
 message AppConfig {
   string host = 1;
   int32 port = 2;
@@ -47,4 +68,5 @@ message AppConfig {
   repeated InitRecord initRecords = 12;
   repeated string applyPaths = 13;
   EventChannelConfig eventChannelConfig = 14;
+  LoggingConfig loggingConfig = 15;
 }
