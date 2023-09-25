@@ -20,7 +20,6 @@ import (
 	"golang.org/x/net/http2/h2c"
 	"net"
 	"net/http"
-	"net/http/httptest"
 	"net/http/httputil"
 	"strings"
 )
@@ -237,15 +236,9 @@ func (s *server) TraceLogMiddleWare(next http.Handler) http.Handler {
 			http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
 			return
 		}
-		log.Tracef(fmt.Sprintf("Request: \n===============\n%s\n===============", string(x)))
-		rec := httptest.NewRecorder()
+		log.Tracef("Request: \n===============\n%s\n===============", string(x))
 
-		next.ServeHTTP(rec, req)
-
-		w.WriteHeader(rec.Code)
-		w.Write(rec.Body.Bytes())
-
-		log.Tracef(fmt.Sprintf("Response: \n===============\n%s\n===============", string(rec.Body.Bytes())))
+		next.ServeHTTP(w, req)
 	})
 }
 
