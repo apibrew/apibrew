@@ -91,7 +91,7 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 					log.Warn("Event not found or already discarted: " + eventId)
 					releaseEvent(e, channelKey, eventId)
 				}
-			case <-time.After(time.Duration(e.config.MaxWaitTimeMs) * time.Millisecond):
+			case <-time.After(3 * time.Second):
 				eventChan <- &model.Event{
 					Id:   "heartbeat-message",
 					Time: timestamppb.Now(),
