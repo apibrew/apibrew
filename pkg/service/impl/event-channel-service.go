@@ -84,14 +84,15 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 				return
 			case eventId := <-e.channelChans[channelKey]:
 				event := e.eventMap[channelKey][eventId]
-
 				if event != nil {
 					eventChan <- event
+					log.Tracef("Event sent to channel: %v", channelKey)
 				} else {
 					log.Warn("Event not found or already discarted: " + eventId)
 					releaseEvent(e, channelKey, eventId)
 				}
 			case <-time.After(3 * time.Second):
+				log.Tracef("Heartbeat message sent to channel: %v", channelKey)
 				eventChan <- &model.Event{
 					Id:   "heartbeat-message",
 					Time: timestamppb.Now(),
