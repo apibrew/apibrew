@@ -35,7 +35,7 @@ COPY --from=builder /app/apibrew /bin/apibrew
 
 EXPOSE 9009
 
-CMD ["/bin/apibrew", "-config", "/app/config.json", "-log-level=debug"]
+CMD ["/bin/apibrew", "-config", "/app/config.json"]
 
 
 FROM golang:1.21-alpine as app-full
