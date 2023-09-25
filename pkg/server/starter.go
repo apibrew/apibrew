@@ -47,7 +47,7 @@ func Run() {
 		case model.LogFormat_JSON:
 			log.SetFormatter(&log.JSONFormatter{})
 		case model.LogFormat_TEXT:
-			log.SetFormatter(&log.TextFormatter{})
+			//log.SetFormatter(&log.TextFormatter{})
 		}
 	} else {
 		log.SetLevel(log.InfoLevel)
