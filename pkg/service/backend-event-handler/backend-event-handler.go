@@ -69,7 +69,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 	for _, handler := range handlers {
 		nextEvent.Resource = originalEvent.Resource
 
-		logger.Debugf("Calling handler: %s - %s", handler.Name, logging.ShortEventInfo(nextEvent))
+		logger.Debugf("Calling handler[%d async: %v]: %s - %s", handler.Order, handler.Sync, handler.Name, logging.ShortEventInfo(nextEvent))
 		logger.Tracef("Processing event[body]: %s", nextEvent)
 		if !handler.Sync {
 			nextEvent.Sync = false
