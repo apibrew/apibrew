@@ -383,7 +383,13 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	}
 
 	if and, ok := query.Expression.(*model.BooleanExpression_Not); ok {
-		return r.applyCondition(resource, and.Not)
+		exp, err := r.applyCondition(resource, and.Not)
+
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprintf("not (%s)", exp), nil
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_Equal); ok {
