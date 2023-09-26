@@ -70,6 +70,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 		nextEvent.Resource = originalEvent.Resource
 
 		logger.Debugf("Calling handler: %s", handler.Name)
+		logger.Tracef("Processing event: %s", nextEvent)
 		if !handler.Sync {
 			nextEvent.Sync = false
 			go func(localHandler Handler) {
@@ -83,6 +84,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 			nextEvent.Sync = true
 			result, err := handler.Fn(ctx, nextEvent)
 			logger.Debugf("Handler responded: %s", handler.Name)
+			logger.Tracef("Handler responded: %s", nextEvent)
 
 			if err != nil {
 				logger.Warnf("Handler [%s] responded with error: %v", handler.Name, err)
@@ -116,6 +118,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 		}
 	}
 	logger.Debugf("Finished handler chain")
+	logger.Tracef("Processed event: %s", nextEvent)
 
 	return nextEvent, nil
 }
