@@ -346,8 +346,6 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 				break
 			}
 		}
-
-		r.logger.Tracef("%s[%s]=%s [%s](%s)", recordId, cd.path, val, cd.property.Name, properties[cd.property.Name])
 	}
 
 	return properties, nil

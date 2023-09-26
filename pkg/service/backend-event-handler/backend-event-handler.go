@@ -69,8 +69,8 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 	for _, handler := range handlers {
 		nextEvent.Resource = originalEvent.Resource
 
-		logger.Debugf("Calling handler: %s", handler.Name)
-		logger.Tracef("Processing event: %s", nextEvent)
+		logger.Debugf("Calling handler: %s - %s", handler.Name, logging.ShortEventInfo(nextEvent))
+		logger.Tracef("Processing event[body]: %s", nextEvent)
 		if !handler.Sync {
 			nextEvent.Sync = false
 			go func(localHandler Handler) {
@@ -83,7 +83,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 		} else {
 			nextEvent.Sync = true
 			result, err := handler.Fn(ctx, nextEvent)
-			logger.Debugf("Handler responded: %s", handler.Name)
+			logger.Debugf("Handler responded: %s - %s", handler.Name, logging.ShortEventInfo(result))
 			logger.Tracef("Handler responded: %s", result)
 
 			if err != nil {
@@ -117,7 +117,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 
 		}
 	}
-	logger.Debugf("Finished handler chain")
+	logger.Debugf("Finished handler chain - %s", logging.ShortEventInfo(nextEvent))
 	logger.Tracef("Processed event: %s", nextEvent)
 
 	return nextEvent, nil
