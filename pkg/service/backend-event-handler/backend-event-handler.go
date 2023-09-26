@@ -84,7 +84,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 			nextEvent.Sync = true
 			result, err := handler.Fn(ctx, nextEvent)
 			logger.Debugf("Handler responded: %s", handler.Name)
-			logger.Tracef("Handler responded: %s", nextEvent)
+			logger.Tracef("Handler responded: %s", result)
 
 			if err != nil {
 				logger.Warnf("Handler [%s] responded with error: %v", handler.Name, err)
