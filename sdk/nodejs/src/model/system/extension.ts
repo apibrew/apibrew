@@ -1,5 +1,4 @@
-import { Resource } from "./resource";
-
+import {Resource} from "./resource";
 
 
 export const ExtensionResource = {
@@ -10,6 +9,43 @@ export const ExtensionResource = {
 // Sub Types
 
 export interface BooleanExpression {
+     and?: BooleanExpression[];
+     or?: BooleanExpression[];
+     not?: BooleanExpression;
+     equal?: PairExpression;
+     lessThan?: PairExpression;
+     greaterThan?: PairExpression;
+     lessThanOrEqual?: PairExpression;
+     greaterThanOrEqual?: PairExpression;
+     in?: PairExpression;
+     isNull?: Expression;
+     regexMatch?: RegexMatchExpression;
+
+}
+
+export interface PairExpression {
+     left?: Expression;
+     right?: Expression;
+
+}
+
+export interface RefValue {
+     namespace?: string;
+     resource?: string;
+     properties?: object;
+
+}
+
+export interface RegexMatchExpression {
+     pattern?: string;
+     expression?: Expression;
+
+}
+
+export interface Expression {
+     property?: string;
+     value?: object;
+     refValue?: RefValue;
 
 }
 
@@ -25,9 +61,15 @@ export interface HttpCall {
 
 }
 
+export interface ChannelCall {
+     channelKey: string;
+
+}
+
 export interface ExternalCall {
      functionCall?: FunctionCall;
      httpCall?: HttpCall;
+     channelCall?: ChannelCall;
 
 }
 
@@ -62,6 +104,22 @@ export interface Event {
      sync?: boolean;
      time?: string;
      annotations?: object;
+     error?: Error;
+
+}
+
+export interface ErrorField {
+     recordId?: string;
+     property?: string;
+     message?: string;
+     value?: object;
+
+}
+
+export interface Error {
+     code?: 'UNKNOWN_ERROR' | 'RECORD_NOT_FOUND' | 'UNABLE_TO_LOCATE_PRIMARY_KEY' | 'INTERNAL_ERROR' | 'PROPERTY_NOT_FOUND' | 'RECORD_VALIDATION_ERROR' | 'RESOURCE_VALIDATION_ERROR' | 'AUTHENTICATION_FAILED' | 'ALREADY_EXISTS' | 'ACCESS_DENIED' | 'BACKEND_ERROR' | 'UNIQUE_VIOLATION' | 'REFERENCE_VIOLATION' | 'RESOURCE_NOT_FOUND' | 'UNSUPPORTED_OPERATION' | 'EXTERNAL_BACKEND_COMMUNICATION_ERROR' | 'EXTERNAL_BACKEND_ERROR';
+     message?: string;
+     fields?: ErrorField[];
 
 }
 

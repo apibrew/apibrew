@@ -1,5 +1,4 @@
-import { Permission } from "./permission";
-
+import {Permission} from "./permission";
 
 
 export const RoleResource = {

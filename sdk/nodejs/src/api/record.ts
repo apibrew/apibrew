@@ -5,6 +5,9 @@ import {Record} from '../model';
 
 export interface ListOptions {
     resolveReferences?: string[]
+    limit?: number
+    offset?: number
+    useHistory?: boolean
 }
 
 export interface GetOptions {
@@ -14,10 +17,42 @@ export interface GetOptions {
 export async function list<T extends Record<unknown>>(config: ServiceConfig, namespace: string, resource: string, options?: ListOptions): Promise<RecordListContainer<T>> {
     let url = resourceUrl(config, namespace, resource)
 
+    const urlParts: {key: string, value: string}[] = []
+
     if (options) {
         if (options.resolveReferences && options.resolveReferences.length > 0) {
-            url += `?resolve-references=${encodeURIComponent(options.resolveReferences.join(','))}`
+            urlParts.push({
+                key: 'resolve-references',
+                value: encodeURIComponent(options.resolveReferences.join(',')),
+            })
         }
+
+        if (options.limit) {
+            urlParts.push({
+                key: 'limit',
+                value: options.limit.toString(),
+            })
+        }
+
+        if (options.offset) {
+            urlParts.push({
+                key: 'offset',
+                value: options.offset.toString(),
+            })
+        }
+
+        if (options.useHistory) {
+            urlParts.push({
+                key: 'use-history',
+                value: 'true',
+            })
+        }
+
+
+    }
+
+    if (urlParts.length > 0) {
+        url += '?' + urlParts.map(urlPart => `${urlPart.key}=${urlPart.value}`).join('&')
     }
 
     const result = await axios.get<RecordListContainer<T>>(url, {
@@ -98,18 +133,16 @@ export async function findByMulti<T extends Record<unknown>>(config: ServiceConf
 }[], options?: GetOptions): Promise<T | undefined> {
 
     const query: BooleanExpression = {
-        and: {
-            expressions: conditions.map(condition => ({
-                equal: {
-                    left: {
-                        property: condition.property
-                    },
-                    right: {
-                        value: condition.value
-                    }
+        and: conditions.map(condition => ({
+            equal: {
+                left: {
+                    property: condition.property
+                },
+                right: {
+                    value: condition.value
                 }
-            }))
-        }
+            }
+        }))
     } as BooleanExpression
     const result = await axios.post<RecordListContainer<T>>(`${resourceUrl(config, namespace, resource)}/_search?resolve-references=*`, {// fixme
         query: query
@@ -125,15 +158,12 @@ export async function findByMulti<T extends Record<unknown>>(config: ServiceConf
 
 }
 
-export interface SearchRecordParams {
+export interface SearchRecordParams extends ListOptions {
     namespace: string
     resource: string
+
     query?: BooleanExpression
-    limit?: number
-    offset?: number
-    useHistory: boolean
-    resolveReferences: string[]
-    annotations: {
+    annotations?: {
         [key: string]: string
     }
 }
