@@ -9,7 +9,9 @@ import io.apibrew.lib.Entity;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class {%s javaClassName(resource.Name) %} extends Entity {
     {%- for _, property := range resource.Properties -%}
     {%s= getJavaPropertyAnnotations(resource, property) %}
