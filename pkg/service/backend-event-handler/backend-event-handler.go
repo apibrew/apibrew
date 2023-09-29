@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -39,15 +40,7 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 
 	var handlers []Handler
 
-	if !annotations.IsEnabled(annotations.FromCtx(ctx), annotations.BypassExtensions) {
-		handlers = b.filterHandlersForEvent(nextEvent)
-	} else {
-		err := b.authorizationService.CheckIsExtensionController(ctx)
-
-		if err != nil {
-			return nil, err
-		}
-	}
+	handlers = b.filterHandlersForEvent(ctx, nextEvent)
 
 	if !nextEvent.Resource.Virtual {
 		handlers = append(handlers, Handler{
@@ -89,13 +82,14 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 
 			nextEvent.Sync = true
 			result, err := handler.Fn(ctx, nextEvent)
-			logger.Debugf("Handler responded: %s - %s", handler.Name, logging.ShortEventInfo(result))
-			logger.Tracef("Handler responded: %s", result)
 
 			if err != nil {
 				logger.Warnf("Handler [%s] responded with error: %v", handler.Name, err)
 				return nil, err
 			}
+
+			logger.Debugf("Handler responded: %s - %s", handler.Name, logging.ShortEventInfo(result))
+			logger.Tracef("Handler responded: %s", result)
 
 			if result != nil && result.Error != nil {
 				logger.Warnf("Handler [%s] responded with error: %v", handler.Name, result.Error)
@@ -148,10 +142,28 @@ func (b *backendEventHandler) UnRegisterHandler(handler Handler) {
 	log.Debugf("Unregister handler[not found]: %s [%v]", handler.Id, handler)
 }
 
-func (b *backendEventHandler) filterHandlersForEvent(incoming *model.Event) []Handler {
+func (b *backendEventHandler) filterHandlersForEvent(ctx context.Context, incoming *model.Event) []Handler {
 	var result []Handler
 
+	// disable handlers for audit log
+	if incoming.Resource.Namespace == resources.AuditLogResource.Namespace && incoming.Resource.Name == resources.AuditLogResource.Name {
+		return result
+	}
+
 	for _, handler := range b.handlers {
+		if !handler.Internal && annotations.IsEnabled(annotations.FromCtx(ctx), annotations.BypassExtensions) {
+			// check if extension controller
+			err := b.authorizationService.CheckIsExtensionController(ctx)
+
+			if err != nil {
+				log.Error(err)
+			} else {
+				continue
+			}
+		} else {
+
+		}
+
 		if b.extensionEventSelectorMatcher.SelectorMatches(incoming, handler.Selector) {
 			log.Tracef("Handler matches: %s [%v]", handler.Id, handler)
 			result = append(result, handler)

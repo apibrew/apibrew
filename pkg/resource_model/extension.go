@@ -405,4 +405,5 @@ const (
 	ExtensionCode_UNSUPPORTEDOPERATION              ExtensionCode = "UNSUPPORTED_OPERATION"
 	ExtensionCode_EXTERNALBACKENDCOMMUNICATIONERROR ExtensionCode = "EXTERNAL_BACKEND_COMMUNICATION_ERROR"
 	ExtensionCode_EXTERNALBACKENDERROR              ExtensionCode = "EXTERNAL_BACKEND_ERROR"
+	ExtensionCode_RATELIMITERROR                    ExtensionCode = "RATE_LIMIT_ERROR"
 )

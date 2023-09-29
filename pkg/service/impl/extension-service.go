@@ -37,6 +37,7 @@ func (d *extensionService) runConfigureExtensions() {
 	records, _, err := d.recordService.List(util.WithSystemContext(context.TODO()), service.RecordListParams{
 		Namespace: resources.ExtensionResource.Namespace,
 		Resource:  resources.ExtensionResource.Name,
+		Limit:     10000,
 	})
 
 	if err != nil {

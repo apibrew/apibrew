@@ -20,11 +20,36 @@ message InfluxDBConfig {
   string organization = 4;
 }
 
+
+message RedisConfig {
+  string prefix = 1;
+  string addr = 2;
+  string password = 3;
+  int32 db = 4;
+}
+
 message MetricsConfig {
   bool enabled = 1;
   optional int32 interval = 2; // defaults to 10 seconds
   optional int32 retention = 3; // defaults to 1 day
   InfluxDBConfig influxdb = 4;
+}
+
+message StatsConfig {
+  bool enabled = 1;
+  RedisConfig redis = 2;
+}
+
+message Limitations {
+  bool enabled = 1;
+  int32 maxRecordCount = 2;
+  int32 maxResourceCount = 3;
+  int32 maxNamespaceCount = 4;
+  int32 requestPerMinute = 5;
+  int32 requestPerHour = 6;
+  int32 requestPerDay = 7;
+  int32 requestPerMonth = 8;
+  int32 requestPerYear = 9;
 }
 
 message EventChannelConfig {
@@ -62,11 +87,13 @@ message AppConfig {
   bool disableCache = 6;
   string pluginsPath = 7;
   MetricsConfig metrics = 8;
-  string serviceId = 9;
-  model.Record systemDataSource = 10;
-  repeated model.Resource initResources = 11;
-  repeated InitRecord initRecords = 12;
-  repeated string applyPaths = 13;
-  EventChannelConfig eventChannelConfig = 14;
-  LoggingConfig loggingConfig = 15;
+  StatsConfig stats = 9;
+  Limitations limitations = 10;
+  string serviceId = 11;
+  model.Record systemDataSource = 12;
+  repeated model.Resource initResources = 13;
+  repeated InitRecord initRecords = 14;
+  repeated string applyPaths = 15;
+  EventChannelConfig eventChannelConfig = 16;
+  LoggingConfig loggingConfig = 17;
 }

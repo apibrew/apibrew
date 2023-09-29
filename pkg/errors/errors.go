@@ -20,6 +20,7 @@ var ReferenceViolation = NewServiceError(model.ErrorCode_REFERENCE_VIOLATION, "R
 var UnsupportedOperation = NewServiceError(model.ErrorCode_UNSUPPORTED_OPERATION, "Unsupported Operation", codes.FailedPrecondition)
 var ExternalBackendCommunicationError = NewServiceError(model.ErrorCode_EXTERNAL_BACKEND_COMMUNICATION_ERROR, "External Backend communication error", codes.Internal)
 var ExternalBackendError = NewServiceError(model.ErrorCode_EXTERNAL_BACKEND_ERROR, "External Backend error", codes.Internal)
+var RateLimitError = NewServiceError(model.ErrorCode_RATE_LIMIT_ERROR, "Rate limit exceeded", codes.FailedPrecondition)
 
 // RecordValidationError @fixme
 var AlreadyExistsError = NewServiceError(model.ErrorCode_ALREADY_EXISTS, "Already Exists", codes.FailedPrecondition)

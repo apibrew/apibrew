@@ -96,6 +96,7 @@ var errorCodeHttpStatusMap = map[model.ErrorCode]int{
 	model.ErrorCode_EXTERNAL_BACKEND_COMMUNICATION_ERROR: 500,
 	model.ErrorCode_EXTERNAL_BACKEND_ERROR:               500,
 	model.ErrorCode_UNKNOWN_ERROR:                        500,
+	model.ErrorCode_RATE_LIMIT_ERROR:                     429,
 }
 
 func getRequestBoolFlag(request *http.Request, s string) bool {

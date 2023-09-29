@@ -28,8 +28,10 @@ type App struct {
 	externalService          service.ExternalService
 	backendEventHandler      backend_event_handler.BackendEventHandler
 	extensionService         service.ExtensionService
-	metricsService           service.MetricsService
 	eventChannelService      service.EventChannelService
+	metricsService           service.MetricsService
+	auditService             service.AuditService
+	statsService             service.StatsService
 }
 
 func (app *App) GetAuthorizationService() service.AuthorizationService {
@@ -72,6 +74,14 @@ func (app *App) GetMetricsService() service.MetricsService {
 	return app.metricsService
 }
 
+func (app *App) GetAuditService() service.AuditService {
+	return app.auditService
+}
+
+func (app *App) GetStatsService() service.StatsService {
+	return app.statsService
+}
+
 func (app *App) Init() <-chan interface{} {
 	app.authorizationService = NewAuthorizationService()
 
@@ -92,6 +102,8 @@ func (app *App) Init() <-chan interface{} {
 	app.watchService = NewWatchService(app.backendEventHandler, app.authorizationService)
 	app.authenticationService = NewAuthenticationService(app.recordService)
 	app.metricsService = NewMetricService(app.recordService, app.resourceService)
+	app.auditService = NewAuditService(app.backendEventHandler, app.recordService)
+	app.statsService = NewStatsService(app.backendEventHandler)
 
 	initSignal := make(chan interface{})
 	go func() {
@@ -112,6 +124,8 @@ func (app *App) initServices() {
 	app.metricsService.Init(app.config)
 	app.extensionService.Init(app.config)
 	app.eventChannelService.Init(app.config)
+	app.auditService.Init(app.config)
+	app.statsService.Init(app.config)
 
 	// run apply paths
 

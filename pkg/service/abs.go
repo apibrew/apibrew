@@ -80,6 +80,14 @@ type MetricsService interface {
 	GetMetrics(req MetricsRequest) ([]MetricsResponseItem, errors.ServiceError)
 }
 
+type AuditService interface {
+	Init(config *model.AppConfig)
+}
+
+type StatsService interface {
+	Init(config *model.AppConfig)
+}
+
 type WatchService interface {
 	Watch(ctx context.Context, params WatchParams) (<-chan *model.Event, errors.ServiceError)
 }

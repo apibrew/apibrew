@@ -19,6 +19,7 @@ func GetAllSystemResources() []*model.Resource {
 		RoleResource,
 		PermissionResource,
 		RecordResource,
+		AuditLogResource,
 	}
 }
 

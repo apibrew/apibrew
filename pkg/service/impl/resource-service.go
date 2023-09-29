@@ -588,6 +588,7 @@ func (r *resourceService) Init(config *model.AppConfig) {
 	r.migrateResource(resources.RoleResource)
 	r.migrateResource(resources.PermissionResource)
 	r.migrateResource(resources.ExtensionResource)
+	r.migrateResource(resources.AuditLogResource)
 
 	if err := r.reloadSchema(context.TODO()); err != nil {
 		panic(err)

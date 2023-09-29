@@ -349,6 +349,10 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 
 			result = append(result, records...)
 		} else {
+			if annotations.IsEnabled(annotations.FromCtx(ctx), annotations.IgnoreIfExists) {
+				result = append(result, record)
+				continue
+			}
 			record.Id = existingRecord.Id
 
 			if util.IsSameRecord(existingRecord, record) {
@@ -792,8 +796,10 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 }
 
 func (r *recordService) Init(config *model.AppConfig) {
+	ctx := util.WithSystemContext(context.TODO())
+	ctx = annotations.SetWithContext(ctx, annotations.IgnoreIfExists, annotations.Enabled)
 	for _, initRecord := range config.InitRecords {
-		_, err := r.Apply(util.WithSystemContext(context.TODO()), service.RecordUpdateParams{
+		_, err := r.Apply(ctx, service.RecordUpdateParams{
 			Namespace: initRecord.Namespace,
 			Resource:  initRecord.Resource,
 			Records:   []*model.Record{initRecord.Record},

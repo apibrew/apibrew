@@ -275,6 +275,7 @@ var ExtensionResource = &model.Resource{
 						"UNSUPPORTED_OPERATION",
 						"EXTERNAL_BACKEND_COMMUNICATION_ERROR",
 						"EXTERNAL_BACKEND_ERROR",
+						"RATE_LIMIT_ERROR",
 					},
 				},
 				{

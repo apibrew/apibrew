@@ -19,6 +19,7 @@ type Handler struct {
 	Finalizes bool
 	Sync      bool
 	Responds  bool
+	Internal  bool
 }
 
 type ByOrder []Handler
