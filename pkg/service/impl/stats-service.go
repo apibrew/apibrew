@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -61,6 +62,10 @@ func (a *statsService) prepareHandler() backend_event_handler.Handler {
 }
 
 func (s *statsService) handle(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	if util.IsSystemContext(ctx) {
+		return event, nil
+	}
+
 	resourceLevelKey := fmt.Sprintf("%s:%s:%s", s.redisPrefix, event.Resource.Namespace, event.Resource.Name)
 	namespaceLevelKey := fmt.Sprintf("%s:%s", s.redisPrefix, event.Resource.Namespace)
 	globalLevelKey := fmt.Sprintf("%s", s.redisPrefix)
