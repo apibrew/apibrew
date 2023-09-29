@@ -797,9 +797,14 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 
 func (r *recordService) Init(config *model.AppConfig) {
 	ctx := util.WithSystemContext(context.TODO())
-	ctx = annotations.SetWithContext(ctx, annotations.IgnoreIfExists, annotations.Enabled)
 	for _, initRecord := range config.InitRecords {
-		_, err := r.Apply(ctx, service.RecordUpdateParams{
+		subCtx := ctx
+
+		if !initRecord.Override {
+			subCtx = annotations.SetWithContext(subCtx, annotations.IgnoreIfExists, annotations.Enabled)
+		}
+
+		_, err := r.Apply(subCtx, service.RecordUpdateParams{
 			Namespace: initRecord.Namespace,
 			Resource:  initRecord.Resource,
 			Records:   []*model.Record{initRecord.Record},

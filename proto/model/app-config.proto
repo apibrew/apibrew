@@ -10,7 +10,8 @@ import 'model/resource.proto';
 message InitRecord {
   string namespace = 1;
   string resource = 2;
-  model.Record record = 3;
+  bool override = 3;
+  model.Record record = 4;
 }
 
 message InfluxDBConfig {
