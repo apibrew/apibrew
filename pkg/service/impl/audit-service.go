@@ -77,6 +77,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 			})
 
 			if err != nil {
+				log.Error(err)
 				return nil, err
 			}
 			log.Debugf("Audit log created for record %s", record.Id)
@@ -92,6 +93,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 			})
 
 			if err != nil {
+				log.Error(err)
 				return nil, err
 			}
 			log.Debugf("Audit log created for record %s", recordId)
