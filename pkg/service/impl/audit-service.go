@@ -68,7 +68,11 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 
 	if event.Records != nil && len(event.Records) > 0 {
 		for _, record := range event.Records {
-			auditLog.RecordId = record.Id
+			if record.Properties["id"] == nil {
+				log.Warnf("Audit log cannot be created for record %s as it does not have an id", record.Id)
+				continue
+			}
+			auditLog.RecordId = record.Properties["id"].GetStringValue()
 
 			_, err := a.recordService.Create(util.WithSystemContext(ctx), service.RecordCreateParams{
 				Namespace: resources.AuditLogResource.Namespace,
