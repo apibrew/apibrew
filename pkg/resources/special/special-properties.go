@@ -3,6 +3,8 @@ package special
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"google.golang.org/protobuf/types/known/structpb"
+	"time"
 )
 
 var IdProperty = &model.ResourceProperty{
@@ -17,9 +19,10 @@ var IdProperty = &model.ResourceProperty{
 }
 
 var VersionProperty = &model.ResourceProperty{
-	Name:     "version",
-	Type:     model.ResourceProperty_INT32,
-	Required: true,
+	Name:         "version",
+	Type:         model.ResourceProperty_INT32,
+	Required:     true,
+	DefaultValue: structpb.NewNumberValue(1),
 	Annotations: map[string]string{
 		annotations.SpecialProperty:     annotations.Enabled,
 		annotations.AllowEmptyPrimitive: annotations.Enabled,
@@ -27,11 +30,12 @@ var VersionProperty = &model.ResourceProperty{
 }
 
 var AuditPropertyCreatedBy = &model.ResourceProperty{
-	Name:      "createdBy",
-	Type:      model.ResourceProperty_STRING,
-	Length:    256,
-	Required:  true,
-	Immutable: true,
+	Name:         "createdBy",
+	Type:         model.ResourceProperty_STRING,
+	Length:       256,
+	Required:     true,
+	DefaultValue: structpb.NewStringValue("unknown"),
+	Immutable:    true,
 	Annotations: map[string]string{
 		annotations.SpecialProperty: "true",
 	},
@@ -48,10 +52,11 @@ var AuditPropertyUpdatedBy = &model.ResourceProperty{
 }
 
 var AuditPropertyCreatedOn = &model.ResourceProperty{
-	Name:      "createdOn",
-	Type:      model.ResourceProperty_TIMESTAMP,
-	Required:  true,
-	Immutable: true,
+	Name:         "createdOn",
+	Type:         model.ResourceProperty_TIMESTAMP,
+	Required:     true,
+	Immutable:    true,
+	DefaultValue: structpb.NewStringValue(time.Now().Format(time.RFC3339)),
 	Annotations: map[string]string{
 		annotations.SpecialProperty: "true",
 	},
