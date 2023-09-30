@@ -21,5 +21,6 @@ func prepareStdHandler(order int, action model.Event_Action, handlerFunc backend
 		Finalizes: false,
 		Sync:      true,
 		Responds:  true,
+		Internal:  true,
 	}
 }

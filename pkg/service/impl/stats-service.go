@@ -68,7 +68,7 @@ func (s *statsService) handle(ctx context.Context, event *model.Event) (*model.E
 
 	resourceLevelKey := fmt.Sprintf("%s:%s:%s", s.redisPrefix, event.Resource.Namespace, event.Resource.Name)
 	namespaceLevelKey := fmt.Sprintf("%s:%s", s.redisPrefix, event.Resource.Namespace)
-	globalLevelKey := fmt.Sprintf("%s", s.redisPrefix)
+	globalLevelKey := s.redisPrefix
 
 	var listOfKeys = []string{
 		resourceLevelKey,

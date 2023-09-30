@@ -102,7 +102,7 @@ func interceptRequest(authenticationService service.AuthenticationService, ctx c
 		for k, v := range md {
 			if len(v) > 0 {
 				for ext, exists := range annotations.ClientAllowedAnnotations {
-					if exists && strings.ToLower(k) == strings.ToLower(ext) {
+					if exists && strings.EqualFold(k, ext) {
 						ctx = annotations.SetWithContext(ctx, ext, v[0])
 					}
 				}

@@ -67,10 +67,10 @@ func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, origi
 				// wait for until current request to be done
 				<-ctx.Done()
 
-				logger.Debugf("Calling handler[%d sync: %v]: %s - %s", handler.Order, handler.Sync, handler.Name, logging.ShortEventInfo(nextEvent))
+				logger.Debugf("Calling handler[%d sync: %v]: %s - %s", localHandler.Order, localHandler.Sync, localHandler.Name, logging.ShortEventInfo(nextEvent))
 				logger.Tracef("Processing event[body]: %s", nextEvent)
 
-				_, err := localHandler.Fn(context.TODO(), nextEvent)
+				_, err := localHandler.Fn(util.NewContextWithValues(context.TODO(), ctx), nextEvent)
 
 				if err != nil {
 					logger.Error("Error from async handler", err)
@@ -160,8 +160,6 @@ func (b *backendEventHandler) filterHandlersForEvent(ctx context.Context, incomi
 			} else {
 				continue
 			}
-		} else {
-
 		}
 
 		if b.extensionEventSelectorMatcher.SelectorMatches(incoming, handler.Selector) {

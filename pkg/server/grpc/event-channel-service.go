@@ -16,6 +16,10 @@ type eventChannelGrpcService struct {
 func (e *eventChannelGrpcService) Poll(req *stub.EventPollRequest, srv stub.EventChannel_PollServer) error {
 	ictx, err := interceptRequest(e.authenticationService, srv.Context(), req)
 
+	if err != nil {
+		return err
+	}
+
 	localCtx, cancel := context.WithCancel(ictx)
 	defer func() {
 		cancel()

@@ -136,7 +136,8 @@ func (e *externalService) CallHttp(ctx context.Context, call *resource_model.Ext
 		err = json.Unmarshal(responseData, result)
 
 		if err != nil {
-			return e.reportHttpError(err, responseData)
+			log.Print(err)
+			return e.reportHttpError(responseData)
 		}
 
 		return nil, errors.FromProtoError(extramappings.ErrorToProto(*result))
@@ -151,16 +152,17 @@ func (e *externalService) CallHttp(ctx context.Context, call *resource_model.Ext
 	err = json.Unmarshal(responseData, result)
 
 	if err != nil {
-		return e.reportHttpError(err, responseData)
+		log.Print(err)
+		return e.reportHttpError(responseData)
 	}
 
 	return extramappings.EventToProto(result), nil
 }
 
-func (e *externalService) reportHttpError(err error, responseData []byte) (*model.Event, errors.ServiceError) {
+func (e *externalService) reportHttpError(responseData []byte) (*model.Event, errors.ServiceError) {
 	var responseError = &model.Error{}
 
-	err = protojson.Unmarshal(responseData, responseError)
+	err := protojson.Unmarshal(responseData, responseError)
 
 	if err != nil {
 		return nil, errors.ExternalBackendCommunicationError.WithMessage(fmt.Sprintf("Error: %s; content: %s", err.Error(), string(responseData)))

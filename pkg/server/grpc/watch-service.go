@@ -16,6 +16,10 @@ type watchGrpcService struct {
 func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchServer) error {
 	ictx, err := interceptRequest(w.authenticationService, res.Context(), req)
 
+	if err != nil {
+		return err
+	}
+
 	localCtx, cancel := context.WithCancel(ictx)
 	defer func() {
 		cancel()

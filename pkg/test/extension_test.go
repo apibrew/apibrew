@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/ext"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
@@ -10,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	"io"
 	"net"
@@ -22,6 +22,7 @@ var simpleVirtualResourceRecords = []*model.Record{
 	{
 		Id: "5429846c-a309-11ed-a8fc-0242ac120002",
 		Properties: map[string]*structpb.Value{
+			"id":          structpb.NewStringValue("5429846c-a309-11ed-a8fc-0242ac120002"),
 			"name":        structpb.NewStringValue("rec-1"),
 			"description": structpb.NewStringValue("rec-1-desc"),
 		},
@@ -29,8 +30,26 @@ var simpleVirtualResourceRecords = []*model.Record{
 	{
 		Id: "54298994-a309-11ed-a8fc-0242ac120002",
 		Properties: map[string]*structpb.Value{
+			"id":          structpb.NewStringValue("54298994-a309-11ed-a8fc-0242ac120002"),
 			"name":        structpb.NewStringValue("rec-2"),
 			"description": structpb.NewStringValue("rec-2-desc"),
+		},
+	},
+}
+
+var simpleVirtualResourceRecords2 = []*resource_model.Record{
+	{
+		Properties: map[string]interface{}{
+			"id":          "5429846c-a309-11ed-a8fc-0242ac120002",
+			"name":        "rec-1",
+			"description": "rec-1-desc",
+		},
+	},
+	{
+		Properties: map[string]interface{}{
+			"id":          "54298994-a309-11ed-a8fc-0242ac120002",
+			"name":        "rec-2",
+			"description": "rec-2-desc",
 		},
 	},
 }
@@ -60,8 +79,8 @@ func extensionHandler(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), 500)
 		return
 	}
-	var event = &model.Event{}
-	err = protojson.Unmarshal(bodyBytes, event)
+	var event = &resource_model.ExtensionEvent{}
+	err = json.Unmarshal(bodyBytes, event)
 	if err != nil {
 		http.Error(writer, err.Error(), 500)
 		return
@@ -69,9 +88,9 @@ func extensionHandler(writer http.ResponseWriter, request *http.Request) {
 
 	log.Println(event)
 
-	event.Records = simpleVirtualResourceRecords
+	event.Records = simpleVirtualResourceRecords2
 
-	respBody, err := protojson.Marshal(event)
+	respBody, err := json.Marshal(event)
 
 	if err != nil {
 		http.Error(writer, err.Error(), 500)

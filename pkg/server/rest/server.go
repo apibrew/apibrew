@@ -216,7 +216,7 @@ func (s *server) AnnotationsMiddleWare(next http.Handler) http.Handler {
 		for k, v := range req.Header {
 			if len(v) > 0 {
 				for ext, exists := range annotations.ClientAllowedAnnotations {
-					if exists && strings.ToLower(k) == strings.ToLower(ext) {
+					if exists && strings.EqualFold(k, ext) {
 						ctx = annotations.SetWithContext(ctx, ext, v[0])
 					}
 				}

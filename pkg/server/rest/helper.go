@@ -27,8 +27,7 @@ func ServiceResponder() ServiceCaller {
 }
 
 type ServiceCaller struct {
-	request *http.Request
-	writer  http.ResponseWriter
+	writer http.ResponseWriter
 }
 
 func (s ServiceCaller) Writer(writer http.ResponseWriter) ServiceCaller {

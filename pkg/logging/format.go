@@ -7,11 +7,7 @@ import (
 )
 
 func ShortEventInfo(event *model.Event) string {
-	var ids []string
-
-	for _, id := range event.Ids {
-		ids = append(ids, id)
-	}
+	var ids = event.Ids
 
 	for _, rec := range event.Records {
 		if rec != nil {

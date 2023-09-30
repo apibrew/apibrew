@@ -9,6 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -63,11 +64,13 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 		auditLog.Username = "internal"
 	}
 
+	ctx = annotations.SetWithContext(ctx, annotations.BypassExtensions, annotations.Enabled)
+
 	if event.Records != nil && len(event.Records) > 0 {
 		for _, record := range event.Records {
 			auditLog.RecordId = record.Id
 
-			_, err := a.recordService.Create(ctx, service.RecordCreateParams{
+			_, err := a.recordService.Create(util.WithSystemContext(ctx), service.RecordCreateParams{
 				Namespace: resources.AuditLogResource.Namespace,
 				Resource:  resources.AuditLogResource.Name,
 				Records:   []*model.Record{resource_model.AuditLogMapperInstance.ToRecord(auditLog)},
@@ -82,7 +85,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 		for _, recordId := range event.Ids {
 			auditLog.RecordId = recordId
 
-			_, err := a.recordService.Create(ctx, service.RecordCreateParams{
+			_, err := a.recordService.Create(util.WithSystemContext(ctx), service.RecordCreateParams{
 				Namespace: resources.AuditLogResource.Namespace,
 				Resource:  resources.AuditLogResource.Name,
 				Records:   []*model.Record{resource_model.AuditLogMapperInstance.ToRecord(auditLog)},
