@@ -10,6 +10,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -39,6 +40,7 @@ func (a *auditService) prepareHandler() backend_event_handler.Handler {
 }
 
 func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	log.Debug("Handled by audit-handler")
 
 	if event.Action == model.Event_GET || event.Action == model.Event_LIST {
 		return event, nil
@@ -74,6 +76,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 			if err != nil {
 				return nil, err
 			}
+			log.Debugf("Audit log created for record %s", record.Id)
 		}
 	} else if event.Ids != nil && len(event.Ids) > 0 {
 		for _, recordId := range event.Ids {
@@ -88,6 +91,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 			if err != nil {
 				return nil, err
 			}
+			log.Debugf("Audit log created for record %s", recordId)
 		}
 	}
 
