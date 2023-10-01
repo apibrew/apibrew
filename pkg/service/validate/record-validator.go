@@ -246,8 +246,11 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 
 				var val interface{}
 				var err error
+
 				if packedVal == nil {
 					val = nil
+				} else if _, ok := packedVal.Kind.(*structpb.Value_NullValue); ok {
+					return nil
 				} else {
 					val, err = subType.UnPack(packedVal)
 

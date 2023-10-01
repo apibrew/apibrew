@@ -256,7 +256,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	}
 
 	defer func() {
-		if err := r.reloadSchema(ctx); err != nil {
+		if err := r.reloadSchema(util.WithSystemContext(context.TODO())); err != nil {
 			log.Fatal(err)
 		}
 	}()
@@ -306,7 +306,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 					log.Print(err)
 				}
 
-				r.mustReloadResources(context.TODO())
+				r.mustReloadResources()
 			} else {
 				err = systemBackend.RollbackTransaction(txCtx)
 
@@ -315,7 +315,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 				}
 			}
 
-			r.mustReloadResources(context.TODO())
+			r.mustReloadResources()
 		}()
 	}
 
@@ -433,7 +433,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 					log.Print(err)
 				}
 
-				r.mustReloadResources(context.TODO())
+				r.mustReloadResources()
 			} else {
 				err = systemBackend.RollbackTransaction(txCtx)
 
@@ -590,7 +590,7 @@ func (r *resourceService) Init(config *model.AppConfig) {
 	r.migrateResource(resources.ExtensionResource)
 	r.migrateResource(resources.AuditLogResource)
 
-	if err := r.reloadSchema(context.TODO()); err != nil {
+	if err := r.reloadSchema(util.WithSystemContext(context.TODO())); err != nil {
 		panic(err)
 	}
 
@@ -733,13 +733,13 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 		}
 	}
 
-	r.mustReloadResources(context.TODO())
+	r.mustReloadResources()
 
 	return nil
 }
 
-func (r *resourceService) mustReloadResources(ctx context.Context) {
-	if err := r.reloadSchema(ctx); err != nil {
+func (r *resourceService) mustReloadResources() {
+	if err := r.reloadSchema(util.WithSystemContext(context.TODO())); err != nil {
 		panic(err)
 	}
 }
@@ -817,13 +817,13 @@ func (r *resourceService) validateMigration(ctx context.Context, resource *model
 }
 
 func NewResourceService(backendProviderService service.BackendProviderService, resourceMigrationService service.ResourceMigrationService, authorizationService service.AuthorizationService) service.ResourceService {
-	service := &resourceService{
+	srv := &resourceService{
 		backendProviderService:   backendProviderService,
 		resourceMigrationService: resourceMigrationService,
 		authorizationService:     authorizationService,
 	}
 
-	backendProviderService.SetSchema(&service.schema)
+	backendProviderService.SetSchema(&srv.schema)
 
-	return service
+	return srv
 }
