@@ -128,13 +128,13 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 
 	if permission.Resource != nil && *permission.Resource != params.Resource.Name {
 		// skipping as not related to this resource
-		logger.Tracef("Skipping permission as not related to this resource: %v", permission)
+		logger.Tracef("Skipping permission as not related to this resource: %v => %v", permission.Resource, params.Resource.Name)
 		return false, nil
 	}
 
 	if permission.Namespace != nil && *permission.Namespace != params.Resource.Namespace {
 		// skipping as not related to this namespace
-		logger.Tracef("Skipping permission as not related to this namespace: %v", permission)
+		logger.Tracef("Skipping permission as not related to this namespace: %v => %v", permission.Namespace, params.Resource.Namespace)
 		return false, nil
 	}
 
@@ -146,7 +146,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 			id = a.processValue(id, userDetails)
 
 			if params.Records == nil {
-				logger.Tracef("Skipping permission as records not found: %v", permission)
+				logger.Tracef("Skipping permission as records not found: %v => %v", permission.RecordIds, id)
 				return false, nil
 			}
 

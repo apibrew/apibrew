@@ -145,7 +145,8 @@ export async function findByMulti<T extends Record<unknown>>(config: ServiceConf
         }))
     } as BooleanExpression
     const result = await axios.post<RecordListContainer<T>>(`${resourceUrl(config, namespace, resource)}/_search?resolve-references=*`, {// fixme
-        query: query
+        query: query,
+        ...options
     }, {
         headers: prepareHeaders(config)
     })
