@@ -16,6 +16,7 @@ type AuditLog struct {
 	Time        time.Time         `json:"time,omitempty"`
 	Username    string            `json:"username,omitempty"`
 	Operation   AuditLogOperation `json:"operation,omitempty"`
+	Properties  interface{}       `json:"properties,omitempty"`
 	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
@@ -42,6 +43,9 @@ func (s *AuditLog) GetUsername() string {
 }
 func (s *AuditLog) GetOperation() AuditLogOperation {
 	return s.Operation
+}
+func (s *AuditLog) GetProperties() interface{} {
+	return s.Properties
 }
 func (s *AuditLog) GetAnnotations() map[string]string {
 	return s.Annotations

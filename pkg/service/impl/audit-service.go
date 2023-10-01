@@ -73,6 +73,15 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 				continue
 			}
 			auditLog.RecordId = record.Properties["id"].GetStringValue()
+			var propertiesMap = make(map[string]interface{})
+
+			if record.Properties != nil {
+				for key, value := range record.Properties {
+					propertiesMap[key] = value.AsInterface()
+				}
+			}
+
+			auditLog.Properties = propertiesMap
 
 			_, err := a.recordService.Create(util.WithSystemContext(ctx), service.RecordCreateParams{
 				Namespace: resources.AuditLogResource.Namespace,

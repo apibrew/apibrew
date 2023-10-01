@@ -58,6 +58,11 @@ var AuditLogResource = &model.Resource{
 				"DELETE",
 			},
 		},
+		{
+			Name:     "properties",
+			Type:     model.ResourceProperty_OBJECT,
+			Required: false,
+		},
 		special.AnnotationsProperty,
 	},
 	Annotations: map[string]string{

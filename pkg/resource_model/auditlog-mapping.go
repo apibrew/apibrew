@@ -13,6 +13,7 @@ import (
 
 import "github.com/google/uuid"
 import "time"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type AuditLogMapper struct {
 }
@@ -142,6 +143,19 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 	}
 	properties["operation"] = var_Operation_mapped
 
+	var_Properties := auditLog.Properties
+
+	if var_Properties != nil {
+		var var_Properties_mapped *structpb.Value
+
+		var var_Properties_err error
+		var_Properties_mapped, var_Properties_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Properties)
+		if var_Properties_err != nil {
+			panic(var_Properties_err)
+		}
+		properties["properties"] = var_Properties_mapped
+	}
+
 	var_Annotations := auditLog.Annotations
 
 	if var_Annotations != nil {
@@ -268,6 +282,14 @@ func (m *AuditLogMapper) FromProperties(properties map[string]*structpb.Value) *
 		var_Operation_mapped := (AuditLogOperation)(var_Operation.GetStringValue())
 
 		s.Operation = var_Operation_mapped
+	}
+	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
+
+		var_Properties := properties["properties"]
+		var_Properties_mapped := new(interface{})
+		*var_Properties_mapped = unstructured.FromValue(var_Properties)
+
+		s.Properties = var_Properties_mapped
 	}
 	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
 
