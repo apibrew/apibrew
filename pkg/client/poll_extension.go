@@ -11,7 +11,7 @@ import (
 
 type pollExtension struct {
 	serviceKey                    string
-	client                        *dhClient
+	client                        *client
 	functions                     map[string]ExternalFunction
 	registeredExtensions          []*resource_model.Extension
 	extensionEventSelectorMatcher *helper.ExtensionEventSelectorMatcher
@@ -104,7 +104,7 @@ func (e *pollExtension) processEvent(originalEvent *model.Event) {
 	}
 }
 
-func (d *dhClient) NewPollExtension() Extension {
+func (d *client) NewPollExtension() Extension {
 	return &pollExtension{
 		client:                        d,
 		serviceKey:                    "golang-ext",

@@ -12,15 +12,15 @@ import (
 	"time"
 )
 
-type DhClientParams struct {
+type Params struct {
 	Addr     string
 	Insecure bool
 	Token    string
 }
 
-type dhClient struct {
+type client struct {
 	conn                 *grpc.ClientConn
-	params               DhClientParams
+	params               Params
 	recordClient         stub.RecordClient
 	authenticationClient stub.AuthenticationClient
 	resourceClient       stub.ResourceClient
@@ -30,7 +30,7 @@ type dhClient struct {
 	token                string
 }
 
-func (d *dhClient) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
+func (d *client) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
 	resp, err := d.watchClient.Watch(ctx, &stub.WatchRequest{
 		Token: d.token,
 		Selector: &model.EventSelector{
@@ -90,7 +90,7 @@ func (d *dhClient) ListenRecords(ctx context.Context, namespace string, resource
 	return nil
 }
 
-func (d *dhClient) DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error {
+func (d *client) DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error {
 	_, err := d.resourceClient.Delete(ctx, &stub.DeleteResourceRequest{
 		Token:          d.token,
 		Ids:            []string{id},
@@ -101,7 +101,7 @@ func (d *dhClient) DeleteResource(ctx context.Context, id string, doMigration bo
 	return err
 }
 
-func (d *dhClient) GetResourceByName(ctx context.Context, namespace string, getType string) (*model.Resource, error) {
+func (d *client) GetResourceByName(ctx context.Context, namespace string, getType string) (*model.Resource, error) {
 	resp, err := d.resourceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
 		Token:     d.token,
 		Namespace: namespace,
@@ -115,7 +115,7 @@ func (d *dhClient) GetResourceByName(ctx context.Context, namespace string, getT
 	return resp.Resource, nil
 }
 
-func (d *dhClient) ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error {
+func (d *client) ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error {
 	resp, err := d.recordClient.ReadStream(ctx, &stub.ReadStreamRequest{})
 
 	if err != nil {
@@ -148,7 +148,7 @@ func (d *dhClient) ReadRecordStream(ctx context.Context, params service.RecordLi
 	return nil
 }
 
-func (d *dhClient) CreateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (d *client) CreateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
 	resp, err := d.recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
@@ -163,7 +163,7 @@ func (d *dhClient) CreateRecord(ctx context.Context, namespace string, resource 
 	return resp.Records[0], nil
 }
 
-func (d *dhClient) UpdateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (d *client) UpdateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
 	resp, err := d.recordClient.Update(ctx, &stub.UpdateRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
@@ -178,7 +178,7 @@ func (d *dhClient) UpdateRecord(ctx context.Context, namespace string, resource 
 	return resp.Records[0], nil
 }
 
-func (d *dhClient) ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (d *client) ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
 	resp, err := d.recordClient.Apply(ctx, &stub.ApplyRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
@@ -193,7 +193,7 @@ func (d *dhClient) ApplyRecord(ctx context.Context, namespace string, resource s
 	return resp.Records[0], nil
 }
 
-func (d *dhClient) GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error) {
+func (d *client) GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error) {
 	resp, err := d.recordClient.Get(ctx, &stub.GetRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
@@ -208,7 +208,7 @@ func (d *dhClient) GetRecord(ctx context.Context, namespace string, resource str
 	return resp.Record, nil
 }
 
-func (d *dhClient) ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
+func (d *client) ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
 	req := params.ToRequest()
 
 	req.Token = d.token
@@ -222,7 +222,7 @@ func (d *dhClient) ListRecords(ctx context.Context, params service.RecordListPar
 	return resp.Content, resp.Total, nil
 }
 
-func (d *dhClient) ListResources(ctx context.Context) ([]*model.Resource, error) {
+func (d *client) ListResources(ctx context.Context) ([]*model.Resource, error) {
 	resp, err := d.resourceClient.List(ctx, &stub.ListResourceRequest{
 		Token: d.token,
 	})
@@ -234,12 +234,12 @@ func (d *dhClient) ListResources(ctx context.Context) ([]*model.Resource, error)
 	return resp.Resources, nil
 }
 
-func (d *dhClient) UpdateTokenFromContext(ctx context.Context) {
+func (d *client) UpdateTokenFromContext(ctx context.Context) {
 	d.params.Token = ctx.Value("token").(string)
 	d.token = ctx.Value("token").(string)
 }
 
-func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password string) error {
+func (d *client) AuthenticateWithUsernameAndPassword(username string, password string) error {
 	authResp, err := d.authenticationClient.Authenticate(context.TODO(), &stub.AuthenticationRequest{
 		Username: username,
 		Password: password,
@@ -256,12 +256,12 @@ func (d *dhClient) AuthenticateWithUsernameAndPassword(username string, password
 	return nil
 }
 
-func (d *dhClient) AuthenticateWithToken(token string) {
+func (d *client) AuthenticateWithToken(token string) {
 	d.params.Token = token
 	d.token = token
 }
 
-func (d *dhClient) DeleteRecord(ctx context.Context, namespace string, name string, id string) error {
+func (d *client) DeleteRecord(ctx context.Context, namespace string, name string, id string) error {
 	_, err := d.recordClient.Delete(ctx, &stub.DeleteRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
@@ -272,7 +272,7 @@ func (d *dhClient) DeleteRecord(ctx context.Context, namespace string, name stri
 	return err
 }
 
-func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *model.Event, error) {
+func (d *client) PollEvents(ctx context.Context, channelKey string) (<-chan *model.Event, error) {
 	log.Infof("Polling events for channel: %v", channelKey)
 	var eventChan = make(chan *model.Event, 1000)
 
@@ -320,7 +320,7 @@ func (d *dhClient) PollEvents(ctx context.Context, channelKey string) (<-chan *m
 	return eventChan, nil
 }
 
-func (d *dhClient) WriteEvent(ctx context.Context, key string, event *model.Event) error {
+func (d *client) WriteEvent(ctx context.Context, key string, event *model.Event) error {
 	_, err := d.eventChannelClient.Write(ctx, &stub.EventWriteRequest{
 		Token:      d.token,
 		ChannelKey: key,
@@ -330,36 +330,7 @@ func (d *dhClient) WriteEvent(ctx context.Context, key string, event *model.Even
 	return err
 }
 
-func NewDhClient(params DhClientParams) (Client, error) {
-	var opts []grpc.DialOption
-	if params.Insecure {
-		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	}
-
-	conn, err := grpc.Dial(params.Addr, opts...)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &dhClient{
-		conn:                 conn,
-		params:               params,
-		recordClient:         stub.NewRecordClient(conn),
-		authenticationClient: stub.NewAuthenticationClient(conn),
-		resourceClient:       stub.NewResourceClient(conn),
-		dataSourceClient:     stub.NewDataSourceClient(conn),
-		token:                params.Token,
-	}, nil
-}
-
-func NewDhClientLocal(serverName string) (Client, error) {
-	configServer := locateConfigServer(serverName)
-
-	var params = DhClientParams{
-		Addr:     configServer.Host,
-		Insecure: configServer.Insecure,
-	}
+func NewClientWithParams(params Params) (Client, error) {
 	var opts []grpc.DialOption
 	if params.Insecure {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -375,7 +346,7 @@ func NewDhClientLocal(serverName string) (Client, error) {
 		return nil, err
 	}
 
-	var dhc = &dhClient{
+	return &client{
 		conn:                 conn,
 		params:               params,
 		recordClient:         stub.NewRecordClient(conn),
@@ -385,17 +356,36 @@ func NewDhClientLocal(serverName string) (Client, error) {
 		watchClient:          stub.NewWatchClient(conn),
 		eventChannelClient:   stub.NewEventChannelClient(conn),
 		token:                params.Token,
+	}, nil
+}
+
+func NewClientWithServerName(serverName string) (Client, error) {
+	configServer := locateConfigServer(serverName)
+
+	return NewClientWithConfigServer(configServer)
+}
+
+func NewClientWithConfigServer(configServer ServerConfig) (Client, error) {
+	var params = Params{
+		Addr:     configServer.Host,
+		Insecure: configServer.Insecure,
+	}
+
+	cl, err := NewClientWithParams(params)
+
+	if err != nil {
+		return nil, err
 	}
 
 	if configServer.Authentication.Token != "" {
-		dhc.AuthenticateWithToken(configServer.Authentication.Token)
+		cl.AuthenticateWithToken(configServer.Authentication.Token)
 	} else {
-		err = dhc.AuthenticateWithUsernameAndPassword(configServer.Authentication.Username, configServer.Authentication.Password)
+		err = cl.AuthenticateWithUsernameAndPassword(configServer.Authentication.Username, configServer.Authentication.Password)
 
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return dhc, nil
+	return cl, nil
 }

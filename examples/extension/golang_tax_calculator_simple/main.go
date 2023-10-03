@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	dhClient, err := client.NewDhClient(client.DhClientParams{
+	dhClient, err := client.NewClientWithParams(client.Params{
 		Addr:     "127.0.0.1:9009",
 		Insecure: true,
 	})

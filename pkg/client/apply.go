@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (d *dhClient) Apply(ctx context.Context, msg proto.Message) error {
+func (d *client) Apply(ctx context.Context, msg proto.Message) error {
 	switch msgTyped := msg.(type) {
 	case *model.Resource:
 		return d.ApplyResource(ctx, msgTyped, true, false)
@@ -19,7 +19,7 @@ func (d *dhClient) Apply(ctx context.Context, msg proto.Message) error {
 	}
 }
 
-func (d *dhClient) ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error {
+func (d *client) ApplyResource(ctx context.Context, resource *model.Resource, doMigration, forceMigration bool) error {
 	resp, err := d.resourceClient.GetByName(ctx, &stub.GetResourceByNameRequest{
 		Token:     d.token,
 		Namespace: resource.Namespace,

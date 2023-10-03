@@ -18,7 +18,7 @@ type remoteExtension struct {
 	serviceKey string
 	host       string
 	remoteHost string
-	client     *dhClient
+	client     *client
 	ext.FunctionServer
 	functions            map[string]ExternalFunction
 	registeredExtensions []*resource_model.Extension
@@ -119,7 +119,7 @@ func (e *remoteExtension) Run(ctx context.Context) error {
 	return server.Serve(l)
 }
 
-func (d *dhClient) NewRemoteExtension(host string, remoteHost string) Extension {
+func (d *client) NewRemoteExtension(host string, remoteHost string) Extension {
 	return &remoteExtension{
 		client:     d,
 		host:       host,

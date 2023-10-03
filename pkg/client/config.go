@@ -11,7 +11,7 @@ type ConfigServerAuthentication struct {
 	Token    string
 }
 
-type ConfigServer struct {
+type ServerConfig struct {
 	Host           string
 	Name           string
 	Authentication ConfigServerAuthentication
@@ -20,7 +20,7 @@ type ConfigServer struct {
 
 type Config struct {
 	Type          string
-	Servers       []ConfigServer
+	Servers       []ServerConfig
 	DefaultServer string
 }
 

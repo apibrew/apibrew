@@ -29,7 +29,7 @@ func parseRootFlags(cmd *cobra.Command) {
 	}
 
 	var err error
-	dhClient, err = client.NewDhClientLocal(server)
+	dhClient, err = client.NewClientWithServerName(server)
 
 	if err != nil {
 		log.Fatal(err)

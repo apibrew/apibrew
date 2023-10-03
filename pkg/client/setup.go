@@ -4,7 +4,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func locateConfigServer(server string) ConfigServer {
+func locateConfigServer(server string) ServerConfig {
 	if server != "" {
 		return locateServerByName(server)
 	} else {
@@ -12,7 +12,7 @@ func locateConfigServer(server string) ConfigServer {
 	}
 }
 
-func locateServerByName(serverName string) ConfigServer {
+func locateServerByName(serverName string) ServerConfig {
 	for _, item := range config.Servers {
 		if item.Name == serverName {
 			return item
@@ -21,5 +21,5 @@ func locateServerByName(serverName string) ConfigServer {
 
 	log.Fatal("could not find apbr-server with name: " + serverName)
 
-	return ConfigServer{}
+	return ServerConfig{}
 }

@@ -13,6 +13,18 @@ properties:
     length: 255
     required: true
     unique: true
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
+annotations:
+  EnableAudit: "true"
 ---
 type: resource
 name: Module
@@ -32,6 +44,13 @@ properties:
     required: true
     reference:
       resource: FunctionExecutionEngine
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
+annotations:
+  EnableAudit: "true"
 ---
 type: resource
 name: Function
@@ -82,11 +101,18 @@ properties:
     item:
       type: STRUCT
       typeRef: Argument
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
 indexes:
   - unique: true
     properties:
       - name: package
       - name: name
+annotations:
+  EnableAudit: "true"
 ---
 type: resource
 name: FunctionExecution
@@ -112,6 +138,11 @@ properties:
       - pending
       - success
       - error
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
 ---
 type: resource
 name: FunctionTrigger
@@ -154,11 +185,18 @@ properties:
     required: true
     reference:
       resource: Function
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
+annotations:
+  EnableAudit: "true"
 ---
 type: resource
 name: Lambda
 namespace: logic
-description: FunctionTrigger
+description: Lambda
 properties:
   - name: package
     type: STRING
@@ -177,11 +215,18 @@ properties:
     required: true
     reference:
       resource: Function
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
 indexes:
   - unique: true
     properties:
       - name: package
       - name: name
+annotations:
+  EnableAudit: "true"
 ---
 type: resource
 name: ResourceRule
@@ -206,6 +251,13 @@ properties:
     required: true
     reference:
       resource: Function
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
+annotations:
+  EnableAudit: "true"
 ---
 type: resource
 name: Schedule
@@ -226,3 +278,10 @@ properties:
     required: true
     reference:
       resource: Function
+  - name: annotations
+    type: MAP
+    required: false
+    item:
+      type: STRING
+annotations:
+  EnableAudit: "true"

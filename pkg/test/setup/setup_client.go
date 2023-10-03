@@ -65,7 +65,7 @@ func initClient() {
 
 	time.Sleep(10 * time.Millisecond)
 
-	dhClient, err = client.NewDhClient(client.DhClientParams{
+	dhClient, err = client.NewClientWithParams(client.Params{
 		Addr:     addr,
 		Insecure: true,
 	})
