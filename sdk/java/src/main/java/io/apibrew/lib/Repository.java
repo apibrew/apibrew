@@ -1,6 +1,6 @@
-package io.apibrew.lib;
+package io.apibrew.common;
 
-import io.apibrew.lib.model.Record;
+import io.apibrew.common.model.Record;
 
 public interface Repository<T extends Entity> {
 

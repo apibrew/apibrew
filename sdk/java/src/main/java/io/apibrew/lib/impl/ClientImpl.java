@@ -1,6 +1,6 @@
-package io.apibrew.lib.impl;
+package io.apibrew.common.impl;
 
-import io.apibrew.lib.Client;
+import io.apibrew.common.Client;
 
 public class ClientImpl implements Client {
     public ClientImpl(String url) {

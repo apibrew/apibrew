@@ -1,8 +1,8 @@
-package io.apibrew.lib.model;
+package io.apibrew.common.model;
 
 import java.util.Objects;
-import io.apibrew.lib.EntityInfo;
-import io.apibrew.lib.Entity;
+import io.apibrew.common.EntityInfo;
+import io.apibrew.common.Entity;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonFormat;
 

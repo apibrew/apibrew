@@ -1,7 +1,7 @@
-package io.apibrew.lib.ext;
+package io.apibrew.common.ext;
 
-import io.apibrew.lib.Entity;
-import io.apibrew.lib.model.User;
+import io.apibrew.common.Entity;
+import io.apibrew.common.model.User;
 
 public interface Condition<T extends Entity> {
     static <T extends Entity> Condition<T> before() {

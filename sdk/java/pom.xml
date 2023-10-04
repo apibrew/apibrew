@@ -5,15 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.apibrew</groupId>
-    <artifactId>lib</artifactId>
+    <artifactId>root</artifactId>
     <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>client</module>
+        <module>common</module>
+    </modules>
 
     <dependencies>
-        <dependency>
-            <groupId>com.konghq</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>3.14.5</version>
-        </dependency>
+
     </dependencies>
 
     <properties>

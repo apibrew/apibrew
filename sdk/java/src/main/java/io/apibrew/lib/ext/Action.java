@@ -1,6 +1,6 @@
-package io.apibrew.lib.ext;
+package io.apibrew.common.ext;
 
-import io.apibrew.lib.Entity;
+import io.apibrew.common.Entity;
 
 import java.util.function.Consumer;
 

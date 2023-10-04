@@ -30,8 +30,8 @@ func StreamGenerateClassCode(qw422016 *qt422016.Writer, pkg string, resource *mo
 	qw422016.N().S(`;
 
 import java.util.Objects;
-import io.apibrew.lib.EntityInfo;
-import io.apibrew.lib.Entity;
+import io.apibrew.client.EntityInfo;
+import io.apibrew.client.Entity;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;

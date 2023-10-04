@@ -1,1 +1,2 @@
-apbr generate --platform="java" -n system --path=src/main/java/io/apibrew/lib/model --package=io.apibrew.lib.model
+apbr generate --platform="java" -n system --path=client/src/main/java/io/apibrew/client/model --package=io.apibrew.client.model
+apbr generate --platform="java" -n logic --path=client/src/main/java/io/apibrew/client/model/logic --package=io.apibrew.client.model.logic

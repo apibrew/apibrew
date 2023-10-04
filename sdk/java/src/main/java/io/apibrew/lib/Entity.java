@@ -1,4 +1,4 @@
-package io.apibrew.lib;
+package io.apibrew.common;
 
 import java.util.UUID;
 

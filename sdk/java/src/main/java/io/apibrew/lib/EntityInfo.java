@@ -1,4 +1,4 @@
-package io.apibrew.lib;
+package io.apibrew.common;
 
 public final class EntityInfo<T> {
     private final String namespace;

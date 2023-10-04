@@ -90,6 +90,8 @@ func getJavaType(resource *model.Resource, property *model.ResourceProperty, non
 		return "java.time.Instant"
 	case model.ResourceProperty_UUID:
 		return "java.util.UUID"
+	case model.ResourceProperty_BYTES:
+		return "byte[]"
 	case model.ResourceProperty_STRUCT:
 		return javaClassName(resource.Name) + "." + javaClassName(*property.TypeRef)
 	}

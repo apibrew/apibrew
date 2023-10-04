@@ -1,8 +1,8 @@
-package io.apibrew.lib;
+package io.apibrew.common;
 
-import io.apibrew.lib.ext.Extension;
-import io.apibrew.lib.impl.ClientImpl;
-import io.apibrew.lib.model.Resource;
+import io.apibrew.common.ext.Extension;
+import io.apibrew.common.impl.ClientImpl;
+import io.apibrew.common.model.Resource;
 
 import java.util.List;
 
