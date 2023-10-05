@@ -125,7 +125,7 @@ func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event
 	select {
 	case e.channelChans[channelKey] <- event.Id:
 	case <-cctx.Done():
-		log.Warn("Event channel timeout[send]: " + event.Id)
+		log.Warn("Event channel timeout[send]: " + event.Id + "/" + channelKey)
 		cancel()
 	}
 
@@ -133,7 +133,7 @@ func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event
 	case result := <-handler:
 		return result, nil
 	case <-cctx.Done():
-		log.Warn("Event handler timeout[receive]: " + event.Id)
+		log.Warn("Event handler timeout[receive]: " + event.Id + "/" + channelKey)
 	}
 
 	return nil, errors.LogicalError.WithMessage(cctx.Err().Error())

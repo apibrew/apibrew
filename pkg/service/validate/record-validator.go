@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
+	"strings"
 )
 
 func Records(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
@@ -210,7 +211,7 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 		return []*model.ErrorField{{
 			RecordId: recordId,
 			Property: propertyPath,
-			Message:  fmt.Sprintf("value must be one of enum values: %v", value),
+			Message:  fmt.Sprintf("value must be one of enum values: [%s]", strings.Join(property.EnumValues, "|")),
 			Value:    value,
 		}}
 
