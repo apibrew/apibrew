@@ -31,6 +31,9 @@ public class Schedule extends Entity {
     
     private int version;
 
+    public static final String NAMESPACE = "logic";
+    public static final String RESOURCE = "Schedule";
+
     @JsonIgnore
     public static final EntityInfo<Schedule> entityInfo = new EntityInfo<>("logic", "Schedule", Schedule.class, "logic-schedule");
 

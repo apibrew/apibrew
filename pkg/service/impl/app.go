@@ -91,7 +91,7 @@ func (app *App) Init() <-chan interface{} {
 	app.resourceMigrationService = NewResourceMigrationService()
 
 	app.resourceService = NewResourceService(app.backendProviderService, app.resourceMigrationService, app.authorizationService)
-	app.recordService = NewRecordService(app.resourceService, app.backendProviderService, app.authorizationService)
+	app.recordService = NewRecordService(app.resourceService, app.backendProviderService, app.authorizationService, app.backendEventHandler)
 
 	app.dataSourceService = NewDataSourceService(app.resourceService, app.recordService, app.backendProviderService)
 	app.eventChannelService = NewEventChannelService(app.authorizationService)

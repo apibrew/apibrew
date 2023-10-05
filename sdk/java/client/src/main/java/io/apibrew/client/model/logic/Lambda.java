@@ -33,6 +33,9 @@ public class Lambda extends Entity {
     
     private int version;
 
+    public static final String NAMESPACE = "logic";
+    public static final String RESOURCE = "Lambda";
+
     @JsonIgnore
     public static final EntityInfo<Lambda> entityInfo = new EntityInfo<>("logic", "Lambda", Lambda.class, "logic-lambda");
 

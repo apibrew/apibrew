@@ -29,6 +29,9 @@ public class Namespace extends Entity {
     
     private Object details;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "Namespace";
+
     @JsonIgnore
     public static final EntityInfo<Namespace> entityInfo = new EntityInfo<>("system", "Namespace", Namespace.class, "system-namespace");
 

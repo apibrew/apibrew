@@ -41,6 +41,9 @@ public class Extension extends Entity {
     
     private java.util.Map<String, String> annotations;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "Extension";
+
     @JsonIgnore
     public static final EntityInfo<Extension> entityInfo = new EntityInfo<>("system", "Extension", Extension.class, "system-extension");
 

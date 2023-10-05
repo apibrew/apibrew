@@ -39,6 +39,9 @@ public class FunctionTrigger extends Entity {
     
     private int version;
 
+    public static final String NAMESPACE = "logic";
+    public static final String RESOURCE = "FunctionTrigger";
+
     @JsonIgnore
     public static final EntityInfo<FunctionTrigger> entityInfo = new EntityInfo<>("logic", "FunctionTrigger", FunctionTrigger.class, "logic-functiontrigger");
 

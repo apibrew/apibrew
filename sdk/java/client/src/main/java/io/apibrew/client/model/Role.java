@@ -29,6 +29,9 @@ public class Role extends Entity {
     
     private Object details;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "Role";
+
     @JsonIgnore
     public static final EntityInfo<Role> entityInfo = new EntityInfo<>("system", "Role", Role.class, "system-role");
 

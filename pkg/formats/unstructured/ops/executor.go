@@ -2,12 +2,11 @@ package ops
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gopkg.in/yaml.v3"
@@ -58,22 +57,19 @@ func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructur
 	}
 
 	if elemType == "resource" {
-		var resource = new(model.Resource)
-		err = unstructured.ToProtoMessage(body, resource)
+		record, err := unstructured.ToRecord(body)
 
 		if err != nil {
-			jsonData, _ := json.MarshalIndent(body, " ", "  ")
-			for index, line := range strings.Split(strings.TrimSuffix(string(jsonData), "\n"), "\n") {
-				fmt.Printf("%d: %s\n", index+1, line)
-			}
 			return err
 		}
 
+		resource := mapping.ResourceFromRecord(record)
 		resource.Namespace = namespace
 
 		err = e.Params.DhClient.ApplyResource(ctx, resource, e.Params.DoMigration, e.Params.ForceMigration)
 
 		if err != nil {
+			log.Error("Error applying resource: ", resource.Namespace+"/"+resource.Name)
 			return err
 		}
 	} else {

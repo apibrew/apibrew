@@ -27,6 +27,9 @@ public class FunctionExecutionEngine extends Entity {
     
     private int version;
 
+    public static final String NAMESPACE = "logic";
+    public static final String RESOURCE = "FunctionExecutionEngine";
+
     @JsonIgnore
     public static final EntityInfo<FunctionExecutionEngine> entityInfo = new EntityInfo<>("logic", "FunctionExecutionEngine", FunctionExecutionEngine.class, "logic-functionexecutionengine");
 

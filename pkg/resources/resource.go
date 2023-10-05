@@ -13,7 +13,7 @@ var ResourcePropertyProperties = []*model.ResourceProperty{
 		Name:     "name",
 		Type:     model.ResourceProperty_STRING,
 		Length:   256,
-		Required: true,
+		Required: false, // can be optional for item types
 	},
 	{
 		Name: "type",
@@ -44,12 +44,6 @@ var ResourcePropertyProperties = []*model.ResourceProperty{
 		Type:     model.ResourceProperty_STRING,
 		Length:   256,
 		Required: false,
-	},
-	{
-		Name:     "mapping",
-		Type:     model.ResourceProperty_STRING,
-		Length:   64,
-		Required: true,
 	},
 	{
 		Name:         "primary",

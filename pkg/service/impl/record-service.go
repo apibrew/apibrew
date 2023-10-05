@@ -12,6 +12,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
+	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
@@ -25,18 +26,20 @@ type recordService struct {
 	resourceService        service.ResourceService
 	backendServiceProvider service.BackendProviderService
 	authorizationService   service.AuthorizationService
+	backendEventHandler    backend_event_handler.BackendEventHandler
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
 	return util.PrepareQuery(resource, queryMap)
 }
 
-func NewRecordService(resourceService service.ResourceService, backendProviderService service.BackendProviderService, authorizationService service.AuthorizationService) service.RecordService {
+func NewRecordService(resourceService service.ResourceService, backendProviderService service.BackendProviderService, authorizationService service.AuthorizationService, backendEventHandler backend_event_handler.BackendEventHandler) service.RecordService {
 	return &recordService{
 		ServiceName:            "RecordService",
 		resourceService:        resourceService,
 		backendServiceProvider: backendProviderService,
 		authorizationService:   authorizationService,
+		backendEventHandler:    backendEventHandler,
 	}
 }
 
@@ -178,16 +181,6 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		InitRecord(ctx, resource, record)
 		NormalizeRecord(resource, record)
 		log.Print("Normalized record: " + record.Id)
-	}
-
-	if err = validate.Records(resource, params.Records, false); err != nil {
-		return nil, err
-	}
-
-	if resource.CheckReferences {
-		if err = r.checkReferences(ctx, resource, params.Records); err != nil {
-			return nil, err
-		}
 	}
 
 	// prepare default values
@@ -432,18 +425,6 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	for _, record := range params.Records {
 		PrepareUpdateForRecord(ctx, resource, record)
 		NormalizeRecord(resource, record)
-	}
-
-	if err = validate.Records(resource, params.Records, true); err != nil {
-		success = false
-		return nil, err
-	}
-
-	if resource.CheckReferences {
-		if err = r.checkReferences(ctx, resource, params.Records); err != nil {
-			success = false
-			return nil, err
-		}
 	}
 
 	var records []*model.Record
@@ -796,6 +777,46 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 }
 
 func (r *recordService) Init(config *model.AppConfig) {
+	r.initHandlers()
+
+	r.initRecords(config)
+}
+
+func (r *recordService) initHandlers() {
+	r.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
+		Id:   "record-validation-handler",
+		Name: "record-validation-handler",
+		Fn:   r.validateRecordHandler,
+		Selector: &model.EventSelector{
+			Actions: []model.Event_Action{
+				model.Event_CREATE,
+				model.Event_UPDATE,
+			},
+		},
+		Order:    50,
+		Responds: true,
+		Sync:     true,
+		Internal: true,
+	})
+
+	r.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
+		Id:   "record-reference-check-handler",
+		Name: "record-reference-check-handler",
+		Fn:   r.referenceCheckHandler,
+		Selector: &model.EventSelector{
+			Actions: []model.Event_Action{
+				model.Event_CREATE,
+				model.Event_UPDATE,
+			},
+		},
+		Order:    51,
+		Responds: true,
+		Sync:     true,
+		Internal: true,
+	})
+}
+
+func (r *recordService) initRecords(config *model.AppConfig) {
 	ctx := util.WithSystemContext(context.TODO())
 	for _, initRecord := range config.InitRecords {
 		subCtx := ctx
@@ -866,4 +887,22 @@ func (r *recordService) checkReferences(ctx context.Context, resource *model.Res
 	}
 
 	return rr.checkReferences(ctx)
+}
+
+func (r *recordService) validateRecordHandler(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	if err := validate.Records(event.Resource, event.Records, event.Action == model.Event_UPDATE); err != nil {
+		return nil, err
+	}
+
+	return event, nil
+}
+
+func (r *recordService) referenceCheckHandler(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	if event.Resource.CheckReferences {
+		if err := r.checkReferences(ctx, event.Resource, event.Records); err != nil {
+			return nil, err
+		}
+	}
+
+	return event, nil
 }

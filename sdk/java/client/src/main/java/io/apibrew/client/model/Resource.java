@@ -53,6 +53,9 @@ public class Resource extends Entity {
     
     private java.util.Map<String, String> annotations;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "Resource";
+
     @JsonIgnore
     public static final EntityInfo<Resource> entityInfo = new EntityInfo<>("system", "Resource", Resource.class, "system-resource");
 
@@ -63,8 +66,6 @@ public class Resource extends Entity {
         private Resource.Type type;
         
         private String typeRef;
-        
-        private String mapping;
         
         private boolean primary;
         
@@ -128,19 +129,6 @@ public class Resource extends Entity {
 
         public Property withTypeRef(String typeRef) {
             this.typeRef = typeRef;
-
-            return this;
-        }
-        public String getMapping() {
-            return mapping;
-        }
-
-        public void setMapping(String mapping) {
-            this.mapping = mapping;
-        }
-
-        public Property withMapping(String mapping) {
-            this.mapping = mapping;
 
             return this;
         }

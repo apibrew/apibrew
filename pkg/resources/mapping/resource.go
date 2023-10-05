@@ -3,7 +3,6 @@ package mapping
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -146,18 +145,43 @@ func ResourceIndexFromValue(val *structpb.Value) *model.ResourceIndex {
 	}
 
 	if st.Fields["properties"] != nil {
-		log.Print("I am found")
+		list := st.Fields["properties"].GetListValue()
+
+		for _, val := range list.Values {
+			pVal := val.GetStructValue()
+			ri.Properties = append(ri.Properties, &model.ResourceIndexProperty{
+				Name:  pVal.Fields["name"].GetStringValue(),
+				Order: model.Order(model.Order_value["ORDER_"+pVal.Fields["order"].GetStringValue()]),
+			})
+		}
 	}
 
 	return ri
 }
 
 func ResourceIndexToValue(index *model.ResourceIndex) *structpb.Value {
+	annotations, err := structpb.NewValue(convertMap(index.Annotations, func(v string) interface{} {
+		return v
+	}))
+
+	if err != nil {
+		panic(err)
+	}
+
+	var propertyStructList []*structpb.Value
+
+	for _, property := range index.Properties {
+		propertyStructList = append(propertyStructList, structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
+			"name":  structpb.NewStringValue(property.Name),
+			"order": structpb.NewStringValue(property.Order.String()[len("ORDER_"):]),
+		}}))
+	}
+
 	return structpb.NewStructValue(&structpb.Struct{
 		Fields: map[string]*structpb.Value{
-			// structpb.NewValue(convertMap(resource.Annotations, func(v string) interface{} {
-			//		return v
-			//	}))
+			"annotations": annotations,
+			"unique":      structpb.NewBoolValue(index.Unique),
+			"properties":  structpb.NewListValue(&structpb.ListValue{Values: propertyStructList}),
 		},
 	})
 }

@@ -31,6 +31,9 @@ public class Module extends Entity {
     
     private int version;
 
+    public static final String NAMESPACE = "logic";
+    public static final String RESOURCE = "Module";
+
     @JsonIgnore
     public static final EntityInfo<Module> entityInfo = new EntityInfo<>("logic", "Module", Module.class, "logic-module");
 

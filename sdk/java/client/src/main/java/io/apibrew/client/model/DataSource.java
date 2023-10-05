@@ -31,6 +31,9 @@ public class DataSource extends Entity {
     
     private java.util.Map<String, String> options;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "DataSource";
+
     @JsonIgnore
     public static final EntityInfo<DataSource> entityInfo = new EntityInfo<>("system", "DataSource", DataSource.class, "system-datasource");
 

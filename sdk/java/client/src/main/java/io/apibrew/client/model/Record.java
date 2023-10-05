@@ -17,6 +17,9 @@ public class Record extends Entity {
     
     private java.util.List<Object> packedProperties;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "Record";
+
     @JsonIgnore
     public static final EntityInfo<Record> entityInfo = new EntityInfo<>("system", "Record", Record.class, "system-record");
 

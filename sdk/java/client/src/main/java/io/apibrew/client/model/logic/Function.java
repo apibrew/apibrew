@@ -39,6 +39,9 @@ public class Function extends Entity {
     
     private int version;
 
+    public static final String NAMESPACE = "logic";
+    public static final String RESOURCE = "Function";
+
     @JsonIgnore
     public static final EntityInfo<Function> entityInfo = new EntityInfo<>("logic", "Function", Function.class, "logic-function");
 

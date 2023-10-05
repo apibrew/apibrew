@@ -18,6 +18,9 @@ public class {%s javaClassName(resource.Name) %} extends Entity {
     private {%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %};
     {%- endfor -%}
 
+    public static final String NAMESPACE = "{%s resource.Namespace %}";
+    public static final String RESOURCE = "{%s resource.Name %}";
+
     @JsonIgnore
     public static final EntityInfo<{%s javaClassName(resource.Name) %}> entityInfo = new EntityInfo<>("{%s resource.Namespace %}", "{%s resource.Name %}", {%s javaClassName(resource.Name) %}.class, "{%s getRestPath(resource) %}");
 

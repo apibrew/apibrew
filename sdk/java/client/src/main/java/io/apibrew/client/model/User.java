@@ -33,6 +33,9 @@ public class User extends Entity {
     
     private Object details;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "User";
+
     @JsonIgnore
     public static final EntityInfo<User> entityInfo = new EntityInfo<>("system", "User", User.class, "system-user");
 

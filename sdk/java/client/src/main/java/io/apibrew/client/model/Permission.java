@@ -49,6 +49,9 @@ public class Permission extends Entity {
     
     private Object localFlags;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "Permission";
+
     @JsonIgnore
     public static final EntityInfo<Permission> entityInfo = new EntityInfo<>("system", "Permission", Permission.class, "system-permission");
 

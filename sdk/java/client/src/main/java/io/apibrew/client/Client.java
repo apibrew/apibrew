@@ -17,6 +17,10 @@ public interface Client {
         return ClientImpl.newClientByServerName(serverName);
     }
 
+    static Client newClientByServerConfig(Config.Server serverConfig) {
+        return ClientImpl.newClientByServerConfig(serverConfig);
+    }
+
     Resource ApplyResource(Resource resource);
 
     Resource GetResourceByName(String namespace, String name);

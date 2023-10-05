@@ -33,6 +33,9 @@ public class ResourceRule extends Entity {
     
     private int version;
 
+    public static final String NAMESPACE = "logic";
+    public static final String RESOURCE = "ResourceRule";
+
     @JsonIgnore
     public static final EntityInfo<ResourceRule> entityInfo = new EntityInfo<>("logic", "ResourceRule", ResourceRule.class, "logic-resourcerule");
 

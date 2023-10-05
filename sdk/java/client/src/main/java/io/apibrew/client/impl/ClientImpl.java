@@ -68,7 +68,7 @@ public class ClientImpl implements Client {
     private final String url;
     private String token;
 
-    protected final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ClientImpl(String url) {
         this.url = url;
@@ -80,6 +80,10 @@ public class ClientImpl implements Client {
 
         Config.Server serverConfig = config.getServers().stream().filter(item -> item.getName().equals(serverName)).findAny().orElseThrow(() -> new IllegalArgumentException("Server not found:" + serverName));
 
+        return newClientByServerConfig(serverConfig);
+    }
+
+    public static ClientImpl newClientByServerConfig(Config.Server serverConfig) {
         ClientImpl client = new ClientImpl(serverConfig.getHost());
 
         if (serverConfig.getAuthentication().getToken() != null) {
@@ -187,8 +191,6 @@ public class ClientImpl implements Client {
 
     @Override
     public <T extends Entity> Container<T> listRecords(Class<T> entityClass, String namespace, String resource) {
-        ObjectMapper objectMapper = new ObjectMapper();
-
         JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, entityClass);
 
         HttpResponse<Container<T>> result = Unirest.get(Urls.recordUrl(url, recordRestPath(namespace, resource))).headers(headers()).asObject(resp -> {

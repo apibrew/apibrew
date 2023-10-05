@@ -31,6 +31,9 @@ public class AuditLog extends Entity {
     
     private java.util.Map<String, String> annotations;
 
+    public static final String NAMESPACE = "system";
+    public static final String RESOURCE = "AuditLog";
+
     @JsonIgnore
     public static final EntityInfo<AuditLog> entityInfo = new EntityInfo<>("system", "AuditLog", AuditLog.class, "system-auditlog");
 
