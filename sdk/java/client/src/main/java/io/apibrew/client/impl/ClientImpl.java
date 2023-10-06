@@ -11,6 +11,7 @@ import io.apibrew.client.model.Token;
 import kong.unirest.GenericType;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
@@ -65,10 +66,11 @@ public class ClientImpl implements Client {
         }
     }
 
+    @Getter
     private final String url;
     private String token;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    static final ObjectMapper objectMapper = new ObjectMapper();
 
     public ClientImpl(String url) {
         this.url = url;
@@ -301,74 +303,6 @@ public class ClientImpl implements Client {
         return result.getBody();
     }
 
-    @Override
-    public void pollEvents(String channelKey, Predicate<Extension.Event> handler) {
-        AtomicBoolean stillRunning = new AtomicBoolean(true);
-        while (stillRunning.get()) {
-            try {
-                log.debug("Begin Polling channel: {}", channelKey);
-
-                HttpResponse<?> result = Unirest.get(Urls.eventsUrl(url) + "?channelKey=" + channelKey)
-                        .connectTimeout(10 * 1000)
-                        .headers(headers())
-                        .asObject(response -> {
-                            if (response.getStatus() != 200) {
-                                throw new ApiException(response.getStatusText());
-                            }
-
-                            BufferedReader br = new BufferedReader(new InputStreamReader(response.getContent()));
-
-                            try {
-                                while (true) {
-                                    String line = br.readLine();
-
-                                    if (line == null) {
-                                        break;
-                                    }
-
-                                    Extension.Event event = objectMapper.readValue(line, Extension.Event.class);
-
-                                    if (event.getId().equals("heartbeat-message")) {
-                                        log.debug("Received heartbeat message");
-                                        continue;
-                                    }
-
-                                    log.debug("Received event: {}", shortInfo(event));
-
-                                    if (!handler.test(event)) {
-                                        stillRunning.set(false);
-                                        return null;
-                                    }
-
-                                    return line;
-                                }
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            } finally {
-                                try {
-                                    br.close();
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-
-                            return null;
-                        });
-
-                ensureResponseSuccess(result);
-
-                log.debug("Polling channel: {} complete", channelKey);
-            } catch (Exception e) {
-                log.error("Error polling channel: {}", channelKey, e);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
-    }
-
     @SneakyThrows
     @Override
     public void writeEvent(String channelKey, Extension.Event event) {
@@ -387,7 +321,7 @@ public class ClientImpl implements Client {
         this.bypassExtensions = bypassExtensions;
     }
 
-    private <T> void ensureResponseSuccess(HttpResponse<T> result) {
+    static <T> void ensureResponseSuccess(HttpResponse<T> result) {
         if (result.getStatus() != 200) {
             ApiException ex;
             try {
@@ -413,7 +347,7 @@ public class ClientImpl implements Client {
         return (namespace + "-" + resource).toLowerCase();
     }
 
-    private Map<String, String> headers() {
+    public Map<String, String> headers() {
         HashMap<String, String> headers = new HashMap<>();
 
         headers.put("Authorization", "Bearer " + token);

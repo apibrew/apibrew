@@ -5,6 +5,7 @@ import io.apibrew.client.model.Extension;
 import io.apibrew.client.model.Resource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public interface Client {
@@ -56,8 +57,11 @@ public interface Client {
 
     <T extends Entity> T createRecord(Class<T> entityClass, String namespace, String resource, T record);
 
-    void pollEvents(String channelKey, Predicate<Extension.Event> handler);
     void writeEvent(String channelKey, Extension.Event event);
 
     void bypassExtensions(boolean bypassExtensions);
+
+    Map<String, String> headers();
+
+    String getUrl();
 }

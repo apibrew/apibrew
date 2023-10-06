@@ -2,6 +2,7 @@ package io.apibrew.common.impl;
 
 import io.apibrew.client.ApiException;
 import io.apibrew.client.Client;
+import io.apibrew.client.impl.ChannelEventPoller;
 import io.apibrew.common.impl.AbstractExtensionServiceImpl;
 import io.apibrew.common.ext.ExtensionService;
 import io.apibrew.client.model.Extension;
@@ -15,13 +16,39 @@ import java.util.concurrent.Executors;
 public class PollerExtensionService extends AbstractExtensionServiceImpl implements ExtensionService {
 
     private final String channelKey;
+    private final ChannelEventPoller poller;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(200);
 
     public PollerExtensionService(Client client, String channelKey) {
         super(client);
         this.channelKey = channelKey;
+        this.poller = ChannelEventPoller.builder()
+                .consumer(this::handleEvent)
+                .channelKey(channelKey)
+                .client(client)
+                .build();
     }
 
-    ExecutorService executorService = Executors.newFixedThreadPool(200);
+    private void handleEvent(Extension.Event event) {
+        executorService.submit(() -> {
+            try {
+                log.trace("Received event: {}", objectMapper.writeValueAsString(event));
+                Extension.Event processedEvent = processEvent(event);
+
+                this.client.writeEvent(channelKey, processedEvent);
+            } catch (ApiException e) {
+                log.error("Unable to process event[ApiException]", e);
+                event.setError(e.getError());
+
+                this.client.writeEvent(channelKey, event);
+            } catch (Exception e) {
+                log.error("Unable to process event", e);
+                event.setError(new Extension.Error().withMessage(e.getMessage()));
+
+                this.client.writeEvent(channelKey, event);
+            }
+        });
+    }
 
     protected Extension.ExternalCall prepareExternalCall() {
         Extension.ExternalCall externalCall = new Extension.ExternalCall();
@@ -36,29 +63,8 @@ public class PollerExtensionService extends AbstractExtensionServiceImpl impleme
     @Override
     public void run() throws IOException {
         registerExtensions();
-        // continuously poll for events on channel
-        this.client.pollEvents(channelKey, event -> {
-            executorService.submit(() -> {
-                try {
-                    log.trace("Received event: {}", objectMapper.writeValueAsString(event));
-                    Extension.Event processedEvent = processEvent(event);
 
-                    this.client.writeEvent(channelKey, processedEvent);
-                } catch (ApiException e) {
-                    log.error("Unable to process event[ApiException]", e);
-                    event.setError(e.getError());
-
-                    this.client.writeEvent(channelKey, event);
-                } catch (Exception e) {
-                    log.error("Unable to process event", e);
-                    event.setError(new Extension.Error().withMessage(e.getMessage()));
-
-                    this.client.writeEvent(channelKey, event);
-                }
-            });
-
-            return true;
-        });
+        this.poller.run();
     }
 
 }
