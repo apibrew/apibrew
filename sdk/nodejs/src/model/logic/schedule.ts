@@ -16,6 +16,11 @@ export interface Schedule {
 name: string;
 schedule: string;
 function: Function;
+annotations?: object;
+createdBy?: string;
+updatedBy?: string;
+createdOn?: string;
+updatedOn?: string;
 version: number;
 
 }
@@ -29,6 +34,16 @@ export const ScheduleNameName = "Name";
 export const ScheduleScheduleName = "Schedule";
 
 export const ScheduleFunctionName = "Function";
+
+export const ScheduleAnnotationsName = "Annotations";
+
+export const ScheduleCreatedByName = "CreatedBy";
+
+export const ScheduleUpdatedByName = "UpdatedBy";
+
+export const ScheduleCreatedOnName = "CreatedOn";
+
+export const ScheduleUpdatedOnName = "UpdatedOn";
 
 export const ScheduleVersionName = "Version";
 

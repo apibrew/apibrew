@@ -20,6 +20,11 @@ action: 'create' | 'update' | 'delete' | 'list' | 'get';
 order?: 'before' | 'after' | 'instead';
 async: boolean;
 function: Function;
+annotations?: object;
+createdBy?: string;
+updatedBy?: string;
+createdOn?: string;
+updatedOn?: string;
 version: number;
 
 }
@@ -41,6 +46,16 @@ export const FunctionTriggerOrderName = "Order";
 export const FunctionTriggerAsyncName = "Async";
 
 export const FunctionTriggerFunctionName = "Function";
+
+export const FunctionTriggerAnnotationsName = "Annotations";
+
+export const FunctionTriggerCreatedByName = "CreatedBy";
+
+export const FunctionTriggerUpdatedByName = "UpdatedBy";
+
+export const FunctionTriggerCreatedOnName = "CreatedOn";
+
+export const FunctionTriggerUpdatedOnName = "UpdatedOn";
 
 export const FunctionTriggerVersionName = "Version";
 

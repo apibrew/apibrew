@@ -13,9 +13,9 @@ export const UserResource = {
 export interface User {
     id: string;
 version: number;
-createdBy: string;
+createdBy?: string;
 updatedBy?: string;
-createdOn: string;
+createdOn?: string;
 updatedOn?: string;
 username: string;
 password?: string;

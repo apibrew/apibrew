@@ -18,6 +18,7 @@ input?: object;
 output?: object;
 error?: object;
 status?: 'pending' | 'success' | 'error';
+annotations?: object;
 version: number;
 
 }
@@ -35,6 +36,8 @@ export const FunctionExecutionOutputName = "Output";
 export const FunctionExecutionErrorName = "Error";
 
 export const FunctionExecutionStatusName = "Status";
+
+export const FunctionExecutionAnnotationsName = "Annotations";
 
 export const FunctionExecutionVersionName = "Version";
 

@@ -13,10 +13,9 @@ export const ResourceResource = {
 // Sub Types
 
 export interface Property {
-     name: string;
+     name?: string;
      type: 'BOOL' | 'STRING' | 'FLOAT32' | 'FLOAT64' | 'INT32' | 'INT64' | 'BYTES' | 'UUID' | 'DATE' | 'TIME' | 'TIMESTAMP' | 'OBJECT' | 'MAP' | 'LIST' | 'REFERENCE' | 'ENUM' | 'STRUCT';
      typeRef?: string;
-     mapping: string;
      primary: boolean;
      required: boolean;
      unique: boolean;
@@ -66,9 +65,9 @@ export interface Reference {
 export interface Resource {
     id: string;
 version: number;
-createdBy: string;
+createdBy?: string;
 updatedBy?: string;
-createdOn: string;
+createdOn?: string;
 updatedOn?: string;
 name: string;
 namespace: Namespace;

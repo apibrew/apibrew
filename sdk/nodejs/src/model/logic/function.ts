@@ -33,6 +33,11 @@ module?: Module;
 engine: FunctionExecutionEngine;
 options?: Options;
 args?: Argument[];
+annotations?: object;
+createdBy?: string;
+updatedBy?: string;
+createdOn?: string;
+updatedOn?: string;
 version: number;
 
 }
@@ -54,6 +59,16 @@ export const FunctionEngineName = "Engine";
 export const FunctionOptionsName = "Options";
 
 export const FunctionArgsName = "Args";
+
+export const FunctionAnnotationsName = "Annotations";
+
+export const FunctionCreatedByName = "CreatedBy";
+
+export const FunctionUpdatedByName = "UpdatedBy";
+
+export const FunctionCreatedOnName = "CreatedOn";
+
+export const FunctionUpdatedOnName = "UpdatedOn";
 
 export const FunctionVersionName = "Version";
 

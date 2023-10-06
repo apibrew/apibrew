@@ -17,6 +17,11 @@ name: string;
 resource: string;
 namespace: string;
 conditionFunction: Function;
+annotations?: object;
+createdBy?: string;
+updatedBy?: string;
+createdOn?: string;
+updatedOn?: string;
 version: number;
 
 }
@@ -32,6 +37,16 @@ export const ResourceRuleResourceName = "Resource";
 export const ResourceRuleNamespaceName = "Namespace";
 
 export const ResourceRuleConditionFunctionName = "ConditionFunction";
+
+export const ResourceRuleAnnotationsName = "Annotations";
+
+export const ResourceRuleCreatedByName = "CreatedBy";
+
+export const ResourceRuleUpdatedByName = "UpdatedBy";
+
+export const ResourceRuleCreatedOnName = "CreatedOn";
+
+export const ResourceRuleUpdatedOnName = "UpdatedOn";
 
 export const ResourceRuleVersionName = "Version";
 

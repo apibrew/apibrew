@@ -17,6 +17,11 @@ package: string;
 name: string;
 eventSelectorPattern: string;
 function: Function;
+annotations?: object;
+createdBy?: string;
+updatedBy?: string;
+createdOn?: string;
+updatedOn?: string;
 version: number;
 
 }
@@ -32,6 +37,16 @@ export const LambdaNameName = "Name";
 export const LambdaEventSelectorPatternName = "EventSelectorPattern";
 
 export const LambdaFunctionName = "Function";
+
+export const LambdaAnnotationsName = "Annotations";
+
+export const LambdaCreatedByName = "CreatedBy";
+
+export const LambdaUpdatedByName = "UpdatedBy";
+
+export const LambdaCreatedOnName = "CreatedOn";
+
+export const LambdaUpdatedOnName = "UpdatedOn";
 
 export const LambdaVersionName = "Version";
 

@@ -12,9 +12,9 @@ export const NamespaceResource = {
 export interface Namespace {
     id: string;
 version: number;
-createdBy: string;
+createdBy?: string;
 updatedBy?: string;
-createdOn: string;
+createdOn?: string;
 updatedOn?: string;
 name: string;
 description?: string;

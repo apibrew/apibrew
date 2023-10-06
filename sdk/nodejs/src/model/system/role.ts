@@ -12,9 +12,9 @@ export const RoleResource = {
 export interface Role {
     id: string;
 version: number;
-createdBy: string;
+createdBy?: string;
 updatedBy?: string;
-createdOn: string;
+createdOn?: string;
 updatedOn?: string;
 name: string;
 permissions?: Permission[];

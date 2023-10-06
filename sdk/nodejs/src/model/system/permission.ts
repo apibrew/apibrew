@@ -16,9 +16,9 @@ export const PermissionResource = {
 export interface Permission {
     id: string;
 version: number;
-createdBy: string;
+createdBy?: string;
 updatedBy?: string;
-createdOn: string;
+createdOn?: string;
 updatedOn?: string;
 namespace?: string;
 resource?: string;
