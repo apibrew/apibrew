@@ -112,7 +112,7 @@ public class ClientImpl implements Client {
         } else if (existsStatus == 404) {
             return CreateResource(resource);
         } else {
-            throw new ApiException(resp.getStatusText());
+            throw new ApiException(String.valueOf(resp.getStatus()));
         }
     }
 
@@ -167,7 +167,7 @@ public class ClientImpl implements Client {
         if (tokenResponse.getStatus() == 200) {
             this.token = tokenResponse.getBody().getToken().getContent();
         } else {
-            throw new ApiException(tokenResponse.getStatusText());
+            throw new ApiException(String.valueOf(tokenResponse.getStatus()));
         }
     }
 

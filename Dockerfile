@@ -48,9 +48,9 @@ RUN apk --update --no-cache add curl
 VOLUME /var/lib/postgresql/data
 
 COPY --from=builder /app/apibrew /bin/apibrew
-COPY run/run-standalone-postgres.sh /app/run.sh
-COPY run/init.sql /app/init.sql
-COPY run/config.json /app/config.json
+COPY deploy/standalone/run/run-standalone-postgres.sh /app/run.sh
+COPY deploy/standalone/run/init.sql /app/init.sql
+COPY deploy/standalone/run/config.json /app/config.json
 
 EXPOSE 9009
 
