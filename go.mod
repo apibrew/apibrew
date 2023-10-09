@@ -7,7 +7,6 @@ require (
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/go-redis/redis_rate/v10 v10.0.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/google/gnostic v0.6.9
@@ -16,7 +15,7 @@ require (
 	github.com/gosimple/slug v1.13.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0
 	github.com/hashicorp/go-metrics v0.5.1
-	github.com/hashicorp/hcl/v2 v2.16.2
+	github.com/hashicorp/hcl/v2 v2.18.1
 	github.com/huandu/xstrings v1.4.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/influxdata/influxdb-client-go/v2 v2.12.3
@@ -47,6 +46,7 @@ require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
