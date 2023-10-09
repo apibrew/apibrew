@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -16,6 +18,7 @@ import (
 
 type openApiBuilder struct {
 	resourceService service.ResourceService
+	recordService   service.RecordService
 }
 
 type OpenApiDocPrepareConfig struct {
@@ -494,6 +497,18 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 
 	list, _ := s.resourceService.List(util.WithSystemContext(ctx))
 
+	var resourceActionsRecords, _, err = s.recordService.List(util.WithSystemContext(context.TODO()), service.RecordListParams{
+		Namespace: resources.ResourceActionResource.Namespace,
+		Resource:  resources.ResourceActionResource.Name,
+		Limit:     1000000,
+	})
+
+	var resourceActions = util.ArrayMap(resourceActionsRecords, resource_model.ResourceActionMapperInstance.FromRecord)
+
+	if err != nil {
+		return nil, err
+	}
+
 	for _, item := range list {
 		if annotations.IsEnabled(item, annotations.RestApiDisabled) {
 			continue
@@ -503,7 +518,15 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 			continue
 		}
 
-		s.appendResourceApis(doc, item)
+		var resourceActionsForItem []*resource_model.ResourceAction
+
+		for _, resourceAction := range resourceActions {
+			if resourceAction.Resource.Id.String() == item.Id {
+				resourceActionsForItem = append(resourceActionsForItem, resourceAction)
+			}
+		}
+
+		s.appendResourceApis(doc, item, resourceActionsForItem)
 	}
 
 	// post processing
@@ -543,6 +566,22 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 				Value: util.PropertiesWithTitleToJsonSchema(item, subType),
 			}
 		}
+
+		for _, resourceAction := range resourceActions {
+			if resourceAction.Resource.Id.String() == item.Id {
+				var resourceActionAsResource = &resource_model.Resource{
+					Name:       item.Name + "_" + resourceAction.Name,
+					Properties: resourceAction.Input,
+					Types:      resourceAction.Types,
+				}
+
+				resourceActionAsResourceInt := mapping.ResourceFromRecord(resource_model.ResourceMapperInstance.ToRecord(resourceActionAsResource))
+
+				doc.Components.Schemas[schemaName+"_"+resourceAction.Name] = &openapi3.SchemaRef{
+					Value: util.PropertiesWithTitleToJsonSchema(resourceActionAsResourceInt, resourceActionAsResourceInt),
+				}
+			}
+		}
 	}
 
 	return doc, nil
@@ -578,7 +617,7 @@ func checkResourceAllowed(config OpenApiDocPrepareConfig, resource *model.Resour
 	return resourceApiGroup == config.group
 }
 
-func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Resource) {
+func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Resource, resourceActions []*resource_model.ResourceAction) {
 	jsonSchemaRef := "#/components/schemas/" + util.ResourceJsonSchemaName(resource)
 
 	var tags []string
@@ -815,6 +854,50 @@ func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 				},
 			},
 		},
+	}
+
+	for _, resourceAction := range resourceActions {
+		doc.Paths["/"+s.getResourceFQN(resource)+"/{id}/_"+resourceAction.Name] = &openapi3.PathItem{
+			Summary:     title + " - " + util.DePointer(resourceAction.Title, resourceAction.Name),
+			Description: util.DePointer(resourceAction.Description, ""),
+			Post: &openapi3.Operation{
+				Tags:        tags,
+				Summary:     title + " - " + util.DePointer(resourceAction.Title, resourceAction.Name),
+				Description: util.DePointer(resourceAction.Description, ""),
+				Parameters: []*openapi3.ParameterRef{
+					{
+						Value: &openapi3.Parameter{
+							Name:     "id",
+							In:       "path",
+							Required: true,
+							Schema: &openapi3.SchemaRef{
+								Value: &openapi3.Schema{
+									Type: "string",
+								},
+							},
+						},
+					},
+				},
+				RequestBody: &openapi3.RequestBodyRef{
+					Value: &openapi3.RequestBody{
+						Required: true,
+						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+							Ref: jsonSchemaRef + "_" + resourceAction.Name,
+						}),
+					},
+				},
+				Responses: map[string]*openapi3.ResponseRef{
+					"200": {
+						Value: &openapi3.Response{
+							Description: util.Pointer("List of items"),
+							Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+								Value: itemSchema,
+							}),
+						},
+					},
+				},
+			},
+		}
 	}
 }
 

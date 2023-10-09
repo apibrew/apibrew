@@ -4,8 +4,10 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	log "github.com/sirupsen/logrus"
 )
 
 type BackendProxy interface {
@@ -165,6 +167,36 @@ func (b backendProxy) ListRecords(ctx context.Context, resource *model.Resource,
 	}
 
 	return endEvent.Records, total, nil
+}
+
+func (b backendProxy) ExecuteAction(ctx context.Context, resource *model.Resource, rec *model.Record, actionName string, input unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+	inputVal, ierr := unstructured.ToRecord(input)
+
+	if ierr != nil {
+		log.Error(ierr)
+		return nil, errors.InternalError.WithDetails(ierr.Error())
+	}
+
+	endEvent, err := b.eventHandler.HandleInternalOperation(ctx, b.eventHandler.PrepareInternalEvent(ctx, &model.Event{
+		Action:     model.Event_OPERATE,
+		Resource:   resource,
+		Records:    []*model.Record{rec},
+		ActionName: actionName,
+		Input:      inputVal.Properties,
+	}),
+		func(ctx context.Context, passedEvent *model.Event) (*model.Event, errors.ServiceError) {
+			return passedEvent, nil
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if endEvent == nil {
+		return nil, nil
+	}
+
+	return unstructured.FromStructValue(endEvent.Output.GetStructValue()), nil
 }
 
 func (b backendProxy) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError) {

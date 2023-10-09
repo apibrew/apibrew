@@ -8,27 +8,27 @@ import "github.com/google/uuid"
 import "time"
 
 type Resource struct {
-	Id              *uuid.UUID         `json:"id,omitempty"`
-	Version         int32              `json:"version,omitempty"`
-	CreatedBy       *string            `json:"createdBy,omitempty"`
-	UpdatedBy       *string            `json:"updatedBy,omitempty"`
-	CreatedOn       *time.Time         `json:"createdOn,omitempty"`
-	UpdatedOn       *time.Time         `json:"updatedOn,omitempty"`
-	Name            string             `json:"name,omitempty"`
-	Namespace       *Namespace         `json:"namespace,omitempty"`
-	Virtual         bool               `json:"virtual,omitempty"`
-	Properties      []ResourceProperty `json:"properties,omitempty"`
-	Indexes         []ResourceIndex    `json:"indexes,omitempty"`
-	Types           []ResourceSubType  `json:"types,omitempty"`
-	Immutable       bool               `json:"immutable,omitempty"`
-	Abstract        bool               `json:"abstract,omitempty"`
-	CheckReferences bool               `json:"checkReferences,omitempty"`
-	DataSource      *DataSource        `json:"dataSource,omitempty"`
-	Entity          *string            `json:"entity,omitempty"`
-	Catalog         *string            `json:"catalog,omitempty"`
-	Title           *string            `json:"title,omitempty"`
-	Description     *string            `json:"description,omitempty"`
-	Annotations     map[string]string  `json:"annotations,omitempty"`
+	Id              *uuid.UUID        `json:"id,omitempty"`
+	Version         int32             `json:"version,omitempty"`
+	CreatedBy       *string           `json:"createdBy,omitempty"`
+	UpdatedBy       *string           `json:"updatedBy,omitempty"`
+	CreatedOn       *time.Time        `json:"createdOn,omitempty"`
+	UpdatedOn       *time.Time        `json:"updatedOn,omitempty"`
+	Name            string            `json:"name,omitempty"`
+	Namespace       *Namespace        `json:"namespace,omitempty"`
+	Virtual         bool              `json:"virtual,omitempty"`
+	Properties      []Property        `json:"properties,omitempty"`
+	Indexes         []ResourceIndex   `json:"indexes,omitempty"`
+	Types           []SubType         `json:"types,omitempty"`
+	Immutable       bool              `json:"immutable,omitempty"`
+	Abstract        bool              `json:"abstract,omitempty"`
+	CheckReferences bool              `json:"checkReferences,omitempty"`
+	DataSource      *DataSource       `json:"dataSource,omitempty"`
+	Entity          *string           `json:"entity,omitempty"`
+	Catalog         *string           `json:"catalog,omitempty"`
+	Title           *string           `json:"title,omitempty"`
+	Description     *string           `json:"description,omitempty"`
+	Annotations     map[string]string `json:"annotations,omitempty"`
 }
 
 func (s *Resource) GetId() *uuid.UUID {
@@ -58,13 +58,13 @@ func (s *Resource) GetNamespace() *Namespace {
 func (s *Resource) GetVirtual() bool {
 	return s.Virtual
 }
-func (s *Resource) GetProperties() []ResourceProperty {
+func (s *Resource) GetProperties() []Property {
 	return s.Properties
 }
 func (s *Resource) GetIndexes() []ResourceIndex {
 	return s.Indexes
 }
-func (s *Resource) GetTypes() []ResourceSubType {
+func (s *Resource) GetTypes() []SubType {
 	return s.Types
 }
 func (s *Resource) GetImmutable() bool {
@@ -95,95 +95,91 @@ func (s *Resource) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 
-type ResourceProperty struct {
-	Name         string             `json:"name,omitempty"`
-	Type         ResourceType       `json:"type,omitempty"`
-	TypeRef      *string            `json:"typeRef,omitempty"`
-	Mapping      string             `json:"mapping,omitempty"`
-	Primary      bool               `json:"primary,omitempty"`
-	Required     bool               `json:"required,omitempty"`
-	Unique       bool               `json:"unique,omitempty"`
-	Immutable    bool               `json:"immutable,omitempty"`
-	Length       int32              `json:"length,omitempty"`
-	Item         *ResourceProperty  `json:"item,omitempty"`
-	Reference    *ResourceReference `json:"reference,omitempty"`
-	DefaultValue interface{}        `json:"defaultValue,omitempty"`
-	EnumValues   []string           `json:"enumValues,omitempty"`
-	ExampleValue interface{}        `json:"exampleValue,omitempty"`
-	Title        *string            `json:"title,omitempty"`
-	Description  *string            `json:"description,omitempty"`
-	Annotations  map[string]string  `json:"annotations,omitempty"`
+type Property struct {
+	Name         *string           `json:"name,omitempty"`
+	Type         ResourceType      `json:"type,omitempty"`
+	TypeRef      *string           `json:"typeRef,omitempty"`
+	Primary      bool              `json:"primary,omitempty"`
+	Required     bool              `json:"required,omitempty"`
+	Unique       bool              `json:"unique,omitempty"`
+	Immutable    bool              `json:"immutable,omitempty"`
+	Length       int32             `json:"length,omitempty"`
+	Item         *Property         `json:"item,omitempty"`
+	Reference    *Reference        `json:"reference,omitempty"`
+	DefaultValue interface{}       `json:"defaultValue,omitempty"`
+	EnumValues   []string          `json:"enumValues,omitempty"`
+	ExampleValue interface{}       `json:"exampleValue,omitempty"`
+	Title        *string           `json:"title,omitempty"`
+	Description  *string           `json:"description,omitempty"`
+	Annotations  map[string]string `json:"annotations,omitempty"`
 }
 
-func (s *ResourceProperty) GetName() string {
+func (s *Property) GetName() *string {
 	return s.Name
 }
-func (s *ResourceProperty) GetType() ResourceType {
+func (s *Property) GetType() ResourceType {
 	return s.Type
 }
-func (s *ResourceProperty) GetTypeRef() *string {
+func (s *Property) GetTypeRef() *string {
 	return s.TypeRef
 }
-func (s *ResourceProperty) GetMapping() string {
-	return s.Mapping
-}
-func (s *ResourceProperty) GetPrimary() bool {
+func (s *Property) GetPrimary() bool {
 	return s.Primary
 }
-func (s *ResourceProperty) GetRequired() bool {
+func (s *Property) GetRequired() bool {
 	return s.Required
 }
-func (s *ResourceProperty) GetUnique() bool {
+func (s *Property) GetUnique() bool {
 	return s.Unique
 }
-func (s *ResourceProperty) GetImmutable() bool {
+func (s *Property) GetImmutable() bool {
 	return s.Immutable
 }
-func (s *ResourceProperty) GetLength() int32 {
+func (s *Property) GetLength() int32 {
 	return s.Length
 }
-func (s *ResourceProperty) GetItem() *ResourceProperty {
+func (s *Property) GetItem() *Property {
 	return s.Item
 }
-func (s *ResourceProperty) GetReference() *ResourceReference {
+func (s *Property) GetReference() *Reference {
 	return s.Reference
 }
-func (s *ResourceProperty) GetDefaultValue() interface{} {
+func (s *Property) GetDefaultValue() interface{} {
 	return s.DefaultValue
 }
-func (s *ResourceProperty) GetEnumValues() []string {
+func (s *Property) GetEnumValues() []string {
 	return s.EnumValues
 }
-func (s *ResourceProperty) GetExampleValue() interface{} {
+func (s *Property) GetExampleValue() interface{} {
 	return s.ExampleValue
 }
-func (s *ResourceProperty) GetTitle() *string {
+func (s *Property) GetTitle() *string {
 	return s.Title
 }
-func (s *ResourceProperty) GetDescription() *string {
+func (s *Property) GetDescription() *string {
 	return s.Description
 }
-func (s *ResourceProperty) GetAnnotations() map[string]string {
+func (s *Property) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 
-type ResourceSubType struct {
-	Name        string             `json:"name,omitempty"`
-	Title       *string            `json:"title,omitempty"`
-	Description *string            `json:"description,omitempty"`
-	Properties  []ResourceProperty `json:"properties,omitempty"`
+type SubType struct {
+	Name        string     `json:"name,omitempty"`
+	Title       *string    `json:"title,omitempty"`
+	Description *string    `json:"description,omitempty"`
+	Properties  []Property `json:"properties,omitempty"`
 }
 
-func (s *ResourceSubType) GetName() string {
+func (s *SubType) GetName() string {
 	return s.Name
 }
-func (s *ResourceSubType) GetTitle() *string {
+func (s *SubType) GetTitle() *string {
 	return s.Title
 }
-func (s *ResourceSubType) GetDescription() *string {
+func (s *SubType) GetDescription() *string {
 	return s.Description
 }
-func (s *ResourceSubType) GetProperties() []ResourceProperty {
+func (s *SubType) GetProperties() []Property {
 	return s.Properties
 }
 
@@ -219,19 +215,19 @@ func (s *ResourceIndex) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 
-type ResourceReference struct {
+type Reference struct {
 	Resource      *Resource `json:"resource,omitempty"`
 	Cascade       *bool     `json:"cascade,omitempty"`
 	BackReference *string   `json:"backReference,omitempty"`
 }
 
-func (s *ResourceReference) GetResource() *Resource {
+func (s *Reference) GetResource() *Resource {
 	return s.Resource
 }
-func (s *ResourceReference) GetCascade() *bool {
+func (s *Reference) GetCascade() *bool {
 	return s.Cascade
 }
-func (s *ResourceReference) GetBackReference() *string {
+func (s *Reference) GetBackReference() *string {
 	return s.BackReference
 }
 

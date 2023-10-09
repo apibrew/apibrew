@@ -119,6 +119,74 @@ var ResourcePropertyProperties = []*model.ResourceProperty{
 	special.AnnotationsProperty,
 }
 
+var PropertyType = &model.ResourceSubType{
+	Name: "Property",
+	Annotations: map[string]string{
+		annotations.CommonType: annotations.Enabled,
+	},
+	Properties: ResourcePropertyProperties,
+}
+
+var SubTypeType = &model.ResourceSubType{
+	Name: "SubType",
+	Annotations: map[string]string{
+		annotations.CommonType: annotations.Enabled,
+	},
+	Properties: []*model.ResourceProperty{
+		{
+			Name:     "name",
+			Type:     model.ResourceProperty_STRING,
+			Required: true,
+		},
+		{
+			Name:     "title",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: false,
+		},
+		{
+			Name:     "description",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: false,
+		},
+		{
+			Name:     "properties",
+			Type:     model.ResourceProperty_LIST,
+			Required: true,
+			Item: &model.ResourceProperty{
+				Type:    model.ResourceProperty_STRUCT,
+				TypeRef: util.Pointer("Property"),
+			},
+		},
+	},
+}
+
+var ReferenceType = &model.ResourceSubType{
+	Name: "Reference",
+	Annotations: map[string]string{
+		annotations.CommonType: annotations.Enabled,
+	},
+	Properties: []*model.ResourceProperty{
+		{
+			Name: "resource",
+			Type: model.ResourceProperty_REFERENCE,
+			Reference: &model.Reference{
+				Namespace: "system",
+				Resource:  "Resource",
+			},
+		},
+		{
+			Name: "cascade",
+			Type: model.ResourceProperty_BOOL,
+		},
+		{
+			Name: "backReference",
+			Type: model.ResourceProperty_STRING,
+		},
+	},
+}
+
 var ResourceResource = &model.Resource{
 	Name:      "Resource",
 	Namespace: "system",
@@ -127,41 +195,8 @@ var ResourceResource = &model.Resource{
 		Entity:     "resource",
 	},
 	Types: []*model.ResourceSubType{
-		{
-			Name:       "Property",
-			Properties: ResourcePropertyProperties,
-		},
-		{
-			Name: "SubType",
-			Properties: []*model.ResourceProperty{
-				{
-					Name:     "name",
-					Type:     model.ResourceProperty_STRING,
-					Required: true,
-				},
-				{
-					Name:     "title",
-					Type:     model.ResourceProperty_STRING,
-					Length:   256,
-					Required: false,
-				},
-				{
-					Name:     "description",
-					Type:     model.ResourceProperty_STRING,
-					Length:   256,
-					Required: false,
-				},
-				{
-					Name:     "properties",
-					Type:     model.ResourceProperty_LIST,
-					Required: true,
-					Item: &model.ResourceProperty{
-						Type:    model.ResourceProperty_STRUCT,
-						TypeRef: util.Pointer("Property"),
-					},
-				},
-			},
-		},
+		PropertyType,
+		SubTypeType,
 		{
 			Name: "IndexProperty",
 			Properties: []*model.ResourceProperty{
@@ -209,27 +244,7 @@ var ResourceResource = &model.Resource{
 				special.AnnotationsProperty,
 			},
 		},
-		{
-			Name: "Reference",
-			Properties: []*model.ResourceProperty{
-				{
-					Name: "resource",
-					Type: model.ResourceProperty_REFERENCE,
-					Reference: &model.Reference{
-						Namespace: "system",
-						Resource:  "Resource",
-					},
-				},
-				{
-					Name: "cascade",
-					Type: model.ResourceProperty_BOOL,
-				},
-				{
-					Name: "backReference",
-					Type: model.ResourceProperty_STRING,
-				},
-			},
-		},
+		ReferenceType,
 	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,

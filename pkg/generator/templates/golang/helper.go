@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/iancoleman/strcase"
+	log "github.com/sirupsen/logrus"
 	qt422016 "github.com/valyala/quicktemplate"
 	"reflect"
 	"strings"
@@ -49,8 +50,56 @@ func getResourceSpecificImports(resource *model.Resource) []string {
 	return util.ArrayUnique(imports)
 }
 
+var commonUniqueTypes = make(map[string]string)
+
 func getAllSubTypes(resource *model.Resource) []*model.ResourceSubType {
-	return resource.Types
+	var types []*model.ResourceSubType
+
+	for _, item := range resource.Types {
+		if annotations.IsEnabled(item, annotations.CommonType) {
+
+			_, ok := commonUniqueTypes[item.Name]
+
+			if !ok {
+				commonUniqueTypes[item.Name] = resource.Namespace + "/" + resource.Name
+			}
+
+			if commonUniqueTypes[item.Name] == resource.Namespace+"/"+resource.Name {
+				types = append(types, item)
+			} else {
+				log.Debug("Skipping common type " + item.Name + " for " + resource.Namespace + "/" + resource.Name + "\n")
+			}
+		} else {
+			types = append(types, item)
+		}
+	}
+
+	return types
+}
+
+func getSubTypeName(resource *model.Resource, subType *model.ResourceSubType) string {
+	if annotations.IsEnabled(subType, annotations.CommonType) {
+		return subType.Name
+	}
+	return resource.Name + "_" + subType.Name
+}
+
+func getSubTypeNameByProperty(resource *model.Resource, prop *model.ResourceProperty) string {
+	var subType *model.ResourceSubType
+	for _, item := range resource.Types {
+		if item.Name == *prop.TypeRef {
+			subType = item
+			break
+		}
+	}
+
+	var typeVal string
+	if annotations.IsEnabled(subType, annotations.CommonType) {
+		typeVal = strcase.ToCamel(*prop.TypeRef)
+	} else {
+		typeVal = strcase.ToCamel(resource.Name + "_" + *prop.TypeRef)
+	}
+	return typeVal
 }
 
 func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
@@ -152,7 +201,8 @@ func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actu
 	} else if prop.Type == model.ResourceProperty_LIST {
 		typeVal = "[]" + PropPureGoType(resource, prop.Item, prop.Name)
 	} else if prop.Type == model.ResourceProperty_STRUCT {
-		typeVal = strcase.ToCamel(resource.Name + "_" + *prop.TypeRef)
+		// locating type
+		typeVal = getSubTypeNameByProperty(resource, prop)
 	} else if prop.Type == model.ResourceProperty_OBJECT {
 		typeVal = "interface{}"
 	} else if prop.Type == model.ResourceProperty_ENUM {
@@ -165,7 +215,6 @@ func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actu
 
 	return typeVal
 }
-
 func StreamPropPureGoType(qw422016 *qt422016.Writer, resource *model.Resource, prop *model.ResourceProperty, actualName string) {
 	_, _ = qw422016.W().Write([]byte(PropPureGoType(resource, prop, actualName)))
 }

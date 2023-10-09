@@ -17,11 +17,13 @@ type SwaggerApi interface {
 
 type swaggerApi struct {
 	resourceService service.ResourceService
+	recordService   service.RecordService
 }
 
 func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 	var oab = &openApiBuilder{
 		resourceService: s.resourceService,
+		recordService:   s.recordService,
 	}
 
 	r.HandleFunc("/docs/openapi.json", func(w http.ResponseWriter, req *http.Request) {
@@ -93,8 +95,9 @@ func (s *swaggerApi) writeDocResult(w http.ResponseWriter, serviceErr errors.Ser
 		log.Error(err)
 	}
 }
-func NewSwaggerApi(resourceService service.ResourceService) SwaggerApi {
+func NewSwaggerApi(resourceService service.ResourceService, recordService service.RecordService) SwaggerApi {
 	return &swaggerApi{
 		resourceService: resourceService,
+		recordService:   recordService,
 	}
 }

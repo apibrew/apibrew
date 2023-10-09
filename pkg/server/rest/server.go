@@ -245,7 +245,7 @@ func (s *server) TraceLogMiddleWare(next http.Handler) http.Handler {
 func NewServer(container service.Container) Server {
 	return &server{
 		container:       container,
-		docsApi:         docs.NewApi(container.GetResourceService()),
+		docsApi:         docs.NewApi(container.GetResourceService(), container.GetRecordService()),
 		recordApi:       NewRecordApi(container),
 		resourceApi:     NewResourceApi(container),
 		metricsApi:      NewMetricsApi(container.GetMetricsService()),

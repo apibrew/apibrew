@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
@@ -53,6 +54,7 @@ type RecordService interface {
 	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
 	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
 	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
+	ExecuteAction(ctx context.Context, params ExecuteActionParams) (unstructured.Unstructured, errors.ServiceError)
 }
 
 type ResourceService interface {
@@ -185,6 +187,14 @@ type RecordDeleteParams struct {
 	Namespace string
 	Resource  string
 	Ids       []string
+}
+
+type ExecuteActionParams struct {
+	Namespace  string
+	Resource   string
+	Id         string
+	ActionName string
+	Input      unstructured.Unstructured
 }
 
 func (p RecordDeleteParams) ToRequest() *stub.DeleteRecordRequest {

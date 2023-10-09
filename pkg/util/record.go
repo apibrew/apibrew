@@ -36,6 +36,14 @@ func RecordIdentifierProperties(resource *model.Resource, properties map[string]
 		return props, nil
 	}
 
+	if props, ok := RecordIdentifierPrimaryProperties(resource, properties); ok {
+		return props, nil
+	}
+
+	if props, ok := RecordIdentifierUniqueProperties(resource, properties); ok {
+		return props, nil
+	}
+
 	return nil, fmt.Errorf("could not find identifiable properties of %s", resource.Name)
 }
 

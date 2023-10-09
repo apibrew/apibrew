@@ -13,17 +13,22 @@ import (
 	"strings"
 )
 
-func Records(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
+type ResourceLike interface {
+	GetProperties() []*model.ResourceProperty
+	GetTypes() []*model.ResourceSubType
+}
+
+func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)
 
-	for _, property := range resource.Properties {
+	for _, property := range resource.GetProperties() {
 		resourcePropertyExists[property.Name] = true
 	}
 
 	for _, record := range list {
-		for _, property := range resource.Properties {
+		for _, property := range resource.GetProperties() {
 
 			packedVal, exists := record.Properties[property.Name]
 
@@ -100,7 +105,7 @@ func Records(resource *model.Resource, list []*model.Record, isUpdate bool) erro
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
-func PropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
+func PropertyPackedValue(resource ResourceLike, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
 	if value == nil {
 		return nil
 	}
@@ -222,7 +227,7 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 			var properties []*model.ResourceProperty
 
 			// locating type
-			typeDef := util.LocateArrayElement(resource.Types, func(elem *model.ResourceSubType) bool {
+			typeDef := util.LocateArrayElement(resource.GetTypes(), func(elem *model.ResourceSubType) bool {
 				return elem.Name == *property.TypeRef
 			})
 

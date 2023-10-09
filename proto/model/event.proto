@@ -9,6 +9,7 @@ import "model/record.proto";
 import "model/query.proto";
 import "model/error.proto";
 import 'google/protobuf/timestamp.proto';
+import 'google/protobuf/struct.proto';
 
 message Event {
   string id = 1;
@@ -58,6 +59,10 @@ message Event {
   bool sync = 10;
 
   google.protobuf.Timestamp time = 11;
+
+  string actionName = 12;
+  map<string, google.protobuf.Value> input = 13;
+  google.protobuf.Value output = 14;
 
   /*
     Request annotations

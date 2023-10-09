@@ -11,7 +11,7 @@
             panic({%s varName %}_err)
         }
     {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
-            {%s varName %}_mapped = structpb.NewStructValue(&structpb.Struct{Fields: {%= GoName(resource.Name + "_" + *property.TypeRef) %}MapperInstance.ToProperties({%= NormalizePointer(property, varName , isCollectionItem, true) %})})
+            {%s varName %}_mapped = structpb.NewStructValue(&structpb.Struct{Fields: {%= GoName(getSubTypeNameByProperty(resource, property)) %}MapperInstance.ToProperties({%= NormalizePointer(property, varName , isCollectionItem, true) %})})
     {%- elseif property.Type == model.ResourceProperty_MAP -%}
         var {%s varName %}_st *structpb.Struct = new(structpb.Struct)
         {%s varName %}_st.Fields = make(map[string]*structpb.Value)
@@ -51,7 +51,7 @@
 {%= GenerateResourceMappingBodyCode(pkg, resource, GoName(resource.Name), resource.Properties, resources) %}
 
 {%- for _, subType := range getAllSubTypes(resource) -%}
-{%- code typeName := GoName(resource.Name + "_" + subType.Name) -%}
+{%- code typeName := GoName(getSubTypeName(resource, subType)) -%}
 {%= GenerateResourceMappingBodyCode(pkg, resource, typeName, subType.Properties, resources ) %}
 {%- endfor -%}
 
@@ -178,7 +178,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]*structpb.V
         {%s valueVarName %}_mapped := ({%= PropPureGoType(resource, property, property.Name) %})({%s valueVarName %}.GetStringValue())
         {%- endif -%}
     {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
-        var mappedValue = {%= GoName(resource.Name + "_" + *property.TypeRef) %}MapperInstance.FromProperties({%s valueVarName %}.GetStructValue().Fields)
+        var mappedValue = {%= GoName(getSubTypeNameByProperty(resource, property)) %}MapperInstance.FromProperties({%s valueVarName %}.GetStructValue().Fields)
         {% if property.Required || insideCollection %}
         {%s valueVarName %}_mapped := *mappedValue
         {% else %}
