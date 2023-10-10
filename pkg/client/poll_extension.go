@@ -17,9 +17,9 @@ type pollExtension struct {
 	extensionEventSelectorMatcher *helper.ExtensionEventSelectorMatcher
 }
 
-func (e *pollExtension) PrepareCall(extension *resource_model.Extension) resource_model.ExtensionExternalCall {
-	return resource_model.ExtensionExternalCall{
-		ChannelCall: &resource_model.ExtensionChannelCall{
+func (e *pollExtension) PrepareCall(extension *resource_model.Extension) resource_model.ExternalCall {
+	return resource_model.ExternalCall{
+		ChannelCall: &resource_model.ChannelCall{
 			ChannelKey: e.serviceKey,
 		},
 	}

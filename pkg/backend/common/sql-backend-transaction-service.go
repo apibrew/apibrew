@@ -67,7 +67,7 @@ func (p *sqlBackend) BeginTransaction(ctx context.Context, readOnly bool) (strin
 		}
 	}()
 
-	logger.Debugf("BeginTransaction: " + transactionKey)
+	logger.Debugf("BeginTransaction: %s / %s", p.dataSourceName, transactionKey)
 
 	return transactionKey, nil
 }

@@ -1,12 +1,15 @@
 package rest
 
 import (
+	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,6 +34,8 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 	// search
 	subRoute.HandleFunc("/{resourceSlug}/_search", r.handleRecordSearch).Methods("POST")
 	subRoute.HandleFunc("/{resourceSlug}/_resource", r.handleRecordResource).Methods("GET")
+	subRoute.HandleFunc("/{resourceSlug}/{id}/_{action}", r.handleAction).Methods("GET")
+	subRoute.HandleFunc("/{resourceSlug}/{id}/_{action}", r.handleAction).Methods("POST")
 
 	// record level operations
 	subRoute.HandleFunc("/{resourceSlug}/{id}", r.handleRecordGet).Methods("GET")
@@ -77,7 +82,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	query, srvErr := r.recordService.PrepareQuery(resource, queryMap)
 
 	if srvErr != nil {
-		handleClientError(writer, srvErr)
+		handleError(writer, srvErr)
 		return
 	}
 
@@ -89,7 +94,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		limit, _err = strconv.Atoi(request.URL.Query().Get("limit"))
 
 		if _err != nil {
-			handleClientError(writer, _err)
+			handleError(writer, _err)
 			return
 		}
 	}
@@ -99,7 +104,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		offset, _err = strconv.Atoi(request.URL.Query().Get("offset"))
 
 		if _err != nil {
-			handleClientError(writer, _err)
+			handleError(writer, _err)
 			return
 		}
 	}
@@ -134,7 +139,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	err := parseRequestMessage(request, record1)
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 
@@ -167,12 +172,12 @@ func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.
 	err := parseRequestMessage(request, record1)
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 
@@ -230,7 +235,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 	record := recordWrap.toRecord()
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 
@@ -281,7 +286,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 	err := parseRequestMessage(request, listRecordRequest)
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 
@@ -319,6 +324,46 @@ func (r *recordApi) handleRecordResource(writer http.ResponseWriter, request *ht
 	ServiceResponder().
 		Writer(writer).
 		Respond(resourceTo(resource), nil)
+}
+
+func (r *recordApi) handleAction(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	var input = new(unstructured.Unstructured)
+
+	data, serr := io.ReadAll(request.Body)
+
+	if serr != nil {
+		handleError(writer, serr)
+		return
+	}
+
+	if len(data) == 0 {
+		data = []byte("{}")
+	}
+
+	serr = json.Unmarshal(data, input)
+
+	if serr != nil {
+		handleError(writer, serr)
+		return
+	}
+
+	result, err := r.recordService.ExecuteAction(request.Context(), service.ExecuteActionParams{
+		Namespace:  resource.Namespace,
+		Resource:   resource.Name,
+		Id:         vars["id"],
+		ActionName: vars["action"],
+		Input:      *input,
+	})
+
+	if err != nil {
+		handleError(writer, err)
+		return
+	}
+
+	respondSuccess(writer, result)
 }
 
 func NewRecordApi(container service.Container) RecordApi {

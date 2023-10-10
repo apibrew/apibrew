@@ -28,7 +28,7 @@ type externalService struct {
 	eventChannelService service.EventChannelService
 }
 
-func (e *externalService) Call(ctx context.Context, call resource_model.ExtensionExternalCall, event *model.Event) (*model.Event, errors.ServiceError) {
+func (e *externalService) Call(ctx context.Context, call resource_model.ExternalCall, event *model.Event) (*model.Event, errors.ServiceError) {
 	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
 
 	if event.Annotations == nil {
@@ -52,7 +52,7 @@ func (e *externalService) Call(ctx context.Context, call resource_model.Extensio
 	}
 }
 
-func (e *externalService) CallFunction(ctx context.Context, call *resource_model.ExtensionFunctionCall, event *model.Event) (*model.Event, errors.ServiceError) {
+func (e *externalService) CallFunction(ctx context.Context, call *resource_model.FunctionCall, event *model.Event) (*model.Event, errors.ServiceError) {
 	if e.functionClientMap[call.Host+"/"+call.FunctionName] == nil {
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -100,7 +100,7 @@ func (e *externalService) CallFunction(ctx context.Context, call *resource_model
 	return result.Event, nil
 }
 
-func (e *externalService) CallHttp(ctx context.Context, call *resource_model.ExtensionHttpCall, event *model.Event) (*model.Event, errors.ServiceError) {
+func (e *externalService) CallHttp(ctx context.Context, call *resource_model.HttpCall, event *model.Event) (*model.Event, errors.ServiceError) {
 	body, err := json.Marshal(extramappings.EventFromProto(event))
 
 	if err != nil {
@@ -131,7 +131,7 @@ func (e *externalService) CallHttp(ctx context.Context, call *resource_model.Ext
 	}
 
 	if resp.StatusCode != 200 {
-		var result = new(resource_model.ExtensionError)
+		var result = new(resource_model.Error)
 
 		err = json.Unmarshal(responseData, result)
 
@@ -147,7 +147,7 @@ func (e *externalService) CallHttp(ctx context.Context, call *resource_model.Ext
 		return nil, nil
 	}
 
-	var result = new(resource_model.ExtensionEvent)
+	var result = new(resource_model.Event)
 
 	err = json.Unmarshal(responseData, result)
 
@@ -171,7 +171,7 @@ func (e *externalService) reportHttpError(responseData []byte) (*model.Event, er
 	return nil, errors.RecordValidationError.WithDetails(responseError.Message)
 }
 
-func (e *externalService) CallChannel(ctx context.Context, call *resource_model.ExtensionChannelCall, event *model.Event) (*model.Event, errors.ServiceError) {
+func (e *externalService) CallChannel(ctx context.Context, call *resource_model.ChannelCall, event *model.Event) (*model.Event, errors.ServiceError) {
 	return e.eventChannelService.Exec(ctx, call.ChannelKey, event)
 }
 

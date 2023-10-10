@@ -187,7 +187,7 @@ func (h handler[Entity]) prepareExtension() {
 	extension := &resource_model.Extension{
 		Name:        h.name,
 		Description: nil,
-		Selector: &resource_model.ExtensionEventSelector{
+		Selector: &resource_model.EventSelector{
 			Actions:    []resource_model.EventAction{h.action},
 			Namespaces: []string{ri.Namespace},
 			Resources:  []string{ri.Name},

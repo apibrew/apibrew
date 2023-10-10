@@ -510,6 +510,9 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 	}
 
 	if propEx, ok := query.Expression.(*model.Expression_RefValue); ok {
+		if propEx.RefValue.Properties["id"] != nil {
+			return r.builder.Var(propEx.RefValue.Properties["id"].AsInterface()), nil
+		}
 		referencedResource := r.backend.schema.ResourceByNamespaceSlashName[propEx.RefValue.Namespace+"/"+propEx.RefValue.Resource]
 
 		innerSql, err := r.backend.resolveReference(propEx.RefValue.Properties, r.builder.Var, referencedResource)

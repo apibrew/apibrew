@@ -72,7 +72,7 @@ func deStringifyPropertyValue(actualValue string, property *model.ResourceProper
 	case model.ResourceProperty_ENUM:
 		return structpb.NewStringValue(actualValue), nil
 	case model.ResourceProperty_REFERENCE:
-		return nil, errors.UnsupportedOperation.WithDetails("Reference de-serialization from string is not supported")
+		return structpb.NewStringValue(actualValue), nil
 	case model.ResourceProperty_BOOL:
 		boolVal, err := strconv.ParseBool(actualValue)
 

@@ -58,7 +58,7 @@ func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder
 		case *model.ResourceMigrationStep_CreateIndex:
 			hp.AddIndex(migrationPlan.CurrentResource.Indexes[sk.CreateIndex.Index])
 		case *model.ResourceMigrationStep_DeleteIndex:
-			hp.DeleteIndex(migrationPlan.CurrentResource.Indexes[sk.DeleteIndex.ExistingIndex])
+			hp.DeleteIndex(migrationPlan.ExistingResource.Indexes[sk.DeleteIndex.ExistingIndex])
 		}
 	}
 

@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/backend/helper"
 	"github.com/apibrew/apibrew/pkg/errors"
@@ -68,7 +69,7 @@ func (p *sqlBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx 
 		txDataInstance := p.transactionMap[transactionKey.(string)]
 
 		if txDataInstance == nil {
-			return errors.LogicalError.WithDetails("Transaction not found: " + transactionKey.(string))
+			return errors.LogicalError.WithDetails(fmt.Sprintf("Transaction not found: %s / %s", p.dataSourceName, transactionKey.(string)))
 		}
 
 		return fn(p.queryLogger(transactionKey.(string), p.dataSourceName, txDataInstance.tx))

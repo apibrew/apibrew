@@ -23,9 +23,9 @@ func (a *api) Handler() *mux.Router {
 	return r
 }
 
-func NewApi(resourceService service.ResourceService) Api {
+func NewApi(resourceService service.ResourceService, recordService service.RecordService) Api {
 	return &api{
 		resourceService: resourceService,
-		swaggerApi:      NewSwaggerApi(resourceService),
+		swaggerApi:      NewSwaggerApi(resourceService, recordService),
 	}
 }

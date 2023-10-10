@@ -11,15 +11,15 @@ window.onload = function () {
             },
             {
                 name: "Meta API",
-                url: "/docs/openapi.json?mode=meta",
+                url: "/docs/openapi.json?group=meta",
             },
             {
                 name: "Internal API",
-                url: "/docs/openapi.json?mode=internal",
+                url: "/docs/openapi.json?group=internal",
             },
             {
                 name: "Full API",
-                url: "/docs/openapi.json?mode=full",
+                url: "/docs/openapi.json?group=full",
             }
         ],
         dom_id: '#swagger-ui',

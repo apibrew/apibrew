@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -66,6 +67,7 @@ func (t TestFunctionBackend) FunctionCall(ctx context.Context, request *ext.Func
 
 	event := request.Event
 	event.Records = simpleVirtualResourceRecords
+	event.Total = uint64(len(simpleVirtualResourceRecords))
 
 	return &ext.FunctionCallResponse{
 		Event: event,
@@ -79,7 +81,7 @@ func extensionHandler(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), 500)
 		return
 	}
-	var event = &resource_model.ExtensionEvent{}
+	var event = &resource_model.Event{}
 	err = json.Unmarshal(bodyBytes, event)
 	if err != nil {
 		http.Error(writer, err.Error(), 500)
@@ -89,6 +91,7 @@ func extensionHandler(writer http.ResponseWriter, request *http.Request) {
 	log.Println(event)
 
 	event.Records = simpleVirtualResourceRecords2
+	event.Total = util.Pointer(int64(len(simpleVirtualResourceRecords2)))
 
 	respBody, err := json.Marshal(event)
 
@@ -139,12 +142,12 @@ func TestListResourceWithFunctionCallExtension(t *testing.T) {
 		Id:   &id,
 		Name: "test-extension",
 
-		Selector: &resource_model.ExtensionEventSelector{
+		Selector: &resource_model.EventSelector{
 			Namespaces: []string{setup.SimpleVirtualResource1.Namespace},
 			Resources:  []string{setup.SimpleVirtualResource1.Name},
 		},
-		Call: resource_model.ExtensionExternalCall{
-			FunctionCall: &resource_model.ExtensionFunctionCall{
+		Call: resource_model.ExternalCall{
+			FunctionCall: &resource_model.FunctionCall{
 				Host:         extensionGrpcHost,
 				FunctionName: "testFunc",
 			},
@@ -213,12 +216,12 @@ func TestListResourceWithHttpExtension(t *testing.T) {
 	var te = &resource_model.Extension{
 		Id:   &id,
 		Name: "test-extension",
-		Selector: &resource_model.ExtensionEventSelector{
+		Selector: &resource_model.EventSelector{
 			Namespaces: []string{setup.SimpleVirtualResource1.Namespace},
 			Resources:  []string{setup.SimpleVirtualResource1.Name},
 		},
-		Call: resource_model.ExtensionExternalCall{
-			HttpCall: &resource_model.ExtensionHttpCall{
+		Call: resource_model.ExternalCall{
+			HttpCall: &resource_model.HttpCall{
 				Uri:    "http://" + extensionRestHost + "/path-1",
 				Method: "POST",
 			},

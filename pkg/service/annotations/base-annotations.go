@@ -40,6 +40,7 @@ const UseJoinTable = "UseJoinTable"
 const TypeName = "TypeName"
 const SelfContainedProperty = "SelfContainedProperty"
 const AllowEmptyPrimitive = "AllowEmptyPrimitive"
+const CommonType = "CommonType"
 
 // restapi
 const RestApiDisabled = "RestApiDisabled"

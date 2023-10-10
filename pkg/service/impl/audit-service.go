@@ -43,7 +43,7 @@ func (a *auditService) prepareHandler() backend_event_handler.Handler {
 func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
 	log.Debug("Handled by audit-handler")
 
-	if event.Action == model.Event_GET || event.Action == model.Event_LIST {
+	if event.Action == model.Event_GET || event.Action == model.Event_LIST || event.Action == model.Event_OPERATE {
 		return event, nil
 	}
 
@@ -64,7 +64,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 		auditLog.Username = "internal"
 	}
 
-	ctx = annotations.SetWithContext(ctx, annotations.BypassExtensions, annotations.Enabled)
+	ctx = annotations.SetWithContext(context.TODO(), annotations.BypassExtensions, annotations.Enabled)
 
 	if event.Records != nil && len(event.Records) > 0 {
 		for _, record := range event.Records {

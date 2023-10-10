@@ -23,6 +23,9 @@ var ExtensionResource = &model.Resource{
 		sub_types.Expression,
 		{
 			Name: "FunctionCall",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name:     "host",
@@ -38,6 +41,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "HttpCall",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name:     "uri",
@@ -53,6 +59,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "ChannelCall",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name:     "channelKey",
@@ -63,6 +72,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "ExternalCall",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name:    "functionCall",
@@ -83,6 +95,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "EventSelector",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name: "actions",
@@ -128,6 +143,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "RecordSearchParams",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name:    "query",
@@ -153,6 +171,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "Event",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name:      "id",
@@ -222,6 +243,22 @@ var ExtensionResource = &model.Resource{
 					Name: "time",
 					Type: model.ResourceProperty_TIMESTAMP,
 				},
+				{
+					Name: "total",
+					Type: model.ResourceProperty_INT64,
+				},
+				{
+					Name: "actionName",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "input",
+					Type: model.ResourceProperty_OBJECT,
+				},
+				{
+					Name: "output",
+					Type: model.ResourceProperty_OBJECT,
+				},
 				special.AnnotationsProperty,
 				{
 					Name:    "error",
@@ -232,6 +269,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "ErrorField",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name: "recordId",
@@ -253,6 +293,9 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "Error",
+			Annotations: map[string]string{
+				annotations.CommonType: annotations.Enabled,
+			},
 			Properties: []*model.ResourceProperty{
 				{
 					Name: "code",

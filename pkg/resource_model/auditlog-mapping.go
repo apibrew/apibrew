@@ -35,12 +35,12 @@ func (m *AuditLogMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *AuditLogMapper) ToRecord(auditLog *AuditLog) *model.Record {
+func (m *AuditLogMapper) ToRecord(auditLog_ *AuditLog) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(auditLog)
+	rec.Properties = m.ToProperties(auditLog_)
 
-	if auditLog.Id != nil {
-		rec.Id = auditLog.Id.String()
+	if auditLog_.Id != nil {
+		rec.Id = auditLog_.Id.String()
 	}
 
 	return rec
@@ -50,10 +50,10 @@ func (m *AuditLogMapper) FromRecord(record *model.Record) *AuditLog {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.Value {
+func (m *AuditLogMapper) ToProperties(auditLog_ *AuditLog) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := auditLog.Id
+	var_Id := auditLog_.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -66,7 +66,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := auditLog.Version
+	var_Version := auditLog_.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -77,7 +77,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 	}
 	properties["version"] = var_Version_mapped
 
-	var_Namespace := auditLog.Namespace
+	var_Namespace := auditLog_.Namespace
 
 	var var_Namespace_mapped *structpb.Value
 
@@ -88,7 +88,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 	}
 	properties["namespace"] = var_Namespace_mapped
 
-	var_Resource := auditLog.Resource
+	var_Resource := auditLog_.Resource
 
 	var var_Resource_mapped *structpb.Value
 
@@ -99,7 +99,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 	}
 	properties["resource"] = var_Resource_mapped
 
-	var_RecordId := auditLog.RecordId
+	var_RecordId := auditLog_.RecordId
 
 	var var_RecordId_mapped *structpb.Value
 
@@ -110,7 +110,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 	}
 	properties["recordId"] = var_RecordId_mapped
 
-	var_Time := auditLog.Time
+	var_Time := auditLog_.Time
 
 	var var_Time_mapped *structpb.Value
 
@@ -121,7 +121,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 	}
 	properties["time"] = var_Time_mapped
 
-	var_Username := auditLog.Username
+	var_Username := auditLog_.Username
 
 	var var_Username_mapped *structpb.Value
 
@@ -132,7 +132,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 	}
 	properties["username"] = var_Username_mapped
 
-	var_Operation := auditLog.Operation
+	var_Operation := auditLog_.Operation
 
 	var var_Operation_mapped *structpb.Value
 
@@ -143,7 +143,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 	}
 	properties["operation"] = var_Operation_mapped
 
-	var_Properties := auditLog.Properties
+	var_Properties := auditLog_.Properties
 
 	if var_Properties != nil {
 		var var_Properties_mapped *structpb.Value
@@ -156,7 +156,7 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 		properties["properties"] = var_Properties_mapped
 	}
 
-	var_Annotations := auditLog.Annotations
+	var_Annotations := auditLog_.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value

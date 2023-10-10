@@ -46,7 +46,8 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      resource: FunctionExecutionEngine
+      resource:
+        name: FunctionExecutionEngine
   - name: options
     type: STRUCT
     typeRef: Options
@@ -72,7 +73,8 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      resource: Function
+      resource:
+        name: Function
   - name: input
     type: OBJECT
   - name: output
@@ -126,7 +128,8 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      resource: Function
+      resource:
+        name: Function
 ---
 type: resource
 name: ResourceRule
@@ -150,7 +153,8 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      resource: Function
+      resource:
+        name: Function
 ---
 type: resource
 name: Schedule
@@ -170,4 +174,5 @@ properties:
     type: REFERENCE
     required: true
     reference:
-      resource: Function
+      resource:
+        name: Function

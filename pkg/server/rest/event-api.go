@@ -27,14 +27,14 @@ func (r *eventChannelApi) pollEvents(writer http.ResponseWriter, request *http.R
 	channelKey := request.URL.Query().Get("channelKey")
 
 	if channelKey == "" {
-		handleClientError(writer, fmt.Errorf("channelKey is required"))
+		handleError(writer, fmt.Errorf("channelKey is required"))
 		return
 	}
 
 	events, err := r.service.PollEvents(request.Context(), channelKey)
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 
@@ -50,7 +50,7 @@ func (r *eventChannelApi) pollEvents(writer http.ResponseWriter, request *http.R
 		data, err := json.Marshal(extramappings.EventFromProto(event))
 
 		if err != nil {
-			handleClientError(writer, err)
+			handleError(writer, err)
 			return
 		}
 
@@ -69,23 +69,23 @@ func (r *eventChannelApi) writeEvent(writer http.ResponseWriter, request *http.R
 	channelKey := request.URL.Query().Get("channelKey")
 
 	if channelKey == "" {
-		handleClientError(writer, fmt.Errorf("channelKey is required"))
+		handleError(writer, fmt.Errorf("channelKey is required"))
 		return
 	}
 
-	var event = &resource_model.ExtensionEvent{}
+	var event = &resource_model.Event{}
 
 	err := json.NewDecoder(request.Body).Decode(event)
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 
 	err = r.service.WriteEvent(request.Context(), channelKey, extramappings.EventToProto(event))
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 

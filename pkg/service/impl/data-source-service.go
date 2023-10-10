@@ -22,13 +22,7 @@ func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]*mod
 	logger.WithField("req", id).Debug("Begin data-source ListEntities")
 	defer logger.Debug("End data-source ListEntities")
 
-	bck, err := d.backendProviderService.GetBackendByDataSourceId(ctx, id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return bck.ListEntities(ctx)
+	return d.backendProviderService.ListEntities(ctx, id)
 }
 
 func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
@@ -36,13 +30,7 @@ func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectio
 	logger.WithField("id", id).Debug("Begin data-source GetStatus")
 	defer logger.Debug("End data-source GetStatus")
 
-	bck, err := d.backendProviderService.GetBackendByDataSourceId(ctx, id)
-
-	if err != nil {
-		return
-	}
-
-	return bck.GetStatus(ctx)
+	return d.backendProviderService.GetStatus(ctx, id)
 }
 
 func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id string, catalog, entity string) (*model.Resource, errors.ServiceError) {
@@ -60,13 +48,7 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 		return nil, err
 	}
 
-	bck, err := d.backendProviderService.GetBackendByDataSourceId(ctx, id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	resource, err := bck.PrepareResourceFromEntity(ctx, catalog, entity)
+	resource, err := d.backendProviderService.PrepareResourceFromEntity(ctx, dsRecord.Properties["name"].GetStringValue(), catalog, entity)
 
 	if err != nil {
 		return nil, err

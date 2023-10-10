@@ -18,7 +18,7 @@ import "{%s importLine %}"
 
 {%= GenerateStructCode(pkg, resource, resource.Name, resource.Properties, resource) %}
 {%- for _, subType := range getAllSubTypes(resource) -%}
-{%= GenerateStructCode(pkg, resource, resource.Name + "_" + subType.Name, subType.Properties, subType) %}
+{%= GenerateStructCode(pkg, resource, getSubTypeName(resource, subType), subType.Properties, subType) %}
 {%- endfor -%}
 {%- for _, enumProperty := range getAllEnums(resource) -%}
 {%= GenerateEnumCode(enumProperty) %}

@@ -35,12 +35,12 @@ func (m *UserMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *UserMapper) ToRecord(user *User) *model.Record {
+func (m *UserMapper) ToRecord(user_ *User) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(user)
+	rec.Properties = m.ToProperties(user_)
 
-	if user.Id != nil {
-		rec.Id = user.Id.String()
+	if user_.Id != nil {
+		rec.Id = user_.Id.String()
 	}
 
 	return rec
@@ -50,10 +50,10 @@ func (m *UserMapper) FromRecord(record *model.Record) *User {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
+func (m *UserMapper) ToProperties(user_ *User) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := user.Id
+	var_Id := user_.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -66,7 +66,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := user.Version
+	var_Version := user_.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -77,7 +77,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := user.CreatedBy
+	var_CreatedBy := user_.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -90,7 +90,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := user.UpdatedBy
+	var_UpdatedBy := user_.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -103,7 +103,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := user.CreatedOn
+	var_CreatedOn := user_.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -116,7 +116,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := user.UpdatedOn
+	var_UpdatedOn := user_.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -129,7 +129,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Username := user.Username
+	var_Username := user_.Username
 
 	var var_Username_mapped *structpb.Value
 
@@ -140,7 +140,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 	}
 	properties["username"] = var_Username_mapped
 
-	var_Password := user.Password
+	var_Password := user_.Password
 
 	if var_Password != nil {
 		var var_Password_mapped *structpb.Value
@@ -153,7 +153,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		properties["password"] = var_Password_mapped
 	}
 
-	var_Roles := user.Roles
+	var_Roles := user_.Roles
 
 	if var_Roles != nil {
 		var var_Roles_mapped *structpb.Value
@@ -172,7 +172,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		properties["roles"] = var_Roles_mapped
 	}
 
-	var_Permissions := user.Permissions
+	var_Permissions := user_.Permissions
 
 	if var_Permissions != nil {
 		var var_Permissions_mapped *structpb.Value
@@ -191,7 +191,7 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		properties["permissions"] = var_Permissions_mapped
 	}
 
-	var_Details := user.Details
+	var_Details := user_.Details
 
 	if var_Details != nil {
 		var var_Details_mapped *structpb.Value

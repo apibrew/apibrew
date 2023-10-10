@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func GenerateGoResourceCode(pkg string, resources []*model.Resource, path string, namespace string) error {
+func GenerateGoResourceCode(pkg string, resources []*model.Resource, actions map[*model.Resource][]*model.Resource, path string, namespace string) error {
 	for _, resource := range resources {
 		if err := generateResourceCode(pkg, resource, path); err != nil {
 			return err

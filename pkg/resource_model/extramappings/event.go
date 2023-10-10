@@ -1,16 +1,16 @@
 package extramappings
 
 import (
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
-	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
-func EventToProto(result *resource_model.ExtensionEvent) *model.Event {
+func EventToProto(result *resource_model.Event) *model.Event {
 	var event = new(model.Event)
 
 	event.Id = result.Id
@@ -52,17 +52,34 @@ func EventToProto(result *resource_model.ExtensionEvent) *model.Event {
 		}
 	})
 
-	event.Resource = resourceFrom(result.Resource)
+	event.Resource = ResourceFrom(result.Resource)
 
 	if result.Error != nil {
 		event.Error = ErrorToProto(*result.Error)
 	}
 
+	event.Total = uint64(util.DePointer(result.Total, 0))
+	event.ActionName = util.DePointer(result.ActionName, "")
+	if result.Input != nil {
+		var err error
+		event.Input, err = unstructured.ToValue(result.Input)
+		if err != nil {
+			panic(err)
+		}
+	}
+	if result.Output != nil {
+		var err error
+		event.Output, err = unstructured.ToValue(result.Output)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	return event
 }
 
-func EventFromProto(event *model.Event) *resource_model.ExtensionEvent {
-	extensionEvent := new(resource_model.ExtensionEvent)
+func EventFromProto(event *model.Event) *resource_model.Event {
+	extensionEvent := new(resource_model.Event)
 	extensionEvent.Id = event.Id
 	extensionEvent.Action = resource_model.ExtensionAction(model.Event_Action_name[int32(event.Action)])
 	extensionEvent.Ids = event.Ids
@@ -82,7 +99,7 @@ func EventFromProto(event *model.Event) *resource_model.ExtensionEvent {
 			query = util.Pointer(BooleanExpressionFromProto(event.RecordSearchParams.Query))
 		}
 
-		extensionEvent.RecordSearchParams = &resource_model.ExtensionRecordSearchParams{
+		extensionEvent.RecordSearchParams = &resource_model.RecordSearchParams{
 			Query:             query,
 			Limit:             util.Pointer(int32(event.RecordSearchParams.Limit)),
 			Offset:            util.Pointer(int32(event.RecordSearchParams.Offset)),
@@ -99,27 +116,20 @@ func EventFromProto(event *model.Event) *resource_model.ExtensionEvent {
 		})
 	})
 
-	extensionEvent.Resource = resourceTo(event.Resource)
+	extensionEvent.Resource = ResourceTo(event.Resource)
 
 	if event.Error != nil {
 		extensionEvent.Error = util.Pointer(ErrorFromProto(event.Error))
 	}
 
+	extensionEvent.Total = util.Pointer(int64(event.Total))
+	extensionEvent.ActionName = util.Pointer(event.ActionName)
+	if event.Input != nil {
+		extensionEvent.Input = unstructured.FromValue(event.Input)
+	}
+	if event.Input != nil {
+		extensionEvent.Output = unstructured.FromValue(event.Input)
+	}
+
 	return extensionEvent
-}
-
-func resourceTo(resource *model.Resource) *resource_model.Resource {
-	if resource == nil {
-		return nil
-	}
-	resourceRec := mapping.ResourceToRecord(resource)
-	return resource_model.ResourceMapperInstance.FromRecord(resourceRec)
-}
-
-func resourceFrom(resource *resource_model.Resource) *model.Resource {
-	if resource == nil {
-		return nil
-	}
-	resourceRec := resource_model.ResourceMapperInstance.ToRecord(resource)
-	return mapping.ResourceFromRecord(resourceRec)
 }

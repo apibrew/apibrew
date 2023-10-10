@@ -79,7 +79,7 @@ func StreamPropertyTo(qw422016 *qt422016.Writer, resource *model.Resource, prope
 //line templates/golang/mapping.qtpl:14
 		qw422016.N().S(`_mapped = structpb.NewStructValue(&structpb.Struct{Fields: `)
 //line templates/golang/mapping.qtpl:14
-		StreamGoName(qw422016, resource.Name+"_"+*property.TypeRef)
+		StreamGoName(qw422016, getSubTypeNameByProperty(resource, property))
 //line templates/golang/mapping.qtpl:14
 		qw422016.N().S(`MapperInstance.ToProperties(`)
 //line templates/golang/mapping.qtpl:14
@@ -298,7 +298,7 @@ func StreamGenerateResourceMappingCode(qw422016 *qt422016.Writer, pkg string, re
 //line templates/golang/mapping.qtpl:53
 	for _, subType := range getAllSubTypes(resource) {
 //line templates/golang/mapping.qtpl:54
-		typeName := GoName(resource.Name + "_" + subType.Name)
+		typeName := GoName(getSubTypeName(resource, subType))
 
 //line templates/golang/mapping.qtpl:55
 		StreamGenerateResourceMappingBodyCode(qw422016, pkg, resource, typeName, subType.Properties, resources)
@@ -872,7 +872,7 @@ func StreamPreparePropertyFromMapping(qw422016 *qt422016.Writer, resource *model
 //line templates/golang/mapping.qtpl:180
 		qw422016.N().S(`        var mappedValue = `)
 //line templates/golang/mapping.qtpl:181
-		StreamGoName(qw422016, resource.Name+"_"+*property.TypeRef)
+		StreamGoName(qw422016, getSubTypeNameByProperty(resource, property))
 //line templates/golang/mapping.qtpl:181
 		qw422016.N().S(`MapperInstance.FromProperties(`)
 //line templates/golang/mapping.qtpl:181

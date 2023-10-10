@@ -65,7 +65,7 @@ func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *
 	err := parseRequestMessage(request, rw)
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 
@@ -108,7 +108,7 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 	err := parseRequestMessage(request, resourceForUpdate)
 
 	if err != nil {
-		handleClientError(writer, err)
+		handleError(writer, err)
 		return
 	}
 

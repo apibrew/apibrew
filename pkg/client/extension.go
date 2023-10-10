@@ -14,5 +14,5 @@ type Extension interface {
 	RegisterExtension(newExtension *resource_model.Extension)
 	getServiceKey() string
 	WithServiceKey(serviceKey string) Extension
-	PrepareCall(*resource_model.Extension) resource_model.ExtensionExternalCall
+	PrepareCall(*resource_model.Extension) resource_model.ExternalCall
 }

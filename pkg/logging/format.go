@@ -15,13 +15,5 @@ func ShortEventInfo(event *model.Event) string {
 		}
 	}
 
-	var resourceName string
-	var namespace string
-
-	if event.Resource != nil {
-		resourceName = event.Resource.Name
-		namespace = event.Resource.Namespace
-	}
-
-	return fmt.Sprintf("[%s]%s/%s/%s - [%s]", event.Action, namespace, resourceName, event.Id, strings.Join(ids, ","))
+	return fmt.Sprintf("%s [%s]", event.Id, strings.Join(ids, ","))
 }

@@ -45,6 +45,7 @@ public interface Client {
     <T extends Entity> Repository<T> repository(EntityInfo<T> entityInfo);
 
     <T extends Entity> Container<T> listRecords(Class<T> entityClass, String namespace, String resource);
+
     <T extends Entity> Container<T> listRecords(Class<T> entityClass, String namespace, String resource, Extension.BooleanExpression query);
 
     <T extends Entity> T applyRecord(Class<T> entityClass, String namespace, String resource, T record);
@@ -54,6 +55,8 @@ public interface Client {
     <T extends Entity> T updateRecord(Class<T> entityClass, String namespace, String resource, T record);
 
     <T extends Entity> T getRecord(Class<T> entityClass, String namespace, String resource, String id);
+
+    <T extends Entity, ActionRequest, ActionResponse> ActionResponse executeRecordAction(Class<ActionResponse> responseClass, String namespace, String resource, String id, String actionName, ActionRequest request);
 
     <T extends Entity> T createRecord(Class<T> entityClass, String namespace, String resource, T record);
 

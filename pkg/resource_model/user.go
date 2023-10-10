@@ -8,17 +8,17 @@ import "github.com/google/uuid"
 import "time"
 
 type User struct {
-	Id          *uuid.UUID    `json:"id,omitempty"`
-	Version     int32         `json:"version,omitempty"`
-	CreatedBy   *string       `json:"createdBy,omitempty"`
-	UpdatedBy   *string       `json:"updatedBy,omitempty"`
-	CreatedOn   *time.Time    `json:"createdOn,omitempty"`
-	UpdatedOn   *time.Time    `json:"updatedOn,omitempty"`
-	Username    string        `json:"username,omitempty"`
-	Password    *string       `json:"password,omitempty"`
-	Roles       []*Role       `json:"roles,omitempty"`
-	Permissions []*Permission `json:"permissions,omitempty"`
-	Details     interface{}   `json:"details,omitempty"`
+	Id          *uuid.UUID    `json:"id_,omitempty"`
+	Version     int32         `json:"version_,omitempty"`
+	CreatedBy   *string       `json:"createdBy_,omitempty"`
+	UpdatedBy   *string       `json:"updatedBy_,omitempty"`
+	CreatedOn   *time.Time    `json:"createdOn_,omitempty"`
+	UpdatedOn   *time.Time    `json:"updatedOn_,omitempty"`
+	Username    string        `json:"username_,omitempty"`
+	Password    *string       `json:"password_,omitempty"`
+	Roles       []*Role       `json:"roles_,omitempty"`
+	Permissions []*Permission `json:"permissions_,omitempty"`
+	Details     interface{}   `json:"details_,omitempty"`
 }
 
 func (s *User) GetId() *uuid.UUID {

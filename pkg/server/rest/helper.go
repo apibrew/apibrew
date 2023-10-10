@@ -69,11 +69,12 @@ func handleServiceError(writer http.ResponseWriter, err errors.ServiceError) {
 	_, _ = writer.Write(body)
 }
 
-func handleClientError(writer http.ResponseWriter, err error) {
-	if err != nil {
-		log.Error(err)
-		writer.WriteHeader(400)
-		_, _ = writer.Write([]byte(err.Error()))
+func handleError(writer http.ResponseWriter, err error) {
+	if serr, ok := err.(errors.ServiceError); ok {
+		handleServiceError(writer, serr)
+		return
+	} else {
+		handleServiceError(writer, errors.RecordValidationError.WithMessage(err.Error()))
 	}
 }
 

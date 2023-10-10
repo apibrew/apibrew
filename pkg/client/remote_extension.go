@@ -24,9 +24,9 @@ type remoteExtension struct {
 	registeredExtensions []*resource_model.Extension
 }
 
-func (e *remoteExtension) PrepareCall(ext *resource_model.Extension) resource_model.ExtensionExternalCall {
-	return resource_model.ExtensionExternalCall{
-		FunctionCall: &resource_model.ExtensionFunctionCall{
+func (e *remoteExtension) PrepareCall(ext *resource_model.Extension) resource_model.ExternalCall {
+	return resource_model.ExternalCall{
+		FunctionCall: &resource_model.FunctionCall{
 			Host:         e.remoteHost,
 			FunctionName: ext.Name,
 		},

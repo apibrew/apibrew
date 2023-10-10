@@ -7,9 +7,9 @@ package resource_model
 import "github.com/google/uuid"
 
 type Record struct {
-	Id               *uuid.UUID    `json:"id,omitempty"`
-	Properties       interface{}   `json:"properties,omitempty"`
-	PackedProperties []interface{} `json:"packedProperties,omitempty"`
+	Id               *uuid.UUID    `json:"id_,omitempty"`
+	Properties       interface{}   `json:"properties_,omitempty"`
+	PackedProperties []interface{} `json:"packedProperties_,omitempty"`
 }
 
 func (s *Record) GetId() *uuid.UUID {

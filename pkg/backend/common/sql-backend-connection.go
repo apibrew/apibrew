@@ -25,7 +25,7 @@ func (p *sqlBackend) acquireConnection(ctx context.Context) (*sql.DB, errors.Ser
 
 		p.connection = conn
 
-		logger.Infof("Connecting to Datasource: %s", p.dataSourceName)
+		logger.Infof("Connecting to Datasource: %s => %s", p.dataSourceName, p.options.GetConnectionString())
 
 		_, _, err = p.GetStatus(ctx)
 

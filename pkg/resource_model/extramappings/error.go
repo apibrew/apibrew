@@ -6,7 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 )
 
-func ErrorToProto(result resource_model.ExtensionError) *model.Error {
+func ErrorToProto(result resource_model.Error) *model.Error {
 	var err = new(model.Error)
 
 	err.Message = util.DePointer(result.Message, "")
@@ -22,14 +22,14 @@ func ErrorToProto(result resource_model.ExtensionError) *model.Error {
 	return err
 }
 
-func ErrorFromProto(result *model.Error) resource_model.ExtensionError {
-	var err = resource_model.ExtensionError{
+func ErrorFromProto(result *model.Error) resource_model.Error {
+	var err = resource_model.Error{
 		Message: util.Pointer(result.Message),
 		Code:    util.Pointer(resource_model.ExtensionCode(model.ErrorCode_name[int32(result.Code)])),
 	}
 
 	for _, field := range result.Fields {
-		err.Fields = append(err.Fields, resource_model.ExtensionErrorField{
+		err.Fields = append(err.Fields, resource_model.ErrorField{
 			Property: util.Pointer(field.Property),
 			Message:  util.Pointer(field.Message),
 		})

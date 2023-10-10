@@ -61,6 +61,10 @@ public class ClientImpl implements Client {
             return String.format("%s/%s/%s", url, restPath, id);
         }
 
+        static String recordActionByIdUrl(String url, String restPath, String id, String action) {
+            return String.format("%s/%s/%s/_%s", url, restPath, id, action);
+        }
+
         static String authenticate(String url) {
             return String.format("%s/authentication/token", url);
         }
@@ -86,7 +90,21 @@ public class ClientImpl implements Client {
     }
 
     public static ClientImpl newClientByServerConfig(Config.Server serverConfig) {
-        ClientImpl client = new ClientImpl(serverConfig.getHost());
+        String addr = serverConfig.getHost();
+
+        if (!addr.startsWith("http")) {
+            if (serverConfig.isInsecure()) {
+                addr = "http://" + addr;
+            } else {
+                addr = "https://" + addr;
+            }
+        }
+
+        if (addr.endsWith("/")) {
+            addr = addr.substring(0, addr.length() - 1);
+        }
+
+        ClientImpl client = new ClientImpl(addr);
 
         if (serverConfig.getAuthentication().getToken() != null) {
             client.authenticateWithToken(serverConfig.getAuthentication().getToken());
@@ -292,6 +310,24 @@ public class ClientImpl implements Client {
     }
 
     @Override
+    @SneakyThrows
+    public <T extends Entity, ActionRequest, ActionResponse> ActionResponse executeRecordAction(Class<ActionResponse> responseClass, String namespace, String resource, String id, String actionName, ActionRequest request) {
+        byte[] body = objectMapper.writeValueAsBytes(request);
+
+        log.debug("Executing record action: {} / {} / {} / {}", namespace, resource, id, actionName);
+        HttpResponse<ActionResponse> result = Unirest.post(Urls.recordActionByIdUrl(url, recordRestPath(namespace, resource), id, actionName))
+                .body(body)
+                .headers(headers())
+                .asObject(responseClass);
+
+        ensureResponseSuccess(result);
+
+        log.debug("Executed record action: {} / {} / {} / {}", namespace, resource, id, actionName);
+
+        return result.getBody();
+    }
+
+    @Override
     public <T extends Entity> T createRecord(Class<T> entityClass, String namespace, String resource, T record) {
         log.debug("Creating record: {}", record);
         HttpResponse<T> result = Unirest.post(Urls.recordUrl(url, recordRestPath(namespace, resource))).body(record).headers(headers()).asObject(entityClass);
@@ -329,6 +365,7 @@ public class ClientImpl implements Client {
                 Extension.Error error = objectMapper.readValue(errorString, Extension.Error.class);
                 ex = new ApiException(error);
             } catch (Exception ignored) {
+                log.error("Error parsing error response: {}", ignored.getMessage(), ignored);
                 ex = new ApiException(result.getStatusText() + ":" + result.mapError(String.class));
             }
 

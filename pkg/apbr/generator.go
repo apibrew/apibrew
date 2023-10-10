@@ -4,7 +4,10 @@ import (
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/generator"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	resources2 "github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/spf13/cobra"
 )
 
@@ -43,7 +46,45 @@ var generatorCmd = &cobra.Command{
 			pkg = "model"
 		}
 
-		err = generator.GenerateResourceCodes(platform, pkg, resources, path, namespace)
+		var resourceActionsRecords, _, err2 = GetDhClient().ListRecords(cmd.Context(), service.RecordListParams{
+			Namespace: resources2.ResourceActionResource.Namespace,
+			Resource:  resources2.ResourceActionResource.Name,
+			Limit:     1000000,
+		})
+
+		check(err2)
+
+		var mappedResourceActions = map[*model.Resource][]*model.Resource{}
+
+		for _, resourceActionRecord := range resourceActionsRecords {
+			resourceAction := resource_model.ResourceActionMapperInstance.FromRecord(resourceActionRecord)
+
+			res := &resource_model.Resource{
+				Name:  resourceAction.Name,
+				Types: resourceAction.Types,
+			}
+
+			if resourceAction.Input != nil {
+				res.Types = append(res.Types, resource_model.SubType{
+					Name:       resourceAction.Name + "Input",
+					Properties: resourceAction.Input,
+				})
+			}
+
+			if resourceAction.Output != nil {
+				res.Properties = []resource_model.Property{
+					*resourceAction.Output,
+				}
+			}
+
+			for _, resource := range resources {
+				if resource.Id == resourceAction.Resource.Id.String() {
+					mappedResourceActions[resource] = append(mappedResourceActions[resource], extramappings.ResourceFrom(res))
+				}
+			}
+		}
+
+		err = generator.GenerateResourceCodes(platform, pkg, resources, mappedResourceActions, path, namespace)
 
 		check(err)
 	},

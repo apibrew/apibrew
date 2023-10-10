@@ -10,7 +10,8 @@ import (
 	"unicode/utf8"
 )
 
-type Unstructured = map[string]interface{}
+type Any = interface{}
+type Unstructured = map[string]Any
 
 func MergeInto(u Unstructured, un Unstructured, nested bool) {
 	for key, value := range un {
@@ -19,8 +20,8 @@ func MergeInto(u Unstructured, un Unstructured, nested bool) {
 		} else {
 			if subU, ok := u[key].(Unstructured); ok {
 				MergeInto(subU, value.(Unstructured), nested)
-			} else if subU, ok := u[key].([]interface{}); ok {
-				subU = append(subU, value.([]interface{})...)
+			} else if subU, ok := u[key].([]Any); ok {
+				subU = append(subU, value.([]Any)...)
 				u[key] = subU
 			} else {
 				u[key] = value
@@ -36,8 +37,8 @@ func MergeOut(u Unstructured, un Unstructured, nested bool) {
 		} else {
 			if subU, ok := u[key].(Unstructured); ok {
 				MergeOut(subU, value.(Unstructured), nested)
-			} else if subU, ok := u[key].([]interface{}); ok {
-				subU = append(subU, value.([]interface{})...)
+			} else if subU, ok := u[key].([]Any); ok {
+				subU = append(subU, value.([]Any)...)
 				u[key] = subU
 			}
 		}
@@ -97,7 +98,7 @@ func ToProperties(u Unstructured) (map[string]*structpb.Value, error) {
 
 	for key, value := range u {
 		var err error
-		properties[key], err = NewStructValue(value)
+		properties[key], err = ToValue(value)
 
 		if err != nil {
 			return nil, err
@@ -121,7 +122,7 @@ func DeleteKey(u Unstructured, key string) {
 	delete(u, key)
 }
 
-func NewStructValue(v interface{}) (*structpb.Value, error) {
+func ToValue(v Any) (*structpb.Value, error) {
 	switch v := v.(type) {
 	case Unstructured:
 		x := &structpb.Struct{Fields: make(map[string]*structpb.Value, len(v))}
@@ -130,17 +131,17 @@ func NewStructValue(v interface{}) (*structpb.Value, error) {
 				return nil, protoimpl.X.NewError("invalid UTF-8 in string: %q", k)
 			}
 			var err error
-			x.Fields[k], err = NewStructValue(v)
+			x.Fields[k], err = ToValue(v)
 			if err != nil {
 				return nil, err
 			}
 		}
 		return structpb.NewStructValue(x), nil
-	case []interface{}:
+	case []Any:
 		x := &structpb.ListValue{Values: make([]*structpb.Value, len(v))}
 		for i, v := range v {
 			var err error
-			x.Values[i], err = NewStructValue(v)
+			x.Values[i], err = ToValue(v)
 			if err != nil {
 				return nil, err
 			}
@@ -165,7 +166,7 @@ func FromStructValue(v *structpb.Struct) Unstructured {
 	return u
 }
 
-func FromValue(v *structpb.Value) interface{} {
+func FromValue(v *structpb.Value) Any {
 	switch v := v.Kind.(type) {
 	case *structpb.Value_NullValue:
 		return nil
@@ -184,8 +185,8 @@ func FromValue(v *structpb.Value) interface{} {
 	}
 }
 
-func FromListValue(value *structpb.ListValue) interface{} {
-	var list []interface{}
+func FromListValue(value *structpb.ListValue) Any {
+	var list []Any
 
 	for _, v := range value.Values {
 		list = append(list, FromValue(v))

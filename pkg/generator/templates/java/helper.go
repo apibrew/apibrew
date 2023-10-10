@@ -100,7 +100,37 @@ func getJavaType(resource *model.Resource, property *model.ResourceProperty, non
 }
 
 func javaClassName(resourceName string) string {
-	return util.Capitalize(resourceName)
+	return util.Capitalize(util.SnakeCaseToCamelCase(resourceName))
+}
+
+func javaVarName(resourceName string) string {
+	return util.DeCapitalize(util.SnakeCaseToCamelCase(resourceName))
+}
+
+func hasInput(resource *model.Resource) bool {
+	return len(resource.Types) > 0
+}
+
+func outputType(resource *model.Resource) string {
+	if len(resource.Properties) > 0 {
+		return getJavaType(resource, resource.Properties[0], false)
+	} else {
+		return "void"
+	}
+}
+
+func getAllSubTypes(resource *model.Resource) []*model.ResourceSubType {
+	var allTypes = resource.Types
+
+	for _, resourceAction := range resourceActions {
+		allTypes = append(allTypes, resourceAction.Types...)
+	}
+
+	for _, subType := range allTypes {
+		subType.Name = javaClassName(subType.Name)
+	}
+
+	return allTypes
 }
 
 func getAllEnums(resource *model.Resource) []*model.ResourceProperty {

@@ -6,6 +6,7 @@ package {%s pkg %};
 import java.util.Objects;
 import io.apibrew.client.EntityInfo;
 import io.apibrew.client.Entity;
+import io.apibrew.client.Client;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,7 +25,7 @@ public class {%s javaClassName(resource.Name) %} extends Entity {
     @JsonIgnore
     public static final EntityInfo<{%s javaClassName(resource.Name) %}> entityInfo = new EntityInfo<>("{%s resource.Namespace %}", "{%s resource.Name %}", {%s javaClassName(resource.Name) %}.class, "{%s getRestPath(resource) %}");
 
-    {%- for _, subType := range resource.Types -%}
+    {%- for _, subType := range getAllSubTypes(resource) -%}
     public static class {%s javaClassName(subType.Name) %} {
         {%- for _, property := range subType.Properties -%}
         {%s= getJavaPropertyAnnotations(resource, property) %}
@@ -67,6 +68,29 @@ public class {%s javaClassName(resource.Name) %} extends Entity {
         }
     }
     {%- endfor -%}
+
+    {% if len(resourceActions) > 0 %}
+        public static class Service {
+
+        private final Client client;
+
+        public Service(Client client) {
+            this.client = client;
+        }
+
+        {% for _, resourceAction := range resourceActions %}
+        {% if hasInput(resourceAction) %}
+        public {%s= outputType(resourceAction)%} {%s= javaVarName(resourceAction.Name)%} ({%s= javaClassName(resource.Name) %} {%s= javaVarName(resource.Name) %}, {%s= javaClassName(resourceAction.Name)%}Input input) {
+            {% if len(resourceAction.Properties) > 0 %} return {% endif %} client.executeRecordAction({%s= outputType(resourceAction)%}.class, {%s javaClassName(resource.Name) %}.NAMESPACE, {%s javaClassName(resource.Name) %}.RESOURCE, instance.getId().toString(), "{%s resourceAction.Name %}", input);
+        }
+        {% else %}
+        public {%s= outputType(resourceAction)%} {%s= javaVarName(resourceAction.Name)%} ({%s= javaClassName(resource.Name) %} {%s= javaVarName(resource.Name) %}) {
+            {% if len(resourceAction.Properties) > 0 %} return {% endif %}  client.executeRecordAction({%s= outputType(resourceAction)%}.class, {%s javaClassName(resource.Name) %}.NAMESPACE, {%s javaClassName(resource.Name) %}.RESOURCE, instance.getId().toString(), "{%s resourceAction.Name %}", null);
+        }
+        {% endif %}
+        {% endfor %}
+        }
+    {% endif %}
 
     public {%s javaClassName(resource.Name) %}() {
     }

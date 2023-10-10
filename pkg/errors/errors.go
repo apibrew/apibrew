@@ -9,6 +9,7 @@ var RecordNotFoundError = NewServiceError(model.ErrorCode_RECORD_NOT_FOUND, "rec
 var ResourceNotFoundError = NewServiceError(model.ErrorCode_RESOURCE_NOT_FOUND, "resource not found", codes.NotFound)
 var UnableToLocatePrimaryKey = NewServiceError(model.ErrorCode_UNABLE_TO_LOCATE_PRIMARY_KEY, "unable to locate primary key", codes.FailedPrecondition)
 var InternalError = NewServiceError(model.ErrorCode_INTERNAL_ERROR, "Internal error", codes.Internal)
+var LogicalError = NewServiceError(model.ErrorCode_INTERNAL_ERROR, "Logical Error", codes.Internal)
 var PropertyNotFoundError = NewServiceError(model.ErrorCode_PROPERTY_NOT_FOUND, "Property not found", codes.FailedPrecondition)
 var RecordValidationError = NewServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Record Validation failed", codes.FailedPrecondition)
 var ResourceValidationError = NewServiceError(model.ErrorCode_RESOURCE_VALIDATION_ERROR, "resource Validation failed", codes.FailedPrecondition)
@@ -24,4 +25,3 @@ var RateLimitError = NewServiceError(model.ErrorCode_RATE_LIMIT_ERROR, "Rate lim
 
 // RecordValidationError @fixme
 var AlreadyExistsError = NewServiceError(model.ErrorCode_ALREADY_EXISTS, "Already Exists", codes.FailedPrecondition)
-var LogicalError = NewServiceError(model.ErrorCode_RECORD_VALIDATION_ERROR, "Logical Error", codes.FailedPrecondition)

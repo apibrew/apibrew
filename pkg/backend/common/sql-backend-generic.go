@@ -40,5 +40,7 @@ func (p *sqlBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated 
 
 	testConnection = err == nil
 
+	log.Debugf("Connection status: %s => %v", p.dataSourceName, testConnection)
+
 	return
 }

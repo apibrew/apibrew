@@ -74,6 +74,8 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		return nil
 	}
 
+	print("DataSource:: " + record.Properties["dataSource"].GetStructValue().GetFields()["name"].GetStringValue())
+
 	var resource = &model.Resource{
 		Id:              record.Id,
 		Name:            record.Properties["name"].GetStringValue(),

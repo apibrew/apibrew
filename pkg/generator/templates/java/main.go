@@ -6,8 +6,15 @@ import (
 	"os"
 )
 
-func GenerateResourceCode(pkg string, resources []*model.Resource, path string, namespace string) error {
+var resourceActions []*model.Resource
+
+func GenerateResourceCode(pkg string, resources []*model.Resource, resourceActionsMap map[*model.Resource][]*model.Resource, path string) error {
 	for _, resource := range resources {
+		resourceActions = resourceActionsMap[resource]
+		if err := generateResourceCode(pkg, resource, path); err != nil {
+			return err
+		}
+
 		if err := generateResourceCode(pkg, resource, path); err != nil {
 			return err
 		}

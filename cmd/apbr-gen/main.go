@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	err := generator.GenerateResourceCodes("golang", "github.com/apibrew/apibrew/resource_model", resources.GetAllSystemResources(), "pkg/resource_model", "resource_model")
+	err := generator.GenerateResourceCodes("golang", "github.com/apibrew/apibrew/resource_model", resources.GetAllSystemResources(), nil, "pkg/resource_model", "resource_model")
 
 	if err != nil {
 		log.Fatal(err)

@@ -11,15 +11,13 @@ import (
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
 )
 
 type BackendEventHandler interface {
 	RegisterHandler(handler Handler)
 	UnRegisterHandler(handler Handler)
-	HandleInternalOperation(ctx context.Context, incoming *model.Event, actualHandler HandlerFunc) (*model.Event, errors.ServiceError)
-	PrepareInternalEvent(ctx context.Context, event *model.Event) *model.Event
+	Handle(ctx context.Context, incoming *model.Event) (*model.Event, errors.ServiceError)
 }
 
 type backendEventHandler struct {
@@ -28,30 +26,14 @@ type backendEventHandler struct {
 	extensionEventSelectorMatcher *helper.ExtensionEventSelectorMatcher
 }
 
-func (b *backendEventHandler) PrepareInternalEvent(ctx context.Context, event *model.Event) *model.Event {
-	event.Id = "internal-event-" + util.RandomHex(6)
-	event.Time = timestamppb.Now()
-
-	return event
-}
-
-func (b *backendEventHandler) HandleInternalOperation(ctx context.Context, originalEvent *model.Event, actualHandler HandlerFunc) (*model.Event, errors.ServiceError) {
+func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.Event) (*model.Event, errors.ServiceError) {
 	nextEvent := originalEvent
 
-	var handlers []Handler
+	var handlers = b.filterHandlersForEvent(ctx, nextEvent)
 
-	handlers = b.filterHandlersForEvent(ctx, nextEvent)
-
-	if !nextEvent.Resource.Virtual {
-		handlers = append(handlers, Handler{
-			Id:        "actualHandler",
-			Name:      "actualHandler",
-			Fn:        actualHandler,
-			Order:     NaturalOrder,
-			Finalizes: false,
-			Sync:      true,
-			Responds:  true,
-		})
+	if len(handlers) == 0 || (len(handlers) == 1 && handlers[0].Id == "audit-handler") {
+		log.Tracef("No handlers found for event: %s", logging.ShortEventInfo(nextEvent))
+		return nextEvent, errors.LogicalError.WithDetails("No handlers found for event")
 	}
 
 	sort.Sort(ByOrder(handlers))
@@ -145,12 +127,12 @@ func (b *backendEventHandler) UnRegisterHandler(handler Handler) {
 func (b *backendEventHandler) filterHandlersForEvent(ctx context.Context, incoming *model.Event) []Handler {
 	var result []Handler
 
-	// disable handlers for audit log
-	if incoming.Resource.Namespace == resources.AuditLogResource.Namespace && incoming.Resource.Name == resources.AuditLogResource.Name {
-		return result
-	}
-
 	for _, handler := range b.handlers {
+		// disable external handlers for audit log
+		if !handler.Internal && incoming.Resource.Namespace == resources.AuditLogResource.Namespace && incoming.Resource.Name == resources.AuditLogResource.Name {
+			continue
+		}
+
 		if !handler.Internal && annotations.IsEnabled(annotations.FromCtx(ctx), annotations.BypassExtensions) {
 			// check if extension controller
 			err := b.authorizationService.CheckIsExtensionController(ctx)

@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
@@ -27,6 +29,73 @@ type recordService struct {
 	backendServiceProvider service.BackendProviderService
 	authorizationService   service.AuthorizationService
 	backendEventHandler    backend_event_handler.BackendEventHandler
+}
+
+func (r *recordService) ExecuteAction(ctx context.Context, params service.ExecuteActionParams) (unstructured.Unstructured, errors.ServiceError) {
+	// locating action
+	var resource = r.resourceService.GetSchema().ResourceByNamespaceSlashName[params.Namespace+"/"+params.Resource]
+	var resourceId = resource.Id
+	resourceActions, _, err := r.List(util.WithSystemContext(context.TODO()), service.RecordListParams{
+		Namespace: resources.ResourceActionResource.Namespace,
+		Resource:  resources.ResourceActionResource.Name,
+		Limit:     1,
+		Filters: map[string]string{
+			"resource": resourceId,
+			"name":     params.ActionName,
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resourceActions) == 0 {
+		return nil, errors.RecordValidationError.WithMessage("Action not found")
+	}
+
+	var resourceAction = resource_model.ResourceActionMapperInstance.FromRecord(resourceActions[0])
+
+	if resourceAction.Internal {
+		return nil, errors.RecordValidationError.WithMessage("Internal action cannot be executed")
+	}
+
+	rec, err := r.Get(ctx, service.RecordGetParams{
+		Namespace: params.Namespace,
+		Resource:  params.Resource,
+		Id:        params.Id,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// validate input
+	if resourceAction.Input == nil {
+		if params.Input != nil {
+			return nil, errors.RecordValidationError.WithMessage("Input is not expected")
+		}
+	} else {
+		var resourceActionAsResource = &resource_model.Resource{
+			Properties: resourceAction.Input,
+			Types:      resourceAction.Types,
+		}
+
+		resourceActionAsResourceInt := mapping.ResourceFromRecord(resource_model.ResourceMapperInstance.ToRecord(resourceActionAsResource))
+
+		inputRecord, ierr := unstructured.ToRecord(params.Input)
+
+		if ierr != nil {
+			return nil, errors.RecordValidationError.WithMessage(ierr.Error())
+		}
+
+		if err := validate.Records(resourceActionAsResourceInt, []*model.Record{inputRecord}, false); err != nil {
+			return nil, err
+		}
+	}
+
+	// calling execute operation
+
+	return r.backendServiceProvider.(abs.BackendActionExecutor).ExecuteAction(ctx, resource, rec, resourceAction.Name, params.Input)
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
@@ -65,18 +134,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	})
 	// end metrics
 
-	var bck abs.Backend
 	var err errors.ServiceError
-
-	if resource.Virtual {
-		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
-	} else {
-		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-		if err != nil {
-			return nil, 0, err
-		}
-	}
 
 	if params.UseHistory {
 		if !annotations.IsEnabled(resource, annotations.KeepHistory) {
@@ -99,7 +157,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		}
 	}
 
-	records, total, err := bck.ListRecords(ctx, resource, abs.ListRecordParams{
+	records, total, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
 		Query:  params.Query,
 		Limit:  params.Limit,
 		Offset: params.Offset,
@@ -209,22 +267,10 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		return nil, nil
 	}
 
-	var bck abs.Backend
-
-	if resource.Virtual {
-		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
-	} else {
-		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	if ctx.Value(abs.TransactionContextKey) != nil {
 		txCtx = ctx
 	} else {
-		tx, err := bck.BeginTransaction(ctx, false)
+		tx, err := r.backendServiceProvider.BeginTransaction(ctx, resource.SourceConfig.DataSource, false)
 
 		if err != nil {
 			success = false
@@ -234,14 +280,14 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 
 		defer func() {
 			if success {
-				err = bck.CommitTransaction(txCtx)
+				err = r.backendServiceProvider.CommitTransaction(txCtx, resource.SourceConfig.DataSource)
 
 				if err != nil {
 					log.Print(err)
 					success = false
 				}
 			} else {
-				err = bck.RollbackTransaction(txCtx)
+				err = r.backendServiceProvider.RollbackTransaction(txCtx, resource.SourceConfig.DataSource)
 
 				if err != nil {
 					log.Print(err)
@@ -250,7 +296,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		}()
 	}
 
-	records, err = bck.AddRecords(txCtx, resource, params.Records)
+	records, err = r.backendServiceProvider.AddRecords(txCtx, resource, params.Records)
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) && annotations.IsEnabledOnCtx(ctx, annotations.IgnoreIfExists) {
 		success = false
@@ -266,7 +312,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
 		historyResource := util.HistoryResource(resource)
 
-		_, err = bck.AddRecords(txCtx, historyResource, records)
+		_, err = r.backendServiceProvider.AddRecords(txCtx, historyResource, records)
 
 		if err != nil {
 			success = false
@@ -318,7 +364,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 			Namespace: resource.Namespace,
 			Resource:  resource.Name,
 			Limit:     1,
-			Query:     qb.FromProperties(identifierProps),
+			Query:     qb.FromProperties(resource, identifierProps),
 		})
 
 		if err != nil {
@@ -429,22 +475,10 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 
 	var records []*model.Record
 
-	var bck abs.Backend
-
-	if resource.Virtual {
-		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
-	} else {
-		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	var txCtx = ctx
 
 	if ctx.Value(abs.TransactionContextKey) == nil {
-		tx, err := bck.BeginTransaction(ctx, false)
+		tx, err := r.backendServiceProvider.BeginTransaction(ctx, resource.SourceConfig.DataSource, false)
 
 		if err != nil {
 			success = false
@@ -455,14 +489,14 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 
 		defer func() {
 			if success {
-				err = bck.CommitTransaction(txCtx)
+				err = r.backendServiceProvider.CommitTransaction(txCtx, resource.SourceConfig.DataSource)
 
 				if err != nil {
 					log.Print(err)
 					success = false
 				}
 			} else {
-				err = bck.RollbackTransaction(txCtx)
+				err = r.backendServiceProvider.RollbackTransaction(txCtx, resource.SourceConfig.DataSource)
 
 				if err != nil {
 					log.Print(err)
@@ -471,7 +505,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		}()
 	}
 
-	records, err = bck.UpdateRecords(txCtx, resource, params.Records)
+	records, err = r.backendServiceProvider.UpdateRecords(txCtx, resource, params.Records)
 
 	if err != nil {
 		success = false
@@ -484,7 +518,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	}
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
-		_, err = bck.AddRecords(txCtx, util.HistoryResource(resource), records)
+		_, err = r.backendServiceProvider.AddRecords(txCtx, util.HistoryResource(resource), records)
 
 		if err != nil {
 			success = false
@@ -638,20 +672,9 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	})
 	// end metrics
 
-	var bck abs.Backend
 	var err errors.ServiceError
 
-	if resource.Virtual {
-		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
-	} else {
-		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	res, err := bck.GetRecord(ctx, resource, id, nil)
+	res, err := r.backendServiceProvider.GetRecord(ctx, resource, id, nil)
 
 	if err != nil {
 		return nil, err
@@ -756,20 +779,9 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 		return errors.RecordValidationError.WithMessage("Immutable resource cannot be modified or deleted: " + params.Resource)
 	}
 
-	var bck abs.Backend
 	var err errors.ServiceError
 
-	if resource.Virtual {
-		bck = r.backendServiceProvider.GetSystemBackend(ctx) // fixme, return virtual backend instead of system backend for future
-	} else {
-		bck, err = r.backendServiceProvider.GetBackendByDataSourceName(ctx, resource.GetSourceConfig().DataSource)
-
-		if err != nil {
-			return err
-		}
-	}
-
-	if err = bck.DeleteRecords(ctx, resource, params.Ids); err != nil {
+	if err = r.backendServiceProvider.DeleteRecords(ctx, resource, params.Ids); err != nil {
 		return err
 	}
 

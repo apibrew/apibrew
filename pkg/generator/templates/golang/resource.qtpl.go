@@ -75,7 +75,7 @@ package `)
 //line templates/golang/resource.qtpl:20
 	for _, subType := range getAllSubTypes(resource) {
 //line templates/golang/resource.qtpl:21
-		StreamGenerateStructCode(qw422016, pkg, resource, resource.Name+"_"+subType.Name, subType.Properties, subType)
+		StreamGenerateStructCode(qw422016, pkg, resource, getSubTypeName(resource, subType), subType.Properties, subType)
 //line templates/golang/resource.qtpl:21
 		qw422016.N().S(`
 `)

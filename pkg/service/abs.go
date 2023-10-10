@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
@@ -25,11 +26,18 @@ type AuthorizationService interface {
 }
 
 type BackendProviderService interface {
+	abs.BackendRecordsInterface
+	abs.BackendActionExecutor
+	DestroyDataSource(ctx context.Context, dataSourceName string) errors.ServiceError
+	ListEntities(ctx context.Context, dataSourceId string) ([]*model.DataSourceCatalog, errors.ServiceError)
+	PrepareResourceFromEntity(ctx context.Context, dataSourceName string, catalog, entity string) (*model.Resource, errors.ServiceError)
+	UpgradeResource(ctx context.Context, dataSourceName string, params abs.UpgradeResourceParams) errors.ServiceError
+	GetStatus(ctx context.Context, dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
+	BeginTransaction(ctx context.Context, dataSourceId string, readOnly bool) (transactionKey string, serviceError errors.ServiceError)
+	CommitTransaction(ctx context.Context, dataSourceId string) (serviceError errors.ServiceError)
+	RollbackTransaction(ctx context.Context, dataSourceId string) (serviceError errors.ServiceError)
+	IsTransactionAlive(ctx context.Context, dataSourceId string) (isAlive bool, serviceError errors.ServiceError)
 	Init(config *model.AppConfig)
-	GetSystemBackend(ctx context.Context) abs.Backend
-	GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (abs.Backend, errors.ServiceError)
-	GetBackendByDataSourceName(ctx context.Context, dataSourceId string) (abs.Backend, errors.ServiceError)
-	DestroyBackend(ctx context.Context, id string) errors.ServiceError
 	SetSchema(schema *abs.Schema)
 }
 
@@ -53,6 +61,7 @@ type RecordService interface {
 	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
 	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
 	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
+	ExecuteAction(ctx context.Context, params ExecuteActionParams) (unstructured.Unstructured, errors.ServiceError)
 }
 
 type ResourceService interface {
@@ -100,7 +109,7 @@ type EventChannelService interface {
 }
 
 type ExternalService interface {
-	Call(ctx context.Context, all resource_model.ExtensionExternalCall, event *model.Event) (*model.Event, errors.ServiceError)
+	Call(ctx context.Context, all resource_model.ExternalCall, event *model.Event) (*model.Event, errors.ServiceError)
 }
 
 type ExtensionService interface {
@@ -185,6 +194,14 @@ type RecordDeleteParams struct {
 	Namespace string
 	Resource  string
 	Ids       []string
+}
+
+type ExecuteActionParams struct {
+	Namespace  string
+	Resource   string
+	Id         string
+	ActionName string
+	Input      unstructured.Unstructured
 }
 
 func (p RecordDeleteParams) ToRequest() *stub.DeleteRecordRequest {

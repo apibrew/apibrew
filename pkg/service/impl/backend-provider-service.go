@@ -14,7 +14,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
-	backend_proxy "github.com/apibrew/apibrew/pkg/service/backend-proxy"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -24,6 +23,7 @@ type backendProviderService struct {
 	systemDataSource *resource_model.DataSource
 	backendMap       map[string]abs.Backend
 	backendIdMap     map[string]string
+	backendNameMap   map[string]string
 	schema           *abs.Schema
 	eventHandler     backend_event_handler.BackendEventHandler
 }
@@ -33,7 +33,7 @@ func (b *backendProviderService) SetSchema(schema *abs.Schema) {
 }
 
 func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) errors.ServiceError {
-	bck, err := b.GetBackendByDataSourceId(ctx, dataSourceId)
+	bck, err := b.getBackendByDataSourceId(ctx, dataSourceId)
 
 	if err != nil {
 		return err
@@ -44,31 +44,41 @@ func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceI
 	delete(b.backendMap, b.backendIdMap[dataSourceId])
 	delete(b.backendMap, dataSourceId)
 	delete(b.backendIdMap, dataSourceId)
+	delete(b.backendNameMap, b.backendIdMap[dataSourceId])
 
 	return nil
 }
 
-func (b *backendProviderService) GetBackendByDataSourceId(ctx context.Context, dataSourceId string) (abs.Backend, errors.ServiceError) {
+func (b *backendProviderService) getBackendByDataSourceId(ctx context.Context, dataSourceId string) (abs.Backend, errors.ServiceError) {
 	if b.backendMap[dataSourceId] != nil {
 		return b.backendMap[dataSourceId], nil
 	}
 
 	if dataSourceId == b.systemDataSource.Id.String() {
-		return b.GetSystemBackend(ctx), nil
+		return b.getSystemBackend(ctx), nil
 	} else {
 		systemCtx := util.WithSystemContext(context.TODO())
-		record, err := b.GetSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, dataSourceId, nil)
-		DeNormalizeRecord(resources.DataSourceResource, record)
+		record, err := b.getSystemBackend(ctx).GetRecord(systemCtx, resources.DataSourceResource, dataSourceId, nil)
 
 		if err != nil {
 			return nil, err
 		}
 
-		return b.GetBackend(resource_model.DataSourceMapperInstance.FromRecord(record)), nil
+		DeNormalizeRecord(resources.DataSourceResource, record)
+
+		return b.getBackend(resource_model.DataSourceMapperInstance.FromRecord(record)), nil
 	}
 }
 
-func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context, dataSourceName string) (abs.Backend, errors.ServiceError) {
+func (b *backendProviderService) getBackendByResource(ctx context.Context, resource *model.Resource) (abs.Backend, errors.ServiceError) {
+	if resource.Virtual {
+		return nil, errors.LogicalError.WithMessage("Cannot get backend for virtual resource")
+	}
+
+	return b.getBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
+}
+
+func (b *backendProviderService) getBackendByDataSourceName(ctx context.Context, dataSourceName string) (abs.Backend, errors.ServiceError) {
 	if b.backendMap[dataSourceName] != nil {
 		return b.backendMap[dataSourceName], nil
 	}
@@ -78,7 +88,7 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 	defer logger.Debug("End data-source GetDataSourceBackendById")
 
 	if dataSourceName == b.systemDataSource.Name {
-		return b.GetSystemBackend(ctx), nil
+		return b.getSystemBackend(ctx), nil
 	} else {
 		systemCtx := util.WithSystemContext(context.TODO())
 		query, err := util.PrepareQuery(resources.DataSourceResource, map[string]interface{}{
@@ -89,7 +99,7 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 			return nil, err
 		}
 
-		records, _, err := b.GetSystemBackend(ctx).ListRecords(systemCtx, resources.DataSourceResource, abs.ListRecordParams{
+		records, _, err := b.getSystemBackend(ctx).ListRecords(systemCtx, resources.DataSourceResource, abs.ListRecordParams{
 			Query: query,
 			Limit: 1,
 		}, nil)
@@ -105,36 +115,32 @@ func (b *backendProviderService) GetBackendByDataSourceName(ctx context.Context,
 		var record = records[0]
 		record.Id = records[0].Properties["id"].GetStringValue()
 
-		return b.GetBackend(resource_model.DataSourceMapperInstance.FromRecord(record)), nil
+		return b.getBackend(resource_model.DataSourceMapperInstance.FromRecord(record)), nil
 	}
 }
 
-func (b *backendProviderService) GetSystemBackend(_ context.Context) abs.Backend {
-	return b.GetBackend(b.systemDataSource)
+func (b *backendProviderService) getSystemBackend(_ context.Context) abs.Backend {
+	return b.getBackend(b.systemDataSource)
 }
 
-func (b *backendProviderService) GetBackend(dataSource *resource_model.DataSource) abs.Backend {
+func (b *backendProviderService) getBackend(dataSource *resource_model.DataSource) abs.Backend {
 	if b.backendMap[dataSource.Id.String()] != nil {
 		return b.backendMap[dataSource.Id.String()]
 	}
 
-	constructor := b.GetBackendConstructor(dataSource.GetBackend())
+	constructor := b.getBackendConstructor(dataSource.GetBackend())
 	instance := constructor(dataSource)
 	instance.SetSchema(b.schema)
 
-	// apply proxy
-	proxy := backend_proxy.NewBackendProxy(instance, b.eventHandler)
-
-	instance = proxy
-
 	b.backendMap[dataSource.Id.String()] = instance
 	b.backendIdMap[dataSource.Id.String()] = dataSource.Name
+	b.backendNameMap[dataSource.Name] = dataSource.Id.String()
 	b.backendMap[dataSource.Name] = instance
 
 	return instance
 }
 
-func (b *backendProviderService) GetBackendConstructor(backend resource_model.DataSourceBackend) abs.BackendConstructor {
+func (b *backendProviderService) getBackendConstructor(backend resource_model.DataSourceBackend) abs.BackendConstructor {
 	switch backend {
 	case resource_model.DataSourceBackend_POSTGRESQL:
 		return postgres.NewPostgresResourceServiceBackend
@@ -155,12 +161,90 @@ func (b *backendProviderService) Init(config *model.AppConfig) {
 	id := uuid.New()
 	b.systemDataSource.Id = &id
 	b.systemDataSource.Name = "system"
+
+	b.eventHandler.RegisterHandler(b.prepareActualHandler())
+}
+
+func (b *backendProviderService) prepareActualHandler() backend_event_handler.Handler {
+	return backend_event_handler.Handler{
+		Id:   "actualHandler",
+		Name: "actualHandler",
+		Fn:   b.actualHandlerFn,
+		Selector: &model.EventSelector{
+			Actions: []model.Event_Action{
+				model.Event_CREATE,
+				model.Event_UPDATE,
+				model.Event_DELETE,
+				model.Event_GET,
+				model.Event_LIST,
+				// OPERATE is not allowed to be handled by actualHandler
+			},
+		},
+		Order:     backend_event_handler.NaturalOrder,
+		Finalizes: false,
+		Sync:      true,
+		Responds:  true,
+		Internal:  true,
+	}
+}
+
+func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	// if resource is virtual, do not handle it
+	if event.Resource.Virtual {
+		return event, nil
+	}
+
+	bck, err := b.getBackendByResource(ctx, event.Resource)
+
+	if err != nil {
+		return nil, err
+	}
+
+	switch event.Action {
+	case model.Event_CREATE:
+		result, err := bck.AddRecords(ctx, event.Resource, event.Records)
+
+		event.Records = result
+
+		return event, err
+	case model.Event_UPDATE:
+		result, err := bck.UpdateRecords(ctx, event.Resource, event.Records)
+
+		event.Records = result
+
+		return event, err
+	case model.Event_GET:
+		result, err := bck.GetRecord(ctx, event.Resource, event.Ids[0], event.RecordSearchParams.ResolveReferences)
+
+		event.Records = []*model.Record{result}
+
+		return event, err
+	case model.Event_DELETE:
+		err := bck.DeleteRecords(ctx, event.Resource, event.Ids)
+
+		return event, err
+	case model.Event_LIST:
+		result, total, err := bck.ListRecords(ctx, event.Resource, abs.ListRecordParams{
+			Query:             event.RecordSearchParams.Query,
+			Limit:             event.RecordSearchParams.Limit,
+			Offset:            event.RecordSearchParams.Offset,
+			ResolveReferences: event.RecordSearchParams.ResolveReferences,
+		}, nil)
+
+		event.Records = result
+		event.Total = uint64(total)
+
+		return event, err
+	default:
+		return nil, errors.InternalError.WithDetails("Unknown action: " + event.Action.String())
+	}
 }
 
 func NewBackendProviderService(eventHandler backend_event_handler.BackendEventHandler) service.BackendProviderService {
 	return &backendProviderService{
-		backendMap:   make(map[string]abs.Backend),
-		backendIdMap: make(map[string]string),
-		eventHandler: eventHandler,
+		backendMap:     make(map[string]abs.Backend),
+		backendIdMap:   make(map[string]string),
+		backendNameMap: make(map[string]string),
+		eventHandler:   eventHandler,
 	}
 }

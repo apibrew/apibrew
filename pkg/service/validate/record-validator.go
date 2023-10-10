@@ -13,17 +13,22 @@ import (
 	"strings"
 )
 
-func Records(resource *model.Resource, list []*model.Record, isUpdate bool) errors.ServiceError {
+type ResourceLike interface {
+	GetProperties() []*model.ResourceProperty
+	GetTypes() []*model.ResourceSubType
+}
+
+func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)
 
-	for _, property := range resource.Properties {
+	for _, property := range resource.GetProperties() {
 		resourcePropertyExists[property.Name] = true
 	}
 
 	for _, record := range list {
-		for _, property := range resource.Properties {
+		for _, property := range resource.GetProperties() {
 
 			packedVal, exists := record.Properties[property.Name]
 
@@ -35,7 +40,7 @@ func Records(resource *model.Resource, list []*model.Record, isUpdate bool) erro
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
-				fieldErrors = append(fieldErrors, PropertyPackedValue(resource, property, record.Id, "", packedVal)...)
+				fieldErrors = append(fieldErrors, Value(resource, property, record.Id, "", packedVal)...)
 			}
 
 			var val interface{}
@@ -100,7 +105,7 @@ func Records(resource *model.Resource, list []*model.Record, isUpdate bool) erro
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
-func PropertyPackedValue(resource *model.Resource, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
+func Value(resource ResourceLike, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
 	if value == nil {
 		return nil
 	}
@@ -160,7 +165,7 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 			var errorFields []*model.ErrorField
 
 			for i, item := range listValue.ListValue.Values {
-				errorFields = append(errorFields, PropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
+				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
 			}
 			return errorFields
 		} else {
@@ -176,7 +181,7 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 			var errorFields []*model.ErrorField
 
 			for key, item := range listValue.StructValue.Fields {
-				errorFields = append(errorFields, PropertyPackedValue(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
+				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
 			}
 
 			return errorFields
@@ -222,7 +227,7 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 			var properties []*model.ResourceProperty
 
 			// locating type
-			typeDef := util.LocateArrayElement(resource.Types, func(elem *model.ResourceSubType) bool {
+			typeDef := util.LocateArrayElement(resource.GetTypes(), func(elem *model.ResourceSubType) bool {
 				return elem.Name == *property.TypeRef
 			})
 
@@ -276,7 +281,7 @@ func PropertyPackedValue(resource *model.Resource, property *model.ResourcePrope
 					continue
 				}
 
-				errorFields = append(errorFields, PropertyPackedValue(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
+				errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
 			}
 
 			for key := range structValue.StructValue.Fields {

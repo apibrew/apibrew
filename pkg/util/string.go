@@ -25,6 +25,15 @@ func Capitalize(str string) string {
 	return string(runes)
 }
 
+func DeCapitalize(str string) string {
+	if len(str) == 0 {
+		return str
+	}
+	runes := []rune(str)
+	runes[0] = unicode.ToLower(runes[0])
+	return string(runes)
+}
+
 func Pointer[T interface{}](val T) *T {
 	var pointer = new(T)
 

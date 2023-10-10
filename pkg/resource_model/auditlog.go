@@ -8,16 +8,16 @@ import "github.com/google/uuid"
 import "time"
 
 type AuditLog struct {
-	Id          *uuid.UUID        `json:"id,omitempty"`
-	Version     int32             `json:"version,omitempty"`
-	Namespace   string            `json:"namespace,omitempty"`
-	Resource    string            `json:"resource,omitempty"`
-	RecordId    string            `json:"recordId,omitempty"`
-	Time        time.Time         `json:"time,omitempty"`
-	Username    string            `json:"username,omitempty"`
-	Operation   AuditLogOperation `json:"operation,omitempty"`
-	Properties  interface{}       `json:"properties,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Id          *uuid.UUID        `json:"id_,omitempty"`
+	Version     int32             `json:"version_,omitempty"`
+	Namespace   string            `json:"namespace_,omitempty"`
+	Resource    string            `json:"resource_,omitempty"`
+	RecordId    string            `json:"recordId_,omitempty"`
+	Time        time.Time         `json:"time_,omitempty"`
+	Username    string            `json:"username_,omitempty"`
+	Operation   AuditLogOperation `json:"operation_,omitempty"`
+	Properties  interface{}       `json:"properties_,omitempty"`
+	Annotations map[string]string `json:"annotations_,omitempty"`
 }
 
 func (s *AuditLog) GetId() *uuid.UUID {
