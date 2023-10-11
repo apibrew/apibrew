@@ -52,7 +52,7 @@ func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *m
 //line templates/golang/struct.qtpl:8
 		qw422016.N().S(`json:"`)
 //line templates/golang/struct.qtpl:8
-		StreamGoVarName(qw422016, property.Name)
+		qw422016.N().S(GoVarName2(property.Name))
 //line templates/golang/struct.qtpl:8
 		qw422016.N().S(`,omitempty"`)
 //line templates/golang/struct.qtpl:8

@@ -35,12 +35,12 @@ func (m *PermissionMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *PermissionMapper) ToRecord(permission_ *Permission) *model.Record {
+func (m *PermissionMapper) ToRecord(permission *Permission) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(permission_)
+	rec.Properties = m.ToProperties(permission)
 
-	if permission_.Id != nil {
-		rec.Id = permission_.Id.String()
+	if permission.Id != nil {
+		rec.Id = permission.Id.String()
 	}
 
 	return rec
@@ -50,10 +50,10 @@ func (m *PermissionMapper) FromRecord(record *model.Record) *Permission {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*structpb.Value {
+func (m *PermissionMapper) ToProperties(permission *Permission) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := permission_.Id
+	var_Id := permission.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -66,7 +66,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := permission_.Version
+	var_Version := permission.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -77,7 +77,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := permission_.CreatedBy
+	var_CreatedBy := permission.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -90,7 +90,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := permission_.UpdatedBy
+	var_UpdatedBy := permission.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -103,7 +103,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := permission_.CreatedOn
+	var_CreatedOn := permission.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -116,7 +116,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := permission_.UpdatedOn
+	var_UpdatedOn := permission.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -129,7 +129,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Namespace := permission_.Namespace
+	var_Namespace := permission.Namespace
 
 	if var_Namespace != nil {
 		var var_Namespace_mapped *structpb.Value
@@ -142,7 +142,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["namespace"] = var_Namespace_mapped
 	}
 
-	var_Resource := permission_.Resource
+	var_Resource := permission.Resource
 
 	if var_Resource != nil {
 		var var_Resource_mapped *structpb.Value
@@ -155,7 +155,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["resource"] = var_Resource_mapped
 	}
 
-	var_Property := permission_.Property
+	var_Property := permission.Property
 
 	if var_Property != nil {
 		var var_Property_mapped *structpb.Value
@@ -168,7 +168,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["property"] = var_Property_mapped
 	}
 
-	var_PropertyValue := permission_.PropertyValue
+	var_PropertyValue := permission.PropertyValue
 
 	if var_PropertyValue != nil {
 		var var_PropertyValue_mapped *structpb.Value
@@ -181,7 +181,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["propertyValue"] = var_PropertyValue_mapped
 	}
 
-	var_PropertyMode := permission_.PropertyMode
+	var_PropertyMode := permission.PropertyMode
 
 	if var_PropertyMode != nil {
 		var var_PropertyMode_mapped *structpb.Value
@@ -194,7 +194,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["propertyMode"] = var_PropertyMode_mapped
 	}
 
-	var_Operation := permission_.Operation
+	var_Operation := permission.Operation
 
 	var var_Operation_mapped *structpb.Value
 
@@ -205,7 +205,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 	}
 	properties["operation"] = var_Operation_mapped
 
-	var_RecordIds := permission_.RecordIds
+	var_RecordIds := permission.RecordIds
 
 	if var_RecordIds != nil {
 		var var_RecordIds_mapped *structpb.Value
@@ -228,7 +228,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["recordIds"] = var_RecordIds_mapped
 	}
 
-	var_Before := permission_.Before
+	var_Before := permission.Before
 
 	if var_Before != nil {
 		var var_Before_mapped *structpb.Value
@@ -241,7 +241,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["before"] = var_Before_mapped
 	}
 
-	var_After := permission_.After
+	var_After := permission.After
 
 	if var_After != nil {
 		var var_After_mapped *structpb.Value
@@ -254,7 +254,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["after"] = var_After_mapped
 	}
 
-	var_User := permission_.User
+	var_User := permission.User
 
 	if var_User != nil {
 		var var_User_mapped *structpb.Value
@@ -263,7 +263,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["user"] = var_User_mapped
 	}
 
-	var_Role := permission_.Role
+	var_Role := permission.Role
 
 	if var_Role != nil {
 		var var_Role_mapped *structpb.Value
@@ -272,7 +272,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 		properties["role"] = var_Role_mapped
 	}
 
-	var_Permit := permission_.Permit
+	var_Permit := permission.Permit
 
 	var var_Permit_mapped *structpb.Value
 
@@ -283,7 +283,7 @@ func (m *PermissionMapper) ToProperties(permission_ *Permission) map[string]*str
 	}
 	properties["permit"] = var_Permit_mapped
 
-	var_LocalFlags := permission_.LocalFlags
+	var_LocalFlags := permission.LocalFlags
 
 	if var_LocalFlags != nil {
 		var var_LocalFlags_mapped *structpb.Value

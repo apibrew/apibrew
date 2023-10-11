@@ -34,12 +34,12 @@ func (m *RecordMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *RecordMapper) ToRecord(record_ *Record) *model.Record {
+func (m *RecordMapper) ToRecord(record *Record) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(record_)
+	rec.Properties = m.ToProperties(record)
 
-	if record_.Id != nil {
-		rec.Id = record_.Id.String()
+	if record.Id != nil {
+		rec.Id = record.Id.String()
 	}
 
 	return rec
@@ -49,10 +49,10 @@ func (m *RecordMapper) FromRecord(record *model.Record) *Record {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *RecordMapper) ToProperties(record_ *Record) map[string]*structpb.Value {
+func (m *RecordMapper) ToProperties(record *Record) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := record_.Id
+	var_Id := record.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -65,7 +65,7 @@ func (m *RecordMapper) ToProperties(record_ *Record) map[string]*structpb.Value 
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Properties := record_.Properties
+	var_Properties := record.Properties
 
 	var var_Properties_mapped *structpb.Value
 
@@ -76,7 +76,7 @@ func (m *RecordMapper) ToProperties(record_ *Record) map[string]*structpb.Value 
 	}
 	properties["properties"] = var_Properties_mapped
 
-	var_PackedProperties := record_.PackedProperties
+	var_PackedProperties := record.PackedProperties
 
 	if var_PackedProperties != nil {
 		var var_PackedProperties_mapped *structpb.Value

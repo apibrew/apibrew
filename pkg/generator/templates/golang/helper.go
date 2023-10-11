@@ -245,13 +245,17 @@ func StreamGoName(qw422016 *qt422016.Writer, name string) {
 }
 
 func GoVarName(name string) string {
-	var result = util.SnakeCaseToCamelCase(name) + "_"
+	var result = util.SnakeCaseToCamelCase(name)
 
 	if isReservedKeyword(result) {
 		result = result + "_"
 	}
 
 	return result
+}
+
+func GoVarName2(name string) string {
+	return util.SnakeCaseToCamelCase(name)
 }
 
 func StreamGoVarName(qw422016 *qt422016.Writer, name string) {

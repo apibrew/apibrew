@@ -34,12 +34,12 @@ func (m *ResourceActionMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ResourceActionMapper) ToRecord(resourceAction_ *ResourceAction) *model.Record {
+func (m *ResourceActionMapper) ToRecord(resourceAction *ResourceAction) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(resourceAction_)
+	rec.Properties = m.ToProperties(resourceAction)
 
-	if resourceAction_.Id != nil {
-		rec.Id = resourceAction_.Id.String()
+	if resourceAction.Id != nil {
+		rec.Id = resourceAction.Id.String()
 	}
 
 	return rec
@@ -49,10 +49,10 @@ func (m *ResourceActionMapper) FromRecord(record *model.Record) *ResourceAction 
 	return m.FromProperties(record.Properties)
 }
 
-func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map[string]*structpb.Value {
+func (m *ResourceActionMapper) ToProperties(resourceAction *ResourceAction) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := resourceAction_.Id
+	var_Id := resourceAction.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -65,7 +65,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := resourceAction_.Version
+	var_Version := resourceAction.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -76,7 +76,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := resourceAction_.CreatedBy
+	var_CreatedBy := resourceAction.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -89,7 +89,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := resourceAction_.UpdatedBy
+	var_UpdatedBy := resourceAction.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -102,7 +102,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := resourceAction_.CreatedOn
+	var_CreatedOn := resourceAction.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -115,7 +115,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := resourceAction_.UpdatedOn
+	var_UpdatedOn := resourceAction.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -128,7 +128,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Resource := resourceAction_.Resource
+	var_Resource := resourceAction.Resource
 
 	if var_Resource != nil {
 		var var_Resource_mapped *structpb.Value
@@ -137,7 +137,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["resource"] = var_Resource_mapped
 	}
 
-	var_Name := resourceAction_.Name
+	var_Name := resourceAction.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -148,7 +148,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Title := resourceAction_.Title
+	var_Title := resourceAction.Title
 
 	if var_Title != nil {
 		var var_Title_mapped *structpb.Value
@@ -161,7 +161,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["title"] = var_Title_mapped
 	}
 
-	var_Description := resourceAction_.Description
+	var_Description := resourceAction.Description
 
 	if var_Description != nil {
 		var var_Description_mapped *structpb.Value
@@ -174,7 +174,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["description"] = var_Description_mapped
 	}
 
-	var_Internal := resourceAction_.Internal
+	var_Internal := resourceAction.Internal
 
 	var var_Internal_mapped *structpb.Value
 
@@ -185,7 +185,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 	}
 	properties["internal"] = var_Internal_mapped
 
-	var_Types := resourceAction_.Types
+	var_Types := resourceAction.Types
 
 	if var_Types != nil {
 		var var_Types_mapped *structpb.Value
@@ -204,7 +204,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["types"] = var_Types_mapped
 	}
 
-	var_Input := resourceAction_.Input
+	var_Input := resourceAction.Input
 
 	if var_Input != nil {
 		var var_Input_mapped *structpb.Value
@@ -223,7 +223,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["input"] = var_Input_mapped
 	}
 
-	var_Output := resourceAction_.Output
+	var_Output := resourceAction.Output
 
 	if var_Output != nil {
 		var var_Output_mapped *structpb.Value
@@ -232,7 +232,7 @@ func (m *ResourceActionMapper) ToProperties(resourceAction_ *ResourceAction) map
 		properties["output"] = var_Output_mapped
 	}
 
-	var_Annotations := resourceAction_.Annotations
+	var_Annotations := resourceAction.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value

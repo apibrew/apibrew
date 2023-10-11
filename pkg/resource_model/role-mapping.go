@@ -35,12 +35,12 @@ func (m *RoleMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *RoleMapper) ToRecord(role_ *Role) *model.Record {
+func (m *RoleMapper) ToRecord(role *Role) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(role_)
+	rec.Properties = m.ToProperties(role)
 
-	if role_.Id != nil {
-		rec.Id = role_.Id.String()
+	if role.Id != nil {
+		rec.Id = role.Id.String()
 	}
 
 	return rec
@@ -50,10 +50,10 @@ func (m *RoleMapper) FromRecord(record *model.Record) *Role {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
+func (m *RoleMapper) ToProperties(role *Role) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := role_.Id
+	var_Id := role.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -66,7 +66,7 @@ func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := role_.Version
+	var_Version := role.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -77,7 +77,7 @@ func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := role_.CreatedBy
+	var_CreatedBy := role.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -90,7 +90,7 @@ func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := role_.UpdatedBy
+	var_UpdatedBy := role.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -103,7 +103,7 @@ func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := role_.CreatedOn
+	var_CreatedOn := role.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -116,7 +116,7 @@ func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := role_.UpdatedOn
+	var_UpdatedOn := role.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -129,7 +129,7 @@ func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Name := role_.Name
+	var_Name := role.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -140,7 +140,7 @@ func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Permissions := role_.Permissions
+	var_Permissions := role.Permissions
 
 	if var_Permissions != nil {
 		var var_Permissions_mapped *structpb.Value
@@ -159,7 +159,7 @@ func (m *RoleMapper) ToProperties(role_ *Role) map[string]*structpb.Value {
 		properties["permissions"] = var_Permissions_mapped
 	}
 
-	var_Details := role_.Details
+	var_Details := role.Details
 
 	if var_Details != nil {
 		var var_Details_mapped *structpb.Value

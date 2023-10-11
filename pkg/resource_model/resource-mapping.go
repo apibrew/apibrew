@@ -35,12 +35,12 @@ func (m *ResourceMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ResourceMapper) ToRecord(resource_ *Resource) *model.Record {
+func (m *ResourceMapper) ToRecord(resource *Resource) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(resource_)
+	rec.Properties = m.ToProperties(resource)
 
-	if resource_.Id != nil {
-		rec.Id = resource_.Id.String()
+	if resource.Id != nil {
+		rec.Id = resource.Id.String()
 	}
 
 	return rec
@@ -50,10 +50,10 @@ func (m *ResourceMapper) FromRecord(record *model.Record) *Resource {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.Value {
+func (m *ResourceMapper) ToProperties(resource *Resource) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := resource_.Id
+	var_Id := resource.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -66,7 +66,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := resource_.Version
+	var_Version := resource.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -77,7 +77,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := resource_.CreatedBy
+	var_CreatedBy := resource.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -90,7 +90,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := resource_.UpdatedBy
+	var_UpdatedBy := resource.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -103,7 +103,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := resource_.CreatedOn
+	var_CreatedOn := resource.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -116,7 +116,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := resource_.UpdatedOn
+	var_UpdatedOn := resource.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -129,7 +129,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Name := resource_.Name
+	var_Name := resource.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -140,7 +140,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Namespace := resource_.Namespace
+	var_Namespace := resource.Namespace
 
 	if var_Namespace != nil {
 		var var_Namespace_mapped *structpb.Value
@@ -149,7 +149,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["namespace"] = var_Namespace_mapped
 	}
 
-	var_Virtual := resource_.Virtual
+	var_Virtual := resource.Virtual
 
 	var var_Virtual_mapped *structpb.Value
 
@@ -160,7 +160,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 	}
 	properties["virtual"] = var_Virtual_mapped
 
-	var_Properties := resource_.Properties
+	var_Properties := resource.Properties
 
 	var var_Properties_mapped *structpb.Value
 
@@ -177,7 +177,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 	var_Properties_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Properties_l})
 	properties["properties"] = var_Properties_mapped
 
-	var_Indexes := resource_.Indexes
+	var_Indexes := resource.Indexes
 
 	if var_Indexes != nil {
 		var var_Indexes_mapped *structpb.Value
@@ -196,7 +196,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["indexes"] = var_Indexes_mapped
 	}
 
-	var_Types := resource_.Types
+	var_Types := resource.Types
 
 	if var_Types != nil {
 		var var_Types_mapped *structpb.Value
@@ -215,7 +215,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["types"] = var_Types_mapped
 	}
 
-	var_Immutable := resource_.Immutable
+	var_Immutable := resource.Immutable
 
 	var var_Immutable_mapped *structpb.Value
 
@@ -226,7 +226,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 	}
 	properties["immutable"] = var_Immutable_mapped
 
-	var_Abstract := resource_.Abstract
+	var_Abstract := resource.Abstract
 
 	var var_Abstract_mapped *structpb.Value
 
@@ -237,7 +237,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 	}
 	properties["abstract"] = var_Abstract_mapped
 
-	var_CheckReferences := resource_.CheckReferences
+	var_CheckReferences := resource.CheckReferences
 
 	var var_CheckReferences_mapped *structpb.Value
 
@@ -248,7 +248,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 	}
 	properties["checkReferences"] = var_CheckReferences_mapped
 
-	var_DataSource := resource_.DataSource
+	var_DataSource := resource.DataSource
 
 	if var_DataSource != nil {
 		var var_DataSource_mapped *structpb.Value
@@ -257,7 +257,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["dataSource"] = var_DataSource_mapped
 	}
 
-	var_Entity := resource_.Entity
+	var_Entity := resource.Entity
 
 	if var_Entity != nil {
 		var var_Entity_mapped *structpb.Value
@@ -270,7 +270,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["entity"] = var_Entity_mapped
 	}
 
-	var_Catalog := resource_.Catalog
+	var_Catalog := resource.Catalog
 
 	if var_Catalog != nil {
 		var var_Catalog_mapped *structpb.Value
@@ -283,7 +283,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["catalog"] = var_Catalog_mapped
 	}
 
-	var_Title := resource_.Title
+	var_Title := resource.Title
 
 	if var_Title != nil {
 		var var_Title_mapped *structpb.Value
@@ -296,7 +296,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["title"] = var_Title_mapped
 	}
 
-	var_Description := resource_.Description
+	var_Description := resource.Description
 
 	if var_Description != nil {
 		var var_Description_mapped *structpb.Value
@@ -309,7 +309,7 @@ func (m *ResourceMapper) ToProperties(resource_ *Resource) map[string]*structpb.
 		properties["description"] = var_Description_mapped
 	}
 
-	var_Annotations := resource_.Annotations
+	var_Annotations := resource.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value
@@ -646,10 +646,10 @@ func (m *PropertyMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.Value {
+func (m *PropertyMapper) ToProperties(property *Property) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Name := property_.Name
+	var_Name := property.Name
 
 	if var_Name != nil {
 		var var_Name_mapped *structpb.Value
@@ -662,7 +662,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["name"] = var_Name_mapped
 	}
 
-	var_Type := property_.Type
+	var_Type := property.Type
 
 	var var_Type_mapped *structpb.Value
 
@@ -673,7 +673,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 	}
 	properties["type"] = var_Type_mapped
 
-	var_TypeRef := property_.TypeRef
+	var_TypeRef := property.TypeRef
 
 	if var_TypeRef != nil {
 		var var_TypeRef_mapped *structpb.Value
@@ -686,7 +686,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["typeRef"] = var_TypeRef_mapped
 	}
 
-	var_Primary := property_.Primary
+	var_Primary := property.Primary
 
 	var var_Primary_mapped *structpb.Value
 
@@ -697,7 +697,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 	}
 	properties["primary"] = var_Primary_mapped
 
-	var_Required := property_.Required
+	var_Required := property.Required
 
 	var var_Required_mapped *structpb.Value
 
@@ -708,7 +708,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 	}
 	properties["required"] = var_Required_mapped
 
-	var_Unique := property_.Unique
+	var_Unique := property.Unique
 
 	var var_Unique_mapped *structpb.Value
 
@@ -719,7 +719,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 	}
 	properties["unique"] = var_Unique_mapped
 
-	var_Immutable := property_.Immutable
+	var_Immutable := property.Immutable
 
 	var var_Immutable_mapped *structpb.Value
 
@@ -730,7 +730,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 	}
 	properties["immutable"] = var_Immutable_mapped
 
-	var_Length := property_.Length
+	var_Length := property.Length
 
 	var var_Length_mapped *structpb.Value
 
@@ -741,7 +741,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 	}
 	properties["length"] = var_Length_mapped
 
-	var_Item := property_.Item
+	var_Item := property.Item
 
 	if var_Item != nil {
 		var var_Item_mapped *structpb.Value
@@ -750,7 +750,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["item"] = var_Item_mapped
 	}
 
-	var_Reference := property_.Reference
+	var_Reference := property.Reference
 
 	if var_Reference != nil {
 		var var_Reference_mapped *structpb.Value
@@ -759,7 +759,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["reference"] = var_Reference_mapped
 	}
 
-	var_DefaultValue := property_.DefaultValue
+	var_DefaultValue := property.DefaultValue
 
 	if var_DefaultValue != nil {
 		var var_DefaultValue_mapped *structpb.Value
@@ -772,7 +772,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["defaultValue"] = var_DefaultValue_mapped
 	}
 
-	var_EnumValues := property_.EnumValues
+	var_EnumValues := property.EnumValues
 
 	if var_EnumValues != nil {
 		var var_EnumValues_mapped *structpb.Value
@@ -795,7 +795,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["enumValues"] = var_EnumValues_mapped
 	}
 
-	var_ExampleValue := property_.ExampleValue
+	var_ExampleValue := property.ExampleValue
 
 	if var_ExampleValue != nil {
 		var var_ExampleValue_mapped *structpb.Value
@@ -808,7 +808,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["exampleValue"] = var_ExampleValue_mapped
 	}
 
-	var_Title := property_.Title
+	var_Title := property.Title
 
 	if var_Title != nil {
 		var var_Title_mapped *structpb.Value
@@ -821,7 +821,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["title"] = var_Title_mapped
 	}
 
-	var_Description := property_.Description
+	var_Description := property.Description
 
 	if var_Description != nil {
 		var var_Description_mapped *structpb.Value
@@ -834,7 +834,7 @@ func (m *PropertyMapper) ToProperties(property_ *Property) map[string]*structpb.
 		properties["description"] = var_Description_mapped
 	}
 
-	var_Annotations := property_.Annotations
+	var_Annotations := property.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value
@@ -1087,10 +1087,10 @@ func (m *SubTypeMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *SubTypeMapper) ToProperties(subType_ *SubType) map[string]*structpb.Value {
+func (m *SubTypeMapper) ToProperties(subType *SubType) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Name := subType_.Name
+	var_Name := subType.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -1101,7 +1101,7 @@ func (m *SubTypeMapper) ToProperties(subType_ *SubType) map[string]*structpb.Val
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Title := subType_.Title
+	var_Title := subType.Title
 
 	if var_Title != nil {
 		var var_Title_mapped *structpb.Value
@@ -1114,7 +1114,7 @@ func (m *SubTypeMapper) ToProperties(subType_ *SubType) map[string]*structpb.Val
 		properties["title"] = var_Title_mapped
 	}
 
-	var_Description := subType_.Description
+	var_Description := subType.Description
 
 	if var_Description != nil {
 		var var_Description_mapped *structpb.Value
@@ -1127,7 +1127,7 @@ func (m *SubTypeMapper) ToProperties(subType_ *SubType) map[string]*structpb.Val
 		properties["description"] = var_Description_mapped
 	}
 
-	var_Properties := subType_.Properties
+	var_Properties := subType.Properties
 
 	var var_Properties_mapped *structpb.Value
 
@@ -1228,10 +1228,10 @@ func (m *ResourceIndexPropertyMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ResourceIndexPropertyMapper) ToProperties(resourceIndexProperty_ *ResourceIndexProperty) map[string]*structpb.Value {
+func (m *ResourceIndexPropertyMapper) ToProperties(resourceIndexProperty *ResourceIndexProperty) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Name := resourceIndexProperty_.Name
+	var_Name := resourceIndexProperty.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -1242,7 +1242,7 @@ func (m *ResourceIndexPropertyMapper) ToProperties(resourceIndexProperty_ *Resou
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Order := resourceIndexProperty_.Order
+	var_Order := resourceIndexProperty.Order
 
 	if var_Order != nil {
 		var var_Order_mapped *structpb.Value
@@ -1303,10 +1303,10 @@ func (m *ResourceIndexMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ResourceIndexMapper) ToProperties(resourceIndex_ *ResourceIndex) map[string]*structpb.Value {
+func (m *ResourceIndexMapper) ToProperties(resourceIndex *ResourceIndex) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Properties := resourceIndex_.Properties
+	var_Properties := resourceIndex.Properties
 
 	if var_Properties != nil {
 		var var_Properties_mapped *structpb.Value
@@ -1325,7 +1325,7 @@ func (m *ResourceIndexMapper) ToProperties(resourceIndex_ *ResourceIndex) map[st
 		properties["properties"] = var_Properties_mapped
 	}
 
-	var_IndexType := resourceIndex_.IndexType
+	var_IndexType := resourceIndex.IndexType
 
 	if var_IndexType != nil {
 		var var_IndexType_mapped *structpb.Value
@@ -1338,7 +1338,7 @@ func (m *ResourceIndexMapper) ToProperties(resourceIndex_ *ResourceIndex) map[st
 		properties["indexType"] = var_IndexType_mapped
 	}
 
-	var_Unique := resourceIndex_.Unique
+	var_Unique := resourceIndex.Unique
 
 	if var_Unique != nil {
 		var var_Unique_mapped *structpb.Value
@@ -1351,7 +1351,7 @@ func (m *ResourceIndexMapper) ToProperties(resourceIndex_ *ResourceIndex) map[st
 		properties["unique"] = var_Unique_mapped
 	}
 
-	var_Annotations := resourceIndex_.Annotations
+	var_Annotations := resourceIndex.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value
@@ -1460,10 +1460,10 @@ func (m *ReferenceMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ReferenceMapper) ToProperties(reference_ *Reference) map[string]*structpb.Value {
+func (m *ReferenceMapper) ToProperties(reference *Reference) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Resource := reference_.Resource
+	var_Resource := reference.Resource
 
 	if var_Resource != nil {
 		var var_Resource_mapped *structpb.Value
@@ -1472,7 +1472,7 @@ func (m *ReferenceMapper) ToProperties(reference_ *Reference) map[string]*struct
 		properties["resource"] = var_Resource_mapped
 	}
 
-	var_Cascade := reference_.Cascade
+	var_Cascade := reference.Cascade
 
 	if var_Cascade != nil {
 		var var_Cascade_mapped *structpb.Value
@@ -1485,7 +1485,7 @@ func (m *ReferenceMapper) ToProperties(reference_ *Reference) map[string]*struct
 		properties["cascade"] = var_Cascade_mapped
 	}
 
-	var_BackReference := reference_.BackReference
+	var_BackReference := reference.BackReference
 
 	if var_BackReference != nil {
 		var var_BackReference_mapped *structpb.Value

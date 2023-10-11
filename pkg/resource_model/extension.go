@@ -8,21 +8,21 @@ import "github.com/google/uuid"
 import "time"
 
 type Extension struct {
-	Id          *uuid.UUID        `json:"id_,omitempty"`
-	Version     int32             `json:"version_,omitempty"`
-	CreatedBy   *string           `json:"createdBy_,omitempty"`
-	UpdatedBy   *string           `json:"updatedBy_,omitempty"`
-	CreatedOn   *time.Time        `json:"createdOn_,omitempty"`
-	UpdatedOn   *time.Time        `json:"updatedOn_,omitempty"`
-	Name        string            `json:"name_,omitempty"`
-	Description *string           `json:"description_,omitempty"`
-	Selector    *EventSelector    `json:"selector_,omitempty"`
-	Order       int32             `json:"order_,omitempty"`
-	Finalizes   bool              `json:"finalizes_,omitempty"`
-	Sync        bool              `json:"sync_,omitempty"`
-	Responds    bool              `json:"responds_,omitempty"`
-	Call        ExternalCall      `json:"call_,omitempty"`
-	Annotations map[string]string `json:"annotations_,omitempty"`
+	Id          *uuid.UUID        `json:"id,omitempty"`
+	Version     int32             `json:"version,omitempty"`
+	CreatedBy   *string           `json:"createdBy,omitempty"`
+	UpdatedBy   *string           `json:"updatedBy,omitempty"`
+	CreatedOn   *time.Time        `json:"createdOn,omitempty"`
+	UpdatedOn   *time.Time        `json:"updatedOn,omitempty"`
+	Name        string            `json:"name,omitempty"`
+	Description *string           `json:"description,omitempty"`
+	Selector    *EventSelector    `json:"selector,omitempty"`
+	Order       int32             `json:"order,omitempty"`
+	Finalizes   bool              `json:"finalizes,omitempty"`
+	Sync        bool              `json:"sync,omitempty"`
+	Responds    bool              `json:"responds,omitempty"`
+	Call        ExternalCall      `json:"call,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
 func (s *Extension) GetId() *uuid.UUID {
@@ -72,17 +72,17 @@ func (s *Extension) GetAnnotations() map[string]string {
 }
 
 type ExtensionBooleanExpression struct {
-	And                []ExtensionBooleanExpression   `json:"and_,omitempty"`
-	Or                 []ExtensionBooleanExpression   `json:"or_,omitempty"`
-	Not                *ExtensionBooleanExpression    `json:"not_,omitempty"`
-	Equal              *ExtensionPairExpression       `json:"equal_,omitempty"`
-	LessThan           *ExtensionPairExpression       `json:"lessThan_,omitempty"`
-	GreaterThan        *ExtensionPairExpression       `json:"greaterThan_,omitempty"`
-	LessThanOrEqual    *ExtensionPairExpression       `json:"lessThanOrEqual_,omitempty"`
-	GreaterThanOrEqual *ExtensionPairExpression       `json:"greaterThanOrEqual_,omitempty"`
-	In                 *ExtensionPairExpression       `json:"in_,omitempty"`
-	IsNull             *ExtensionExpression           `json:"isNull_,omitempty"`
-	RegexMatch         *ExtensionRegexMatchExpression `json:"regexMatch_,omitempty"`
+	And                []ExtensionBooleanExpression   `json:"and,omitempty"`
+	Or                 []ExtensionBooleanExpression   `json:"or,omitempty"`
+	Not                *ExtensionBooleanExpression    `json:"not,omitempty"`
+	Equal              *ExtensionPairExpression       `json:"equal,omitempty"`
+	LessThan           *ExtensionPairExpression       `json:"lessThan,omitempty"`
+	GreaterThan        *ExtensionPairExpression       `json:"greaterThan,omitempty"`
+	LessThanOrEqual    *ExtensionPairExpression       `json:"lessThanOrEqual,omitempty"`
+	GreaterThanOrEqual *ExtensionPairExpression       `json:"greaterThanOrEqual,omitempty"`
+	In                 *ExtensionPairExpression       `json:"in,omitempty"`
+	IsNull             *ExtensionExpression           `json:"isNull,omitempty"`
+	RegexMatch         *ExtensionRegexMatchExpression `json:"regexMatch,omitempty"`
 }
 
 func (s *ExtensionBooleanExpression) GetAnd() []ExtensionBooleanExpression {
@@ -120,8 +120,8 @@ func (s *ExtensionBooleanExpression) GetRegexMatch() *ExtensionRegexMatchExpress
 }
 
 type ExtensionPairExpression struct {
-	Left  *ExtensionExpression `json:"left_,omitempty"`
-	Right *ExtensionExpression `json:"right_,omitempty"`
+	Left  *ExtensionExpression `json:"left,omitempty"`
+	Right *ExtensionExpression `json:"right,omitempty"`
 }
 
 func (s *ExtensionPairExpression) GetLeft() *ExtensionExpression {
@@ -132,9 +132,9 @@ func (s *ExtensionPairExpression) GetRight() *ExtensionExpression {
 }
 
 type ExtensionRefValue struct {
-	Namespace  *string                `json:"namespace_,omitempty"`
-	Resource   *string                `json:"resource_,omitempty"`
-	Properties map[string]interface{} `json:"properties_,omitempty"`
+	Namespace  *string                `json:"namespace,omitempty"`
+	Resource   *string                `json:"resource,omitempty"`
+	Properties map[string]interface{} `json:"properties,omitempty"`
 }
 
 func (s *ExtensionRefValue) GetNamespace() *string {
@@ -148,8 +148,8 @@ func (s *ExtensionRefValue) GetProperties() map[string]interface{} {
 }
 
 type ExtensionRegexMatchExpression struct {
-	Pattern    *string              `json:"pattern_,omitempty"`
-	Expression *ExtensionExpression `json:"expression_,omitempty"`
+	Pattern    *string              `json:"pattern,omitempty"`
+	Expression *ExtensionExpression `json:"expression,omitempty"`
 }
 
 func (s *ExtensionRegexMatchExpression) GetPattern() *string {
@@ -160,9 +160,9 @@ func (s *ExtensionRegexMatchExpression) GetExpression() *ExtensionExpression {
 }
 
 type ExtensionExpression struct {
-	Property *string            `json:"property_,omitempty"`
-	Value    interface{}        `json:"value_,omitempty"`
-	RefValue *ExtensionRefValue `json:"refValue_,omitempty"`
+	Property *string            `json:"property,omitempty"`
+	Value    interface{}        `json:"value,omitempty"`
+	RefValue *ExtensionRefValue `json:"refValue,omitempty"`
 }
 
 func (s *ExtensionExpression) GetProperty() *string {
@@ -176,8 +176,8 @@ func (s *ExtensionExpression) GetRefValue() *ExtensionRefValue {
 }
 
 type FunctionCall struct {
-	Host         string `json:"host_,omitempty"`
-	FunctionName string `json:"functionName_,omitempty"`
+	Host         string `json:"host,omitempty"`
+	FunctionName string `json:"functionName,omitempty"`
 }
 
 func (s *FunctionCall) GetHost() string {
@@ -188,8 +188,8 @@ func (s *FunctionCall) GetFunctionName() string {
 }
 
 type HttpCall struct {
-	Uri    string `json:"uri_,omitempty"`
-	Method string `json:"method_,omitempty"`
+	Uri    string `json:"uri,omitempty"`
+	Method string `json:"method,omitempty"`
 }
 
 func (s *HttpCall) GetUri() string {
@@ -200,7 +200,7 @@ func (s *HttpCall) GetMethod() string {
 }
 
 type ChannelCall struct {
-	ChannelKey string `json:"channelKey_,omitempty"`
+	ChannelKey string `json:"channelKey,omitempty"`
 }
 
 func (s *ChannelCall) GetChannelKey() string {
@@ -208,9 +208,9 @@ func (s *ChannelCall) GetChannelKey() string {
 }
 
 type ExternalCall struct {
-	FunctionCall *FunctionCall `json:"functionCall_,omitempty"`
-	HttpCall     *HttpCall     `json:"httpCall_,omitempty"`
-	ChannelCall  *ChannelCall  `json:"channelCall_,omitempty"`
+	FunctionCall *FunctionCall `json:"functionCall,omitempty"`
+	HttpCall     *HttpCall     `json:"httpCall,omitempty"`
+	ChannelCall  *ChannelCall  `json:"channelCall,omitempty"`
 }
 
 func (s *ExternalCall) GetFunctionCall() *FunctionCall {
@@ -224,12 +224,12 @@ func (s *ExternalCall) GetChannelCall() *ChannelCall {
 }
 
 type EventSelector struct {
-	Actions        []EventAction               `json:"actions_,omitempty"`
-	RecordSelector *ExtensionBooleanExpression `json:"recordSelector_,omitempty"`
-	Namespaces     []string                    `json:"namespaces_,omitempty"`
-	Resources      []string                    `json:"resources_,omitempty"`
-	Ids            []string                    `json:"ids_,omitempty"`
-	Annotations    map[string]string           `json:"annotations_,omitempty"`
+	Actions        []EventAction               `json:"actions,omitempty"`
+	RecordSelector *ExtensionBooleanExpression `json:"recordSelector,omitempty"`
+	Namespaces     []string                    `json:"namespaces,omitempty"`
+	Resources      []string                    `json:"resources,omitempty"`
+	Ids            []string                    `json:"ids,omitempty"`
+	Annotations    map[string]string           `json:"annotations,omitempty"`
 }
 
 func (s *EventSelector) GetActions() []EventAction {
@@ -252,10 +252,10 @@ func (s *EventSelector) GetAnnotations() map[string]string {
 }
 
 type RecordSearchParams struct {
-	Query             *ExtensionBooleanExpression `json:"query_,omitempty"`
-	Limit             *int32                      `json:"limit_,omitempty"`
-	Offset            *int32                      `json:"offset_,omitempty"`
-	ResolveReferences []string                    `json:"resolveReferences_,omitempty"`
+	Query             *ExtensionBooleanExpression `json:"query,omitempty"`
+	Limit             *int32                      `json:"limit,omitempty"`
+	Offset            *int32                      `json:"offset,omitempty"`
+	ResolveReferences []string                    `json:"resolveReferences,omitempty"`
 }
 
 func (s *RecordSearchParams) GetQuery() *ExtensionBooleanExpression {
@@ -272,23 +272,23 @@ func (s *RecordSearchParams) GetResolveReferences() []string {
 }
 
 type Event struct {
-	Id                 string              `json:"id_,omitempty"`
-	Action             ExtensionAction     `json:"action_,omitempty"`
-	RecordSearchParams *RecordSearchParams `json:"recordSearchParams_,omitempty"`
-	ActionSummary      *string             `json:"actionSummary_,omitempty"`
-	ActionDescription  *string             `json:"actionDescription_,omitempty"`
-	Resource           *Resource           `json:"resource_,omitempty"`
-	Records            []*Record           `json:"records_,omitempty"`
-	Ids                []string            `json:"ids_,omitempty"`
-	Finalizes          *bool               `json:"finalizes_,omitempty"`
-	Sync               *bool               `json:"sync_,omitempty"`
-	Time               *time.Time          `json:"time_,omitempty"`
-	Total              *int64              `json:"total_,omitempty"`
-	ActionName         *string             `json:"actionName_,omitempty"`
-	Input              interface{}         `json:"input_,omitempty"`
-	Output             interface{}         `json:"output_,omitempty"`
-	Annotations        map[string]string   `json:"annotations_,omitempty"`
-	Error              *Error              `json:"error_,omitempty"`
+	Id                 string              `json:"id,omitempty"`
+	Action             ExtensionAction     `json:"action,omitempty"`
+	RecordSearchParams *RecordSearchParams `json:"recordSearchParams,omitempty"`
+	ActionSummary      *string             `json:"actionSummary,omitempty"`
+	ActionDescription  *string             `json:"actionDescription,omitempty"`
+	Resource           *Resource           `json:"resource,omitempty"`
+	Records            []*Record           `json:"records,omitempty"`
+	Ids                []string            `json:"ids,omitempty"`
+	Finalizes          *bool               `json:"finalizes,omitempty"`
+	Sync               *bool               `json:"sync,omitempty"`
+	Time               *time.Time          `json:"time,omitempty"`
+	Total              *int64              `json:"total,omitempty"`
+	ActionName         *string             `json:"actionName,omitempty"`
+	Input              interface{}         `json:"input,omitempty"`
+	Output             interface{}         `json:"output,omitempty"`
+	Annotations        map[string]string   `json:"annotations,omitempty"`
+	Error              *Error              `json:"error,omitempty"`
 }
 
 func (s *Event) GetId() string {
@@ -344,10 +344,10 @@ func (s *Event) GetError() *Error {
 }
 
 type ErrorField struct {
-	RecordId *string     `json:"recordId_,omitempty"`
-	Property *string     `json:"property_,omitempty"`
-	Message  *string     `json:"message_,omitempty"`
-	Value    interface{} `json:"value_,omitempty"`
+	RecordId *string     `json:"recordId,omitempty"`
+	Property *string     `json:"property,omitempty"`
+	Message  *string     `json:"message,omitempty"`
+	Value    interface{} `json:"value,omitempty"`
 }
 
 func (s *ErrorField) GetRecordId() *string {
@@ -364,9 +364,9 @@ func (s *ErrorField) GetValue() interface{} {
 }
 
 type Error struct {
-	Code    *ExtensionCode `json:"code_,omitempty"`
-	Message *string        `json:"message_,omitempty"`
-	Fields  []ErrorField   `json:"fields_,omitempty"`
+	Code    *ExtensionCode `json:"code,omitempty"`
+	Message *string        `json:"message,omitempty"`
+	Fields  []ErrorField   `json:"fields,omitempty"`
 }
 
 func (s *Error) GetCode() *ExtensionCode {

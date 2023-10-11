@@ -4,27 +4,25 @@
 
 package resource_model
 
-import (
-	"github.com/google/uuid"
-)
+import "github.com/google/uuid"
 import "time"
 
 type ResourceAction struct {
-	Id          *uuid.UUID        `json:"id_,omitempty"`
-	Version     int32             `json:"version_,omitempty"`
-	CreatedBy   *string           `json:"createdBy_,omitempty"`
-	UpdatedBy   *string           `json:"updatedBy_,omitempty"`
-	CreatedOn   *time.Time        `json:"createdOn_,omitempty"`
-	UpdatedOn   *time.Time        `json:"updatedOn_,omitempty"`
-	Resource    *Resource         `json:"resource_,omitempty"`
-	Name        string            `json:"name_,omitempty"`
-	Title       *string           `json:"title_,omitempty"`
-	Description *string           `json:"description_,omitempty"`
-	Internal    bool              `json:"internal_,omitempty"`
-	Types       []SubType         `json:"types_,omitempty"`
-	Input       []Property        `json:"input_,omitempty"`
-	Output      *Property         `json:"output_,omitempty"`
-	Annotations map[string]string `json:"annotations_,omitempty"`
+	Id          *uuid.UUID        `json:"id,omitempty"`
+	Version     int32             `json:"version,omitempty"`
+	CreatedBy   *string           `json:"createdBy,omitempty"`
+	UpdatedBy   *string           `json:"updatedBy,omitempty"`
+	CreatedOn   *time.Time        `json:"createdOn,omitempty"`
+	UpdatedOn   *time.Time        `json:"updatedOn,omitempty"`
+	Resource    *Resource         `json:"resource,omitempty"`
+	Name        string            `json:"name,omitempty"`
+	Title       *string           `json:"title,omitempty"`
+	Description *string           `json:"description,omitempty"`
+	Internal    bool              `json:"internal,omitempty"`
+	Types       []SubType         `json:"types,omitempty"`
+	Input       []Property        `json:"input,omitempty"`
+	Output      *Property         `json:"output,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
 func (s *ResourceAction) GetId() *uuid.UUID {

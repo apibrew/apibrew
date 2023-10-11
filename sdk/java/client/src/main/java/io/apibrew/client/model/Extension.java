@@ -689,6 +689,14 @@ public class Extension extends Entity {
         @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
         private java.time.Instant time;
         
+        private Long total;
+        
+        private String actionName;
+        
+        private Object input;
+        
+        private Object output;
+        
         private java.util.Map<String, String> annotations;
         
         private Extension.Error error;
@@ -833,6 +841,58 @@ public class Extension extends Entity {
 
         public Event withTime(java.time.Instant time) {
             this.time = time;
+
+            return this;
+        }
+        public Long getTotal() {
+            return total;
+        }
+
+        public void setTotal(Long total) {
+            this.total = total;
+        }
+
+        public Event withTotal(Long total) {
+            this.total = total;
+
+            return this;
+        }
+        public String getActionName() {
+            return actionName;
+        }
+
+        public void setActionName(String actionName) {
+            this.actionName = actionName;
+        }
+
+        public Event withActionName(String actionName) {
+            this.actionName = actionName;
+
+            return this;
+        }
+        public Object getInput() {
+            return input;
+        }
+
+        public void setInput(Object input) {
+            this.input = input;
+        }
+
+        public Event withInput(Object input) {
+            this.input = input;
+
+            return this;
+        }
+        public Object getOutput() {
+            return output;
+        }
+
+        public void setOutput(Object output) {
+            this.output = output;
+        }
+
+        public Event withOutput(Object output) {
+            this.output = output;
 
             return this;
         }

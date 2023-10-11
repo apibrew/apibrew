@@ -34,12 +34,12 @@ func (m *DataSourceMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *DataSourceMapper) ToRecord(dataSource_ *DataSource) *model.Record {
+func (m *DataSourceMapper) ToRecord(dataSource *DataSource) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(dataSource_)
+	rec.Properties = m.ToProperties(dataSource)
 
-	if dataSource_.Id != nil {
-		rec.Id = dataSource_.Id.String()
+	if dataSource.Id != nil {
+		rec.Id = dataSource.Id.String()
 	}
 
 	return rec
@@ -49,10 +49,10 @@ func (m *DataSourceMapper) FromRecord(record *model.Record) *DataSource {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*structpb.Value {
+func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := dataSource_.Id
+	var_Id := dataSource.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -65,7 +65,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := dataSource_.Version
+	var_Version := dataSource.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -76,7 +76,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := dataSource_.CreatedBy
+	var_CreatedBy := dataSource.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -89,7 +89,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := dataSource_.UpdatedBy
+	var_UpdatedBy := dataSource.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -102,7 +102,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := dataSource_.CreatedOn
+	var_CreatedOn := dataSource.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -115,7 +115,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := dataSource_.UpdatedOn
+	var_UpdatedOn := dataSource.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -128,7 +128,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Name := dataSource_.Name
+	var_Name := dataSource.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -139,7 +139,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Description := dataSource_.Description
+	var_Description := dataSource.Description
 
 	var var_Description_mapped *structpb.Value
 
@@ -150,7 +150,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 	}
 	properties["description"] = var_Description_mapped
 
-	var_Backend := dataSource_.Backend
+	var_Backend := dataSource.Backend
 
 	var var_Backend_mapped *structpb.Value
 
@@ -161,7 +161,7 @@ func (m *DataSourceMapper) ToProperties(dataSource_ *DataSource) map[string]*str
 	}
 	properties["backend"] = var_Backend_mapped
 
-	var_Options := dataSource_.Options
+	var_Options := dataSource.Options
 
 	var var_Options_mapped *structpb.Value
 

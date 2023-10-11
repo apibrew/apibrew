@@ -35,12 +35,12 @@ func (m *NamespaceMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *NamespaceMapper) ToRecord(namespace_ *Namespace) *model.Record {
+func (m *NamespaceMapper) ToRecord(namespace *Namespace) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(namespace_)
+	rec.Properties = m.ToProperties(namespace)
 
-	if namespace_.Id != nil {
-		rec.Id = namespace_.Id.String()
+	if namespace.Id != nil {
+		rec.Id = namespace.Id.String()
 	}
 
 	return rec
@@ -50,10 +50,10 @@ func (m *NamespaceMapper) FromRecord(record *model.Record) *Namespace {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*structpb.Value {
+func (m *NamespaceMapper) ToProperties(namespace *Namespace) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := namespace_.Id
+	var_Id := namespace.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -66,7 +66,7 @@ func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*struct
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := namespace_.Version
+	var_Version := namespace.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -77,7 +77,7 @@ func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*struct
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := namespace_.CreatedBy
+	var_CreatedBy := namespace.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -90,7 +90,7 @@ func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*struct
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := namespace_.UpdatedBy
+	var_UpdatedBy := namespace.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -103,7 +103,7 @@ func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*struct
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := namespace_.CreatedOn
+	var_CreatedOn := namespace.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -116,7 +116,7 @@ func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*struct
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := namespace_.UpdatedOn
+	var_UpdatedOn := namespace.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -129,7 +129,7 @@ func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*struct
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Name := namespace_.Name
+	var_Name := namespace.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -140,7 +140,7 @@ func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*struct
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Description := namespace_.Description
+	var_Description := namespace.Description
 
 	if var_Description != nil {
 		var var_Description_mapped *structpb.Value
@@ -153,7 +153,7 @@ func (m *NamespaceMapper) ToProperties(namespace_ *Namespace) map[string]*struct
 		properties["description"] = var_Description_mapped
 	}
 
-	var_Details := namespace_.Details
+	var_Details := namespace.Details
 
 	if var_Details != nil {
 		var var_Details_mapped *structpb.Value

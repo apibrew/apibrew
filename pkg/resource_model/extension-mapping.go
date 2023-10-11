@@ -35,12 +35,12 @@ func (m *ExtensionMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ExtensionMapper) ToRecord(extension_ *Extension) *model.Record {
+func (m *ExtensionMapper) ToRecord(extension *Extension) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(extension_)
+	rec.Properties = m.ToProperties(extension)
 
-	if extension_.Id != nil {
-		rec.Id = extension_.Id.String()
+	if extension.Id != nil {
+		rec.Id = extension.Id.String()
 	}
 
 	return rec
@@ -50,10 +50,10 @@ func (m *ExtensionMapper) FromRecord(record *model.Record) *Extension {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*structpb.Value {
+func (m *ExtensionMapper) ToProperties(extension *Extension) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := extension_.Id
+	var_Id := extension.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -66,7 +66,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Version := extension_.Version
+	var_Version := extension.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -77,7 +77,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := extension_.CreatedBy
+	var_CreatedBy := extension.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -90,7 +90,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := extension_.UpdatedBy
+	var_UpdatedBy := extension.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -103,7 +103,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := extension_.CreatedOn
+	var_CreatedOn := extension.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -116,7 +116,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := extension_.UpdatedOn
+	var_UpdatedOn := extension.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -129,7 +129,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 
-	var_Name := extension_.Name
+	var_Name := extension.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -140,7 +140,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Description := extension_.Description
+	var_Description := extension.Description
 
 	if var_Description != nil {
 		var var_Description_mapped *structpb.Value
@@ -153,7 +153,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 		properties["description"] = var_Description_mapped
 	}
 
-	var_Selector := extension_.Selector
+	var_Selector := extension.Selector
 
 	if var_Selector != nil {
 		var var_Selector_mapped *structpb.Value
@@ -162,7 +162,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 		properties["selector"] = var_Selector_mapped
 	}
 
-	var_Order := extension_.Order
+	var_Order := extension.Order
 
 	var var_Order_mapped *structpb.Value
 
@@ -173,7 +173,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 	}
 	properties["order"] = var_Order_mapped
 
-	var_Finalizes := extension_.Finalizes
+	var_Finalizes := extension.Finalizes
 
 	var var_Finalizes_mapped *structpb.Value
 
@@ -184,7 +184,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 	}
 	properties["finalizes"] = var_Finalizes_mapped
 
-	var_Sync := extension_.Sync
+	var_Sync := extension.Sync
 
 	var var_Sync_mapped *structpb.Value
 
@@ -195,7 +195,7 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 	}
 	properties["sync"] = var_Sync_mapped
 
-	var_Responds := extension_.Responds
+	var_Responds := extension.Responds
 
 	var var_Responds_mapped *structpb.Value
 
@@ -206,14 +206,14 @@ func (m *ExtensionMapper) ToProperties(extension_ *Extension) map[string]*struct
 	}
 	properties["responds"] = var_Responds_mapped
 
-	var_Call := extension_.Call
+	var_Call := extension.Call
 
 	var var_Call_mapped *structpb.Value
 
 	var_Call_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExternalCallMapperInstance.ToProperties(&var_Call)})
 	properties["call"] = var_Call_mapped
 
-	var_Annotations := extension_.Annotations
+	var_Annotations := extension.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value
@@ -464,10 +464,10 @@ func (m *ExtensionBooleanExpressionMapper) ResourceIdentity() abs.ResourceIdenti
 	}
 }
 
-func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpression_ *ExtensionBooleanExpression) map[string]*structpb.Value {
+func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpression *ExtensionBooleanExpression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_And := extensionBooleanExpression_.And
+	var_And := extensionBooleanExpression.And
 
 	if var_And != nil {
 		var var_And_mapped *structpb.Value
@@ -486,7 +486,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["and"] = var_And_mapped
 	}
 
-	var_Or := extensionBooleanExpression_.Or
+	var_Or := extensionBooleanExpression.Or
 
 	if var_Or != nil {
 		var var_Or_mapped *structpb.Value
@@ -505,7 +505,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["or"] = var_Or_mapped
 	}
 
-	var_Not := extensionBooleanExpression_.Not
+	var_Not := extensionBooleanExpression.Not
 
 	if var_Not != nil {
 		var var_Not_mapped *structpb.Value
@@ -514,7 +514,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["not"] = var_Not_mapped
 	}
 
-	var_Equal := extensionBooleanExpression_.Equal
+	var_Equal := extensionBooleanExpression.Equal
 
 	if var_Equal != nil {
 		var var_Equal_mapped *structpb.Value
@@ -523,7 +523,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["equal"] = var_Equal_mapped
 	}
 
-	var_LessThan := extensionBooleanExpression_.LessThan
+	var_LessThan := extensionBooleanExpression.LessThan
 
 	if var_LessThan != nil {
 		var var_LessThan_mapped *structpb.Value
@@ -532,7 +532,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["lessThan"] = var_LessThan_mapped
 	}
 
-	var_GreaterThan := extensionBooleanExpression_.GreaterThan
+	var_GreaterThan := extensionBooleanExpression.GreaterThan
 
 	if var_GreaterThan != nil {
 		var var_GreaterThan_mapped *structpb.Value
@@ -541,7 +541,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["greaterThan"] = var_GreaterThan_mapped
 	}
 
-	var_LessThanOrEqual := extensionBooleanExpression_.LessThanOrEqual
+	var_LessThanOrEqual := extensionBooleanExpression.LessThanOrEqual
 
 	if var_LessThanOrEqual != nil {
 		var var_LessThanOrEqual_mapped *structpb.Value
@@ -550,7 +550,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["lessThanOrEqual"] = var_LessThanOrEqual_mapped
 	}
 
-	var_GreaterThanOrEqual := extensionBooleanExpression_.GreaterThanOrEqual
+	var_GreaterThanOrEqual := extensionBooleanExpression.GreaterThanOrEqual
 
 	if var_GreaterThanOrEqual != nil {
 		var var_GreaterThanOrEqual_mapped *structpb.Value
@@ -559,7 +559,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["greaterThanOrEqual"] = var_GreaterThanOrEqual_mapped
 	}
 
-	var_In := extensionBooleanExpression_.In
+	var_In := extensionBooleanExpression.In
 
 	if var_In != nil {
 		var var_In_mapped *structpb.Value
@@ -568,7 +568,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["in"] = var_In_mapped
 	}
 
-	var_IsNull := extensionBooleanExpression_.IsNull
+	var_IsNull := extensionBooleanExpression.IsNull
 
 	if var_IsNull != nil {
 		var var_IsNull_mapped *structpb.Value
@@ -577,7 +577,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["isNull"] = var_IsNull_mapped
 	}
 
-	var_RegexMatch := extensionBooleanExpression_.RegexMatch
+	var_RegexMatch := extensionBooleanExpression.RegexMatch
 
 	if var_RegexMatch != nil {
 		var var_RegexMatch_mapped *structpb.Value
@@ -726,10 +726,10 @@ func (m *ExtensionPairExpressionMapper) ResourceIdentity() abs.ResourceIdentity 
 	}
 }
 
-func (m *ExtensionPairExpressionMapper) ToProperties(extensionPairExpression_ *ExtensionPairExpression) map[string]*structpb.Value {
+func (m *ExtensionPairExpressionMapper) ToProperties(extensionPairExpression *ExtensionPairExpression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Left := extensionPairExpression_.Left
+	var_Left := extensionPairExpression.Left
 
 	if var_Left != nil {
 		var var_Left_mapped *structpb.Value
@@ -738,7 +738,7 @@ func (m *ExtensionPairExpressionMapper) ToProperties(extensionPairExpression_ *E
 		properties["left"] = var_Left_mapped
 	}
 
-	var_Right := extensionPairExpression_.Right
+	var_Right := extensionPairExpression.Right
 
 	if var_Right != nil {
 		var var_Right_mapped *structpb.Value
@@ -792,10 +792,10 @@ func (m *ExtensionRefValueMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ExtensionRefValueMapper) ToProperties(extensionRefValue_ *ExtensionRefValue) map[string]*structpb.Value {
+func (m *ExtensionRefValueMapper) ToProperties(extensionRefValue *ExtensionRefValue) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Namespace := extensionRefValue_.Namespace
+	var_Namespace := extensionRefValue.Namespace
 
 	if var_Namespace != nil {
 		var var_Namespace_mapped *structpb.Value
@@ -808,7 +808,7 @@ func (m *ExtensionRefValueMapper) ToProperties(extensionRefValue_ *ExtensionRefV
 		properties["namespace"] = var_Namespace_mapped
 	}
 
-	var_Resource := extensionRefValue_.Resource
+	var_Resource := extensionRefValue.Resource
 
 	if var_Resource != nil {
 		var var_Resource_mapped *structpb.Value
@@ -821,7 +821,7 @@ func (m *ExtensionRefValueMapper) ToProperties(extensionRefValue_ *ExtensionRefV
 		properties["resource"] = var_Resource_mapped
 	}
 
-	var_Properties := extensionRefValue_.Properties
+	var_Properties := extensionRefValue.Properties
 
 	if var_Properties != nil {
 		var var_Properties_mapped *structpb.Value
@@ -914,10 +914,10 @@ func (m *ExtensionRegexMatchExpressionMapper) ResourceIdentity() abs.ResourceIde
 	}
 }
 
-func (m *ExtensionRegexMatchExpressionMapper) ToProperties(extensionRegexMatchExpression_ *ExtensionRegexMatchExpression) map[string]*structpb.Value {
+func (m *ExtensionRegexMatchExpressionMapper) ToProperties(extensionRegexMatchExpression *ExtensionRegexMatchExpression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Pattern := extensionRegexMatchExpression_.Pattern
+	var_Pattern := extensionRegexMatchExpression.Pattern
 
 	if var_Pattern != nil {
 		var var_Pattern_mapped *structpb.Value
@@ -930,7 +930,7 @@ func (m *ExtensionRegexMatchExpressionMapper) ToProperties(extensionRegexMatchEx
 		properties["pattern"] = var_Pattern_mapped
 	}
 
-	var_Expression := extensionRegexMatchExpression_.Expression
+	var_Expression := extensionRegexMatchExpression.Expression
 
 	if var_Expression != nil {
 		var var_Expression_mapped *structpb.Value
@@ -989,10 +989,10 @@ func (m *ExtensionExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ExtensionExpressionMapper) ToProperties(extensionExpression_ *ExtensionExpression) map[string]*structpb.Value {
+func (m *ExtensionExpressionMapper) ToProperties(extensionExpression *ExtensionExpression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Property := extensionExpression_.Property
+	var_Property := extensionExpression.Property
 
 	if var_Property != nil {
 		var var_Property_mapped *structpb.Value
@@ -1005,7 +1005,7 @@ func (m *ExtensionExpressionMapper) ToProperties(extensionExpression_ *Extension
 		properties["property"] = var_Property_mapped
 	}
 
-	var_Value := extensionExpression_.Value
+	var_Value := extensionExpression.Value
 
 	if var_Value != nil {
 		var var_Value_mapped *structpb.Value
@@ -1018,7 +1018,7 @@ func (m *ExtensionExpressionMapper) ToProperties(extensionExpression_ *Extension
 		properties["value"] = var_Value_mapped
 	}
 
-	var_RefValue := extensionExpression_.RefValue
+	var_RefValue := extensionExpression.RefValue
 
 	if var_RefValue != nil {
 		var var_RefValue_mapped *structpb.Value
@@ -1085,10 +1085,10 @@ func (m *FunctionCallMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *FunctionCallMapper) ToProperties(functionCall_ *FunctionCall) map[string]*structpb.Value {
+func (m *FunctionCallMapper) ToProperties(functionCall *FunctionCall) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Host := functionCall_.Host
+	var_Host := functionCall.Host
 
 	var var_Host_mapped *structpb.Value
 
@@ -1099,7 +1099,7 @@ func (m *FunctionCallMapper) ToProperties(functionCall_ *FunctionCall) map[strin
 	}
 	properties["host"] = var_Host_mapped
 
-	var_FunctionName := functionCall_.FunctionName
+	var_FunctionName := functionCall.FunctionName
 
 	var var_FunctionName_mapped *structpb.Value
 
@@ -1163,10 +1163,10 @@ func (m *HttpCallMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *HttpCallMapper) ToProperties(httpCall_ *HttpCall) map[string]*structpb.Value {
+func (m *HttpCallMapper) ToProperties(httpCall *HttpCall) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Uri := httpCall_.Uri
+	var_Uri := httpCall.Uri
 
 	var var_Uri_mapped *structpb.Value
 
@@ -1177,7 +1177,7 @@ func (m *HttpCallMapper) ToProperties(httpCall_ *HttpCall) map[string]*structpb.
 	}
 	properties["uri"] = var_Uri_mapped
 
-	var_Method := httpCall_.Method
+	var_Method := httpCall.Method
 
 	var var_Method_mapped *structpb.Value
 
@@ -1241,10 +1241,10 @@ func (m *ChannelCallMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ChannelCallMapper) ToProperties(channelCall_ *ChannelCall) map[string]*structpb.Value {
+func (m *ChannelCallMapper) ToProperties(channelCall *ChannelCall) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_ChannelKey := channelCall_.ChannelKey
+	var_ChannelKey := channelCall.ChannelKey
 
 	var var_ChannelKey_mapped *structpb.Value
 
@@ -1295,10 +1295,10 @@ func (m *ExternalCallMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ExternalCallMapper) ToProperties(externalCall_ *ExternalCall) map[string]*structpb.Value {
+func (m *ExternalCallMapper) ToProperties(externalCall *ExternalCall) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_FunctionCall := externalCall_.FunctionCall
+	var_FunctionCall := externalCall.FunctionCall
 
 	if var_FunctionCall != nil {
 		var var_FunctionCall_mapped *structpb.Value
@@ -1307,7 +1307,7 @@ func (m *ExternalCallMapper) ToProperties(externalCall_ *ExternalCall) map[strin
 		properties["functionCall"] = var_FunctionCall_mapped
 	}
 
-	var_HttpCall := externalCall_.HttpCall
+	var_HttpCall := externalCall.HttpCall
 
 	if var_HttpCall != nil {
 		var var_HttpCall_mapped *structpb.Value
@@ -1316,7 +1316,7 @@ func (m *ExternalCallMapper) ToProperties(externalCall_ *ExternalCall) map[strin
 		properties["httpCall"] = var_HttpCall_mapped
 	}
 
-	var_ChannelCall := externalCall_.ChannelCall
+	var_ChannelCall := externalCall.ChannelCall
 
 	if var_ChannelCall != nil {
 		var var_ChannelCall_mapped *structpb.Value
@@ -1379,10 +1379,10 @@ func (m *EventSelectorMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *EventSelectorMapper) ToProperties(eventSelector_ *EventSelector) map[string]*structpb.Value {
+func (m *EventSelectorMapper) ToProperties(eventSelector *EventSelector) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Actions := eventSelector_.Actions
+	var_Actions := eventSelector.Actions
 
 	if var_Actions != nil {
 		var var_Actions_mapped *structpb.Value
@@ -1405,7 +1405,7 @@ func (m *EventSelectorMapper) ToProperties(eventSelector_ *EventSelector) map[st
 		properties["actions"] = var_Actions_mapped
 	}
 
-	var_RecordSelector := eventSelector_.RecordSelector
+	var_RecordSelector := eventSelector.RecordSelector
 
 	if var_RecordSelector != nil {
 		var var_RecordSelector_mapped *structpb.Value
@@ -1414,7 +1414,7 @@ func (m *EventSelectorMapper) ToProperties(eventSelector_ *EventSelector) map[st
 		properties["recordSelector"] = var_RecordSelector_mapped
 	}
 
-	var_Namespaces := eventSelector_.Namespaces
+	var_Namespaces := eventSelector.Namespaces
 
 	if var_Namespaces != nil {
 		var var_Namespaces_mapped *structpb.Value
@@ -1437,7 +1437,7 @@ func (m *EventSelectorMapper) ToProperties(eventSelector_ *EventSelector) map[st
 		properties["namespaces"] = var_Namespaces_mapped
 	}
 
-	var_Resources := eventSelector_.Resources
+	var_Resources := eventSelector.Resources
 
 	if var_Resources != nil {
 		var var_Resources_mapped *structpb.Value
@@ -1460,7 +1460,7 @@ func (m *EventSelectorMapper) ToProperties(eventSelector_ *EventSelector) map[st
 		properties["resources"] = var_Resources_mapped
 	}
 
-	var_Ids := eventSelector_.Ids
+	var_Ids := eventSelector.Ids
 
 	if var_Ids != nil {
 		var var_Ids_mapped *structpb.Value
@@ -1483,7 +1483,7 @@ func (m *EventSelectorMapper) ToProperties(eventSelector_ *EventSelector) map[st
 		properties["ids"] = var_Ids_mapped
 	}
 
-	var_Annotations := eventSelector_.Annotations
+	var_Annotations := eventSelector.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value
@@ -1637,10 +1637,10 @@ func (m *RecordSearchParamsMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *RecordSearchParamsMapper) ToProperties(recordSearchParams_ *RecordSearchParams) map[string]*structpb.Value {
+func (m *RecordSearchParamsMapper) ToProperties(recordSearchParams *RecordSearchParams) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Query := recordSearchParams_.Query
+	var_Query := recordSearchParams.Query
 
 	if var_Query != nil {
 		var var_Query_mapped *structpb.Value
@@ -1649,7 +1649,7 @@ func (m *RecordSearchParamsMapper) ToProperties(recordSearchParams_ *RecordSearc
 		properties["query"] = var_Query_mapped
 	}
 
-	var_Limit := recordSearchParams_.Limit
+	var_Limit := recordSearchParams.Limit
 
 	if var_Limit != nil {
 		var var_Limit_mapped *structpb.Value
@@ -1662,7 +1662,7 @@ func (m *RecordSearchParamsMapper) ToProperties(recordSearchParams_ *RecordSearc
 		properties["limit"] = var_Limit_mapped
 	}
 
-	var_Offset := recordSearchParams_.Offset
+	var_Offset := recordSearchParams.Offset
 
 	if var_Offset != nil {
 		var var_Offset_mapped *structpb.Value
@@ -1675,7 +1675,7 @@ func (m *RecordSearchParamsMapper) ToProperties(recordSearchParams_ *RecordSearc
 		properties["offset"] = var_Offset_mapped
 	}
 
-	var_ResolveReferences := recordSearchParams_.ResolveReferences
+	var_ResolveReferences := recordSearchParams.ResolveReferences
 
 	if var_ResolveReferences != nil {
 		var var_ResolveReferences_mapped *structpb.Value
@@ -1782,10 +1782,10 @@ func (m *EventMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
+func (m *EventMapper) ToProperties(event *Event) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := event_.Id
+	var_Id := event.Id
 
 	var var_Id_mapped *structpb.Value
 
@@ -1796,7 +1796,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 	}
 	properties["id"] = var_Id_mapped
 
-	var_Action := event_.Action
+	var_Action := event.Action
 
 	var var_Action_mapped *structpb.Value
 
@@ -1807,7 +1807,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 	}
 	properties["action"] = var_Action_mapped
 
-	var_RecordSearchParams := event_.RecordSearchParams
+	var_RecordSearchParams := event.RecordSearchParams
 
 	if var_RecordSearchParams != nil {
 		var var_RecordSearchParams_mapped *structpb.Value
@@ -1816,7 +1816,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["recordSearchParams"] = var_RecordSearchParams_mapped
 	}
 
-	var_ActionSummary := event_.ActionSummary
+	var_ActionSummary := event.ActionSummary
 
 	if var_ActionSummary != nil {
 		var var_ActionSummary_mapped *structpb.Value
@@ -1829,7 +1829,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["actionSummary"] = var_ActionSummary_mapped
 	}
 
-	var_ActionDescription := event_.ActionDescription
+	var_ActionDescription := event.ActionDescription
 
 	if var_ActionDescription != nil {
 		var var_ActionDescription_mapped *structpb.Value
@@ -1842,7 +1842,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["actionDescription"] = var_ActionDescription_mapped
 	}
 
-	var_Resource := event_.Resource
+	var_Resource := event.Resource
 
 	if var_Resource != nil {
 		var var_Resource_mapped *structpb.Value
@@ -1851,7 +1851,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["resource"] = var_Resource_mapped
 	}
 
-	var_Records := event_.Records
+	var_Records := event.Records
 
 	if var_Records != nil {
 		var var_Records_mapped *structpb.Value
@@ -1870,7 +1870,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["records"] = var_Records_mapped
 	}
 
-	var_Ids := event_.Ids
+	var_Ids := event.Ids
 
 	if var_Ids != nil {
 		var var_Ids_mapped *structpb.Value
@@ -1893,7 +1893,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["ids"] = var_Ids_mapped
 	}
 
-	var_Finalizes := event_.Finalizes
+	var_Finalizes := event.Finalizes
 
 	if var_Finalizes != nil {
 		var var_Finalizes_mapped *structpb.Value
@@ -1906,7 +1906,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["finalizes"] = var_Finalizes_mapped
 	}
 
-	var_Sync := event_.Sync
+	var_Sync := event.Sync
 
 	if var_Sync != nil {
 		var var_Sync_mapped *structpb.Value
@@ -1919,7 +1919,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["sync"] = var_Sync_mapped
 	}
 
-	var_Time := event_.Time
+	var_Time := event.Time
 
 	if var_Time != nil {
 		var var_Time_mapped *structpb.Value
@@ -1932,7 +1932,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["time"] = var_Time_mapped
 	}
 
-	var_Total := event_.Total
+	var_Total := event.Total
 
 	if var_Total != nil {
 		var var_Total_mapped *structpb.Value
@@ -1945,7 +1945,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["total"] = var_Total_mapped
 	}
 
-	var_ActionName := event_.ActionName
+	var_ActionName := event.ActionName
 
 	if var_ActionName != nil {
 		var var_ActionName_mapped *structpb.Value
@@ -1958,7 +1958,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["actionName"] = var_ActionName_mapped
 	}
 
-	var_Input := event_.Input
+	var_Input := event.Input
 
 	if var_Input != nil {
 		var var_Input_mapped *structpb.Value
@@ -1971,7 +1971,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["input"] = var_Input_mapped
 	}
 
-	var_Output := event_.Output
+	var_Output := event.Output
 
 	if var_Output != nil {
 		var var_Output_mapped *structpb.Value
@@ -1984,7 +1984,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["output"] = var_Output_mapped
 	}
 
-	var_Annotations := event_.Annotations
+	var_Annotations := event.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value
@@ -2008,7 +2008,7 @@ func (m *EventMapper) ToProperties(event_ *Event) map[string]*structpb.Value {
 		properties["annotations"] = var_Annotations_mapped
 	}
 
-	var_Error := event_.Error
+	var_Error := event.Error
 
 	if var_Error != nil {
 		var var_Error_mapped *structpb.Value
@@ -2257,10 +2257,10 @@ func (m *ErrorFieldMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ErrorFieldMapper) ToProperties(errorField_ *ErrorField) map[string]*structpb.Value {
+func (m *ErrorFieldMapper) ToProperties(errorField *ErrorField) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_RecordId := errorField_.RecordId
+	var_RecordId := errorField.RecordId
 
 	if var_RecordId != nil {
 		var var_RecordId_mapped *structpb.Value
@@ -2273,7 +2273,7 @@ func (m *ErrorFieldMapper) ToProperties(errorField_ *ErrorField) map[string]*str
 		properties["recordId"] = var_RecordId_mapped
 	}
 
-	var_Property := errorField_.Property
+	var_Property := errorField.Property
 
 	if var_Property != nil {
 		var var_Property_mapped *structpb.Value
@@ -2286,7 +2286,7 @@ func (m *ErrorFieldMapper) ToProperties(errorField_ *ErrorField) map[string]*str
 		properties["property"] = var_Property_mapped
 	}
 
-	var_Message := errorField_.Message
+	var_Message := errorField.Message
 
 	if var_Message != nil {
 		var var_Message_mapped *structpb.Value
@@ -2299,7 +2299,7 @@ func (m *ErrorFieldMapper) ToProperties(errorField_ *ErrorField) map[string]*str
 		properties["message"] = var_Message_mapped
 	}
 
-	var_Value := errorField_.Value
+	var_Value := errorField.Value
 
 	if var_Value != nil {
 		var var_Value_mapped *structpb.Value

@@ -26,6 +26,7 @@ var keywords = map[string]bool{
 	"import":      true,
 	"return":      true,
 	"var":         true,
+	"error":       true,
 }
 
 func isReservedKeyword(s string) bool {
