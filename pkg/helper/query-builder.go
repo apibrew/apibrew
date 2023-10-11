@@ -53,7 +53,7 @@ func (q QueryBuilder) In(property string, values []interface{}) *model.BooleanEx
 }
 
 func (q QueryBuilder) Equal(property *model.ResourceProperty, value *structpb.Value) *model.BooleanExpression {
-	var right = &model.Expression{}
+	var right *model.Expression
 
 	if property.Type == model.ResourceProperty_REFERENCE {
 		if value.GetStringValue() != "" {
