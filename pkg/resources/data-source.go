@@ -13,13 +13,13 @@ var DataSourceResource = &model.Resource{
 		DataSource: "system",
 		Entity:     "data_source",
 	},
+	Types: []*model.ResourceSubType{
+		special.AuditDataSubType,
+	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,
 		special.VersionProperty,
-		special.AuditProperties[0],
-		special.AuditProperties[1],
-		special.AuditProperties[2],
-		special.AuditProperties[3],
+		special.AuditProperty,
 		{
 			Name:     "name",
 			Length:   64,

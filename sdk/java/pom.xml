@@ -11,6 +11,7 @@
     <modules>
         <module>client</module>
         <module>common</module>
+        <module>controller</module>
     </modules>
 
     <dependencies>

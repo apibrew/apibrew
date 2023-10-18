@@ -14,13 +14,13 @@ var PermissionResource = &model.Resource{
 		DataSource: "system",
 		Entity:     "permission",
 	},
+	Types: []*model.ResourceSubType{
+		special.AuditDataSubType,
+	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,
 		special.VersionProperty,
-		special.AuditProperties[0],
-		special.AuditProperties[1],
-		special.AuditProperties[2],
-		special.AuditProperties[3],
+		special.AuditProperty,
 		{
 			Name:   "namespace",
 			Type:   model.ResourceProperty_STRING,

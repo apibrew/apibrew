@@ -1,19 +1,15 @@
 package rest
 
 import (
-	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
-	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest/docs"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	"github.com/gorilla/mux"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
@@ -36,16 +32,17 @@ type Server interface {
 }
 
 type server struct {
-	handler         http.Handler
-	certFile        string
-	keyFile         string
-	container       service.Container
-	docsApi         docs.Api
-	metricsApi      MetricsApi
-	healthApi       HealthApi
-	recordApi       RecordApi
-	resourceApi     ResourceApi
-	eventChannelApi EventChannelApi
+	handler           http.Handler
+	certFile          string
+	keyFile           string
+	container         service.Container
+	docsApi           docs.Api
+	metricsApi        MetricsApi
+	healthApi         HealthApi
+	recordApi         RecordApi
+	resourceApi       ResourceApi
+	eventChannelApi   EventChannelApi
+	authenticationApi AuthenticationApi
 }
 
 func (s *server) Init() {
@@ -171,24 +168,14 @@ func (s *server) configureRoutes() {
 		c.Log = log.New()
 	}
 
-	m := runtime.NewServeMux()
-
 	s.recordApi.ConfigureRouter(r)
 	s.resourceApi.ConfigureRouter(r)
 	s.metricsApi.ConfigureRouter(r)
 	s.healthApi.ConfigureRouter(r)
 	s.eventChannelApi.ConfigureRouter(r)
-
-	r.PathPrefix("/authentication").Handler(m)
-
-	if err := stub.RegisterAuthenticationHandlerServer(context.TODO(), m, grpc.NewAuthenticationServer(s.container.GetAuthenticationService())); err != nil {
-		log.Fatal(err)
-	}
-
-	r.PathPrefix("/docs").Handler(s.docsApi.Handler())
-
-	healthEndpoint := new(HealthEndpoint)
-	r.PathPrefix("/health").Handler(healthEndpoint.Handler())
+	s.authenticationApi.ConfigureRouter(r)
+	s.docsApi.ConfigureRouter(r)
+	s.healthApi.ConfigureRouter(r)
 
 	s.handler = c.Handler(r)
 }
@@ -244,12 +231,13 @@ func (s *server) TraceLogMiddleWare(next http.Handler) http.Handler {
 
 func NewServer(container service.Container) Server {
 	return &server{
-		container:       container,
-		docsApi:         docs.NewApi(container.GetResourceService(), container.GetRecordService()),
-		recordApi:       NewRecordApi(container),
-		resourceApi:     NewResourceApi(container),
-		metricsApi:      NewMetricsApi(container.GetMetricsService()),
-		healthApi:       NewHealthApi(),
-		eventChannelApi: NewEventChannelApi(container),
+		container:         container,
+		docsApi:           docs.NewApi(container.GetResourceService(), container.GetRecordService()),
+		recordApi:         NewRecordApi(container),
+		resourceApi:       NewResourceApi(container),
+		metricsApi:        NewMetricsApi(container.GetMetricsService()),
+		healthApi:         NewHealthApi(),
+		eventChannelApi:   NewEventChannelApi(container),
+		authenticationApi: NewAuthenticationApi(container.GetAuthenticationService()),
 	}
 }

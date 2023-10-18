@@ -47,6 +47,7 @@ const RestApiDisabled = "RestApiDisabled"
 
 // openapi
 const OpenApiGroup = "OpenApiGroup"
+const OpenApiHide = "OpenApiHide"
 
 // service
 const ServiceKey = "ServiceKey"

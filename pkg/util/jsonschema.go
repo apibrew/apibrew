@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -21,9 +22,18 @@ func PropertiesWithTitleToJsonSchema(resource *model.Resource, elem PropertiesWi
 	recordSchema := &openapi3.Schema{
 		Type:       "object",
 		Properties: map[string]*openapi3.SchemaRef{},
+		ExtensionProps: openapi3.ExtensionProps{
+			Extensions: map[string]interface{}{
+				"x-resource": resource.Name,
+			},
+		},
 	}
 
 	for _, property := range elem.GetProperties() {
+		if annotations.IsEnabled(property, annotations.OpenApiHide) {
+			continue
+		}
+
 		recordSchema.Properties[property.Name] = ResourcePropertyTypeToJsonSchemaType(resource, property)
 
 		if property.Required {
@@ -133,6 +143,8 @@ func ResourcePropertyTypeToJsonSchemaType(resource *model.Resource, property *mo
 	}
 
 	if propSchemaRef.Value != nil {
+		propSchemaRef.Value.Extensions = make(map[string]interface{})
+
 		if property.ExampleValue != nil {
 			propSchemaRef.Value.Example = property.ExampleValue.AsInterface()
 		}
@@ -146,15 +158,26 @@ func ResourcePropertyTypeToJsonSchemaType(resource *model.Resource, property *mo
 		}
 
 		if property.Immutable {
-			propSchemaRef.Value.Extensions = map[string]interface{}{
-				"x-immutable": true,
-			}
+			propSchemaRef.Value.Extensions["x-immutable"] = true
 		}
-
-		propSchemaRef.Value.Extensions = make(map[string]interface{})
 
 		for key, value := range property.Annotations {
 			propSchemaRef.Value.Extensions["x-"+key] = value
+		}
+
+		propSchemaRef.Value.Extensions["x-type"] = property.Type.String()
+
+		if property.TypeRef != nil {
+			propSchemaRef.Value.Extensions["x-type-ref"] = *property.TypeRef
+		}
+
+		if property.Reference != nil {
+			propSchemaRef.Value.Extensions["x-reference-name"] = property.Reference.Resource
+			propSchemaRef.Value.Extensions["x-reference-namespace"] = property.Reference.Namespace
+		}
+
+		if property.Item != nil {
+			propSchemaRef.Value.Extensions["x-item"] = property.Item.Type
 		}
 	}
 

@@ -73,14 +73,7 @@ func RemarkResource(resource *model.Resource) {
 	propertyNameMap := GetNamedMap(resource.Properties)
 
 	if !annotations.IsEnabled(resource, annotations.EnableAudit) {
-		auditPropertyCount := 0
-		for _, prop := range special.AuditProperties {
-			if propertyNameMap[prop.Name] != nil && propertyNameMap[prop.Name].Type == prop.Type {
-				auditPropertyCount++
-			}
-		}
-
-		if auditPropertyCount == 4 {
+		if propertyNameMap[special.AuditProperty.Name] != nil && propertyNameMap[special.AuditProperty.Name].Type == special.AuditProperty.Type {
 			annotations.Enable(resource, annotations.EnableAudit)
 		}
 	}
@@ -99,21 +92,12 @@ func NormalizeResource(resource *model.Resource) {
 		resource.Annotations = make(map[string]string)
 	}
 
-	if annotations.IsEnabled(resource, annotations.EnableAudit) {
-		exists := false
-		for _, prop := range special.AuditProperties {
-			if propertyNameMap[prop.Name] != nil {
-				exists = true
-				break
-			}
-		}
-		if !exists {
-			resource.Properties = append(resource.Properties, special.AuditProperties...)
-		}
-	}
-
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) && propertyNameMap[special.VersionProperty.Name] == nil {
 		resource.Properties = append(resource.Properties, special.VersionProperty)
+	}
+
+	if annotations.IsEnabled(resource, annotations.EnableAudit) && propertyNameMap[special.AuditProperty.Name] == nil {
+		resource.Properties = append(resource.Properties, special.AuditProperty)
 	}
 
 	if !HasResourcePrimaryProp(resource) && propertyNameMap[special.IdProperty.Name] == nil {

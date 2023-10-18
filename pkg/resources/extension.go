@@ -21,6 +21,7 @@ var ExtensionResource = &model.Resource{
 		sub_types.RefValue,
 		sub_types.RegexMatchExpression,
 		sub_types.Expression,
+		special.AuditDataSubType,
 		{
 			Name: "FunctionCall",
 			Annotations: map[string]string{
@@ -339,10 +340,7 @@ var ExtensionResource = &model.Resource{
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,
 		special.VersionProperty,
-		special.AuditProperties[0],
-		special.AuditProperties[1],
-		special.AuditProperties[2],
-		special.AuditProperties[3],
+		special.AuditProperty,
 		{
 			Name:     "name",
 			Length:   64,

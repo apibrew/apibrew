@@ -81,6 +81,14 @@ public class ClientImpl implements Client {
         objectMapper.registerModule(new JavaTimeModule());
     }
 
+    public static Client newClient() {
+        Config config = ConfigLoader.load();
+
+        Config.Server serverConfig = config.getServers().stream().filter(item -> item.getName().equals(config.getDefaultServer())).findAny().orElseThrow(() -> new IllegalArgumentException("Default server cannot be located"));
+
+        return newClientByServerConfig(serverConfig);
+    }
+
     public static Client newClientByServerName(String serverName) {
         Config config = ConfigLoader.load();
 

@@ -10,6 +10,10 @@ import java.util.function.Predicate;
 
 public interface Client {
 
+    static Client newClient() {
+        return ClientImpl.newClient();
+    }
+
     static Client newClient(String url) {
         return new ClientImpl(url);
     }

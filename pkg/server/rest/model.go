@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
+	"time"
 )
 
 var mo = protojson.MarshalOptions{
@@ -107,4 +108,29 @@ type SearchRecordRequest struct {
 
 type HealthResponse struct {
 	Status string `json:"status"`
+}
+
+type AuthenticationRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Term     string `json:"term"`
+}
+
+type Token struct {
+	Term       string `json:"term"`
+	Content    string `json:"content"`
+	Expiration time.Time
+}
+
+type AuthenticationResponse struct {
+	Token Token `json:"token"`
+}
+
+type RefreshTokenRequest struct {
+	Token string `json:"token"`
+	Term  string `json:"term"`
+}
+
+type RefreshTokenResponse struct {
+	Token Token `json:"token"`
 }

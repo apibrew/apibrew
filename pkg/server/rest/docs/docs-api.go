@@ -10,8 +10,13 @@ type api struct {
 	swaggerApi      SwaggerApi
 }
 
+func (a *api) ConfigureRouter(r *mux.Router) {
+	r.PathPrefix("/docs").Handler(a.Handler())
+}
+
 type Api interface {
 	Handler() *mux.Router
+	ConfigureRouter(r *mux.Router)
 }
 
 func (a *api) Handler() *mux.Router {

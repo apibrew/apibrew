@@ -13,13 +13,13 @@ var NamespaceResource = &model.Resource{
 		DataSource: "system",
 		Entity:     "namespace",
 	},
+	Types: []*model.ResourceSubType{
+		special.AuditDataSubType,
+	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,
 		special.VersionProperty,
-		special.AuditProperties[0],
-		special.AuditProperties[1],
-		special.AuditProperties[2],
-		special.AuditProperties[3],
+		special.AuditProperty,
 		{
 			Name:      "name",
 			Type:      model.ResourceProperty_STRING,

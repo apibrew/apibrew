@@ -13,13 +13,13 @@ var UserResource = &model.Resource{
 		DataSource: "system",
 		Entity:     "user",
 	},
+	Types: []*model.ResourceSubType{
+		special.AuditDataSubType,
+	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,
 		special.VersionProperty,
-		special.AuditProperties[0],
-		special.AuditProperties[1],
-		special.AuditProperties[2],
-		special.AuditProperties[3],
+		special.AuditProperty,
 		{
 			Name:     "username",
 			Type:     model.ResourceProperty_STRING,

@@ -64,7 +64,7 @@ func ComputeRecordIdFromProperties(resource *model.Resource, record *model.Recor
 
 func InitRecord(ctx context.Context, resource *model.Resource, record *model.Record) {
 	now := time.Now()
-	recordNewId, _ := uuid.NewUUID()
+	recordNewId := uuid.Must(uuid.NewRandom())
 	record.Id = recordNewId.String()
 	if record.Properties == nil {
 		record.Properties = make(map[string]*structpb.Value)

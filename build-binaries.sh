@@ -10,7 +10,7 @@ buildBinary() {
   echo "Building apbr for ${OS}/${ARCH}${SUFFIX}"
   GOOS=${OS} GOARCH=${ARCH} go build -o dist/apbr-${OS}-${ARCH}${SUFFIX} cmd/apbr/main.go
   echo "Building apibrew for ${OS}/${ARCH}${SUFFIX}"
-  GOOS=${OS} GOARCH=${ARCH} go build -o dist/apibrew-${OS}-${ARCH}${SUFFIX} cmd/server/main.go
+  GOOS=${OS} GOARCH=${ARCH} go build -o dist/apibrew-server-${OS}-${ARCH}${SUFFIX} cmd/apbr-server/main.go
 }
 
 buildBinary linux amd64 ""
