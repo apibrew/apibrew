@@ -8,21 +8,18 @@ import "github.com/google/uuid"
 import "time"
 
 type Extension struct {
-	Id          *uuid.UUID        `json:"id,omitempty"`
-	Version     int32             `json:"version,omitempty"`
-	CreatedBy   *string           `json:"createdBy,omitempty"`
-	UpdatedBy   *string           `json:"updatedBy,omitempty"`
-	CreatedOn   *time.Time        `json:"createdOn,omitempty"`
-	UpdatedOn   *time.Time        `json:"updatedOn,omitempty"`
-	Name        string            `json:"name,omitempty"`
-	Description *string           `json:"description,omitempty"`
-	Selector    *EventSelector    `json:"selector,omitempty"`
-	Order       int32             `json:"order,omitempty"`
-	Finalizes   bool              `json:"finalizes,omitempty"`
-	Sync        bool              `json:"sync,omitempty"`
-	Responds    bool              `json:"responds,omitempty"`
-	Call        ExternalCall      `json:"call,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Id          *uuid.UUID          `json:"id,omitempty"`
+	Version     int32               `json:"version,omitempty"`
+	AuditData   *ExtensionAuditData `json:"auditData,omitempty"`
+	Name        string              `json:"name,omitempty"`
+	Description *string             `json:"description,omitempty"`
+	Selector    *EventSelector      `json:"selector,omitempty"`
+	Order       int32               `json:"order,omitempty"`
+	Finalizes   bool                `json:"finalizes,omitempty"`
+	Sync        bool                `json:"sync,omitempty"`
+	Responds    bool                `json:"responds,omitempty"`
+	Call        ExternalCall        `json:"call,omitempty"`
+	Annotations map[string]string   `json:"annotations,omitempty"`
 }
 
 func (s *Extension) GetId() *uuid.UUID {
@@ -31,17 +28,8 @@ func (s *Extension) GetId() *uuid.UUID {
 func (s *Extension) GetVersion() int32 {
 	return s.Version
 }
-func (s *Extension) GetCreatedBy() *string {
-	return s.CreatedBy
-}
-func (s *Extension) GetUpdatedBy() *string {
-	return s.UpdatedBy
-}
-func (s *Extension) GetCreatedOn() *time.Time {
-	return s.CreatedOn
-}
-func (s *Extension) GetUpdatedOn() *time.Time {
-	return s.UpdatedOn
+func (s *Extension) GetAuditData() *ExtensionAuditData {
+	return s.AuditData
 }
 func (s *Extension) GetName() string {
 	return s.Name
@@ -173,6 +161,26 @@ func (s *ExtensionExpression) GetValue() interface{} {
 }
 func (s *ExtensionExpression) GetRefValue() *ExtensionRefValue {
 	return s.RefValue
+}
+
+type ExtensionAuditData struct {
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
+	CreatedOn *time.Time `json:"createdOn,omitempty"`
+	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
+}
+
+func (s *ExtensionAuditData) GetCreatedBy() *string {
+	return s.CreatedBy
+}
+func (s *ExtensionAuditData) GetUpdatedBy() *string {
+	return s.UpdatedBy
+}
+func (s *ExtensionAuditData) GetCreatedOn() *time.Time {
+	return s.CreatedOn
+}
+func (s *ExtensionAuditData) GetUpdatedOn() *time.Time {
+	return s.UpdatedOn
 }
 
 type FunctionCall struct {

@@ -18,6 +18,8 @@ public class Config {
     public static class Server {
         private String name;
         private String host;
+        private int port;
+        private int httpPort;
         private boolean insecure;
         private Authentication authentication;
     }

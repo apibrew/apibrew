@@ -97,4 +97,5 @@ message AppConfig {
   repeated string applyPaths = 15;
   EventChannelConfig eventChannelConfig = 16;
   LoggingConfig loggingConfig = 17;
+  bool enablePprof = 18;
 }

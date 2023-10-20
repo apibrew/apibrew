@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+	"strconv"
 	"time"
 )
 
@@ -360,14 +361,14 @@ func NewClientWithParams(params Params) (Client, error) {
 }
 
 func NewClientWithServerName(serverName string) (Client, error) {
-	configServer := locateConfigServer(serverName)
+	configServer := LocateConfigServer(serverName)
 
 	return NewClientWithConfigServer(configServer)
 }
 
 func NewClientWithConfigServer(configServer ServerConfig) (Client, error) {
 	var params = Params{
-		Addr:     configServer.Host,
+		Addr:     configServer.Host + ":" + strconv.Itoa(int(configServer.Port)),
 		Insecure: configServer.Insecure,
 	}
 

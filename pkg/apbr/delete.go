@@ -24,7 +24,7 @@ var deleteResource = &cobra.Command{
 		}
 
 		if *deleteResourceId == "" {
-			resource, err := GetDhClient().GetResourceByName(cmd.Context(), *deleteResourceNamespace, *deleteResourceName)
+			resource, err := GetClient().GetResourceByName(cmd.Context(), *deleteResourceNamespace, *deleteResourceName)
 
 			if err != nil {
 				log.Fatal(err)
@@ -33,7 +33,7 @@ var deleteResource = &cobra.Command{
 			*deleteResourceId = resource.Id
 		}
 
-		err := GetDhClient().DeleteResource(cmd.Context(), *deleteResourceId, *deleteResourceMigrate, *deleteResourceForce)
+		err := GetClient().DeleteResource(cmd.Context(), *deleteResourceId, *deleteResourceMigrate, *deleteResourceForce)
 
 		if err != nil {
 			log.Fatal(err)
@@ -49,8 +49,8 @@ var deleteResource = &cobra.Command{
 //		}
 //
 //		if *deleteDataSourceId == "" {
-//			resp, err := GetDhClient().GetDataSourceClient().List(cmd.Context(), &stub.ListDataSourceRequest{
-//				Token: GetDhClient().GetToken(),
+//			resp, err := GetClient().GetDataSourceClient().List(cmd.Context(), &stub.ListDataSourceRequest{
+//				Token: GetClient().GetToken(),
 //			})
 //
 //			if err != nil {
@@ -68,8 +68,8 @@ var deleteResource = &cobra.Command{
 //			}
 //		}
 //
-//		_, err := GetDhClient().GetDataSourceClient().Delete(cmd.Context(), &stub.DeleteDataSourceRequest{
-//			Token: GetDhClient().GetToken(),
+//		_, err := GetClient().GetDataSourceClient().Delete(cmd.Context(), &stub.DeleteDataSourceRequest{
+//			Token: GetClient().GetToken(),
 //			Ids:   []string{*deleteDataSourceId},
 //		})
 //
@@ -87,8 +87,8 @@ var deleteResource = &cobra.Command{
 //		}
 //
 //		if *deleteNamespaceId == "" {
-//			resp, err := GetDhClient().GetNamespaceClient().List(cmd.Context(), &stub.ListNamespaceRequest{
-//				Token: GetDhClient().GetToken(),
+//			resp, err := GetClient().GetNamespaceClient().List(cmd.Context(), &stub.ListNamespaceRequest{
+//				Token: GetClient().GetToken(),
 //			})
 //
 //			if err != nil {
@@ -106,8 +106,8 @@ var deleteResource = &cobra.Command{
 //			}
 //		}
 //
-//		_, err := GetDhClient().GetNamespaceClient().Delete(cmd.Context(), &stub.DeleteNamespaceRequest{
-//			Token: GetDhClient().GetToken(),
+//		_, err := GetClient().GetNamespaceClient().Delete(cmd.Context(), &stub.DeleteNamespaceRequest{
+//			Token: GetClient().GetToken(),
 //			Ids:   []string{*deleteNamespaceId},
 //		})
 //
@@ -125,8 +125,8 @@ var deleteResource = &cobra.Command{
 //		}
 //
 //		if *deleteUserId == "" {
-//			resp, err := GetDhClient().GetUserClient().List(cmd.Context(), &stub.ListUserRequest{
-//				Token: GetDhClient().GetToken(),
+//			resp, err := GetClient().GetUserClient().List(cmd.Context(), &stub.ListUserRequest{
+//				Token: GetClient().GetToken(),
 //			})
 //
 //			if err != nil {
@@ -144,8 +144,8 @@ var deleteResource = &cobra.Command{
 //			}
 //		}
 //
-//		_, err := GetDhClient().GetUserClient().Delete(cmd.Context(), &stub.DeleteUserRequest{
-//			Token: GetDhClient().GetToken(),
+//		_, err := GetClient().GetUserClient().Delete(cmd.Context(), &stub.DeleteUserRequest{
+//			Token: GetClient().GetToken(),
 //			Ids:   []string{*deleteUserId},
 //		})
 //
@@ -163,8 +163,8 @@ var deleteResource = &cobra.Command{
 //		}
 //
 //		if *deleteExtensionId == "" {
-//			resp, err := GetDhClient().GetExtensionClient().List(cmd.Context(), &stub.ListExtensionRequest{
-//				Token: GetDhClient().GetToken(),
+//			resp, err := GetClient().GetExtensionClient().List(cmd.Context(), &stub.ListExtensionRequest{
+//				Token: GetClient().GetToken(),
 //			})
 //
 //			if err != nil {
@@ -182,8 +182,8 @@ var deleteResource = &cobra.Command{
 //			}
 //		}
 //
-//		_, err := GetDhClient().GetExtensionClient().Delete(cmd.Context(), &stub.DeleteExtensionRequest{
-//			Token: GetDhClient().GetToken(),
+//		_, err := GetClient().GetExtensionClient().Delete(cmd.Context(), &stub.DeleteExtensionRequest{
+//			Token: GetClient().GetToken(),
 //			Ids:   []string{*deleteExtensionId},
 //		})
 //

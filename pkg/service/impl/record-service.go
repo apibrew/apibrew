@@ -238,7 +238,6 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	for _, record := range params.Records {
 		InitRecord(ctx, resource, record)
 		NormalizeRecord(resource, record)
-		log.Print("Normalized record: " + record.Id)
 	}
 
 	// prepare default values
@@ -269,7 +268,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 
 	if ctx.Value(abs.TransactionContextKey) != nil {
 		txCtx = ctx
-	} else {
+	} else if !resource.Virtual {
 		tx, err := r.backendServiceProvider.BeginTransaction(ctx, resource.SourceConfig.DataSource, false)
 
 		if err != nil {

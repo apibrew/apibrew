@@ -76,56 +76,13 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]*stru
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := dataSource.CreatedBy
+	var_AuditData := dataSource.AuditData
 
-	if var_CreatedBy != nil {
-		var var_CreatedBy_mapped *structpb.Value
+	if var_AuditData != nil {
+		var var_AuditData_mapped *structpb.Value
 
-		var var_CreatedBy_err error
-		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
-		if var_CreatedBy_err != nil {
-			panic(var_CreatedBy_err)
-		}
-		properties["createdBy"] = var_CreatedBy_mapped
-	}
-
-	var_UpdatedBy := dataSource.UpdatedBy
-
-	if var_UpdatedBy != nil {
-		var var_UpdatedBy_mapped *structpb.Value
-
-		var var_UpdatedBy_err error
-		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
-		if var_UpdatedBy_err != nil {
-			panic(var_UpdatedBy_err)
-		}
-		properties["updatedBy"] = var_UpdatedBy_mapped
-	}
-
-	var_CreatedOn := dataSource.CreatedOn
-
-	if var_CreatedOn != nil {
-		var var_CreatedOn_mapped *structpb.Value
-
-		var var_CreatedOn_err error
-		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
-		if var_CreatedOn_err != nil {
-			panic(var_CreatedOn_err)
-		}
-		properties["createdOn"] = var_CreatedOn_mapped
-	}
-
-	var_UpdatedOn := dataSource.UpdatedOn
-
-	if var_UpdatedOn != nil {
-		var var_UpdatedOn_mapped *structpb.Value
-
-		var var_UpdatedOn_err error
-		var_UpdatedOn_mapped, var_UpdatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_UpdatedOn)
-		if var_UpdatedOn_err != nil {
-			panic(var_UpdatedOn_err)
-		}
-		properties["updatedOn"] = var_UpdatedOn_mapped
+		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: DataSourceAuditDataMapperInstance.ToProperties(var_AuditData)})
+		properties["auditData"] = var_AuditData_mapped
 	}
 
 	var_Name := dataSource.Name
@@ -214,6 +171,150 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Version = var_Version_mapped
 	}
+	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
+
+		var_AuditData := properties["auditData"]
+		var mappedValue = DataSourceAuditDataMapperInstance.FromProperties(var_AuditData.GetStructValue().Fields)
+
+		var_AuditData_mapped := mappedValue
+
+		s.AuditData = var_AuditData_mapped
+	}
+	if properties["name"] != nil && properties["name"].AsInterface() != nil {
+
+		var_Name := properties["name"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Name_mapped := val.(string)
+
+		s.Name = var_Name_mapped
+	}
+	if properties["description"] != nil && properties["description"].AsInterface() != nil {
+
+		var_Description := properties["description"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Description)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Description_mapped := val.(string)
+
+		s.Description = var_Description_mapped
+	}
+	if properties["backend"] != nil && properties["backend"].AsInterface() != nil {
+
+		var_Backend := properties["backend"]
+		var_Backend_mapped := (DataSourceBackend)(var_Backend.GetStringValue())
+
+		s.Backend = var_Backend_mapped
+	}
+	if properties["options"] != nil && properties["options"].AsInterface() != nil {
+
+		var_Options := properties["options"]
+		var_Options_mapped := make(map[string]string)
+		for k, v := range var_Options.GetStructValue().Fields {
+
+			var_3x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
+
+			if err != nil {
+				panic(err)
+			}
+
+			var_3x_mapped := val.(string)
+
+			var_Options_mapped[k] = var_3x_mapped
+		}
+
+		s.Options = var_Options_mapped
+	}
+	return s
+}
+
+type DataSourceAuditDataMapper struct {
+}
+
+func NewDataSourceAuditDataMapper() *DataSourceAuditDataMapper {
+	return &DataSourceAuditDataMapper{}
+}
+
+var DataSourceAuditDataMapperInstance = NewDataSourceAuditDataMapper()
+
+func (m *DataSourceAuditDataMapper) New() *DataSourceAuditData {
+	return &DataSourceAuditData{}
+}
+
+func (m *DataSourceAuditDataMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "DataSource",
+	}
+}
+
+func (m *DataSourceAuditDataMapper) ToProperties(dataSourceAuditData *DataSourceAuditData) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_CreatedBy := dataSourceAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped *structpb.Value
+
+		var var_CreatedBy_err error
+		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
+		if var_CreatedBy_err != nil {
+			panic(var_CreatedBy_err)
+		}
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := dataSourceAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped *structpb.Value
+
+		var var_UpdatedBy_err error
+		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
+		if var_UpdatedBy_err != nil {
+			panic(var_UpdatedBy_err)
+		}
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := dataSourceAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped *structpb.Value
+
+		var var_CreatedOn_err error
+		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
+		if var_CreatedOn_err != nil {
+			panic(var_CreatedOn_err)
+		}
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := dataSourceAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped *structpb.Value
+
+		var var_UpdatedOn_err error
+		var_UpdatedOn_mapped, var_UpdatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_UpdatedOn)
+		if var_UpdatedOn_err != nil {
+			panic(var_UpdatedOn_err)
+		}
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+	return properties
+}
+
+func (m *DataSourceAuditDataMapper) FromProperties(properties map[string]*structpb.Value) *DataSourceAuditData {
+	var s = m.New()
 	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
 
 		var_CreatedBy := properties["createdBy"]
@@ -269,59 +370,6 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 		*var_UpdatedOn_mapped = val.(time.Time)
 
 		s.UpdatedOn = var_UpdatedOn_mapped
-	}
-	if properties["name"] != nil && properties["name"].AsInterface() != nil {
-
-		var_Name := properties["name"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Name_mapped := val.(string)
-
-		s.Name = var_Name_mapped
-	}
-	if properties["description"] != nil && properties["description"].AsInterface() != nil {
-
-		var_Description := properties["description"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Description)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Description_mapped := val.(string)
-
-		s.Description = var_Description_mapped
-	}
-	if properties["backend"] != nil && properties["backend"].AsInterface() != nil {
-
-		var_Backend := properties["backend"]
-		var_Backend_mapped := (DataSourceBackend)(var_Backend.GetStringValue())
-
-		s.Backend = var_Backend_mapped
-	}
-	if properties["options"] != nil && properties["options"].AsInterface() != nil {
-
-		var_Options := properties["options"]
-		var_Options_mapped := make(map[string]string)
-		for k, v := range var_Options.GetStructValue().Fields {
-
-			var_3x := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
-
-			if err != nil {
-				panic(err)
-			}
-
-			var_3x_mapped := val.(string)
-
-			var_Options_mapped[k] = var_3x_mapped
-		}
-
-		s.Options = var_Options_mapped
 	}
 	return s
 }

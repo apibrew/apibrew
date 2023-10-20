@@ -28,8 +28,8 @@ package apbr
 //		defer func() {
 //			close(ch)
 //		}()
-//		catalogs := check2(GetDhClient().GetDataSourceClient().ListEntities(ctx, &stub.ListEntitiesRequest{
-//			Token: GetDhClient().GetToken(),
+//		catalogs := check2(GetClient().GetDataSourceClient().ListEntities(ctx, &stub.ListEntitiesRequest{
+//			Token: GetClient().GetToken(),
 //			Id:    dataSource.Id,
 //		})).Catalogs
 //
@@ -70,8 +70,8 @@ package apbr
 //					}
 //				}
 //
-//				res := check2(GetDhClient().GetDataSourceClient().PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
-//					Token:   GetDhClient().GetToken(),
+//				res := check2(GetClient().GetDataSourceClient().PrepareResourceFromEntity(ctx, &stub.PrepareResourceFromEntityRequest{
+//					Token:   GetClient().GetToken(),
 //					Id:      dataSource.Id,
 //					Catalog: catalog.Name,
 //					Entity:  entity.Name,
@@ -102,8 +102,8 @@ package apbr
 //	Run: func(cmd *cobra.Command, args []string) {
 //		dataSource := loadDataSourceByNameOrId(cmd.Context(), *dataSourceId, *dataSourceName)
 //
-//		resp := check2(GetDhClient().GetDataSourceClient().Status(cmd.Context(), &stub.StatusRequest{
-//			Token: GetDhClient().GetToken(),
+//		resp := check2(GetClient().GetDataSourceClient().Status(cmd.Context(), &stub.StatusRequest{
+//			Token: GetClient().GetToken(),
 //			Id:    dataSource.Id,
 //		}))
 //
@@ -119,8 +119,8 @@ package apbr
 //	Run: func(cmd *cobra.Command, args []string) {
 //		dataSource := loadDataSourceByNameOrId(cmd.Context(), *dataSourceId, *dataSourceName)
 //
-//		catalogs := check2(GetDhClient().GetDataSourceClient().ListEntities(cmd.Context(), &stub.ListEntitiesRequest{
-//			Token: GetDhClient().GetToken(),
+//		catalogs := check2(GetClient().GetDataSourceClient().ListEntities(cmd.Context(), &stub.ListEntitiesRequest{
+//			Token: GetClient().GetToken(),
 //			Id:    dataSource.Id,
 //		})).Catalogs
 //

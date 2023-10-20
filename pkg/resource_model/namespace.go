@@ -8,15 +8,12 @@ import "github.com/google/uuid"
 import "time"
 
 type Namespace struct {
-	Id          *uuid.UUID  `json:"id,omitempty"`
-	Version     int32       `json:"version,omitempty"`
-	CreatedBy   *string     `json:"createdBy,omitempty"`
-	UpdatedBy   *string     `json:"updatedBy,omitempty"`
-	CreatedOn   *time.Time  `json:"createdOn,omitempty"`
-	UpdatedOn   *time.Time  `json:"updatedOn,omitempty"`
-	Name        string      `json:"name,omitempty"`
-	Description *string     `json:"description,omitempty"`
-	Details     interface{} `json:"details,omitempty"`
+	Id          *uuid.UUID          `json:"id,omitempty"`
+	Version     int32               `json:"version,omitempty"`
+	AuditData   *NamespaceAuditData `json:"auditData,omitempty"`
+	Name        string              `json:"name,omitempty"`
+	Description *string             `json:"description,omitempty"`
+	Details     interface{}         `json:"details,omitempty"`
 }
 
 func (s *Namespace) GetId() *uuid.UUID {
@@ -25,17 +22,8 @@ func (s *Namespace) GetId() *uuid.UUID {
 func (s *Namespace) GetVersion() int32 {
 	return s.Version
 }
-func (s *Namespace) GetCreatedBy() *string {
-	return s.CreatedBy
-}
-func (s *Namespace) GetUpdatedBy() *string {
-	return s.UpdatedBy
-}
-func (s *Namespace) GetCreatedOn() *time.Time {
-	return s.CreatedOn
-}
-func (s *Namespace) GetUpdatedOn() *time.Time {
-	return s.UpdatedOn
+func (s *Namespace) GetAuditData() *NamespaceAuditData {
+	return s.AuditData
 }
 func (s *Namespace) GetName() string {
 	return s.Name
@@ -45,4 +33,24 @@ func (s *Namespace) GetDescription() *string {
 }
 func (s *Namespace) GetDetails() interface{} {
 	return s.Details
+}
+
+type NamespaceAuditData struct {
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
+	CreatedOn *time.Time `json:"createdOn,omitempty"`
+	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
+}
+
+func (s *NamespaceAuditData) GetCreatedBy() *string {
+	return s.CreatedBy
+}
+func (s *NamespaceAuditData) GetUpdatedBy() *string {
+	return s.UpdatedBy
+}
+func (s *NamespaceAuditData) GetCreatedOn() *time.Time {
+	return s.CreatedOn
+}
+func (s *NamespaceAuditData) GetUpdatedOn() *time.Time {
+	return s.UpdatedOn
 }

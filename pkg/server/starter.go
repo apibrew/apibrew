@@ -15,22 +15,22 @@ import (
 	"strings"
 )
 
-import _ "net/http/pprof"
-
 func Run() {
-	init := flag.String("config", "", "Config file")
+	configPathP := flag.String("config", "", "Config file")
 	flag.Parse()
 	//grayLogAddr := flag.String("gray-log-addr", "", "Initial Data for configuring system")
 
-	flag.Parse()
+	RunServer(*configPathP)
+}
 
+func RunServer(configPath string) {
 	var err error
 	appConfig := &model.AppConfig{}
 
-	if strings.HasSuffix(*init, "pb") {
-		err = util.Read(*init, appConfig)
-	} else if strings.HasSuffix(*init, "json") {
-		err = util.ReadJson(*init, appConfig)
+	if strings.HasSuffix(configPath, "pb") {
+		err = util.Read(configPath, appConfig)
+	} else if strings.HasSuffix(configPath, "json") {
+		err = util.ReadJson(configPath, appConfig)
 	} else {
 		log.Fatal("config is not set")
 	}
@@ -86,7 +86,7 @@ func Run() {
 
 	grpcServer := grpc.NewGrpcServer(app)
 	grpcServer.Init()
-	restServer := rest.NewServer(app)
+	restServer := rest.NewServer(app, appConfig)
 	restServer.Init()
 
 	go grpcServer.Serve(grpcl)

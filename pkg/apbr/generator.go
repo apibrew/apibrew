@@ -46,7 +46,7 @@ var generatorCmd = &cobra.Command{
 			pkg = "model"
 		}
 
-		var resourceActionsRecords, _, err2 = GetDhClient().ListRecords(cmd.Context(), service.RecordListParams{
+		var resourceActionsRecords, _, err2 = GetClient().ListRecords(cmd.Context(), service.RecordListParams{
 			Namespace: resources2.ResourceActionResource.Namespace,
 			Resource:  resources2.ResourceActionResource.Name,
 			Limit:     1000000,

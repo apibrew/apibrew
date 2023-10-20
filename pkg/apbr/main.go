@@ -6,11 +6,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var selectorFlags = flags.NewSelectorFlags(GetDhClient)
+var selectorFlags = flags.NewSelectorFlags(GetClient)
 var overrideFlags = flags.NewOverrideFlags()
 var dhClient client.Client
 
-func GetDhClient() client.Client {
+func GetClient() client.Client {
 	return dhClient
 }
 
@@ -28,7 +28,9 @@ func init() {
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(generatorCmd)
 	rootCmd.AddCommand(deleteCmd)
-	//rootCmd.AddCommand(dataSourceCmd)
+	rootCmd.AddCommand(configureCmd)
+	rootCmd.AddCommand(deployCmd)
+	rootCmd.AddCommand(loadCmd)
 	defineRootFlags(rootCmd)
 }
 

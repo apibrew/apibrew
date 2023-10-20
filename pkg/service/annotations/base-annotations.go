@@ -34,6 +34,7 @@ const AllowPublicAccess = "AllowPublicAccess"
 
 // sql
 const SQLType = "SQLType"
+const SQLUseTextType = "SQLUseTextType"
 const UseJoinTable = "UseJoinTable"
 
 // code generator

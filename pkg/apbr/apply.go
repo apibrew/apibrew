@@ -48,7 +48,7 @@ var applyCmd = &cobra.Command{
 		overrideConfig := new(flags.OverrideConfig)
 		overrideFlags.Parse(overrideConfig, cmd, args)
 
-		applier := apply.NewApplier(GetDhClient(), doMigration, dataOnly, force, *overrideConfig)
+		applier := apply.NewApplier(GetClient(), doMigration, dataOnly, force, *overrideConfig)
 
 		for _, inputFilePath := range inputFilePathArr {
 			err = applier.ApplyWithPattern(context.TODO(), inputFilePath, format)

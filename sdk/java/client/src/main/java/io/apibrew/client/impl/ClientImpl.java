@@ -98,7 +98,7 @@ public class ClientImpl implements Client {
     }
 
     public static ClientImpl newClientByServerConfig(Config.Server serverConfig) {
-        String addr = serverConfig.getHost();
+        String addr = serverConfig.getHost() + ":" + serverConfig.getHttpPort();
 
         if (!addr.startsWith("http")) {
             if (serverConfig.isInsecure()) {

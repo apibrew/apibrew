@@ -97,6 +97,8 @@ public class Controller<T extends Entity & ControllerInstance> {
     private io.apibrew.client.Config.Server prepareConfigServer(T.ServerConfig controller) {
         io.apibrew.client.Config.Server controllerConfig = new io.apibrew.client.Config.Server();
         controllerConfig.setHost(controller.getHost());
+        controllerConfig.setPort(controller.getPort());
+        controllerConfig.setHttpPort(controller.getHttpPort());
         controllerConfig.setInsecure(controller.getInsecure());
         io.apibrew.client.Config.Authentication authentication = new io.apibrew.client.Config.Authentication();
         authentication.setUsername(controller.getAuthentication().getUsername());

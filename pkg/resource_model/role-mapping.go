@@ -12,8 +12,8 @@ import (
 )
 
 import "github.com/google/uuid"
-import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "time"
 
 type RoleMapper struct {
 }
@@ -77,56 +77,13 @@ func (m *RoleMapper) ToProperties(role *Role) map[string]*structpb.Value {
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := role.CreatedBy
+	var_AuditData := role.AuditData
 
-	if var_CreatedBy != nil {
-		var var_CreatedBy_mapped *structpb.Value
+	if var_AuditData != nil {
+		var var_AuditData_mapped *structpb.Value
 
-		var var_CreatedBy_err error
-		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
-		if var_CreatedBy_err != nil {
-			panic(var_CreatedBy_err)
-		}
-		properties["createdBy"] = var_CreatedBy_mapped
-	}
-
-	var_UpdatedBy := role.UpdatedBy
-
-	if var_UpdatedBy != nil {
-		var var_UpdatedBy_mapped *structpb.Value
-
-		var var_UpdatedBy_err error
-		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
-		if var_UpdatedBy_err != nil {
-			panic(var_UpdatedBy_err)
-		}
-		properties["updatedBy"] = var_UpdatedBy_mapped
-	}
-
-	var_CreatedOn := role.CreatedOn
-
-	if var_CreatedOn != nil {
-		var var_CreatedOn_mapped *structpb.Value
-
-		var var_CreatedOn_err error
-		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
-		if var_CreatedOn_err != nil {
-			panic(var_CreatedOn_err)
-		}
-		properties["createdOn"] = var_CreatedOn_mapped
-	}
-
-	var_UpdatedOn := role.UpdatedOn
-
-	if var_UpdatedOn != nil {
-		var var_UpdatedOn_mapped *structpb.Value
-
-		var var_UpdatedOn_err error
-		var_UpdatedOn_mapped, var_UpdatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_UpdatedOn)
-		if var_UpdatedOn_err != nil {
-			panic(var_UpdatedOn_err)
-		}
-		properties["updatedOn"] = var_UpdatedOn_mapped
+		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: RoleAuditDataMapperInstance.ToProperties(var_AuditData)})
+		properties["auditData"] = var_AuditData_mapped
 	}
 
 	var_Name := role.Name
@@ -203,6 +160,132 @@ func (m *RoleMapper) FromProperties(properties map[string]*structpb.Value) *Role
 
 		s.Version = var_Version_mapped
 	}
+	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
+
+		var_AuditData := properties["auditData"]
+		var mappedValue = RoleAuditDataMapperInstance.FromProperties(var_AuditData.GetStructValue().Fields)
+
+		var_AuditData_mapped := mappedValue
+
+		s.AuditData = var_AuditData_mapped
+	}
+	if properties["name"] != nil && properties["name"].AsInterface() != nil {
+
+		var_Name := properties["name"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Name_mapped := val.(string)
+
+		s.Name = var_Name_mapped
+	}
+	if properties["permissions"] != nil && properties["permissions"].AsInterface() != nil {
+
+		var_Permissions := properties["permissions"]
+		var_Permissions_mapped := []*Permission{}
+		for _, v := range var_Permissions.GetListValue().Values {
+
+			var_4x := v
+			var_4x_mapped := PermissionMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
+
+			var_Permissions_mapped = append(var_Permissions_mapped, var_4x_mapped)
+		}
+
+		s.Permissions = var_Permissions_mapped
+	}
+	if properties["details"] != nil && properties["details"].AsInterface() != nil {
+
+		var_Details := properties["details"]
+		var_Details_mapped := new(interface{})
+		*var_Details_mapped = unstructured.FromValue(var_Details)
+
+		s.Details = var_Details_mapped
+	}
+	return s
+}
+
+type RoleAuditDataMapper struct {
+}
+
+func NewRoleAuditDataMapper() *RoleAuditDataMapper {
+	return &RoleAuditDataMapper{}
+}
+
+var RoleAuditDataMapperInstance = NewRoleAuditDataMapper()
+
+func (m *RoleAuditDataMapper) New() *RoleAuditData {
+	return &RoleAuditData{}
+}
+
+func (m *RoleAuditDataMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Role",
+	}
+}
+
+func (m *RoleAuditDataMapper) ToProperties(roleAuditData *RoleAuditData) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_CreatedBy := roleAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped *structpb.Value
+
+		var var_CreatedBy_err error
+		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
+		if var_CreatedBy_err != nil {
+			panic(var_CreatedBy_err)
+		}
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := roleAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped *structpb.Value
+
+		var var_UpdatedBy_err error
+		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
+		if var_UpdatedBy_err != nil {
+			panic(var_UpdatedBy_err)
+		}
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := roleAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped *structpb.Value
+
+		var var_CreatedOn_err error
+		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
+		if var_CreatedOn_err != nil {
+			panic(var_CreatedOn_err)
+		}
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := roleAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped *structpb.Value
+
+		var var_UpdatedOn_err error
+		var_UpdatedOn_mapped, var_UpdatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_UpdatedOn)
+		if var_UpdatedOn_err != nil {
+			panic(var_UpdatedOn_err)
+		}
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+	return properties
+}
+
+func (m *RoleAuditDataMapper) FromProperties(properties map[string]*structpb.Value) *RoleAuditData {
+	var s = m.New()
 	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
 
 		var_CreatedBy := properties["createdBy"]
@@ -258,41 +341,6 @@ func (m *RoleMapper) FromProperties(properties map[string]*structpb.Value) *Role
 		*var_UpdatedOn_mapped = val.(time.Time)
 
 		s.UpdatedOn = var_UpdatedOn_mapped
-	}
-	if properties["name"] != nil && properties["name"].AsInterface() != nil {
-
-		var_Name := properties["name"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Name_mapped := val.(string)
-
-		s.Name = var_Name_mapped
-	}
-	if properties["permissions"] != nil && properties["permissions"].AsInterface() != nil {
-
-		var_Permissions := properties["permissions"]
-		var_Permissions_mapped := []*Permission{}
-		for _, v := range var_Permissions.GetListValue().Values {
-
-			var_4x := v
-			var_4x_mapped := PermissionMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
-
-			var_Permissions_mapped = append(var_Permissions_mapped, var_4x_mapped)
-		}
-
-		s.Permissions = var_Permissions_mapped
-	}
-	if properties["details"] != nil && properties["details"].AsInterface() != nil {
-
-		var_Details := properties["details"]
-		var_Details_mapped := new(interface{})
-		*var_Details_mapped = unstructured.FromValue(var_Details)
-
-		s.Details = var_Details_mapped
 	}
 	return s
 }

@@ -28,7 +28,7 @@ type Client interface {
 	ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error
 
 	// resource
-	GetResourceByName(ctx context.Context, namespace string, getType string) (*model.Resource, error)
+	GetResourceByName(ctx context.Context, namespace string, resourceName string) (*model.Resource, error)
 	ListResources(ctx context.Context) ([]*model.Resource, error)
 	ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error
 	DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error

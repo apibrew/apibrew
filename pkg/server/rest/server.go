@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
+	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/server/rest/docs"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
@@ -36,13 +37,15 @@ type server struct {
 	certFile          string
 	keyFile           string
 	container         service.Container
-	docsApi           docs.Api
-	metricsApi        MetricsApi
-	healthApi         HealthApi
-	recordApi         RecordApi
-	resourceApi       ResourceApi
-	eventChannelApi   EventChannelApi
-	authenticationApi AuthenticationApi
+	docsApi           Api
+	metricsApi        Api
+	healthApi         Api
+	recordApi         Api
+	resourceApi       Api
+	eventChannelApi   Api
+	authenticationApi Api
+	config            *model.AppConfig
+	pprofApi          Api
 }
 
 func (s *server) Init() {
@@ -177,6 +180,10 @@ func (s *server) configureRoutes() {
 	s.docsApi.ConfigureRouter(r)
 	s.healthApi.ConfigureRouter(r)
 
+	if s.config.EnablePprof {
+		s.pprofApi.ConfigureRouter(r)
+	}
+
 	s.handler = c.Handler(r)
 }
 
@@ -229,7 +236,7 @@ func (s *server) TraceLogMiddleWare(next http.Handler) http.Handler {
 	})
 }
 
-func NewServer(container service.Container) Server {
+func NewServer(container service.Container, config *model.AppConfig) Server {
 	return &server{
 		container:         container,
 		docsApi:           docs.NewApi(container.GetResourceService(), container.GetRecordService()),
@@ -239,5 +246,7 @@ func NewServer(container service.Container) Server {
 		healthApi:         NewHealthApi(),
 		eventChannelApi:   NewEventChannelApi(container),
 		authenticationApi: NewAuthenticationApi(container.GetAuthenticationService()),
+		config:            config,
+		pprofApi:          NewPprofApi(),
 	}
 }

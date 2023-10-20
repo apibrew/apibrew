@@ -8,8 +8,8 @@ import (
 
 //func loadDataSourceByNameOrId(ctx context.Context, id string, name string) *resource_model.DataSource {
 //	if id == "" {
-//		resp := check2(GetDhClient().GetDataSourceClient().List(ctx, &stub.ListDataSourceRequest{
-//			Token: GetDhClient().GetToken(),
+//		resp := check2(GetClient().GetDataSourceClient().List(ctx, &stub.ListDataSourceRequest{
+//			Token: GetClient().GetToken(),
 //		}))
 //
 //		for _, item := range resp.Content {
@@ -21,8 +21,8 @@ import (
 //		log.Fatal("Datasource not found with name: " + name)
 //	}
 //
-//	return check2(GetDhClient().GetDataSourceClient().Get(ctx, &stub.GetDataSourceRequest{
-//		Token: GetDhClient().GetToken(),
+//	return check2(GetClient().GetDataSourceClient().Get(ctx, &stub.GetDataSourceRequest{
+//		Token: GetClient().GetToken(),
 //		Id:    id,
 //	})).DataSource
 //}

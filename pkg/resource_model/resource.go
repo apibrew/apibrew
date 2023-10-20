@@ -8,27 +8,24 @@ import "github.com/google/uuid"
 import "time"
 
 type Resource struct {
-	Id              *uuid.UUID        `json:"id,omitempty"`
-	Version         int32             `json:"version,omitempty"`
-	CreatedBy       *string           `json:"createdBy,omitempty"`
-	UpdatedBy       *string           `json:"updatedBy,omitempty"`
-	CreatedOn       *time.Time        `json:"createdOn,omitempty"`
-	UpdatedOn       *time.Time        `json:"updatedOn,omitempty"`
-	Name            string            `json:"name,omitempty"`
-	Namespace       *Namespace        `json:"namespace,omitempty"`
-	Virtual         bool              `json:"virtual,omitempty"`
-	Properties      []Property        `json:"properties,omitempty"`
-	Indexes         []ResourceIndex   `json:"indexes,omitempty"`
-	Types           []SubType         `json:"types,omitempty"`
-	Immutable       bool              `json:"immutable,omitempty"`
-	Abstract        bool              `json:"abstract,omitempty"`
-	CheckReferences bool              `json:"checkReferences,omitempty"`
-	DataSource      *DataSource       `json:"dataSource,omitempty"`
-	Entity          *string           `json:"entity,omitempty"`
-	Catalog         *string           `json:"catalog,omitempty"`
-	Title           *string           `json:"title,omitempty"`
-	Description     *string           `json:"description,omitempty"`
-	Annotations     map[string]string `json:"annotations,omitempty"`
+	Id              *uuid.UUID         `json:"id,omitempty"`
+	Version         int32              `json:"version,omitempty"`
+	AuditData       *ResourceAuditData `json:"auditData,omitempty"`
+	Name            string             `json:"name,omitempty"`
+	Namespace       *Namespace         `json:"namespace,omitempty"`
+	Virtual         bool               `json:"virtual,omitempty"`
+	Properties      []Property         `json:"properties,omitempty"`
+	Indexes         []ResourceIndex    `json:"indexes,omitempty"`
+	Types           []SubType          `json:"types,omitempty"`
+	Immutable       bool               `json:"immutable,omitempty"`
+	Abstract        bool               `json:"abstract,omitempty"`
+	CheckReferences bool               `json:"checkReferences,omitempty"`
+	DataSource      *DataSource        `json:"dataSource,omitempty"`
+	Entity          *string            `json:"entity,omitempty"`
+	Catalog         *string            `json:"catalog,omitempty"`
+	Title           *string            `json:"title,omitempty"`
+	Description     *string            `json:"description,omitempty"`
+	Annotations     map[string]string  `json:"annotations,omitempty"`
 }
 
 func (s *Resource) GetId() *uuid.UUID {
@@ -37,17 +34,8 @@ func (s *Resource) GetId() *uuid.UUID {
 func (s *Resource) GetVersion() int32 {
 	return s.Version
 }
-func (s *Resource) GetCreatedBy() *string {
-	return s.CreatedBy
-}
-func (s *Resource) GetUpdatedBy() *string {
-	return s.UpdatedBy
-}
-func (s *Resource) GetCreatedOn() *time.Time {
-	return s.CreatedOn
-}
-func (s *Resource) GetUpdatedOn() *time.Time {
-	return s.UpdatedOn
+func (s *Resource) GetAuditData() *ResourceAuditData {
+	return s.AuditData
 }
 func (s *Resource) GetName() string {
 	return s.Name
@@ -181,6 +169,26 @@ func (s *SubType) GetDescription() *string {
 }
 func (s *SubType) GetProperties() []Property {
 	return s.Properties
+}
+
+type ResourceAuditData struct {
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
+	CreatedOn *time.Time `json:"createdOn,omitempty"`
+	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
+}
+
+func (s *ResourceAuditData) GetCreatedBy() *string {
+	return s.CreatedBy
+}
+func (s *ResourceAuditData) GetUpdatedBy() *string {
+	return s.UpdatedBy
+}
+func (s *ResourceAuditData) GetCreatedOn() *time.Time {
+	return s.CreatedOn
+}
+func (s *ResourceAuditData) GetUpdatedOn() *time.Time {
+	return s.UpdatedOn
 }
 
 type ResourceIndexProperty struct {

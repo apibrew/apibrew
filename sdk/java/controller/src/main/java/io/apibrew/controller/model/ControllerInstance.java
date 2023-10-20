@@ -24,6 +24,10 @@ public interface ControllerInstance {
         boolean getInsecure();
 
         Authentication getAuthentication();
+
+        int getPort();
+
+        int getHttpPort();
     }
 
     public interface Authentication {

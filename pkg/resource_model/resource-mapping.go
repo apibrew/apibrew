@@ -12,8 +12,8 @@ import (
 )
 
 import "github.com/google/uuid"
-import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "time"
 
 type ResourceMapper struct {
 }
@@ -77,56 +77,13 @@ func (m *ResourceMapper) ToProperties(resource *Resource) map[string]*structpb.V
 	}
 	properties["version"] = var_Version_mapped
 
-	var_CreatedBy := resource.CreatedBy
+	var_AuditData := resource.AuditData
 
-	if var_CreatedBy != nil {
-		var var_CreatedBy_mapped *structpb.Value
+	if var_AuditData != nil {
+		var var_AuditData_mapped *structpb.Value
 
-		var var_CreatedBy_err error
-		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
-		if var_CreatedBy_err != nil {
-			panic(var_CreatedBy_err)
-		}
-		properties["createdBy"] = var_CreatedBy_mapped
-	}
-
-	var_UpdatedBy := resource.UpdatedBy
-
-	if var_UpdatedBy != nil {
-		var var_UpdatedBy_mapped *structpb.Value
-
-		var var_UpdatedBy_err error
-		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
-		if var_UpdatedBy_err != nil {
-			panic(var_UpdatedBy_err)
-		}
-		properties["updatedBy"] = var_UpdatedBy_mapped
-	}
-
-	var_CreatedOn := resource.CreatedOn
-
-	if var_CreatedOn != nil {
-		var var_CreatedOn_mapped *structpb.Value
-
-		var var_CreatedOn_err error
-		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
-		if var_CreatedOn_err != nil {
-			panic(var_CreatedOn_err)
-		}
-		properties["createdOn"] = var_CreatedOn_mapped
-	}
-
-	var_UpdatedOn := resource.UpdatedOn
-
-	if var_UpdatedOn != nil {
-		var var_UpdatedOn_mapped *structpb.Value
-
-		var var_UpdatedOn_err error
-		var_UpdatedOn_mapped, var_UpdatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_UpdatedOn)
-		if var_UpdatedOn_err != nil {
-			panic(var_UpdatedOn_err)
-		}
-		properties["updatedOn"] = var_UpdatedOn_mapped
+		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ResourceAuditDataMapperInstance.ToProperties(var_AuditData)})
+		properties["auditData"] = var_AuditData_mapped
 	}
 
 	var_Name := resource.Name
@@ -364,61 +321,14 @@ func (m *ResourceMapper) FromProperties(properties map[string]*structpb.Value) *
 
 		s.Version = var_Version_mapped
 	}
-	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
+	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
 
-		var_CreatedBy := properties["createdBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
+		var_AuditData := properties["auditData"]
+		var mappedValue = ResourceAuditDataMapperInstance.FromProperties(var_AuditData.GetStructValue().Fields)
 
-		if err != nil {
-			panic(err)
-		}
+		var_AuditData_mapped := mappedValue
 
-		var_CreatedBy_mapped := new(string)
-		*var_CreatedBy_mapped = val.(string)
-
-		s.CreatedBy = var_CreatedBy_mapped
-	}
-	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
-
-		var_UpdatedBy := properties["updatedBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_UpdatedBy_mapped := new(string)
-		*var_UpdatedBy_mapped = val.(string)
-
-		s.UpdatedBy = var_UpdatedBy_mapped
-	}
-	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
-
-		var_CreatedOn := properties["createdOn"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_CreatedOn_mapped := new(time.Time)
-		*var_CreatedOn_mapped = val.(time.Time)
-
-		s.CreatedOn = var_CreatedOn_mapped
-	}
-	if properties["updatedOn"] != nil && properties["updatedOn"].AsInterface() != nil {
-
-		var_UpdatedOn := properties["updatedOn"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_UpdatedOn)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_UpdatedOn_mapped := new(time.Time)
-		*var_UpdatedOn_mapped = val.(time.Time)
-
-		s.UpdatedOn = var_UpdatedOn_mapped
+		s.AuditData = var_AuditData_mapped
 	}
 	if properties["name"] != nil && properties["name"].AsInterface() != nil {
 
@@ -1204,6 +1114,144 @@ func (m *SubTypeMapper) FromProperties(properties map[string]*structpb.Value) *S
 		}
 
 		s.Properties = var_Properties_mapped
+	}
+	return s
+}
+
+type ResourceAuditDataMapper struct {
+}
+
+func NewResourceAuditDataMapper() *ResourceAuditDataMapper {
+	return &ResourceAuditDataMapper{}
+}
+
+var ResourceAuditDataMapperInstance = NewResourceAuditDataMapper()
+
+func (m *ResourceAuditDataMapper) New() *ResourceAuditData {
+	return &ResourceAuditData{}
+}
+
+func (m *ResourceAuditDataMapper) ResourceIdentity() abs.ResourceIdentity {
+	return abs.ResourceIdentity{
+		Namespace: "system",
+		Name:      "Resource",
+	}
+}
+
+func (m *ResourceAuditDataMapper) ToProperties(resourceAuditData *ResourceAuditData) map[string]*structpb.Value {
+	var properties = make(map[string]*structpb.Value)
+
+	var_CreatedBy := resourceAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped *structpb.Value
+
+		var var_CreatedBy_err error
+		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
+		if var_CreatedBy_err != nil {
+			panic(var_CreatedBy_err)
+		}
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := resourceAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped *structpb.Value
+
+		var var_UpdatedBy_err error
+		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
+		if var_UpdatedBy_err != nil {
+			panic(var_UpdatedBy_err)
+		}
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := resourceAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped *structpb.Value
+
+		var var_CreatedOn_err error
+		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
+		if var_CreatedOn_err != nil {
+			panic(var_CreatedOn_err)
+		}
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := resourceAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped *structpb.Value
+
+		var var_UpdatedOn_err error
+		var_UpdatedOn_mapped, var_UpdatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_UpdatedOn)
+		if var_UpdatedOn_err != nil {
+			panic(var_UpdatedOn_err)
+		}
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+	return properties
+}
+
+func (m *ResourceAuditDataMapper) FromProperties(properties map[string]*structpb.Value) *ResourceAuditData {
+	var s = m.New()
+	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
+
+		var_CreatedBy := properties["createdBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_CreatedBy_mapped := new(string)
+		*var_CreatedBy_mapped = val.(string)
+
+		s.CreatedBy = var_CreatedBy_mapped
+	}
+	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
+
+		var_UpdatedBy := properties["updatedBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_UpdatedBy_mapped := new(string)
+		*var_UpdatedBy_mapped = val.(string)
+
+		s.UpdatedBy = var_UpdatedBy_mapped
+	}
+	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
+
+		var_CreatedOn := properties["createdOn"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_CreatedOn_mapped := new(time.Time)
+		*var_CreatedOn_mapped = val.(time.Time)
+
+		s.CreatedOn = var_CreatedOn_mapped
+	}
+	if properties["updatedOn"] != nil && properties["updatedOn"].AsInterface() != nil {
+
+		var_UpdatedOn := properties["updatedOn"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_UpdatedOn)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_UpdatedOn_mapped := new(time.Time)
+		*var_UpdatedOn_mapped = val.(time.Time)
+
+		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	return s
 }

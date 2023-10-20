@@ -8,17 +8,14 @@ import "github.com/google/uuid"
 import "time"
 
 type User struct {
-	Id          *uuid.UUID    `json:"id,omitempty"`
-	Version     int32         `json:"version,omitempty"`
-	CreatedBy   *string       `json:"createdBy,omitempty"`
-	UpdatedBy   *string       `json:"updatedBy,omitempty"`
-	CreatedOn   *time.Time    `json:"createdOn,omitempty"`
-	UpdatedOn   *time.Time    `json:"updatedOn,omitempty"`
-	Username    string        `json:"username,omitempty"`
-	Password    *string       `json:"password,omitempty"`
-	Roles       []*Role       `json:"roles,omitempty"`
-	Permissions []*Permission `json:"permissions,omitempty"`
-	Details     interface{}   `json:"details,omitempty"`
+	Id          *uuid.UUID     `json:"id,omitempty"`
+	Version     int32          `json:"version,omitempty"`
+	AuditData   *UserAuditData `json:"auditData,omitempty"`
+	Username    string         `json:"username,omitempty"`
+	Password    *string        `json:"password,omitempty"`
+	Roles       []*Role        `json:"roles,omitempty"`
+	Permissions []*Permission  `json:"permissions,omitempty"`
+	Details     interface{}    `json:"details,omitempty"`
 }
 
 func (s *User) GetId() *uuid.UUID {
@@ -27,17 +24,8 @@ func (s *User) GetId() *uuid.UUID {
 func (s *User) GetVersion() int32 {
 	return s.Version
 }
-func (s *User) GetCreatedBy() *string {
-	return s.CreatedBy
-}
-func (s *User) GetUpdatedBy() *string {
-	return s.UpdatedBy
-}
-func (s *User) GetCreatedOn() *time.Time {
-	return s.CreatedOn
-}
-func (s *User) GetUpdatedOn() *time.Time {
-	return s.UpdatedOn
+func (s *User) GetAuditData() *UserAuditData {
+	return s.AuditData
 }
 func (s *User) GetUsername() string {
 	return s.Username
@@ -53,4 +41,24 @@ func (s *User) GetPermissions() []*Permission {
 }
 func (s *User) GetDetails() interface{} {
 	return s.Details
+}
+
+type UserAuditData struct {
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
+	CreatedOn *time.Time `json:"createdOn,omitempty"`
+	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
+}
+
+func (s *UserAuditData) GetCreatedBy() *string {
+	return s.CreatedBy
+}
+func (s *UserAuditData) GetUpdatedBy() *string {
+	return s.UpdatedBy
+}
+func (s *UserAuditData) GetCreatedOn() *time.Time {
+	return s.CreatedOn
+}
+func (s *UserAuditData) GetUpdatedOn() *time.Time {
+	return s.UpdatedOn
 }

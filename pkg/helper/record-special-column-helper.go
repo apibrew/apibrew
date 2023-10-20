@@ -4,7 +4,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/types"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
@@ -16,9 +15,6 @@ type RecordSpecialColumnHelper struct {
 }
 
 func (h RecordSpecialColumnHelper) IsAuditEnabled() bool {
-	if h.Resource.Namespace != "system" {
-		log.Print("found")
-	}
 	return annotations.IsEnabled(h.Resource, annotations.EnableAudit)
 }
 
@@ -35,11 +31,11 @@ func (h RecordSpecialColumnHelper) InitVersion() {
 }
 
 func (h RecordSpecialColumnHelper) GetCreatedOn() *timestamppb.Timestamp {
-	if h.Record.Properties["createdOn"] == nil {
+	if h.Record.Properties["auditData"] == nil {
 		return nil
 	}
 
-	val, err := types.TimestampType.UnPack(h.Record.Properties["createdOn"])
+	val, err := types.TimestampType.UnPack(h.Record.Properties["auditData"].GetStructValue().GetFields()["createdOn"])
 
 	if err != nil {
 		panic(err)
@@ -50,7 +46,7 @@ func (h RecordSpecialColumnHelper) GetCreatedOn() *timestamppb.Timestamp {
 
 func (h RecordSpecialColumnHelper) SetCreatedOn(createdOn *timestamppb.Timestamp) {
 	if createdOn == nil {
-		delete(h.Record.Properties, "createdOn")
+		delete(h.Record.Properties, "auditData")
 	}
 
 	val, err := types.TimestampType.Pack(createdOn.AsTime())
@@ -59,25 +55,37 @@ func (h RecordSpecialColumnHelper) SetCreatedOn(createdOn *timestamppb.Timestamp
 		panic(err)
 	}
 
-	h.Record.Properties["createdOn"] = val
+	h.ensureAuditData()
+
+	h.Record.Properties["auditData"].GetStructValue().Fields["createdOn"] = val
+}
+
+func (h RecordSpecialColumnHelper) ensureAuditData() {
+	if h.Record.Properties["auditData"] == nil {
+		h.Record.Properties["auditData"] = structpb.NewStructValue(&structpb.Struct{
+			Fields: map[string]*structpb.Value{},
+		})
+	}
 }
 
 func (h RecordSpecialColumnHelper) GetCreatedBy() *string {
-	if h.Record.Properties["createdBy"] == nil {
+	if h.Record.Properties["auditData"] == nil {
 		return nil
 	}
 
-	val := h.Record.Properties["createdBy"].GetStringValue()
+	val := h.Record.Properties["auditData"].GetStructValue().Fields["createdBy"].GetStringValue()
 	return &val
 }
 
 func (h RecordSpecialColumnHelper) SetCreatedBy(createdBy string) {
-	h.Record.Properties["createdBy"] = structpb.NewStringValue(createdBy)
+	h.ensureAuditData()
+
+	h.Record.Properties["auditData"].GetStructValue().Fields["createdBy"] = structpb.NewStringValue(createdBy)
 }
 
 func (h RecordSpecialColumnHelper) SetUpdatedOn(updatedOn *timestamppb.Timestamp) {
 	if updatedOn == nil {
-		delete(h.Record.Properties, "updatedOn")
+		delete(h.Record.Properties["auditData"].GetStructValue().Fields, "updatedOn")
 	}
 
 	val, err := types.TimestampType.Pack(updatedOn.AsTime())
@@ -86,7 +94,9 @@ func (h RecordSpecialColumnHelper) SetUpdatedOn(updatedOn *timestamppb.Timestamp
 		panic(err)
 	}
 
-	h.Record.Properties["updatedOn"] = val
+	h.ensureAuditData()
+
+	h.Record.Properties["auditData"].GetStructValue().Fields["createdBy"] = val
 }
 
 func (h RecordSpecialColumnHelper) HasIdSpecialProperty() bool {
@@ -104,7 +114,10 @@ func (h RecordSpecialColumnHelper) SetId(id string) {
 }
 
 func (h RecordSpecialColumnHelper) SetUpdatedBy(updatedBy string) {
-	h.Record.Properties["updatedBy"] = structpb.NewStringValue(updatedBy)
+
+	h.ensureAuditData()
+
+	h.Record.Properties["auditData"].GetStructValue().Fields["updatedBy"] = structpb.NewStringValue(updatedBy)
 }
 
 func (h RecordSpecialColumnHelper) GetVersion() uint32 {

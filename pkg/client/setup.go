@@ -4,15 +4,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func locateConfigServer(server string) ServerConfig {
+func LocateConfigServer(server string) ServerConfig {
 	if server != "" {
-		return locateServerByName(server)
+		return LocateServerByName(server)
 	} else {
-		return locateServerByName(config.DefaultServer)
+		return LocateServerByName(config.DefaultServer)
 	}
 }
 
-func locateServerByName(serverName string) ServerConfig {
+func LocateServerByName(serverName string) ServerConfig {
 	for _, item := range config.Servers {
 		if item.Name == serverName {
 			return item

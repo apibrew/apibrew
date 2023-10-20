@@ -4,11 +4,14 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/util"
 )
 
 var RoleResource = &model.Resource{
-	Name:      "Role",
-	Namespace: "system",
+	Name:        "Role",
+	Title:       util.Pointer("Role"),
+	Description: util.Pointer("Role is a resource that defines the access control model. It is used to give permissions to users in a grouped way"),
+	Namespace:   "system",
 	SourceConfig: &model.ResourceSourceConfig{
 		DataSource: "system",
 		Entity:     "role",
@@ -21,18 +24,21 @@ var RoleResource = &model.Resource{
 		special.VersionProperty,
 		special.AuditProperty,
 		{
-			Name:     "name",
-			Type:     model.ResourceProperty_STRING,
-			Length:   256,
-			Required: true,
-			Unique:   true,
+			Name:        "name",
+			Title:       util.Pointer("Name"),
+			Description: util.Pointer(`The name of the role`),
+			Type:        model.ResourceProperty_STRING,
+			Length:      256,
+			Required:    true,
+			Unique:      true,
 			Annotations: map[string]string{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
 		{
-			Name: "permissions",
-			Type: model.ResourceProperty_LIST,
+			Name:        "permissions",
+			Description: util.Pointer(`The permissions of the role. It is used to define the access control rules for resources for roles. When you set permissions it is automatically created though Permission Resource. No need to manage it manually`),
+			Type:        model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
 				Type: model.ResourceProperty_REFERENCE,
 				Reference: &model.Reference{
@@ -46,9 +52,10 @@ var RoleResource = &model.Resource{
 			Required: false,
 		},
 		{
-			Name: "details",
-
-			Type: model.ResourceProperty_OBJECT,
+			Name:        "details",
+			Title:       util.Pointer("Details"),
+			Description: util.Pointer(`The details of the user. It is used to store additional information about the user.`),
+			Type:        model.ResourceProperty_OBJECT,
 		},
 	},
 	Annotations: map[string]string{

@@ -10,10 +10,7 @@ import "time"
 type Permission struct {
 	Id            *uuid.UUID              `json:"id,omitempty"`
 	Version       int32                   `json:"version,omitempty"`
-	CreatedBy     *string                 `json:"createdBy,omitempty"`
-	UpdatedBy     *string                 `json:"updatedBy,omitempty"`
-	CreatedOn     *time.Time              `json:"createdOn,omitempty"`
-	UpdatedOn     *time.Time              `json:"updatedOn,omitempty"`
+	AuditData     *PermissionAuditData    `json:"auditData,omitempty"`
 	Namespace     *string                 `json:"namespace,omitempty"`
 	Resource      *string                 `json:"resource,omitempty"`
 	Property      *string                 `json:"property,omitempty"`
@@ -35,17 +32,8 @@ func (s *Permission) GetId() *uuid.UUID {
 func (s *Permission) GetVersion() int32 {
 	return s.Version
 }
-func (s *Permission) GetCreatedBy() *string {
-	return s.CreatedBy
-}
-func (s *Permission) GetUpdatedBy() *string {
-	return s.UpdatedBy
-}
-func (s *Permission) GetCreatedOn() *time.Time {
-	return s.CreatedOn
-}
-func (s *Permission) GetUpdatedOn() *time.Time {
-	return s.UpdatedOn
+func (s *Permission) GetAuditData() *PermissionAuditData {
+	return s.AuditData
 }
 func (s *Permission) GetNamespace() *string {
 	return s.Namespace
@@ -85,6 +73,26 @@ func (s *Permission) GetPermit() PermissionPermit {
 }
 func (s *Permission) GetLocalFlags() interface{} {
 	return s.LocalFlags
+}
+
+type PermissionAuditData struct {
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
+	CreatedOn *time.Time `json:"createdOn,omitempty"`
+	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
+}
+
+func (s *PermissionAuditData) GetCreatedBy() *string {
+	return s.CreatedBy
+}
+func (s *PermissionAuditData) GetUpdatedBy() *string {
+	return s.UpdatedBy
+}
+func (s *PermissionAuditData) GetCreatedOn() *time.Time {
+	return s.CreatedOn
+}
+func (s *PermissionAuditData) GetUpdatedOn() *time.Time {
+	return s.UpdatedOn
 }
 
 type PermissionPropertyMode string
