@@ -591,5 +591,6 @@ If DataSource is not provided, default DataSource will be used
 		annotations.EnableAudit:     annotations.Enabled,
 		annotations.RestApiDisabled: annotations.Enabled,
 		annotations.OpenApiGroup:    OpenApiMeta,
+		annotations.OpenApiRestPath: "resources",
 	},
 }

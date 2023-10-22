@@ -40,14 +40,25 @@ func (r *eventChannelApi) pollEvents(writer http.ResponseWriter, request *http.R
 
 	writer.WriteHeader(200)
 
-	for event := range events {
+	for eventProto := range events {
+		event := extramappings.EventFromProto(eventProto)
+
+		if eventProto.Resource != nil {
+			event.Resource = &resource_model.Resource{
+				Name: eventProto.Resource.Name,
+				Namespace: &resource_model.Namespace{
+					Name: eventProto.Resource.Namespace,
+				},
+			}
+		}
+
 		select {
 		case <-request.Context().Done():
 			return
 		default:
 		}
 
-		data, err := json.Marshal(extramappings.EventFromProto(event))
+		data, err := json.Marshal(event)
 
 		if err != nil {
 			handleError(writer, err)

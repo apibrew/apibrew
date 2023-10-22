@@ -2,6 +2,17 @@ package io.apibrew.client.impl;
 
 import io.apibrew.client.*;
 import io.apibrew.client.model.Extension;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+
+import static io.apibrew.client.helper.EventHelper.shortInfo;
 
 public class RepositoryImpl<T extends Entity> implements Repository<T> {
     private final Client client;
@@ -19,36 +30,41 @@ public class RepositoryImpl<T extends Entity> implements Repository<T> {
 
     @Override
     public T create(T record) {
-        return client.createRecord(entityInfo.getEntityClass(), entityInfo.getNamespace(), entityInfo.getResource(), record);
+        return client.createRecord(entityInfo, record);
     }
 
     @Override
     public T get(String id) {
-        return client.getRecord(entityInfo.getEntityClass(), entityInfo.getNamespace(), entityInfo.getResource(), id);
+        return client.getRecord(entityInfo, id);
     }
 
     @Override
     public T update(T record) {
-        return client.updateRecord(entityInfo.getEntityClass(), entityInfo.getNamespace(), entityInfo.getResource(), record);
+        return client.updateRecord(entityInfo, record);
     }
 
     @Override
     public T delete(String id) {
-        return client.deleteRecord(entityInfo.getEntityClass(), entityInfo.getNamespace(), entityInfo.getResource(), id);
+        return client.deleteRecord(entityInfo, id);
     }
 
     @Override
     public T apply(T record) {
-        return client.applyRecord(entityInfo.getEntityClass(), entityInfo.getNamespace(), entityInfo.getResource(), record);
+        return client.applyRecord(entityInfo, record);
     }
 
     @Override
     public Container<T> list() {
-        return client.listRecords(entityInfo.getEntityClass(), entityInfo.getNamespace(), entityInfo.getResource());
+        return client.listRecords(entityInfo);
     }
 
     @Override
     public Container<T> list(Extension.BooleanExpression query) {
-        return client.listRecords(entityInfo.getEntityClass(), entityInfo.getNamespace(), entityInfo.getResource(), query);
+        return client.listRecords(entityInfo, query);
+    }
+
+    @Override
+    public Watcher<T> watch(Consumer<Extension.Event> eventConsumer) {
+        return new WatcherImpl<>(client, entityInfo, eventConsumer);
     }
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/gosimple/slug"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -96,8 +97,21 @@ func NormalizeResource(resource *model.Resource) {
 		resource.Properties = append(resource.Properties, special.VersionProperty)
 	}
 
-	if annotations.IsEnabled(resource, annotations.EnableAudit) && propertyNameMap[special.AuditProperty.Name] == nil {
-		resource.Properties = append(resource.Properties, special.AuditProperty)
+	if annotations.IsEnabled(resource, annotations.EnableAudit) {
+		if propertyNameMap[special.AuditProperty.Name] == nil {
+			resource.Properties = append(resource.Properties, special.AuditProperty)
+		}
+
+		var found = false
+		for _, subType := range resource.Types {
+			if subType.Name == special.AuditDataSubType.Name {
+				found = true
+			}
+		}
+
+		if !found {
+			resource.Types = append(resource.Types, special.AuditDataSubType)
+		}
 	}
 
 	if !HasResourcePrimaryProp(resource) && propertyNameMap[special.IdProperty.Name] == nil {
@@ -158,5 +172,15 @@ func resourceWalkPropertiesRecursive(resource *model.Resource, path string, prop
 		if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
 			resourceWalkPropertiesRecursive(resource, newName+"[]", []*model.ResourceProperty{property.Item}, true, callback)
 		}
+	}
+}
+
+func ResourceRestPath(resource *model.Resource) string {
+	if annotations.Get(resource, annotations.OpenApiRestPath) != "" {
+		return annotations.Get(resource, annotations.OpenApiRestPath)
+	} else if resource.Namespace == "default" {
+		return slug.Make(resource.Name)
+	} else {
+		return slug.Make(resource.Namespace + "/" + resource.Name)
 	}
 }

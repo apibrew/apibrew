@@ -13,7 +13,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
-	"github.com/gosimple/slug"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
 	"strings"
@@ -155,7 +154,7 @@ func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, reso
 }
 
 func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError {
-	ctx = annotations.SetWithContext(ctx, annotations.UseJoinTable, "true")
+	ctx = annotations.SetWithContext(ctx, annotations.UseJoinTable, "true") // O(1)
 	records, _, err := r.backendProviderService.ListRecords(ctx, resources.ResourceResource, abs.ListRecordParams{
 		Limit: 1000000,
 		ResolveReferences: []string{
@@ -283,39 +282,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	var txCtx = ctx
-	var success = false
-
-	if txCtx.Value(abs.TransactionContextKey) == nil {
-		txk, err := r.backendProviderService.BeginTransaction(ctx, "system", false)
-
-		if err != nil {
-			return err
-		}
-
-		txCtx = context.WithValue(ctx, abs.TransactionContextKey, txk)
-
-		defer func() {
-			if success {
-				err = r.backendProviderService.CommitTransaction(txCtx, "system")
-
-				if err != nil {
-					log.Print(err)
-				}
-
-				r.mustReloadResources()
-			} else {
-				err = r.backendProviderService.RollbackTransaction(txCtx, "system")
-
-				if err != nil {
-					log.Print(err)
-				}
-			}
-
-			r.mustReloadResources()
-		}()
-	}
-
 	if !resource.Virtual && doMigration {
 		if forceMigration {
 			// prepare local migration plan for backend
@@ -352,12 +318,12 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		}
 	}
 
-	success = true
+	r.registerResourceToSchema(resource)
 
 	return nil
 }
 
-func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
+func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (res *model.Resource, err errors.ServiceError) {
 	r.mu.Lock()
 	defer func() {
 		r.mu.Unlock()
@@ -403,35 +369,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	var txCtx = ctx
 
-	var success = false
-	if txCtx.Value(abs.TransactionContextKey) == nil {
-		txk, err := r.backendProviderService.BeginTransaction(ctx, "system", false)
-
-		if err != nil {
-			return nil, err
-		}
-
-		txCtx = context.WithValue(ctx, abs.TransactionContextKey, txk)
-
-		defer func() {
-			if success {
-				err = r.backendProviderService.CommitTransaction(txCtx, "system")
-
-				if err != nil {
-					log.Print(err)
-				}
-
-				r.mustReloadResources()
-			} else {
-				err = r.backendProviderService.RollbackTransaction(txCtx, "system")
-
-				if err != nil {
-					log.Print(err)
-				}
-			}
-		}()
-	}
-
 	InitRecord(ctx, resources.ResourceResource, resourceRecord)
 	NormalizeRecord(resources.ResourceResource, resourceRecord)
 
@@ -452,6 +389,17 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	if err != nil {
 		return nil, err
 	}
+
+	defer func() {
+		if err != nil {
+			log.Print("Reverting created records for resource: " + resource.Name + " with id: " + result[0].Id + " due to error: " + err.Error() + " ...")
+			if err := r.backendProviderService.DeleteRecords(util.WithSystemContext(context.TODO()), resources.ResourceResource, []string{
+				result[0].Id,
+			}); err != nil {
+				log.Error(err)
+			}
+		}
+	}()
 
 	// fetch inserted record
 
@@ -521,7 +469,8 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 	}
 
-	success = true
+	r.schema.Resources = append(r.schema.Resources, insertedResource)
+	r.registerResourceToSchema(insertedResource)
 
 	return resource, nil
 }
@@ -595,13 +544,18 @@ func (r *resourceService) prepareSchemaMappings() {
 	r.schema.ResourceBySlug = make(map[string]*model.Resource)
 	r.schema.ResourcePropertiesByType = make(map[string]map[model.ResourceProperty_Type][]abs.PropertyWithPath)
 	for _, resource := range r.schema.Resources {
-		r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
-		r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
-		r.schema.ResourceBySlug[slug.Make(resource.Namespace+"/"+resource.Name)] = resource
-		if resource.Namespace == "default" {
-			r.schema.ResourceBySlug[slug.Make(resource.Name)] = resource
-		}
+		r.registerResourceToSchema(resource)
 	}
+}
+
+func (r *resourceService) registerResourceToSchema(resource *model.Resource) {
+
+	r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
+	r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
+
+	r.schema.ResourceBySlug[util.ResourceRestPath(resource)] = resource
+
+	log.Debugf("Registered resource to schema: %s/%s", resource.Namespace, resource.Name)
 }
 
 func (r *resourceService) migrateResource(resource *model.Resource) {
@@ -653,6 +607,9 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 		resource, err := r.Get(ctx, resourceId)
 
 		if err != nil {
+			for _, item := range r.schema.Resources {
+				log.Print(item.Id, item.Namespace, item.Name)
+			}
 			return err
 		}
 

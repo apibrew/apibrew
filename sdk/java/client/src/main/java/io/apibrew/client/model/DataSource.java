@@ -3,6 +3,7 @@ package io.apibrew.client.model;
 import java.util.Objects;
 import io.apibrew.client.EntityInfo;
 import io.apibrew.client.Entity;
+import io.apibrew.client.Client;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,13 +16,7 @@ public class DataSource extends Entity {
     
     private int version;
     
-    private String createdBy;
-    
-    private String updatedBy;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
-    private java.time.Instant createdOn;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
-    private java.time.Instant updatedOn;
+    private DataSource.AuditData auditData;
     
     private String name;
     
@@ -37,6 +32,69 @@ public class DataSource extends Entity {
     @JsonIgnore
     public static final EntityInfo<DataSource> entityInfo = new EntityInfo<>("system", "DataSource", DataSource.class, "system-datasource");
 
+    public static class AuditData {
+        
+        private String createdBy;
+        
+        private String updatedBy;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
+        private java.time.Instant createdOn;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
+        private java.time.Instant updatedOn;
+
+        public String getCreatedBy() {
+            return createdBy;
+        }
+
+        public void setCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
+        }
+
+        public AuditData withCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
+
+            return this;
+        }
+        public String getUpdatedBy() {
+            return updatedBy;
+        }
+
+        public void setUpdatedBy(String updatedBy) {
+            this.updatedBy = updatedBy;
+        }
+
+        public AuditData withUpdatedBy(String updatedBy) {
+            this.updatedBy = updatedBy;
+
+            return this;
+        }
+        public java.time.Instant getCreatedOn() {
+            return createdOn;
+        }
+
+        public void setCreatedOn(java.time.Instant createdOn) {
+            this.createdOn = createdOn;
+        }
+
+        public AuditData withCreatedOn(java.time.Instant createdOn) {
+            this.createdOn = createdOn;
+
+            return this;
+        }
+        public java.time.Instant getUpdatedOn() {
+            return updatedOn;
+        }
+
+        public void setUpdatedOn(java.time.Instant updatedOn) {
+            this.updatedOn = updatedOn;
+        }
+
+        public AuditData withUpdatedOn(java.time.Instant updatedOn) {
+            this.updatedOn = updatedOn;
+
+            return this;
+        }
+    }
 
     public static enum Backend {
         POSTGRESQL("POSTGRESQL"),
@@ -55,6 +113,8 @@ public class DataSource extends Entity {
             return value;
         }
     }
+
+    
 
     public DataSource() {
     }
@@ -85,55 +145,16 @@ public class DataSource extends Entity {
 
         return this;
     }
-    public String getCreatedBy() {
-        return createdBy;
+    public DataSource.AuditData getAuditData() {
+        return auditData;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public void setAuditData(DataSource.AuditData auditData) {
+        this.auditData = auditData;
     }
 
-    public DataSource withCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-
-        return this;
-    }
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public DataSource withUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-
-        return this;
-    }
-    public java.time.Instant getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(java.time.Instant createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public DataSource withCreatedOn(java.time.Instant createdOn) {
-        this.createdOn = createdOn;
-
-        return this;
-    }
-    public java.time.Instant getUpdatedOn() {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(java.time.Instant updatedOn) {
-        this.updatedOn = updatedOn;
-    }
-
-    public DataSource withUpdatedOn(java.time.Instant updatedOn) {
-        this.updatedOn = updatedOn;
+    public DataSource withAuditData(DataSource.AuditData auditData) {
+        this.auditData = auditData;
 
         return this;
     }
@@ -204,16 +225,7 @@ public class DataSource extends Entity {
         if (!Objects.equals(this.version, obj.version)) {
             return false;
         }
-        if (!Objects.equals(this.createdBy, obj.createdBy)) {
-            return false;
-        }
-        if (!Objects.equals(this.updatedBy, obj.updatedBy)) {
-            return false;
-        }
-        if (!Objects.equals(this.createdOn, obj.createdOn)) {
-            return false;
-        }
-        if (!Objects.equals(this.updatedOn, obj.updatedOn)) {
+        if (!Objects.equals(this.auditData, obj.auditData)) {
             return false;
         }
         if (!Objects.equals(this.name, obj.name)) {

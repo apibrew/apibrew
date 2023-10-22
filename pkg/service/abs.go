@@ -33,10 +33,6 @@ type BackendProviderService interface {
 	PrepareResourceFromEntity(ctx context.Context, dataSourceName string, catalog, entity string) (*model.Resource, errors.ServiceError)
 	UpgradeResource(ctx context.Context, dataSourceName string, params abs.UpgradeResourceParams) errors.ServiceError
 	GetStatus(ctx context.Context, dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
-	BeginTransaction(ctx context.Context, dataSourceId string, readOnly bool) (transactionKey string, serviceError errors.ServiceError)
-	CommitTransaction(ctx context.Context, dataSourceId string) (serviceError errors.ServiceError)
-	RollbackTransaction(ctx context.Context, dataSourceId string) (serviceError errors.ServiceError)
-	IsTransactionAlive(ctx context.Context, dataSourceId string) (isAlive bool, serviceError errors.ServiceError)
 	Init(config *model.AppConfig)
 	SetSchema(schema *abs.Schema)
 }
@@ -99,6 +95,7 @@ type StatsService interface {
 
 type WatchService interface {
 	Watch(ctx context.Context, params WatchParams) (<-chan *model.Event, errors.ServiceError)
+	WatchResource(ctx context.Context, params WatchParams) (<-chan *model.Event, errors.ServiceError)
 }
 
 type EventChannelService interface {
@@ -126,6 +123,11 @@ type CheckRecordAccessParams struct {
 }
 
 type WatchParams struct {
+	Selector   *model.EventSelector
+	BufferSize int
+}
+
+type WatchResourceParams struct {
 	Selector   *model.EventSelector
 	BufferSize int
 }

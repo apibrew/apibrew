@@ -167,6 +167,9 @@ func FromStructValue(v *structpb.Struct) Unstructured {
 }
 
 func FromValue(v *structpb.Value) Any {
+	if v == nil {
+		return nil
+	}
 	switch v := v.Kind.(type) {
 	case *structpb.Value_NullValue:
 		return nil

@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"strconv"
@@ -22,6 +24,7 @@ type RecordApi interface {
 type recordApi struct {
 	recordService   service.RecordService
 	resourceService service.ResourceService
+	watchService    service.WatchService
 }
 
 func (r *recordApi) ConfigureRouter(router *mux.Router) {
@@ -31,16 +34,19 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 	subRoute.HandleFunc("/{resourceSlug}", r.handleRecordCreate).Methods("POST")
 	subRoute.HandleFunc("/{resourceSlug}", r.handleRecordApply).Methods("PATCH")
 
-	// search
+	// internal actions
 	subRoute.HandleFunc("/{resourceSlug}/_search", r.handleRecordSearch).Methods("POST")
+	subRoute.HandleFunc("/{resourceSlug}/_watch", r.handleRecordWatch).Methods("GET")
 	subRoute.HandleFunc("/{resourceSlug}/_resource", r.handleRecordResource).Methods("GET")
-	subRoute.HandleFunc("/{resourceSlug}/{id}/_{action}", r.handleAction).Methods("GET")
-	subRoute.HandleFunc("/{resourceSlug}/{id}/_{action}", r.handleAction).Methods("POST")
 
 	// record level operations
 	subRoute.HandleFunc("/{resourceSlug}/{id}", r.handleRecordGet).Methods("GET")
 	subRoute.HandleFunc("/{resourceSlug}/{id}", r.handleRecordUpdate).Methods("PUT")
 	subRoute.HandleFunc("/{resourceSlug}/{id}", r.handleRecordDelete).Methods("DELETE")
+
+	// user defined actions
+	subRoute.HandleFunc("/{resourceSlug}/{id}/_{action}", r.handleAction).Methods("GET")
+	subRoute.HandleFunc("/{resourceSlug}/{id}/_{action}", r.handleAction).Methods("POST")
 }
 
 func (r *recordApi) matchFunc(request *http.Request, match *mux.RouteMatch) bool {
@@ -366,9 +372,69 @@ func (r *recordApi) handleAction(writer http.ResponseWriter, request *http.Reque
 	respondSuccess(writer, result)
 }
 
+func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	res, err := r.watchService.WatchResource(request.Context(), service.WatchParams{
+		Selector: &model.EventSelector{
+			Actions: []model.Event_Action{
+				model.Event_CREATE,
+				model.Event_UPDATE,
+				model.Event_DELETE,
+			},
+			Namespaces: []string{resource.Namespace},
+			Resources:  []string{resource.Name},
+		},
+	})
+
+	if err != nil {
+		handleServiceError(writer, err)
+		return
+	}
+
+	writer.WriteHeader(200)
+
+	for eventProto := range res {
+		select {
+		case <-request.Context().Done():
+			return
+		default:
+		}
+
+		event := extramappings.EventFromProto(eventProto)
+
+		if eventProto.Resource != nil {
+			event.Resource = &resource_model.Resource{
+				Name: eventProto.Resource.Name,
+				Namespace: &resource_model.Namespace{
+					Name: eventProto.Resource.Namespace,
+				},
+			}
+		}
+
+		data, err := json.Marshal(event)
+
+		if err != nil {
+			log.Print(err)
+			return
+		}
+
+		_, _ = writer.Write(data)
+
+		_, _ = writer.Write([]byte("\n"))
+
+		if f, ok := writer.(http.Flusher); ok {
+			f.Flush()
+		}
+
+	}
+}
+
 func NewRecordApi(container service.Container) RecordApi {
 	return &recordApi{
 		recordService:   container.GetRecordService(),
 		resourceService: container.GetResourceService(),
+		watchService:    container.GetWatchService(),
 	}
 }

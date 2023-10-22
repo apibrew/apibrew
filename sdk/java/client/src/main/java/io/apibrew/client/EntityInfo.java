@@ -37,4 +37,9 @@ public final class EntityInfo<T> {
     public String getRestPath() {
         return restPath;
     }
+
+    @Override
+    public String toString() {
+        return getNamespace() + "/" + getResource();
+    }
 }

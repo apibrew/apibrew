@@ -3,7 +3,6 @@ package java
 import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
-	"github.com/gosimple/slug"
 	"strings"
 )
 
@@ -16,11 +15,7 @@ func propertyName(property *model.ResourceProperty) string {
 }
 
 func getRestPath(resource *model.Resource) string {
-	if resource.Namespace == "" || resource.Namespace == "default" {
-		return slug.Make(resource.Name)
-	} else {
-		return slug.Make(resource.Namespace + "/" + resource.Name)
-	}
+	return util.ResourceRestPath(resource)
 }
 
 func getJavaPropertyAnnotations(resource *model.Resource, property *model.ResourceProperty) string {

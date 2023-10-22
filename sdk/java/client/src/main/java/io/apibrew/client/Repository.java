@@ -2,6 +2,9 @@ package io.apibrew.client;
 
 import io.apibrew.client.model.Extension;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 public interface Repository<T extends Entity> {
 
     T create(T record);
@@ -12,4 +15,6 @@ public interface Repository<T extends Entity> {
      Container<T> list();
 
     Container<T> list(Extension.BooleanExpression query);
+
+    Watcher<T> watch(Consumer<Extension.Event> eventConsumer);
 }

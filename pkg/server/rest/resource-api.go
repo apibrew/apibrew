@@ -1,12 +1,16 @@
 package rest
 
 import (
+	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
+	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -16,6 +20,7 @@ type ResourceApi interface {
 
 type resourceApi struct {
 	resourceService service.ResourceService
+	watchService    service.WatchService
 }
 
 func (r *resourceApi) ConfigureRouter(router *mux.Router) {
@@ -27,6 +32,7 @@ func (r *resourceApi) ConfigureRouter(router *mux.Router) {
 	subRoute.HandleFunc("/", r.handleResourceCreate).Methods("POST")
 
 	// resource level operations
+	subRoute.HandleFunc("/_watch", r.handleResourceWatch).Methods("GET")
 	subRoute.HandleFunc("/{id}", r.handleResourceGet).Methods("GET")
 	subRoute.HandleFunc("/{id}", r.handleResourceUpdate).Methods("PUT")
 	subRoute.HandleFunc("/{id}", r.handleResourceDelete).Methods("DELETE")
@@ -40,7 +46,10 @@ func (r *resourceApi) handleResourceList(writer http.ResponseWriter, request *ht
 
 	ServiceResponder().
 		Writer(writer).
-		Respond(util.ArrayMap(resources, resourceTo), err)
+		Respond(map[string]interface{}{
+			"total":   len(resources),
+			"content": util.ArrayMap(resources, resourceTo),
+		}, err)
 }
 
 func resourceTo(resource *model.Resource) *resource_model.Resource {
@@ -145,8 +154,65 @@ func (r *resourceApi) handleResourceDelete(writer http.ResponseWriter, request *
 		Respond(nil, serviceErr)
 }
 
+func (r *resourceApi) handleResourceWatch(writer http.ResponseWriter, request *http.Request) {
+	res, err := r.watchService.WatchResource(request.Context(), service.WatchParams{
+		Selector: &model.EventSelector{
+			Actions: []model.Event_Action{
+				model.Event_CREATE,
+				model.Event_UPDATE,
+				model.Event_DELETE,
+			},
+			Namespaces: []string{resources.ResourceResource.Namespace},
+			Resources:  []string{resources.ResourceResource.Name},
+		},
+	})
+
+	if err != nil {
+		handleServiceError(writer, err)
+		return
+	}
+
+	writer.WriteHeader(200)
+
+	for eventProto := range res {
+		select {
+		case <-request.Context().Done():
+			return
+		default:
+		}
+
+		event := extramappings.EventFromProto(eventProto)
+
+		if eventProto.Resource != nil {
+			event.Resource = &resource_model.Resource{
+				Name: eventProto.Resource.Name,
+				Namespace: &resource_model.Namespace{
+					Name: eventProto.Resource.Namespace,
+				},
+			}
+		}
+
+		data, err := json.Marshal(event)
+
+		if err != nil {
+			log.Print(err)
+			return
+		}
+
+		_, _ = writer.Write(data)
+
+		_, _ = writer.Write([]byte("\n"))
+
+		if f, ok := writer.(http.Flusher); ok {
+			f.Flush()
+		}
+
+	}
+}
+
 func NewResourceApi(container service.Container) ResourceApi {
 	return &resourceApi{
 		resourceService: container.GetResourceService(),
+		watchService:    container.GetWatchService(),
 	}
 }

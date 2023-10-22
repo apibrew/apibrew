@@ -19,8 +19,7 @@ type eventSignal struct {
 }
 
 type eventChannelService struct {
-	channelChans         map[string]chan string
-	eventMap             map[string]map[string]*model.Event
+	channelChans         map[string]chan *model.Event
 	eventSignalMap       map[string]map[string]eventSignal
 	mu                   sync.Mutex
 	authorizationService service.AuthorizationService
@@ -53,7 +52,7 @@ func (e *eventChannelService) WriteEvent(ctx context.Context, channelKey string,
 
 	e.ensureChannel(channelKey)
 
-	if e.eventMap[channelKey][event.Id] == nil || e.eventSignalMap[channelKey][event.Id].ctx.Err() != nil {
+	if e.eventSignalMap[channelKey][event.Id].ctx == nil || e.eventSignalMap[channelKey][event.Id].ctx.Err() != nil {
 		log.Warn("Event is not exists or already discarded: " + event.Id)
 		return errors.LogicalError.WithMessage("Event is not exists or already discarded: " + event.Id)
 	}
@@ -82,14 +81,13 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 			case <-ctx.Done():
 				close(eventChan)
 				return
-			case eventId := <-e.channelChans[channelKey]:
-				event := e.eventMap[channelKey][eventId]
+			case event := <-e.channelChans[channelKey]:
 				if event != nil {
 					eventChan <- event
 					log.Tracef("Event sent to channel: %v", channelKey)
 				} else {
-					log.Warn("Event not found or already discarted: " + eventId)
-					releaseEvent(e, channelKey, eventId)
+					log.Warn("Event not found or already discarted: " + event.Id)
+					releaseEvent(e, channelKey, event.Id)
 				}
 			case <-time.After(3 * time.Second):
 				log.Tracef("Heartbeat message sent to channel: %v", channelKey)
@@ -108,25 +106,31 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 
 func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, errors.ServiceError) {
 	e.ensureChannel(channelKey)
-	e.eventMap[channelKey][event.Id] = event
 
-	var handler = make(chan *model.Event)
+	var handler chan *model.Event
 
 	cctx, cancel := context.WithTimeout(ctx, time.Duration(e.config.MaxWaitTimeMs)*time.Millisecond)
 
 	defer cancel()
 	defer releaseEvent(e, channelKey, event.Id)
 
-	e.eventSignalMap[channelKey][event.Id] = eventSignal{
-		ctx:     cctx,
-		handler: handler,
+	if event.Sync {
+		handler = make(chan *model.Event)
+		e.eventSignalMap[channelKey][event.Id] = eventSignal{
+			ctx:     cctx,
+			handler: handler,
+		}
 	}
 
 	select {
-	case e.channelChans[channelKey] <- event.Id:
+	case e.channelChans[channelKey] <- event:
 	case <-cctx.Done():
 		log.Warn("Event channel timeout[send]: " + event.Id + "/" + channelKey)
 		cancel()
+	}
+
+	if !event.Sync {
+		return nil, nil
 	}
 
 	select {
@@ -143,7 +147,6 @@ func releaseEvent(e *eventChannelService, channelKey string, eventId string) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
-	delete(e.eventMap[channelKey], eventId)
 	delete(e.eventSignalMap[channelKey], eventId)
 }
 
@@ -152,11 +155,7 @@ func (e *eventChannelService) ensureChannel(key string) {
 	defer e.mu.Unlock()
 
 	if e.channelChans[key] == nil {
-		e.channelChans[key] = make(chan string, 100)
-	}
-
-	if e.eventMap[key] == nil {
-		e.eventMap[key] = make(map[string]*model.Event)
+		e.channelChans[key] = make(chan *model.Event, 100)
 	}
 
 	if e.eventSignalMap[key] == nil {
@@ -166,8 +165,7 @@ func (e *eventChannelService) ensureChannel(key string) {
 
 func NewEventChannelService(authorizationService service.AuthorizationService) service.EventChannelService {
 	return &eventChannelService{
-		channelChans:         make(map[string]chan string),
-		eventMap:             make(map[string]map[string]*model.Event),
+		channelChans:         make(map[string]chan *model.Event),
 		eventSignalMap:       make(map[string]map[string]eventSignal),
 		authorizationService: authorizationService,
 	}

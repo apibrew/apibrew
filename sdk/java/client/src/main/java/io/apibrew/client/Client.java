@@ -6,6 +6,7 @@ import io.apibrew.client.model.Resource;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public interface Client {
@@ -48,21 +49,21 @@ public interface Client {
 
     <T extends Entity> Repository<T> repository(EntityInfo<T> entityInfo);
 
-    <T extends Entity> Container<T> listRecords(Class<T> entityClass, String namespace, String resource);
+    <T extends Entity> Container<T> listRecords(EntityInfo<T> entityInfo);
 
-    <T extends Entity> Container<T> listRecords(Class<T> entityClass, String namespace, String resource, Extension.BooleanExpression query);
+    <T extends Entity> Container<T> listRecords(EntityInfo<T> entityInfo, Extension.BooleanExpression query);
 
-    <T extends Entity> T applyRecord(Class<T> entityClass, String namespace, String resource, T record);
+    <T extends Entity> T applyRecord(EntityInfo<T> entityInfo, T record);
 
-    <T extends Entity> T deleteRecord(Class<T> entityClass, String namespace, String resource, String id);
+    <T extends Entity> T deleteRecord(EntityInfo<T> entityInfo, String id);
 
-    <T extends Entity> T updateRecord(Class<T> entityClass, String namespace, String resource, T record);
+    <T extends Entity> T updateRecord(EntityInfo<T> entityInfo, T record);
 
-    <T extends Entity> T getRecord(Class<T> entityClass, String namespace, String resource, String id);
+    <T extends Entity> T getRecord(EntityInfo<T> entityInfo, String id);
 
-    <T extends Entity, ActionRequest, ActionResponse> ActionResponse executeRecordAction(Class<ActionResponse> responseClass, String namespace, String resource, String id, String actionName, ActionRequest request);
+    <T extends Entity, ActionRequest, ActionResponse> ActionResponse executeRecordAction(Class<ActionResponse> responseClass, EntityInfo<T> entityInfo, String id, String actionName, ActionRequest request);
 
-    <T extends Entity> T createRecord(Class<T> entityClass, String namespace, String resource, T record);
+    <T extends Entity> T createRecord(EntityInfo<T> entityInfo, T record);
 
     void writeEvent(String channelKey, Extension.Event event);
 

@@ -3,6 +3,7 @@ package io.apibrew.client.model;
 import java.util.Objects;
 import io.apibrew.client.EntityInfo;
 import io.apibrew.client.Entity;
+import io.apibrew.client.Client;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,13 +16,7 @@ public class User extends Entity {
     
     private int version;
     
-    private String createdBy;
-    
-    private String updatedBy;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
-    private java.time.Instant createdOn;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
-    private java.time.Instant updatedOn;
+    private User.AuditData auditData;
     
     private String username;
     
@@ -39,7 +34,72 @@ public class User extends Entity {
     @JsonIgnore
     public static final EntityInfo<User> entityInfo = new EntityInfo<>("system", "User", User.class, "system-user");
 
+    public static class AuditData {
+        
+        private String createdBy;
+        
+        private String updatedBy;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
+        private java.time.Instant createdOn;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
+        private java.time.Instant updatedOn;
 
+        public String getCreatedBy() {
+            return createdBy;
+        }
+
+        public void setCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
+        }
+
+        public AuditData withCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
+
+            return this;
+        }
+        public String getUpdatedBy() {
+            return updatedBy;
+        }
+
+        public void setUpdatedBy(String updatedBy) {
+            this.updatedBy = updatedBy;
+        }
+
+        public AuditData withUpdatedBy(String updatedBy) {
+            this.updatedBy = updatedBy;
+
+            return this;
+        }
+        public java.time.Instant getCreatedOn() {
+            return createdOn;
+        }
+
+        public void setCreatedOn(java.time.Instant createdOn) {
+            this.createdOn = createdOn;
+        }
+
+        public AuditData withCreatedOn(java.time.Instant createdOn) {
+            this.createdOn = createdOn;
+
+            return this;
+        }
+        public java.time.Instant getUpdatedOn() {
+            return updatedOn;
+        }
+
+        public void setUpdatedOn(java.time.Instant updatedOn) {
+            this.updatedOn = updatedOn;
+        }
+
+        public AuditData withUpdatedOn(java.time.Instant updatedOn) {
+            this.updatedOn = updatedOn;
+
+            return this;
+        }
+    }
+
+
+    
 
     public User() {
     }
@@ -70,55 +130,16 @@ public class User extends Entity {
 
         return this;
     }
-    public String getCreatedBy() {
-        return createdBy;
+    public User.AuditData getAuditData() {
+        return auditData;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public void setAuditData(User.AuditData auditData) {
+        this.auditData = auditData;
     }
 
-    public User withCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-
-        return this;
-    }
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public User withUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-
-        return this;
-    }
-    public java.time.Instant getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(java.time.Instant createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public User withCreatedOn(java.time.Instant createdOn) {
-        this.createdOn = createdOn;
-
-        return this;
-    }
-    public java.time.Instant getUpdatedOn() {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(java.time.Instant updatedOn) {
-        this.updatedOn = updatedOn;
-    }
-
-    public User withUpdatedOn(java.time.Instant updatedOn) {
-        this.updatedOn = updatedOn;
+    public User withAuditData(User.AuditData auditData) {
+        this.auditData = auditData;
 
         return this;
     }
@@ -202,16 +223,7 @@ public class User extends Entity {
         if (!Objects.equals(this.version, obj.version)) {
             return false;
         }
-        if (!Objects.equals(this.createdBy, obj.createdBy)) {
-            return false;
-        }
-        if (!Objects.equals(this.updatedBy, obj.updatedBy)) {
-            return false;
-        }
-        if (!Objects.equals(this.createdOn, obj.createdOn)) {
-            return false;
-        }
-        if (!Objects.equals(this.updatedOn, obj.updatedOn)) {
+        if (!Objects.equals(this.auditData, obj.auditData)) {
             return false;
         }
         if (!Objects.equals(this.username, obj.username)) {

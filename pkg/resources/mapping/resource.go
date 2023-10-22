@@ -75,7 +75,7 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 	}
 
 	var resource = &model.Resource{
-		Id:              record.Id,
+		Id:              record.Properties["id"].GetStringValue(),
 		Name:            record.Properties["name"].GetStringValue(),
 		Namespace:       record.Properties["namespace"].GetStructValue().GetFields()["name"].GetStringValue(),
 		Virtual:         record.Properties["virtual"].GetBoolValue(),

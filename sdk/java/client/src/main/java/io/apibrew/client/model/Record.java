@@ -3,6 +3,7 @@ package io.apibrew.client.model;
 import java.util.Objects;
 import io.apibrew.client.EntityInfo;
 import io.apibrew.client.Entity;
+import io.apibrew.client.Client;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,6 +25,8 @@ public class Record extends Entity {
     public static final EntityInfo<Record> entityInfo = new EntityInfo<>("system", "Record", Record.class, "system-record");
 
 
+
+    
 
     public Record() {
     }

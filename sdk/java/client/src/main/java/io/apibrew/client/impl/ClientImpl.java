@@ -15,15 +15,12 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
 import static io.apibrew.client.helper.EventHelper.shortInfo;
 
@@ -47,6 +44,10 @@ public class ClientImpl implements Client {
 
         static String recordSearchUrl(String url, String restPath) {
             return String.format("%s/%s/_search", url, restPath);
+        }
+
+        static String recordWatchUrl(String url, String restPath) {
+            return String.format("%s/%s/_watch", url, restPath);
         }
 
         static String resourceByName(String url, String namespace, String name) {
@@ -218,10 +219,10 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public <T extends Entity> Container<T> listRecords(Class<T> entityClass, String namespace, String resource) {
-        JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, entityClass);
+    public <T extends Entity> Container<T> listRecords(EntityInfo<T> entityInfo) {
+        JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, entityInfo.getEntityClass());
 
-        HttpResponse<Container<T>> result = Unirest.get(Urls.recordUrl(url, recordRestPath(namespace, resource))).headers(headers()).asObject(resp -> {
+        HttpResponse<Container<T>> result = Unirest.get(Urls.recordUrl(url, entityInfo.getRestPath())).headers(headers()).asObject(resp -> {
             try {
                 JsonNode json = objectMapper.readTree(resp.getContent());
 
@@ -245,13 +246,13 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public <T extends Entity> Container<T> listRecords(Class<T> entityClass, String namespace, String resource, Extension.BooleanExpression query) {
-        JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, entityClass);
+    public <T extends Entity> Container<T> listRecords(EntityInfo<T> entityInfo, Extension.BooleanExpression query) {
+        JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, entityInfo.getEntityClass());
 
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("query", query);
 
-        HttpResponse<Container<T>> result = Unirest.post(Urls.recordSearchUrl(url, recordRestPath(namespace, resource)))
+        HttpResponse<Container<T>> result = Unirest.post(Urls.recordSearchUrl(url, entityInfo.getRestPath()))
                 .body(searchParams)
                 .headers(headers())
                 .asObject(resp -> {
@@ -282,8 +283,8 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public <T extends Entity> T applyRecord(Class<T> entityClass, String namespace, String resource, T record) {
-        HttpResponse<T> result = Unirest.patch(Urls.recordUrl(url, recordRestPath(namespace, resource))).body(record).headers(headers()).asObject(entityClass);
+    public <T extends Entity> T applyRecord(EntityInfo<T> entityInfo, T record) {
+        HttpResponse<T> result = Unirest.patch(Urls.recordUrl(url, entityInfo.getRestPath())).body(record).headers(headers()).asObject(entityInfo.getEntityClass());
 
         ensureResponseSuccess(result);
 
@@ -291,8 +292,8 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public <T extends Entity> T deleteRecord(Class<T> entityClass, String namespace, String resource, String id) {
-        HttpResponse<T> result = Unirest.delete(Urls.recordByIdUrl(url, recordRestPath(namespace, resource), id)).headers(headers()).asObject(entityClass);
+    public <T extends Entity> T deleteRecord(EntityInfo<T> entityInfo, String id) {
+        HttpResponse<T> result = Unirest.delete(Urls.recordByIdUrl(url, entityInfo.getRestPath(), id)).headers(headers()).asObject(entityInfo.getEntityClass());
 
         ensureResponseSuccess(result);
 
@@ -300,8 +301,8 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public <T extends Entity> T updateRecord(Class<T> entityClass, String namespace, String resource, T record) {
-        HttpResponse<T> result = Unirest.put(Urls.recordByIdUrl(url, recordRestPath(namespace, resource), Objects.toString(record.getId()))).body(record).headers(headers()).asObject(entityClass);
+    public <T extends Entity> T updateRecord(EntityInfo<T> entityInfo, T record) {
+        HttpResponse<T> result = Unirest.put(Urls.recordByIdUrl(url, entityInfo.getRestPath(), Objects.toString(record.getId()))).body(record).headers(headers()).asObject(entityInfo.getEntityClass());
 
         ensureResponseSuccess(result);
 
@@ -309,8 +310,8 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public <T extends Entity> T getRecord(Class<T> entityClass, String namespace, String resource, String id) {
-        HttpResponse<T> result = Unirest.get(Urls.recordByIdUrl(url, recordRestPath(namespace, resource), id)).headers(headers()).asObject(entityClass);
+    public <T extends Entity> T getRecord(EntityInfo<T> entityInfo, String id) {
+        HttpResponse<T> result = Unirest.get(Urls.recordByIdUrl(url, entityInfo.getRestPath(), id)).headers(headers()).asObject(entityInfo.getEntityClass());
 
         ensureResponseSuccess(result);
 
@@ -319,26 +320,26 @@ public class ClientImpl implements Client {
 
     @Override
     @SneakyThrows
-    public <T extends Entity, ActionRequest, ActionResponse> ActionResponse executeRecordAction(Class<ActionResponse> responseClass, String namespace, String resource, String id, String actionName, ActionRequest request) {
+    public <T extends Entity, ActionRequest, ActionResponse> ActionResponse executeRecordAction(Class<ActionResponse> responseClass, EntityInfo<T> entityInfo, String id, String actionName, ActionRequest request) {
         byte[] body = objectMapper.writeValueAsBytes(request);
 
-        log.debug("Executing record action: {} / {} / {} / {}", namespace, resource, id, actionName);
-        HttpResponse<ActionResponse> result = Unirest.post(Urls.recordActionByIdUrl(url, recordRestPath(namespace, resource), id, actionName))
+        log.debug("Executing record action: {} / {} / {}", entityInfo.getEntityClass(), id, actionName);
+        HttpResponse<ActionResponse> result = Unirest.post(Urls.recordActionByIdUrl(url, entityInfo.getRestPath(), id, actionName))
                 .body(body)
                 .headers(headers())
                 .asObject(responseClass);
 
         ensureResponseSuccess(result);
 
-        log.debug("Executed record action: {} / {} / {} / {}", namespace, resource, id, actionName);
+        log.debug("Executed record action: {} / {} / {}", entityInfo.getEntityClass(), id, actionName);
 
         return result.getBody();
     }
 
     @Override
-    public <T extends Entity> T createRecord(Class<T> entityClass, String namespace, String resource, T record) {
+    public <T extends Entity> T createRecord(EntityInfo<T> entityInfo, T record) {
         log.debug("Creating record: {}", record);
-        HttpResponse<T> result = Unirest.post(Urls.recordUrl(url, recordRestPath(namespace, resource))).body(record).headers(headers()).asObject(entityClass);
+        HttpResponse<T> result = Unirest.post(Urls.recordUrl(url, entityInfo.getRestPath())).body(record).headers(headers()).asObject(entityInfo.getEntityClass());
 
         ensureResponseSuccess(result);
 
@@ -383,13 +384,6 @@ public class ClientImpl implements Client {
         if (result.getParsingError().isPresent()) {
             throw new ApiException(result.getParsingError().get().getMessage());
         }
-    }
-
-    private String recordRestPath(String namespace, String resource) {
-        if (Objects.equals(namespace, "") || Objects.equals(namespace, "default")) {
-            return resource.toLowerCase();
-        }
-        return (namespace + "-" + resource).toLowerCase();
     }
 
     public Map<String, String> headers() {

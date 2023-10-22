@@ -20,15 +20,17 @@ var deployCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "Deploy nano code",
 	Long:  `Deploy nano code to apibrew`,
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		if len(args) == 0 {
-			return errors.New("please specify a nano code file to deploy")
-		}
-
 		var name = cmd.Flag("name").Value.String()
 		var override, err = cmd.PersistentFlags().GetBool("override")
+
+		inputFilePathArr, err := cmd.Flags().GetStringArray("file")
+		if err != nil {
+			return fmt.Errorf("failed to get input file path: %w", err)
+		}
+		if len(inputFilePathArr) == 0 {
+			return errors.New("file must be provided")
+		}
 
 		if err != nil {
 			return err
@@ -50,7 +52,7 @@ var deployCmd = &cobra.Command{
 			return err
 		}
 
-		for _, nanoCodeFile := range args {
+		for _, nanoCodeFile := range inputFilePathArr {
 			if name == "" {
 				name = nanoCodeFile
 			}
@@ -199,5 +201,6 @@ func prepareTarGz(path string) ([]byte, error) {
 
 func init() {
 	deployCmd.PersistentFlags().String("name", "", "unique code name")
+	deployCmd.PersistentFlags().StringArrayP("file", "f", nil, "Input file(s)")
 	deployCmd.PersistentFlags().Bool("override", false, "Override if code already exists")
 }

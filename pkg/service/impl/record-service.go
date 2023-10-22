@@ -208,7 +208,6 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 
 	var err errors.ServiceError
 
-	var success = true
 	var txCtx = ctx
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
@@ -266,45 +265,14 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		return nil, nil
 	}
 
-	if ctx.Value(abs.TransactionContextKey) != nil {
-		txCtx = ctx
-	} else if !resource.Virtual {
-		tx, err := r.backendServiceProvider.BeginTransaction(ctx, resource.SourceConfig.DataSource, false)
-
-		if err != nil {
-			success = false
-			return nil, err
-		}
-		txCtx = context.WithValue(ctx, abs.TransactionContextKey, tx)
-
-		defer func() {
-			if success {
-				err = r.backendServiceProvider.CommitTransaction(txCtx, resource.SourceConfig.DataSource)
-
-				if err != nil {
-					log.Print(err)
-					success = false
-				}
-			} else {
-				err = r.backendServiceProvider.RollbackTransaction(txCtx, resource.SourceConfig.DataSource)
-
-				if err != nil {
-					log.Print(err)
-				}
-			}
-		}()
-	}
-
 	records, err = r.backendServiceProvider.AddRecords(txCtx, resource, params.Records)
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) && annotations.IsEnabledOnCtx(ctx, annotations.IgnoreIfExists) {
-		success = false
 		return nil, errors.RecordValidationError.WithMessage("IgnoreIfExists must be disabled if resource has keepHistory enabled")
 	}
 
 	// create back reference
 	if err := r.applyBackReferences(txCtx, resource, records); err != nil {
-		success = false
 		return nil, err
 	}
 
@@ -314,13 +282,11 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		_, err = r.backendServiceProvider.AddRecords(txCtx, historyResource, records)
 
 		if err != nil {
-			success = false
 			return nil, err
 		}
 	}
 
 	if err != nil {
-		success = false
 		return nil, err
 	}
 
@@ -432,8 +398,6 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	var result []*model.Record
 	var err errors.ServiceError
 
-	var success = true
-
 	if isResourceRelatedResource(resource) {
 		return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
@@ -463,7 +427,6 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	}
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) && !annotations.IsEnabledOnCtx(ctx, annotations.CheckVersion) {
-		success = false
 		return nil, errors.RecordValidationError.WithMessage("checkVersion must be enabled if resource has keepHistory enabled")
 	}
 
@@ -476,43 +439,13 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 
 	var txCtx = ctx
 
-	if ctx.Value(abs.TransactionContextKey) == nil {
-		tx, err := r.backendServiceProvider.BeginTransaction(ctx, resource.SourceConfig.DataSource, false)
-
-		if err != nil {
-			success = false
-			return nil, err
-		}
-
-		txCtx := context.WithValue(ctx, abs.TransactionContextKey, tx)
-
-		defer func() {
-			if success {
-				err = r.backendServiceProvider.CommitTransaction(txCtx, resource.SourceConfig.DataSource)
-
-				if err != nil {
-					log.Print(err)
-					success = false
-				}
-			} else {
-				err = r.backendServiceProvider.RollbackTransaction(txCtx, resource.SourceConfig.DataSource)
-
-				if err != nil {
-					log.Print(err)
-				}
-			}
-		}()
-	}
-
 	records, err = r.backendServiceProvider.UpdateRecords(txCtx, resource, params.Records)
 
 	if err != nil {
-		success = false
 		return nil, err
 	}
 
 	if err := r.applyBackReferences(txCtx, resource, records); err != nil {
-		success = false
 		return nil, err
 	}
 
@@ -520,7 +453,6 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		_, err = r.backendServiceProvider.AddRecords(txCtx, util.HistoryResource(resource), records)
 
 		if err != nil {
-			success = false
 			return nil, err
 		}
 	}

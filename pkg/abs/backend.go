@@ -11,7 +11,6 @@ type Backend interface {
 	BackendGenericInterface
 	BackendRecordsInterface
 	BackendSchemaInterface
-	BackendTransactionInterface
 
 	SetSchema(schema *Schema)
 }
@@ -37,13 +36,6 @@ type BackendSchemaInterface interface {
 	ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError)
 	PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError)
 	UpgradeResource(ctx context.Context, params UpgradeResourceParams) errors.ServiceError
-}
-
-type BackendTransactionInterface interface {
-	BeginTransaction(ctx context.Context, readOnly bool) (transactionKey string, serviceError errors.ServiceError)
-	CommitTransaction(ctx context.Context) (serviceError errors.ServiceError)
-	RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError)
-	IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError errors.ServiceError)
 }
 
 type ListRecordParams struct {

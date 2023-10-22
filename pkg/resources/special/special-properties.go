@@ -108,6 +108,9 @@ var AuditProperty = &model.ResourceProperty{
 		"updatedOn": structpb.NewStringValue(time.Now().Format(time.RFC3339)),
 	}}),
 	TypeRef: Pointer("AuditData"),
+	Annotations: map[string]string{
+		annotations.SpecialProperty: "true",
+	},
 }
 
 var AnnotationsProperty = &model.ResourceProperty{
