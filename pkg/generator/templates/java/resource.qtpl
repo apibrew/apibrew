@@ -47,6 +47,28 @@ public class {%s javaClassName(resource.Name) %} extends Entity {
             return this;
         }
         {%- endfor -%}
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof {%s javaClassName(subType.Name) %})) {
+                return false;
+            }
+
+            {%s javaClassName(subType.Name) %} obj = ({%s javaClassName(subType.Name) %}) o;
+
+            {%- for _, property := range subType.Properties -%}
+            if (!Objects.equals(this.{%s= propertyName(property) %}, obj.{%s= propertyName(property) %})) {
+                return false;
+            }
+            {%- endfor -%}
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash({%s= hashcodePropertyNames(subType.Properties) %});
+        }
     }
     {%- endfor -%}
 

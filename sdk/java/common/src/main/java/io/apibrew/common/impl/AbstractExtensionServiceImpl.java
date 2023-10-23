@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.apibrew.client.Client;
 import io.apibrew.client.Entity;
+import io.apibrew.client.EntityInfo;
 import io.apibrew.client.Repository;
 import io.apibrew.common.ExtensionInfo;
 import io.apibrew.common.ext.ExtensionService;
@@ -28,6 +29,8 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
     private final Repository<Extension> extensionRepo;
 
     protected final ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, BiFunction<Extension.Event, Record, Record>> operatorMap = new HashMap<>();
+    Map<String, ExtensionInfo> operatorIdExtensionInfoMap = new HashMap<>();
 
 
     protected AbstractExtensionServiceImpl(Client client) {
@@ -43,11 +46,18 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
     }
 
     @Override
+    public <T extends Entity> Handler<T> handler(EntityInfo<T> entityInfo) {
+        return new HandlerImpl<T>(client, this, entityInfo);
+    }
+
+    @Override
     public GenericHandler genericHandler() {
         return new GenericHandlerImpl(client, this);
     }
 
     protected synchronized void registerExtensions() {
+        log.debug("Registering extensions");
+
         extensionInfoSet.forEach(extensionInfo -> {
             if (!registeredExtensionInfoSet.contains(extensionInfo)) {
                 registeredExtensionInfoSet.add(extensionInfo);
@@ -55,9 +65,12 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
                 registerExtension(extensionInfo);
             }
         });
+
+        log.debug("Registered extensions");
     }
 
     private void registerExtension(ExtensionInfo extensionInfo) {
+        log.debug("Registering extension: {}", extensionInfo);
         Extension extension = extensionInfo.toExtension();
 
         extension.setCall(prepareExternalCall());
@@ -65,6 +78,8 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
         extension = extensionRepo.apply(extension);
 
         extensionInfoIdMap.put(extension.getId().toString(), extensionInfo);
+
+        log.debug("Registered extension: {}", extensionInfo);
     }
 
     protected abstract Extension.ExternalCall prepareExternalCall();
@@ -129,11 +144,42 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
     }
 
     @Override
-    public void registerExtensionWithOperator(ExtensionInfo extensionInfo, BiFunction<Extension.Event, Record, Record> operator) {
+    public String registerExtensionWithOperator(ExtensionInfo extensionInfo, BiFunction<Extension.Event, Record, Record> operator) {
+        String id = UUID.randomUUID().toString();
         extensionInfoSet.add(extensionInfo);
 
         extensionHandlerMap.putIfAbsent(extensionInfo, new ArrayList<>());
 
         extensionHandlerMap.get(extensionInfo).add(operator);
+
+        operatorMap.put(id, operator);
+        operatorIdExtensionInfoMap.put(id, extensionInfo);
+
+        return id;
+    }
+
+    @Override
+    public void unRegisterOperator(String id) {
+        BiFunction<Extension.Event, Record, Record> operator = operatorMap.get(id);
+
+        if (operator == null) {
+            throw new RuntimeException("Operator not found for id: " + id);
+        }
+
+        ExtensionInfo extensionInfo = operatorIdExtensionInfoMap.get(id);
+        extensionHandlerMap.get(extensionInfo).remove(operator);
+
+        if (extensionHandlerMap.get(extensionInfo).isEmpty()) {
+            extensionHandlerMap.remove(extensionInfo);
+            extensionInfoSet.remove(extensionInfo);
+        }
+
+        operatorMap.remove(id);
+        operatorIdExtensionInfoMap.remove(id);
+    }
+
+    @Override
+    public void registerPendingItems() {
+        registerExtensions();
     }
 }

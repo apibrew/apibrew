@@ -19,6 +19,7 @@ public class HostedExtensionServiceImpl extends AbstractExtensionServiceImpl imp
     private final String host;
     private final int port;
     private final String remoteUrl;
+    private HttpServer server;
 
     public HostedExtensionServiceImpl(Client client, String host, int port, String remoteUrl) {
         super(client);
@@ -43,7 +44,7 @@ public class HostedExtensionServiceImpl extends AbstractExtensionServiceImpl imp
     @Override
     public void run() throws IOException {
         registerExtensions();
-        HttpServer server = HttpServer.create(new InetSocketAddress(host, port), 0);
+        this.server = HttpServer.create(new InetSocketAddress(host, port), 0);
 
         server.createContext("/").setHandler(e -> {
             executorService.execute(() -> handle(e));
@@ -105,4 +106,9 @@ public class HostedExtensionServiceImpl extends AbstractExtensionServiceImpl imp
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        executorService.shutdown();
+        this.server.stop(0);
+    }
 }

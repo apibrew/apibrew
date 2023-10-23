@@ -42,6 +42,10 @@ public class HandlerImpl<T extends Entity> implements Handler<T> {
         );
     }
 
+    public HandlerImpl(Client client, ExtensionService extensionService, Class<T> entityClass) {
+        this(client, extensionService, EntityInfo.fromEntityClass(entityClass));
+    }
+
     public HandlerImpl(Client client, ExtensionService extensionService, EntityInfo<T> entityInfo, ExtensionInfo extensionInfo, List<BiPredicate<Event, T>> predicates) {
         this.client = client;
         this.extensionService = extensionService;
@@ -51,10 +55,6 @@ public class HandlerImpl<T extends Entity> implements Handler<T> {
 
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
-
-    public HandlerImpl(Client client, ExtensionService extensionService, Class<T> entityClass) {
-        this(client, extensionService, EntityInfo.fromEntityClass(entityClass));
     }
 
     public Handler<T> withExtensionInfo(ExtensionInfo extensionInfo) {
@@ -114,15 +114,13 @@ public class HandlerImpl<T extends Entity> implements Handler<T> {
     }
 
     @Override
-    public Handler<T> operate(Operator<T> entityOperator) {
-        entityOperator.operate(this);
-
-        return this;
+    public String operate(Operator<T> entityOperator) {
+        return entityOperator.operate(this);
     }
 
     @Override
-    public Handler<T> operate(BiFunction<Event, T, T> entityOperator) {
-        extensionService.registerExtensionWithOperator(extensionInfo, (event, record) -> {
+    public String operate(BiFunction<Event, T, T> entityOperator) {
+        return extensionService.registerExtensionWithOperator(extensionInfo, (event, record) -> {
             T castedEntity = recordToEntity(record);
             if (!checkPredicates(event, castedEntity)) {
                 return record;
@@ -132,7 +130,10 @@ public class HandlerImpl<T extends Entity> implements Handler<T> {
 
             return recordFromEntity(result);
         });
+    }
 
-        return this;
+    @Override
+    public void unRegister(String id) {
+        extensionService.unRegisterOperator(id);
     }
 }

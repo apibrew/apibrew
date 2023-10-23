@@ -18,6 +18,17 @@ func getRestPath(resource *model.Resource) string {
 	return util.ResourceRestPath(resource)
 }
 
+func hashcodePropertyNames(properties []*model.ResourceProperty) string {
+	var hashcode = ""
+	for i, property := range properties {
+		if i > 0 {
+			hashcode += ", "
+		}
+		hashcode += propertyName(property)
+	}
+	return hashcode
+}
+
 func getJavaPropertyAnnotations(resource *model.Resource, property *model.ResourceProperty) string {
 	switch property.Type {
 	case model.ResourceProperty_TIME:

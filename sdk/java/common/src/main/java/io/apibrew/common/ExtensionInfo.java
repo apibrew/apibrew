@@ -147,4 +147,17 @@ public class ExtensionInfo {
 
         return eventSelector;
     }
+
+    @Override
+    public String toString() {
+        return "ExtensionInfo{" +
+                "namespaces=" + namespaces +
+                ", resources=" + resources +
+                ", action=" + action +
+                ", sync=" + sync +
+                ", responds=" + responds +
+                ", finalizer=" + finalizer +
+                ", order=" + order +
+                '}';
+    }
 }

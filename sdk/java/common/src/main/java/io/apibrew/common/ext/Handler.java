@@ -15,6 +15,8 @@ public interface Handler<T extends Entity> {
 
     Handler<T> configure(Function<ExtensionInfo, ExtensionInfo> configurer);
 
-    Handler<T> operate(Operator<T> entityOperator);
-    Handler<T> operate(BiFunction<Extension.Event, T, T> entityOperator);
+    String operate(Operator<T> entityOperator);
+    String operate(BiFunction<Extension.Event, T, T> entityOperator);
+
+    void unRegister(String id);
 }

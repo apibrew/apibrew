@@ -13,10 +13,9 @@ import static io.apibrew.common.ext.Condition.*;
 
 public interface Operator<T extends Entity> {
 
-    void operate(Handler<T> handler);
+    String operate(Handler<T> handler);
 
     static <T extends Entity> Operator<T> graceFullDelete(String property, Object value) {
-
 
         return handler -> {
             handler = handler.configure(ei -> ei.withResponds(true));
@@ -25,7 +24,7 @@ public interface Operator<T extends Entity> {
             handler.when(beforeCreate()).operate(graceFullDeleteOperator(property, value));
             handler.when(beforeUpdate()).operate(graceFullDeleteOperator(property, value));
 
-            handler.when(beforeList()).operate((event, entity) -> {
+            return handler.when(beforeList()).operate((event, entity) -> {
                 Extension.BooleanExpression query = event.getRecordSearchParams().getQuery();
 
                 Extension.BooleanExpression deletedFilterExp = new Extension.BooleanExpression().withNot(
@@ -78,7 +77,7 @@ public interface Operator<T extends Entity> {
             handler.when(beforeDelete()).operate(dataSeparator); // fix delete
             handler.when(afterGet()).operate(dataSeparator);
 
-            handler.when(beforeList()).operate((event, entity) -> {
+            return handler.when(beforeList()).operate((event, entity) -> {
                 Extension.BooleanExpression query = event.getRecordSearchParams().getQuery();
 
                 Extension.BooleanExpression ownerFilterExp = new Extension.BooleanExpression().withEqual(

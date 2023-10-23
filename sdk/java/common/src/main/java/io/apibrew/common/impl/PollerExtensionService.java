@@ -67,4 +67,8 @@ public class PollerExtensionService extends AbstractExtensionServiceImpl impleme
         this.poller.run();
     }
 
+    @Override
+    public void close() throws Exception {
+        this.poller.close();
+    }
 }
