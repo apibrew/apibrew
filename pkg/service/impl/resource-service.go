@@ -15,6 +15,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 	"sync"
 )
@@ -386,9 +387,9 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	defer func() {
 		if err != nil {
-			log.Print("Reverting created records for resource: " + resource.Name + " with id: " + result[0].Id + " due to error: " + err.Error() + " ...")
+			log.Print("Reverting created records for resource: " + resource.Name + " with id: " + util.GetRecordId(resource, result[0]) + " due to error: " + err.Error() + " ...")
 			if err := r.backendProviderService.DeleteRecords(util.WithSystemContext(context.TODO()), resources.ResourceResource, []string{
-				result[0].Id,
+				util.GetRecordId(resource, result[0]),
 			}); err != nil {
 				log.Error(err)
 			}
@@ -399,7 +400,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	txCtx = annotations.SetWithContext(txCtx, annotations.UseJoinTable, "true")
 
-	insertedRecord, err := r.backendProviderService.GetRecord(txCtx, resources.ResourceResource, result[0].Id, []string{
+	insertedRecord, err := r.backendProviderService.GetRecord(txCtx, resources.ResourceResource, util.GetRecordId(resource, result[0]), []string{
 		"*",
 	})
 
@@ -413,7 +414,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, errors.ResourceValidationError.WithMessage("DataSource not found with name: " + resource.SourceConfig.DataSource)
 	}
 
-	resource.Id = result[0].Id
+	resource.Id = util.GetRecordId(resource, result[0])
 
 	if !resource.Virtual && doMigration {
 		var plan *model.ResourceMigrationPlan
@@ -620,8 +621,12 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 		}
 
 		if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-			Resource:  resources.ResourceResource,
-			Records:   &[]*model.Record{{Id: resourceId}},
+			Resource: resources.ResourceResource,
+			Records: &[]*model.Record{{
+				Properties: map[string]*structpb.Value{
+					"id": structpb.NewStringValue(resourceId),
+				},
+			}},
 			Operation: resource_model.PermissionOperation_DELETE,
 		}); err != nil {
 			return err
@@ -707,8 +712,14 @@ func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, 
 		if item.Id != "" && item.Id == id {
 
 			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-				Resource:  resources.ResourceResource,
-				Records:   &[]*model.Record{{Id: id}},
+				Resource: resources.ResourceResource,
+				Records: &[]*model.Record{
+					{
+						Properties: map[string]*structpb.Value{
+							"id": structpb.NewStringValue(id),
+						},
+					},
+				},
 				Operation: resource_model.PermissionOperation_READ,
 			}); err != nil {
 				if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{

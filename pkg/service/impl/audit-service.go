@@ -69,7 +69,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 	if event.Records != nil && len(event.Records) > 0 {
 		for _, record := range event.Records {
 			if record.Properties["id"] == nil {
-				log.Warnf("Audit log cannot be created for record %s as it does not have an id", record.Id)
+				log.Warnf("Audit log cannot be created for record %s as it does not have an id", util.GetRecordId(event.Resource, record))
 				continue
 			}
 			auditLog.RecordId = record.Properties["id"].GetStringValue()
@@ -93,7 +93,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 				log.Error(err)
 				return nil, err
 			}
-			log.Debugf("Audit log created for record %s", record.Id)
+			log.Debugf("Audit log created for record %s", util.GetRecordId(event.Resource, record))
 		}
 	}
 

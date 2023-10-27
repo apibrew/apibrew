@@ -351,7 +351,10 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 				result = append(result, record)
 				continue
 			}
-			record.Id = existingRecord.Id
+
+			if record.Properties != nil && existingRecord.Properties != nil {
+				record.Properties["id"] = existingRecord.Properties["id"]
+			}
 
 			if util.IsSameRecord(existingRecord, record) {
 				return params.Records, nil
@@ -479,18 +482,17 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 							continue
 						}
 
-						ids = append(ids, record.Id)
+						ids = append(ids, util.GetRecordId(resource, record))
 
 						if gotVal.GetListValue() != nil {
 
 							for _, item := range gotVal.GetListValue().Values {
 								st := item.GetStructValue()
 								st.Fields[backRef.Property] = structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
-									"id": structpb.NewStringValue(record.Id),
+									"id": structpb.NewStringValue(util.GetRecordId(resource, record)),
 								}})
 								if st.Fields["id"] != nil {
 									backRefUpdatedRecords = append(backRefUpdatedRecords, &model.Record{
-										Id:         st.Fields["id"].GetStringValue(),
 										Properties: st.Fields,
 									})
 								} else {
@@ -524,7 +526,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 					var backRefRecordsRemovalIds []string
 
 					for _, existingRecord := range existingRecords {
-						backRefRecordsRemovalIds = append(backRefRecordsRemovalIds, existingRecord.Id)
+						backRefRecordsRemovalIds = append(backRefRecordsRemovalIds, util.GetRecordId(resource, existingRecord))
 					}
 
 					if len(backRefRecordsRemovalIds) > 0 {
@@ -579,7 +581,9 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		Resource: resource,
 		Records: &[]*model.Record{
 			{
-				Id: id,
+				Properties: map[string]*structpb.Value{
+					"id": structpb.NewStringValue(id),
+				},
 			},
 		},
 		Operation: resource_model.PermissionOperation_READ,
@@ -672,7 +676,9 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 
 	var recordForCheck = util.ArrayMap(params.Ids, func(t string) *model.Record {
 		return &model.Record{
-			Id: t,
+			Properties: map[string]*structpb.Value{
+				"id": structpb.NewStringValue(t),
+			},
 		}
 	})
 

@@ -29,7 +29,9 @@ func TestDhTestUserCannotCreateUser(t *testing.T) {
 		_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
 			Namespace: resources.UserResource.Namespace,
 			Resource:  resources.UserResource.Name,
-			Ids:       []string{record.Records[0].Id},
+			Ids: []string{
+				util.GetRecordId(nil, record.Records[0]),
+			},
 		})
 
 		if err != nil {

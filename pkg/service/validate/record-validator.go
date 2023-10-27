@@ -2,6 +2,7 @@ package validate
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
@@ -13,12 +14,7 @@ import (
 	"strings"
 )
 
-type ResourceLike interface {
-	GetProperties() []*model.ResourceProperty
-	GetTypes() []*model.ResourceSubType
-}
-
-func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.ServiceError {
+func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)
@@ -40,7 +36,7 @@ func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
-				fieldErrors = append(fieldErrors, Value(resource, property, record.Id, "", packedVal)...)
+				fieldErrors = append(fieldErrors, Value(resource, property, util.GetRecordId(resource, record), "", packedVal)...)
 			}
 
 			var val interface{}
@@ -53,7 +49,7 @@ func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.
 
 				if err != nil {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
-						RecordId: record.Id,
+						RecordId: util.GetRecordId(resource, record),
 						Property: property.Name,
 						Message:  "wrong type: " + err.Error(),
 						Value:    record.Properties[property.Name],
@@ -67,7 +63,7 @@ func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.
 			if isEmpty {
 				if annotations.IsEnabled(property, annotations.PrimaryProperty) && isUpdate {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
-						RecordId: record.Id,
+						RecordId: util.GetRecordId(resource, record),
 						Property: property.Name,
 						Message:  "required",
 						Value:    record.Properties[property.Name],
@@ -76,7 +72,7 @@ func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.
 
 				if !annotations.IsEnabled(property, annotations.PrimaryProperty) && property.Required && (exists || !isUpdate) {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
-						RecordId: record.Id,
+						RecordId: util.GetRecordId(resource, record),
 						Property: property.Name,
 						Message:  "required",
 						Value:    record.Properties[property.Name],
@@ -88,7 +84,7 @@ func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.
 		for key := range record.Properties {
 			if !resourcePropertyExists[key] {
 				fieldErrors = append(fieldErrors, &model.ErrorField{
-					RecordId: record.Id,
+					RecordId: util.GetRecordId(resource, record),
 					Property: key,
 					Message:  "there are no such property",
 				})
@@ -105,7 +101,7 @@ func Records(resource ResourceLike, list []*model.Record, isUpdate bool) errors.
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
-func Value(resource ResourceLike, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
+func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
 	if value == nil {
 		return nil
 	}

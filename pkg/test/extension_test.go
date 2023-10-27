@@ -21,7 +21,6 @@ import (
 
 var simpleVirtualResourceRecords = []*model.Record{
 	{
-		Id: "5429846c-a309-11ed-a8fc-0242ac120002",
 		Properties: map[string]*structpb.Value{
 			"id":          structpb.NewStringValue("5429846c-a309-11ed-a8fc-0242ac120002"),
 			"name":        structpb.NewStringValue("rec-1"),
@@ -29,7 +28,6 @@ var simpleVirtualResourceRecords = []*model.Record{
 		},
 	},
 	{
-		Id: "54298994-a309-11ed-a8fc-0242ac120002",
 		Properties: map[string]*structpb.Value{
 			"id":          structpb.NewStringValue("54298994-a309-11ed-a8fc-0242ac120002"),
 			"name":        structpb.NewStringValue("rec-2"),
@@ -179,12 +177,12 @@ func TestListResourceWithFunctionCallExtension(t *testing.T) {
 		return
 	}
 
-	if resp.Content[0].Id != simpleVirtualResourceRecords[0].Id {
+	if util.GetRecordId(nil, resp.Content[0]) != util.GetRecordId(nil, simpleVirtualResourceRecords[0]) {
 		t.Error("record[0].id does not match")
 		return
 	}
 
-	if resp.Content[1].Id != simpleVirtualResourceRecords[1].Id {
+	if util.GetRecordId(nil, resp.Content[1]) != util.GetRecordId(nil, simpleVirtualResourceRecords[1]) {
 		t.Error("record[1].id does not match")
 		return
 	}
@@ -252,12 +250,12 @@ func TestListResourceWithHttpExtension(t *testing.T) {
 		return
 	}
 
-	if resp.Content[0].Id != simpleVirtualResourceRecords[0].Id {
+	if util.GetRecordId(nil, resp.Content[0]) != util.GetRecordId(nil, simpleVirtualResourceRecords[0]) {
 		t.Error("record[0].id does not match")
 		return
 	}
 
-	if resp.Content[1].Id != simpleVirtualResourceRecords[1].Id {
+	if util.GetRecordId(nil, resp.Content[1]) != util.GetRecordId(nil, simpleVirtualResourceRecords[1]) {
 		t.Error("record[1].id does not match")
 		return
 	}

@@ -103,11 +103,6 @@ func (m *{%s typeName %}Mapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *{%s typeName %}Mapper) ToRecord({%= GoVarName(typeName)%} *{%s typeName %}) *model.Record {
     var rec = &model.Record{}
     rec.Properties = m.ToProperties({%= GoVarName(typeName)%})
-
-    if {%= GoVarName(typeName)%}.Id != nil {
-        rec.Id = {%= GoVarName(typeName)%}.Id.String()
-    }
-
     return rec
 }
 

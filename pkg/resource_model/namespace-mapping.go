@@ -38,11 +38,6 @@ func (m *NamespaceMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *NamespaceMapper) ToRecord(namespace *Namespace) *model.Record {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(namespace)
-
-	if namespace.Id != nil {
-		rec.Id = namespace.Id.String()
-	}
-
 	return rec
 }
 

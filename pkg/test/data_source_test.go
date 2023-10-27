@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
 	"testing"
 )
@@ -65,7 +66,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(nil, resp.Records[0]))
 
 	checkNewCreatedRecordStatus(newDataSource, t)
 }
@@ -159,7 +160,7 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(nil, resp.Records[0]))
 
 	checkNewCreatedRecordStatus(newDataSource, t)
 
@@ -275,7 +276,7 @@ func TestUpdateRecordstatus(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(resp.Records[0].Id)
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(nil, resp.Records[0]))
 	createdDataSource1 := resource_model.DataSourceMapperInstance.FromRecord(resp.Records[0])
 
 	checkNewCreatedRecordStatusPasswordWrong(newDataSource, t)

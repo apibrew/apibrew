@@ -38,11 +38,6 @@ func (m *PermissionMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *PermissionMapper) ToRecord(permission *Permission) *model.Record {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(permission)
-
-	if permission.Id != nil {
-		rec.Id = permission.Id.String()
-	}
-
 	return rec
 }
 

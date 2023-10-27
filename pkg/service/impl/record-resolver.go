@@ -26,8 +26,8 @@ func (r *recordResolver) resolveReferences(ctx context.Context) errors.ServiceEr
 		pathMap[path] = true
 	}
 
-	var recordValues = util.ArrayToMap(r.records, func(t *model.Record) string {
-		return t.GetId()
+	var recordValues = util.ArrayToMap(r.records, func(record *model.Record) string {
+		return util.GetRecordId(nil, record)
 	}, func(t *model.Record) *structpb.Value {
 		return structpb.NewStructValue(&structpb.Struct{Fields: t.Properties})
 	})
@@ -83,7 +83,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 			if prop.BackReference != nil {
 				var ids []string
 				for _, record := range r.records {
-					ids = append(ids, record.Id)
+					ids = append(ids, util.GetRecordId(nil, record))
 				}
 
 				// get referenced records
@@ -387,8 +387,8 @@ func (r *recordResolver) checkReferences(ctx context.Context) errors.ServiceErro
 		pathMap[path] = true
 	}
 
-	var recordValues = util.ArrayToMap(r.records, func(t *model.Record) string {
-		return t.GetId()
+	var recordValues = util.ArrayToMap(r.records, func(record *model.Record) string {
+		return util.GetRecordId(nil, record)
 	}, func(t *model.Record) *structpb.Value {
 		return structpb.NewStructValue(&structpb.Struct{Fields: t.Properties})
 	})

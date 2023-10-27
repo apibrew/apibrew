@@ -38,11 +38,6 @@ func (m *UserMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *UserMapper) ToRecord(user *User) *model.Record {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(user)
-
-	if user.Id != nil {
-		rec.Id = user.Id.String()
-	}
-
 	return rec
 }
 

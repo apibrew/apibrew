@@ -9,7 +9,6 @@ import 'model/audit.proto';
 import 'model/common.proto';
 
 message Record {
-  string id = 1; // id; read only
   map<string, google.protobuf.Value> properties = 4;
   repeated google.protobuf.Value propertiesPacked = 5;
 }

@@ -186,7 +186,7 @@ func (c consoleWriter) WriteRecordsChan(resource *model.Resource, total uint32, 
 	var i = 0
 	for item := range recordsChan {
 		row := []string{
-			item.Id,
+			util.GetRecordId(resource, item),
 		}
 
 		for _, prop := range resource.Properties {

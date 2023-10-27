@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/types"
@@ -224,9 +225,24 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 
 func IdRecord(id string) *model.Record {
 	return &model.Record{
-		Id: id,
 		Properties: map[string]*structpb.Value{
 			"id": structpb.NewStringValue(id),
 		},
 	}
+}
+
+func GetRecordId(resource abs.ResourceLike, record *model.Record) string {
+	if record == nil {
+		return ""
+	}
+
+	if record.Properties == nil {
+		return ""
+	}
+
+	if id, ok := record.Properties["id"]; ok {
+		return id.GetStringValue()
+	}
+
+	return ""
 }

@@ -106,7 +106,6 @@ func EventFromProto(event *model.Event) *resource_model.Event {
 	}
 	extensionEvent.Records = util.ArrayMapX(event.Records, func(item *model.Record) *resource_model.Record {
 		return resource_model.RecordMapperInstance.FromRecord(&model.Record{
-			Id: item.Id,
 			Properties: map[string]*structpb.Value{
 				"id":         item.Properties["id"],
 				"properties": structpb.NewStructValue(&structpb.Struct{Fields: item.Properties}),

@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
 	"testing"
 )
@@ -30,7 +31,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 
 	if res.Records != nil {
 		namespace1.Id = new(uuid.UUID)
-		*namespace1.Id = uuid.MustParse(res.Records[0].Id)
+		*namespace1.Id = uuid.MustParse(util.GetRecordId(nil, res.Records[0]))
 	} else {
 		t.Error("Namespace was not created")
 		return

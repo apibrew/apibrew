@@ -48,7 +48,6 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 				}
 
 				record.Properties = appliedRecord.Properties
-				record.Id = appliedRecord.Id
 				return err
 			} else if a.mode == CREATE {
 				appliedRecord, err := a.client.CreateRecord(ctx, namespace, resource, record)
@@ -58,7 +57,6 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 				}
 
 				record.Properties = appliedRecord.Properties
-				record.Id = appliedRecord.Id
 				return err
 			} else if a.mode == UPDATE {
 				appliedRecord, err := a.client.UpdateRecord(ctx, namespace, resource, record)
@@ -68,7 +66,6 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 				}
 
 				record.Properties = appliedRecord.Properties
-				record.Id = appliedRecord.Id
 				return err
 			} else {
 				return errors.New("unknown mode")

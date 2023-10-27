@@ -225,7 +225,7 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 	for i := 0; i < len(resp.Records); i++ {
 		createdRecord := resp.Records[i]
 		record := records[i]
-		record.Id = createdRecord.Id
+		record.Properties["id"] = createdRecord.Properties["id"]
 	}
 
 	for _, record := range records {

@@ -264,7 +264,7 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 
 	var serviceErr errors.ServiceError
 
-	record.Properties, serviceErr = r.mapRecordProperties(record.Id, r.resource, "t_", propertyPointers)
+	record.Properties, serviceErr = r.mapRecordProperties(util.GetRecordId(r.resource, record), r.resource, "t_", propertyPointers)
 	if serviceErr != nil {
 		return serviceErr
 	}

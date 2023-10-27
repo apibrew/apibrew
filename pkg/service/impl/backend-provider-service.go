@@ -111,7 +111,6 @@ func (b *backendProviderService) getBackendByDataSourceName(ctx context.Context,
 		}
 
 		var record = records[0]
-		record.Id = records[0].Properties["id"].GetStringValue()
 
 		return b.getBackend(resource_model.DataSourceMapperInstance.FromRecord(record)), nil
 	}

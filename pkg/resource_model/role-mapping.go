@@ -38,11 +38,6 @@ func (m *RoleMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *RoleMapper) ToRecord(role *Role) *model.Record {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(role)
-
-	if role.Id != nil {
-		rec.Id = role.Id.String()
-	}
-
 	return rec
 }
 

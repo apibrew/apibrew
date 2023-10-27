@@ -151,7 +151,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 			}
 
 			for _, record := range *params.Records {
-				if record.Id == id {
+				if util.GetRecordId(params.Resource, record) == id {
 					found = true
 					break mainLoop
 				}

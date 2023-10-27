@@ -14,7 +14,6 @@ import (
 func InitRecord(ctx context.Context, resource *model.Resource, record *model.Record) {
 	now := time.Now()
 	recordNewId := uuid.Must(uuid.NewRandom())
-	record.Id = recordNewId.String()
 	if record.Properties == nil {
 		record.Properties = make(map[string]*structpb.Value)
 	}
@@ -33,10 +32,6 @@ func InitRecord(ctx context.Context, resource *model.Resource, record *model.Rec
 
 	if ah.IsVersionEnabled() {
 		ah.InitVersion()
-	}
-
-	if ah.HasIdSpecialProperty() {
-		ah.SetId(record.Id)
 	}
 }
 

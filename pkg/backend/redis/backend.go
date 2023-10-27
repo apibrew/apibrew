@@ -45,7 +45,7 @@ func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, 
 			return nil, r.handleError(err)
 		}
 
-		_, err = r.rdb.Set(ctx, r.getKey(resource, record.Id), data, time.Hour*10000).Result()
+		_, err = r.rdb.Set(ctx, r.getKey(resource, util.GetRecordId(resource, record)), data, time.Hour*10000).Result()
 
 		if err != nil {
 			log.Warn(err)
@@ -67,7 +67,7 @@ func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 			return nil, r.handleError(err)
 		}
 
-		_, err = r.rdb.Set(ctx, r.getKey(resource, record.Id), data, time.Hour*10000).Result()
+		_, err = r.rdb.Set(ctx, r.getKey(resource, util.GetRecordId(resource, record)), data, time.Hour*10000).Result()
 
 		if err != nil {
 			log.Warn(err)

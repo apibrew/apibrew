@@ -38,11 +38,6 @@ func (m *ExtensionMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *ExtensionMapper) ToRecord(extension *Extension) *model.Record {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(extension)
-
-	if extension.Id != nil {
-		rec.Id = extension.Id.String()
-	}
-
 	return rec
 }
 

@@ -253,8 +253,8 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 
 	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
 		{
-			Id: recordCreateResult1.Records[0].Id,
 			Properties: map[string]*structpb.Value{
+				"id":     recordCreateResult1.Records[0].Properties["id"],
 				"prop-1": structpb.NewStringValue("test-123321"),
 				"prop-2": structpb.NewStringValue("test-12332144"),
 			},

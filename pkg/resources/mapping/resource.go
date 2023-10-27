@@ -64,7 +64,6 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	}
 
 	return &model.Record{
-		Id:         resource.Id,
 		Properties: properties,
 	}
 }

@@ -38,11 +38,6 @@ func (m *AuditLogMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *AuditLogMapper) ToRecord(auditLog *AuditLog) *model.Record {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(auditLog)
-
-	if auditLog.Id != nil {
-		rec.Id = auditLog.Id.String()
-	}
-
 	return rec
 }
 

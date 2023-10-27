@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/structpb"
 	"io"
@@ -150,7 +151,7 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 		}
 	}
 
-	fmt.Printf("Deployed nano code %s with id: %s\n", path, record.Id)
+	fmt.Printf("Deployed nano code %s with id: %s\n", path, util.GetRecordId(nil, record))
 
 	return nil
 }
