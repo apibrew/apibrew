@@ -391,11 +391,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_Equal); ok {
-		left, err := r.applyExpression(resource, equ.Equal.Left)
-		if err != nil {
-			return "", err
-		}
-		right, err := r.applyExpression(resource, equ.Equal.Right)
+		left, right, err := r.applyExpressionPair(resource, equ.Equal)
 		if err != nil {
 			return "", err
 		}
@@ -411,11 +407,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_GreaterThan); ok {
-		left, err := r.applyExpression(resource, equ.GreaterThan.Left)
-		if err != nil {
-			return "", err
-		}
-		right, err := r.applyExpression(resource, equ.GreaterThan.Right)
+		left, right, err := r.applyExpressionPair(resource, equ.GreaterThan)
 		if err != nil {
 			return "", err
 		}
@@ -423,11 +415,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_GreaterThanOrEqual); ok {
-		left, err := r.applyExpression(resource, equ.GreaterThanOrEqual.Left)
-		if err != nil {
-			return "", err
-		}
-		right, err := r.applyExpression(resource, equ.GreaterThanOrEqual.Right)
+		left, right, err := r.applyExpressionPair(resource, equ.GreaterThanOrEqual)
 		if err != nil {
 			return "", err
 		}
@@ -435,11 +423,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_LessThan); ok {
-		left, err := r.applyExpression(resource, equ.LessThan.Left)
-		if err != nil {
-			return "", err
-		}
-		right, err := r.applyExpression(resource, equ.LessThan.Right)
+		left, right, err := r.applyExpressionPair(resource, equ.LessThan)
 		if err != nil {
 			return "", err
 		}
@@ -447,11 +431,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_LessThanOrEqual); ok {
-		left, err := r.applyExpression(resource, equ.LessThanOrEqual.Left)
-		if err != nil {
-			return "", err
-		}
-		right, err := r.applyExpression(resource, equ.LessThanOrEqual.Right)
+		left, right, err := r.applyExpressionPair(resource, equ.LessThanOrEqual)
 		if err != nil {
 			return "", err
 		}
@@ -459,11 +439,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	}
 
 	if equ, ok := query.Expression.(*model.BooleanExpression_In); ok {
-		left, err := r.applyExpression(resource, equ.In.Left)
-		if err != nil {
-			return "", err
-		}
-		right, err := r.applyExpression(resource, equ.In.Right)
+		left, right, err := r.applyExpressionPair(resource, equ.In)
 		if err != nil {
 			return "", err
 		}
@@ -481,6 +457,65 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	return "", errors.LogicalError.WithDetails("Unknown boolean expression type: " + query.String())
 }
 
+func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model.PairExpression) (string, string, errors.ServiceError) {
+	var left string
+	var right string
+	var property *model.ResourceProperty
+
+	if propEx, ok := pair.Left.Expression.(*model.Expression_Property); ok {
+		property = util.LocatePropertyByName(resource, propEx.Property)
+
+		if property == nil {
+			return "", "", errors.PropertyNotFoundError.WithDetails(propEx.Property)
+		}
+
+		left = fmt.Sprintf("t." + r.quote(property.Name))
+	} else {
+		return "", "", errors.LogicalError.WithDetails("Only property expression is allowed on the left part: " + pair.Left.String())
+	}
+
+	if propEx, ok := pair.Right.Expression.(*model.Expression_Value); ok {
+		if property.Type == model.ResourceProperty_REFERENCE {
+			if propEx.Value.GetStructValue() != nil {
+				properties := propEx.Value.GetStructValue().Fields
+				if properties["id"] != nil {
+					right = properties["id"].GetStringValue()
+				}
+				referencedResource := r.backend.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.Resource]
+
+				innerSql, err := r.backend.resolveReference(properties, r.builder.Var, referencedResource)
+
+				if err != nil {
+					return "", "", err
+				}
+
+				right = innerSql
+			} else {
+				right = r.applyValue(propEx.Value)
+			}
+		} else {
+			right = r.applyValue(propEx.Value)
+		}
+	} else {
+		return "", "", errors.LogicalError.WithDetails("Only value expression is allowed on the right part: " + pair.Right.String())
+	}
+
+	return left, right, nil
+}
+
+func (r *recordLister) applyValue(value *structpb.Value) string {
+	if value.GetListValue() != nil {
+		list := value.GetListValue()
+		var c []string
+		for _, val := range list.Values {
+			c = append(c, r.builder.Var(val.AsInterface()))
+		}
+		return strings.Join(c, ",")
+	} else {
+		return r.builder.Var(value.AsInterface())
+	}
+}
+
 func (r *recordLister) applyExpression(resource *model.Resource, query *model.Expression) (string, errors.ServiceError) {
 	if query.Expression == nil {
 		return "", errors.PropertyNotFoundError.WithDetails("expression is empty")
@@ -494,37 +529,9 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 		}
 
 		return fmt.Sprintf("t." + r.quote(property.Name)), nil
+	} else {
+		return "", errors.LogicalError.WithDetails("Only property expression is allowed: " + query.String())
 	}
-
-	if propEx, ok := query.Expression.(*model.Expression_Value); ok {
-		if propEx.Value.GetListValue() != nil {
-			list := propEx.Value.GetListValue()
-			var c []string
-			for _, val := range list.Values {
-				c = append(c, r.builder.Var(val.AsInterface()))
-			}
-			return strings.Join(c, ","), nil
-		} else {
-			return r.builder.Var(propEx.Value.AsInterface()), nil
-		}
-	}
-
-	if propEx, ok := query.Expression.(*model.Expression_RefValue); ok {
-		if propEx.RefValue.Properties["id"] != nil {
-			return r.builder.Var(propEx.RefValue.Properties["id"].AsInterface()), nil
-		}
-		referencedResource := r.backend.schema.ResourceByNamespaceSlashName[propEx.RefValue.Namespace+"/"+propEx.RefValue.Resource]
-
-		innerSql, err := r.backend.resolveReference(propEx.RefValue.Properties, r.builder.Var, referencedResource)
-
-		if err != nil {
-			return "", err
-		}
-
-		return innerSql, nil
-	}
-
-	return "", errors.LogicalError.WithDetails("Unknown boolean expression type: " + query.String())
 }
 
 func (r *recordLister) prepareCols() []string {

@@ -82,15 +82,13 @@ public class ChannelEventPoller implements AutoCloseable {
                                     Extension.Event event = ClientImpl.objectMapper.readValue(line, Extension.Event.class);
 
                                     if (event.getId().equals("heartbeat-message")) {
-                                        log.debug("Received heartbeat message");
+                                        log.trace("Received heartbeat message");
                                         continue;
                                     }
 
                                     log.debug("Received event: {}", shortInfo(event));
 
                                     consumer.accept(event);
-
-                                    return line;
                                 }
                             } catch (IOException e) {
                                 throw new RuntimeException(e);

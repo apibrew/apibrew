@@ -38,7 +38,7 @@ public final class EntityInfo<T> {
     private static String getRestPath(Resource resource) {
         if (resource.getAnnotations() != null && resource.getAnnotations().get("OpenApiRestPath") != null) {
             return resource.getAnnotations().get("OpenApiRestPath");
-        } else if (isBlank(resource.getNamespace().getName()) || resource.getName().equals("default")) {
+        } else if (isBlank(resource.getNamespace().getName()) || resource.getNamespace().getName().equals("default")) {
             return slug(resource.getName());
         } else {
             return slug(resource.getNamespace().getName() + "/" + resource.getName());

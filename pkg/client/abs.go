@@ -32,6 +32,8 @@ type Client interface {
 	ListResources(ctx context.Context) ([]*model.Resource, error)
 	ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error
 	DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error
+	CreateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error
+	UpdateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error
 
 	PollEvents(ctx context.Context, key string) (<-chan *model.Event, error)
 	WriteEvent(ctx context.Context, key string, event *model.Event) error

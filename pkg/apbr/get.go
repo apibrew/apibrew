@@ -12,7 +12,7 @@ import (
 
 var getCmd = &cobra.Command{
 	Use:   "get",
-	Short: "get - get type",
+	Short: "get - get resource/record docs: https://apibrew.io/docs/cli#apply",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		parseRootFlags(cmd)
 
@@ -93,7 +93,6 @@ func initGetCmd() {
 	getCmd.PersistentFlags().StringP("output", "o", "", "output")
 	getCmd.PersistentFlags().Int64("limit", 100, "limit")
 	getCmd.PersistentFlags().Int64("offset", 0, "offset")
-	getCmd.PersistentFlags().Bool("backup", false, "backup")
 	getCmd.PersistentFlags().Bool("for-apply", false, "Prepare for apply")
 	selectorFlags.Declare(getCmd)
 }

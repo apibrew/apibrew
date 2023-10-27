@@ -221,3 +221,12 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 		return RecordPropertyAccessorByPath(rightProperties.GetStructValue().Fields, right)
 	}
 }
+
+func IdRecord(id string) *model.Record {
+	return &model.Record{
+		Id: id,
+		Properties: map[string]*structpb.Value{
+			"id": structpb.NewStringValue(id),
+		},
+	}
+}

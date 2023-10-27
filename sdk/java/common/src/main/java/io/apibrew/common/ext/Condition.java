@@ -25,6 +25,10 @@ public interface Condition<T extends Entity> {
         return new SimpleCondition<>(ei -> ei.withOrder(110));
     }
 
+    static <T extends Entity> Condition<T> on(String customActionName) {
+        return new SimpleCondition<>(ei -> ei.withAction(OPERATE), (e, t) -> Objects.equals(customActionName, e.getActionName()));
+    }
+
     static <T extends Entity> Condition<T> create() {
         return new SimpleCondition<>(ei -> ei.withAction(CREATE));
     }
@@ -83,6 +87,10 @@ public interface Condition<T extends Entity> {
 
     static <T extends Entity> Condition<T> afterGet() {
         return and(after(), get());
+    }
+
+    static <T extends Entity> Condition<T> onAction(String customActionName) {
+        return and(before(), on(customActionName));
     }
 
     static <T extends Entity> Condition<T> async() {
@@ -153,5 +161,10 @@ public interface Condition<T extends Entity> {
     static <T extends Entity> Condition<T> and(Condition<T> condition1, Condition<T> condition2) {
         return new SimpleCondition<>(ei -> condition2.configureExtensionInfo(condition1.configureExtensionInfo(ei)),
                 (e, t) -> condition1.eventMatches(e, t) && condition2.eventMatches(e, t));
+    }
+
+    static <T extends Entity> Condition<T> or(Condition<T> condition1, Condition<T> condition2) {
+        return new SimpleCondition<>(ei -> condition2.configureExtensionInfo(condition1.configureExtensionInfo(ei)),
+                (e, t) -> condition1.eventMatches(e, t) || condition2.eventMatches(e, t));
     }
 }

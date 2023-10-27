@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/client"
-	"github.com/apibrew/apibrew/pkg/formats/apply"
+	"github.com/apibrew/apibrew/pkg/formats/executor"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -130,7 +130,7 @@ func (app *App) initServices() {
 	// run apply paths
 
 	if app.config.ApplyPaths != nil {
-		applier := apply.NewApplier(client.NewLocalClient(app), true, false, false, flags.OverrideConfig{})
+		applier := executor.NewExecutor(executor.APPLY, client.NewLocalClient(app), true, false, false, flags.OverrideConfig{})
 		for _, path := range app.config.ApplyPaths {
 			err := applier.ApplyWithPattern(util.WithSystemContext(context.TODO()), path, "")
 

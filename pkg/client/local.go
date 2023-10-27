@@ -12,6 +12,16 @@ type localClient struct {
 	container service.Container
 }
 
+func (l localClient) CreateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (l localClient) UpdateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (l localClient) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
 	//TODO implement me
 	panic("implement me")

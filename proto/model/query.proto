@@ -10,17 +10,10 @@ message CompoundBooleanExpression {
   repeated BooleanExpression expressions = 1;
 }
 
-message RefValue {
-  string namespace = 1;
-  string resource = 2;
-  map<string, google.protobuf.Value> properties = 3;
-}
-
 message Expression {
   oneof expression {
     string property = 1;
     google.protobuf.Value value = 3;
-    RefValue refValue = 4;
   }
 }
 

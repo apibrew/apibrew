@@ -64,8 +64,6 @@ func (b *backendProviderService) getBackendByDataSourceId(ctx context.Context, d
 			return nil, err
 		}
 
-		DeNormalizeRecord(resources.DataSourceResource, record)
-
 		return b.getBackend(resource_model.DataSourceMapperInstance.FromRecord(record)), nil
 	}
 }
@@ -214,14 +212,21 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 
 		return event, err
 	case model.Event_GET:
-		result, err := bck.GetRecord(ctx, event.Resource, event.Ids[0], event.RecordSearchParams.ResolveReferences)
+		for i, record := range event.Records {
+			result, err := bck.GetRecord(ctx, event.Resource, record.Properties["id"].GetStringValue(), event.RecordSearchParams.ResolveReferences)
 
-		event.Records = []*model.Record{result}
+			if err != nil {
+				return nil, err
+			}
+
+			event.Records[i] = result
+		}
 
 		return event, err
 	case model.Event_DELETE:
-		err := bck.DeleteRecords(ctx, event.Resource, event.Ids)
-
+		err = bck.DeleteRecords(ctx, event.Resource, util.ArrayMap(event.Records, func(item *model.Record) string {
+			return item.Properties["id"].GetStringValue()
+		}))
 		return event, err
 	case model.Event_LIST:
 		result, total, err := bck.ListRecords(ctx, event.Resource, abs.ListRecordParams{

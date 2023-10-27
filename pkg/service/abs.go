@@ -101,7 +101,7 @@ type WatchService interface {
 type EventChannelService interface {
 	Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, errors.ServiceError)
 	PollEvents(ctx context.Context, channelKey string) (chan *model.Event, errors.ServiceError)
-	WriteEvent(ctx context.Context, key string, proto *model.Event) errors.ServiceError
+	WriteEvent(ctx context.Context, proto *model.Event) errors.ServiceError
 	Init(config *model.AppConfig)
 }
 

@@ -17,7 +17,6 @@ import (
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
-	"github.com/google/uuid"
 	"github.com/hashicorp/go-metrics"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -169,10 +168,6 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		return nil, 0, err
 	}
 
-	for _, record := range records {
-		DeNormalizeRecord(resource, record)
-	}
-
 	// resolving references
 	if err := r.ResolveReferences(ctx, resource, records, params.ResolveReferences); err != nil {
 		return nil, 0, err
@@ -236,7 +231,6 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 
 	for _, record := range params.Records {
 		InitRecord(ctx, resource, record)
-		NormalizeRecord(resource, record)
 	}
 
 	// prepare default values
@@ -432,7 +426,6 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 
 	for _, record := range params.Records {
 		PrepareUpdateForRecord(ctx, resource, record)
-		NormalizeRecord(resource, record)
 	}
 
 	var records []*model.Record
@@ -502,7 +495,6 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 									})
 								} else {
 									backRefNewRecords = append(backRefNewRecords, &model.Record{
-										Id:         uuid.New().String(),
 										Properties: st.Fields,
 									})
 								}
@@ -610,8 +602,6 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	if err != nil {
 		return nil, err
 	}
-
-	DeNormalizeRecord(resource, res)
 
 	// resolving references
 	if err := r.ResolveReferences(ctx, resource, []*model.Record{res}, resolveReferences); err != nil {

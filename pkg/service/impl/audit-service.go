@@ -95,22 +95,6 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 			}
 			log.Debugf("Audit log created for record %s", record.Id)
 		}
-	} else if event.Ids != nil && len(event.Ids) > 0 {
-		for _, recordId := range event.Ids {
-			auditLog.RecordId = recordId
-
-			_, err := a.recordService.Create(util.WithSystemContext(ctx), service.RecordCreateParams{
-				Namespace: resources.AuditLogResource.Namespace,
-				Resource:  resources.AuditLogResource.Name,
-				Records:   []*model.Record{resource_model.AuditLogMapperInstance.ToRecord(auditLog)},
-			})
-
-			if err != nil {
-				log.Error(err)
-				return nil, err
-			}
-			log.Debugf("Audit log created for record %s", recordId)
-		}
 	}
 
 	return event, nil

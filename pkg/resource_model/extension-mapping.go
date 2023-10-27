@@ -682,128 +682,6 @@ func (m *ExtensionPairExpressionMapper) FromProperties(properties map[string]*st
 	return s
 }
 
-type ExtensionRefValueMapper struct {
-}
-
-func NewExtensionRefValueMapper() *ExtensionRefValueMapper {
-	return &ExtensionRefValueMapper{}
-}
-
-var ExtensionRefValueMapperInstance = NewExtensionRefValueMapper()
-
-func (m *ExtensionRefValueMapper) New() *ExtensionRefValue {
-	return &ExtensionRefValue{}
-}
-
-func (m *ExtensionRefValueMapper) ResourceIdentity() abs.ResourceIdentity {
-	return abs.ResourceIdentity{
-		Namespace: "system",
-		Name:      "Extension",
-	}
-}
-
-func (m *ExtensionRefValueMapper) ToProperties(extensionRefValue *ExtensionRefValue) map[string]*structpb.Value {
-	var properties = make(map[string]*structpb.Value)
-
-	var_Namespace := extensionRefValue.Namespace
-
-	if var_Namespace != nil {
-		var var_Namespace_mapped *structpb.Value
-
-		var var_Namespace_err error
-		var_Namespace_mapped, var_Namespace_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Namespace)
-		if var_Namespace_err != nil {
-			panic(var_Namespace_err)
-		}
-		properties["namespace"] = var_Namespace_mapped
-	}
-
-	var_Resource := extensionRefValue.Resource
-
-	if var_Resource != nil {
-		var var_Resource_mapped *structpb.Value
-
-		var var_Resource_err error
-		var_Resource_mapped, var_Resource_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Resource)
-		if var_Resource_err != nil {
-			panic(var_Resource_err)
-		}
-		properties["resource"] = var_Resource_mapped
-	}
-
-	var_Properties := extensionRefValue.Properties
-
-	if var_Properties != nil {
-		var var_Properties_mapped *structpb.Value
-
-		var var_Properties_st *structpb.Struct = new(structpb.Struct)
-		var_Properties_st.Fields = make(map[string]*structpb.Value)
-		for key, value := range var_Properties {
-
-			var_1x := value
-			var var_1x_mapped *structpb.Value
-
-			var var_1x_err error
-			var_1x_mapped, var_1x_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_1x)
-			if var_1x_err != nil {
-				panic(var_1x_err)
-			}
-
-			var_Properties_st.Fields[key] = var_1x_mapped
-		}
-		var_Properties_mapped = structpb.NewStructValue(var_Properties_st)
-		properties["properties"] = var_Properties_mapped
-	}
-	return properties
-}
-
-func (m *ExtensionRefValueMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionRefValue {
-	var s = m.New()
-	if properties["namespace"] != nil && properties["namespace"].AsInterface() != nil {
-
-		var_Namespace := properties["namespace"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Namespace)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Namespace_mapped := new(string)
-		*var_Namespace_mapped = val.(string)
-
-		s.Namespace = var_Namespace_mapped
-	}
-	if properties["resource"] != nil && properties["resource"].AsInterface() != nil {
-
-		var_Resource := properties["resource"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Resource)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Resource_mapped := new(string)
-		*var_Resource_mapped = val.(string)
-
-		s.Resource = var_Resource_mapped
-	}
-	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
-
-		var_Properties := properties["properties"]
-		var_Properties_mapped := make(map[string]interface{})
-		for k, v := range var_Properties.GetStructValue().Fields {
-
-			var_3x := v
-			var_3x_mapped := unstructured.FromValue(var_3x)
-
-			var_Properties_mapped[k] = var_3x_mapped
-		}
-
-		s.Properties = var_Properties_mapped
-	}
-	return s
-}
-
 type ExtensionRegexMatchExpressionMapper struct {
 }
 
@@ -927,15 +805,6 @@ func (m *ExtensionExpressionMapper) ToProperties(extensionExpression *ExtensionE
 		}
 		properties["value"] = var_Value_mapped
 	}
-
-	var_RefValue := extensionExpression.RefValue
-
-	if var_RefValue != nil {
-		var var_RefValue_mapped *structpb.Value
-
-		var_RefValue_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionRefValueMapperInstance.ToProperties(var_RefValue)})
-		properties["refValue"] = var_RefValue_mapped
-	}
 	return properties
 }
 
@@ -962,15 +831,6 @@ func (m *ExtensionExpressionMapper) FromProperties(properties map[string]*struct
 		*var_Value_mapped = unstructured.FromValue(var_Value)
 
 		s.Value = var_Value_mapped
-	}
-	if properties["refValue"] != nil && properties["refValue"].AsInterface() != nil {
-
-		var_RefValue := properties["refValue"]
-		var mappedValue = ExtensionRefValueMapperInstance.FromProperties(var_RefValue.GetStructValue().Fields)
-
-		var_RefValue_mapped := mappedValue
-
-		s.RefValue = var_RefValue_mapped
 	}
 	return s
 }
@@ -1918,29 +1778,6 @@ func (m *EventMapper) ToProperties(event *Event) map[string]*structpb.Value {
 		properties["records"] = var_Records_mapped
 	}
 
-	var_Ids := event.Ids
-
-	if var_Ids != nil {
-		var var_Ids_mapped *structpb.Value
-
-		var var_Ids_l []*structpb.Value
-		for _, value := range var_Ids {
-
-			var_5x := value
-			var var_5x_mapped *structpb.Value
-
-			var var_5x_err error
-			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
-			if var_5x_err != nil {
-				panic(var_5x_err)
-			}
-
-			var_Ids_l = append(var_Ids_l, var_5x_mapped)
-		}
-		var_Ids_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Ids_l})
-		properties["ids"] = var_Ids_mapped
-	}
-
 	var_Finalizes := event.Finalizes
 
 	if var_Finalizes != nil {
@@ -2146,26 +1983,6 @@ func (m *EventMapper) FromProperties(properties map[string]*structpb.Value) *Eve
 		}
 
 		s.Records = var_Records_mapped
-	}
-	if properties["ids"] != nil && properties["ids"].AsInterface() != nil {
-
-		var_Ids := properties["ids"]
-		var_Ids_mapped := []string{}
-		for _, v := range var_Ids.GetListValue().Values {
-
-			var_4x := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
-
-			if err != nil {
-				panic(err)
-			}
-
-			var_4x_mapped := val.(string)
-
-			var_Ids_mapped = append(var_Ids_mapped, var_4x_mapped)
-		}
-
-		s.Ids = var_Ids_mapped
 	}
 	if properties["finalizes"] != nil && properties["finalizes"].AsInterface() != nil {
 

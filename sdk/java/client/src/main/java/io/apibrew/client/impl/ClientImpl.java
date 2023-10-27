@@ -371,8 +371,12 @@ public class ClientImpl implements Client {
             ApiException ex;
             try {
                 String errorString = result.mapError(String.class);
-                Extension.Error error = objectMapper.readValue(errorString, Extension.Error.class);
-                ex = new ApiException(error);
+                if (errorString == null) {
+                    ex = new ApiException(errorString + " " + result.getStatus());
+                } else {
+                    Extension.Error error = objectMapper.readValue(errorString, Extension.Error.class);
+                    ex = new ApiException(error);
+                }
             } catch (Exception ignored) {
                 log.error("Error parsing error response: {}", ignored.getMessage(), ignored);
                 ex = new ApiException(result.getStatusText() + ":" + result.mapError(String.class));

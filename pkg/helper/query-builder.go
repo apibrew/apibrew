@@ -59,12 +59,8 @@ func (q QueryBuilder) Equal(property *model.ResourceProperty, value *structpb.Va
 		if value.GetStringValue() != "" {
 			right = &model.Expression{Expression: &model.Expression_Value{Value: value}}
 		} else {
-			right = &model.Expression{Expression: &model.Expression_RefValue{
-				RefValue: &model.RefValue{
-					Namespace:  property.Reference.Namespace,
-					Resource:   property.Reference.Resource,
-					Properties: value.GetStructValue().Fields,
-				},
+			right = &model.Expression{Expression: &model.Expression_Value{
+				Value: value,
 			}}
 		}
 	} else {

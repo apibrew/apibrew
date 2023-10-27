@@ -20,9 +20,6 @@ var generatorCmd = &cobra.Command{
 		namespace, err := cmd.Flags().GetString("namespace")
 		check(err)
 
-		system, err := cmd.Flags().GetBool("system")
-		check(err)
-
 		path, err := cmd.Flags().GetString("path")
 		check(err)
 
@@ -34,13 +31,9 @@ var generatorCmd = &cobra.Command{
 
 		var resources []*model.Resource
 
-		if !system {
-			var selection = &flags.SelectedRecordsResult{}
-			selectorFlags.Parse(selection, cmd, args)
-			resources = selection.Resources
-		} else {
-			resources = resources2.GetAllSystemResources()
-		}
+		var selection = &flags.SelectedRecordsResult{}
+		selectorFlags.Parse(selection, cmd, args)
+		resources = selection.Resources
 
 		if pkg == "" {
 			pkg = "model"
@@ -93,7 +86,6 @@ var generatorCmd = &cobra.Command{
 func init() {
 	generatorCmd.PersistentFlags().StringP("path", "p", ".", "Path")
 	generatorCmd.PersistentFlags().String("package", "", "Package")
-	generatorCmd.PersistentFlags().Bool("system", false, "System only")
-	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, nodejs, typescript]")
+	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, javascript, typescript, java]")
 	selectorFlags.Declare(generatorCmd)
 }

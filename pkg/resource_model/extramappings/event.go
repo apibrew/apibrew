@@ -15,7 +15,6 @@ func EventToProto(result *resource_model.Event) *model.Event {
 
 	event.Id = result.Id
 	event.Action = model.Event_Action(model.Event_Action_value[string(result.Action)])
-	event.Ids = result.Ids
 	if result.Time != nil {
 		event.Time = timestamppb.New(*result.Time)
 	}
@@ -82,7 +81,6 @@ func EventFromProto(event *model.Event) *resource_model.Event {
 	extensionEvent := new(resource_model.Event)
 	extensionEvent.Id = event.Id
 	extensionEvent.Action = resource_model.ExtensionAction(model.Event_Action_name[int32(event.Action)])
-	extensionEvent.Ids = event.Ids
 	if event.Time != nil {
 		extensionEvent.Time = new(time.Time)
 		*extensionEvent.Time = event.Time.AsTime()

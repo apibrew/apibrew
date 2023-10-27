@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
-	"github.com/apibrew/apibrew/pkg/formats/apply"
+	"github.com/apibrew/apibrew/pkg/formats/executor"
 	"github.com/spf13/cobra"
 	"sync"
 	"sync/atomic"
@@ -13,9 +13,10 @@ import (
 )
 
 var loadCmd = &cobra.Command{
-	Use:   "load",
-	Short: "Load test",
-	Long:  `Load test apibrew`,
+	Use:    "load",
+	Hidden: true,
+	Short:  "Load test",
+	Long:   `Load test apibrew`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if loadNumberOfRequests == nil {
 			return errors.New("please specify number of requests")
@@ -128,7 +129,7 @@ var loadCmd = &cobra.Command{
 }
 
 func loadApply(cmd *cobra.Command, args []string, payloadFile string) func() error {
-	applier := apply.NewApplier(GetClient(), false, false, false, flags.OverrideConfig{})
+	applier := executor.NewExecutor(executor.APPLY, GetClient(), false, false, false, flags.OverrideConfig{})
 
 	return func() error {
 		return applier.Apply(cmd.Context(), payloadFile, "")

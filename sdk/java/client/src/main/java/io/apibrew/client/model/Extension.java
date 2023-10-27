@@ -209,6 +209,56 @@ public class Extension extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof BooleanExpression)) {
+                return false;
+            }
+
+            BooleanExpression obj = (BooleanExpression) o;
+
+            if (!Objects.equals(this.and, obj.and)) {
+                return false;
+            }
+            if (!Objects.equals(this.or, obj.or)) {
+                return false;
+            }
+            if (!Objects.equals(this.not, obj.not)) {
+                return false;
+            }
+            if (!Objects.equals(this.equal, obj.equal)) {
+                return false;
+            }
+            if (!Objects.equals(this.lessThan, obj.lessThan)) {
+                return false;
+            }
+            if (!Objects.equals(this.greaterThan, obj.greaterThan)) {
+                return false;
+            }
+            if (!Objects.equals(this.lessThanOrEqual, obj.lessThanOrEqual)) {
+                return false;
+            }
+            if (!Objects.equals(this.greaterThanOrEqual, obj.greaterThanOrEqual)) {
+                return false;
+            }
+            if (!Objects.equals(this.in, obj.in)) {
+                return false;
+            }
+            if (!Objects.equals(this.isNull, obj.isNull)) {
+                return false;
+            }
+            if (!Objects.equals(this.regexMatch, obj.regexMatch)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(and, or, not, equal, lessThan, greaterThan, lessThanOrEqual, greaterThanOrEqual, in, isNull, regexMatch);
+        }
     }
     public static class PairExpression {
         
@@ -242,53 +292,28 @@ public class Extension extends Entity {
 
             return this;
         }
-    }
-    public static class RefValue {
-        
-        private String namespace;
-        
-        private String resource;
-        
-        private java.util.Map<String, Object> properties;
 
-        public String getNamespace() {
-            return namespace;
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof PairExpression)) {
+                return false;
+            }
+
+            PairExpression obj = (PairExpression) o;
+
+            if (!Objects.equals(this.left, obj.left)) {
+                return false;
+            }
+            if (!Objects.equals(this.right, obj.right)) {
+                return false;
+            }
+
+            return true;
         }
 
-        public void setNamespace(String namespace) {
-            this.namespace = namespace;
-        }
-
-        public RefValue withNamespace(String namespace) {
-            this.namespace = namespace;
-
-            return this;
-        }
-        public String getResource() {
-            return resource;
-        }
-
-        public void setResource(String resource) {
-            this.resource = resource;
-        }
-
-        public RefValue withResource(String resource) {
-            this.resource = resource;
-
-            return this;
-        }
-        public java.util.Map<String, Object> getProperties() {
-            return properties;
-        }
-
-        public void setProperties(java.util.Map<String, Object> properties) {
-            this.properties = properties;
-        }
-
-        public RefValue withProperties(java.util.Map<String, Object> properties) {
-            this.properties = properties;
-
-            return this;
+        @Override
+        public int hashCode() {
+           return Objects.hash(left, right);
         }
     }
     public static class RegexMatchExpression {
@@ -323,14 +348,35 @@ public class Extension extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof RegexMatchExpression)) {
+                return false;
+            }
+
+            RegexMatchExpression obj = (RegexMatchExpression) o;
+
+            if (!Objects.equals(this.pattern, obj.pattern)) {
+                return false;
+            }
+            if (!Objects.equals(this.expression, obj.expression)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(pattern, expression);
+        }
     }
     public static class Expression {
         
         private String property;
         
         private Object value;
-        
-        private Extension.RefValue refValue;
 
         public String getProperty() {
             return property;
@@ -358,18 +404,28 @@ public class Extension extends Entity {
 
             return this;
         }
-        public Extension.RefValue getRefValue() {
-            return refValue;
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Expression)) {
+                return false;
+            }
+
+            Expression obj = (Expression) o;
+
+            if (!Objects.equals(this.property, obj.property)) {
+                return false;
+            }
+            if (!Objects.equals(this.value, obj.value)) {
+                return false;
+            }
+
+            return true;
         }
 
-        public void setRefValue(Extension.RefValue refValue) {
-            this.refValue = refValue;
-        }
-
-        public Expression withRefValue(Extension.RefValue refValue) {
-            this.refValue = refValue;
-
-            return this;
+        @Override
+        public int hashCode() {
+           return Objects.hash(property, value);
         }
     }
     public static class AuditData {
@@ -434,6 +490,35 @@ public class Extension extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof AuditData)) {
+                return false;
+            }
+
+            AuditData obj = (AuditData) o;
+
+            if (!Objects.equals(this.createdBy, obj.createdBy)) {
+                return false;
+            }
+            if (!Objects.equals(this.updatedBy, obj.updatedBy)) {
+                return false;
+            }
+            if (!Objects.equals(this.createdOn, obj.createdOn)) {
+                return false;
+            }
+            if (!Objects.equals(this.updatedOn, obj.updatedOn)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(createdBy, updatedBy, createdOn, updatedOn);
+        }
     }
     public static class FunctionCall {
         
@@ -466,6 +551,29 @@ public class Extension extends Entity {
             this.functionName = functionName;
 
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof FunctionCall)) {
+                return false;
+            }
+
+            FunctionCall obj = (FunctionCall) o;
+
+            if (!Objects.equals(this.host, obj.host)) {
+                return false;
+            }
+            if (!Objects.equals(this.functionName, obj.functionName)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(host, functionName);
         }
     }
     public static class HttpCall {
@@ -500,6 +608,29 @@ public class Extension extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof HttpCall)) {
+                return false;
+            }
+
+            HttpCall obj = (HttpCall) o;
+
+            if (!Objects.equals(this.uri, obj.uri)) {
+                return false;
+            }
+            if (!Objects.equals(this.method, obj.method)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(uri, method);
+        }
     }
     public static class ChannelCall {
         
@@ -517,6 +648,26 @@ public class Extension extends Entity {
             this.channelKey = channelKey;
 
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ChannelCall)) {
+                return false;
+            }
+
+            ChannelCall obj = (ChannelCall) o;
+
+            if (!Objects.equals(this.channelKey, obj.channelKey)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(channelKey);
         }
     }
     public static class ExternalCall {
@@ -565,6 +716,32 @@ public class Extension extends Entity {
             this.channelCall = channelCall;
 
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ExternalCall)) {
+                return false;
+            }
+
+            ExternalCall obj = (ExternalCall) o;
+
+            if (!Objects.equals(this.functionCall, obj.functionCall)) {
+                return false;
+            }
+            if (!Objects.equals(this.httpCall, obj.httpCall)) {
+                return false;
+            }
+            if (!Objects.equals(this.channelCall, obj.channelCall)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(functionCall, httpCall, channelCall);
         }
     }
     public static class EventSelector {
@@ -659,6 +836,41 @@ public class Extension extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof EventSelector)) {
+                return false;
+            }
+
+            EventSelector obj = (EventSelector) o;
+
+            if (!Objects.equals(this.actions, obj.actions)) {
+                return false;
+            }
+            if (!Objects.equals(this.recordSelector, obj.recordSelector)) {
+                return false;
+            }
+            if (!Objects.equals(this.namespaces, obj.namespaces)) {
+                return false;
+            }
+            if (!Objects.equals(this.resources, obj.resources)) {
+                return false;
+            }
+            if (!Objects.equals(this.ids, obj.ids)) {
+                return false;
+            }
+            if (!Objects.equals(this.annotations, obj.annotations)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(actions, recordSelector, namespaces, resources, ids, annotations);
+        }
     }
     public static class RecordSearchParams {
         
@@ -722,6 +934,35 @@ public class Extension extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof RecordSearchParams)) {
+                return false;
+            }
+
+            RecordSearchParams obj = (RecordSearchParams) o;
+
+            if (!Objects.equals(this.query, obj.query)) {
+                return false;
+            }
+            if (!Objects.equals(this.limit, obj.limit)) {
+                return false;
+            }
+            if (!Objects.equals(this.offset, obj.offset)) {
+                return false;
+            }
+            if (!Objects.equals(this.resolveReferences, obj.resolveReferences)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(query, limit, offset, resolveReferences);
+        }
     }
     public static class Event {
         
@@ -738,8 +979,6 @@ public class Extension extends Entity {
         private Resource resource;
         
         private java.util.List<Record> records;
-        
-        private java.util.List<String> ids;
         
         private Boolean finalizes;
         
@@ -847,19 +1086,6 @@ public class Extension extends Entity {
 
         public Event withRecords(java.util.List<Record> records) {
             this.records = records;
-
-            return this;
-        }
-        public java.util.List<String> getIds() {
-            return ids;
-        }
-
-        public void setIds(java.util.List<String> ids) {
-            this.ids = ids;
-        }
-
-        public Event withIds(java.util.List<String> ids) {
-            this.ids = ids;
 
             return this;
         }
@@ -980,6 +1206,71 @@ public class Extension extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Event)) {
+                return false;
+            }
+
+            Event obj = (Event) o;
+
+            if (!Objects.equals(this.id, obj.id)) {
+                return false;
+            }
+            if (!Objects.equals(this.action, obj.action)) {
+                return false;
+            }
+            if (!Objects.equals(this.recordSearchParams, obj.recordSearchParams)) {
+                return false;
+            }
+            if (!Objects.equals(this.actionSummary, obj.actionSummary)) {
+                return false;
+            }
+            if (!Objects.equals(this.actionDescription, obj.actionDescription)) {
+                return false;
+            }
+            if (!Objects.equals(this.resource, obj.resource)) {
+                return false;
+            }
+            if (!Objects.equals(this.records, obj.records)) {
+                return false;
+            }
+            if (!Objects.equals(this.finalizes, obj.finalizes)) {
+                return false;
+            }
+            if (!Objects.equals(this.sync, obj.sync)) {
+                return false;
+            }
+            if (!Objects.equals(this.time, obj.time)) {
+                return false;
+            }
+            if (!Objects.equals(this.total, obj.total)) {
+                return false;
+            }
+            if (!Objects.equals(this.actionName, obj.actionName)) {
+                return false;
+            }
+            if (!Objects.equals(this.input, obj.input)) {
+                return false;
+            }
+            if (!Objects.equals(this.output, obj.output)) {
+                return false;
+            }
+            if (!Objects.equals(this.annotations, obj.annotations)) {
+                return false;
+            }
+            if (!Objects.equals(this.error, obj.error)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(id, action, recordSearchParams, actionSummary, actionDescription, resource, records, finalizes, sync, time, total, actionName, input, output, annotations, error);
+        }
     }
     public static class ErrorField {
         
@@ -1043,6 +1334,35 @@ public class Extension extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ErrorField)) {
+                return false;
+            }
+
+            ErrorField obj = (ErrorField) o;
+
+            if (!Objects.equals(this.recordId, obj.recordId)) {
+                return false;
+            }
+            if (!Objects.equals(this.property, obj.property)) {
+                return false;
+            }
+            if (!Objects.equals(this.message, obj.message)) {
+                return false;
+            }
+            if (!Objects.equals(this.value, obj.value)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(recordId, property, message, value);
+        }
     }
     public static class Error {
         
@@ -1090,6 +1410,32 @@ public class Extension extends Entity {
             this.fields = fields;
 
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Error)) {
+                return false;
+            }
+
+            Error obj = (Error) o;
+
+            if (!Objects.equals(this.code, obj.code)) {
+                return false;
+            }
+            if (!Objects.equals(this.message, obj.message)) {
+                return false;
+            }
+            if (!Objects.equals(this.fields, obj.fields)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(code, message, fields);
         }
     }
 

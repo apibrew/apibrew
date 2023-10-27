@@ -296,6 +296,71 @@ public class Resource extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Property)) {
+                return false;
+            }
+
+            Property obj = (Property) o;
+
+            if (!Objects.equals(this.name, obj.name)) {
+                return false;
+            }
+            if (!Objects.equals(this.type, obj.type)) {
+                return false;
+            }
+            if (!Objects.equals(this.typeRef, obj.typeRef)) {
+                return false;
+            }
+            if (!Objects.equals(this.primary, obj.primary)) {
+                return false;
+            }
+            if (!Objects.equals(this.required, obj.required)) {
+                return false;
+            }
+            if (!Objects.equals(this.unique, obj.unique)) {
+                return false;
+            }
+            if (!Objects.equals(this.immutable, obj.immutable)) {
+                return false;
+            }
+            if (!Objects.equals(this.length, obj.length)) {
+                return false;
+            }
+            if (!Objects.equals(this.item, obj.item)) {
+                return false;
+            }
+            if (!Objects.equals(this.reference, obj.reference)) {
+                return false;
+            }
+            if (!Objects.equals(this.defaultValue, obj.defaultValue)) {
+                return false;
+            }
+            if (!Objects.equals(this.enumValues, obj.enumValues)) {
+                return false;
+            }
+            if (!Objects.equals(this.exampleValue, obj.exampleValue)) {
+                return false;
+            }
+            if (!Objects.equals(this.title, obj.title)) {
+                return false;
+            }
+            if (!Objects.equals(this.description, obj.description)) {
+                return false;
+            }
+            if (!Objects.equals(this.annotations, obj.annotations)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(name, type, typeRef, primary, required, unique, immutable, length, item, reference, defaultValue, enumValues, exampleValue, title, description, annotations);
+        }
     }
     public static class SubType {
         
@@ -358,6 +423,35 @@ public class Resource extends Entity {
             this.properties = properties;
 
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof SubType)) {
+                return false;
+            }
+
+            SubType obj = (SubType) o;
+
+            if (!Objects.equals(this.name, obj.name)) {
+                return false;
+            }
+            if (!Objects.equals(this.title, obj.title)) {
+                return false;
+            }
+            if (!Objects.equals(this.description, obj.description)) {
+                return false;
+            }
+            if (!Objects.equals(this.properties, obj.properties)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(name, title, description, properties);
         }
     }
     public static class AuditData {
@@ -422,6 +516,35 @@ public class Resource extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof AuditData)) {
+                return false;
+            }
+
+            AuditData obj = (AuditData) o;
+
+            if (!Objects.equals(this.createdBy, obj.createdBy)) {
+                return false;
+            }
+            if (!Objects.equals(this.updatedBy, obj.updatedBy)) {
+                return false;
+            }
+            if (!Objects.equals(this.createdOn, obj.createdOn)) {
+                return false;
+            }
+            if (!Objects.equals(this.updatedOn, obj.updatedOn)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(createdBy, updatedBy, createdOn, updatedOn);
+        }
     }
     public static class IndexProperty {
         
@@ -454,6 +577,29 @@ public class Resource extends Entity {
             this.order = order;
 
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof IndexProperty)) {
+                return false;
+            }
+
+            IndexProperty obj = (IndexProperty) o;
+
+            if (!Objects.equals(this.name, obj.name)) {
+                return false;
+            }
+            if (!Objects.equals(this.order, obj.order)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(name, order);
         }
     }
     public static class Index {
@@ -518,6 +664,35 @@ public class Resource extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Index)) {
+                return false;
+            }
+
+            Index obj = (Index) o;
+
+            if (!Objects.equals(this.properties, obj.properties)) {
+                return false;
+            }
+            if (!Objects.equals(this.indexType, obj.indexType)) {
+                return false;
+            }
+            if (!Objects.equals(this.unique, obj.unique)) {
+                return false;
+            }
+            if (!Objects.equals(this.annotations, obj.annotations)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(properties, indexType, unique, annotations);
+        }
     }
     public static class Reference {
         
@@ -565,6 +740,32 @@ public class Resource extends Entity {
             this.backReference = backReference;
 
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Reference)) {
+                return false;
+            }
+
+            Reference obj = (Reference) o;
+
+            if (!Objects.equals(this.resource, obj.resource)) {
+                return false;
+            }
+            if (!Objects.equals(this.cascade, obj.cascade)) {
+                return false;
+            }
+            if (!Objects.equals(this.backReference, obj.backReference)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(resource, cascade, backReference);
         }
     }
 

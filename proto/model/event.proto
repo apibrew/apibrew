@@ -38,12 +38,6 @@ message Event {
     LIST - result of the list operation
    */
   repeated model.Record records = 6;
-
-  /*
-    GET - there will be only one id, for getting record with id
-    DELETE - there will be multiple ids, for deleting multiple records
-   */
-  repeated string ids = 7;
   /*
     LIST - search params for the list operation
    */

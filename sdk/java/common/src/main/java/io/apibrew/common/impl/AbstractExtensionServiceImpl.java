@@ -155,6 +155,8 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
         operatorMap.put(id, operator);
         operatorIdExtensionInfoMap.put(id, extensionInfo);
 
+        log.info("Registered operator: {} => {}", id, extensionInfo);
+
         return id;
     }
 
@@ -176,6 +178,8 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
 
         operatorMap.remove(id);
         operatorIdExtensionInfoMap.remove(id);
+
+        log.info("Unregistered operator: {} => {}", id, extensionInfo);
     }
 
     @Override

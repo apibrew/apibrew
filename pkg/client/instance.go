@@ -31,6 +31,28 @@ type client struct {
 	token                string
 }
 
+func (d *client) CreateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error {
+	_, err := d.resourceClient.Create(ctx, &stub.CreateResourceRequest{
+		Token:          d.token,
+		Resources:      []*model.Resource{resource},
+		DoMigration:    migration,
+		ForceMigration: force,
+	})
+
+	return err
+}
+
+func (d *client) UpdateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error {
+	_, err := d.resourceClient.Update(ctx, &stub.UpdateResourceRequest{
+		Token:          d.token,
+		Resources:      []*model.Resource{resource},
+		DoMigration:    migration,
+		ForceMigration: force,
+	})
+
+	return err
+}
+
 func (d *client) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
 	resp, err := d.watchClient.Watch(ctx, &stub.WatchRequest{
 		Token: d.token,
@@ -323,9 +345,8 @@ func (d *client) PollEvents(ctx context.Context, channelKey string) (<-chan *mod
 
 func (d *client) WriteEvent(ctx context.Context, key string, event *model.Event) error {
 	_, err := d.eventChannelClient.Write(ctx, &stub.EventWriteRequest{
-		Token:      d.token,
-		ChannelKey: key,
-		Event:      event,
+		Token: d.token,
+		Event: event,
 	})
 
 	return err

@@ -66,7 +66,7 @@ func (b backendProviderService) GetRecord(ctx context.Context, resource *model.R
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
 		Action:   model.Event_GET,
 		Resource: resource,
-		Ids:      []string{id},
+		Records:  []*model.Record{util.IdRecord(id)},
 		RecordSearchParams: &model.Event_RecordSearchParams{
 			ResolveReferences: resolveReferences,
 		},
@@ -91,7 +91,7 @@ func (b backendProviderService) DeleteRecords(ctx context.Context, resource *mod
 	_, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
 		Action:   model.Event_DELETE,
 		Resource: resource,
-		Ids:      list,
+		Records:  util.ArrayMap(list, util.IdRecord),
 	}))
 
 	return err

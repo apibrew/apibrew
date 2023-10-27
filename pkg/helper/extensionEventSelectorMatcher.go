@@ -139,10 +139,6 @@ func (b *ExtensionEventSelectorMatcher) resolve(incoming *model.Event, left *mod
 		return incoming.Records[0].Properties[left.GetProperty()]
 	}
 
-	if left.GetRefValue() != nil {
-		return left.GetRefValue()
-	}
-
 	if left.GetValue() != nil {
 		return left.GetValue()
 	}

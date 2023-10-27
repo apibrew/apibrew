@@ -93,7 +93,7 @@ func (r *eventChannelApi) writeEvent(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	err = r.service.WriteEvent(request.Context(), channelKey, extramappings.EventToProto(event))
+	err = r.service.WriteEvent(request.Context(), extramappings.EventToProto(event))
 
 	if err != nil {
 		handleError(writer, err)

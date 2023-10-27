@@ -16,13 +16,16 @@ import (
 )
 
 type Executor struct {
-	Params              ExecutorParams
+	Client              client.Client
 	resources           []*model.Resource
 	resourcePropertyMap map[string]*model.ResourceProperty
 	preprocessor        preprocessor
+
+	ResourceHandler func(resource *model.Resource) error
+	RecordHandler   func(namespace string, resource string, record *model.Record) error
 }
 
-func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructured) error {
+func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 	body, err := e.preprocessor.preprocess(body)
 
 	if err != nil {
@@ -66,7 +69,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructur
 		resource := mapping.ResourceFromRecord(record)
 		resource.Namespace = namespace
 
-		err = e.Params.DhClient.ApplyResource(ctx, resource, e.Params.DoMigration, e.Params.ForceMigration)
+		err = e.ResourceHandler(resource)
 
 		if err != nil {
 			log.Error("Error applying resource: ", resource.Namespace+"/"+resource.Name)
@@ -135,7 +138,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructur
 			}
 		}
 
-		_, err = e.Params.DhClient.ApplyRecord(ctx, namespace, resourceName, record)
+		err = e.RecordHandler(namespace, resourceName, record)
 
 		if err != nil {
 			return err
@@ -145,7 +148,7 @@ func (e *Executor) RestoreItem(ctx context.Context, body unstructured.Unstructur
 	return nil
 }
 func (e *Executor) Init(ctx context.Context) error {
-	resources, err := e.Params.DhClient.ListResources(ctx)
+	resources, err := e.Client.ListResources(ctx)
 
 	if err != nil {
 		return err
@@ -165,7 +168,7 @@ func (e *Executor) Init(ctx context.Context) error {
 	}
 
 	e.preprocessor = preprocessor{
-		dhClient: e.Params.DhClient,
+		dhClient: e.Client,
 		writer:   &Writer{},
 	}
 
@@ -175,14 +178,6 @@ func (e *Executor) Init(ctx context.Context) error {
 type OverrideConfig struct {
 	Namespace  string
 	DataSource string
-}
-
-type ExecutorParams struct {
-	DhClient       client.Client
-	OverrideConfig OverrideConfig
-	DoMigration    bool
-	ForceMigration bool
-	DataOnly       bool
 }
 
 type ParserFunc func(reader io.Reader, consumer func(data unstructured.Unstructured) error) error

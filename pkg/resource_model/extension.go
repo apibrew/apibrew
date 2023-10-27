@@ -119,22 +119,6 @@ func (s *ExtensionPairExpression) GetRight() *ExtensionExpression {
 	return s.Right
 }
 
-type ExtensionRefValue struct {
-	Namespace  *string                `json:"namespace,omitempty"`
-	Resource   *string                `json:"resource,omitempty"`
-	Properties map[string]interface{} `json:"properties,omitempty"`
-}
-
-func (s *ExtensionRefValue) GetNamespace() *string {
-	return s.Namespace
-}
-func (s *ExtensionRefValue) GetResource() *string {
-	return s.Resource
-}
-func (s *ExtensionRefValue) GetProperties() map[string]interface{} {
-	return s.Properties
-}
-
 type ExtensionRegexMatchExpression struct {
 	Pattern    *string              `json:"pattern,omitempty"`
 	Expression *ExtensionExpression `json:"expression,omitempty"`
@@ -148,9 +132,8 @@ func (s *ExtensionRegexMatchExpression) GetExpression() *ExtensionExpression {
 }
 
 type ExtensionExpression struct {
-	Property *string            `json:"property,omitempty"`
-	Value    interface{}        `json:"value,omitempty"`
-	RefValue *ExtensionRefValue `json:"refValue,omitempty"`
+	Property *string     `json:"property,omitempty"`
+	Value    interface{} `json:"value,omitempty"`
 }
 
 func (s *ExtensionExpression) GetProperty() *string {
@@ -158,9 +141,6 @@ func (s *ExtensionExpression) GetProperty() *string {
 }
 func (s *ExtensionExpression) GetValue() interface{} {
 	return s.Value
-}
-func (s *ExtensionExpression) GetRefValue() *ExtensionRefValue {
-	return s.RefValue
 }
 
 type ExtensionAuditData struct {
@@ -287,7 +267,6 @@ type Event struct {
 	ActionDescription  *string             `json:"actionDescription,omitempty"`
 	Resource           *Resource           `json:"resource,omitempty"`
 	Records            []*Record           `json:"records,omitempty"`
-	Ids                []string            `json:"ids,omitempty"`
 	Finalizes          *bool               `json:"finalizes,omitempty"`
 	Sync               *bool               `json:"sync,omitempty"`
 	Time               *time.Time          `json:"time,omitempty"`
@@ -319,9 +298,6 @@ func (s *Event) GetResource() *Resource {
 }
 func (s *Event) GetRecords() []*Record {
 	return s.Records
-}
-func (s *Event) GetIds() []string {
-	return s.Ids
 }
 func (s *Event) GetFinalizes() *bool {
 	return s.Finalizes

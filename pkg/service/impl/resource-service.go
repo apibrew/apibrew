@@ -163,10 +163,6 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 		},
 	}, nil)
 
-	for _, record := range records {
-		DeNormalizeRecord(resources.ResourceResource, record)
-	}
-
 	r.schema.Resources = mapping.MapFromRecord(records, mapping.ResourceFromRecord)
 
 	if err != nil {
@@ -261,7 +257,6 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 
 	for _, record := range resourceRecords {
 		PrepareUpdateForRecord(ctx, resources.ResourceResource, record)
-		NormalizeRecord(resources.ResourceResource, record)
 	}
 
 	if _, err = r.backendProviderService.UpdateRecords(ctx, resources.ResourceResource, resourceRecords); err != nil {
@@ -370,7 +365,6 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	var txCtx = ctx
 
 	InitRecord(ctx, resources.ResourceResource, resourceRecord)
-	NormalizeRecord(resources.ResourceResource, resourceRecord)
 
 	result, err := r.backendProviderService.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
 

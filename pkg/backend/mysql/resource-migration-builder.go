@@ -72,6 +72,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 	if property.Unique {
 		uniqModifier = "UNIQUE"
 	}
+
 	sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
 	var def = []string{r.options.Quote(property.Name), sqlType, nullModifier, uniqModifier}

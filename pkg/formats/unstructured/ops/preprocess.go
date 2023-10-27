@@ -128,7 +128,7 @@ func (p *preprocessor) runIncludeFolder(un unstructured.Unstructured) (string, e
 	filePath := un["$folder"].(string)
 	format := un["$format"].(string)
 
-	if format == "tar" {
+	if format == "" || format == "tar" {
 		var buffer = new(bytes.Buffer)
 		err := makeTar(filePath, buffer)
 

@@ -45,7 +45,7 @@ func (e *eventChannelGrpcService) Poll(req *stub.EventPollRequest, srv stub.Even
 }
 
 func (e *eventChannelGrpcService) Write(ctx context.Context, req *stub.EventWriteRequest) (*stub.EventWriteResponse, error) {
-	err := e.eventChannelService.WriteEvent(ctx, req.ChannelKey, req.Event)
+	err := e.eventChannelService.WriteEvent(ctx, req.Event)
 
 	if err != nil {
 		log.Error(err)

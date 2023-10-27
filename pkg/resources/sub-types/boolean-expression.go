@@ -21,27 +21,6 @@ var PairExpression = &model.ResourceSubType{
 	},
 }
 
-var RefValue = &model.ResourceSubType{
-	Name: "RefValue",
-	Properties: []*model.ResourceProperty{
-		{
-			Name: "namespace",
-			Type: model.ResourceProperty_STRING,
-		},
-		{
-			Name: "resource",
-			Type: model.ResourceProperty_STRING,
-		},
-		{
-			Name: "properties",
-			Type: model.ResourceProperty_MAP,
-			Item: &model.ResourceProperty{
-				Type: model.ResourceProperty_OBJECT,
-			},
-		},
-	},
-}
-
 var RegexMatchExpression = &model.ResourceSubType{
 	Name: "RegexMatchExpression",
 	Properties: []*model.ResourceProperty{
@@ -67,11 +46,6 @@ var Expression = &model.ResourceSubType{
 		{
 			Name: "value",
 			Type: model.ResourceProperty_OBJECT,
-		},
-		{
-			Name:    "refValue",
-			Type:    model.ResourceProperty_STRUCT,
-			TypeRef: util.Pointer("RefValue"),
 		},
 	},
 }

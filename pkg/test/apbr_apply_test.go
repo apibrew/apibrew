@@ -1,33 +1,17 @@
 package test
 
 import (
-	"fmt"
-	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
+	"github.com/apibrew/apibrew/pkg/apbr/flags"
+	executor2 "github.com/apibrew/apibrew/pkg/formats/executor"
 	"github.com/apibrew/apibrew/pkg/test/setup"
-	"os"
 	"testing"
 )
 
 func apbrApply(inputFilePath string) error {
-	in, err := os.Open(inputFilePath)
-	if err != nil {
-		return fmt.Errorf("failed to open YAML file: %w", err)
-	}
-	defer in.Close()
-
 	dhClient := setup.GetTestDhClient()
 
-	executor, err := yamlformat.NewExecutor(yamlformat.ExecutorParams{
-		Input:          in,
-		DhClient:       dhClient,
-		DoMigration:    true,
-		ForceMigration: true,
-	}, setup.Ctx)
-	if err != nil {
-		return fmt.Errorf("failed to create YAML executor: %w", err)
-	}
-
-	return executor.Restore(setup.Ctx)
+	exec := executor2.NewExecutor(executor2.APPLY, dhClient, true, false, false, flags.OverrideConfig{})
+	return exec.Apply(setup.Ctx, inputFilePath, "yaml")
 }
 
 func TestApply(t *testing.T) {

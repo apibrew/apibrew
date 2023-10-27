@@ -22,9 +22,6 @@ message EventPollRequest {
 
 message EventWriteRequest {
   string token = 1;
-
-  string channelKey = 2;
-
   model.Event event = 3;
 }
 

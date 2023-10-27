@@ -77,26 +77,6 @@ func ExpressionFromProto(exp *model.Expression) resource_model.ExtensionExpressi
 		result.Value = unstructured.FromValue(exp.GetValue())
 	}
 
-	if exp.GetRefValue() != nil {
-		result.RefValue = util.Pointer(RefValueFromProto(exp.GetRefValue()))
-	}
-
-	return result
-}
-
-func RefValueFromProto(value *model.RefValue) resource_model.ExtensionRefValue {
-	var result = resource_model.ExtensionRefValue{}
-
-	result.Namespace = util.Pointer(value.GetNamespace())
-	result.Resource = util.Pointer(value.GetResource())
-	if value.GetProperties() != nil {
-		result.Properties = make(map[string]interface{})
-
-		for k, v := range value.GetProperties() {
-			result.Properties[k] = unstructured.FromValue(v)
-		}
-	}
-
 	return result
 }
 
@@ -203,35 +183,6 @@ func ExpressionToProto(expression resource_model.ExtensionExpression) *model.Exp
 
 		result.Expression = &model.Expression_Value{
 			Value: val,
-		}
-	}
-
-	if expression.RefValue != nil {
-		result.Expression = &model.Expression_RefValue{
-			RefValue: RefValueToProto(*expression.RefValue),
-		}
-	}
-
-	return result
-}
-
-func RefValueToProto(value resource_model.ExtensionRefValue) *model.RefValue {
-	var result = new(model.RefValue)
-
-	result.Namespace = util.DePointer(value.Namespace, "")
-	result.Resource = util.DePointer(value.Resource, "")
-
-	if value.Properties != nil {
-		result.Properties = make(map[string]*structpb.Value)
-
-		for k, v := range value.Properties {
-			val, err := structpb.NewValue(v)
-
-			if err != nil {
-				panic(err)
-			}
-
-			result.Properties[k] = val
 		}
 	}
 

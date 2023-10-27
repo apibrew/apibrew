@@ -92,6 +92,35 @@ public class Role extends Entity {
 
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof AuditData)) {
+                return false;
+            }
+
+            AuditData obj = (AuditData) o;
+
+            if (!Objects.equals(this.createdBy, obj.createdBy)) {
+                return false;
+            }
+            if (!Objects.equals(this.updatedBy, obj.updatedBy)) {
+                return false;
+            }
+            if (!Objects.equals(this.createdOn, obj.createdOn)) {
+                return false;
+            }
+            if (!Objects.equals(this.updatedOn, obj.updatedOn)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(createdBy, updatedBy, createdOn, updatedOn);
+        }
     }
 
 

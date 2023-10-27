@@ -18,7 +18,6 @@ var ExtensionResource = &model.Resource{
 	Types: []*model.ResourceSubType{
 		sub_types.BooleanExpression,
 		sub_types.PairExpression,
-		sub_types.RefValue,
 		sub_types.RegexMatchExpression,
 		sub_types.Expression,
 		special.AuditDataSubType,
@@ -223,13 +222,6 @@ var ExtensionResource = &model.Resource{
 						Reference: &model.Reference{
 							Resource: "Record",
 						},
-					},
-				},
-				{
-					Name: "ids",
-					Type: model.ResourceProperty_LIST,
-					Item: &model.ResourceProperty{
-						Type: model.ResourceProperty_STRING,
 					},
 				},
 				{
