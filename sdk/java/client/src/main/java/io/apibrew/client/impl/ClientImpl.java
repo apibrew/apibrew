@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import static io.apibrew.client.helper.EventHelper.shortInfo;
 
@@ -28,6 +27,10 @@ import static io.apibrew.client.helper.EventHelper.shortInfo;
 public class ClientImpl implements Client {
 
     private boolean bypassExtensions;
+
+    private final Map<Class<?>, Repository<?>> repositoryClassMap = new HashMap<>();
+    private final Map<EntityInfo<?>, Repository<?>> repositoryEntityMap = new HashMap<>();
+
 
     public static class Urls {
         static String eventsUrl(String url) {
@@ -99,7 +102,13 @@ public class ClientImpl implements Client {
     }
 
     public static ClientImpl newClientByServerConfig(Config.Server serverConfig) {
-        String addr = serverConfig.getHost() + ":" + serverConfig.getHttpPort();
+        int httpPort = serverConfig.getHttpPort();
+
+        if (httpPort == 0) {
+            httpPort = serverConfig.getPort();
+        }
+
+        String addr = serverConfig.getHost() + ":" + httpPort;
 
         if (!addr.startsWith("http")) {
             if (serverConfig.isInsecure()) {
@@ -124,7 +133,7 @@ public class ClientImpl implements Client {
         return client;
     }
 
-    private void authenticateWithToken(String token) {
+    public void authenticateWithToken(String token) {
         this.token = token;
     }
 
@@ -177,11 +186,6 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void AuthenticateWithToken(String token) {
-        this.token = token;
-    }
-
-    @Override
     public void authenticateWithUsernameAndPassword(String username, String password) {
         Map<String, String> body = new HashMap<>();
 
@@ -199,23 +203,51 @@ public class ClientImpl implements Client {
     }
 
     @Override
+    public Client newClientAuthenticateWithToken(String token) {
+        ClientImpl client = new ClientImpl(url);
+        client.bypassExtensions = bypassExtensions;
+        client.authenticateWithToken(token);
+
+        return client;
+    }
+
+    @Override
+    public Client newClientAuthenticateWithUsernameAndPassword(String username, String password) {
+        ClientImpl client = new ClientImpl(url);
+        client.bypassExtensions = bypassExtensions;
+        client.authenticateWithUsernameAndPassword(username, password);
+
+        return client;
+    }
+
+    @Override
     public <T extends Entity> Repository<T> repo(Class<T> entityClass) {
         return repository(entityClass);
     }
 
     @Override
-    public <T extends Entity> Repository<T> repository(Class<T> entityClass) {
-        return new RepositoryImpl<>(this, entityClass);
+    @SuppressWarnings("unchecked")
+    public synchronized <T extends Entity> Repository<T> repository(Class<T> entityClass) {
+        if (!repositoryClassMap.containsKey(entityClass)) {
+            repositoryClassMap.put(entityClass, new RepositoryImpl<>(this, entityClass));
+        }
+
+        return (Repository<T>) repositoryClassMap.get(entityClass);
     }
 
     @Override
     public <T extends Entity> Repository<T> repo(EntityInfo<T> entityInfo) {
-        return new RepositoryImpl<>(this, entityInfo);
+        return repository(entityInfo);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Entity> Repository<T> repository(EntityInfo<T> entityInfo) {
-        return new RepositoryImpl<>(this, entityInfo);
+        if (!repositoryEntityMap.containsKey(entityInfo)) {
+            repositoryEntityMap.put(entityInfo, new RepositoryImpl<>(this, entityInfo));
+        }
+
+        return (Repository<T>) repositoryEntityMap.get(entityInfo);
     }
 
     @Override

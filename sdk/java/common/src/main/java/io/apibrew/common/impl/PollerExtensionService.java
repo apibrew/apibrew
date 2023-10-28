@@ -3,7 +3,6 @@ package io.apibrew.common.impl;
 import io.apibrew.client.ApiException;
 import io.apibrew.client.Client;
 import io.apibrew.client.impl.ChannelEventPoller;
-import io.apibrew.common.impl.AbstractExtensionServiceImpl;
 import io.apibrew.common.ext.ExtensionService;
 import io.apibrew.client.model.Extension;
 import lombok.extern.log4j.Log4j2;
@@ -19,8 +18,8 @@ public class PollerExtensionService extends AbstractExtensionServiceImpl impleme
     private final ChannelEventPoller poller;
     private final ExecutorService executorService = Executors.newFixedThreadPool(200);
 
-    public PollerExtensionService(Client client, String channelKey) {
-        super(client);
+    public PollerExtensionService(String serviceName, Client client, String channelKey) {
+        super(serviceName, client);
         this.channelKey = channelKey;
         this.poller = ChannelEventPoller.builder()
                 .consumer(this::handleEvent)

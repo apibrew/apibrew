@@ -14,6 +14,7 @@ import io.apibrew.client.model.Extension;
 import io.apibrew.client.model.Record;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -29,11 +30,13 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
     private final Repository<Extension> extensionRepo;
 
     protected final ObjectMapper objectMapper = new ObjectMapper();
+    private final String serviceName;
     Map<String, BiFunction<Extension.Event, Record, Record>> operatorMap = new HashMap<>();
     Map<String, ExtensionInfo> operatorIdExtensionInfoMap = new HashMap<>();
+    
 
-
-    protected AbstractExtensionServiceImpl(Client client) {
+    protected AbstractExtensionServiceImpl(String serviceName, Client client) {
+        this.serviceName = serviceName;
         this.client = client;
         this.extensionRepo = client.repo(Extension.class);
 
@@ -56,7 +59,7 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
     }
 
     protected synchronized void registerExtensions() {
-        log.debug("Registering extensions");
+        log.debug("ExtensionService: {} / Registering extensions", serviceName);
 
         extensionInfoSet.forEach(extensionInfo -> {
             if (!registeredExtensionInfoSet.contains(extensionInfo)) {
@@ -66,26 +69,28 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
             }
         });
 
-        log.debug("Registered extensions");
+        log.debug("ExtensionService: {} / Registered extensions", serviceName);
     }
 
     private void registerExtension(ExtensionInfo extensionInfo) {
-        log.debug("Registering extension: {}", extensionInfo);
+        log.debug("ExtensionService: {} / Registering extension: {}", serviceName, extensionInfo);
         Extension extension = extensionInfo.toExtension();
 
         extension.setCall(prepareExternalCall());
+
+        extension.setName(serviceName + "/" + extension.getName());
 
         extension = extensionRepo.apply(extension);
 
         extensionInfoIdMap.put(extension.getId().toString(), extensionInfo);
 
-        log.debug("Registered extension: {}", extensionInfo);
+        log.debug("ExtensionService: {} / Registered extension: {}", serviceName, extensionInfo);
     }
 
     protected abstract Extension.ExternalCall prepareExternalCall();
 
     protected Extension.Event processEvent(Extension.Event event) {
-        log.debug("Begin processing event: {}", shortInfo(event));
+        log.debug("ExtensionService: {} / Begin processing event: {}", serviceName, shortInfo(event));
         // normalize event
 
         if (event.getAnnotations() == null) {
@@ -95,8 +100,8 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
         String extensionId = event.getAnnotations().get("ExtensionId");
         ExtensionInfo extensionInfo = extensionInfoIdMap.get(extensionId);
 
-        log.trace("Event ID: {} => Extension ID: {}", event.getId(), extensionId);
-        log.trace("ExtensionInfo: {}", extensionInfo);
+        log.trace("ExtensionService: {} / Event ID: {} => Extension ID: {}", serviceName, event.getId(), extensionId);
+        log.trace("ExtensionService: {} / ExtensionInfo: {}", serviceName, extensionInfo);
 
         if (extensionInfo == null) {
             log.warn("ExtensionInfo not found for event: {}", shortInfo(event));
@@ -104,7 +109,7 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
 
         Extension.Event eventChain = processEvent(extensionInfo, event);
 
-        log.debug("End processing event: {}", shortInfo(event));
+        log.debug("ExtensionService: {} / End processing event: {}", serviceName, shortInfo(event));
 
         return eventChain;
     }
@@ -121,7 +126,7 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
                     List<Record> processedRecords = new ArrayList<>();
 
                     for (Record record : eventChainRecords) {
-                        log.debug("Processing record: {}", record.getId());
+                        log.debug("ExtensionService: {} / Processing record: {}", serviceName, record.getId());
                         Record processedRecord = handler.apply(eventChain, record);
                         if (processedRecord != null) {
                             processedRecords.add(processedRecord);
@@ -155,7 +160,7 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
         operatorMap.put(id, operator);
         operatorIdExtensionInfoMap.put(id, extensionInfo);
 
-        log.info("Registered operator: {} => {}", id, extensionInfo);
+        log.info("ExtensionService: {} / Registered operator: {} => {}", serviceName, id, extensionInfo);
 
         return id;
     }
@@ -185,5 +190,20 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
     @Override
     public void registerPendingItems() {
         registerExtensions();
+    }
+
+    @Override
+    public void runAsync() {
+        Thread thread = new Thread(() -> {
+            try {
+                run();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        thread.setName("ExtensionService: " + UUID.randomUUID());
+
+        thread.start();
     }
 }

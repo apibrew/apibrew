@@ -16,6 +16,7 @@ public interface ExtensionService extends AutoCloseable {
     GenericHandler genericHandler();
 
     void run() throws IOException;
+    void runAsync() throws IOException;
 
     String registerExtensionWithOperator(ExtensionInfo extensionInfo, BiFunction<Extension.Event, Record, Record> operator);
 

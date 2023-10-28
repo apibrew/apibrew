@@ -1,6 +1,7 @@
 package apbr
 
 import (
+	"errors"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/generator"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -43,13 +44,6 @@ var generatorCmd = &cobra.Command{
 
 		var resources []*model.Resource
 
-		var selection = &flags.SelectedRecordsResult{}
-		err = selectorFlags.Parse(selection, cmd, []string{"resources"})
-
-		if err != nil {
-			return err
-		}
-
 		filters, err := cmd.Flags().GetStringSlice("filter")
 
 		if err != nil {
@@ -57,6 +51,13 @@ var generatorCmd = &cobra.Command{
 		}
 
 		selectorFlags.Filters = filters
+
+		var selection = &flags.SelectedRecordsResult{}
+		err = selectorFlags.Parse(selection, cmd, []string{"resources"})
+
+		if err != nil {
+			return err
+		}
 
 		resources = selection.Resources
 
@@ -102,6 +103,10 @@ var generatorCmd = &cobra.Command{
 					mappedResourceActions[resource] = append(mappedResourceActions[resource], extramappings.ResourceFrom(res))
 				}
 			}
+		}
+
+		if len(resources) == 0 {
+			return errors.New("No resources matched the filter")
 		}
 
 		return generator.GenerateResourceCodes(platform, pkg, resources, mappedResourceActions, path, namespace)

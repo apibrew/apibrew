@@ -75,6 +75,9 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 			}
 		},
 		ResourceHandler: func(resource *model.Resource) error {
+			defer func() {
+				log.Info("Resource: ", resource.Name, " "+string(a.mode))
+			}()
 			if a.mode == APPLY {
 				return a.client.ApplyResource(ctx, resource, a.doMigration, a.force)
 			} else if a.mode == CREATE {

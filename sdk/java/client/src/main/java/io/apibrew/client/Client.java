@@ -6,8 +6,6 @@ import io.apibrew.client.model.Resource;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public interface Client {
 
@@ -37,9 +35,13 @@ public interface Client {
 
     Resource UpdateResource(Resource resource);
 
-    void AuthenticateWithToken(String token);
+    void authenticateWithToken(String token);
 
     void authenticateWithUsernameAndPassword(String username, String password);
+
+    Client newClientAuthenticateWithToken(String token);
+
+    Client newClientAuthenticateWithUsernameAndPassword(String username, String password);
 
     <T extends Entity> Repository<T> repo(Class<T> entityClass);
 

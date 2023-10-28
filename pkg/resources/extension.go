@@ -335,7 +335,7 @@ var ExtensionResource = &model.Resource{
 		special.AuditProperty,
 		{
 			Name:     "name",
-			Length:   64,
+			Length:   256,
 			Type:     model.ResourceProperty_STRING,
 			Unique:   true,
 			Required: true,
@@ -345,7 +345,7 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name:     "description",
-			Length:   64,
+			Length:   1024,
 			Type:     model.ResourceProperty_STRING,
 			Required: false,
 		},

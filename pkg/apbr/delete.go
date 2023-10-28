@@ -27,7 +27,7 @@ var deleteCmd = &cobra.Command{
 			return fmt.Errorf("failed to get force flag: %w", err)
 		}
 
-		if len(inputFilePathArr) < 0 {
+		if len(inputFilePathArr) > 0 {
 			format, err := cmd.Flags().GetString("format")
 
 			if err != nil {

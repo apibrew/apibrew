@@ -73,16 +73,20 @@ func (s *SelectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command,
 
 			result.Records = append(result.Records, data)
 		}
-	} else if s.namespace == "" && (s.resourceName == "type" || s.resourceName == "types" || s.resourceName == "resourceName" || s.resourceName == "resources") {
+	} else if s.namespace == "" && (s.resourceName == "type" || s.resourceName == "types" || s.resourceName == "resource" || s.resourceName == "resources") {
 		for _, filter := range s.Filters {
 			filterKey, filterValue := parseFilter(filter)
 
-			if filterKey == "namespace" {
+			if filterKey == "namespace" || filterKey == "namespace.name" {
 				s.namespace = filterValue
+			} else {
+				s.namespace = "default"
 			}
 
 			if filterKey == "name" {
 				s.resourceName = filterValue
+			} else {
+				s.resourceName = ""
 			}
 		}
 

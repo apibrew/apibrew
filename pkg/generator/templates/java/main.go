@@ -10,11 +10,9 @@ var resourceActions []*model.Resource
 
 func GenerateResourceCode(pkg string, resources []*model.Resource, resourceActionsMap map[*model.Resource][]*model.Resource, path string) error {
 	for _, resource := range resources {
-		resourceActions = resourceActionsMap[resource]
-		if err := generateResourceCode(pkg, resource, path); err != nil {
-			return err
-		}
+		log.Print("Generating model for resource: " + resource.Name)
 
+		resourceActions = resourceActionsMap[resource]
 		if err := generateResourceCode(pkg, resource, path); err != nil {
 			return err
 		}
@@ -37,5 +35,8 @@ func generateResourceCode(pkg string, resource *model.Resource, path string) err
 	if err != nil {
 		return err
 	}
+
+	log.Println("Written to file: " + path + "/" + resourceFileName)
+
 	return nil
 }

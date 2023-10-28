@@ -21,8 +21,8 @@ public class HostedExtensionServiceImpl extends AbstractExtensionServiceImpl imp
     private final String remoteUrl;
     private HttpServer server;
 
-    public HostedExtensionServiceImpl(Client client, String host, int port, String remoteUrl) {
-        super(client);
+    public HostedExtensionServiceImpl(String serviceName, Client client, String host, int port, String remoteUrl) {
+        super(serviceName, client);
         this.host = host;
         this.port = port;
         this.remoteUrl = remoteUrl;
