@@ -19,6 +19,7 @@ const (
 	APPLY  Mode = "APPLY"
 	CREATE Mode = "CREATE"
 	UPDATE Mode = "UPDATE"
+	DELETE Mode = "DELETE"
 )
 
 type Executor struct {
@@ -67,6 +68,8 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 
 				record.Properties = appliedRecord.Properties
 				return err
+			} else if a.mode == DELETE {
+				return a.client.DeleteRecord(ctx, namespace, resource, record) // fixme locate id if not exists
 			} else {
 				return errors.New("unknown mode")
 			}
@@ -78,6 +81,8 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 				return a.client.CreateResource(ctx, resource, a.doMigration, a.force)
 			} else if a.mode == UPDATE {
 				return a.client.UpdateResource(ctx, resource, a.doMigration, a.force)
+			} else if a.mode == DELETE {
+				return a.client.DeleteResource(ctx, resource.Id, a.doMigration, a.force)
 			} else {
 				return errors.New("unknown mode")
 			}

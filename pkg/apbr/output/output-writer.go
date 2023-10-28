@@ -9,7 +9,7 @@ import (
 
 type Writer interface {
 	WriteResource(resource ...*model.Resource) error
-	WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error
+	WriteRecords(resource *model.Resource, total uint32, records []*model.Record) error
 	IsBinary() bool
 }
 
@@ -19,11 +19,6 @@ func NewOutputWriter(format string, w io.Writer, annotations map[string]string) 
 		return &consoleWriter{
 			writer:   w,
 			describe: false,
-		}
-	case "describe":
-		return &consoleWriter{
-			writer:   w,
-			describe: true,
 		}
 	case "yaml", "yml":
 		return yamlformat.NewWriter(w, annotations)

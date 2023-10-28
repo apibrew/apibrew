@@ -1,221 +1,92 @@
 package apbr
 
 import (
+	"fmt"
+	"github.com/apibrew/apibrew/pkg/apbr/flags"
+	"github.com/apibrew/apibrew/pkg/formats/executor"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var deleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "delete",
-}
+	Use: "delete",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		parseRootFlags(cmd)
 
-var deleteResourceMigrate *bool
-var deleteResourceForce *bool
-var deleteResourceId *string
-var deleteResourceName *string
-var deleteResourceNamespace *string
-
-var deleteResource = &cobra.Command{
-	Use: "resource",
-	Run: func(cmd *cobra.Command, args []string) {
-		if *deleteResourceId == "" && *deleteResourceName == "" {
-			log.Fatal("Id or name must be provided")
+		inputFilePathArr, err := cmd.Flags().GetStringArray("file")
+		if err != nil {
+			return fmt.Errorf("failed to get input file path: %w", err)
+		}
+		doMigration, err := cmd.Flags().GetBool("migrate")
+		if err != nil {
+			return fmt.Errorf("failed to get migration flag: %w", err)
 		}
 
-		if *deleteResourceId == "" {
-			resource, err := GetClient().GetResourceByName(cmd.Context(), *deleteResourceNamespace, *deleteResourceName)
+		force, err := cmd.Flags().GetBool("force")
+		if err != nil {
+			return fmt.Errorf("failed to get force flag: %w", err)
+		}
+
+		if len(inputFilePathArr) < 0 {
+			format, err := cmd.Flags().GetString("format")
 
 			if err != nil {
-				log.Fatal(err)
+				return fmt.Errorf("failed to get format flag: %w", err)
 			}
 
-			*deleteResourceId = resource.Id
+			applier := executor.NewExecutor(executor.DELETE, GetClient(), doMigration, false, force, flags.OverrideConfig{})
+
+			for _, inputFilePath := range inputFilePathArr {
+				err = applier.ApplyWithPattern(cmd.Context(), inputFilePath, format)
+				if err != nil {
+					log.Error(err)
+				}
+			}
+		} else {
+			var selection = &flags.SelectedRecordsResult{}
+
+			filters, err := cmd.Flags().GetStringSlice("filter")
+
+			if err != nil {
+				return err
+			}
+
+			selectorFlags.Filters = filters
+
+			err = selectorFlags.Parse(selection, cmd, args)
+
+			if err != nil {
+				return err
+			}
+
+			for _, resource := range selection.Resources {
+				err = GetClient().DeleteResource(cmd.Context(), resource.Id, doMigration, force)
+				if err != nil {
+					return err
+				}
+			}
+
+			for _, record := range selection.Records {
+				for _, r := range record.Records {
+					err = GetClient().DeleteRecord(cmd.Context(), record.Resource.Namespace, record.Resource.Name, r)
+					if err != nil {
+						return err
+					}
+				}
+			}
 		}
 
-		err := GetClient().DeleteResource(cmd.Context(), *deleteResourceId, *deleteResourceMigrate, *deleteResourceForce)
-
-		if err != nil {
-			log.Fatal(err)
-		}
+		return nil
 	},
 }
 
-//var deleteDataSource = &cobra.Command{
-//	Use: "data-source",
-//	Run: func(cmd *cobra.Command, args []string) {
-//		if *deleteDataSourceId == "" && *deleteDataSourceName == "" {
-//			log.Fatal("Id or name must be provided")
-//		}
-//
-//		if *deleteDataSourceId == "" {
-//			resp, err := GetClient().GetDataSourceClient().List(cmd.Context(), &stub.ListDataSourceRequest{
-//				Token: GetClient().GetToken(),
-//			})
-//
-//			if err != nil {
-//				log.Fatal(err)
-//			}
-//
-//			for _, item := range resp.Content {
-//				if item.Name == *deleteDataSourceName {
-//					*deleteDataSourceId = item.Id
-//				}
-//			}
-//
-//			if *deleteDataSourceId == "" {
-//				log.Fatal("Datasource not found with name: " + *deleteDataSourceName)
-//			}
-//		}
-//
-//		_, err := GetClient().GetDataSourceClient().Delete(cmd.Context(), &stub.DeleteDataSourceRequest{
-//			Token: GetClient().GetToken(),
-//			Ids:   []string{*deleteDataSourceId},
-//		})
-//
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//	},
-//}
-//
-//var deleteNamespace = &cobra.Command{
-//	Use: "namespace",
-//	Run: func(cmd *cobra.Command, args []string) {
-//		if *deleteNamespaceId == "" && *deleteNamespaceName == "" {
-//			log.Fatal("Id or name must be provided")
-//		}
-//
-//		if *deleteNamespaceId == "" {
-//			resp, err := GetClient().GetNamespaceClient().List(cmd.Context(), &stub.ListNamespaceRequest{
-//				Token: GetClient().GetToken(),
-//			})
-//
-//			if err != nil {
-//				log.Fatal(err)
-//			}
-//
-//			for _, item := range resp.Content {
-//				if item.Name == *deleteNamespaceName {
-//					*deleteNamespaceId = item.Id
-//				}
-//			}
-//
-//			if *deleteNamespaceId == "" {
-//				log.Fatal("Namespace not found with name: " + *deleteNamespaceName)
-//			}
-//		}
-//
-//		_, err := GetClient().GetNamespaceClient().Delete(cmd.Context(), &stub.DeleteNamespaceRequest{
-//			Token: GetClient().GetToken(),
-//			Ids:   []string{*deleteNamespaceId},
-//		})
-//
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//	},
-//}
-
-//var deleteUser = &cobra.Command{
-//	Use: "user",
-//	Run: func(cmd *cobra.Command, args []string) {
-//		if *deleteUserId == "" && *deleteUserName == "" {
-//			log.Fatal("Id or name must be provided")
-//		}
-//
-//		if *deleteUserId == "" {
-//			resp, err := GetClient().GetUserClient().List(cmd.Context(), &stub.ListUserRequest{
-//				Token: GetClient().GetToken(),
-//			})
-//
-//			if err != nil {
-//				log.Fatal(err)
-//			}
-//
-//			for _, item := range resp.Content {
-//				if item.Username == *deleteUserName {
-//					*deleteUserId = item.Id
-//				}
-//			}
-//
-//			if *deleteUserId == "" {
-//				log.Fatal("User not found with name: " + *deleteUserName)
-//			}
-//		}
-//
-//		_, err := GetClient().GetUserClient().Delete(cmd.Context(), &stub.DeleteUserRequest{
-//			Token: GetClient().GetToken(),
-//			Ids:   []string{*deleteUserId},
-//		})
-//
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//	},
-//}
-//
-//var deleteExtension = &cobra.Command{
-//	Use: "extension",
-//	Run: func(cmd *cobra.Command, args []string) {
-//		if *deleteExtensionId == "" && *deleteExtensionName == "" {
-//			log.Fatal("Id or name must be provided")
-//		}
-//
-//		if *deleteExtensionId == "" {
-//			resp, err := GetClient().GetExtensionClient().List(cmd.Context(), &stub.ListExtensionRequest{
-//				Token: GetClient().GetToken(),
-//			})
-//
-//			if err != nil {
-//				log.Fatal(err)
-//			}
-//
-//			for _, item := range resp.Content {
-//				if item.Name == *deleteExtensionName {
-//					*deleteExtensionId = item.Id
-//				}
-//			}
-//
-//			if *deleteExtensionId == "" {
-//				log.Fatal("Extension not found with name: " + *deleteExtensionName)
-//			}
-//		}
-//
-//		_, err := GetClient().GetExtensionClient().Delete(cmd.Context(), &stub.DeleteExtensionRequest{
-//			Token: GetClient().GetToken(),
-//			Ids:   []string{*deleteExtensionId},
-//		})
-//
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//	},
-//}
-
 func init() {
-	deleteResourceMigrate = deleteResource.PersistentFlags().BoolP("migrate", "m", true, "")
-	deleteResourceForce = deleteResource.PersistentFlags().BoolP("force", "f", false, "")
+	deleteCmd.PersistentFlags().StringSlice("filter", nil, "filter")
+	deleteCmd.PersistentFlags().StringArrayP("file", "f", nil, "path to file or directory to apply")
+	deleteCmd.PersistentFlags().BoolP("migrate", "m", true, "Migrate")
+	deleteCmd.PersistentFlags().Bool("force", false, "Force")
+	deleteCmd.PersistentFlags().String("format", "yaml", "[yaml, json]")
 
-	deleteResourceId = deleteResource.PersistentFlags().String("id", "", "Id of resource")
-	deleteResourceName = deleteResource.PersistentFlags().String("name", "", "Id of resource")
-	deleteResourceNamespace = deleteResource.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
+	selectorFlags.Declare(deleteCmd)
 
-	//deleteDataSourceId = deleteDataSource.PersistentFlags().String("id", "", "Id of data-source")
-	//deleteDataSourceName = deleteDataSource.PersistentFlags().String("name", "", "Id of data-source")
-
-	//deleteNamespaceId = deleteNamespace.PersistentFlags().String("id", "", "Id of namespace")
-	//deleteNamespaceName = deleteNamespace.PersistentFlags().String("name", "", "Id of namespace")
-
-	//deleteUserId = deleteUser.PersistentFlags().String("id", "", "Id of user")
-	//deleteUserName = deleteUser.PersistentFlags().String("username", "", "Username of user")
-	//
-	//deleteExtensionId = deleteExtension.PersistentFlags().String("id", "", "Id of extension")
-	//deleteExtensionName = deleteExtension.PersistentFlags().String("name", "", "name of extension")
-
-	deleteCmd.AddCommand(deleteResource)
-	//deleteCmd.AddCommand(deleteDataSource)
-	//deleteCmd.AddCommand(deleteNamespace)
-	//deleteCmd.AddCommand(deleteUser)
-	//deleteCmd.AddCommand(deleteExtension)
 }

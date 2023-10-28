@@ -11,6 +11,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/types/known/structpb"
 	"io"
 	"net/http"
 	"strconv"
@@ -245,7 +246,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	record.Id = id
+	record.Properties["id"] = structpb.NewStringValue(id)
 
 	result, serviceErr := r.recordService.Update(request.Context(), service.RecordUpdateParams{
 		Namespace: resource.Namespace,

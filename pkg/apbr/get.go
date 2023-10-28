@@ -20,13 +20,46 @@ var getCmd = &cobra.Command{
 		o := getFlag(cmd, "output", false)
 		forApply, err := cmd.Flags().GetBool("for-apply")
 
+		filters, err := cmd.Flags().GetStringSlice("filter")
+
+		if err != nil {
+			return err
+		}
+
+		selectorFlags.Filters = filters
+
+		limit, err := cmd.PersistentFlags().GetInt64("limit")
+
+		if err != nil {
+			return err
+		}
+		selectorFlags.Limit = limit
+
+		packRecords, err := cmd.PersistentFlags().GetBool("pack-records")
+
+		if err != nil {
+			return err
+		}
+		selectorFlags.PackRecords = packRecords
+
+		offset, err := cmd.PersistentFlags().GetInt64("offset")
+
+		if err != nil {
+			return err
+		}
+		selectorFlags.Offset = offset
+
 		if err != nil {
 			return err
 		}
 
 		var selection = &flags.SelectedRecordsResult{}
 
-		selectorFlags.Parse(selection, cmd, args)
+		err = selectorFlags.Parse(selection, cmd, args)
+
+		if err != nil {
+			return err
+		}
 
 		var w io.Writer
 		if o == "" || o == "-" {
@@ -67,9 +100,8 @@ var getCmd = &cobra.Command{
 			}
 		}
 
-		for _, recordProvider := range selection.RecordProviders {
-			records := recordProvider()
-			err := writer.WriteRecordsChan(records.Resource, records.Total, records.Records)
+		for _, records := range selection.Records {
+			err := writer.WriteRecords(records.Resource, records.Total, records.Records)
 
 			if err != nil {
 				return err
@@ -93,6 +125,9 @@ func initGetCmd() {
 	getCmd.PersistentFlags().StringP("output", "o", "", "output")
 	getCmd.PersistentFlags().Int64("limit", 100, "limit")
 	getCmd.PersistentFlags().Int64("offset", 0, "offset")
+	getCmd.PersistentFlags().StringSlice("filter", nil, "filter")
+	getCmd.PersistentFlags().Bool("append", false, "append")
+	getCmd.PersistentFlags().Bool("pack-records", false, "pack-records")
 	getCmd.PersistentFlags().Bool("for-apply", false, "Prepare for apply")
 	selectorFlags.Declare(getCmd)
 }

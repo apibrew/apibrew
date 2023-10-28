@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/ext"
+	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -11,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
 	"net"
 )
 
@@ -106,7 +108,11 @@ func (e *remoteExtension) Run(ctx context.Context) error {
 
 				if !found {
 					log.Warn("Removing orphaned remoteExtension: ", exr.Id)
-					err = e.client.DeleteRecord(ctx, resources.ExtensionResource.Namespace, resources.ExtensionResource.Name, exr.Id.String())
+					err = e.client.DeleteRecord(ctx, resources.ExtensionResource.Namespace, resources.ExtensionResource.Name, &model.Record{
+						Properties: map[string]*structpb.Value{
+							"id": structpb.NewStringValue(exr.Id.String()),
+						},
+					})
 
 					if err != nil {
 						return err

@@ -12,9 +12,21 @@ func (s *overrideFlags) Declare(cmd *cobra.Command) {
 	cmd.PersistentFlags().String("override-data-source", "", "Override data source")
 }
 
-func (s *overrideFlags) Parse(result *OverrideConfig, cmd *cobra.Command, args []string) {
-	result.Namespace, _ = cmd.PersistentFlags().GetString("override-namespace")
-	result.DataSource, _ = cmd.PersistentFlags().GetString("override-data-source")
+func (s *overrideFlags) Parse(result *OverrideConfig, cmd *cobra.Command, args []string) error {
+	var err error
+	result.Namespace, err = cmd.PersistentFlags().GetString("override-namespace")
+
+	if err != nil {
+		return err
+	}
+
+	result.DataSource, err = cmd.PersistentFlags().GetString("override-data-source")
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 type OverrideConfig struct {

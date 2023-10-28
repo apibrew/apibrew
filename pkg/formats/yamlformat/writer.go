@@ -41,8 +41,8 @@ func (w *writer) WriteRecord(namespace string, resourceName string, records ...*
 	return nil
 }
 
-func (w *writer) WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error {
-	for record := range recordsChan {
+func (w *writer) WriteRecords(resource *model.Resource, total uint32, records []*model.Record) error {
+	for _, record := range records {
 		err := w.WriteRecord(resource.Namespace, resource.Name, record)
 
 		if err != nil {

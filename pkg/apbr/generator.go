@@ -14,25 +14,50 @@ import (
 var generatorCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "generate - Generate codes",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		parseRootFlags(cmd)
 
 		namespace, err := cmd.Flags().GetString("namespace")
-		check(err)
+
+		if err != nil {
+			return err
+		}
 
 		path, err := cmd.Flags().GetString("path")
-		check(err)
+
+		if err != nil {
+			return err
+		}
 
 		pkg, err := cmd.Flags().GetString("package")
-		check(err)
+
+		if err != nil {
+			return err
+		}
 
 		platform, err := cmd.Flags().GetString("platform")
-		check(err)
+
+		if err != nil {
+			return err
+		}
 
 		var resources []*model.Resource
 
 		var selection = &flags.SelectedRecordsResult{}
-		selectorFlags.Parse(selection, cmd, args)
+		err = selectorFlags.Parse(selection, cmd, []string{"resources"})
+
+		if err != nil {
+			return err
+		}
+
+		filters, err := cmd.Flags().GetStringSlice("filter")
+
+		if err != nil {
+			return err
+		}
+
+		selectorFlags.Filters = filters
+
 		resources = selection.Resources
 
 		if pkg == "" {
@@ -45,7 +70,9 @@ var generatorCmd = &cobra.Command{
 			Limit:     1000000,
 		})
 
-		check(err2)
+		if err2 != nil {
+			return err2
+		}
 
 		var mappedResourceActions = map[*model.Resource][]*model.Resource{}
 
@@ -77,9 +104,7 @@ var generatorCmd = &cobra.Command{
 			}
 		}
 
-		err = generator.GenerateResourceCodes(platform, pkg, resources, mappedResourceActions, path, namespace)
-
-		check(err)
+		return generator.GenerateResourceCodes(platform, pkg, resources, mappedResourceActions, path, namespace)
 	},
 }
 
@@ -87,5 +112,6 @@ func init() {
 	generatorCmd.PersistentFlags().StringP("path", "p", ".", "Path")
 	generatorCmd.PersistentFlags().String("package", "", "Package")
 	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, javascript, typescript, java]")
+	generatorCmd.PersistentFlags().StringSlice("filter", nil, "filter")
 	selectorFlags.Declare(generatorCmd)
 }

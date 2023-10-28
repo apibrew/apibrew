@@ -18,8 +18,8 @@ var rootCmd = &cobra.Command{
 	Use:   "apbr",
 	Short: "apbr - client for apibrew",
 	Long:  `apbr is cli util for apibrew, you can do various of operations with apbr`,
-	Run: func(cmd *cobra.Command, args []string) {
-		check(cmd.Usage())
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cmd.Usage()
 	},
 }
 

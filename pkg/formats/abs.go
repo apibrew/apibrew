@@ -8,7 +8,7 @@ import (
 type Writer interface {
 	WriteResource(resource ...*model.Resource) error
 	WriteRecord(namespace string, resourceName string, record ...*model.Record) error
-	WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error
+	WriteRecords(resource *model.Resource, total uint32, records []*model.Record) error
 	IsBinary() bool
 }
 

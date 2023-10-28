@@ -12,6 +12,11 @@ type localClient struct {
 	container service.Container
 }
 
+func (l localClient) DeleteRecord(ctx context.Context, namespace string, name string, record *model.Record) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (l localClient) CreateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error {
 	//TODO implement me
 	panic("implement me")

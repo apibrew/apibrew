@@ -284,12 +284,12 @@ func (d *client) AuthenticateWithToken(token string) {
 	d.token = token
 }
 
-func (d *client) DeleteRecord(ctx context.Context, namespace string, name string, id string) error {
+func (d *client) DeleteRecord(ctx context.Context, namespace string, name string, record *model.Record) error {
 	_, err := d.recordClient.Delete(ctx, &stub.DeleteRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
 		Resource:  name,
-		Ids:       []string{id},
+		Ids:       []string{record.Properties["id"].GetStringValue()},
 	})
 
 	return err

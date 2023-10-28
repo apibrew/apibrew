@@ -2,40 +2,57 @@ package flags
 
 import (
 	"context"
+	"errors"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
-	"github.com/apibrew/apibrew/pkg/service/annotations"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"strings"
 )
 
-type selectorFlags struct {
-	client func() client.Client
+type SelectorFlags struct {
+	client       func() client.Client
+	Filters      []string
+	Limit        int64
+	Offset       int64
+	resourceName string
+	namespace    string
+	PackRecords  bool
 }
 
-func (s selectorFlags) Declare(cmd *cobra.Command) {
+func (s *SelectorFlags) Declare(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringP("namespace", "n", "default", "Namespace")
 	cmd.PersistentFlags().String("name", "", "item name")
 	cmd.PersistentFlags().String("names", "", "item names")
 }
 
-func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, args []string) {
-	name := getFlag(cmd, "name", false)
-	names := getFlag(cmd, "names", false)
-	namespace := getFlag(cmd, "namespace", false)
-
-	backup, _ := cmd.PersistentFlags().GetBool("backup")
-	limit, _ := cmd.PersistentFlags().GetInt64("limit")
-	offset, _ := cmd.PersistentFlags().GetInt64("offset")
-
-	var getType = "resource"
-	if len(args) > 0 {
-		getType = args[0]
+func (s *SelectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, args []string) error {
+	if len(args) == 0 {
+		return errors.New("resourceName name is required as argument")
 	}
 
-	if getType == "all" || getType == "*" {
+	if len(args) > 2 {
+		return errors.New("too many arguments, it must be `namespace resourceName` or `resourceName` or `namespace/resourceName`")
+	}
+
+	if len(args) == 1 {
+		s.resourceName = args[0]
+
+		if strings.Contains(s.resourceName, "/") {
+			parts := strings.Split(s.resourceName, "/")
+			s.namespace = parts[0]
+			s.resourceName = parts[1]
+		} else {
+			s.namespace = ""
+		}
+	} else {
+		s.namespace = args[0]
+		s.resourceName = args[1]
+	}
+
+	if s.namespace == "" && (s.resourceName == "all" || s.resourceName == "*") {
+
 		resources, err := s.client().ListResources(cmd.Context())
 
 		check(err)
@@ -48,116 +65,116 @@ func (s selectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command, 
 				continue
 			}
 
-			if namespace != "" && resource.Namespace != namespace {
-				continue
+			var data, err = s.readSelectData3(cmd.Context(), resource)
+
+			if err != nil {
+				return err
 			}
 
-			if backup && annotations.IsEnabled(resource, annotations.DisableBackup) {
-				log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resource.Namespace, resource.Name)
-				continue
-			}
-			func(localResource *model.Resource) {
-				result.RecordProviders = append(result.RecordProviders, func() SelectedRecordData {
-					return s.readSelectData3(cmd.Context(), localResource, backup, limit, offset)
-				})
-			}(resource)
+			result.Records = append(result.Records, data)
 		}
-	} else if getType == "type" || getType == "types" || getType == "resource" || getType == "resources" {
+	} else if s.namespace == "" && (s.resourceName == "type" || s.resourceName == "types" || s.resourceName == "resourceName" || s.resourceName == "resources") {
+		for _, filter := range s.Filters {
+			filterKey, filterValue := parseFilter(filter)
+
+			if filterKey == "namespace" {
+				s.namespace = filterValue
+			}
+
+			if filterKey == "name" {
+				s.resourceName = filterValue
+			}
+		}
+
 		resources, err := s.client().ListResources(cmd.Context())
 
 		check(err)
 
 		var filteredResources []*model.Resource
 
-		if name != "" {
-			for _, item := range resources {
-				if item.Name == name {
-					if namespace == "" || item.Namespace == namespace {
-						filteredResources = append(filteredResources, item)
-					}
-				}
+		for _, resource := range resources {
+			if s.namespace != "" && resource.Namespace != s.namespace {
+				continue
 			}
-		} else if names != "" {
-			for _, ni := range strings.Split(names, ",") {
-				for _, item := range resources {
-					if item.Name == ni {
-						if namespace == "" || item.Namespace == namespace {
-							filteredResources = append(filteredResources, item)
-						}
-					}
-				}
+
+			if s.resourceName != "" && resource.Name != s.resourceName {
+				continue
 			}
-		} else {
-			for _, item := range resources {
-				if namespace == "" || item.Namespace == namespace {
-					filteredResources = append(filteredResources, item)
-				}
-			}
+
+			filteredResources = append(filteredResources, resource)
 		}
 
 		result.Resources = filteredResources
 	} else {
-		resource, err := s.client().GetResourceByName(cmd.Context(), namespace, getType)
+		resource, err := s.client().GetResourceByName(cmd.Context(), s.namespace, s.resourceName)
 
-		check(err)
-
-		if backup && annotations.IsEnabled(resource, annotations.DisableBackup) {
-			log.Printf("Skipping %s/%s [backup mode & Disable backup annotation enabled]\n", resource.Namespace, resource.Name)
-			return
+		if err != nil {
+			return err
 		}
 
-		result.RecordProviders = []func() SelectedRecordData{
-			func() SelectedRecordData {
-				return s.readSelectData3(cmd.Context(), resource, backup, limit, offset)
-			},
+		data, err := s.readSelectData3(cmd.Context(), resource)
+
+		if err != nil {
+			return err
 		}
+
+		result.Records = append(result.Records, data)
 	}
 
+	return nil
+}
+
+func parseFilter(filter string) (string, string) {
+	middle := strings.Index(filter, "=")
+
+	if middle == -1 {
+		return filter, ""
+	}
+
+	return filter[:middle], filter[middle+1:]
 }
 
 type SelectedRecordData struct {
 	Total    uint32
 	Resource *model.Resource
-	Records  chan *model.Record
+	Records  []*model.Record
 }
 
 type SelectedRecordsResult struct {
-	RecordProviders []func() SelectedRecordData
-	Resources       []*model.Resource
+	Records   []SelectedRecordData
+	Resources []*model.Resource
 }
 
-func (s selectorFlags) readSelectData3(ctx context.Context, resource *model.Resource, backup bool, limit int64, offset int64) SelectedRecordData {
-	log.Println("readSelectData3 1 " + resource.Name)
+func (s *SelectorFlags) readSelectData3(ctx context.Context, resource *model.Resource) (SelectedRecordData, error) {
+	var filters = make(map[string]string)
 
-	_, total, err := s.client().ListRecords(ctx, service.RecordListParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
-		Limit:     1,
-		Offset:    uint64(offset),
-	})
+	for _, filter := range s.Filters {
+		filterKey, filterValue := parseFilter(filter)
+		filters[filterKey] = filterValue
+	}
 
-	check(err)
-
-	recordsChan := make(chan *model.Record)
-
-	err = s.client().ReadRecordStream(ctx, service.RecordListParams{
+	result, total, err := s.client().ListRecords(ctx, service.RecordListParams{
 		Namespace:   resource.Namespace,
 		Resource:    resource.Name,
-		Limit:       uint32(limit),
-		Offset:      uint64(offset),
-		PackRecords: backup,
-	}, recordsChan)
-	check(err)
+		Limit:       uint32(s.Limit),
+		Offset:      uint64(s.Offset),
+		PackRecords: s.PackRecords,
+		Filters:     filters,
+	})
+
+	if err != nil {
+		return SelectedRecordData{}, err
+	}
 
 	var res = SelectedRecordData{
 		Resource: resource,
 		Total:    total,
-		Records:  recordsChan,
+		Records:  result,
 	}
 
-	return res
+	return res, nil
 }
 
-func NewSelectorFlags(clientGetter func() client.Client) FlagHelper[*SelectedRecordsResult] {
-	return &selectorFlags{client: clientGetter}
+func NewSelectorFlags(clientGetter func() client.Client) *SelectorFlags {
+	return &SelectorFlags{client: clientGetter}
 }

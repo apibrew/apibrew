@@ -168,26 +168,20 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	table.Render() // Send output
 }
 
-func (c consoleWriter) WriteRecordsChan(resource *model.Resource, total uint32, recordsChan chan *model.Record) error {
+func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, records []*model.Record) error {
 	table := tablewriter.NewWriter(c.writer)
-	columns := []string{"Id"}
-
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		columns = append(columns, "version")
-	}
+	var columns []string
 
 	for _, prop := range resource.Properties {
-		columns = append(columns, prop.Name)
+		columns = append(columns, util.ToDashCase(prop.Name))
 	}
 
 	table.SetHeader(columns)
 	c.configureTable(table)
 
 	var i = 0
-	for item := range recordsChan {
-		row := []string{
-			util.GetRecordId(resource, item),
-		}
+	for _, item := range records {
+		var row []string
 
 		for _, prop := range resource.Properties {
 			typeHandler := types.ByResourcePropertyType(prop.Type)

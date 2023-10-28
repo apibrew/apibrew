@@ -1,7 +1,6 @@
 package apbr
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
@@ -17,7 +16,7 @@ func execSave(mode executor.Mode, cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to get input file path: %w", err)
 	}
-	if inputFilePathArr == nil {
+	if len(inputFilePathArr) == 0 {
 		return errors.New("file must be provided")
 	}
 
@@ -48,7 +47,7 @@ func execSave(mode executor.Mode, cmd *cobra.Command, args []string) error {
 	applier := executor.NewExecutor(mode, GetClient(), doMigration, dataOnly, force, *overrideConfig)
 
 	for _, inputFilePath := range inputFilePathArr {
-		err = applier.ApplyWithPattern(context.TODO(), inputFilePath, format)
+		err = applier.ApplyWithPattern(cmd.Context(), inputFilePath, format)
 		if err != nil {
 			log.Error(err)
 		}

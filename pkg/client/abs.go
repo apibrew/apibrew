@@ -22,6 +22,7 @@ type Client interface {
 	// record
 	CreateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
 	UpdateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
+	DeleteRecord(ctx context.Context, namespace string, name string, record *model.Record) error
 	ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
 	GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error)
 	ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error)
