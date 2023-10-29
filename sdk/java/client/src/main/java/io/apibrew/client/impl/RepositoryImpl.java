@@ -59,6 +59,11 @@ public class RepositoryImpl<T extends Entity> implements Repository<T> {
     }
 
     @Override
+    public T load(T record) {
+        return client.loadRecord(entityInfo, record);
+    }
+
+    @Override
     public Container<T> list(Extension.BooleanExpression query) {
         return client.listRecords(entityInfo, query);
     }

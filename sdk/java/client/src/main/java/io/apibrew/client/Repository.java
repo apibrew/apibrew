@@ -14,6 +14,8 @@ public interface Repository<T extends Entity> {
     T apply(T record);
      Container<T> list();
 
+     T load(T record);
+
     Container<T> list(Extension.BooleanExpression query);
 
     Watcher<T> watch(Consumer<Extension.Event> eventConsumer);
