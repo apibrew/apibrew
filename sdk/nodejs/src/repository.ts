@@ -1,48 +1,23 @@
-import { Record, RecordListContainer, RecordResourceInfo } from "./model/record";
-import { RecordApi } from "./api";
-import { ServiceConfig, ServiceConfigProvider } from "./api/config";
-import { SearchRecordParams } from "./api/record";
+import {Entity} from "./entity";
+import {Container} from "./container";
+import {BooleanExpression, Event} from "./model/extension";
+import {Watcher} from "./watcher";
+import {ListRecordParams} from "./list-record-params";
 
-export class Repository<T extends Record<unknown>> {
-    constructor(private configProvider: ServiceConfigProvider, private recordResourceInfo: RecordResourceInfo) {
-    }
+export interface Repository<T extends Entity> {
+    create(record: T): Promise<T>;
 
-    async create(entity: T): Promise<T> {
-        return RecordApi.create<T>(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)
-    }
+    get(id: string, resolveReferences?: string[]): Promise<T>;
 
-    async update(entity: T): Promise<T> {
-        return RecordApi.update<T>(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)
-    }
+    update(record: T): Promise<T>;
 
-    async apply(entity: T): Promise<T> {
-        return RecordApi.apply<T>(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, entity)
-    }
+    delete(id: string): Promise<T>;
 
-    async list(): Promise<RecordListContainer<T>> {
-        return RecordApi.list<T>(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource)
-    }
+    apply(record: T): Promise<T>;
 
-    async get(id: string): Promise<T> {
-        return RecordApi.get<T>(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, id)
-    }
+    load(record: T): Promise<T>;
 
-    async remove(id: string): Promise<void> {
-        return RecordApi.remove(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, id)
-    }
+    list(params?: ListRecordParams): Promise<Container<T>>;
 
-    async search(params: SearchRecordParams): Promise<RecordListContainer<T>> {
-        return RecordApi.search<T>(this.configProvider(), params)
-    }
-
-    async findBy(property: string, value: any): Promise<T | undefined> {
-        return RecordApi.findBy<T>(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, property, value)
-    }
-
-    async findByMulti(conditions: {
-        property: string,
-        value: any
-    }[]): Promise<T | undefined> {
-        return RecordApi.findByMulti<T>(this.configProvider(), this.recordResourceInfo.namespace, this.recordResourceInfo.resource, conditions)
-    }
+    watch(eventConsumer: (event: Event) => void): Watcher<T>;
 }

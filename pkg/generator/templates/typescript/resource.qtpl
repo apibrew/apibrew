@@ -1,0 +1,63 @@
+{% import "github.com/apibrew/apibrew/pkg/model" %}
+
+{%- func GenerateClassCode(pkg string, resource *model.Resource) -%}
+{%- for _, reference := range getAllReferencedResources(resource) -%}
+import {{%s= typescriptClassName(reference.Resource) %}} from './{%s= fileName(reference.Resource) %}';
+{%- endfor -%}
+
+export interface {%s typescriptClassName(resource.Name) %} {
+    {%- for _, property := range resource.Properties -%}
+    {%s= propertyName(property) %}{% if !property.Required %}?{% endif %}: {%s= getTypescriptType(resource, property, false) %}
+    {%- endfor -%}
+}
+
+export const NAMESPACE = "{%s resource.Namespace %}";
+export const RESOURCE = "{%s resource.Name %}";
+export const REST_PATH = "{%s getRestPath(resource) %}"
+
+export const {%s typescriptClassName(resource.Name) %}EntityInfo = {
+    namespace: NAMESPACE,
+    resource: RESOURCE,
+    restPath: REST_PATH,
+}
+{%- for _, subType := range getAllSubTypes(resource) -%}
+
+export interface {%s typescriptClassName(subType.Name) %} {
+    {%- for _, property := range subType.Properties -%}
+    {%s= propertyName(property) %}: {%s= getTypescriptType(resource, property, false) %}
+    {%- endfor -%}
+}
+{%- endfor -%}
+{%- for _, enum := range getAllEnums(resource) -%}
+
+export enum {%s typescriptClassName(enum.Name) %} {
+    {%- for _, enumValue := range enum.EnumValues -%}
+    {%s= enumName(enumValue) %} = "{%s enumValue %}",
+    {%- endfor -%}
+}
+{%- endfor -%}
+{% if len(resourceActions) > 0 %}
+
+    export interface Service {
+
+    private final Client client;
+
+    public Service(Client client) {
+        this.client = client;
+    }
+
+    {% for _, resourceAction := range resourceActions %}
+    {% if hasInput(resourceAction) %}
+    public {%s= outputType(resourceAction)%} {%s= typescriptVarName(resourceAction.Name)%} ({%s= typescriptClassName(resource.Name) %} {%s= typescriptVarName(resource.Name) %}, {%s= typescriptClassName(resourceAction.Name)%}Input input) {
+        {% if len(resourceAction.Properties) > 0 %} return {% endif %} client.executeRecordAction({%s= outputType(resourceAction)%}.class, {%s typescriptClassName(resource.Name) %}.NAMESPACE, {%s typescriptClassName(resource.Name) %}.RESOURCE, instance.getId().toString(), "{%s resourceAction.Name %}", input);
+    }
+    {% else %}
+    public {%s= outputType(resourceAction)%} {%s= typescriptVarName(resourceAction.Name)%} ({%s= typescriptClassName(resource.Name) %} {%s= typescriptVarName(resource.Name) %}) {
+        {% if len(resourceAction.Properties) > 0 %} return {% endif %}  client.executeRecordAction({%s= outputType(resourceAction)%}.class, {%s typescriptClassName(resource.Name) %}.NAMESPACE, {%s typescriptClassName(resource.Name) %}.RESOURCE, instance.getId().toString(), "{%s resourceAction.Name %}", null);
+    }
+    {% endif %}
+    {% endfor %}
+    }
+{% endif %}
+
+{%- endfunc -%}

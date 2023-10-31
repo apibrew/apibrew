@@ -1,0 +1,67 @@
+{% import "github.com/apibrew/apibrew/pkg/model" %}
+
+{%- func GenerateClassCode(pkg string, resource *model.Resource) -%}
+from datetime import datetime
+from typing import List, Optional
+from enum import Enum
+from apibrew.entity import Entity, EntityInfo
+from __future__ import annotations
+
+{%- for _, reference := range getAllReferencedResources(resource) -%}
+from {%s pkg %}.{%s= fileName(reference.Resource) %} import {%s= pythonClassName(reference.Resource) %}
+{%- endfor -%}
+
+
+{%- for _, subType := range getAllSubTypes(resource) -%}
+
+class {%s pythonClassName(subType.Name) %}:
+    {%- for _, property := range subType.Properties -%}
+    {%s= propertyName(property) %}: {%s= getPythonType(resource, property, false) %}
+    {%- endfor -%}
+{%- endfor -%}
+
+{%- for _, enum := range getAllEnums(resource) -%}
+
+class {%s pythonClassName(enum.Name) %}(Enum):
+    {%- for _, enumValue := range enum.EnumValues -%}
+    {%s= enumName(enumValue) %} = "{%s enumValue %}"
+    {%- endfor -%}
+
+{%- endfor -%}
+
+
+class {%s pythonClassName(resource.Name) %}:
+    {%- for _, property := range resource.Properties -%}
+    {%s= propertyName(property) %}: {%s= getPythonType(resource, property, false) %}
+    {%- endfor -%}
+
+    @staticmethod
+    def entity_info():
+        return EntityInfo("{%s resource.Namespace %}", "{%s resource.Name %}", "{%s getRestPath(resource) %}")
+
+
+{% if len(resourceActions) > 0 %}
+
+    export interface Service {
+
+    private final Client client;
+
+    public Service(Client client) {
+        this.client = client;
+    }
+
+    {% for _, resourceAction := range resourceActions %}
+    {% if hasInput(resourceAction) %}
+    public {%s= outputType(resourceAction)%} {%s= pythonVarName(resourceAction.Name)%} ({%s= pythonClassName(resource.Name) %} {%s= pythonVarName(resource.Name) %}, {%s= pythonClassName(resourceAction.Name)%}Input input) {
+        {% if len(resourceAction.Properties) > 0 %} return {% endif %} client.executeRecordAction({%s= outputType(resourceAction)%}.class, {%s pythonClassName(resource.Name) %}.NAMESPACE, {%s pythonClassName(resource.Name) %}.RESOURCE, instance.getId().toString(), "{%s resourceAction.Name %}", input);
+    }
+    {% else %}
+    public {%s= outputType(resourceAction)%} {%s= pythonVarName(resourceAction.Name)%} ({%s= pythonClassName(resource.Name) %} {%s= pythonVarName(resource.Name) %}) {
+        {% if len(resourceAction.Properties) > 0 %} return {% endif %}  client.executeRecordAction({%s= outputType(resourceAction)%}.class, {%s pythonClassName(resource.Name) %}.NAMESPACE, {%s pythonClassName(resource.Name) %}.RESOURCE, instance.getId().toString(), "{%s resourceAction.Name %}", null);
+    }
+    {% endif %}
+    {% endfor %}
+    }
+{% endif %}
+
+{%- endfunc -%}

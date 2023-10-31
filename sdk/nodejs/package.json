@@ -4,7 +4,6 @@
   "version": "1.0.96",
   "description": "Client library for API Brew client",
   "scripts": {
-    "generate-model": "apbr generate --namespace=logic --platform=typescript --path=src/model/logic;apbr generate --namespace=system --platform=typescript --path=src/model/system",
     "prepublish": "tsc",
     "deploy": "tsc; npm version patch; npm publish --access public"
   },
@@ -13,10 +12,12 @@
   "author": "Taleh Ibrahimli",
   "license": "ISC",
   "devDependencies": {
+    "@types/js-yaml": "^4.0.8",
     "@types/node": "^18.15.11",
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "axios": "^1.4.0"
+    "axios": "^1.4.0",
+    "js-yaml": "^4.1.0"
   }
 }

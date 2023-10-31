@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@apibrew/client": "^1.0.44"
+    "@apibrew/client": "^1.0.44",
+    "js-yaml": "^4.1.0"
   }
 }

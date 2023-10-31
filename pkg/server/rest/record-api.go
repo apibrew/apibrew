@@ -80,19 +80,6 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 
 	// handle query parameters
 
-	queryMap := make(map[string]interface{})
-
-	for key := range request.URL.Query() {
-		queryMap[key] = request.URL.Query().Get(key)
-	}
-
-	query, srvErr := r.recordService.PrepareQuery(resource, queryMap)
-
-	if srvErr != nil {
-		handleError(writer, srvErr)
-		return
-	}
-
 	limit := 10
 	offset := 0
 
@@ -116,8 +103,17 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		}
 	}
 
+	filters := make(map[string]string)
+
+	for key := range request.URL.Query() {
+		if key == "limit" || key == "offset" || key == "resolve-references" || key == "useHistory" {
+			continue
+		}
+		filters[key] = request.URL.Query().Get(key)
+	}
+
 	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
-		Query:             query,
+		Filters:           filters,
 		Namespace:         resource.Namespace,
 		Resource:          resource.Name,
 		Limit:             uint32(limit),

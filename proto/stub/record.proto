@@ -11,21 +11,6 @@ import 'model/event.proto';
 import 'google/protobuf/struct.proto';
 import "google/protobuf/descriptor.proto";
 
-message Operation {
-  oneof kind {
-    string abc = 1;
-    float cde = 2;
-  }
-}
-
-message Logic {
-  repeated Operation operation = 1;
-}
-
-extend google.protobuf.MethodOptions {
-  Logic resources = 1001;
-}
-
 
 // Record service is an abstract service for records of all resources. You can do CRUD like operations with Record service
 service Record {
