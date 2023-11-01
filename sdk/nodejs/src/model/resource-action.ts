@@ -15,14 +15,10 @@ export interface ResourceAction {
     annotations?: { [key: string]: string }
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "ResourceAction";
-export const REST_PATH = "system-resourceaction"
-
 export const ResourceActionEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "ResourceAction",
+    restPath: "system-resourceaction",
 }
 
 export interface SubType {
@@ -40,7 +36,7 @@ export interface Reference {
 
 export interface Property {
     name: string
-    $type: Type
+    type: Type
     typeRef: string
     primary: boolean
     required: boolean

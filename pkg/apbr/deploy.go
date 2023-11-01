@@ -25,6 +25,10 @@ var deployCmd = &cobra.Command{
 		var name = cmd.Flag("name").Value.String()
 		var override, err = cmd.PersistentFlags().GetBool("override")
 
+		if err != nil {
+			return err
+		}
+
 		inputFilePathArr, err := cmd.Flags().GetStringArray("file")
 		if err != nil {
 			return fmt.Errorf("failed to get input file path: %w", err)
@@ -159,29 +163,39 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 func prepareTarGz(path string) ([]byte, error) {
 	bw := bytes.NewBuffer(nil)
 	gw := gzip.NewWriter(bw)
-	defer gw.Close()
+	defer func() {
+		_ = gw.Close()
+	}()
 	tw := tar.NewWriter(gw)
-	defer tw.Close()
+	defer func() {
+		_ = tw.Close()
+	}()
 
 	walkFn := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if info.Mode().IsDir() {
 			return nil
 		}
 		// Because of scoping we can reference the external root_directory variable
-		new_path := path[len(path):]
-		if len(new_path) == 0 {
+		newPath := path[len(path):]
+		if len(newPath) == 0 {
 			return nil
 		}
 		fr, err := os.Open(path)
 		if err != nil {
 			return err
 		}
-		defer fr.Close()
+		defer func() {
+			_ = fr.Close()
+		}()
 
-		if h, err := tar.FileInfoHeader(info, new_path); err != nil {
+		if h, err := tar.FileInfoHeader(info, newPath); err != nil {
 			return err
 		} else {
-			h.Name = new_path
+			h.Name = newPath
 			if err = tw.WriteHeader(h); err != nil {
 				return err
 			}

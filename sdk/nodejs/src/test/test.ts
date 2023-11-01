@@ -1,9 +1,9 @@
-import {newClientByServerName} from "../client";
 import {StorageServiceImpl} from "../storage/impl/storage-service-impl";
 import {StorageObject} from "../storage/model/storage-object";
+import {newClient} from "../client";
 
 export async function run() {
-    const client = await newClientByServerName("local")
+    const client = await newClient("local")
 
     const storageService = new StorageServiceImpl(client, "http://localhost:8080/local")
 

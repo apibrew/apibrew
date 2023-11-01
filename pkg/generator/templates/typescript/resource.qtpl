@@ -11,14 +11,10 @@ export interface {%s typescriptClassName(resource.Name) %} {
     {%- endfor -%}
 }
 
-export const NAMESPACE = "{%s resource.Namespace %}";
-export const RESOURCE = "{%s resource.Name %}";
-export const REST_PATH = "{%s getRestPath(resource) %}"
-
 export const {%s typescriptClassName(resource.Name) %}EntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "{%s resource.Namespace %}",
+    resource: "{%s resource.Name %}",
+    restPath: "{%s getRestPath(resource) %}",
 }
 {%- for _, subType := range getAllSubTypes(resource) -%}
 

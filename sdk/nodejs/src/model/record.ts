@@ -5,14 +5,10 @@ export interface Record {
     packedProperties?: object[]
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "Record";
-export const REST_PATH = "system-record"
-
 export const RecordEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "Record",
+    restPath: "system-record",
 }
 
 

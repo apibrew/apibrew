@@ -20,14 +20,10 @@ export interface Permission {
     localFlags?: object
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "Permission";
-export const REST_PATH = "system-permission"
-
 export const PermissionEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "Permission",
+    restPath: "system-permission",
 }
 
 export interface AuditData {

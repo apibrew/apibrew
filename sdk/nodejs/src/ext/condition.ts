@@ -33,6 +33,10 @@ export function or<T extends Entity>(condition1: Condition<T>, condition2: Condi
         (e, t) => condition1.eventMatches(e, t) || condition2.eventMatches(e, t));
 }
 
+export function not<T extends Entity>(condition: Condition<T>): Condition<T> {
+    return new SimpleCondition<T>(ei => condition.configureExtensionInfo(ei), (e, t) => !condition.eventMatches(e, t));
+}
+
 export function before<T extends Entity>(): Condition<T> {
     return new SimpleCondition<T>(ei => {
         return {...ei, order: 10}

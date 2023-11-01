@@ -70,7 +70,7 @@ var loadCmd = &cobra.Command{
 		var printMutex = sync.Mutex{}
 		var lastPrintTime = time.Now()
 		var mustPrint = func() {
-			overallDiff := time.Now().Sub(overallStartTime).Milliseconds()
+			overallDiff := time.Since(overallStartTime).Milliseconds()
 
 			var sumTimeTaken int64 = sumTimeTakenNs / int64(time.Millisecond)
 			_, _ = fmt.Fprintf(w, "Time taken [sum]\t%dms\n", sumTimeTaken)
@@ -85,7 +85,7 @@ var loadCmd = &cobra.Command{
 			_ = w.Flush()
 		}
 		var printResults = func() {
-			if time.Now().Sub(lastPrintTime).Seconds() < 3 {
+			if time.Since(lastPrintTime).Seconds() < 3 {
 				return
 			}
 
@@ -138,16 +138,17 @@ func loadApply(cmd *cobra.Command, args []string, payloadFile string) func() err
 
 var loadNumberOfRequests *int32
 var loadConcurrency *int32
-var loadTimeLimit *int32
-var loadTimeout *int32
+
+// var loadTimeLimit *int32
+// var loadTimeout *int32
 var loadAction *string
 var loadPayloadFile *string
 
 func init() {
 	loadNumberOfRequests = loadCmd.PersistentFlags().Int32P("requests", "n", 0, "Number of requests to perform")
 	loadConcurrency = loadCmd.PersistentFlags().Int32P("concurrency", "c", 0, "Number of multiple requests to make at a time")
-	loadTimeLimit = loadCmd.PersistentFlags().Int32P("timelimit", "t", 0, "Seconds to max. to spend on benchmarking\n                  This implies -n 50000")
-	loadTimeout = loadCmd.PersistentFlags().Int32P("timeout", "s", 0, "Seconds to max. wait for each response\n                    Default is 30 seconds")
+	//loadTimeLimit = loadCmd.PersistentFlags().Int32P("timelimit", "t", 0, "Seconds to max. to spend on benchmarking\n                  This implies -n 50000")
+	//loadTimeout = loadCmd.PersistentFlags().Int32P("timeout", "s", 0, "Seconds to max. wait for each response\n                    Default is 30 seconds")
 	loadAction = loadCmd.PersistentFlags().StringP("action", "a", "APPLY", "Load action, indicates which endpoint will be called\n                    Default is 30 seconds")
 	loadPayloadFile = loadCmd.PersistentFlags().StringP("payload", "p", "", "Load payload file, indicates which payload will be sent\n                    Default is 30 seconds")
 }

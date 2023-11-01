@@ -1,12 +1,8 @@
 {
   "name": "@apibrew/client",
   "private": false,
-  "version": "1.0.96",
+  "version": "1.0.102",
   "description": "Client library for API Brew client",
-  "scripts": {
-    "prepublish": "tsc",
-    "deploy": "tsc; npm version patch; npm publish --access public"
-  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Taleh Ibrahimli",
@@ -15,6 +11,16 @@
     "@types/js-yaml": "^4.0.8",
     "@types/node": "^18.15.11",
     "typescript": "^5.0.4"
+  },
+  "exports": {
+    "./*": "./dist/*"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
   },
   "dependencies": {
     "axios": "^1.4.0",

@@ -22,19 +22,15 @@ export interface Resource {
     annotations?: { [key: string]: string }
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "Resource";
-export const REST_PATH = "resources"
-
 export const ResourceEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "Resource",
+    restPath: "resources",
 }
 
 export interface Property {
     name: string
-    $type: Type
+    type: Type
     typeRef: string
     primary: boolean
     required: boolean

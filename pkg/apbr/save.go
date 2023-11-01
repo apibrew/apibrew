@@ -42,7 +42,11 @@ func execSave(mode executor.Mode, cmd *cobra.Command, args []string) error {
 	}
 
 	overrideConfig := new(flags.OverrideConfig)
-	overrideFlags.Parse(overrideConfig, cmd, args)
+	err = overrideFlags.Parse(overrideConfig, cmd, args)
+
+	if err != nil {
+		return fmt.Errorf("failed to parse override flags: %w", err)
+	}
 
 	applier := executor.NewExecutor(mode, GetClient(), doMigration, dataOnly, force, *overrideConfig)
 

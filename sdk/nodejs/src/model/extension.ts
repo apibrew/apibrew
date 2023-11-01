@@ -16,14 +16,10 @@ export interface Extension {
     annotations?: { [key: string]: string }
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "Extension";
-export const REST_PATH = "system-extension"
-
 export const ExtensionEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "Extension",
+    restPath: "system-extension",
 }
 
 export interface BooleanExpression {
@@ -35,7 +31,7 @@ export interface BooleanExpression {
     greaterThan: PairExpression
     lessThanOrEqual: PairExpression
     greaterThanOrEqual: PairExpression
-    $in: PairExpression
+    in: PairExpression
     isNull: Expression
     regexMatch: RegexMatchExpression
 }

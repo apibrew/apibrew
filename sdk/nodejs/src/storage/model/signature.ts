@@ -10,14 +10,10 @@ export interface Signature {
     version: number
 }
 
-export const NAMESPACE = "storage";
-export const RESOURCE = "Signature";
-export const REST_PATH = "storage-signature"
-
 export const SignatureEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "storage",
+    resource: "Signature",
+    restPath: "storage-signature",
 }
 
 export enum Permission {

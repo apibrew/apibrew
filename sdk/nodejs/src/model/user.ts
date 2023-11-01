@@ -12,14 +12,10 @@ export interface User {
     details?: object
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "User";
-export const REST_PATH = "system-user"
-
 export const UserEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "User",
+    restPath: "system-user",
 }
 
 export interface AuditData {

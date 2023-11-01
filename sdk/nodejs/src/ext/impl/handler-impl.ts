@@ -5,6 +5,7 @@ import {Event} from "../../model/extension";
 import {Entity} from "../../entity";
 import {EntityInfo} from "../../entity-info";
 import {Handler} from "../handler";
+import {Condition} from "../condition";
 
 type Predicate<T extends Entity> = (event: Event, entity: T) => boolean;
 
@@ -17,8 +18,26 @@ export class HandlerImpl<T extends Entity> implements Handler<T>{
     }
 
     public withExtensionInfo(extensionInfo: ExtensionInfo): Handler<T> {
-        return new HandlerImpl(this.client, this.extensionService, this.extensionInfo, this.predicates, this.entityInfo)
-            .withExtensionInfo(extensionInfo);
+        return new HandlerImpl(this.client, this.extensionService, extensionInfo, this.predicates, this.entityInfo);
+    }
+
+    configure(configurer: (info: ExtensionInfo) => ExtensionInfo): Handler<T> {
+        return this;
+    }
+
+    localOperator(localOperator: (event: Event, entity: T) => T): string {
+        return "";
+    }
+
+    operate(operator: (event: Event, entity: T) => T): string {
+        return "";
+    }
+
+    unRegister(id: string): void {
+    }
+
+    when(condition: Condition<T>): Handler<T> {
+        return this;
     }
 
 }

@@ -11,14 +11,10 @@ export interface StorageObject {
     auditData?: AuditData
 }
 
-export const NAMESPACE = "storage";
-export const RESOURCE = "StorageObject";
-export const REST_PATH = "storage-storageobject"
-
 export const StorageObjectEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "storage",
+    resource: "StorageObject",
+    restPath: "storage-storageobject",
 }
 
 export interface AuditData {

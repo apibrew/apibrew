@@ -12,14 +12,10 @@ export interface AuditLog {
     annotations?: { [key: string]: string }
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "AuditLog";
-export const REST_PATH = "system-auditlog"
-
 export const AuditLogEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "AuditLog",
+    restPath: "system-auditlog",
 }
 
 export enum Operation {

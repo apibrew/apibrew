@@ -20,6 +20,10 @@ var getCmd = &cobra.Command{
 		o := getFlag(cmd, "output", false)
 		forApply, err := cmd.Flags().GetBool("for-apply")
 
+		if err != nil {
+			return err
+		}
+
 		filters, err := cmd.Flags().GetStringSlice("filter")
 
 		if err != nil {

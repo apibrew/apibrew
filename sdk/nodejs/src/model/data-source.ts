@@ -9,14 +9,10 @@ export interface DataSource {
     options: { [key: string]: string }
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "DataSource";
-export const REST_PATH = "system-datasource"
-
 export const DataSourceEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "DataSource",
+    restPath: "system-datasource",
 }
 
 export interface AuditData {

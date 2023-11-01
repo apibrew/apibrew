@@ -69,95 +69,91 @@ export interface `)
 //line templates/typescript/resource.qtpl:11
 	qw422016.N().S(`}
 
-export const NAMESPACE = "`)
-//line templates/typescript/resource.qtpl:14
-	qw422016.E().S(resource.Namespace)
-//line templates/typescript/resource.qtpl:14
-	qw422016.N().S(`";
-export const RESOURCE = "`)
-//line templates/typescript/resource.qtpl:15
-	qw422016.E().S(resource.Name)
-//line templates/typescript/resource.qtpl:15
-	qw422016.N().S(`";
-export const REST_PATH = "`)
-//line templates/typescript/resource.qtpl:16
-	qw422016.E().S(getRestPath(resource))
-//line templates/typescript/resource.qtpl:16
-	qw422016.N().S(`"
-
 export const `)
-//line templates/typescript/resource.qtpl:18
+//line templates/typescript/resource.qtpl:14
 	qw422016.E().S(typescriptClassName(resource.Name))
-//line templates/typescript/resource.qtpl:18
+//line templates/typescript/resource.qtpl:14
 	qw422016.N().S(`EntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "`)
+//line templates/typescript/resource.qtpl:15
+	qw422016.E().S(resource.Namespace)
+//line templates/typescript/resource.qtpl:15
+	qw422016.N().S(`",
+    resource: "`)
+//line templates/typescript/resource.qtpl:16
+	qw422016.E().S(resource.Name)
+//line templates/typescript/resource.qtpl:16
+	qw422016.N().S(`",
+    restPath: "`)
+//line templates/typescript/resource.qtpl:17
+	qw422016.E().S(getRestPath(resource))
+//line templates/typescript/resource.qtpl:17
+	qw422016.N().S(`",
 }
 `)
-//line templates/typescript/resource.qtpl:23
+//line templates/typescript/resource.qtpl:19
 	for _, subType := range getAllSubTypes(resource) {
-//line templates/typescript/resource.qtpl:23
+//line templates/typescript/resource.qtpl:19
 		qw422016.N().S(`
 export interface `)
-//line templates/typescript/resource.qtpl:25
+//line templates/typescript/resource.qtpl:21
 		qw422016.E().S(typescriptClassName(subType.Name))
-//line templates/typescript/resource.qtpl:25
+//line templates/typescript/resource.qtpl:21
 		qw422016.N().S(` {
 `)
-//line templates/typescript/resource.qtpl:26
+//line templates/typescript/resource.qtpl:22
 		for _, property := range subType.Properties {
-//line templates/typescript/resource.qtpl:26
+//line templates/typescript/resource.qtpl:22
 			qw422016.N().S(`    `)
-//line templates/typescript/resource.qtpl:27
+//line templates/typescript/resource.qtpl:23
 			qw422016.N().S(propertyName(property))
-//line templates/typescript/resource.qtpl:27
+//line templates/typescript/resource.qtpl:23
 			qw422016.N().S(`: `)
-//line templates/typescript/resource.qtpl:27
+//line templates/typescript/resource.qtpl:23
 			qw422016.N().S(getTypescriptType(resource, property, false))
-//line templates/typescript/resource.qtpl:27
+//line templates/typescript/resource.qtpl:23
 			qw422016.N().S(`
 `)
-//line templates/typescript/resource.qtpl:28
+//line templates/typescript/resource.qtpl:24
 		}
-//line templates/typescript/resource.qtpl:28
+//line templates/typescript/resource.qtpl:24
 		qw422016.N().S(`}
 `)
-//line templates/typescript/resource.qtpl:30
+//line templates/typescript/resource.qtpl:26
 	}
-//line templates/typescript/resource.qtpl:31
+//line templates/typescript/resource.qtpl:27
 	for _, enum := range getAllEnums(resource) {
-//line templates/typescript/resource.qtpl:31
+//line templates/typescript/resource.qtpl:27
 		qw422016.N().S(`
 export enum `)
-//line templates/typescript/resource.qtpl:33
+//line templates/typescript/resource.qtpl:29
 		qw422016.E().S(typescriptClassName(enum.Name))
-//line templates/typescript/resource.qtpl:33
+//line templates/typescript/resource.qtpl:29
 		qw422016.N().S(` {
 `)
-//line templates/typescript/resource.qtpl:34
+//line templates/typescript/resource.qtpl:30
 		for _, enumValue := range enum.EnumValues {
-//line templates/typescript/resource.qtpl:34
+//line templates/typescript/resource.qtpl:30
 			qw422016.N().S(`    `)
-//line templates/typescript/resource.qtpl:35
+//line templates/typescript/resource.qtpl:31
 			qw422016.N().S(enumName(enumValue))
-//line templates/typescript/resource.qtpl:35
+//line templates/typescript/resource.qtpl:31
 			qw422016.N().S(` = "`)
-//line templates/typescript/resource.qtpl:35
+//line templates/typescript/resource.qtpl:31
 			qw422016.E().S(enumValue)
-//line templates/typescript/resource.qtpl:35
+//line templates/typescript/resource.qtpl:31
 			qw422016.N().S(`",
 `)
-//line templates/typescript/resource.qtpl:36
+//line templates/typescript/resource.qtpl:32
 		}
-//line templates/typescript/resource.qtpl:36
+//line templates/typescript/resource.qtpl:32
 		qw422016.N().S(`}
 `)
-//line templates/typescript/resource.qtpl:38
+//line templates/typescript/resource.qtpl:34
 	}
-//line templates/typescript/resource.qtpl:39
+//line templates/typescript/resource.qtpl:35
 	if len(resourceActions) > 0 {
-//line templates/typescript/resource.qtpl:39
+//line templates/typescript/resource.qtpl:35
 		qw422016.N().S(`
 
     export interface Service {
@@ -169,153 +165,153 @@ export enum `)
     }
 
     `)
-//line templates/typescript/resource.qtpl:49
+//line templates/typescript/resource.qtpl:45
 		for _, resourceAction := range resourceActions {
-//line templates/typescript/resource.qtpl:49
+//line templates/typescript/resource.qtpl:45
 			qw422016.N().S(`
     `)
-//line templates/typescript/resource.qtpl:50
+//line templates/typescript/resource.qtpl:46
 			if hasInput(resourceAction) {
-//line templates/typescript/resource.qtpl:50
+//line templates/typescript/resource.qtpl:46
 				qw422016.N().S(`
     public `)
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(outputType(resourceAction))
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(` `)
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(typescriptVarName(resourceAction.Name))
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(` (`)
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(typescriptClassName(resource.Name))
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(` `)
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(typescriptVarName(resource.Name))
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(`, `)
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(typescriptClassName(resourceAction.Name))
-//line templates/typescript/resource.qtpl:51
+//line templates/typescript/resource.qtpl:47
 				qw422016.N().S(`Input input) {
         `)
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				if len(resourceAction.Properties) > 0 {
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 					qw422016.N().S(` return `)
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				}
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.N().S(` client.executeRecordAction(`)
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.N().S(outputType(resourceAction))
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.N().S(`.class, `)
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.E().S(typescriptClassName(resource.Name))
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.N().S(`.NAMESPACE, `)
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.E().S(typescriptClassName(resource.Name))
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.N().S(`.RESOURCE, instance.getId().toString(), "`)
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.E().S(resourceAction.Name)
-//line templates/typescript/resource.qtpl:52
+//line templates/typescript/resource.qtpl:48
 				qw422016.N().S(`", input);
     }
     `)
-//line templates/typescript/resource.qtpl:54
+//line templates/typescript/resource.qtpl:50
 			} else {
-//line templates/typescript/resource.qtpl:54
+//line templates/typescript/resource.qtpl:50
 				qw422016.N().S(`
     public `)
-//line templates/typescript/resource.qtpl:55
+//line templates/typescript/resource.qtpl:51
 				qw422016.N().S(outputType(resourceAction))
-//line templates/typescript/resource.qtpl:55
+//line templates/typescript/resource.qtpl:51
 				qw422016.N().S(` `)
-//line templates/typescript/resource.qtpl:55
+//line templates/typescript/resource.qtpl:51
 				qw422016.N().S(typescriptVarName(resourceAction.Name))
-//line templates/typescript/resource.qtpl:55
+//line templates/typescript/resource.qtpl:51
 				qw422016.N().S(` (`)
-//line templates/typescript/resource.qtpl:55
+//line templates/typescript/resource.qtpl:51
 				qw422016.N().S(typescriptClassName(resource.Name))
-//line templates/typescript/resource.qtpl:55
+//line templates/typescript/resource.qtpl:51
 				qw422016.N().S(` `)
-//line templates/typescript/resource.qtpl:55
+//line templates/typescript/resource.qtpl:51
 				qw422016.N().S(typescriptVarName(resource.Name))
-//line templates/typescript/resource.qtpl:55
+//line templates/typescript/resource.qtpl:51
 				qw422016.N().S(`) {
         `)
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				if len(resourceAction.Properties) > 0 {
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 					qw422016.N().S(` return `)
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				}
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.N().S(`  client.executeRecordAction(`)
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.N().S(outputType(resourceAction))
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.N().S(`.class, `)
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.E().S(typescriptClassName(resource.Name))
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.N().S(`.NAMESPACE, `)
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.E().S(typescriptClassName(resource.Name))
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.N().S(`.RESOURCE, instance.getId().toString(), "`)
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.E().S(resourceAction.Name)
-//line templates/typescript/resource.qtpl:56
+//line templates/typescript/resource.qtpl:52
 				qw422016.N().S(`", null);
     }
     `)
-//line templates/typescript/resource.qtpl:58
+//line templates/typescript/resource.qtpl:54
 			}
-//line templates/typescript/resource.qtpl:58
+//line templates/typescript/resource.qtpl:54
 			qw422016.N().S(`
     `)
-//line templates/typescript/resource.qtpl:59
+//line templates/typescript/resource.qtpl:55
 		}
-//line templates/typescript/resource.qtpl:59
+//line templates/typescript/resource.qtpl:55
 		qw422016.N().S(`
     }
 `)
-//line templates/typescript/resource.qtpl:61
+//line templates/typescript/resource.qtpl:57
 	}
-//line templates/typescript/resource.qtpl:61
+//line templates/typescript/resource.qtpl:57
 	qw422016.N().S(`
 
 `)
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 }
 
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 func WriteGenerateClassCode(qq422016 qtio422016.Writer, pkg string, resource *model.Resource) {
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 	StreamGenerateClassCode(qw422016, pkg, resource)
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 	qt422016.ReleaseWriter(qw422016)
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 }
 
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 func GenerateClassCode(pkg string, resource *model.Resource) string {
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 	qb422016 := qt422016.AcquireByteBuffer()
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 	WriteGenerateClassCode(qb422016, pkg, resource)
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 	qs422016 := string(qb422016.B)
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 	qt422016.ReleaseByteBuffer(qb422016)
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 	return qs422016
-//line templates/typescript/resource.qtpl:63
+//line templates/typescript/resource.qtpl:59
 }

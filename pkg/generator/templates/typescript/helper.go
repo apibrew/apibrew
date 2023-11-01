@@ -7,10 +7,6 @@ import (
 )
 
 func propertyName(property *model.ResourceProperty) string {
-	if isTypescriptReservedKeyword(property.Name) {
-		return "$" + property.Name
-	}
-
 	return property.Name
 }
 

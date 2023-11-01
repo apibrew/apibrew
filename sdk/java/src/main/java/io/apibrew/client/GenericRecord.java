@@ -36,4 +36,22 @@ public class GenericRecord extends Entity {
     public void setId(UUID id) {
         properties.put("id", id.toString());
     }
+
+    @Override
+    public Map<String, Object> getPropertyMap() {
+        return getProperties();
+    }
+
+    @Override
+    public Object getProperty(String property) {
+        return getProperties().get(property);
+    }
+
+    @Override
+    public void setProperty(String property, Object value) {
+        getProperties().put(property, value);
+    }
+
+
+
 }

@@ -480,16 +480,17 @@ func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model
 				properties := propEx.Value.GetStructValue().Fields
 				if properties["id"] != nil {
 					right = properties["id"].GetStringValue()
+				} else {
+					referencedResource := r.backend.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.Resource]
+
+					innerSql, err := r.backend.resolveReference(properties, r.builder.Var, referencedResource)
+
+					if err != nil {
+						return "", "", err
+					}
+
+					right = innerSql
 				}
-				referencedResource := r.backend.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.Resource]
-
-				innerSql, err := r.backend.resolveReference(properties, r.builder.Var, referencedResource)
-
-				if err != nil {
-					return "", "", err
-				}
-
-				right = innerSql
 			} else {
 				right = r.applyValue(propEx.Value)
 			}

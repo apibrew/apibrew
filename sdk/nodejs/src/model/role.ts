@@ -9,14 +9,10 @@ export interface Role {
     details?: object
 }
 
-export const NAMESPACE = "system";
-export const RESOURCE = "Role";
-export const REST_PATH = "system-role"
-
 export const RoleEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "system",
+    resource: "Role",
+    restPath: "system-role",
 }
 
 export interface AuditData {

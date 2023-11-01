@@ -10,14 +10,10 @@ export interface Code {
     auditData?: AuditData
 }
 
-export const NAMESPACE = "nano";
-export const RESOURCE = "Code";
-export const REST_PATH = "nano-code"
-
 export const CodeEntityInfo = {
-    namespace: NAMESPACE,
-    resource: RESOURCE,
-    restPath: REST_PATH,
+    namespace: "nano",
+    resource: "Code",
+    restPath: "nano-code",
 }
 
 export interface AuditData {
