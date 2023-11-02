@@ -5,9 +5,10 @@
     "module": "commonjs",
     "lib": ["es2017", "es7", "es6"],
     "declaration": true,
-    "outDir": "dist",
+    "outDir": ".",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
   "exclude": [
     "node_modules",

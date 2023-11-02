@@ -167,4 +167,9 @@ public interface Condition<T extends Entity> {
         return new SimpleCondition<>(ei -> condition2.configureExtensionInfo(condition1.configureExtensionInfo(ei)),
                 (e, t) -> condition1.eventMatches(e, t) || condition2.eventMatches(e, t));
     }
+
+    static <T extends Entity> Condition<T> not(Condition<T> condition) {
+        return new SimpleCondition<>(condition::configureExtensionInfo,
+                (e, t) -> !condition.eventMatches(e, t));
+    }
 }
