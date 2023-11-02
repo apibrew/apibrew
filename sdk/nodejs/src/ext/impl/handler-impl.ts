@@ -6,157 +6,61 @@ import {Entity} from "../../entity";
 import {EntityInfo} from "../../entity-info";
 import {Handler} from "../handler";
 import {Condition} from "../condition";
+import {Operator} from "../operator";
+import {Record} from "../../model/record";
 
 type Predicate<T extends Entity> = (event: Event, entity: T) => boolean;
 
-export class HandlerImpl<T extends Entity> implements Handler<T>{
+export class HandlerImpl<T extends Entity> implements Handler<T> {
     constructor(private client: Client,
                 private extensionService: ExtensionService,
-                private extensionInfo: ExtensionInfo,
-                private predicates: Predicate<Entity>[],
-                private entityInfo: EntityInfo) {
+                private entityInfo: EntityInfo,
+                private extensionInfo: ExtensionInfo = {
+                    sync: true,
+                    responds: true,
+                } as ExtensionInfo,
+                private predicates: Predicate<any>[] = []) {
     }
 
     public withExtensionInfo(extensionInfo: ExtensionInfo): Handler<T> {
-        return new HandlerImpl(this.client, this.extensionService, extensionInfo, this.predicates, this.entityInfo);
+        return new HandlerImpl(this.client, this.extensionService, this.entityInfo, {...this.extensionInfo}, [...this.predicates]);
     }
 
     configure(configurer: (info: ExtensionInfo) => ExtensionInfo): Handler<T> {
-        return this;
+        return this.withExtensionInfo(configurer(this.extensionInfo));
     }
 
     localOperator(localOperator: (event: Event, entity: T) => T): string {
-        return "";
+        return this.extensionService.registerExtensionWithOperator(this.extensionInfo, (event, record) => {
+            if (!this.checkPredicates(event, record.properties as T)) {
+                return record;
+            }
+
+            return {
+                properties: localOperator(event, record.properties as T) as object,
+            } as Record;
+        });
     }
 
-    operate(operator: (event: Event, entity: T) => T): string {
-        return "";
+    public operate(operator: Operator<T>): string {
+        return operator.operate(this);
+    }
+
+    private checkPredicates(event: Event, entity: T): boolean {
+        for (const predicate of this.predicates) {
+            if (!predicate(event, entity)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     unRegister(id: string): void {
+        this.extensionService.unRegisterOperator(id);
     }
 
     when(condition: Condition<T>): Handler<T> {
-        return this;
+        return new HandlerImpl(this.client, this.extensionService, this.entityInfo, {...condition.configureExtensionInfo(this.extensionInfo)}, [...this.predicates, condition.eventMatches.bind(condition)]);
     }
-
 }
-
-// import static io.apibrew.client.model.Extension.*;
-//
-// public class HandlerImpl<T extends Entity> implements Handler<T> {
-//     private final Client client;
-//     private final ExtensionService extensionService;
-//
-//     private final ExtensionInfo extensionInfo;
-//     private final List<BiPredicate<Event, T>> predicates;
-//
-//     private final EntityInfo<T> entityInfo;
-//
-//     private final ObjectMapper objectMapper = new ObjectMapper();
-//
-//     public HandlerImpl(Client client, ExtensionService extensionService, EntityInfo<T> entityInfo) {
-//         this(
-//                 client,
-//                 extensionService,
-//                 entityInfo,
-//                 new ExtensionInfo().withNamespace(entityInfo.getNamespace()).withResource(entityInfo.getResource()),
-//                 new ArrayList<>()
-//         );
-//     }
-//
-//     public HandlerImpl(Client client, ExtensionService extensionService, Class<T> entityClass) {
-//         this(client, extensionService, EntityInfo.fromEntityClass(entityClass));
-//     }
-//
-//     public HandlerImpl(Client client, ExtensionService extensionService, EntityInfo<T> entityInfo, ExtensionInfo extensionInfo, List<BiPredicate<Event, T>> predicates) {
-//         this.client = client;
-//         this.extensionService = extensionService;
-//         this.entityInfo = entityInfo;
-//         this.extensionInfo = extensionInfo.withSealResource(true);
-//         this.predicates = predicates;
-//
-//         objectMapper.registerModule(new JavaTimeModule());
-//         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-//     }
-//
-//     public Handler<T> withExtensionInfo(ExtensionInfo extensionInfo) {
-//         return new HandlerImpl<>(client, extensionService, entityInfo, extensionInfo, predicates);
-//     }
-//
-//     public Handler<T> withPredicates(List<BiPredicate<Event, T>> predicates) {
-//         return new HandlerImpl<>(client, extensionService, entityInfo, extensionInfo, predicates);
-//     }
-//
-//     public Handler<T> withPredicate(BiPredicate<Event, T> predicate) {
-//         ArrayList<BiPredicate<Event, T>> predicatesCopy = new ArrayList<>(predicates);
-//         predicatesCopy.add(predicate);
-//
-//         return withPredicates(predicatesCopy);
-//     }
-//
-//     @Override
-//     public Handler<T> when(Condition<T> condition) {
-//         return ((HandlerImpl<T>) withExtensionInfo(condition.configureExtensionInfo(extensionInfo)))
-//                 .withPredicate(condition::eventMatches);
-//     }
-//
-//     @Override
-//     public Handler<T> configure(Function<ExtensionInfo, ExtensionInfo> configurer) {
-//         return withExtensionInfo(configurer.apply(extensionInfo));
-//     }
-//
-//     private T recordToEntity(Record entity) {
-//         if (entity == null) {
-//             return null;
-//         }
-//
-//         return objectMapper.convertValue(entity.getProperties(), entityInfo.getEntityClass());
-//     }
-//
-//     private Record recordFromEntity(T entity) {
-//         if (entity == null) {
-//             return null;
-//         }
-//
-//         Record record = new Record();
-//         record.setProperties(objectMapper.convertValue(entity, Object.class));
-//         record.setId(entity.getId());
-//
-//         return record;
-//     }
-//
-//     private boolean checkPredicates(Event event, T entity) {
-//         for (BiPredicate<Event, T> predicate : predicates) {
-//             if (!predicate.test(event, entity)) {
-//                 return false;
-//             }
-//         }
-//
-//         return true;
-//     }
-//
-//     @Override
-//     public String operate(Operator<T> entityOperator) {
-//         return entityOperator.operate(this);
-//     }
-//
-//     @Override
-//     public String operate(BiFunction<Event, T, T> entityOperator) {
-//         return extensionService.registerExtensionWithOperator(extensionInfo, (event, record) -> {
-//             T castedEntity = recordToEntity(record);
-//             if (!checkPredicates(event, castedEntity)) {
-//                 return record;
-//             }
-//
-//             T result = entityOperator.apply(event, castedEntity);
-//
-//             return recordFromEntity(result);
-//         });
-//     }
-//
-//     @Override
-//     public void unRegister(String id) {
-//         extensionService.unRegisterOperator(id);
-//     }
-// }

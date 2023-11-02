@@ -34,7 +34,7 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
     private final String serviceName;
     Map<String, BiFunction<Extension.Event, Record, Record>> operatorMap = new HashMap<>();
     Map<String, ExtensionInfo> operatorIdExtensionInfoMap = new HashMap<>();
-    
+
 
     protected AbstractExtensionServiceImpl(String serviceName, Client client) {
         this.serviceName = serviceName;
@@ -75,12 +75,10 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
 
     private void registerExtension(ExtensionInfo extensionInfo) {
         log.debug("ExtensionService: {} / Registering extension: {}", serviceName, extensionInfo);
+
         Extension extension = extensionInfo.toExtension();
-
         extension.setCall(prepareExternalCall());
-
         extension.setName(serviceName + "/" + extension.getName());
-
         extension = extensionRepo.apply(extension);
 
         extensionInfoIdMap.put(extension.getId().toString(), extensionInfo);
@@ -106,6 +104,7 @@ public abstract class AbstractExtensionServiceImpl implements ExtensionService {
 
         if (extensionInfo == null) {
             log.warn("ExtensionInfo not found for event: {}", shortInfo(event));
+            return event;
         }
 
         Extension.Event eventChain = processEvent(extensionInfo, event);

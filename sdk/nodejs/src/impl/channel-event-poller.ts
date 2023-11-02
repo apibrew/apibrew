@@ -1,11 +1,6 @@
-
-import { Client } from '../client';
-import { Entity } from "../entity";
-import { Repository } from "../repository";
-import { EntityInfo } from "../entity-info";
-import { Container } from "../container";
+import {Client} from '../client';
 import {BooleanExpression, Code, Event} from "../model/extension";
-import axios from "axios/index";
+import axios from "axios";
 import {Urls} from "./client-impl";
 import {ApiException} from "../api-exception";
 
@@ -43,9 +38,11 @@ export class ChannelEventPoller {
 
         while (this.isRunning()) {
             try {
-                console.log("Begin Polling channel: " + this.channelKey);
+                const url = Urls.eventsUrl(this.client.getUrl()) + "?channelKey=" + this.channelKey
 
-                const result = await axios.get(Urls.eventsUrl(this.client.getUrl()) + "?channelKey=" + this.channelKey, {
+                console.log("Begin Polling channel: " + this.channelKey + " at: " + url);
+
+                const result = await axios.get(url, {
                     headers: this.client.headers(),
                     validateStatus: (status) => true,
                     responseType: "stream",
@@ -57,7 +54,9 @@ export class ChannelEventPoller {
                 }
 
                 if (result.status !== 200) {
-                    throw new ApiException(Code.INTERNAL_ERROR, result.statusText);
+                    console.log("Polling channel: " + this.channelKey + " failed: " + result.status + ": " + result.statusText);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    continue;
                 }
 
                 const stream = result.data;
@@ -97,7 +96,7 @@ export class ChannelEventPoller {
             } catch (e) {
                 console.log("Error polling channel: " + this.channelKey + ": " + e);
                 try {
-                    setTimeout(() => this.run(), 1000);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 } catch (ex: any) {
                     throw new Error(ex.message);
                 }

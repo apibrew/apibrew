@@ -1,18 +1,21 @@
-import {StorageServiceImpl} from "../storage/impl/storage-service-impl";
-import {StorageObject} from "../storage/model/storage-object";
 import {newClient} from "../client";
+import {Book, BookEntityInfo} from "./model/book";
+import {beforeCreate, execute, PollerExtensionService} from "../ext";
 
 export async function run() {
     const client = await newClient("local")
 
-    const storageService = new StorageServiceImpl(client, "http://localhost:8080/local")
+    const repository = client.repository(BookEntityInfo)
 
-    const object = await storageService.repository().create({} as StorageObject)
+    const extensionService = new PollerExtensionService("test-service-name", client, "test-channel-key")
 
-    await storageService.uploadBytes(object.id, Buffer.from("Hello World 321"), "hello.txt")
+    extensionService.handler(BookEntityInfo).when(beforeCreate()).operate(execute((event, entity) => {
+        console.log('inside beforeCreate', event, entity)
+    }))
 
 
-    console.log((await storageService.downloadBytes(object.id)).toString())
+    extensionService.run();
+
 }
 
 run();

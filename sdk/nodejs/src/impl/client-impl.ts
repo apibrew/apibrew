@@ -53,7 +53,7 @@ export class Urls {
     }
 
     static eventsUrl(url: string) {
-        return `${url}/events`;
+        return `${url}/_events`;
     }
 }
 
@@ -215,12 +215,16 @@ export class ClientImpl implements Client {
                 validateStatus: (status) => true,
             });
 
+            ClientImpl.ensureResponseSuccess(resp)
+
             return resp.data;
         } else {
             const resp = await axios.post<Container<T>>(Urls.recordSearchUrl(this.url, entityInfo.restPath), params, {
                 headers: this.headers(),
                 validateStatus: (status) => true,
             });
+
+            ClientImpl.ensureResponseSuccess(resp)
 
             return resp.data;
         }
@@ -232,6 +236,8 @@ export class ClientImpl implements Client {
             validateStatus: (status) => true,
         });
 
+        ClientImpl.ensureResponseSuccess(resp)
+
         return resp.data;
     }
 
@@ -240,6 +246,8 @@ export class ClientImpl implements Client {
             headers: this.headers(),
             validateStatus: (status) => true,
         });
+
+        ClientImpl.ensureResponseSuccess(resp)
 
         return resp.data;
     }
@@ -250,7 +258,7 @@ export class ClientImpl implements Client {
             validateStatus: (status) => true,
         }).catch();
 
-        resp.status
+        ClientImpl.ensureResponseSuccess(resp)
 
         return resp.data;
     }
@@ -278,6 +286,8 @@ export class ClientImpl implements Client {
             validateStatus: (status) => true,
         });
 
+        ClientImpl.ensureResponseSuccess(resp)
+
         return resp.data;
     }
 
@@ -297,6 +307,8 @@ export class ClientImpl implements Client {
             validateStatus: (status) => true,
         });
 
+        ClientImpl.ensureResponseSuccess(resp)
+
         if (resp.data.total == 0) {
             throw new ApiException(Code.RECORD_NOT_FOUND, "No record found for " + record);
         } else if (resp.data.total > 1) {
@@ -307,10 +319,13 @@ export class ClientImpl implements Client {
     }
 
     public async writeEvent(channelKey: string, event: Event): Promise<void> {
-        await axios.post(Urls.recordActionByIdUrl(this.url, "events", channelKey, "write"), event, {
+        const url = Urls.eventsUrl(this.url) + "?channelKey=" + channelKey;
+        const resp = await axios.post(url, event, {
             headers: this.headers(),
             validateStatus: (status) => true,
         });
+
+        ClientImpl.ensureResponseSuccess(resp)
     }
 
     repo<T extends Entity>(entityInfo: EntityInfo): Repository<T> {

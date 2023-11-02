@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 
 @Log4j2
 public class PollerExtensionService extends AbstractExtensionServiceImpl implements ExtensionService {
-
     private final String channelKey;
     private final ChannelEventPoller poller;
     private final ExecutorService executorService = Executors.newFixedThreadPool(200);

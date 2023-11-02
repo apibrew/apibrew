@@ -94,10 +94,10 @@ export function dataSeparation<T extends Entity>(property: string, ownerFieldGet
 }
 
 
-function execute<T extends Entity>(consumer: (event: Event, entity: T) => T): Operator<T> {
+export function execute<T extends Entity>(consumer: (event: Event, entity: T) => T | void): Operator<T> {
     return {
         operate(handler: Handler<T>): string {
-            return handler.operate((event, entity) => {
+            return handler.localOperator((event, entity) => {
                 consumer(event, entity);
 
                 return entity;
@@ -106,14 +106,14 @@ function execute<T extends Entity>(consumer: (event: Event, entity: T) => T): Op
     };
 }
 
-function reject<T extends Entity>(message?: string): Operator<T> {
+export function reject<T extends Entity>(message?: string): Operator<T> {
     return check((event, entity) => false, message);
 }
 
-function check<T extends Entity>(condition: (event: Event, entity: T) => boolean, message?: string): Operator<T> {
+export function check<T extends Entity>(condition: (event: Event, entity: T) => boolean, message?: string): Operator<T> {
     return {
         operate(handler: Handler<T>): string {
-            return handler.operate((event, entity) => {
+            return handler.localOperator((event, entity) => {
                 if (condition(event, entity)) {
                     return entity;
                 } else {
