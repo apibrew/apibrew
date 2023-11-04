@@ -1,7 +1,9 @@
 package typescript
 
 import (
+	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/util"
 	"strings"
 )
@@ -47,6 +49,32 @@ func getTypescriptType(resource *model.Resource, property *model.ResourcePropert
 	}
 
 	panic("Unknown type: " + property.Type.String())
+}
+
+func resourceJson(resource *model.Resource) string {
+	remarkedResource := &model.Resource{
+		Name:            resource.Name,
+		Namespace:       resource.Namespace,
+		Properties:      resource.Properties,
+		Types:           resource.Types,
+		Indexes:         resource.Indexes,
+		Virtual:         resource.Virtual,
+		Immutable:       resource.Immutable,
+		Abstract:        resource.Abstract,
+		CheckReferences: resource.CheckReferences,
+		Title:           resource.Title,
+		Description:     resource.Description,
+		AuditData:       resource.AuditData,
+		Annotations:     resource.Annotations,
+	}
+
+	data, err := json.MarshalIndent(extramappings.ResourceTo(remarkedResource), "", "  ")
+
+	if err != nil {
+		panic(err)
+	}
+
+	return string(data)
 }
 
 func typescriptClassName(resourceName string) string {

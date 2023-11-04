@@ -32,28 +32,7 @@ export enum {%s typescriptClassName(enum.Name) %} {
     {%- endfor -%}
 }
 {%- endfor -%}
-{% if len(resourceActions) > 0 %}
 
-    export interface Service {
-
-    private final Client client;
-
-    public Service(Client client) {
-        this.client = client;
-    }
-
-    {% for _, resourceAction := range resourceActions %}
-    {% if hasInput(resourceAction) %}
-    public {%s= outputType(resourceAction)%} {%s= typescriptVarName(resourceAction.Name)%} ({%s= typescriptClassName(resource.Name) %} {%s= typescriptVarName(resource.Name) %}, {%s= typescriptClassName(resourceAction.Name)%}Input input) {
-        {% if len(resourceAction.Properties) > 0 %} return {% endif %} client.executeRecordAction({%s= outputType(resourceAction)%}.class, {%s typescriptClassName(resource.Name) %}.NAMESPACE, {%s typescriptClassName(resource.Name) %}.RESOURCE, instance.getId().toString(), "{%s resourceAction.Name %}", input);
-    }
-    {% else %}
-    public {%s= outputType(resourceAction)%} {%s= typescriptVarName(resourceAction.Name)%} ({%s= typescriptClassName(resource.Name) %} {%s= typescriptVarName(resource.Name) %}) {
-        {% if len(resourceAction.Properties) > 0 %} return {% endif %}  client.executeRecordAction({%s= outputType(resourceAction)%}.class, {%s typescriptClassName(resource.Name) %}.NAMESPACE, {%s typescriptClassName(resource.Name) %}.RESOURCE, instance.getId().toString(), "{%s resourceAction.Name %}", null);
-    }
-    {% endif %}
-    {% endfor %}
-    }
-{% endif %}
+export const {%s typescriptClassName(resource.Name) %}Resource = {%s= resourceJson(resource) %} as unknown
 
 {%- endfunc -%}

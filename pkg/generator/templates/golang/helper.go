@@ -25,6 +25,23 @@ func getImportsForResource(resource *model.Resource) []string {
 	return util.ArrayUnique(imports)
 }
 
+func getImportsForResourceDef(resource *model.Resource) []string {
+	var imports = []string{
+		"github.com/apibrew/apibrew/pkg/model",
+	}
+	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
+		if prop.DefaultValue != nil || prop.ExampleValue != nil {
+			imports = append(imports, "google.golang.org/protobuf/types/known/structpb")
+		}
+	})
+
+	if resource.Title != nil || resource.Description != nil {
+		imports = append(imports, "github.com/apibrew/apibrew/pkg/util")
+	}
+
+	return util.ArrayUnique(imports)
+}
+
 func getImportsForMapping(resource *model.Resource) []string {
 	imports := []string{}
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
