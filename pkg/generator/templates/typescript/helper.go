@@ -81,22 +81,6 @@ func typescriptClassName(resourceName string) string {
 	return util.Capitalize(util.SnakeCaseToCamelCase(resourceName))
 }
 
-func typescriptVarName(resourceName string) string {
-	return util.DeCapitalize(util.SnakeCaseToCamelCase(resourceName))
-}
-
-func hasInput(resource *model.Resource) bool {
-	return len(resource.Types) > 0
-}
-
-func outputType(resource *model.Resource) string {
-	if len(resource.Properties) > 0 {
-		return getTypescriptType(resource, resource.Properties[0], false)
-	} else {
-		return "void"
-	}
-}
-
 func getAllSubTypes(resource *model.Resource) []*model.ResourceSubType {
 	var allTypes = resource.Types
 
