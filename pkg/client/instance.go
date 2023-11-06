@@ -266,7 +266,7 @@ func (d *client) AuthenticateWithUsernameAndPassword(username string, password s
 	authResp, err := d.authenticationClient.Authenticate(context.TODO(), &stub.AuthenticationRequest{
 		Username: username,
 		Password: password,
-		Term:     2,
+		Term:     model.TokenTerm_VERY_LONG,
 	})
 
 	if err != nil {
