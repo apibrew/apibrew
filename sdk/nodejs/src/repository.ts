@@ -9,13 +9,13 @@ export interface Repository<T extends Entity> {
 
     get(id: string, resolveReferences?: string[]): Promise<T>;
 
-    update(record: T): Promise<T>;
+    update(record: Partial<T> & Entity): Promise<T>;
 
     delete(id: string): Promise<T>;
 
-    apply(record: T): Promise<T>;
+    apply(record: Partial<T>): Promise<T>;
 
-    load(record: T): Promise<T>;
+    load(record: Partial<T>, resolveReferences?: string[]): Promise<T>;
 
     list(params?: ListRecordParams): Promise<Container<T>>;
 

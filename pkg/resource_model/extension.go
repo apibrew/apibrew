@@ -61,87 +61,87 @@ func (s *Extension) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 
-type ExtensionBooleanExpression struct {
-	And                []ExtensionBooleanExpression   `json:"and,omitempty"`
-	Or                 []ExtensionBooleanExpression   `json:"or,omitempty"`
-	Not                *ExtensionBooleanExpression    `json:"not,omitempty"`
-	Equal              *ExtensionPairExpression       `json:"equal,omitempty"`
-	LessThan           *ExtensionPairExpression       `json:"lessThan,omitempty"`
-	GreaterThan        *ExtensionPairExpression       `json:"greaterThan,omitempty"`
-	LessThanOrEqual    *ExtensionPairExpression       `json:"lessThanOrEqual,omitempty"`
-	GreaterThanOrEqual *ExtensionPairExpression       `json:"greaterThanOrEqual,omitempty"`
-	In                 *ExtensionPairExpression       `json:"in,omitempty"`
-	IsNull             *ExtensionExpression           `json:"isNull,omitempty"`
-	RegexMatch         *ExtensionRegexMatchExpression `json:"regexMatch,omitempty"`
+type BooleanExpression struct {
+	And                []BooleanExpression   `json:"and,omitempty"`
+	Or                 []BooleanExpression   `json:"or,omitempty"`
+	Not                *BooleanExpression    `json:"not,omitempty"`
+	Equal              *PairExpression       `json:"equal,omitempty"`
+	LessThan           *PairExpression       `json:"lessThan,omitempty"`
+	GreaterThan        *PairExpression       `json:"greaterThan,omitempty"`
+	LessThanOrEqual    *PairExpression       `json:"lessThanOrEqual,omitempty"`
+	GreaterThanOrEqual *PairExpression       `json:"greaterThanOrEqual,omitempty"`
+	In                 *PairExpression       `json:"in,omitempty"`
+	IsNull             *Expression           `json:"isNull,omitempty"`
+	RegexMatch         *RegexMatchExpression `json:"regexMatch,omitempty"`
 }
 
-func (s *ExtensionBooleanExpression) GetAnd() []ExtensionBooleanExpression {
+func (s *BooleanExpression) GetAnd() []BooleanExpression {
 	return s.And
 }
-func (s *ExtensionBooleanExpression) GetOr() []ExtensionBooleanExpression {
+func (s *BooleanExpression) GetOr() []BooleanExpression {
 	return s.Or
 }
-func (s *ExtensionBooleanExpression) GetNot() *ExtensionBooleanExpression {
+func (s *BooleanExpression) GetNot() *BooleanExpression {
 	return s.Not
 }
-func (s *ExtensionBooleanExpression) GetEqual() *ExtensionPairExpression {
+func (s *BooleanExpression) GetEqual() *PairExpression {
 	return s.Equal
 }
-func (s *ExtensionBooleanExpression) GetLessThan() *ExtensionPairExpression {
+func (s *BooleanExpression) GetLessThan() *PairExpression {
 	return s.LessThan
 }
-func (s *ExtensionBooleanExpression) GetGreaterThan() *ExtensionPairExpression {
+func (s *BooleanExpression) GetGreaterThan() *PairExpression {
 	return s.GreaterThan
 }
-func (s *ExtensionBooleanExpression) GetLessThanOrEqual() *ExtensionPairExpression {
+func (s *BooleanExpression) GetLessThanOrEqual() *PairExpression {
 	return s.LessThanOrEqual
 }
-func (s *ExtensionBooleanExpression) GetGreaterThanOrEqual() *ExtensionPairExpression {
+func (s *BooleanExpression) GetGreaterThanOrEqual() *PairExpression {
 	return s.GreaterThanOrEqual
 }
-func (s *ExtensionBooleanExpression) GetIn() *ExtensionPairExpression {
+func (s *BooleanExpression) GetIn() *PairExpression {
 	return s.In
 }
-func (s *ExtensionBooleanExpression) GetIsNull() *ExtensionExpression {
+func (s *BooleanExpression) GetIsNull() *Expression {
 	return s.IsNull
 }
-func (s *ExtensionBooleanExpression) GetRegexMatch() *ExtensionRegexMatchExpression {
+func (s *BooleanExpression) GetRegexMatch() *RegexMatchExpression {
 	return s.RegexMatch
 }
 
-type ExtensionPairExpression struct {
-	Left  *ExtensionExpression `json:"left,omitempty"`
-	Right *ExtensionExpression `json:"right,omitempty"`
+type PairExpression struct {
+	Left  *Expression `json:"left,omitempty"`
+	Right *Expression `json:"right,omitempty"`
 }
 
-func (s *ExtensionPairExpression) GetLeft() *ExtensionExpression {
+func (s *PairExpression) GetLeft() *Expression {
 	return s.Left
 }
-func (s *ExtensionPairExpression) GetRight() *ExtensionExpression {
+func (s *PairExpression) GetRight() *Expression {
 	return s.Right
 }
 
-type ExtensionRegexMatchExpression struct {
-	Pattern    *string              `json:"pattern,omitempty"`
-	Expression *ExtensionExpression `json:"expression,omitempty"`
+type RegexMatchExpression struct {
+	Pattern    *string     `json:"pattern,omitempty"`
+	Expression *Expression `json:"expression,omitempty"`
 }
 
-func (s *ExtensionRegexMatchExpression) GetPattern() *string {
+func (s *RegexMatchExpression) GetPattern() *string {
 	return s.Pattern
 }
-func (s *ExtensionRegexMatchExpression) GetExpression() *ExtensionExpression {
+func (s *RegexMatchExpression) GetExpression() *Expression {
 	return s.Expression
 }
 
-type ExtensionExpression struct {
+type Expression struct {
 	Property *string     `json:"property,omitempty"`
 	Value    interface{} `json:"value,omitempty"`
 }
 
-func (s *ExtensionExpression) GetProperty() *string {
+func (s *Expression) GetProperty() *string {
 	return s.Property
 }
-func (s *ExtensionExpression) GetValue() interface{} {
+func (s *Expression) GetValue() interface{} {
 	return s.Value
 }
 
@@ -214,18 +214,18 @@ func (s *ExternalCall) GetChannelCall() *ChannelCall {
 }
 
 type EventSelector struct {
-	Actions        []EventAction               `json:"actions,omitempty"`
-	RecordSelector *ExtensionBooleanExpression `json:"recordSelector,omitempty"`
-	Namespaces     []string                    `json:"namespaces,omitempty"`
-	Resources      []string                    `json:"resources,omitempty"`
-	Ids            []string                    `json:"ids,omitempty"`
-	Annotations    map[string]string           `json:"annotations,omitempty"`
+	Actions        []EventAction      `json:"actions,omitempty"`
+	RecordSelector *BooleanExpression `json:"recordSelector,omitempty"`
+	Namespaces     []string           `json:"namespaces,omitempty"`
+	Resources      []string           `json:"resources,omitempty"`
+	Ids            []string           `json:"ids,omitempty"`
+	Annotations    map[string]string  `json:"annotations,omitempty"`
 }
 
 func (s *EventSelector) GetActions() []EventAction {
 	return s.Actions
 }
-func (s *EventSelector) GetRecordSelector() *ExtensionBooleanExpression {
+func (s *EventSelector) GetRecordSelector() *BooleanExpression {
 	return s.RecordSelector
 }
 func (s *EventSelector) GetNamespaces() []string {
@@ -242,13 +242,13 @@ func (s *EventSelector) GetAnnotations() map[string]string {
 }
 
 type RecordSearchParams struct {
-	Query             *ExtensionBooleanExpression `json:"query,omitempty"`
-	Limit             *int32                      `json:"limit,omitempty"`
-	Offset            *int32                      `json:"offset,omitempty"`
-	ResolveReferences []string                    `json:"resolveReferences,omitempty"`
+	Query             *BooleanExpression `json:"query,omitempty"`
+	Limit             *int32             `json:"limit,omitempty"`
+	Offset            *int32             `json:"offset,omitempty"`
+	ResolveReferences []string           `json:"resolveReferences,omitempty"`
 }
 
-func (s *RecordSearchParams) GetQuery() *ExtensionBooleanExpression {
+func (s *RecordSearchParams) GetQuery() *BooleanExpression {
 	return s.Query
 }
 func (s *RecordSearchParams) GetLimit() *int32 {

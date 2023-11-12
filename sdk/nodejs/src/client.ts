@@ -8,8 +8,18 @@ import {ClientImpl} from "./impl/client-impl";
 import {Server} from "./config";
 import {GetRecordParams} from "./get-record-params";
 import {ListRecordParams} from "./list-record-params";
+import {TokenStorage} from "./token-storage";
+import {TokenBody} from "./token-body";
 
 export interface Client {
+    useTokenStorage(tokenStorage: TokenStorage): void;
+
+    isAuthenticated(): boolean
+
+    getTokenBody(): TokenBody | undefined;
+
+    invalidateAuthentication(): void;
+
     applyResource(resource: Resource): Promise<Resource>
 
     getResourceByName(namespace: string, name: string): Promise<Resource>
@@ -36,17 +46,17 @@ export interface Client {
 
     listRecords<T extends Entity>(entityInfo: EntityInfo, params: ListRecordParams): Promise<Container<T>>;
 
-    applyRecord<T extends Entity>(entityInfo: EntityInfo, record: T): Promise<T>;
+    applyRecord<T extends Entity>(entityInfo: EntityInfo, record: Partial<T>): Promise<T>;
 
     deleteRecord<T extends Entity>(entityInfo: EntityInfo, id: string): Promise<T>;
 
-    updateRecord<T extends Entity>(entityInfo: EntityInfo, record: T): Promise<T>;
+    updateRecord<T extends Entity>(entityInfo: EntityInfo, record: Partial<T> & Entity): Promise<T>;
 
     getRecord<T extends Entity>(entityInfo: EntityInfo, params: GetRecordParams): Promise<T>;
 
     createRecord<T extends Entity>(entityInfo: EntityInfo, record: T): Promise<T>;
 
-    loadRecord<T extends Entity>(entityInfo: EntityInfo, record: T): Promise<T>;
+    loadRecord<T extends Entity>(entityInfo: EntityInfo, record: Partial<T>, resolveReferences?: string[]): Promise<T>;
 
     writeEvent(channelKey: string, event: Event): Promise<void>;
 
@@ -55,10 +65,6 @@ export interface Client {
     headers(): { [key: string]: string };
 
     getUrl(): string;
-}
-
-export async function newClient(serverName?: string): Promise<Client> {
-    return ClientImpl.newClientByServerName(serverName)
 }
 
 export async function newClientByServerConfig(serverConfig: Server): Promise<Client> {

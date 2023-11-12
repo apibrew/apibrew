@@ -17,15 +17,19 @@ export class WatcherImpl<T extends Entity> implements Watcher<T> {
     }
 
     public start() {
-        this.ensureCanRun();
+        if (this.isStopped) {
+            throw new ApiException(Code.INTERNAL_ERROR, "Poller is stopped");
+        }
+
+        if (this.stillRunning) {
+            throw new ApiException(Code.INTERNAL_ERROR, "Poller is already running");
+        }
+
         this.stillRunning = true;
         this.run();
     }
 
-    public async run() {
-        this.ensureCanRun();
-        this.stillRunning = true;
-
+    private async run() {
         while (this.isRunning()) {
             try {
                 console.log("Begin watching: ", this.entityInfo);
@@ -34,7 +38,7 @@ export class WatcherImpl<T extends Entity> implements Watcher<T> {
                     headers: this.client.headers(),
                     validateStatus: (status) => true,
                     responseType: "stream",
-                    timeout: 10 * 1000,
+                    timeout: 1000 * 1000,
                 });
 
                 if (!this.isRunning()) {
@@ -86,16 +90,6 @@ export class WatcherImpl<T extends Entity> implements Watcher<T> {
                     throw new ApiException(Code.INTERNAL_ERROR, ex.message);
                 }
             }
-        }
-    }
-
-    private ensureCanRun() {
-        if (this.isStopped) {
-            throw new ApiException(Code.INTERNAL_ERROR, "Poller is stopped");
-        }
-
-        if (this.stillRunning) {
-            throw new ApiException(Code.INTERNAL_ERROR, "Poller is already running");
         }
     }
 

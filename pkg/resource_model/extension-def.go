@@ -83,8 +83,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":  "true",
 				"OpenApiGroup": "internal",
+				"EnableAudit":  "true",
 			},
 		},
 		{
@@ -153,7 +153,7 @@ var ExtensionResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-04T03:41:26+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -162,7 +162,7 @@ var ExtensionResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-04T03:41:26+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -171,8 +171,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
@@ -191,8 +191,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
@@ -211,8 +211,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
@@ -278,7 +278,7 @@ var ExtensionResource = &model.Resource{
 				{
 					Name:         "annotations",
 					Type:         model.ResourceProperty_MAP,
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -313,8 +313,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":  "true",
 				"OpenApiGroup": "internal",
+				"EnableAudit":  "true",
 			},
 		},
 		{
@@ -395,8 +395,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
@@ -457,8 +457,8 @@ var ExtensionResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
-				"SpecialProperty": "true",
 				"PrimaryProperty": "true",
+				"SpecialProperty": "true",
 			},
 		},
 		{
@@ -476,7 +476,7 @@ var ExtensionResource = &model.Resource{
 		{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedOn": structpb.NewStringValue("2023-11-04T03:41:26+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-04T03:41:26+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -530,7 +530,7 @@ var ExtensionResource = &model.Resource{
 		{
 			Name:         "annotations",
 			Type:         model.ResourceProperty_MAP,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -539,7 +539,7 @@ var ExtensionResource = &model.Resource{
 	},
 
 	Annotations: map[string]string{
-		"OpenApiGroup": "internal",
 		"EnableAudit":  "true",
+		"OpenApiGroup": "internal",
 	},
 }

@@ -8,8 +8,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func BooleanExpressionFromProto(exp *model.BooleanExpression) resource_model.ExtensionBooleanExpression {
-	var result = resource_model.ExtensionBooleanExpression{}
+func BooleanExpressionFromProto(exp *model.BooleanExpression) resource_model.BooleanExpression {
+	var result = resource_model.BooleanExpression{}
 
 	if exp.Expression != nil {
 		if exp.GetAnd() != nil {
@@ -52,8 +52,8 @@ func BooleanExpressionFromProto(exp *model.BooleanExpression) resource_model.Ext
 	return result
 }
 
-func PairExpressionFromProto(equal *model.PairExpression) resource_model.ExtensionPairExpression {
-	var result = resource_model.ExtensionPairExpression{}
+func PairExpressionFromProto(equal *model.PairExpression) resource_model.PairExpression {
+	var result = resource_model.PairExpression{}
 
 	if equal.Left != nil {
 		result.Left = util.Pointer(ExpressionFromProto(equal.Left))
@@ -66,8 +66,8 @@ func PairExpressionFromProto(equal *model.PairExpression) resource_model.Extensi
 	return result
 }
 
-func ExpressionFromProto(exp *model.Expression) resource_model.ExtensionExpression {
-	var result = resource_model.ExtensionExpression{}
+func ExpressionFromProto(exp *model.Expression) resource_model.Expression {
+	var result = resource_model.Expression{}
 
 	if exp.GetProperty() != "" {
 		result.Property = util.Pointer(exp.GetProperty())
@@ -80,8 +80,8 @@ func ExpressionFromProto(exp *model.Expression) resource_model.ExtensionExpressi
 	return result
 }
 
-func RegexMatchExpressionFromProto(match *model.RegexMatchExpression) resource_model.ExtensionRegexMatchExpression {
-	var result = resource_model.ExtensionRegexMatchExpression{}
+func RegexMatchExpressionFromProto(match *model.RegexMatchExpression) resource_model.RegexMatchExpression {
+	var result = resource_model.RegexMatchExpression{}
 
 	result.Pattern = util.Pointer(match.GetPattern())
 	result.Expression = util.Pointer(ExpressionFromProto(match.GetExpression()))
@@ -89,7 +89,7 @@ func RegexMatchExpressionFromProto(match *model.RegexMatchExpression) resource_m
 	return result
 }
 
-func BooleanExpressionToProto(exp resource_model.ExtensionBooleanExpression) *model.BooleanExpression {
+func BooleanExpressionToProto(exp resource_model.BooleanExpression) *model.BooleanExpression {
 	var result = new(model.BooleanExpression)
 
 	if exp.And != nil {
@@ -153,7 +153,7 @@ func BooleanExpressionToProto(exp resource_model.ExtensionBooleanExpression) *mo
 	return result
 }
 
-func RegexMatchExpressionToProto(expression resource_model.ExtensionRegexMatchExpression) *model.RegexMatchExpression {
+func RegexMatchExpressionToProto(expression resource_model.RegexMatchExpression) *model.RegexMatchExpression {
 	var result = new(model.RegexMatchExpression)
 
 	result.Pattern = util.DePointer(expression.Pattern, "")
@@ -165,7 +165,7 @@ func RegexMatchExpressionToProto(expression resource_model.ExtensionRegexMatchEx
 	return result
 }
 
-func ExpressionToProto(expression resource_model.ExtensionExpression) *model.Expression {
+func ExpressionToProto(expression resource_model.Expression) *model.Expression {
 	var result = new(model.Expression)
 
 	if expression.Property != nil {
@@ -189,7 +189,7 @@ func ExpressionToProto(expression resource_model.ExtensionExpression) *model.Exp
 	return result
 }
 
-func PairExpressionToProto(expression resource_model.ExtensionPairExpression) *model.PairExpression {
+func PairExpressionToProto(expression resource_model.PairExpression) *model.PairExpression {
 	var result = new(model.PairExpression)
 
 	if expression.Left != nil {

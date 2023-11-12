@@ -57,6 +57,10 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 						referenceNamespace = resource.Namespace
 					}
 					referencedResource := schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+property.Reference.Resource]
+
+					if referencedResource == nil {
+						return errors.LogicalError.WithDetails("Referenced resource not found: " + referenceNamespace + "/" + property.Reference.Resource)
+					}
 					item, err := p.resolveReference(packedVal.GetStructValue().Fields, args.Add, referencedResource)
 
 					if err != nil {
@@ -129,13 +133,13 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 			return "", errors.LogicalError.WithDetails(err.Error())
 		}
 
-		where = append(where, fmt.Sprintf("%s=%s", k, argPlaceHolder(unpacked)))
+		where = append(where, fmt.Sprintf("%s=%s", p.options.Quote(k), argPlaceHolder(unpacked)))
 	}
 
 	if len(where) == 0 {
 		return argPlaceHolder(nil), nil
 	} else {
-		innerSql := fmt.Sprintf("select id from %s where %s", referencedResource.SourceConfig.Entity, strings.Join(where, " AND "))
+		innerSql := fmt.Sprintf("select \"id\" from %s where %s", p.options.Quote(referencedResource.SourceConfig.Entity), strings.Join(where, " AND "))
 
 		return fmt.Sprintf("(%s)", innerSql), nil
 	}

@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
-	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -46,14 +45,43 @@ func (w watchService) WatchResource(ctx context.Context, params service.WatchPar
 		return nil, err
 	}
 
-	return w.watch(ctx, params)
+	ch, err := w.watch(ctx, params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// check each event if the user has access to it
+
+	result := make(chan *model.Event, params.BufferSize)
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case event := <-ch:
+				if event.Id != "heartbeat-message" {
+					if err := w.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+						Resource:  resource,
+						Operation: resource_model.PermissionOperation_READ,
+						Records:   &event.Records,
+					}); err != nil {
+						log.Warnf("User don't have permission to access this event: %v", event.Id)
+						continue
+					}
+				}
+
+				result <- event
+			}
+		}
+	}()
+
+	return result, nil
 }
 
 func (w watchService) Watch(ctx context.Context, params service.WatchParams) (<-chan *model.Event, errors.ServiceError) {
-	if err := w.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-		Resource:  resources.ExtensionResource,
-		Operation: resource_model.PermissionOperation_FULL,
-	}); err != nil {
+	if err := w.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return nil, err
 	}
 

@@ -74,6 +74,7 @@ func (s *SelectorFlags) Parse(result *SelectedRecordsResult, cmd *cobra.Command,
 			result.Records = append(result.Records, data)
 		}
 	} else if s.namespace == "" && (s.resourceName == "type" || s.resourceName == "types" || s.resourceName == "resource" || s.resourceName == "resources") {
+		s.resourceName = ""
 		for _, filter := range s.Filters {
 			filterKey, filterValue := parseFilter(filter)
 

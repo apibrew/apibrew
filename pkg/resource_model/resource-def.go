@@ -112,7 +112,7 @@ var ResourceResource = &model.Resource{
 				{
 					Name:         "annotations",
 					Type:         model.ResourceProperty_MAP,
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -121,10 +121,10 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
+				"EnableAudit":     "true",
 				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
 				"OpenApiRestPath": "resources",
-				"EnableAudit":     "true",
 			},
 		},
 		{
@@ -154,15 +154,15 @@ var ResourceResource = &model.Resource{
 					Name:         "properties",
 					Type:         model.ResourceProperty_LIST,
 					Required:     true,
-					ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"type": structpb.NewStringValue("STRING"), "name": structpb.NewStringValue("title")}})}}),
+					ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("title"), "type": structpb.NewStringValue("STRING")}})}}),
 				},
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":     "true",
-				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
 				"OpenApiRestPath": "resources",
+				"EnableAudit":     "true",
+				"RestApiDisabled": "true",
 			},
 		},
 		{
@@ -195,7 +195,7 @@ var ResourceResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-04T03:41:26+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -204,7 +204,7 @@ var ResourceResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-04T03:41:26+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -213,10 +213,10 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiRestPath": "resources",
-				"EnableAudit":     "true",
 				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
+				"OpenApiRestPath": "resources",
+				"EnableAudit":     "true",
 			},
 		},
 		{
@@ -235,10 +235,10 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":     "true",
-				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
 				"OpenApiRestPath": "resources",
+				"EnableAudit":     "true",
+				"RestApiDisabled": "true",
 			},
 		},
 		{
@@ -297,10 +297,10 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":     "true",
 				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
 				"OpenApiRestPath": "resources",
+				"EnableAudit":     "true",
 			},
 		},
 	},
@@ -313,8 +313,8 @@ var ResourceResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
-				"PrimaryProperty": "true",
 				"SpecialProperty": "true",
+				"PrimaryProperty": "true",
 			},
 		},
 		{
@@ -332,7 +332,7 @@ var ResourceResource = &model.Resource{
 		{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-04T03:41:26+04:00"), "updatedOn": structpb.NewStringValue("2023-11-04T03:41:26+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00"), "updatedOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -365,7 +365,7 @@ var ResourceResource = &model.Resource{
 			Name:         "properties",
 			Type:         model.ResourceProperty_LIST,
 			Required:     true,
-			ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("title"), "type": structpb.NewStringValue("name")}}), structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"type": structpb.NewStringValue("STRING"), "name": structpb.NewStringValue("type")}})}}),
+			ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("title"), "type": structpb.NewStringValue("name")}}), structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("type"), "type": structpb.NewStringValue("STRING")}})}}),
 		},
 		{
 			Name: "indexes",
@@ -424,7 +424,7 @@ var ResourceResource = &model.Resource{
 		{
 			Name:         "annotations",
 			Type:         model.ResourceProperty_MAP,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

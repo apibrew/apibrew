@@ -4,8 +4,6 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resource_model"
-	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -42,10 +40,7 @@ func (e *eventChannelService) Init(config *model.AppConfig) {
 }
 
 func (e *eventChannelService) WriteEvent(ctx context.Context, event *model.Event) errors.ServiceError {
-	if err := e.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-		Resource:  resources.ExtensionResource,
-		Operation: resource_model.PermissionOperation_FULL,
-	}); err != nil {
+	if err := e.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return err
 	}
 
@@ -65,10 +60,7 @@ func (e *eventChannelService) WriteEvent(ctx context.Context, event *model.Event
 
 func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string) (chan *model.Event, errors.ServiceError) {
 	log.Infof("Polling events for channel: %v", channelKey)
-	if err := e.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-		Resource:  resources.ExtensionResource,
-		Operation: resource_model.PermissionOperation_FULL,
-	}); err != nil {
+	if err := e.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return nil, err
 	}
 

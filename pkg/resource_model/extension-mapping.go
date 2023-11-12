@@ -351,30 +351,30 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 	return s
 }
 
-type ExtensionBooleanExpressionMapper struct {
+type BooleanExpressionMapper struct {
 }
 
-func NewExtensionBooleanExpressionMapper() *ExtensionBooleanExpressionMapper {
-	return &ExtensionBooleanExpressionMapper{}
+func NewBooleanExpressionMapper() *BooleanExpressionMapper {
+	return &BooleanExpressionMapper{}
 }
 
-var ExtensionBooleanExpressionMapperInstance = NewExtensionBooleanExpressionMapper()
+var BooleanExpressionMapperInstance = NewBooleanExpressionMapper()
 
-func (m *ExtensionBooleanExpressionMapper) New() *ExtensionBooleanExpression {
-	return &ExtensionBooleanExpression{}
+func (m *BooleanExpressionMapper) New() *BooleanExpression {
+	return &BooleanExpression{}
 }
 
-func (m *ExtensionBooleanExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
+func (m *BooleanExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
 		Namespace: "system",
 		Name:      "Extension",
 	}
 }
 
-func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpression *ExtensionBooleanExpression) map[string]*structpb.Value {
+func (m *BooleanExpressionMapper) ToProperties(booleanExpression *BooleanExpression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_And := extensionBooleanExpression.And
+	var_And := booleanExpression.And
 
 	if var_And != nil {
 		var var_And_mapped *structpb.Value
@@ -385,7 +385,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 			var_5x := value
 			var var_5x_mapped *structpb.Value
 
-			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(&var_5x)})
+			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: BooleanExpressionMapperInstance.ToProperties(&var_5x)})
 
 			var_And_l = append(var_And_l, var_5x_mapped)
 		}
@@ -393,7 +393,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["and"] = var_And_mapped
 	}
 
-	var_Or := extensionBooleanExpression.Or
+	var_Or := booleanExpression.Or
 
 	if var_Or != nil {
 		var var_Or_mapped *structpb.Value
@@ -404,7 +404,7 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 			var_5x := value
 			var var_5x_mapped *structpb.Value
 
-			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(&var_5x)})
+			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: BooleanExpressionMapperInstance.ToProperties(&var_5x)})
 
 			var_Or_l = append(var_Or_l, var_5x_mapped)
 		}
@@ -412,99 +412,99 @@ func (m *ExtensionBooleanExpressionMapper) ToProperties(extensionBooleanExpressi
 		properties["or"] = var_Or_mapped
 	}
 
-	var_Not := extensionBooleanExpression.Not
+	var_Not := booleanExpression.Not
 
 	if var_Not != nil {
 		var var_Not_mapped *structpb.Value
 
-		var_Not_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(var_Not)})
+		var_Not_mapped = structpb.NewStructValue(&structpb.Struct{Fields: BooleanExpressionMapperInstance.ToProperties(var_Not)})
 		properties["not"] = var_Not_mapped
 	}
 
-	var_Equal := extensionBooleanExpression.Equal
+	var_Equal := booleanExpression.Equal
 
 	if var_Equal != nil {
 		var var_Equal_mapped *structpb.Value
 
-		var_Equal_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_Equal)})
+		var_Equal_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_Equal)})
 		properties["equal"] = var_Equal_mapped
 	}
 
-	var_LessThan := extensionBooleanExpression.LessThan
+	var_LessThan := booleanExpression.LessThan
 
 	if var_LessThan != nil {
 		var var_LessThan_mapped *structpb.Value
 
-		var_LessThan_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_LessThan)})
+		var_LessThan_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_LessThan)})
 		properties["lessThan"] = var_LessThan_mapped
 	}
 
-	var_GreaterThan := extensionBooleanExpression.GreaterThan
+	var_GreaterThan := booleanExpression.GreaterThan
 
 	if var_GreaterThan != nil {
 		var var_GreaterThan_mapped *structpb.Value
 
-		var_GreaterThan_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_GreaterThan)})
+		var_GreaterThan_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_GreaterThan)})
 		properties["greaterThan"] = var_GreaterThan_mapped
 	}
 
-	var_LessThanOrEqual := extensionBooleanExpression.LessThanOrEqual
+	var_LessThanOrEqual := booleanExpression.LessThanOrEqual
 
 	if var_LessThanOrEqual != nil {
 		var var_LessThanOrEqual_mapped *structpb.Value
 
-		var_LessThanOrEqual_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_LessThanOrEqual)})
+		var_LessThanOrEqual_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_LessThanOrEqual)})
 		properties["lessThanOrEqual"] = var_LessThanOrEqual_mapped
 	}
 
-	var_GreaterThanOrEqual := extensionBooleanExpression.GreaterThanOrEqual
+	var_GreaterThanOrEqual := booleanExpression.GreaterThanOrEqual
 
 	if var_GreaterThanOrEqual != nil {
 		var var_GreaterThanOrEqual_mapped *structpb.Value
 
-		var_GreaterThanOrEqual_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_GreaterThanOrEqual)})
+		var_GreaterThanOrEqual_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_GreaterThanOrEqual)})
 		properties["greaterThanOrEqual"] = var_GreaterThanOrEqual_mapped
 	}
 
-	var_In := extensionBooleanExpression.In
+	var_In := booleanExpression.In
 
 	if var_In != nil {
 		var var_In_mapped *structpb.Value
 
-		var_In_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionPairExpressionMapperInstance.ToProperties(var_In)})
+		var_In_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_In)})
 		properties["in"] = var_In_mapped
 	}
 
-	var_IsNull := extensionBooleanExpression.IsNull
+	var_IsNull := booleanExpression.IsNull
 
 	if var_IsNull != nil {
 		var var_IsNull_mapped *structpb.Value
 
-		var_IsNull_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExpressionMapperInstance.ToProperties(var_IsNull)})
+		var_IsNull_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExpressionMapperInstance.ToProperties(var_IsNull)})
 		properties["isNull"] = var_IsNull_mapped
 	}
 
-	var_RegexMatch := extensionBooleanExpression.RegexMatch
+	var_RegexMatch := booleanExpression.RegexMatch
 
 	if var_RegexMatch != nil {
 		var var_RegexMatch_mapped *structpb.Value
 
-		var_RegexMatch_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionRegexMatchExpressionMapperInstance.ToProperties(var_RegexMatch)})
+		var_RegexMatch_mapped = structpb.NewStructValue(&structpb.Struct{Fields: RegexMatchExpressionMapperInstance.ToProperties(var_RegexMatch)})
 		properties["regexMatch"] = var_RegexMatch_mapped
 	}
 	return properties
 }
 
-func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionBooleanExpression {
+func (m *BooleanExpressionMapper) FromProperties(properties map[string]*structpb.Value) *BooleanExpression {
 	var s = m.New()
 	if properties["and"] != nil && properties["and"].AsInterface() != nil {
 
 		var_And := properties["and"]
-		var_And_mapped := []ExtensionBooleanExpression{}
+		var_And_mapped := []BooleanExpression{}
 		for _, v := range var_And.GetListValue().Values {
 
 			var_4x := v
-			var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
+			var mappedValue = BooleanExpressionMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
 
 			var_4x_mapped := *mappedValue
 
@@ -516,11 +516,11 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["or"] != nil && properties["or"].AsInterface() != nil {
 
 		var_Or := properties["or"]
-		var_Or_mapped := []ExtensionBooleanExpression{}
+		var_Or_mapped := []BooleanExpression{}
 		for _, v := range var_Or.GetListValue().Values {
 
 			var_4x := v
-			var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
+			var mappedValue = BooleanExpressionMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
 
 			var_4x_mapped := *mappedValue
 
@@ -532,7 +532,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["not"] != nil && properties["not"].AsInterface() != nil {
 
 		var_Not := properties["not"]
-		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_Not.GetStructValue().Fields)
+		var mappedValue = BooleanExpressionMapperInstance.FromProperties(var_Not.GetStructValue().Fields)
 
 		var_Not_mapped := mappedValue
 
@@ -541,7 +541,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["equal"] != nil && properties["equal"].AsInterface() != nil {
 
 		var_Equal := properties["equal"]
-		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_Equal.GetStructValue().Fields)
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_Equal.GetStructValue().Fields)
 
 		var_Equal_mapped := mappedValue
 
@@ -550,7 +550,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["lessThan"] != nil && properties["lessThan"].AsInterface() != nil {
 
 		var_LessThan := properties["lessThan"]
-		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_LessThan.GetStructValue().Fields)
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_LessThan.GetStructValue().Fields)
 
 		var_LessThan_mapped := mappedValue
 
@@ -559,7 +559,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["greaterThan"] != nil && properties["greaterThan"].AsInterface() != nil {
 
 		var_GreaterThan := properties["greaterThan"]
-		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_GreaterThan.GetStructValue().Fields)
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_GreaterThan.GetStructValue().Fields)
 
 		var_GreaterThan_mapped := mappedValue
 
@@ -568,7 +568,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["lessThanOrEqual"] != nil && properties["lessThanOrEqual"].AsInterface() != nil {
 
 		var_LessThanOrEqual := properties["lessThanOrEqual"]
-		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_LessThanOrEqual.GetStructValue().Fields)
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_LessThanOrEqual.GetStructValue().Fields)
 
 		var_LessThanOrEqual_mapped := mappedValue
 
@@ -577,7 +577,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["greaterThanOrEqual"] != nil && properties["greaterThanOrEqual"].AsInterface() != nil {
 
 		var_GreaterThanOrEqual := properties["greaterThanOrEqual"]
-		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_GreaterThanOrEqual.GetStructValue().Fields)
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_GreaterThanOrEqual.GetStructValue().Fields)
 
 		var_GreaterThanOrEqual_mapped := mappedValue
 
@@ -586,7 +586,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["in"] != nil && properties["in"].AsInterface() != nil {
 
 		var_In := properties["in"]
-		var mappedValue = ExtensionPairExpressionMapperInstance.FromProperties(var_In.GetStructValue().Fields)
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_In.GetStructValue().Fields)
 
 		var_In_mapped := mappedValue
 
@@ -595,7 +595,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["isNull"] != nil && properties["isNull"].AsInterface() != nil {
 
 		var_IsNull := properties["isNull"]
-		var mappedValue = ExtensionExpressionMapperInstance.FromProperties(var_IsNull.GetStructValue().Fields)
+		var mappedValue = ExpressionMapperInstance.FromProperties(var_IsNull.GetStructValue().Fields)
 
 		var_IsNull_mapped := mappedValue
 
@@ -604,7 +604,7 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	if properties["regexMatch"] != nil && properties["regexMatch"].AsInterface() != nil {
 
 		var_RegexMatch := properties["regexMatch"]
-		var mappedValue = ExtensionRegexMatchExpressionMapperInstance.FromProperties(var_RegexMatch.GetStructValue().Fields)
+		var mappedValue = RegexMatchExpressionMapperInstance.FromProperties(var_RegexMatch.GetStructValue().Fields)
 
 		var_RegexMatch_mapped := mappedValue
 
@@ -613,55 +613,55 @@ func (m *ExtensionBooleanExpressionMapper) FromProperties(properties map[string]
 	return s
 }
 
-type ExtensionPairExpressionMapper struct {
+type PairExpressionMapper struct {
 }
 
-func NewExtensionPairExpressionMapper() *ExtensionPairExpressionMapper {
-	return &ExtensionPairExpressionMapper{}
+func NewPairExpressionMapper() *PairExpressionMapper {
+	return &PairExpressionMapper{}
 }
 
-var ExtensionPairExpressionMapperInstance = NewExtensionPairExpressionMapper()
+var PairExpressionMapperInstance = NewPairExpressionMapper()
 
-func (m *ExtensionPairExpressionMapper) New() *ExtensionPairExpression {
-	return &ExtensionPairExpression{}
+func (m *PairExpressionMapper) New() *PairExpression {
+	return &PairExpression{}
 }
 
-func (m *ExtensionPairExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
+func (m *PairExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
 		Namespace: "system",
 		Name:      "Extension",
 	}
 }
 
-func (m *ExtensionPairExpressionMapper) ToProperties(extensionPairExpression *ExtensionPairExpression) map[string]*structpb.Value {
+func (m *PairExpressionMapper) ToProperties(pairExpression *PairExpression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Left := extensionPairExpression.Left
+	var_Left := pairExpression.Left
 
 	if var_Left != nil {
 		var var_Left_mapped *structpb.Value
 
-		var_Left_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExpressionMapperInstance.ToProperties(var_Left)})
+		var_Left_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExpressionMapperInstance.ToProperties(var_Left)})
 		properties["left"] = var_Left_mapped
 	}
 
-	var_Right := extensionPairExpression.Right
+	var_Right := pairExpression.Right
 
 	if var_Right != nil {
 		var var_Right_mapped *structpb.Value
 
-		var_Right_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExpressionMapperInstance.ToProperties(var_Right)})
+		var_Right_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExpressionMapperInstance.ToProperties(var_Right)})
 		properties["right"] = var_Right_mapped
 	}
 	return properties
 }
 
-func (m *ExtensionPairExpressionMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionPairExpression {
+func (m *PairExpressionMapper) FromProperties(properties map[string]*structpb.Value) *PairExpression {
 	var s = m.New()
 	if properties["left"] != nil && properties["left"].AsInterface() != nil {
 
 		var_Left := properties["left"]
-		var mappedValue = ExtensionExpressionMapperInstance.FromProperties(var_Left.GetStructValue().Fields)
+		var mappedValue = ExpressionMapperInstance.FromProperties(var_Left.GetStructValue().Fields)
 
 		var_Left_mapped := mappedValue
 
@@ -670,7 +670,7 @@ func (m *ExtensionPairExpressionMapper) FromProperties(properties map[string]*st
 	if properties["right"] != nil && properties["right"].AsInterface() != nil {
 
 		var_Right := properties["right"]
-		var mappedValue = ExtensionExpressionMapperInstance.FromProperties(var_Right.GetStructValue().Fields)
+		var mappedValue = ExpressionMapperInstance.FromProperties(var_Right.GetStructValue().Fields)
 
 		var_Right_mapped := mappedValue
 
@@ -679,30 +679,30 @@ func (m *ExtensionPairExpressionMapper) FromProperties(properties map[string]*st
 	return s
 }
 
-type ExtensionRegexMatchExpressionMapper struct {
+type RegexMatchExpressionMapper struct {
 }
 
-func NewExtensionRegexMatchExpressionMapper() *ExtensionRegexMatchExpressionMapper {
-	return &ExtensionRegexMatchExpressionMapper{}
+func NewRegexMatchExpressionMapper() *RegexMatchExpressionMapper {
+	return &RegexMatchExpressionMapper{}
 }
 
-var ExtensionRegexMatchExpressionMapperInstance = NewExtensionRegexMatchExpressionMapper()
+var RegexMatchExpressionMapperInstance = NewRegexMatchExpressionMapper()
 
-func (m *ExtensionRegexMatchExpressionMapper) New() *ExtensionRegexMatchExpression {
-	return &ExtensionRegexMatchExpression{}
+func (m *RegexMatchExpressionMapper) New() *RegexMatchExpression {
+	return &RegexMatchExpression{}
 }
 
-func (m *ExtensionRegexMatchExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
+func (m *RegexMatchExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
 		Namespace: "system",
 		Name:      "Extension",
 	}
 }
 
-func (m *ExtensionRegexMatchExpressionMapper) ToProperties(extensionRegexMatchExpression *ExtensionRegexMatchExpression) map[string]*structpb.Value {
+func (m *RegexMatchExpressionMapper) ToProperties(regexMatchExpression *RegexMatchExpression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Pattern := extensionRegexMatchExpression.Pattern
+	var_Pattern := regexMatchExpression.Pattern
 
 	if var_Pattern != nil {
 		var var_Pattern_mapped *structpb.Value
@@ -715,18 +715,18 @@ func (m *ExtensionRegexMatchExpressionMapper) ToProperties(extensionRegexMatchEx
 		properties["pattern"] = var_Pattern_mapped
 	}
 
-	var_Expression := extensionRegexMatchExpression.Expression
+	var_Expression := regexMatchExpression.Expression
 
 	if var_Expression != nil {
 		var var_Expression_mapped *structpb.Value
 
-		var_Expression_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionExpressionMapperInstance.ToProperties(var_Expression)})
+		var_Expression_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExpressionMapperInstance.ToProperties(var_Expression)})
 		properties["expression"] = var_Expression_mapped
 	}
 	return properties
 }
 
-func (m *ExtensionRegexMatchExpressionMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionRegexMatchExpression {
+func (m *RegexMatchExpressionMapper) FromProperties(properties map[string]*structpb.Value) *RegexMatchExpression {
 	var s = m.New()
 	if properties["pattern"] != nil && properties["pattern"].AsInterface() != nil {
 
@@ -745,7 +745,7 @@ func (m *ExtensionRegexMatchExpressionMapper) FromProperties(properties map[stri
 	if properties["expression"] != nil && properties["expression"].AsInterface() != nil {
 
 		var_Expression := properties["expression"]
-		var mappedValue = ExtensionExpressionMapperInstance.FromProperties(var_Expression.GetStructValue().Fields)
+		var mappedValue = ExpressionMapperInstance.FromProperties(var_Expression.GetStructValue().Fields)
 
 		var_Expression_mapped := mappedValue
 
@@ -754,30 +754,30 @@ func (m *ExtensionRegexMatchExpressionMapper) FromProperties(properties map[stri
 	return s
 }
 
-type ExtensionExpressionMapper struct {
+type ExpressionMapper struct {
 }
 
-func NewExtensionExpressionMapper() *ExtensionExpressionMapper {
-	return &ExtensionExpressionMapper{}
+func NewExpressionMapper() *ExpressionMapper {
+	return &ExpressionMapper{}
 }
 
-var ExtensionExpressionMapperInstance = NewExtensionExpressionMapper()
+var ExpressionMapperInstance = NewExpressionMapper()
 
-func (m *ExtensionExpressionMapper) New() *ExtensionExpression {
-	return &ExtensionExpression{}
+func (m *ExpressionMapper) New() *Expression {
+	return &Expression{}
 }
 
-func (m *ExtensionExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
+func (m *ExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
 		Namespace: "system",
 		Name:      "Extension",
 	}
 }
 
-func (m *ExtensionExpressionMapper) ToProperties(extensionExpression *ExtensionExpression) map[string]*structpb.Value {
+func (m *ExpressionMapper) ToProperties(expression *Expression) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Property := extensionExpression.Property
+	var_Property := expression.Property
 
 	if var_Property != nil {
 		var var_Property_mapped *structpb.Value
@@ -790,7 +790,7 @@ func (m *ExtensionExpressionMapper) ToProperties(extensionExpression *ExtensionE
 		properties["property"] = var_Property_mapped
 	}
 
-	var_Value := extensionExpression.Value
+	var_Value := expression.Value
 
 	if var_Value != nil {
 		var var_Value_mapped *structpb.Value
@@ -805,7 +805,7 @@ func (m *ExtensionExpressionMapper) ToProperties(extensionExpression *ExtensionE
 	return properties
 }
 
-func (m *ExtensionExpressionMapper) FromProperties(properties map[string]*structpb.Value) *ExtensionExpression {
+func (m *ExpressionMapper) FromProperties(properties map[string]*structpb.Value) *Expression {
 	var s = m.New()
 	if properties["property"] != nil && properties["property"].AsInterface() != nil {
 
@@ -1315,7 +1315,7 @@ func (m *EventSelectorMapper) ToProperties(eventSelector *EventSelector) map[str
 	if var_RecordSelector != nil {
 		var var_RecordSelector_mapped *structpb.Value
 
-		var_RecordSelector_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(var_RecordSelector)})
+		var_RecordSelector_mapped = structpb.NewStructValue(&structpb.Struct{Fields: BooleanExpressionMapperInstance.ToProperties(var_RecordSelector)})
 		properties["recordSelector"] = var_RecordSelector_mapped
 	}
 
@@ -1433,7 +1433,7 @@ func (m *EventSelectorMapper) FromProperties(properties map[string]*structpb.Val
 	if properties["recordSelector"] != nil && properties["recordSelector"].AsInterface() != nil {
 
 		var_RecordSelector := properties["recordSelector"]
-		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_RecordSelector.GetStructValue().Fields)
+		var mappedValue = BooleanExpressionMapperInstance.FromProperties(var_RecordSelector.GetStructValue().Fields)
 
 		var_RecordSelector_mapped := mappedValue
 
@@ -1550,7 +1550,7 @@ func (m *RecordSearchParamsMapper) ToProperties(recordSearchParams *RecordSearch
 	if var_Query != nil {
 		var var_Query_mapped *structpb.Value
 
-		var_Query_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExtensionBooleanExpressionMapperInstance.ToProperties(var_Query)})
+		var_Query_mapped = structpb.NewStructValue(&structpb.Struct{Fields: BooleanExpressionMapperInstance.ToProperties(var_Query)})
 		properties["query"] = var_Query_mapped
 	}
 
@@ -1610,7 +1610,7 @@ func (m *RecordSearchParamsMapper) FromProperties(properties map[string]*structp
 	if properties["query"] != nil && properties["query"].AsInterface() != nil {
 
 		var_Query := properties["query"]
-		var mappedValue = ExtensionBooleanExpressionMapperInstance.FromProperties(var_Query.GetStructValue().Fields)
+		var mappedValue = BooleanExpressionMapperInstance.FromProperties(var_Query.GetStructValue().Fields)
 
 		var_Query_mapped := mappedValue
 

@@ -2,11 +2,15 @@ package sub_types
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 )
 
 var PairExpression = &model.ResourceSubType{
 	Name: "PairExpression",
+	Annotations: map[string]string{
+		annotations.CommonType: annotations.Enabled,
+	},
 	Properties: []*model.ResourceProperty{
 		{
 			Name:    "left",
@@ -23,6 +27,9 @@ var PairExpression = &model.ResourceSubType{
 
 var RegexMatchExpression = &model.ResourceSubType{
 	Name: "RegexMatchExpression",
+	Annotations: map[string]string{
+		annotations.CommonType: annotations.Enabled,
+	},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "pattern",
@@ -38,6 +45,9 @@ var RegexMatchExpression = &model.ResourceSubType{
 
 var Expression = &model.ResourceSubType{
 	Name: "Expression",
+	Annotations: map[string]string{
+		annotations.CommonType: annotations.Enabled,
+	},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "property",
@@ -52,6 +62,9 @@ var Expression = &model.ResourceSubType{
 
 var BooleanExpression = &model.ResourceSubType{
 	Name: "BooleanExpression",
+	Annotations: map[string]string{
+		annotations.CommonType: annotations.Enabled,
+	},
 	Properties: []*model.ResourceProperty{
 		{
 			Name: "and",

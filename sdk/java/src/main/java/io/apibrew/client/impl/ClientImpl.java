@@ -263,6 +263,7 @@ public class ClientImpl implements Client {
 
         StringBuilder finalUrl = new StringBuilder(Urls.recordUrl(url, entityInfo.getRestPath()));
 
+        // fixme build url properly
         finalUrl.append("?");
 
         if (params.getLimit() > 0) {
@@ -277,6 +278,10 @@ public class ClientImpl implements Client {
             for (Map.Entry<String, String> entry : params.getFilters().entrySet()) {
                 finalUrl.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
             }
+        }
+
+        if (params.getResolveReferences() != null && !params.getResolveReferences().isEmpty()) {
+            finalUrl.append("resolve-references=").append(String.join(",", params.getResolveReferences())).append("&");
         }
 
         HttpResponse<Container<T>> result = Unirest.get(finalUrl.toString()).headers(headers()).asObject(resp -> {

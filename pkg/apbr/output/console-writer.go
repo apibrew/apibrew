@@ -151,13 +151,18 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	c.configureTable(table)
 
 	for _, item := range resources {
+		var sourceConfig = item.SourceConfig
+
+		if sourceConfig == nil {
+			sourceConfig = &model.ResourceSourceConfig{}
+		}
 		data = append(data, []string{
 			item.Id,
 			item.Name,
 			item.Namespace,
-			item.SourceConfig.DataSource,
-			item.SourceConfig.Catalog,
-			item.SourceConfig.Entity,
+			sourceConfig.DataSource,
+			sourceConfig.Catalog,
+			sourceConfig.Entity,
 			strconv.Itoa(int(item.Version)),
 		})
 	}

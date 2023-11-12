@@ -481,7 +481,17 @@ func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model
 				if properties["id"] != nil {
 					right = properties["id"].GetStringValue()
 				} else {
-					referencedResource := r.backend.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+property.Reference.Resource]
+					referenceNamespace := property.Reference.Namespace
+
+					if referenceNamespace == "" {
+						referenceNamespace = resource.Namespace
+					}
+
+					referencedResource := r.backend.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+property.Reference.Resource]
+
+					if referencedResource == nil {
+						return "", "", errors.LogicalError.WithDetails("Referenced resource not found: " + referenceNamespace + "/" + property.Reference.Resource)
+					}
 
 					innerSql, err := r.backend.resolveReference(properties, r.builder.Var, referencedResource)
 

@@ -22,6 +22,7 @@ type AuthenticationService interface {
 
 type AuthorizationService interface {
 	CheckRecordAccess(ctx context.Context, params CheckRecordAccessParams) errors.ServiceError
+	CheckRecordAccessWithRecordSelector(ctx context.Context, params CheckRecordAccessParams) (*resource_model.BooleanExpression, errors.ServiceError)
 	CheckIsExtensionController(ctx context.Context) errors.ServiceError
 }
 

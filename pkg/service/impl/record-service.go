@@ -10,6 +10,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -118,10 +119,12 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		return nil, 0, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
 	}
 
-	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+	exp, err := r.authorizationService.CheckRecordAccessWithRecordSelector(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Operation: resource_model.PermissionOperation_READ,
-	}); err != nil {
+	})
+
+	if err != nil {
 		return nil, 0, err
 	}
 
@@ -132,8 +135,6 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		{Name: "namespace", Value: params.Namespace},
 	})
 	// end metrics
-
-	var err errors.ServiceError
 
 	if params.UseHistory {
 		if !annotations.IsEnabled(resource, annotations.KeepHistory) {
@@ -156,6 +157,21 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		}
 	}
 
+	if exp != nil {
+		expM := extramappings.BooleanExpressionToProto(*exp)
+		if params.Query == nil {
+			params.Query = expM
+		} else {
+			params.Query = &model.BooleanExpression{
+				Expression: &model.BooleanExpression_And{
+					And: &model.CompoundBooleanExpression{
+						Expressions: []*model.BooleanExpression{expM, params.Query},
+					},
+				},
+			}
+		}
+	}
+
 	records, total, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
 		Query:  params.Query,
 		Limit:  params.Limit,
@@ -169,15 +185,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	}
 
 	// resolving references
-	if err := r.ResolveReferences(ctx, resource, records, params.ResolveReferences); err != nil {
-		return nil, 0, err
-	}
-
-	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-		Resource:  resource,
-		Records:   &records,
-		Operation: resource_model.PermissionOperation_READ,
-	}); err != nil {
+	if err = r.ResolveReferences(ctx, resource, records, params.ResolveReferences); err != nil {
 		return nil, 0, err
 	}
 
@@ -205,6 +213,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 
 	var txCtx = ctx
 
+	// only check before operation
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Records:   &params.Records,
@@ -577,17 +586,12 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		return nil, errors.LogicalError.WithDetails("resource and related resources cannot be modified from records API")
 	}
 
-	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-		Resource: resource,
-		Records: &[]*model.Record{
-			{
-				Properties: map[string]*structpb.Value{
-					"id": structpb.NewStringValue(id),
-				},
-			},
-		},
+	exp, err := r.authorizationService.CheckRecordAccessWithRecordSelector(ctx, service.CheckRecordAccessParams{
+		Resource:  resource,
 		Operation: resource_model.PermissionOperation_READ,
-	}); err != nil {
+	})
+
+	if err != nil {
 		return nil, err
 	}
 
@@ -599,13 +603,36 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	})
 	// end metrics
 
-	var err errors.ServiceError
+	var query = &model.BooleanExpression{Expression: &model.BooleanExpression_Equal{Equal: &model.PairExpression{
+		Left:  &model.Expression{Expression: &model.Expression_Property{Property: "id"}},
+		Right: &model.Expression{Expression: &model.Expression_Value{Value: structpb.NewStringValue(id)}},
+	}}}
 
-	res, err := r.backendServiceProvider.GetRecord(ctx, resource, id, nil)
+	if exp != nil {
+		expM := extramappings.BooleanExpressionToProto(*exp)
+		query = &model.BooleanExpression{
+			Expression: &model.BooleanExpression_And{
+				And: &model.CompoundBooleanExpression{
+					Expressions: []*model.BooleanExpression{expM, query},
+				},
+			},
+		}
+	}
+
+	records, total, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
+		Query: query,
+		Limit: 1,
+	}, nil)
 
 	if err != nil {
 		return nil, err
 	}
+
+	if total == 0 {
+		return nil, errors.RecordNotFoundError.WithMessage("Record not found with id: " + id)
+	}
+
+	var res = records[0]
 
 	// resolving references
 	if err := r.ResolveReferences(ctx, resource, []*model.Record{res}, resolveReferences); err != nil {
@@ -653,7 +680,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	}
 
 	if total == 0 {
-		return nil, errors.RecordNotFoundError
+		return nil, errors.RecordNotFoundError.WithMessage(fmt.Sprintf("Record not found with %s: %v", propertyName, value))
 	}
 
 	if total > 1 {
@@ -674,19 +701,12 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 		return errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
 	}
 
-	var recordForCheck = util.ArrayMap(params.Ids, func(t string) *model.Record {
-		return &model.Record{
-			Properties: map[string]*structpb.Value{
-				"id": structpb.NewStringValue(t),
-			},
-		}
+	exp, err := r.authorizationService.CheckRecordAccessWithRecordSelector(ctx, service.CheckRecordAccessParams{
+		Resource:  resource,
+		Operation: resource_model.PermissionOperation_DELETE,
 	})
 
-	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-		Resource:  resource,
-		Records:   &recordForCheck,
-		Operation: resource_model.PermissionOperation_DELETE,
-	}); err != nil {
+	if err != nil {
 		return err
 	}
 
@@ -706,7 +726,48 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 		return errors.RecordValidationError.WithMessage("Immutable resource cannot be modified or deleted: " + params.Resource)
 	}
 
-	var err errors.ServiceError
+	////
+	var query = &model.BooleanExpression{Expression: &model.BooleanExpression_In{In: &model.PairExpression{
+		Left: &model.Expression{Expression: &model.Expression_Property{Property: "id"}},
+		Right: &model.Expression{Expression: &model.Expression_Value{Value: structpb.NewListValue(&structpb.ListValue{Values: util.ArrayMap(params.Ids, func(t string) *structpb.Value {
+			return structpb.NewStringValue(t)
+		})})}},
+	}}}
+
+	if exp != nil {
+		expM := extramappings.BooleanExpressionToProto(*exp)
+		query = &model.BooleanExpression{
+			Expression: &model.BooleanExpression_And{
+				And: &model.CompoundBooleanExpression{
+					Expressions: []*model.BooleanExpression{expM, query},
+				},
+			},
+		}
+
+		records, _, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
+			Query: query,
+			Limit: 1,
+		}, nil)
+
+		if err != nil {
+			return err
+		}
+
+		for _, id := range params.Ids {
+			var found = false
+
+			for _, record := range records {
+				var foundId = util.GetRecordId(resource, record)
+				if id == foundId {
+					found = true
+				}
+			}
+
+			if !found {
+				return errors.RecordNotFoundError.WithMessage("Record not found with id: " + id)
+			}
+		}
+	}
 
 	if err = r.backendServiceProvider.DeleteRecords(ctx, resource, params.Ids); err != nil {
 		return err

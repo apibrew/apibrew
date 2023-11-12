@@ -8,6 +8,7 @@ export * from './api-exception'
 export * from './generic-record'
 export * from './list-record-params'
 export * from './boolean-expression-builder'
+export * from './token-body'
 
 
 import './model'

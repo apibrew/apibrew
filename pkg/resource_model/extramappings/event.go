@@ -91,7 +91,7 @@ func EventFromProto(event *model.Event) *resource_model.Event {
 	extensionEvent.Finalizes = &event.Finalizes
 	extensionEvent.Sync = &event.Sync
 	if event.RecordSearchParams != nil {
-		var query *resource_model.ExtensionBooleanExpression
+		var query *resource_model.BooleanExpression
 
 		if event.RecordSearchParams.Query != nil {
 			query = util.Pointer(BooleanExpressionFromProto(event.RecordSearchParams.Query))

@@ -21,7 +21,7 @@ export class RepositoryImpl<T extends Entity> implements Repository<T> {
         return this.client.getRecord<T>(this.entityInfo, {id, resolveReferences});
     }
 
-    public update(record: T): Promise<T> {
+    public update(record: Partial<T> & Entity): Promise<T> {
         return this.client.updateRecord<T>(this.entityInfo, record);
     }
 
@@ -29,12 +29,12 @@ export class RepositoryImpl<T extends Entity> implements Repository<T> {
         return this.client.deleteRecord<T>(this.entityInfo, id);
     }
 
-    public apply(record: T): Promise<T> {
+    public apply(record: Partial<T>): Promise<T> {
         return this.client.applyRecord<T>(this.entityInfo, record);
     }
 
-    public load(record: T): Promise<T> {
-        return this.client.loadRecord<T>(this.entityInfo, record);
+    public load(record: Partial<T>, resolveReferences?: string[]): Promise<T> {
+        return this.client.loadRecord<T>(this.entityInfo, record, resolveReferences);
     }
 
     public list(params: ListRecordParams = {}): Promise<Container<T>> {

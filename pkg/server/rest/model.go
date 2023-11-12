@@ -98,12 +98,12 @@ type RecordList struct {
 }
 
 type SearchRecordRequest struct {
-	Query             *resource_model.ExtensionBooleanExpression `json:"query,omitempty"`
-	Limit             uint32                                     `json:"limit,omitempty"`
-	Offset            uint64                                     `json:"offset,omitempty"`
-	UseHistory        bool                                       `json:"useHistory,omitempty"`
-	ResolveReferences []string                                   `json:"resolveReferences,omitempty"`
-	Annotations       map[string]string                          `json:"annotations,omitempty"`
+	Query             *resource_model.BooleanExpression `json:"query,omitempty"`
+	Limit             uint32                            `json:"limit,omitempty"`
+	Offset            uint64                            `json:"offset,omitempty"`
+	UseHistory        bool                              `json:"useHistory,omitempty"`
+	ResolveReferences []string                          `json:"resolveReferences,omitempty"`
+	Annotations       map[string]string                 `json:"annotations,omitempty"`
 }
 
 type HealthResponse struct {

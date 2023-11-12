@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
@@ -17,58 +18,67 @@ import (
 )
 
 type authorizationService struct {
+	recordInlineSelector *helper.RecordInlineSelector
 }
 
 func (a *authorizationService) CheckIsExtensionController(ctx context.Context) errors.ServiceError {
-	if err := a.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+	exp, err := a.CheckRecordAccessWithRecordSelector(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ExtensionResource,
 		Operation: resource_model.PermissionOperation_FULL,
-	}); err != nil {
+	})
+
+	if err != nil {
 		return err
+	}
+
+	if exp != nil {
+		return errors.AccessDeniedError.WithDetails("User must have unconditional access to extension resource")
 	}
 
 	return nil
 }
 
 func (a *authorizationService) CheckRecordAccess(ctx context.Context, params service.CheckRecordAccessParams) errors.ServiceError {
+	_, err := a.CheckRecordAccessWithRecordSelector(ctx, params)
+
+	return err
+}
+
+func (a *authorizationService) CheckRecordAccessWithRecordSelector(ctx context.Context, params service.CheckRecordAccessParams) (*resource_model.BooleanExpression, errors.ServiceError) {
 	if util.IsSystemContext(ctx) {
-		return nil
+		return nil, nil
+	}
+
+	if annotations.IsEnabled(params.Resource, annotations.AllowPublicWriteAccess) || params.Operation == resource_model.PermissionOperation_READ && annotations.IsEnabled(params.Resource, annotations.AllowPublicAccess) {
+		return nil, nil
 	}
 
 	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
 
 	if userDetails == nil {
-		if !annotations.IsEnabled(params.Resource, annotations.AllowPublicAccess) {
-			return errors.AccessDeniedError.WithDetails("Public access is denied")
-		} else {
-			return nil
-		}
+		return nil, errors.AccessDeniedError.WithDetails("Public access is denied")
 	}
 
 	var permissions []*resource_model.Permission
 
-	//for _, permission := range params.Resource.Permissions {
-	//	permission.Resource = params.Resource.Name
-	//	permission.Namespace = params.Resource.Namespace
-	//}
-
-	//permissions = append(permissions, params.Resource.Permissions...)
 	permissions = append(permissions, userDetails.Permissions...)
 
-	errorFields := a.evaluateConstraints(ctx, params, permissions, userDetails)
+	exp, errorFields := a.evaluateConstraints(ctx, params, permissions, userDetails)
 
 	if len(errorFields) == 0 {
-		return nil
+		return exp, nil
 	} else {
-		return errors.AccessDeniedError.WithDetails("User don't have permission to access this resource").WithErrorFields(errorFields)
+		return nil, errors.AccessDeniedError.WithDetails("User don't have permission to access this resource").WithErrorFields(errorFields)
 	}
 }
 
-func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, permissions []*resource_model.Permission, userDetails *jwt_model.UserDetails) []*model.ErrorField {
+func (a *authorizationService) evaluateConstraints(ctx context.Context, params service.CheckRecordAccessParams, permissions []*resource_model.Permission, userDetails *jwt_model.UserDetails) (*resource_model.BooleanExpression, []*model.ErrorField) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	now := time.Now()
 	var errorFields []*model.ErrorField
+
+	var exp *resource_model.BooleanExpression
 
 	/*
 	  Default policy for checking permissions are like that
@@ -86,16 +96,22 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 
 	for _, permission := range permissions {
 		logger.Tracef("Evaluating permission: %v", permission)
-		hasAllowFlagLocal, errorFieldsLocal := a.evaluateConstraint(ctx, params, permission, now, userDetails, &remainingPropertyCheck)
+		expLocal, hasAllowFlagLocal := a.evaluateConstraint(ctx, params, permission, now, userDetails)
 
-		logger.Tracef("Constraint evaluation result: %v, %v", hasAllowFlagLocal, errorFieldsLocal)
+		logger.Tracef("Constraint evaluation result: %v", hasAllowFlagLocal)
 
 		if hasAllowFlagLocal {
 			hasAllowFlag = true
 		}
 
-		if errorFieldsLocal != nil {
-			errorFields = append(errorFields, errorFieldsLocal...)
+		if expLocal != nil {
+			if exp == nil {
+				exp = expLocal
+			} else {
+				exp = &resource_model.BooleanExpression{And: []resource_model.BooleanExpression{
+					*exp, *expLocal,
+				}}
+			}
 		}
 	}
 
@@ -114,14 +130,14 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 	if !hasAllowFlag {
 		errorFields = append(errorFields, &model.ErrorField{
 			Property: "resource",
-			Message:  "No permissions matched",
+			Message:  fmt.Sprintf("No permissions matched while accessing resource: %s", params.Resource.Name),
 		})
 	}
 
-	return errorFields
+	return exp, errorFields
 }
 
-func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, permission *resource_model.Permission, now time.Time, userDetails *jwt_model.UserDetails, remainingPropertyCheck *map[string]bool) (bool, []*model.ErrorField) {
+func (a *authorizationService) evaluateConstraint(ctx context.Context, params service.CheckRecordAccessParams, permission *resource_model.Permission, now time.Time, userDetails *jwt_model.UserDetails) (*resource_model.BooleanExpression, bool) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	// check resource permission matches
@@ -129,118 +145,52 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 	if permission.Resource != nil && *permission.Resource != params.Resource.Name {
 		// skipping as not related to this resource
 		logger.Tracef("Skipping permission as not related to this resource: %v => %v", permission.Resource, params.Resource.Name)
-		return false, nil
+		return nil, false
 	}
 
 	if permission.Namespace != nil && *permission.Namespace != params.Resource.Namespace {
 		// skipping as not related to this namespace
 		logger.Tracef("Skipping permission as not related to this namespace: %v => %v", permission.Namespace, params.Resource.Namespace)
-		return false, nil
-	}
-
-	if permission.GetRecordIds() != nil {
-		var found = false
-
-	mainLoop:
-		for _, id := range permission.GetRecordIds() {
-			id = a.processValue(id, userDetails)
-
-			if params.Records == nil {
-				logger.Tracef("Skipping permission as records not found: %v => %v", permission.RecordIds, id)
-				return false, nil
-			}
-
-			for _, record := range *params.Records {
-				if util.GetRecordId(params.Resource, record) == id {
-					found = true
-					break mainLoop
-				}
-			}
-		}
-
-		if !found {
-			logger.Tracef("Skipping permission as record id not matched: %v", permission)
-			return false, nil
-		}
+		return nil, false
 	}
 
 	if permission.GetOperation() != resource_model.PermissionOperation_FULL && permission.Operation != params.Operation {
 		logger.Tracef("Skipping permission as operation not matched: %v", permission)
-		return false, nil
+		return nil, false
 	}
 
 	if permission.Before != nil && permission.Before.After(now) {
 		logger.Tracef("Skipping permission as before time not matched: %v", permission)
-		return false, nil
+		return nil, false
 	}
 
 	if permission.After != nil && permission.Before.After(now) {
 		logger.Tracef("Skipping permission as after time not matched: %v", permission)
-		return false, nil
+		return nil, false
 	}
 
 	if permission.User != nil && permission.User.Id.String() != userDetails.UserId {
 		logger.Tracef("Skipping permission as username not matched: %v", permission)
-		return false, nil
+		return nil, false
 	}
 
-	if permission.Property != nil {
-		if permission.PropertyMode != nil && *permission.PropertyMode == resource_model.PermissionPropertyMode_PROPERTYMATCHONLY {
-			if permission.PropertyValue != nil {
-				for _, record := range *params.Records {
-					for key := range record.Properties {
-						if key == "id" {
-							continue
-						}
-						if key != *permission.Property {
-							continue
-						}
+	if permission.RecordSelector != nil && params.Records != nil {
+		var checkedRecords, err = a.recordInlineSelector.SelectRecords(ctx, params.Resource, params.Records, permission.RecordSelector)
 
-						(*remainingPropertyCheck)[key] = false
-
-						if permission.PropertyValue != nil {
-							var value = *permission.PropertyValue
-
-							value = a.processValue(value, userDetails)
-
-							strActualVal := fmt.Sprintf("%v", record.Properties[*permission.Property].AsInterface())
-
-							if strActualVal != value {
-								logger.Tracef("Skipping permission as property value not matched: %v", permission)
-								return false, nil
-							}
-						}
-					}
-				}
-			}
-		} else {
-			var value = *permission.PropertyValue
-
-			value = a.processValue(value, userDetails)
-
-			if params.Records != nil {
-				for _, record := range *params.Records {
-					if record.Properties[*permission.Property] == nil {
-						logger.Tracef("Skipping permission as property not found: %v", permission)
-						return false, nil
-					}
-
-					strActualVal := fmt.Sprintf("%v", record.Properties[*permission.Property].AsInterface())
-
-					if strActualVal != value {
-						return false, []*model.ErrorField{
-							{
-								Property: *permission.Property,
-								Message:  fmt.Sprintf("Property '%s' is not allowed", *permission.Property),
-							},
-						}
-					}
-				}
-			}
+		if err != nil {
+			logger.Errorf("Error while evaluating record selector: %v", err)
+			return nil, false
 		}
+
+		if len(checkedRecords) == 0 {
+			logger.Tracef("Skipping permission as record selector not matched: %v", permission)
+			return nil, false
+		}
+
+		*params.Records = checkedRecords
 	}
 
-	return true, nil
+	return permission.RecordSelector, true
 }
 
 func (a *authorizationService) processValue(value string, userDetails *jwt_model.UserDetails) string {
@@ -256,5 +206,7 @@ func (a *authorizationService) processValue(value string, userDetails *jwt_model
 }
 
 func NewAuthorizationService() service.AuthorizationService {
-	return &authorizationService{}
+	return &authorizationService{
+		recordInlineSelector: new(helper.RecordInlineSelector),
+	}
 }

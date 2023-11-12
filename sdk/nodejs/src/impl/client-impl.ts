@@ -2,7 +2,7 @@ import {Client} from '../client';
 import {Resource} from "../model/resource";
 import axios, {AxiosResponse} from "axios";
 import {ApiException} from "../api-exception";
-import {BooleanExpression, Code, Event} from "../model/extension";
+import {Code, Event} from "../model/extension";
 import {AuthenticationResponse, TokenTerm} from "../model/token";
 import {Container} from "../container";
 import {Entity} from "../entity";
@@ -10,10 +10,11 @@ import {EntityInfo} from "../entity-info";
 import {BooleanExpressionBuilder} from "../boolean-expression-builder";
 import {Repository} from "../repository";
 import {RepositoryImpl} from "./repository-impl";
-import {ConfigLoader} from "../config-loader";
 import {Server} from "../config";
 import {ListRecordParams} from "../list-record-params";
 import {GetRecordParams} from "../get-record-params";
+import {TokenStorage} from '../token-storage';
+import {TokenBody} from '../token-body';
 
 export class Urls {
     static resourceUrl(url: string) {
@@ -57,11 +58,38 @@ export class Urls {
     }
 }
 
+export class DefaultTokenStorage implements TokenStorage {
+    private data: Map<string, string> = new Map();
+
+    clear(): void {
+        this.data.clear();
+    }
+
+    get(name: string): string | undefined {
+        return this.data.get(name);
+    }
+
+    set(name: string, token: string): void {
+        this.data.set(name, token);
+    }
+
+}
+
+const ACCESS_TOKEN = 'ACCESS_TOKEN';
+const REFRESH_TOKEN = 'REFRESH_TOKEN';
+
 export class ClientImpl implements Client {
-    private token?: string;
     private bypassExtensionsEnabled: boolean = false;
+    private tokenStorage: TokenStorage = new DefaultTokenStorage();
+    private tokenRefreshInterval?: NodeJS.Timer;
 
     constructor(private url: string) {
+    }
+
+    useTokenStorage(tokenStorage: TokenStorage): void {
+        this.tokenStorage = tokenStorage
+
+        this.setupTokenRefresher()
     }
 
     static ensureResponseSuccess(resp: AxiosResponse) {
@@ -150,35 +178,51 @@ export class ClientImpl implements Client {
     }
 
     public async authenticateWithToken(token: string): Promise<void> {
-        this.token = token;
+        this.tokenStorage.set(ACCESS_TOKEN, token);
     }
 
-    public async authenticateWithUsernameAndPassword(username: string, password: string, term: TokenTerm = TokenTerm.VERY_LONG): Promise<void> {
-        const resp = await axios.post<AuthenticationResponse>(Urls.authenticate(this.url), {
+    public async authenticateWithUsernameAndPassword(username: string, password: string): Promise<void> {
+        const refreshTokenResp = await axios.post<AuthenticationResponse>(Urls.authenticate(this.url), {
             username: username,
             password: password,
-            term: term,
+            term: TokenTerm.LONG
         }, {
             validateStatus: (status) => true,
         });
 
-        ClientImpl.ensureResponseSuccess(resp);
+        ClientImpl.ensureResponseSuccess(refreshTokenResp);
 
-        this.token = resp.data.token.content;
+        this.tokenStorage.set(REFRESH_TOKEN, refreshTokenResp.data.token.content)
+
+        const accessTokenResp = await axios.post<AuthenticationResponse>(Urls.authenticate(this.url), {
+            username: username,
+            password: password,
+            term: TokenTerm.LONG
+        }, {
+            validateStatus: (status) => true,
+        });
+
+        ClientImpl.ensureResponseSuccess(accessTokenResp);
+
+        this.tokenStorage.set(ACCESS_TOKEN, accessTokenResp.data.token.content)
+
+        this.setupTokenRefresher();
     }
 
     public newClientAuthenticateWithToken(token: string): Client {
         const client = new ClientImpl(this.url);
+        client.useTokenStorage(this.tokenStorage)
         client.bypassExtensionsEnabled = this.bypassExtensionsEnabled;
         client.authenticateWithToken(token);
 
         return client;
     }
 
-    public async newClientAuthenticateWithUsernameAndPassword(username: string, password: string, term: TokenTerm = TokenTerm.VERY_LONG): Promise<Client> {
+    public async newClientAuthenticateWithUsernameAndPassword(username: string, password: string): Promise<Client> {
         const client = new ClientImpl(this.url);
+        client.useTokenStorage(this.tokenStorage)
         client.bypassExtensionsEnabled = this.bypassExtensionsEnabled;
-        await client.authenticateWithUsernameAndPassword(username, password, term);
+        await client.authenticateWithUsernameAndPassword(username, password);
 
         return client;
     }
@@ -186,7 +230,7 @@ export class ClientImpl implements Client {
     public headers() {
         const headers: { [key: string]: string } = {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + this.token
+            "Authorization": "Bearer " + this.tokenStorage.get(ACCESS_TOKEN),
         }
 
         if (this.bypassExtensionsEnabled) {
@@ -210,7 +254,36 @@ export class ClientImpl implements Client {
         }
 
         if (!params.query) {
-            const resp = await axios.get<Container<T>>(Urls.recordUrl(this.url, entityInfo.restPath), {
+            let url = Urls.recordUrl(this.url, entityInfo.restPath)
+            const queryParams: { [key: string]: string } = {}
+
+            if (params) {
+                if (params.resolveReferences && params.resolveReferences.length > 0) {
+                    queryParams['resolve-references'] = params.resolveReferences.join(',')
+                }
+
+                if (params.useHistory) {
+                    queryParams['use-history'] = 'true'
+                }
+
+                if (params.limit && params.limit > 0) {
+                    queryParams['limit'] = params.limit.toString()
+                }
+
+                if (params.offset && params.offset > 0) {
+                    queryParams['offset'] = params.offset.toString()
+                }
+
+                if (params.filters) {
+                    Object.entries(params.filters).forEach(filter => {
+                        queryParams[filter[0]] = filter[1]
+                    })
+                }
+            }
+
+            url = url + '?' + Object.entries(queryParams).map(entry => entry[0] + '=' + entry[1]).join('&')
+
+            const resp = await axios.get<Container<T>>(url, {
                 headers: this.headers(),
                 validateStatus: (status) => true,
             });
@@ -230,7 +303,7 @@ export class ClientImpl implements Client {
         }
     }
 
-    public async applyRecord<T extends Entity>(entityInfo: EntityInfo, record: T): Promise<T> {
+    public async applyRecord<T extends Entity>(entityInfo: EntityInfo, record: Partial<T>): Promise<T> {
         const resp = await axios.patch<T>(Urls.recordUrl(this.url, entityInfo.restPath), record, {
             headers: this.headers(),
             validateStatus: (status) => true,
@@ -252,7 +325,7 @@ export class ClientImpl implements Client {
         return resp.data;
     }
 
-    public async updateRecord<T extends Entity>(entityInfo: EntityInfo, record: T): Promise<T> {
+    public async updateRecord<T extends Entity>(entityInfo: EntityInfo, record: Partial<T> & Entity): Promise<T> {
         const resp = await axios.put<T>(Urls.recordByIdUrl(this.url, entityInfo.restPath, record.id!), record, {
             headers: this.headers(),
             validateStatus: (status) => true,
@@ -291,17 +364,19 @@ export class ClientImpl implements Client {
         return resp.data;
     }
 
-    public async loadRecord<T extends Entity>(entityInfo: EntityInfo, record: T): Promise<T> {
+    public async loadRecord<T extends Entity>(entityInfo: EntityInfo, record: Partial<T>, resolveReferences?: string[]): Promise<T> {
         if (record.id) {
             return this.getRecord(entityInfo, {
                 id: record.id,
+                resolveReferences: resolveReferences,
             });
         }
 
         const conditions = Object.entries(record).map(([key, value]) => BooleanExpressionBuilder.eq(key, value));
 
         const resp = await axios.post<Container<T>>(Urls.recordSearchUrl(this.url, entityInfo.restPath), {
-            query: BooleanExpressionBuilder.and(...conditions)
+            query: BooleanExpressionBuilder.and(...conditions),
+            resolveReferences: resolveReferences,
         }, {
             headers: this.headers(),
             validateStatus: (status) => true,
@@ -344,22 +419,6 @@ export class ClientImpl implements Client {
         return new ClientImpl(url);
     }
 
-    static newClientByServerName(serverName?: string) {
-        const config = ConfigLoader.load();
-
-        if (!serverName) {
-            serverName = config.defaultServer;
-        }
-
-        const serverConfig = config.servers.find(item => item.name == serverName);
-
-        if (!serverConfig) {
-            throw new Error("Server not found: " + serverName);
-        }
-
-        return ClientImpl.newClientByServerConfig(serverConfig!);
-    }
-
     static async newClientByServerConfig(serverConfig: Server) {
         let httpPort = serverConfig.httpPort;
 
@@ -390,5 +449,72 @@ export class ClientImpl implements Client {
         }
 
         return client;
+    }
+
+    private setupTokenRefresher() {
+        if (this.tokenRefreshInterval) {
+            clearInterval(this.tokenRefreshInterval)
+        }
+        this.tokenRefreshInterval = setInterval(() => this.ensureTokenFresh(), 1000 * 60 * 5);
+    }
+
+    getTokenBody(): TokenBody | undefined {
+        // check if access token is expired
+        const token = this.tokenStorage.get(ACCESS_TOKEN);
+
+        if (!token) {
+            return;
+        }
+
+        const tokenParts = token.split(".");
+
+        if (tokenParts.length != 3) {
+            return;
+        }
+
+        const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString('utf-8'));
+
+        return payload as TokenBody
+    }
+
+    private ensureTokenFresh() {
+        const refreshToken = this.tokenStorage.get(REFRESH_TOKEN);
+
+        if (!refreshToken) {
+            return;
+        }
+
+        const payload = this.getTokenBody();
+
+        if (!payload) {
+            return;
+        }
+
+        if (payload.exp * 1000 > Date.now()) {
+            return;
+        }
+
+        console.warn("Access token expired, refreshing...");
+
+        axios.post<AuthenticationResponse>(Urls.authenticate(this.url), {
+            token: refreshToken,
+            term: TokenTerm.LONG
+        }, {
+            validateStatus: (status) => true,
+        }).then(resp => {
+            if (resp.status == 200) {
+                this.tokenStorage.set(ACCESS_TOKEN, resp.data.token.content);
+            }
+        }).catch(e => {
+            console.error("Error refreshing token", e);
+        })
+    }
+
+    public isAuthenticated(): boolean {
+        return !!this.tokenStorage.get(ACCESS_TOKEN);
+    }
+
+    public invalidateAuthentication(): void {
+        this.tokenStorage.clear();
     }
 }

@@ -48,7 +48,7 @@ var PermissionResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-04T03:41:26+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -57,11 +57,119 @@ var PermissionResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-04T03:41:26+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
 					},
+				},
+			},
+
+			Annotations: map[string]string{
+				"EnableAudit":  "true",
+				"OpenApiGroup": "meta",
+			},
+		},
+		{
+			Name: "BooleanExpression",
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "and",
+					Type: model.ResourceProperty_LIST,
+				},
+				{
+					Name: "or",
+					Type: model.ResourceProperty_LIST,
+				},
+				{
+					Name: "not",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "equal",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "lessThan",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "greaterThan",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "lessThanOrEqual",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "greaterThanOrEqual",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "in",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "isNull",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "regexMatch",
+					Type: model.ResourceProperty_STRUCT,
+				},
+			},
+
+			Annotations: map[string]string{
+				"EnableAudit":  "true",
+				"OpenApiGroup": "meta",
+			},
+		},
+		{
+			Name: "PairExpression",
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "left",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "right",
+					Type: model.ResourceProperty_STRUCT,
+				},
+			},
+
+			Annotations: map[string]string{
+				"EnableAudit":  "true",
+				"OpenApiGroup": "meta",
+			},
+		},
+		{
+			Name: "RegexMatchExpression",
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "pattern",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "expression",
+					Type: model.ResourceProperty_STRUCT,
+				},
+			},
+
+			Annotations: map[string]string{
+				"EnableAudit":  "true",
+				"OpenApiGroup": "meta",
+			},
+		},
+		{
+			Name: "Expression",
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "property",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "value",
+					Type: model.ResourceProperty_OBJECT,
 				},
 			},
 
@@ -92,14 +200,14 @@ var PermissionResource = &model.Resource{
 			ExampleValue: structpb.NewNumberValue(1),
 
 			Annotations: map[string]string{
-				"AllowEmptyPrimitive": "true",
 				"SpecialProperty":     "true",
+				"AllowEmptyPrimitive": "true",
 			},
 		},
 		{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-04T03:41:26+04:00"), "updatedOn": structpb.NewStringValue("2023-11-04T03:41:26+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00"), "updatedOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -118,21 +226,8 @@ var PermissionResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("Book"),
 		},
 		{
-			Name:         "property",
-			Type:         model.ResourceProperty_STRING,
-			Length:       255,
-			ExampleValue: structpb.NewStringValue("author"),
-		},
-		{
-			Name:         "propertyValue",
-			Type:         model.ResourceProperty_STRING,
-			Length:       255,
-			ExampleValue: structpb.NewStringValue("John Doe"),
-		},
-		{
-			Name:   "propertyMode",
-			Type:   model.ResourceProperty_ENUM,
-			Length: 255,
+			Name: "recordSelector",
+			Type: model.ResourceProperty_STRUCT,
 		},
 		{
 			Name:         "operation",
@@ -141,10 +236,6 @@ var PermissionResource = &model.Resource{
 			Required:     true,
 			DefaultValue: structpb.NewStringValue("FULL"),
 			ExampleValue: structpb.NewStringValue("READ"),
-		},
-		{
-			Name: "recordIds",
-			Type: model.ResourceProperty_LIST,
 		},
 		{
 			Name: "before",

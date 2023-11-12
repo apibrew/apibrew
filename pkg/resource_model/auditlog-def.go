@@ -35,8 +35,8 @@ var AuditLogResource = &model.Resource{
 			ExampleValue: structpb.NewNumberValue(1),
 
 			Annotations: map[string]string{
-				"SpecialProperty":     "true",
 				"AllowEmptyPrimitive": "true",
+				"SpecialProperty":     "true",
 			},
 		},
 		{
@@ -83,7 +83,7 @@ var AuditLogResource = &model.Resource{
 		{
 			Name:         "annotations",
 			Type:         model.ResourceProperty_MAP,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -93,7 +93,7 @@ var AuditLogResource = &model.Resource{
 	Immutable: true,
 
 	Annotations: map[string]string{
-		"OpenApiGroup":     "internal",
 		"BypassExtensions": "true",
+		"OpenApiGroup":     "internal",
 	},
 }

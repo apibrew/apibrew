@@ -1,9 +1,10 @@
-import {newClient} from "../client";
 import {Book, BookEntityInfo} from "./model/book";
 import {beforeCreate, execute, PollerExtensionService} from "../ext";
+import {newClientByServerConfig} from "../client";
+import {ConfigLoader} from "../config-loader";
 
 export async function run() {
-    const client = await newClient("local")
+    const client = await newClientByServerConfig(ConfigLoader.loadServerConfig("local"))
 
     const repository = client.repository(BookEntityInfo)
 

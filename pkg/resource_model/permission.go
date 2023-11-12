@@ -10,22 +10,19 @@ import "github.com/google/uuid"
 import "time"
 
 type Permission struct {
-	Id            *uuid.UUID              `json:"id,omitempty"`
-	Version       int32                   `json:"version,omitempty"`
-	AuditData     *PermissionAuditData    `json:"auditData,omitempty"`
-	Namespace     *string                 `json:"namespace,omitempty"`
-	Resource      *string                 `json:"resource,omitempty"`
-	Property      *string                 `json:"property,omitempty"`
-	PropertyValue *string                 `json:"propertyValue,omitempty"`
-	PropertyMode  *PermissionPropertyMode `json:"propertyMode,omitempty"`
-	Operation     PermissionOperation     `json:"operation,omitempty"`
-	RecordIds     []string                `json:"recordIds,omitempty"`
-	Before        *time.Time              `json:"before,omitempty"`
-	After         *time.Time              `json:"after,omitempty"`
-	User          *User                   `json:"user,omitempty"`
-	Role          *Role                   `json:"role,omitempty"`
-	Permit        PermissionPermit        `json:"permit,omitempty"`
-	LocalFlags    interface{}             `json:"localFlags,omitempty"`
+	Id             *uuid.UUID           `json:"id,omitempty"`
+	Version        int32                `json:"version,omitempty"`
+	AuditData      *PermissionAuditData `json:"auditData,omitempty"`
+	Namespace      *string              `json:"namespace,omitempty"`
+	Resource       *string              `json:"resource,omitempty"`
+	RecordSelector *BooleanExpression   `json:"recordSelector,omitempty"`
+	Operation      PermissionOperation  `json:"operation,omitempty"`
+	Before         *time.Time           `json:"before,omitempty"`
+	After          *time.Time           `json:"after,omitempty"`
+	User           *User                `json:"user,omitempty"`
+	Role           *Role                `json:"role,omitempty"`
+	Permit         PermissionPermit     `json:"permit,omitempty"`
+	LocalFlags     interface{}          `json:"localFlags,omitempty"`
 }
 
 func (s *Permission) GetId() *uuid.UUID {
@@ -43,20 +40,11 @@ func (s *Permission) GetNamespace() *string {
 func (s *Permission) GetResource() *string {
 	return s.Resource
 }
-func (s *Permission) GetProperty() *string {
-	return s.Property
-}
-func (s *Permission) GetPropertyValue() *string {
-	return s.PropertyValue
-}
-func (s *Permission) GetPropertyMode() *PermissionPropertyMode {
-	return s.PropertyMode
+func (s *Permission) GetRecordSelector() *BooleanExpression {
+	return s.RecordSelector
 }
 func (s *Permission) GetOperation() PermissionOperation {
 	return s.Operation
-}
-func (s *Permission) GetRecordIds() []string {
-	return s.RecordIds
 }
 func (s *Permission) GetBefore() *time.Time {
 	return s.Before
@@ -96,13 +84,6 @@ func (s *PermissionAuditData) GetCreatedOn() *time.Time {
 func (s *PermissionAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
-
-type PermissionPropertyMode string
-
-const (
-	PermissionPropertyMode_PROPERTYMATCHONLY PermissionPropertyMode = "PROPERTY_MATCH_ONLY"
-	PermissionPropertyMode_PROPERTYMATCHANY  PermissionPropertyMode = "PROPERTY_MATCH_ANY"
-)
 
 type PermissionOperation string
 

@@ -6,7 +6,8 @@ import (
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resources/mapping"
+	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gopkg.in/yaml.v3"
@@ -66,7 +67,9 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 			return err
 		}
 
-		resource := mapping.ResourceFromRecord(record)
+		resourceModel := resource_model.ResourceMapperInstance.FromRecord(record)
+
+		resource := extramappings.ResourceFrom(resourceModel)
 		resource.Namespace = namespace
 
 		err = e.ResourceHandler(resource)

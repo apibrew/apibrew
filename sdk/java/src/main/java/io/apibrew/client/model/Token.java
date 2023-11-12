@@ -32,7 +32,7 @@ public class Token {
     }
 
     @JsonProperty
-    private TokenTerm tokenTerm;
+    private TokenTerm term;
 
     @JsonProperty
     private String content;
@@ -55,11 +55,11 @@ public class Token {
         this.content = content;
     }
 
-    public TokenTerm getTokenTerm() {
-        return tokenTerm;
+    public TokenTerm getTerm() {
+        return term;
     }
 
-    public void setTokenTerm(TokenTerm tokenTerm) {
-        this.tokenTerm = tokenTerm;
+    public void setTerm(TokenTerm term) {
+        this.term = term;
     }
 }

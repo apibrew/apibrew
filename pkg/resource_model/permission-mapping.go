@@ -109,43 +109,13 @@ func (m *PermissionMapper) ToProperties(permission *Permission) map[string]*stru
 		properties["resource"] = var_Resource_mapped
 	}
 
-	var_Property := permission.Property
+	var_RecordSelector := permission.RecordSelector
 
-	if var_Property != nil {
-		var var_Property_mapped *structpb.Value
+	if var_RecordSelector != nil {
+		var var_RecordSelector_mapped *structpb.Value
 
-		var var_Property_err error
-		var_Property_mapped, var_Property_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Property)
-		if var_Property_err != nil {
-			panic(var_Property_err)
-		}
-		properties["property"] = var_Property_mapped
-	}
-
-	var_PropertyValue := permission.PropertyValue
-
-	if var_PropertyValue != nil {
-		var var_PropertyValue_mapped *structpb.Value
-
-		var var_PropertyValue_err error
-		var_PropertyValue_mapped, var_PropertyValue_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_PropertyValue)
-		if var_PropertyValue_err != nil {
-			panic(var_PropertyValue_err)
-		}
-		properties["propertyValue"] = var_PropertyValue_mapped
-	}
-
-	var_PropertyMode := permission.PropertyMode
-
-	if var_PropertyMode != nil {
-		var var_PropertyMode_mapped *structpb.Value
-
-		var var_PropertyMode_err error
-		var_PropertyMode_mapped, var_PropertyMode_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(*var_PropertyMode))
-		if var_PropertyMode_err != nil {
-			panic(var_PropertyMode_err)
-		}
-		properties["propertyMode"] = var_PropertyMode_mapped
+		var_RecordSelector_mapped = structpb.NewStructValue(&structpb.Struct{Fields: BooleanExpressionMapperInstance.ToProperties(var_RecordSelector)})
+		properties["recordSelector"] = var_RecordSelector_mapped
 	}
 
 	var_Operation := permission.Operation
@@ -158,29 +128,6 @@ func (m *PermissionMapper) ToProperties(permission *Permission) map[string]*stru
 		panic(var_Operation_err)
 	}
 	properties["operation"] = var_Operation_mapped
-
-	var_RecordIds := permission.RecordIds
-
-	if var_RecordIds != nil {
-		var var_RecordIds_mapped *structpb.Value
-
-		var var_RecordIds_l []*structpb.Value
-		for _, value := range var_RecordIds {
-
-			var_5x := value
-			var var_5x_mapped *structpb.Value
-
-			var var_5x_err error
-			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
-			if var_5x_err != nil {
-				panic(var_5x_err)
-			}
-
-			var_RecordIds_l = append(var_RecordIds_l, var_5x_mapped)
-		}
-		var_RecordIds_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_RecordIds_l})
-		properties["recordIds"] = var_RecordIds_mapped
-	}
 
 	var_Before := permission.Before
 
@@ -318,41 +265,14 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Resource = var_Resource_mapped
 	}
-	if properties["property"] != nil && properties["property"].AsInterface() != nil {
+	if properties["recordSelector"] != nil && properties["recordSelector"].AsInterface() != nil {
 
-		var_Property := properties["property"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Property)
+		var_RecordSelector := properties["recordSelector"]
+		var mappedValue = BooleanExpressionMapperInstance.FromProperties(var_RecordSelector.GetStructValue().Fields)
 
-		if err != nil {
-			panic(err)
-		}
+		var_RecordSelector_mapped := mappedValue
 
-		var_Property_mapped := new(string)
-		*var_Property_mapped = val.(string)
-
-		s.Property = var_Property_mapped
-	}
-	if properties["propertyValue"] != nil && properties["propertyValue"].AsInterface() != nil {
-
-		var_PropertyValue := properties["propertyValue"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_PropertyValue)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_PropertyValue_mapped := new(string)
-		*var_PropertyValue_mapped = val.(string)
-
-		s.PropertyValue = var_PropertyValue_mapped
-	}
-	if properties["propertyMode"] != nil && properties["propertyMode"].AsInterface() != nil {
-
-		var_PropertyMode := properties["propertyMode"]
-		var_PropertyMode_mapped := new(PermissionPropertyMode)
-		*var_PropertyMode_mapped = (PermissionPropertyMode)(var_PropertyMode.GetStringValue())
-
-		s.PropertyMode = var_PropertyMode_mapped
+		s.RecordSelector = var_RecordSelector_mapped
 	}
 	if properties["operation"] != nil && properties["operation"].AsInterface() != nil {
 
@@ -360,26 +280,6 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 		var_Operation_mapped := (PermissionOperation)(var_Operation.GetStringValue())
 
 		s.Operation = var_Operation_mapped
-	}
-	if properties["recordIds"] != nil && properties["recordIds"].AsInterface() != nil {
-
-		var_RecordIds := properties["recordIds"]
-		var_RecordIds_mapped := []string{}
-		for _, v := range var_RecordIds.GetListValue().Values {
-
-			var_4x := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
-
-			if err != nil {
-				panic(err)
-			}
-
-			var_4x_mapped := val.(string)
-
-			var_RecordIds_mapped = append(var_RecordIds_mapped, var_4x_mapped)
-		}
-
-		s.RecordIds = var_RecordIds_mapped
 	}
 	if properties["before"] != nil && properties["before"].AsInterface() != nil {
 
