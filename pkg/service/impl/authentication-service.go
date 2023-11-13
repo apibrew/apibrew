@@ -252,6 +252,8 @@ func (s *authenticationService) collectUserPermissions(ctx context.Context, user
 		result = append(result, role.Permissions...)
 	}
 
+	// preprocess permissions // @todo fixme
+
 	return result, nil
 }
 

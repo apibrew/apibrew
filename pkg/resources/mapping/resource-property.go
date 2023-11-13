@@ -85,7 +85,7 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 		reference = &model.Reference{}
 		var referenceProperties = record.Properties["reference"].GetStructValue().GetFields()
 		reference.Resource = referenceProperties["resource"].GetStructValue().GetFields()["name"].GetStringValue()
-		if referenceProperties["resource"].GetStructValue().GetFields()["namespace"] != nil && referenceProperties["resource"].GetStructValue().GetFields()["namespace"] != nil {
+		if referenceProperties["resource"].GetStructValue().GetFields()["namespace"] != nil && referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue() != nil {
 			reference.Namespace = referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue().GetFields()["name"].GetStringValue()
 		}
 

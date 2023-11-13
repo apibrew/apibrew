@@ -193,18 +193,6 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 	return permission.RecordSelector, true
 }
 
-func (a *authorizationService) processValue(value string, userDetails *jwt_model.UserDetails) string {
-	var processedValue = value
-
-	if processedValue == "$userId" {
-		processedValue = userDetails.UserId
-	} else if processedValue == "$username" {
-		processedValue = userDetails.Username
-	}
-
-	return processedValue
-}
-
 func NewAuthorizationService() service.AuthorizationService {
 	return &authorizationService{
 		recordInlineSelector: new(helper.RecordInlineSelector),
