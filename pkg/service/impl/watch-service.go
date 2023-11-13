@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -38,46 +39,31 @@ func (w watchService) WatchResource(ctx context.Context, params service.WatchPar
 		return nil, err
 	}
 
-	if err := w.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+	exp, err := w.authorizationService.CheckRecordAccessWithRecordSelector(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Operation: resource_model.PermissionOperation_READ,
-	}); err != nil {
-		return nil, err
-	}
-
-	ch, err := w.watch(ctx, params)
+	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	// check each event if the user has access to it
-
-	result := make(chan *model.Event, params.BufferSize)
-
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case event := <-ch:
-				if event.Id != "heartbeat-message" {
-					if err := w.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-						Resource:  resource,
-						Operation: resource_model.PermissionOperation_READ,
-						Records:   &event.Records,
-					}); err != nil {
-						log.Warnf("User don't have permission to access this event: %v", event.Id)
-						continue
-					}
-				}
-
-				result <- event
+	if exp != nil {
+		expM := extramappings.BooleanExpressionToProto(*exp)
+		if params.Selector.RecordSelector == nil {
+			params.Selector.RecordSelector = expM
+		} else {
+			params.Selector.RecordSelector = &model.BooleanExpression{
+				Expression: &model.BooleanExpression_And{
+					And: &model.CompoundBooleanExpression{
+						Expressions: []*model.BooleanExpression{expM, params.Selector.RecordSelector},
+					},
+				},
 			}
 		}
-	}()
+	}
 
-	return result, nil
+	return w.watch(ctx, params)
 }
 
 func (w watchService) Watch(ctx context.Context, params service.WatchParams) (<-chan *model.Event, errors.ServiceError) {

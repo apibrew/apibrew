@@ -13,9 +13,6 @@ import (
 type RecordInlineSelector struct {
 }
 
-type booleanExpression interface {
-}
-
 func (s RecordInlineSelector) SelectRecords(ctx context.Context, resource *model.Resource, records *[]*model.Record, selector *resource_model.BooleanExpression) ([]*model.Record, errors.ServiceError) {
 	var result []*model.Record
 

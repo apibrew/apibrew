@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
@@ -103,14 +104,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		}
 	}
 
-	filters := make(map[string]string)
-
-	for key := range request.URL.Query() {
-		if key == "limit" || key == "offset" || key == "resolve-references" || key == "useHistory" {
-			continue
-		}
-		filters[key] = request.URL.Query().Get(key)
-	}
+	filters := r.makeFilters(request)
 
 	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
 		Filters:           filters,
@@ -131,6 +125,18 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		Total:   uint64(total),
 		Records: util.ArrayMap(result, NewRecordWrapper),
 	})
+}
+
+func (r *recordApi) makeFilters(request *http.Request) map[string]string {
+	filters := make(map[string]string)
+
+	for key := range request.URL.Query() {
+		if key == "limit" || key == "offset" || key == "resolve-references" || key == "useHistory" {
+			continue
+		}
+		filters[key] = request.URL.Query().Get(key)
+	}
+	return filters
 }
 
 func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http.Request) {
@@ -373,6 +379,20 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
+	filters := r.makeFilters(request)
+
+	var recordSelector *model.BooleanExpression
+
+	if len(filters) > 0 {
+		var err errors.ServiceError
+		recordSelector, err = util.PrepareQuery(resource, filters)
+
+		if err != nil {
+			handleServiceError(writer, err)
+			return
+		}
+	}
+
 	res, err := r.watchService.WatchResource(request.Context(), service.WatchParams{
 		Selector: &model.EventSelector{
 			Actions: []model.Event_Action{
@@ -380,8 +400,9 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 				model.Event_UPDATE,
 				model.Event_DELETE,
 			},
-			Namespaces: []string{resource.Namespace},
-			Resources:  []string{resource.Name},
+			Namespaces:     []string{resource.Namespace},
+			Resources:      []string{resource.Name},
+			RecordSelector: recordSelector,
 		},
 	})
 

@@ -11,6 +11,12 @@ type stringType struct {
 }
 
 func (s stringType) Equals(a, b interface{}) bool {
+	if _, ok := a.(string); !ok {
+		return false
+	}
+	if _, ok := b.(string); !ok {
+		return false
+	}
 	return a == b
 }
 

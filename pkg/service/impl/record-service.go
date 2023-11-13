@@ -98,7 +98,7 @@ func (r *recordService) ExecuteAction(ctx context.Context, params service.Execut
 	return r.backendServiceProvider.(abs.BackendActionExecutor).ExecuteAction(ctx, resource, rec, resourceAction.Name, params.Input)
 }
 
-func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
+func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError) {
 	return util.PrepareQuery(resource, queryMap)
 }
 
@@ -642,7 +642,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	return res, nil
 }
 
-func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, propertyName string, value interface{}) (*model.Record, errors.ServiceError) {
+func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (*model.Record, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Debug("Begin record-service FindBy")
@@ -654,7 +654,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
 	}
 
-	queryMap := make(map[string]interface{})
+	queryMap := make(map[string]string)
 
 	queryMap[propertyName] = value
 

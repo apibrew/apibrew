@@ -82,10 +82,10 @@ func deStringifyPropertyValue(actualValue string, property *model.ResourceProper
 	}
 }
 
-func PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, errors.ServiceError) {
+func PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError) {
 	var criteria []*model.BooleanExpression
 	for _, property := range resource.Properties {
-		if queryMap[property.Name] != nil {
+		if queryMap[property.Name] != "" {
 			var val *structpb.Value
 			val, err := structpb.NewValue(queryMap[property.Name])
 			if err != nil {
