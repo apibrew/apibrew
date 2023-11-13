@@ -7,11 +7,8 @@ export interface Permission {
     auditData?: AuditData
     namespace?: string
     resource?: string
-    property?: string
-    propertyValue?: string
-    propertyMode?: PropertyMode
+    recordSelector?: BooleanExpression
     operation: Operation
-    recordIds?: string[]
     before?: string | Date
     after?: string | Date
     user?: User
@@ -33,9 +30,33 @@ export interface AuditData {
     updatedOn: string | Date
 }
 
-export enum PropertyMode {
-    PROPERTY_MATCH_ONLY = "PROPERTY_MATCH_ONLY",
-    PROPERTY_MATCH_ANY = "PROPERTY_MATCH_ANY",
+export interface BooleanExpression {
+    and: BooleanExpression[]
+    or: BooleanExpression[]
+    not: BooleanExpression
+    equal: PairExpression
+    lessThan: PairExpression
+    greaterThan: PairExpression
+    lessThanOrEqual: PairExpression
+    greaterThanOrEqual: PairExpression
+    in: PairExpression
+    isNull: Expression
+    regexMatch: RegexMatchExpression
+}
+
+export interface PairExpression {
+    left: Expression
+    right: Expression
+}
+
+export interface RegexMatchExpression {
+    pattern: string
+    expression: Expression
+}
+
+export interface Expression {
+    property: string
+    value: object
 }
 
 export enum Operation {
@@ -88,9 +109,9 @@ export const PermissionResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2023-11-04T03:41:34+04:00",
+        "createdOn": "2023-11-13T12:31:41+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2023-11-04T03:41:34+04:00"
+        "updatedOn": "2023-11-13T12:31:41+04:00"
       },
       "title": "Audit Data",
       "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
@@ -115,31 +136,9 @@ export const PermissionResource = {
       "description": "The name of the resource. If given it will be used to match the resource by name."
     },
     {
-      "name": "property",
-      "type": "STRING",
-      "length": 255,
-      "exampleValue": "author",
-      "title": "Property",
-      "description": "The name of the property.\nproperty and propertyValue are used to match the resource by property value. If record matches property =\u003e propertyValue then the permission will be considered. If not, it will be ignored.\nBesides that we also have propertyMode which indicate how to match the property value.\nIf propertyMode is PROPERTY_MATCH_ONLY then only the given property is allowed to be updated, if any other property is sent and not matching by any permission, it will cause an error.\nLike for example, you want user to update only title property of resource and to not able to update any other property.\nBut PROPERTY_MATCH_ANY means that if any of the property is matching then the permission will be considered. It is more useful for owner matching or etc.\nFor example you want to allow records where owner is user own, etc.\n"
-    },
-    {
-      "name": "propertyValue",
-      "type": "STRING",
-      "length": 255,
-      "exampleValue": "John Doe",
-      "title": "Property Value",
-      "description": "The value of the property. It is used by combination with property, please see the description of property."
-    },
-    {
-      "name": "propertyMode",
-      "type": "ENUM",
-      "length": 255,
-      "enumValues": [
-        "PROPERTY_MATCH_ONLY",
-        "PROPERTY_MATCH_ANY"
-      ],
-      "title": "Property Mode",
-      "description": "The mode of the property. It is used by combination with property and property value, please see the description of property."
+      "name": "recordSelector",
+      "type": "STRUCT",
+      "typeRef": "BooleanExpression"
     },
     {
       "name": "operation",
@@ -157,16 +156,6 @@ export const PermissionResource = {
       "exampleValue": "READ",
       "title": "Operation",
       "description": "The operation of the permission. It is used to match the operation of the request. If given it will be used to match the operation of the request."
-    },
-    {
-      "name": "recordIds",
-      "type": "LIST",
-      "item": {
-        "name": "recordIds",
-        "type": "STRING"
-      },
-      "title": "Record Ids",
-      "description": "The ids of the records. It is used to match the record ids of the request. If you want to match only specific records, otherwise all records will be considered"
     },
     {
       "name": "before",
@@ -260,7 +249,7 @@ export const PermissionResource = {
           "name": "createdOn",
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2023-11-04T03:41:34+04:00",
+          "exampleValue": "2023-11-13T12:31:41+04:00",
           "title": "Created On",
           "description": "The timestamp when the resource/record was created.",
           "annotations": {
@@ -270,12 +259,130 @@ export const PermissionResource = {
         {
           "name": "updatedOn",
           "type": "TIMESTAMP",
-          "exampleValue": "2023-11-04T03:41:34+04:00",
+          "exampleValue": "2023-11-13T12:31:41+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {
             "SpecialProperty": "true"
           }
+        }
+      ]
+    },
+    {
+      "name": "BooleanExpression",
+      "title": "",
+      "description": "",
+      "properties": [
+        {
+          "name": "and",
+          "type": "LIST",
+          "item": {
+            "name": "",
+            "type": "STRUCT",
+            "typeRef": "BooleanExpression"
+          }
+        },
+        {
+          "name": "or",
+          "type": "LIST",
+          "item": {
+            "name": "",
+            "type": "STRUCT",
+            "typeRef": "BooleanExpression"
+          }
+        },
+        {
+          "name": "not",
+          "type": "STRUCT",
+          "typeRef": "BooleanExpression"
+        },
+        {
+          "name": "equal",
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        {
+          "name": "lessThan",
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        {
+          "name": "greaterThan",
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        {
+          "name": "lessThanOrEqual",
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        {
+          "name": "greaterThanOrEqual",
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        {
+          "name": "in",
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        {
+          "name": "isNull",
+          "type": "STRUCT",
+          "typeRef": "Expression"
+        },
+        {
+          "name": "regexMatch",
+          "type": "STRUCT",
+          "typeRef": "RegexMatchExpression"
+        }
+      ]
+    },
+    {
+      "name": "PairExpression",
+      "title": "",
+      "description": "",
+      "properties": [
+        {
+          "name": "left",
+          "type": "STRUCT",
+          "typeRef": "Expression"
+        },
+        {
+          "name": "right",
+          "type": "STRUCT",
+          "typeRef": "Expression"
+        }
+      ]
+    },
+    {
+      "name": "RegexMatchExpression",
+      "title": "",
+      "description": "",
+      "properties": [
+        {
+          "name": "pattern",
+          "type": "STRING"
+        },
+        {
+          "name": "expression",
+          "type": "STRUCT",
+          "typeRef": "Expression"
+        }
+      ]
+    },
+    {
+      "name": "Expression",
+      "title": "",
+      "description": "",
+      "properties": [
+        {
+          "name": "property",
+          "type": "STRING"
+        },
+        {
+          "name": "value",
+          "type": "OBJECT"
         }
       ]
     }

@@ -15,10 +15,30 @@ class AuditData:
     createdOn: datetime
     updatedOn: datetime
 
+class BooleanExpression:
+    and_: list[BooleanExpression]
+    or_: list[BooleanExpression]
+    not_: BooleanExpression
+    equal: PairExpression
+    lessThan: PairExpression
+    greaterThan: PairExpression
+    lessThanOrEqual: PairExpression
+    greaterThanOrEqual: PairExpression
+    in_: PairExpression
+    isNull: Expression
+    regexMatch: RegexMatchExpression
 
-class PropertyMode(Enum):
-    PROPERTY_MATCH_ONLY = "PROPERTY_MATCH_ONLY"
-    PROPERTY_MATCH_ANY = "PROPERTY_MATCH_ANY"
+class PairExpression:
+    left: Expression
+    right: Expression
+
+class RegexMatchExpression:
+    pattern: str
+    expression: Expression
+
+class Expression:
+    property: str
+    value: dict
 
 
 class Operation(Enum):
@@ -41,11 +61,8 @@ class Permission:
     auditData: AuditData
     namespace: str
     resource: str
-    property: str
-    propertyValue: str
-    propertyMode: PropertyMode
+    recordSelector: BooleanExpression
     operation: Operation
-    recordIds: list[str]
     before: datetime
     after: datetime
     user: User

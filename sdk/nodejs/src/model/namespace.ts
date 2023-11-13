@@ -58,9 +58,9 @@ export const NamespaceResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2023-11-04T03:41:34+04:00",
+        "createdOn": "2023-11-13T12:31:41+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2023-11-04T03:41:34+04:00"
+        "updatedOn": "2023-11-13T12:31:41+04:00"
       },
       "title": "Audit Data",
       "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
@@ -122,7 +122,7 @@ export const NamespaceResource = {
           "name": "createdOn",
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2023-11-04T03:41:34+04:00",
+          "exampleValue": "2023-11-13T12:31:41+04:00",
           "title": "Created On",
           "description": "The timestamp when the resource/record was created.",
           "annotations": {
@@ -132,7 +132,7 @@ export const NamespaceResource = {
         {
           "name": "updatedOn",
           "type": "TIMESTAMP",
-          "exampleValue": "2023-11-04T03:41:34+04:00",
+          "exampleValue": "2023-11-13T12:31:41+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {

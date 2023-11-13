@@ -22,15 +22,9 @@ public class Permission extends Entity {
     
     private String resource;
     
-    private String property;
-    
-    private String propertyValue;
-    
-    private Permission.PropertyMode propertyMode;
+    private Permission.BooleanExpression recordSelector;
     
     private Permission.Operation operation;
-    
-    private java.util.List<String> recordIds;
     @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
     private java.time.Instant before;
     @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
@@ -142,22 +136,393 @@ public class Permission extends Entity {
            return Objects.hash(createdBy, updatedBy, createdOn, updatedOn);
         }
     }
+    public static class BooleanExpression {
+        
+        private java.util.List<Permission.BooleanExpression> and;
+        
+        private java.util.List<Permission.BooleanExpression> or;
+        
+        private Permission.BooleanExpression not;
+        
+        private Permission.PairExpression equal;
+        
+        private Permission.PairExpression lessThan;
+        
+        private Permission.PairExpression greaterThan;
+        
+        private Permission.PairExpression lessThanOrEqual;
+        
+        private Permission.PairExpression greaterThanOrEqual;
+        
+        private Permission.PairExpression in;
+        
+        private Permission.Expression isNull;
+        
+        private Permission.RegexMatchExpression regexMatch;
 
-    public static enum PropertyMode {
-        PROPERTY_MATCH_ONLY("PROPERTY_MATCH_ONLY"),
-        PROPERTY_MATCH_ANY("PROPERTY_MATCH_ANY");
+        public java.util.List<Permission.BooleanExpression> getAnd() {
+            return and;
+        }
 
-        private final String value;
+        public void setAnd(java.util.List<Permission.BooleanExpression> and) {
+            this.and = and;
+        }
 
-        PropertyMode(String value) {
+        public BooleanExpression withAnd(java.util.List<Permission.BooleanExpression> and) {
+            this.and = and;
+
+            return this;
+        }
+        public java.util.List<Permission.BooleanExpression> getOr() {
+            return or;
+        }
+
+        public void setOr(java.util.List<Permission.BooleanExpression> or) {
+            this.or = or;
+        }
+
+        public BooleanExpression withOr(java.util.List<Permission.BooleanExpression> or) {
+            this.or = or;
+
+            return this;
+        }
+        public Permission.BooleanExpression getNot() {
+            return not;
+        }
+
+        public void setNot(Permission.BooleanExpression not) {
+            this.not = not;
+        }
+
+        public BooleanExpression withNot(Permission.BooleanExpression not) {
+            this.not = not;
+
+            return this;
+        }
+        public Permission.PairExpression getEqual() {
+            return equal;
+        }
+
+        public void setEqual(Permission.PairExpression equal) {
+            this.equal = equal;
+        }
+
+        public BooleanExpression withEqual(Permission.PairExpression equal) {
+            this.equal = equal;
+
+            return this;
+        }
+        public Permission.PairExpression getLessThan() {
+            return lessThan;
+        }
+
+        public void setLessThan(Permission.PairExpression lessThan) {
+            this.lessThan = lessThan;
+        }
+
+        public BooleanExpression withLessThan(Permission.PairExpression lessThan) {
+            this.lessThan = lessThan;
+
+            return this;
+        }
+        public Permission.PairExpression getGreaterThan() {
+            return greaterThan;
+        }
+
+        public void setGreaterThan(Permission.PairExpression greaterThan) {
+            this.greaterThan = greaterThan;
+        }
+
+        public BooleanExpression withGreaterThan(Permission.PairExpression greaterThan) {
+            this.greaterThan = greaterThan;
+
+            return this;
+        }
+        public Permission.PairExpression getLessThanOrEqual() {
+            return lessThanOrEqual;
+        }
+
+        public void setLessThanOrEqual(Permission.PairExpression lessThanOrEqual) {
+            this.lessThanOrEqual = lessThanOrEqual;
+        }
+
+        public BooleanExpression withLessThanOrEqual(Permission.PairExpression lessThanOrEqual) {
+            this.lessThanOrEqual = lessThanOrEqual;
+
+            return this;
+        }
+        public Permission.PairExpression getGreaterThanOrEqual() {
+            return greaterThanOrEqual;
+        }
+
+        public void setGreaterThanOrEqual(Permission.PairExpression greaterThanOrEqual) {
+            this.greaterThanOrEqual = greaterThanOrEqual;
+        }
+
+        public BooleanExpression withGreaterThanOrEqual(Permission.PairExpression greaterThanOrEqual) {
+            this.greaterThanOrEqual = greaterThanOrEqual;
+
+            return this;
+        }
+        public Permission.PairExpression getIn() {
+            return in;
+        }
+
+        public void setIn(Permission.PairExpression in) {
+            this.in = in;
+        }
+
+        public BooleanExpression withIn(Permission.PairExpression in) {
+            this.in = in;
+
+            return this;
+        }
+        public Permission.Expression getIsNull() {
+            return isNull;
+        }
+
+        public void setIsNull(Permission.Expression isNull) {
+            this.isNull = isNull;
+        }
+
+        public BooleanExpression withIsNull(Permission.Expression isNull) {
+            this.isNull = isNull;
+
+            return this;
+        }
+        public Permission.RegexMatchExpression getRegexMatch() {
+            return regexMatch;
+        }
+
+        public void setRegexMatch(Permission.RegexMatchExpression regexMatch) {
+            this.regexMatch = regexMatch;
+        }
+
+        public BooleanExpression withRegexMatch(Permission.RegexMatchExpression regexMatch) {
+            this.regexMatch = regexMatch;
+
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof BooleanExpression)) {
+                return false;
+            }
+
+            BooleanExpression obj = (BooleanExpression) o;
+
+            if (!Objects.equals(this.and, obj.and)) {
+                return false;
+            }
+            if (!Objects.equals(this.or, obj.or)) {
+                return false;
+            }
+            if (!Objects.equals(this.not, obj.not)) {
+                return false;
+            }
+            if (!Objects.equals(this.equal, obj.equal)) {
+                return false;
+            }
+            if (!Objects.equals(this.lessThan, obj.lessThan)) {
+                return false;
+            }
+            if (!Objects.equals(this.greaterThan, obj.greaterThan)) {
+                return false;
+            }
+            if (!Objects.equals(this.lessThanOrEqual, obj.lessThanOrEqual)) {
+                return false;
+            }
+            if (!Objects.equals(this.greaterThanOrEqual, obj.greaterThanOrEqual)) {
+                return false;
+            }
+            if (!Objects.equals(this.in, obj.in)) {
+                return false;
+            }
+            if (!Objects.equals(this.isNull, obj.isNull)) {
+                return false;
+            }
+            if (!Objects.equals(this.regexMatch, obj.regexMatch)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(and, or, not, equal, lessThan, greaterThan, lessThanOrEqual, greaterThanOrEqual, in, isNull, regexMatch);
+        }
+    }
+    public static class PairExpression {
+        
+        private Permission.Expression left;
+        
+        private Permission.Expression right;
+
+        public Permission.Expression getLeft() {
+            return left;
+        }
+
+        public void setLeft(Permission.Expression left) {
+            this.left = left;
+        }
+
+        public PairExpression withLeft(Permission.Expression left) {
+            this.left = left;
+
+            return this;
+        }
+        public Permission.Expression getRight() {
+            return right;
+        }
+
+        public void setRight(Permission.Expression right) {
+            this.right = right;
+        }
+
+        public PairExpression withRight(Permission.Expression right) {
+            this.right = right;
+
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof PairExpression)) {
+                return false;
+            }
+
+            PairExpression obj = (PairExpression) o;
+
+            if (!Objects.equals(this.left, obj.left)) {
+                return false;
+            }
+            if (!Objects.equals(this.right, obj.right)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(left, right);
+        }
+    }
+    public static class RegexMatchExpression {
+        
+        private String pattern;
+        
+        private Permission.Expression expression;
+
+        public String getPattern() {
+            return pattern;
+        }
+
+        public void setPattern(String pattern) {
+            this.pattern = pattern;
+        }
+
+        public RegexMatchExpression withPattern(String pattern) {
+            this.pattern = pattern;
+
+            return this;
+        }
+        public Permission.Expression getExpression() {
+            return expression;
+        }
+
+        public void setExpression(Permission.Expression expression) {
+            this.expression = expression;
+        }
+
+        public RegexMatchExpression withExpression(Permission.Expression expression) {
+            this.expression = expression;
+
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof RegexMatchExpression)) {
+                return false;
+            }
+
+            RegexMatchExpression obj = (RegexMatchExpression) o;
+
+            if (!Objects.equals(this.pattern, obj.pattern)) {
+                return false;
+            }
+            if (!Objects.equals(this.expression, obj.expression)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(pattern, expression);
+        }
+    }
+    public static class Expression {
+        
+        private String property;
+        
+        private Object value;
+
+        public String getProperty() {
+            return property;
+        }
+
+        public void setProperty(String property) {
+            this.property = property;
+        }
+
+        public Expression withProperty(String property) {
+            this.property = property;
+
+            return this;
+        }
+        public Object getValue() {
+            return value;
+        }
+
+        public void setValue(Object value) {
             this.value = value;
         }
 
-        @JsonValue
-        public String getValue() {
-            return value;
+        public Expression withValue(Object value) {
+            this.value = value;
+
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Expression)) {
+                return false;
+            }
+
+            Expression obj = (Expression) o;
+
+            if (!Objects.equals(this.property, obj.property)) {
+                return false;
+            }
+            if (!Objects.equals(this.value, obj.value)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+           return Objects.hash(property, value);
         }
     }
+
     public static enum Operation {
         READ("READ"),
         CREATE("CREATE"),
@@ -262,42 +627,16 @@ public class Permission extends Entity {
 
         return this;
     }
-    public String getProperty() {
-        return property;
+    public Permission.BooleanExpression getRecordSelector() {
+        return recordSelector;
     }
 
-    public void setProperty(String property) {
-        this.property = property;
+    public void setRecordSelector(Permission.BooleanExpression recordSelector) {
+        this.recordSelector = recordSelector;
     }
 
-    public Permission withProperty(String property) {
-        this.property = property;
-
-        return this;
-    }
-    public String getPropertyValue() {
-        return propertyValue;
-    }
-
-    public void setPropertyValue(String propertyValue) {
-        this.propertyValue = propertyValue;
-    }
-
-    public Permission withPropertyValue(String propertyValue) {
-        this.propertyValue = propertyValue;
-
-        return this;
-    }
-    public Permission.PropertyMode getPropertyMode() {
-        return propertyMode;
-    }
-
-    public void setPropertyMode(Permission.PropertyMode propertyMode) {
-        this.propertyMode = propertyMode;
-    }
-
-    public Permission withPropertyMode(Permission.PropertyMode propertyMode) {
-        this.propertyMode = propertyMode;
+    public Permission withRecordSelector(Permission.BooleanExpression recordSelector) {
+        this.recordSelector = recordSelector;
 
         return this;
     }
@@ -311,19 +650,6 @@ public class Permission extends Entity {
 
     public Permission withOperation(Permission.Operation operation) {
         this.operation = operation;
-
-        return this;
-    }
-    public java.util.List<String> getRecordIds() {
-        return recordIds;
-    }
-
-    public void setRecordIds(java.util.List<String> recordIds) {
-        this.recordIds = recordIds;
-    }
-
-    public Permission withRecordIds(java.util.List<String> recordIds) {
-        this.recordIds = recordIds;
 
         return this;
     }
@@ -429,19 +755,10 @@ public class Permission extends Entity {
         if (!Objects.equals(this.resource, obj.resource)) {
             return false;
         }
-        if (!Objects.equals(this.property, obj.property)) {
-            return false;
-        }
-        if (!Objects.equals(this.propertyValue, obj.propertyValue)) {
-            return false;
-        }
-        if (!Objects.equals(this.propertyMode, obj.propertyMode)) {
+        if (!Objects.equals(this.recordSelector, obj.recordSelector)) {
             return false;
         }
         if (!Objects.equals(this.operation, obj.operation)) {
-            return false;
-        }
-        if (!Objects.equals(this.recordIds, obj.recordIds)) {
             return false;
         }
         if (!Objects.equals(this.before, obj.before)) {
