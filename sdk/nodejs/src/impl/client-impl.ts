@@ -37,8 +37,16 @@ export class Urls {
         return `${url}/${restPath}/_search`;
     }
 
-    static recordWatchUrl(url: string, restPath: string) {
-        return `${url}/${restPath}/_watch`;
+    static recordWatchUrl(url: string, restPath: string, filters?: { [key: string]: string }) {
+        let watchUrl = `${url}/${restPath}/_watch`;
+
+        if (filters) {
+            if (watchUrl) {
+                watchUrl += '?' + Object.entries(filters).map(entry => encodeURIComponent(entry[0]) + '=' + encodeURIComponent(entry[1])).join('&')
+            }
+        }
+
+        return watchUrl;
     }
 
     static recordByIdUrl(url: string, restPath: string, id: string) {

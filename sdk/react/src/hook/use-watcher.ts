@@ -6,7 +6,7 @@ import { useClient } from '../context'
 
 export function useWatcher(
   entityInfo: EntityInfo,
-  filter: (event: Event) => boolean = () => true
+  filters?: { [key: string]: string }
 ): number {
   const client = useClient()
 
@@ -25,7 +25,7 @@ export function useWatcher(
       while (!controller.signal.aborted) {
         console.log('Starting watch')
         const response = await fetch(
-          Urls.recordWatchUrl(client.getUrl(), entityInfo.restPath),
+          Urls.recordWatchUrl(client.getUrl(), entityInfo.restPath, filters),
           {
             method: 'GET',
             headers: {
@@ -55,10 +55,6 @@ export function useWatcher(
             if (event.id === 'heartbeat-message') {
               // console.log('Received heartbeat event')
             } else {
-              // console.log('Received event: ', event)
-              if (filter && !filter(event)) {
-                continue
-              }
               triggerUpdate()
             }
           } catch (e) {
@@ -69,7 +65,9 @@ export function useWatcher(
       }
     }
 
-    watchInternal()
+    watchInternal().then(() => {
+      console.log('Watch completed')
+    })
 
     return () => {
       console.log('Aborting watch')

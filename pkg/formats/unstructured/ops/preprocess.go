@@ -51,6 +51,10 @@ func (p *preprocessor) runPreprocess(un unstructured.Unstructured) (interface{},
 		return p.runIncludeFile(un)
 	}
 
+	if util.ArrayContains(keys, "$base64File") {
+		return p.runIncludeBase64File(un)
+	}
+
 	if util.ArrayContains(keys, "$folder") {
 		return p.runIncludeFolder(un)
 	}
@@ -122,6 +126,18 @@ func (p *preprocessor) runIncludeFile(un unstructured.Unstructured) (string, err
 	}
 
 	return string(dat), nil
+}
+
+func (p *preprocessor) runIncludeBase64File(un unstructured.Unstructured) (string, error) {
+	filePath := un["$base64File"]
+
+	dat, err := os.ReadFile(filePath.(string))
+
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(dat), nil
 }
 
 func (p *preprocessor) runIncludeFolder(un unstructured.Unstructured) (string, error) {
@@ -322,7 +338,7 @@ func (p *preprocessor) runPreprocessProperties(un unstructured.Unstructured) (un
 }
 
 var preprocessKeywords = []string{
-	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties", "$file", "$folder",
+	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties", "$file", "$base64File", "$folder",
 }
 
 func isPreprocessorKey(key string) bool {

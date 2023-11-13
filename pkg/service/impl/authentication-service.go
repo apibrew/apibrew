@@ -12,6 +12,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/apibrew/apibrew/pkg/util/jwt-model"
+	"github.com/apibrew/apibrew/pkg/util/query"
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -249,10 +250,41 @@ func (s *authenticationService) collectUserPermissions(ctx context.Context, user
 
 	for _, roleRecord := range roleRecords {
 		role := resource_model.RoleMapperInstance.FromRecord(roleRecord)
-		result = append(result, role.Permissions...)
-	}
 
-	// preprocess permissions // @todo fixme
+		for _, permission := range role.Permissions {
+			query.WalkBooleanExpressionValues(permission.RecordSelector, func(value interface{}) interface{} {
+				if valueStrp, ok := value.(*interface{}); ok && valueStrp != nil {
+					if valueStr, ok2 := (*valueStrp).(string); ok2 {
+						if valueStr == "$role" || valueStr == "$roleName" {
+							return role.Name
+						} else if valueStr == "$roleId" || valueStr == "$rid" {
+							return role.Id.String()
+						}
+					}
+				}
+
+				return value
+			})
+		}
+
+		result = append(result, role.Permissions...)
+
+		for _, permission := range result {
+			query.WalkBooleanExpressionValues(permission.RecordSelector, func(value interface{}) interface{} {
+				if valueStrp, ok := value.(*interface{}); ok && valueStrp != nil {
+					if valueStr, ok2 := (*valueStrp).(string); ok2 {
+						if valueStr == "$user" || valueStr == "$username" {
+							return user.Username
+						} else if valueStr == "$userId" || valueStr == "$uid" {
+							return user.Id.String()
+						}
+					}
+				}
+
+				return value
+			})
+		}
+	}
 
 	return result, nil
 }
