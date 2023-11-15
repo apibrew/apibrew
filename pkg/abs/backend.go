@@ -28,7 +28,7 @@ type BackendRecordsInterface interface {
 	AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError)
 	UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError)
 	GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError)
-	DeleteRecords(ctx context.Context, resource *model.Resource, ids []string) errors.ServiceError
+	DeleteRecords(ctx context.Context, resource *model.Resource, ids []*model.Record) errors.ServiceError
 	ListRecords(ctx context.Context, resource *model.Resource, params ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError)
 }
 

@@ -45,18 +45,27 @@ func (a *authorizationService) CheckRecordAccess(ctx context.Context, params ser
 }
 
 func (a *authorizationService) CheckRecordAccessWithRecordSelector(ctx context.Context, params service.CheckRecordAccessParams) (*resource_model.BooleanExpression, errors.ServiceError) {
+	logger := log.WithFields(logging.CtxFields(ctx))
+
 	if util.IsSystemContext(ctx) {
+		logger.Trace("System context, skipping authorization check")
 		return nil, nil
 	}
 
-	if annotations.IsEnabled(params.Resource, annotations.AllowPublicWriteAccess) || params.Operation == resource_model.PermissionOperation_READ && annotations.IsEnabled(params.Resource, annotations.AllowPublicAccess) {
+	if annotations.IsEnabled(params.Resource, annotations.AllowPublicAccess) {
+		logger.Trace("Public access is allowed")
+		return nil, nil
+	}
+
+	if annotations.IsEnabled(params.Resource, a.locatePublicAccessAnnotation(params.Operation)) {
+		logger.Trace("Public access is allowed")
 		return nil, nil
 	}
 
 	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
 
 	if userDetails == nil {
-		return nil, errors.AccessDeniedError.WithDetails("Public access is denied")
+		return nil, errors.AccessDeniedError.WithDetails("Public access is denied to resource: " + params.Resource.Name)
 	}
 
 	var permissions []*resource_model.Permission
@@ -69,6 +78,21 @@ func (a *authorizationService) CheckRecordAccessWithRecordSelector(ctx context.C
 		return exp, nil
 	} else {
 		return nil, errors.AccessDeniedError.WithDetails("User don't have permission to access this resource").WithErrorFields(errorFields)
+	}
+}
+
+func (a *authorizationService) locatePublicAccessAnnotation(operation resource_model.PermissionOperation) string {
+	switch operation {
+	case resource_model.PermissionOperation_READ:
+		return annotations.AllowPublicReadAccess
+	case resource_model.PermissionOperation_UPDATE:
+		return annotations.AllowPublicUpdateAccess
+	case resource_model.PermissionOperation_DELETE:
+		return annotations.AllowPublicDeleteAccess
+	case resource_model.PermissionOperation_CREATE:
+		return annotations.AllowPublicCreateAccess
+	default:
+		return annotations.AllowPublicAccess
 	}
 }
 
@@ -108,7 +132,7 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 			if exp == nil {
 				exp = expLocal
 			} else {
-				exp = &resource_model.BooleanExpression{And: []resource_model.BooleanExpression{
+				exp = &resource_model.BooleanExpression{Or: []resource_model.BooleanExpression{
 					*exp, *expLocal,
 				}}
 			}

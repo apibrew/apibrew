@@ -87,11 +87,11 @@ func (b backendProviderService) GetRecord(ctx context.Context, resource *model.R
 	return endEvent.Records[0], nil
 }
 
-func (b backendProviderService) DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError {
+func (b backendProviderService) DeleteRecords(ctx context.Context, resource *model.Resource, list []*model.Record) errors.ServiceError {
 	_, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
 		Action:   model.Event_DELETE,
 		Resource: resource,
-		Records:  util.ArrayMap(list, util.IdRecord),
+		Records:  list,
 	}))
 
 	return err

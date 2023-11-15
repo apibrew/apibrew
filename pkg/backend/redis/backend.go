@@ -97,8 +97,12 @@ func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, i
 	return record, nil
 }
 
-func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resource, list []string) errors.ServiceError {
-	_, err := r.rdb.Del(ctx, util.ArrayMap(list, func(item string) string {
+func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
+	var ids = util.ArrayMap(records, func(record *model.Record) string {
+		return util.GetRecordId(resource, record)
+	})
+
+	_, err := r.rdb.Del(ctx, util.ArrayMap(ids, func(item string) string {
 		return r.getKey(resource, item)
 	})...).Result()
 

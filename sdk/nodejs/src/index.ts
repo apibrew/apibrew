@@ -10,5 +10,10 @@ export * from './list-record-params'
 export * from './boolean-expression-builder'
 export * from './token-body'
 
+export * from './impl/client-impl'
+export * from './impl/channel-event-poller'
+export * from './impl/repository-impl'
+export * from './impl/watcher-impl'
+
 
 import './model'

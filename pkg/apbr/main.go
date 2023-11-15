@@ -33,11 +33,13 @@ func init() {
 	rootCmd.AddCommand(configureCmd)
 	rootCmd.AddCommand(deployCmd)
 	rootCmd.AddCommand(loadCmd)
+	rootCmd.AddCommand(watchCmd)
 	defineRootFlags(rootCmd)
 }
 
 func PrepareRootCmd() *cobra.Command {
 	initGetCmd()
+	initWatchCmd()
 
 	return rootCmd
 }

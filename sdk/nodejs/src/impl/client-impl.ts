@@ -15,6 +15,7 @@ import {ListRecordParams} from "../list-record-params";
 import {GetRecordParams} from "../get-record-params";
 import {TokenStorage} from '../token-storage';
 import {TokenBody} from '../token-body';
+import {decodeBase64} from "../util/base64";
 
 export class Urls {
     static resourceUrl(url: string) {
@@ -480,7 +481,7 @@ export class ClientImpl implements Client {
             return;
         }
 
-        const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString('utf-8'));
+        const payload = JSON.parse(decodeBase64(tokenParts[1]));
 
         return payload as TokenBody
     }

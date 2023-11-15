@@ -388,9 +388,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	defer func() {
 		if err != nil {
 			log.Print("Reverting created records for resource: " + resource.Name + " with id: " + util.GetRecordId(resource, result[0]) + " due to error: " + err.Error() + " ...")
-			if err := r.backendProviderService.DeleteRecords(util.WithSystemContext(context.TODO()), resources.ResourceResource, []string{
-				util.GetRecordId(resource, result[0]),
-			}); err != nil {
+			if err := r.backendProviderService.DeleteRecords(util.WithSystemContext(context.TODO()), resources.ResourceResource, result); err != nil {
 				log.Error(err)
 			}
 		}
@@ -632,7 +630,7 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			return err
 		}
 
-		err = r.backendProviderService.DeleteRecords(ctx, resources.ResourceResource, []string{resourceId})
+		err = r.backendProviderService.DeleteRecords(ctx, resources.ResourceResource, []*model.Record{util.IdRecord(resourceId)})
 
 		if err != nil {
 			return err

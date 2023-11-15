@@ -2,6 +2,7 @@ import {Client} from "../../client";
 import {NanoService} from "../nano-service";
 import {Code, CodeEntityInfo, Language} from "../model/code";
 import {Repository} from "../../repository";
+import {decodeBase64} from "../../util/base64";
 
 export class NanoServiceImpl implements NanoService {
     private repo: Repository<Code>;
@@ -22,7 +23,7 @@ export class NanoServiceImpl implements NanoService {
         return this.deployCode({
             name: name,
             language: language,
-            content: Buffer.from(source, "utf-8").toString("base64"),
+            content: decodeBase64(source),
         } as Code, override)
     }
 

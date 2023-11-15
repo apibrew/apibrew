@@ -767,10 +767,14 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 				return errors.RecordNotFoundError.WithMessage("Record not found with id: " + id)
 			}
 		}
-	}
 
-	if err = r.backendServiceProvider.DeleteRecords(ctx, resource, params.Ids); err != nil {
-		return err
+		if err = r.backendServiceProvider.DeleteRecords(ctx, resource, records); err != nil {
+			return err
+		}
+	} else {
+		if err = r.backendServiceProvider.DeleteRecords(ctx, resource, util.ArrayMap(params.Ids, util.IdRecord)); err != nil {
+			return err
+		}
 	}
 
 	return nil

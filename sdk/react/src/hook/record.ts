@@ -7,13 +7,14 @@ export function useRecordByName<
   T extends Entity & {
     name: string
   }
->(entityInfo: EntityInfo, name: string): T | undefined {
-  return useRecordBy<T>(entityInfo, { name: name } as any)
+>(entityInfo: EntityInfo, name: string, wi?: number): T | undefined {
+  return useRecordBy<T>(entityInfo, { name: name } as any, wi)
 }
 
 export function useRecordBy<T extends Entity>(
   entityInfo: EntityInfo,
-  identifier: Partial<T>
+  identifier: Partial<T>,
+  wi?: number
 ): T | undefined {
   const repository = useRepository<T>(entityInfo)
 
@@ -22,14 +23,15 @@ export function useRecordBy<T extends Entity>(
 
   useEffect(() => {
     repository.load(identifier).then(setRecord, errorHandler)
-  }, [entityInfo, identifier])
+  }, [entityInfo.restPath, JSON.stringify(identifier), wi])
 
   return record
 }
 
 export function useRecords<T extends Entity>(
   entityInfo: EntityInfo,
-  params?: ListRecordParams
+  params?: ListRecordParams,
+  wi?: number
 ) {
   const repository = useRepository<T>(entityInfo)
 
@@ -40,7 +42,7 @@ export function useRecords<T extends Entity>(
     repository.list(params).then((response) => {
       setRecords(response.content)
     }, errorHandler)
-  }, [entityInfo, params])
+  }, [entityInfo.restPath, JSON.stringify(params), wi])
 
   return records
 }

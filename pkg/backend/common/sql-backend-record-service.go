@@ -10,6 +10,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -110,7 +111,10 @@ func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id
 	return record, err
 }
 
-func (p *sqlBackend) DeleteRecords(ctx context.Context, resource *model.Resource, ids []string) errors.ServiceError {
+func (p *sqlBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
+	var ids = util.ArrayMap(records, func(record *model.Record) string {
+		return util.GetRecordId(resource, record)
+	})
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("Begin deleting records: %v / %v / %v", resource.Namespace, resource.Name, ids)

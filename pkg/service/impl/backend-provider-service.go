@@ -223,9 +223,7 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 
 		return event, err
 	case model.Event_DELETE:
-		err = bck.DeleteRecords(ctx, event.Resource, util.ArrayMap(event.Records, func(item *model.Record) string {
-			return item.Properties["id"].GetStringValue()
-		}))
+		err = bck.DeleteRecords(ctx, event.Resource, event.Records)
 		return event, err
 	case model.Event_LIST:
 		result, total, err := bck.ListRecords(ctx, event.Resource, abs.ListRecordParams{

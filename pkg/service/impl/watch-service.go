@@ -86,6 +86,9 @@ func (w watchService) watch(ctx context.Context, p service.WatchParams) (<-chan 
 		Id:   "watch-handler-" + watchHandlerId,
 		Name: "watch-handler-" + watchHandlerId,
 		Fn: func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+			if ctx.Err() != nil {
+				return event, nil
+			}
 			out <- event
 
 			return event, nil
