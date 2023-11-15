@@ -9,7 +9,6 @@ import {Event} from "../../model";
 import {Extension, ExtensionEntityInfo, ExternalCall} from "../../model/extension";
 import {Repository} from "../../repository";
 import {Record} from "../../model/record";
-import {randomUUID} from "crypto";
 
 export abstract class AbstractExtensionService implements ExtensionService {
     private extensionRepo: Repository<Extension>;
@@ -114,7 +113,7 @@ export abstract class AbstractExtensionService implements ExtensionService {
     }
 
     registerExtensionWithOperator(extensionInfo: ExtensionInfo, localOperator: (event: Event, entity: Record) => Record): string {
-        const id = randomUUID().toString();
+        const id = generateRandomHex(6);
         this.extensionInfoSet.add(extensionInfo);
 
         if (!this.extensionHandlerMap.get(extensionInfo)) {
@@ -163,4 +162,12 @@ export abstract class AbstractExtensionService implements ExtensionService {
 
     abstract close(): void;
 
+}
+
+function generateRandomHex(length: number) {
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += Math.floor(Math.random() * 16).toString(16);
+    }
+    return result;
 }

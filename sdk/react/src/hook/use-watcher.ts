@@ -23,44 +23,50 @@ export function useWatcher(
 
     async function watchInternal() {
       while (!controller.signal.aborted) {
-        console.log('Starting watch')
-        const response = await fetch(
-          Urls.recordWatchUrl(client.getUrl(), entityInfo.restPath, filters),
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'text/event-stream',
-              ...client.headers()
-            },
-            signal: controller.signal
+        try {
+          console.log('Starting watch')
+          const response = await fetch(
+            Urls.recordWatchUrl(client.getUrl(), entityInfo.restPath, filters),
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'text/event-stream',
+                ...client.headers()
+              },
+              signal: controller.signal
+            }
+          )
+
+          if (!response.body) {
+            throw new Error('No response body')
           }
-        )
 
-        if (!response.body) {
-          throw new Error('No response body')
-        }
+          const reader = response.body
+            .pipeThrough(new TextDecoderStream())
+            .getReader()
+          while (true) {
+            try {
+              const { value, done } = await reader.read()
+              if (done) break
+              if (!value) {
+                break
+              }
+              const event = JSON.parse(value) as Event
 
-        const reader = response.body
-          .pipeThrough(new TextDecoderStream())
-          .getReader()
-        while (true) {
-          try {
-            const { value, done } = await reader.read()
-            if (done) break
-            if (!value) {
+              if (event.id === 'heartbeat-message') {
+                // console.log('Received heartbeat event')
+              } else {
+                triggerUpdate()
+              }
+            } catch (e) {
+              console.error('Error reading data', e)
               break
             }
-            const event = JSON.parse(value) as Event
-
-            if (event.id === 'heartbeat-message') {
-              // console.log('Received heartbeat event')
-            } else {
-              triggerUpdate()
-            }
-          } catch (e) {
-            console.error('Error reading data', e)
-            break
           }
+        } catch (e) {
+          console.error('Error watching', e)
+          // delay before retrying
+          await new Promise((resolve) => setTimeout(resolve, 1000))
         }
       }
     }
