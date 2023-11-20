@@ -86,7 +86,7 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 			Entity:     record.Properties["entity"].GetStringValue(),
 			Catalog:    record.Properties["catalog"].GetStringValue(),
 		},
-		Properties: util.ArrayMap(record.Properties["properties"].GetListValue().Values, func(t *structpb.Value) *model.ResourceProperty {
+		Properties: convertMap(record.Properties["properties"].GetStructValue().Fields, func(t *structpb.Value) *model.ResourceProperty {
 			return ResourcePropertyFromRecord(&model.Record{Properties: t.GetStructValue().Fields})
 		}),
 		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
@@ -189,7 +189,7 @@ func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
 	var st = val.GetStructValue()
 	rt := &model.ResourceSubType{
 		Name: st.GetFields()["name"].GetStringValue(),
-		Properties: util.ArrayMap(st.GetFields()["properties"].GetListValue().Values, func(t *structpb.Value) *model.ResourceProperty {
+		Properties: convertMap(st.GetFields()["properties"].GetStructValue().Fields, func(t *structpb.Value) *model.ResourceProperty {
 			return ResourcePropertyFromRecord(&model.Record{Properties: t.GetStructValue().Fields})
 		}),
 	}

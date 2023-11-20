@@ -1,9 +1,9 @@
 {% import "github.com/apibrew/apibrew/pkg/model" %}
 
-{%- func GenerateEnumCode(enumProperty *model.ResourceProperty) -%}
-{%- code typeName := GoName(enumProperty.Name) -%}
+{%- func GenerateEnumCode(resource *model.Resource, enumProperty *model.ResourceProperty) -%}
+{%- code typeName := PropPureGoType(resource, enumProperty) -%}
 
-type {%s enumProperty.Name %} string
+type {%s typeName %} string
 
 const (
 {%- for _, value := range enumProperty.EnumValues -%}

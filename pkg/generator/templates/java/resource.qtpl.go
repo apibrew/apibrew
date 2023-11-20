@@ -143,7 +143,7 @@ public class `)
 //line templates/java/resource.qtpl:36
 			qw422016.N().S(` get`)
 //line templates/java/resource.qtpl:36
-			qw422016.N().S(javaClassName(property.Name))
+			qw422016.N().S(javaClassName(propertyName))
 //line templates/java/resource.qtpl:36
 			qw422016.N().S(`() {
             return `)
@@ -155,7 +155,7 @@ public class `)
 
         public void set`)
 //line templates/java/resource.qtpl:40
-			qw422016.N().S(javaClassName(property.Name))
+			qw422016.N().S(javaClassName(propertyName))
 //line templates/java/resource.qtpl:40
 			qw422016.N().S(`(`)
 //line templates/java/resource.qtpl:40
@@ -183,7 +183,7 @@ public class `)
 //line templates/java/resource.qtpl:44
 			qw422016.N().S(` with`)
 //line templates/java/resource.qtpl:44
-			qw422016.N().S(javaClassName(property.Name))
+			qw422016.N().S(javaClassName(propertyName))
 //line templates/java/resource.qtpl:44
 			qw422016.N().S(`(`)
 //line templates/java/resource.qtpl:44
@@ -479,7 +479,7 @@ public class `)
 //line templates/java/resource.qtpl:121
 		qw422016.N().S(` get`)
 //line templates/java/resource.qtpl:121
-		qw422016.N().S(javaClassName(property.Name))
+		qw422016.N().S(javaClassName(propertyName))
 //line templates/java/resource.qtpl:121
 		qw422016.N().S(`() {
         return `)
@@ -491,7 +491,7 @@ public class `)
 
     public void set`)
 //line templates/java/resource.qtpl:125
-		qw422016.N().S(javaClassName(property.Name))
+		qw422016.N().S(javaClassName(propertyName))
 //line templates/java/resource.qtpl:125
 		qw422016.N().S(`(`)
 //line templates/java/resource.qtpl:125
@@ -519,7 +519,7 @@ public class `)
 //line templates/java/resource.qtpl:129
 		qw422016.N().S(` with`)
 //line templates/java/resource.qtpl:129
-		qw422016.N().S(javaClassName(property.Name))
+		qw422016.N().S(javaClassName(propertyName))
 //line templates/java/resource.qtpl:129
 		qw422016.N().S(`(`)
 //line templates/java/resource.qtpl:129

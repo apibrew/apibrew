@@ -140,7 +140,7 @@ func StreamGeneratePropertyDef(qw422016 *qt422016.Writer, resource *model.Resour
 	qw422016.N().S(`{
         Name:     "`)
 //line templates/java/resource-def.qtpl:39
-	qw422016.E().S(property.Name)
+	qw422016.E().S(propertyName)
 //line templates/java/resource-def.qtpl:39
 	qw422016.N().S(`",
         Type:     model.ResourceProperty_`)
@@ -428,7 +428,7 @@ func StreamGenerateResourceDefCode(qw422016 *qt422016.Writer, resource *model.Re
 //line templates/java/resource-def.qtpl:103
 				qw422016.N().S(`new ResourceIndexProperty() .withName("`)
 //line templates/java/resource-def.qtpl:105
-				qw422016.E().S(property.Name)
+				qw422016.E().S(propertyName)
 //line templates/java/resource-def.qtpl:105
 				qw422016.N().S(`") .withOrder(model.ResourceIndexProperty_`)
 //line templates/java/resource-def.qtpl:106

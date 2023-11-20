@@ -10,43 +10,40 @@ import "github.com/google/uuid"
 import "time"
 
 type Extension struct {
-	Id          *uuid.UUID          `json:"id,omitempty"`
-	Version     int32               `json:"version,omitempty"`
-	AuditData   *ExtensionAuditData `json:"auditData,omitempty"`
-	Name        string              `json:"name,omitempty"`
-	Description *string             `json:"description,omitempty"`
-	Selector    *EventSelector      `json:"selector,omitempty"`
-	Order       int32               `json:"order,omitempty"`
-	Finalizes   bool                `json:"finalizes,omitempty"`
-	Sync        bool                `json:"sync,omitempty"`
 	Responds    bool                `json:"responds,omitempty"`
 	Call        ExternalCall        `json:"call,omitempty"`
 	Annotations map[string]string   `json:"annotations,omitempty"`
+	Version     int32               `json:"version,omitempty"`
+	AuditData   *ExtensionAuditData `json:"auditData,omitempty"`
+	Description *string             `json:"description,omitempty"`
+	Order       int32               `json:"order,omitempty"`
+	Sync        bool                `json:"sync,omitempty"`
+	Id          *uuid.UUID          `json:"id,omitempty"`
+	Name        string              `json:"name,omitempty"`
+	Selector    *EventSelector      `json:"selector,omitempty"`
+	Finalizes   bool                `json:"finalizes,omitempty"`
 }
 
-func (s *Extension) GetId() *uuid.UUID {
-	return s.Id
-}
-func (s *Extension) GetVersion() int32 {
-	return s.Version
-}
-func (s *Extension) GetAuditData() *ExtensionAuditData {
-	return s.AuditData
-}
 func (s *Extension) GetName() string {
 	return s.Name
-}
-func (s *Extension) GetDescription() *string {
-	return s.Description
 }
 func (s *Extension) GetSelector() *EventSelector {
 	return s.Selector
 }
-func (s *Extension) GetOrder() int32 {
-	return s.Order
-}
 func (s *Extension) GetFinalizes() bool {
 	return s.Finalizes
+}
+func (s *Extension) GetId() *uuid.UUID {
+	return s.Id
+}
+func (s *Extension) GetAuditData() *ExtensionAuditData {
+	return s.AuditData
+}
+func (s *Extension) GetDescription() *string {
+	return s.Description
+}
+func (s *Extension) GetOrder() int32 {
+	return s.Order
 }
 func (s *Extension) GetSync() bool {
 	return s.Sync
@@ -60,27 +57,24 @@ func (s *Extension) GetCall() ExternalCall {
 func (s *Extension) GetAnnotations() map[string]string {
 	return s.Annotations
 }
+func (s *Extension) GetVersion() int32 {
+	return s.Version
+}
 
 type BooleanExpression struct {
 	And                []BooleanExpression   `json:"and,omitempty"`
 	Or                 []BooleanExpression   `json:"or,omitempty"`
+	GreaterThanOrEqual *PairExpression       `json:"greaterThanOrEqual,omitempty"`
+	RegexMatch         *RegexMatchExpression `json:"regexMatch,omitempty"`
+	IsNull             *Expression           `json:"isNull,omitempty"`
 	Not                *BooleanExpression    `json:"not,omitempty"`
 	Equal              *PairExpression       `json:"equal,omitempty"`
 	LessThan           *PairExpression       `json:"lessThan,omitempty"`
 	GreaterThan        *PairExpression       `json:"greaterThan,omitempty"`
 	LessThanOrEqual    *PairExpression       `json:"lessThanOrEqual,omitempty"`
-	GreaterThanOrEqual *PairExpression       `json:"greaterThanOrEqual,omitempty"`
 	In                 *PairExpression       `json:"in,omitempty"`
-	IsNull             *Expression           `json:"isNull,omitempty"`
-	RegexMatch         *RegexMatchExpression `json:"regexMatch,omitempty"`
 }
 
-func (s *BooleanExpression) GetAnd() []BooleanExpression {
-	return s.And
-}
-func (s *BooleanExpression) GetOr() []BooleanExpression {
-	return s.Or
-}
 func (s *BooleanExpression) GetNot() *BooleanExpression {
 	return s.Not
 }
@@ -96,14 +90,20 @@ func (s *BooleanExpression) GetGreaterThan() *PairExpression {
 func (s *BooleanExpression) GetLessThanOrEqual() *PairExpression {
 	return s.LessThanOrEqual
 }
-func (s *BooleanExpression) GetGreaterThanOrEqual() *PairExpression {
-	return s.GreaterThanOrEqual
-}
 func (s *BooleanExpression) GetIn() *PairExpression {
 	return s.In
 }
 func (s *BooleanExpression) GetIsNull() *Expression {
 	return s.IsNull
+}
+func (s *BooleanExpression) GetAnd() []BooleanExpression {
+	return s.And
+}
+func (s *BooleanExpression) GetOr() []BooleanExpression {
+	return s.Or
+}
+func (s *BooleanExpression) GetGreaterThanOrEqual() *PairExpression {
+	return s.GreaterThanOrEqual
 }
 func (s *BooleanExpression) GetRegexMatch() *RegexMatchExpression {
 	return s.RegexMatch
@@ -122,15 +122,15 @@ func (s *PairExpression) GetRight() *Expression {
 }
 
 type RegexMatchExpression struct {
-	Pattern    *string     `json:"pattern,omitempty"`
 	Expression *Expression `json:"expression,omitempty"`
+	Pattern    *string     `json:"pattern,omitempty"`
 }
 
-func (s *RegexMatchExpression) GetPattern() *string {
-	return s.Pattern
-}
 func (s *RegexMatchExpression) GetExpression() *Expression {
 	return s.Expression
+}
+func (s *RegexMatchExpression) GetPattern() *string {
+	return s.Pattern
 }
 
 type Expression struct {
@@ -203,23 +203,23 @@ type ExternalCall struct {
 	ChannelCall  *ChannelCall  `json:"channelCall,omitempty"`
 }
 
-func (s *ExternalCall) GetFunctionCall() *FunctionCall {
-	return s.FunctionCall
-}
 func (s *ExternalCall) GetHttpCall() *HttpCall {
 	return s.HttpCall
 }
 func (s *ExternalCall) GetChannelCall() *ChannelCall {
 	return s.ChannelCall
 }
+func (s *ExternalCall) GetFunctionCall() *FunctionCall {
+	return s.FunctionCall
+}
 
 type EventSelector struct {
+	Annotations    map[string]string  `json:"annotations,omitempty"`
 	Actions        []EventAction      `json:"actions,omitempty"`
 	RecordSelector *BooleanExpression `json:"recordSelector,omitempty"`
 	Namespaces     []string           `json:"namespaces,omitempty"`
 	Resources      []string           `json:"resources,omitempty"`
 	Ids            []string           `json:"ids,omitempty"`
-	Annotations    map[string]string  `json:"annotations,omitempty"`
 }
 
 func (s *EventSelector) GetActions() []EventAction {
@@ -242,10 +242,10 @@ func (s *EventSelector) GetAnnotations() map[string]string {
 }
 
 type RecordSearchParams struct {
-	Query             *BooleanExpression `json:"query,omitempty"`
 	Limit             *int32             `json:"limit,omitempty"`
 	Offset            *int32             `json:"offset,omitempty"`
 	ResolveReferences []string           `json:"resolveReferences,omitempty"`
+	Query             *BooleanExpression `json:"query,omitempty"`
 }
 
 func (s *RecordSearchParams) GetQuery() *BooleanExpression {
@@ -262,26 +262,44 @@ func (s *RecordSearchParams) GetResolveReferences() []string {
 }
 
 type Event struct {
-	Id                 string              `json:"id,omitempty"`
+	ActionName         *string             `json:"actionName,omitempty"`
+	Time               *time.Time          `json:"time,omitempty"`
 	Action             ExtensionAction     `json:"action,omitempty"`
 	RecordSearchParams *RecordSearchParams `json:"recordSearchParams,omitempty"`
 	ActionSummary      *string             `json:"actionSummary,omitempty"`
-	ActionDescription  *string             `json:"actionDescription,omitempty"`
 	Resource           *Resource           `json:"resource,omitempty"`
 	Records            []*Record           `json:"records,omitempty"`
 	Finalizes          *bool               `json:"finalizes,omitempty"`
-	Sync               *bool               `json:"sync,omitempty"`
-	Time               *time.Time          `json:"time,omitempty"`
 	Total              *int64              `json:"total,omitempty"`
-	ActionName         *string             `json:"actionName,omitempty"`
+	Id                 string              `json:"id,omitempty"`
+	Error              *Error              `json:"error,omitempty"`
+	Sync               *bool               `json:"sync,omitempty"`
 	Input              interface{}         `json:"input,omitempty"`
 	Output             interface{}         `json:"output,omitempty"`
 	Annotations        map[string]string   `json:"annotations,omitempty"`
-	Error              *Error              `json:"error,omitempty"`
+	ActionDescription  *string             `json:"actionDescription,omitempty"`
 }
 
-func (s *Event) GetId() string {
-	return s.Id
+func (s *Event) GetSync() *bool {
+	return s.Sync
+}
+func (s *Event) GetInput() interface{} {
+	return s.Input
+}
+func (s *Event) GetOutput() interface{} {
+	return s.Output
+}
+func (s *Event) GetAnnotations() map[string]string {
+	return s.Annotations
+}
+func (s *Event) GetActionDescription() *string {
+	return s.ActionDescription
+}
+func (s *Event) GetActionName() *string {
+	return s.ActionName
+}
+func (s *Event) GetTime() *time.Time {
+	return s.Time
 }
 func (s *Event) GetAction() ExtensionAction {
 	return s.Action
@@ -292,9 +310,6 @@ func (s *Event) GetRecordSearchParams() *RecordSearchParams {
 func (s *Event) GetActionSummary() *string {
 	return s.ActionSummary
 }
-func (s *Event) GetActionDescription() *string {
-	return s.ActionDescription
-}
 func (s *Event) GetResource() *Resource {
 	return s.Resource
 }
@@ -304,26 +319,11 @@ func (s *Event) GetRecords() []*Record {
 func (s *Event) GetFinalizes() *bool {
 	return s.Finalizes
 }
-func (s *Event) GetSync() *bool {
-	return s.Sync
-}
-func (s *Event) GetTime() *time.Time {
-	return s.Time
-}
 func (s *Event) GetTotal() *int64 {
 	return s.Total
 }
-func (s *Event) GetActionName() *string {
-	return s.ActionName
-}
-func (s *Event) GetInput() interface{} {
-	return s.Input
-}
-func (s *Event) GetOutput() interface{} {
-	return s.Output
-}
-func (s *Event) GetAnnotations() map[string]string {
-	return s.Annotations
+func (s *Event) GetId() string {
+	return s.Id
 }
 func (s *Event) GetError() *Error {
 	return s.Error
@@ -336,9 +336,6 @@ type ErrorField struct {
 	Value    interface{} `json:"value,omitempty"`
 }
 
-func (s *ErrorField) GetRecordId() *string {
-	return s.RecordId
-}
 func (s *ErrorField) GetProperty() *string {
 	return s.Property
 }
@@ -347,6 +344,9 @@ func (s *ErrorField) GetMessage() *string {
 }
 func (s *ErrorField) GetValue() interface{} {
 	return s.Value
+}
+func (s *ErrorField) GetRecordId() *string {
+	return s.RecordId
 }
 
 type Error struct {

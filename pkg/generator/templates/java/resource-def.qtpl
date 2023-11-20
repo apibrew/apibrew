@@ -36,7 +36,7 @@
   {%- endfunc -%}
 
 {%- func GeneratePropertyDef(resource *model.Resource, property *model.ResourceProperty) -%}{
-        Name:     "{%s property.Name %}",
+        Name:     "{%s propertyName %}",
         Type:     model.ResourceProperty_{%s property.Type.String() %},
         {%- if property.Length > 0 %}Length:   {%d int(property.Length) %},
         {% endif-%}
@@ -102,7 +102,7 @@ new Resource()
             .withProperties(
                 {%- for _, property := range index.Properties -%}
                 new ResourceIndexProperty()
-                    .withName("{%s property.Name %}")
+                    .withName("{%s propertyName %}")
                     .withOrder(model.ResourceIndexProperty_{%s property.Order.String() %}),
                 {%- endfor -%}
             )

@@ -7,11 +7,11 @@ import (
 )
 
 func propertyName(property *model.ResourceProperty) string {
-	if isJavaReservedKeyword(property.Name) {
-		return "$" + property.Name
+	if isJavaReservedKeyword(propertyName) {
+		return "$" + propertyName
 	}
 
-	return property.Name
+	return propertyName
 }
 
 func getRestPath(resource *model.Resource) string {
@@ -81,7 +81,7 @@ func getJavaType(resource *model.Resource, property *model.ResourceProperty, non
 	case model.ResourceProperty_REFERENCE:
 		return javaClassName(property.Reference.Resource)
 	case model.ResourceProperty_ENUM:
-		return javaClassName(resource.Name) + "." + javaClassName(property.Name)
+		return javaClassName(resource.Name) + "." + javaClassName(propertyName)
 	case model.ResourceProperty_OBJECT:
 		return "Object"
 	case model.ResourceProperty_LIST:
@@ -143,7 +143,7 @@ func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
 	var enums []*model.ResourceProperty
 	var addedEnum = make(map[string]bool)
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
-		var name = prop.Name
+		var name = propName
 		if prop.Type == model.ResourceProperty_ENUM {
 			var enumName = name
 

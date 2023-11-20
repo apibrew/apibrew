@@ -19,12 +19,11 @@ var RoleResource = &model.Resource{
 	Types: []*model.ResourceSubType{
 		special.AuditDataSubType,
 	},
-	Properties: []*model.ResourceProperty{
-		special.IdProperty,
-		special.VersionProperty,
-		special.AuditProperty,
-		{
-			Name:        "name",
+	Properties: map[string]*model.ResourceProperty{
+		"id":        special.IdProperty,
+		"version":   special.VersionProperty,
+		"auditData": special.AuditProperty,
+		"name": {
 			Title:       util.Pointer("Name"),
 			Description: util.Pointer(`The name of the role`),
 			Type:        model.ResourceProperty_STRING,
@@ -35,8 +34,7 @@ var RoleResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:        "permissions",
+		"permissions": {
 			Description: util.Pointer(`The permissions of the role. It is used to define the access control rules for resources for roles. When you set permissions it is automatically created though Permission Resource. No need to manage it manually`),
 			Type:        model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
@@ -51,8 +49,7 @@ var RoleResource = &model.Resource{
 			},
 			Required: false,
 		},
-		{
-			Name:        "details",
+		"details": {
 			Title:       util.Pointer("Details"),
 			Description: util.Pointer(`The details of the user. It is used to store additional information about the user.`),
 			Type:        model.ResourceProperty_OBJECT,

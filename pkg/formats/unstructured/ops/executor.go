@@ -24,6 +24,7 @@ type Executor struct {
 
 	ResourceHandler func(resource *model.Resource) error
 	RecordHandler   func(namespace string, resource string, record *model.Record) error
+	Type            string
 }
 
 func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
@@ -37,24 +38,20 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 
 	log.Debug("Restoring item: \n", string(bodyStr))
 
-	var elemType string
+	var elemType = body["type"].(string)
 	var namespace string
 	var resourceName string
 	var ok bool
 
-	if elemType, ok = body["type"].(string); !ok {
-		return errors.New("type field is required on record yaml definition")
+	if elemType, ok = body["type"].(string); ok {
+		elemType = e.Type
 	}
 
-	if namespace, ok = body["namespace"].(string); !ok {
-		namespace = "default"
+	if elemType == "" {
+		return errors.New("type (resource) field is required on record definition or on command arguments")
 	}
-
-	resourceName, _ = body["resource"].(string)
 
 	delete(body, "type")
-	delete(body, "resource")
-	delete(body, "namespace")
 
 	if err != nil {
 		return err
@@ -79,32 +76,18 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 			return err
 		}
 	} else {
-		if elemType != "record" {
-			if strings.Contains(elemType, "/") {
-				namespace = strings.Split(elemType, "/")[0]
-				resourceName = strings.Split(elemType, "/")[1]
-			} else {
-				resourceName = elemType
-			}
-		}
-		if resourceName == "" {
-			return errors.New("resource field is required on record yaml definition")
+		if strings.Contains(elemType, "/") {
+			namespace = strings.Split(elemType, "/")[0]
+			resourceName = strings.Split(elemType, "/")[1]
+		} else {
+			resourceName = elemType
 		}
 
 		var record = new(model.Record)
 
-		if _, exists := body["properties"]; !exists {
-			body["properties"] = make(unstructured.Unstructured)
-		}
-
-		for key, value := range body {
-			if key != "properties" {
-				body["properties"].(unstructured.Unstructured)[key] = value
-				delete(body, key)
-			}
-		}
-
-		err = unstructured.ToProtoMessage(body, record)
+		err = unstructured.ToProtoMessage(unstructured.Unstructured{
+			"properties": body,
+		}, record)
 
 		if err != nil {
 			return err
@@ -165,8 +148,8 @@ func (e *Executor) Init(ctx context.Context) error {
 	}
 
 	for _, item := range e.resources {
-		for _, field := range item.Properties {
-			e.resourcePropertyMap[item.Namespace+"/"+item.Name+"/"+field.Name] = field
+		for name, field := range item.Properties {
+			e.resourcePropertyMap[item.Namespace+"/"+item.Name+"/"+name] = field
 		}
 	}
 

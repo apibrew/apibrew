@@ -9,7 +9,6 @@ import (
 func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.Resource) *model.Record {
 	properties := make(map[string]*structpb.Value)
 
-	properties["name"] = structpb.NewStringValue(property.Name)
 	if property.Title != nil {
 		properties["title"] = structpb.NewStringValue(*property.Title)
 	}
@@ -101,7 +100,6 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	var resourceProperty = &model.ResourceProperty{
-		Name:          record.Properties["name"].GetStringValue(),
 		Type:          model.ResourceProperty_Type(model.ResourceProperty_Type_value[record.Properties["type"].GetStringValue()]),
 		Required:      record.Properties["required"].GetBoolValue(),
 		Length:        uint32(record.Properties["length"].GetNumberValue()),

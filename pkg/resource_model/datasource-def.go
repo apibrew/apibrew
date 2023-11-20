@@ -19,9 +19,25 @@ var DataSourceResource = &model.Resource{
 			Name:        "AuditData",
 			Title:       "Audit Data",
 			Description: "Audit Data is a type that represents the audit data of a resource/record. ",
-			Properties: []*model.ResourceProperty{
-				{
-					Name:         "createdBy",
+			Properties: map[string]*model.ResourceProperty{
+				"createdOn": {
+					Type:         model.ResourceProperty_TIMESTAMP,
+					Immutable:    true,
+					ExampleValue: structpb.NewStringValue("2023-11-20T23:38:43+04:00"),
+
+					Annotations: map[string]string{
+						"SpecialProperty": "true",
+					},
+				},
+				"updatedOn": {
+					Type:         model.ResourceProperty_TIMESTAMP,
+					ExampleValue: structpb.NewStringValue("2023-11-20T23:38:43+04:00"),
+
+					Annotations: map[string]string{
+						"SpecialProperty": "true",
+					},
+				},
+				"createdBy": {
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					Immutable:    true,
@@ -31,30 +47,10 @@ var DataSourceResource = &model.Resource{
 						"SpecialProperty": "true",
 					},
 				},
-				{
-					Name:         "updatedBy",
+				"updatedBy": {
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					ExampleValue: structpb.NewStringValue("admin"),
-
-					Annotations: map[string]string{
-						"SpecialProperty": "true",
-					},
-				},
-				{
-					Name:         "createdOn",
-					Type:         model.ResourceProperty_TIMESTAMP,
-					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
-
-					Annotations: map[string]string{
-						"SpecialProperty": "true",
-					},
-				},
-				{
-					Name:         "updatedOn",
-					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -63,14 +59,33 @@ var DataSourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":  "true",
 				"OpenApiGroup": "internal",
+				"EnableAudit":  "true",
 			},
 		},
 	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name:         "id",
+	Properties: map[string]*model.ResourceProperty{
+		"description": {
+			Type:   model.ResourceProperty_STRING,
+			Length: 64,
+
+			Annotations: map[string]string{
+				"AllowEmptyPrimitive": "true",
+			},
+		},
+		"backend": {
+			Type:     model.ResourceProperty_ENUM,
+			Required: true,
+
+			Annotations: map[string]string{
+				"TypeName": "DataSourceBackend",
+			},
+		},
+		"options": {
+			Type:     model.ResourceProperty_MAP,
+			Required: true,
+		},
+		"id": {
 			Type:         model.ResourceProperty_UUID,
 			Required:     true,
 			Immutable:    true,
@@ -81,8 +96,7 @@ var DataSourceResource = &model.Resource{
 				"PrimaryProperty": "true",
 			},
 		},
-		{
-			Name:         "version",
+		"version": {
 			Type:         model.ResourceProperty_INT32,
 			Required:     true,
 			DefaultValue: structpb.NewNumberValue(1),
@@ -93,17 +107,15 @@ var DataSourceResource = &model.Resource{
 				"AllowEmptyPrimitive": "true",
 			},
 		},
-		{
-			Name:         "auditData",
+		"auditData": {
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedOn": structpb.NewStringValue("2023-11-20T23:38:43+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-20T23:38:43+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
 			},
 		},
-		{
-			Name:     "name",
+		"name": {
 			Type:     model.ResourceProperty_STRING,
 			Length:   64,
 			Required: true,
@@ -112,25 +124,6 @@ var DataSourceResource = &model.Resource{
 			Annotations: map[string]string{
 				"IsHclLabel": "true",
 			},
-		},
-		{
-			Name:   "description",
-			Type:   model.ResourceProperty_STRING,
-			Length: 64,
-
-			Annotations: map[string]string{
-				"AllowEmptyPrimitive": "true",
-			},
-		},
-		{
-			Name:     "backend",
-			Type:     model.ResourceProperty_ENUM,
-			Required: true,
-		},
-		{
-			Name:     "options",
-			Type:     model.ResourceProperty_MAP,
-			Required: true,
 		},
 	},
 

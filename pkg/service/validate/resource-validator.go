@@ -7,7 +7,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
-	"strconv"
 	"strings"
 )
 
@@ -86,27 +85,27 @@ func ValidateResource(resource *model.Resource) errors.ServiceError {
 	return nil
 }
 
-func ValidateResourceProperties(resource *model.Resource, path string, depth int, properties []*model.ResourceProperty, wrapped bool) []*model.ErrorField {
+func ValidateResourceProperties(resource *model.Resource, path string, depth int, properties map[string]*model.ResourceProperty, wrapped bool) []*model.ErrorField {
 	var errorFields []*model.ErrorField
-	for i, prop := range properties {
-		propertyPrefix := prop.Name + "."
+	for propName, prop := range properties {
+		propertyPrefix := propName + "."
 
 		if path != "" {
 			propertyPrefix = path + propertyPrefix
 		}
 
 		if !wrapped {
-			if prop.Name == "" {
+			if propName == "" {
 				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
+					Property: propertyPrefix,
 					Message:  "should not be blank",
 					Value:    nil,
 				})
-			} else if !NamePattern.MatchString(prop.Name) {
+			} else if !NamePattern.MatchString(propName) {
 				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
+					Property: propertyPrefix,
 					Message:  "should match pattern " + NamePattern.String(),
-					Value:    structpb.NewStringValue(prop.Name),
+					Value:    structpb.NewStringValue(propName),
 				})
 			}
 		}
@@ -157,7 +156,7 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Value:    nil,
 				})
 			} else {
-				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Item", depth+1, []*model.ResourceProperty{prop.Item}, true)...)
+				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Item", depth+1, map[string]*model.ResourceProperty{"item": prop.Item}, true)...)
 			}
 		}
 
@@ -169,7 +168,7 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Value:    nil,
 				})
 			} else {
-				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Item", depth+1, []*model.ResourceProperty{prop.Item}, true)...)
+				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Item", depth+1, map[string]*model.ResourceProperty{"item": prop.Item}, true)...)
 			}
 		}
 

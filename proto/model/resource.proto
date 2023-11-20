@@ -36,10 +36,6 @@ message ResourceProperty {
     ENUM = 16;
     STRUCT = 17;
   }
-  /*
-    property name
-   */
-  string name = 2 [(model.hcl_label) = "name"];
 
   // type of property
   Type type = 3;
@@ -113,7 +109,7 @@ message ResourceSubType {
   string name = 1;
   string title = 2;
   string description = 3;
-  repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
+  map<string, ResourceProperty> properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
   map<string, string> annotations = 103 [(model.hcl_block) = "annotations"];
 }
 
@@ -122,7 +118,7 @@ message Resource {
   string name = 2 [(model.hcl_label) = "name"]; // unique resource name, it is unique per namespace
   string namespace = 3; // each resource is kept inside a namespace. One namespace can have multiple resources
   ResourceSourceConfig sourceConfig = 5 [(model.hcl_block) = "sourceConfig"]; //
-  repeated ResourceProperty properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
+  map<string, ResourceProperty> properties = 6 [(model.hcl_block) = "property"]; // list of properties of resource. This properties will be used by records of resource. Properties is columns on sql databases. For schemaless data structures properties is only managed by API Brew itself
   repeated ResourceSubType types = 7 [(model.hcl_block) = "type"];
   repeated ResourceIndex indexes = 8 [(model.hcl_block) = "index"]; // list of resource indexes. Its implementation is depending on data source backend and may not be supported by some backends.
   bool virtual = 11; // If virtual is true. Operations will not phisically affect datasource/backend. Virtual resources is for   extension purposes. Their behaviors can be extended and altered. It can also be used to integrate 3rd party systems.

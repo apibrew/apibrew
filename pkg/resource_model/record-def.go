@@ -17,30 +17,27 @@ var RecordResource = &model.Resource{
 	Namespace:   "system",
 	Title:       util.Pointer("Generic Record"),
 	Description: util.Pointer("A generic record resource. All Apis are extended from Generic Record resource"),
-	Properties: []*model.ResourceProperty{
-		{
-			Name:         "id",
+	Properties: map[string]*model.ResourceProperty{
+		"properties": {
+			Type:     model.ResourceProperty_OBJECT,
+			Required: true,
+		},
+		"packedProperties": {
+			Type: model.ResourceProperty_LIST,
+
+			Annotations: map[string]string{
+				"OpenApiHide": "true",
+			},
+		},
+		"id": {
 			Type:         model.ResourceProperty_UUID,
 			Required:     true,
 			Immutable:    true,
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
-				"SpecialProperty": "true",
 				"PrimaryProperty": "true",
-			},
-		},
-		{
-			Name:     "properties",
-			Type:     model.ResourceProperty_OBJECT,
-			Required: true,
-		},
-		{
-			Name: "packedProperties",
-			Type: model.ResourceProperty_LIST,
-
-			Annotations: map[string]string{
-				"OpenApiHide": "true",
+				"SpecialProperty": "true",
 			},
 		},
 	},

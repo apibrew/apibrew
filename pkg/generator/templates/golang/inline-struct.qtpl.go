@@ -21,16 +21,16 @@ var (
 )
 
 //line templates/golang/inline-struct.qtpl:3
-func StreamGenerateInlineStructCode(qw422016 *qt422016.Writer, resource *model.Resource, properties []*model.ResourceProperty) {
+func StreamGenerateInlineStructCode(qw422016 *qt422016.Writer, resource *model.Resource, properties map[string]*model.ResourceProperty) {
 //line templates/golang/inline-struct.qtpl:3
 	qw422016.N().S(`struct {
 `)
 //line templates/golang/inline-struct.qtpl:5
-	for _, property := range properties {
+	for propName, property := range properties {
 //line templates/golang/inline-struct.qtpl:5
 		qw422016.N().S(`	    `)
 //line templates/golang/inline-struct.qtpl:6
-		StreamGoName(qw422016, property.Name)
+		StreamGoName(qw422016, propName)
 //line templates/golang/inline-struct.qtpl:6
 		qw422016.N().S(` `)
 //line templates/golang/inline-struct.qtpl:6
@@ -46,7 +46,7 @@ func StreamGenerateInlineStructCode(qw422016 *qt422016.Writer, resource *model.R
 }
 
 //line templates/golang/inline-struct.qtpl:8
-func WriteGenerateInlineStructCode(qq422016 qtio422016.Writer, resource *model.Resource, properties []*model.ResourceProperty) {
+func WriteGenerateInlineStructCode(qq422016 qtio422016.Writer, resource *model.Resource, properties map[string]*model.ResourceProperty) {
 //line templates/golang/inline-struct.qtpl:8
 	qw422016 := qt422016.AcquireWriter(qq422016)
 //line templates/golang/inline-struct.qtpl:8
@@ -57,7 +57,7 @@ func WriteGenerateInlineStructCode(qq422016 qtio422016.Writer, resource *model.R
 }
 
 //line templates/golang/inline-struct.qtpl:8
-func GenerateInlineStructCode(resource *model.Resource, properties []*model.ResourceProperty) string {
+func GenerateInlineStructCode(resource *model.Resource, properties map[string]*model.ResourceProperty) string {
 //line templates/golang/inline-struct.qtpl:8
 	qb422016 := qt422016.AcquireByteBuffer()
 //line templates/golang/inline-struct.qtpl:8

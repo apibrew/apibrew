@@ -20,9 +20,6 @@ type User struct {
 	Details     interface{}    `json:"details,omitempty"`
 }
 
-func (s *User) GetId() *uuid.UUID {
-	return s.Id
-}
 func (s *User) GetVersion() int32 {
 	return s.Version
 }
@@ -43,6 +40,9 @@ func (s *User) GetPermissions() []*Permission {
 }
 func (s *User) GetDetails() interface{} {
 	return s.Details
+}
+func (s *User) GetId() *uuid.UUID {
+	return s.Id
 }
 
 type UserAuditData struct {

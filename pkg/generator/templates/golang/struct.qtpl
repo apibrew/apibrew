@@ -1,17 +1,17 @@
 {% import "github.com/apibrew/apibrew/pkg/model" %}
 {% import "github.com/apibrew/apibrew/pkg/service/annotations" %}
 
-{%- func GenerateStructCode(pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty, annotated annotations.Annotated) -%}
+{%- func GenerateStructCode(pkg string, resource *model.Resource, name string, properties map[string]*model.ResourceProperty, annotated annotations.Annotated) -%}
 {%- code typeName := GoName(name) -%}
 type {%s typeName %} struct {
-    {%- for _, property := range properties -%}
-	{%= GoName(property.Name) %} {%= PropertyType(resource, property) %} `json:"{%s= GoVarName2(property.Name) %},omitempty"`
+    {%- for propertyName, property := range properties -%}
+	{%= GoName(propertyName) %} {%= PropertyType(resource, property) %} `json:"{%s= GoVarName2(propertyName) %},omitempty"`
 	{%- endfor -%}
 }
 
-{%- for _, property := range properties -%}
-func (s *{%s typeName %}) Get{%= GoName(property.Name) %}() {%= PropertyType(resource, property) %} {
-	return s.{%= GoName(property.Name) %}
+{%- for propertyName, property := range properties -%}
+func (s *{%s typeName %}) Get{%= GoName(propertyName) %}() {%= PropertyType(resource, property) %} {
+	return s.{%= GoName(propertyName) %}
 }
 {%- endfor -%}
 

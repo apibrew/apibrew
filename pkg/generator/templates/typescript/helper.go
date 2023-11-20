@@ -9,7 +9,7 @@ import (
 )
 
 func propertyName(property *model.ResourceProperty) string {
-	return property.Name
+	return propertyName
 }
 
 func getRestPath(resource *model.Resource) string {
@@ -27,7 +27,7 @@ func getTypescriptType(resource *model.Resource, property *model.ResourcePropert
 	case model.ResourceProperty_REFERENCE:
 		return typescriptClassName(property.Reference.Resource)
 	case model.ResourceProperty_ENUM:
-		return typescriptClassName(property.Name)
+		return typescriptClassName(propertyName)
 	case model.ResourceProperty_OBJECT:
 		return "object"
 	case model.ResourceProperty_LIST:
@@ -99,7 +99,7 @@ func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
 	var enums []*model.ResourceProperty
 	var addedEnum = make(map[string]bool)
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
-		var name = prop.Name
+		var name = propName
 		if prop.Type == model.ResourceProperty_ENUM {
 			var enumName = name
 

@@ -16,12 +16,11 @@ var DataSourceResource = &model.Resource{
 	Types: []*model.ResourceSubType{
 		special.AuditDataSubType,
 	},
-	Properties: []*model.ResourceProperty{
-		special.IdProperty,
-		special.VersionProperty,
-		special.AuditProperty,
-		{
-			Name:     "name",
+	Properties: map[string]*model.ResourceProperty{
+		"id":        special.IdProperty,
+		"version":   special.VersionProperty,
+		"auditData": special.AuditProperty,
+		"name": {
 			Length:   64,
 			Unique:   true,
 			Type:     model.ResourceProperty_STRING,
@@ -30,8 +29,7 @@ var DataSourceResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:     "description",
+		"description": {
 			Length:   64,
 			Type:     model.ResourceProperty_STRING,
 			Required: false,
@@ -39,8 +37,7 @@ var DataSourceResource = &model.Resource{
 				annotations.AllowEmptyPrimitive: annotations.Enabled,
 			},
 		},
-		{
-			Name:     "backend",
+		"backend": {
 			Type:     model.ResourceProperty_ENUM,
 			Required: true,
 			EnumValues: []string{
@@ -50,8 +47,7 @@ var DataSourceResource = &model.Resource{
 				"REDIS",
 			},
 		},
-		{
-			Name:     "options",
+		"options": {
 			Required: true,
 			Type:     model.ResourceProperty_MAP,
 			Item: &model.ResourceProperty{

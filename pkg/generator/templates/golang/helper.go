@@ -119,35 +119,48 @@ func getSubTypeNameByProperty(resource *model.Resource, prop *model.ResourceProp
 	return typeVal
 }
 
-func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
-	var enums []*model.ResourceProperty
-	var addedEnum = make(map[string]bool)
+var addedNums = make(map[string]bool)
+
+func getAllEnums(resource *model.Resource) map[string]*model.ResourceProperty {
+	var enums = make(map[string]*model.ResourceProperty)
+
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
-		var name = prop.Name
-		if name == "" {
-			pathParts := strings.Split(path, ".")
-			name = pathParts[len(pathParts)-1]
-			name = strings.ReplaceAll(name, "[]", "")
-		}
+		pathParts := strings.Split(path, ".")
+		name := pathParts[len(pathParts)-1]
+		name = strings.ReplaceAll(name, "[]", "")
+
 		if prop.Type == model.ResourceProperty_ENUM {
-			var enumName = GoName(resource.Name + "_" + name)
+			var enumName = annotations.Get(prop, annotations.TypeName)
 
-			if annotations.Get(prop, annotations.TypeName) != "" {
-				enumName = annotations.Get(prop, annotations.TypeName)
-			}
-
-			if addedEnum[enumName] {
+			if addedNums[enumName] {
 				return
 			}
+			addedNums[enumName] = true
 
-			enums = append(enums, &model.ResourceProperty{
-				Name:       enumName,
-				EnumValues: prop.EnumValues,
-			})
-			addedEnum[enumName] = true
+			enums[enumName] = prop
 		}
 	})
 	return enums
+}
+
+func initResource(resource *model.Resource) {
+	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
+		pathParts := strings.Split(path, ".")
+		name := pathParts[len(pathParts)-1]
+		name = strings.ReplaceAll(name, "[]", "")
+
+		if prop.Type == model.ResourceProperty_ENUM {
+			var enumName = GoName(resource.Name + "_" + name)
+
+			if annotations.Get(prop, annotations.TypeName) == "" {
+				if prop.Annotations == nil {
+					prop.Annotations = make(map[string]string)
+				}
+
+				prop.Annotations[annotations.TypeName] = enumName
+			}
+		}
+	})
 }
 
 func isNullable(prop *model.ResourceProperty) bool {
@@ -164,9 +177,9 @@ func isSelfNullable(prop *model.ResourceProperty) bool {
 
 func PropertyType(resource *model.Resource, prop *model.ResourceProperty) string {
 	if !isNullable(prop) || isSelfNullable(prop) {
-		return PropPureGoType(resource, prop, "")
+		return PropPureGoType(resource, prop)
 	} else {
-		return "*" + PropPureGoType(resource, prop, "")
+		return "*" + PropPureGoType(resource, prop)
 	}
 }
 
@@ -204,36 +217,28 @@ func StreamPropertyType(qw422016 *qt422016.Writer, resource *model.Resource, pro
 	_, _ = qw422016.W().Write([]byte(PropertyType(resource, prop)))
 }
 
-func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty, actualName string) string {
+func PropPureGoType(resource *model.Resource, prop *model.ResourceProperty) string {
 	typeVal := GoTypeRaw(prop)
-
-	if actualName == "" {
-		actualName = prop.Name
-	}
 
 	if prop.Type == model.ResourceProperty_REFERENCE {
 		typeVal = "*" + strcase.ToCamel(prop.Reference.Resource)
 	} else if prop.Type == model.ResourceProperty_MAP {
-		typeVal = "map[string]" + PropPureGoType(resource, prop.Item, prop.Name)
+		typeVal = "map[string]" + PropPureGoType(resource, prop.Item)
 	} else if prop.Type == model.ResourceProperty_LIST {
-		typeVal = "[]" + PropPureGoType(resource, prop.Item, prop.Name)
+		typeVal = "[]" + PropPureGoType(resource, prop.Item)
 	} else if prop.Type == model.ResourceProperty_STRUCT {
 		// locating type
 		typeVal = getSubTypeNameByProperty(resource, prop)
 	} else if prop.Type == model.ResourceProperty_OBJECT {
 		typeVal = "interface{}"
 	} else if prop.Type == model.ResourceProperty_ENUM {
-		typeVal = strcase.ToCamel(resource.Name + "_" + actualName)
-
-		if annotations.Get(prop, annotations.TypeName) != "" {
-			typeVal = annotations.Get(prop, annotations.TypeName)
-		}
+		typeVal = annotations.Get(prop, annotations.TypeName)
 	}
 
 	return typeVal
 }
-func StreamPropPureGoType(qw422016 *qt422016.Writer, resource *model.Resource, prop *model.ResourceProperty, actualName string) {
-	_, _ = qw422016.W().Write([]byte(PropPureGoType(resource, prop, actualName)))
+func StreamPropPureGoType(qw422016 *qt422016.Writer, resource *model.Resource, prop *model.ResourceProperty) {
+	_, _ = qw422016.W().Write([]byte(PropPureGoType(resource, prop)))
 }
 
 func StreamGoTypeRaw(qw422016 *qt422016.Writer, prop *model.ResourceProperty) {

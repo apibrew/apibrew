@@ -25,33 +25,29 @@ var PermissionResource = &model.Resource{
 		sub_types.RegexMatchExpression,
 		sub_types.Expression,
 	},
-	Properties: []*model.ResourceProperty{
-		special.IdProperty,
-		special.VersionProperty,
-		special.AuditProperty,
-		{
-			Name:         "namespace",
+	Properties: map[string]*model.ResourceProperty{
+		"id":        special.IdProperty,
+		"version":   special.VersionProperty,
+		"auditData": special.AuditProperty,
+		"namespace": {
 			Title:        util.Pointer("Namespace"),
 			Description:  util.Pointer(`The namespace(name) of the resource. If given it will be used to match the resource by namespace.`),
 			Type:         model.ResourceProperty_STRING,
 			Length:       255,
 			ExampleValue: structpb.NewStringValue("default"),
 		},
-		{
-			Name:         "resource",
+		"resource": {
 			Title:        util.Pointer("Resource"),
 			Description:  util.Pointer(`The name of the resource. If given it will be used to match the resource by name.`),
 			Type:         model.ResourceProperty_STRING,
 			Length:       255,
 			ExampleValue: structpb.NewStringValue("Book"),
 		},
-		{
-			Name:    "recordSelector",
+		"recordSelector": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(sub_types.BooleanExpression.Name),
 		},
-		{
-			Name:         "operation",
+		"operation": {
 			Title:        util.Pointer("Operation"),
 			Description:  util.Pointer(`The operation of the permission. It is used to match the operation of the request. If given it will be used to match the operation of the request.`),
 			Type:         model.ResourceProperty_ENUM,
@@ -67,20 +63,17 @@ var PermissionResource = &model.Resource{
 			},
 			ExampleValue: structpb.NewStringValue("READ"),
 		},
-		{
-			Name:        "before",
+		"before": {
 			Title:       util.Pointer("Before"),
 			Description: util.Pointer(`The timestamp before which the permission is valid. If given it will be used to match the timestamp of the request.`),
 			Type:        model.ResourceProperty_TIMESTAMP,
 		},
-		{
-			Name:        "after",
+		"after": {
 			Title:       util.Pointer("After"),
 			Description: util.Pointer(`The timestamp after which the permission is valid. If given it will be used to match the timestamp of the request.`),
 			Type:        model.ResourceProperty_TIMESTAMP,
 		},
-		{
-			Name:        "user",
+		"user": {
 			Title:       util.Pointer("User"),
 			Description: util.Pointer(`The user who has the permission. If given it will be used to match the user of the request. It is ignored by default, because if permissions is set through User this property is overrides and auto-populated by system`),
 			Type:        model.ResourceProperty_REFERENCE,
@@ -89,8 +82,7 @@ var PermissionResource = &model.Resource{
 				Resource:  UserResource.Name,
 			},
 		},
-		{
-			Name:        "role",
+		"role": {
 			Title:       util.Pointer("Role"),
 			Description: util.Pointer(`The role who has the permission. If given it will be used to match the role of the request. It is ignored by default, because if permissions is set through Role this property is overrides and auto-populated by system`),
 			Type:        model.ResourceProperty_REFERENCE,
@@ -99,8 +91,7 @@ var PermissionResource = &model.Resource{
 				Resource:  RoleResource.Name,
 			},
 		},
-		{
-			Name:        "permit",
+		"permit": {
 			Title:       util.Pointer("Permit"),
 			Description: util.Pointer(`The permit of the permission. If permission is matched, this property is judging field to indicate that if operation is allowed or not`),
 			Required:    true,
@@ -111,8 +102,7 @@ var PermissionResource = &model.Resource{
 				"REJECT",
 			},
 		},
-		{
-			Name: "localFlags",
+		"localFlags": {
 			Type: model.ResourceProperty_OBJECT,
 		},
 	},

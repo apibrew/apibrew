@@ -246,7 +246,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	var defaultValueMap = make(map[string]*structpb.Value)
 	for _, prop := range resource.Properties {
 		if prop.DefaultValue != nil && prop.DefaultValue.AsInterface() != nil {
-			defaultValueMap[prop.Name] = prop.DefaultValue
+			defaultValueMap[propName] = prop.DefaultValue
 		}
 	}
 	// set default values

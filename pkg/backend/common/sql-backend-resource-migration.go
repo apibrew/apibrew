@@ -125,7 +125,6 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 		}
 
 		property := &model.ResourceProperty{
-			Name: *columnName,
 			Type: typ,
 
 			Required:    !*isNullable,
@@ -149,7 +148,7 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 
 		annotations.Set(property, annotations.SourceDef, sourceDef)
 
-		resource.Properties = append(resource.Properties, property)
+		resource.Properties[*columnName] = property
 	}
 
 	return err
@@ -180,19 +179,13 @@ func (p *sqlBackend) resourcePrepareIndexes(ctx context.Context, runner helper.Q
 		var properties []*model.ResourceIndexProperty
 
 		for _, col := range cols {
-			var prop *model.ResourceProperty
-			for _, prop = range resource.Properties {
-				if prop.Name == col {
-					break
-				}
-			}
 
-			if prop == nil {
+			if resource.Properties[col] == nil {
 				return errors.LogicalError.WithDetails("Property not found with col: " + col)
 			}
 
 			properties = append(properties, &model.ResourceIndexProperty{
-				Name:  prop.Name,
+				Name:  col,
 				Order: model.Order_ORDER_UNKNOWN,
 			})
 		}

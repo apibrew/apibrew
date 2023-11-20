@@ -16,30 +16,30 @@ func CheckTwoRecordEquals(t *testing.T, resource *model.Resource, a *model.Recor
 			continue
 		}
 
-		if (a.Properties[prop.Name] != nil) != (b.Properties[prop.Name] != nil) {
-			t.Errorf("[%s]; different: %v <=> %v", prop.Name, a.Properties[prop.Name], b.Properties[prop.Name])
+		if (a.Properties[propName] != nil) != (b.Properties[propName] != nil) {
+			t.Errorf("[%s]; different: %v <=> %v", propName, a.Properties[propName], b.Properties[propName])
 		}
 
-		if (a.Properties[prop.Name] == nil) && (b.Properties[prop.Name] == nil) {
+		if (a.Properties[propName] == nil) && (b.Properties[propName] == nil) {
 			continue
 		}
 
 		typeHelper := types.ByResourcePropertyType(prop.Type)
 
-		va, err := typeHelper.UnPack(a.Properties[prop.Name])
+		va, err := typeHelper.UnPack(a.Properties[propName])
 
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		vb, err := typeHelper.UnPack(b.Properties[prop.Name])
+		vb, err := typeHelper.UnPack(b.Properties[propName])
 
 		if err != nil {
 			t.Error(err)
 			return
 		}
 		if !typeHelper.Equals(va, vb) {
-			t.Errorf("[%s]; different: %v <=> %v", prop.Name, va, vb)
+			t.Errorf("[%s]; different: %v <=> %v", propName, va, vb)
 		}
 	}
 }

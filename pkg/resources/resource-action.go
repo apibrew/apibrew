@@ -21,12 +21,11 @@ var ResourceActionResource = &model.Resource{
 		PropertyType,
 		special.AuditDataSubType,
 	},
-	Properties: []*model.ResourceProperty{
-		special.IdProperty,
-		special.VersionProperty,
-		special.AuditProperty,
-		{
-			Name:     "resource",
+	Properties: map[string]*model.ResourceProperty{
+		"id":        special.IdProperty,
+		"version":   special.VersionProperty,
+		"auditData": special.AuditProperty,
+		"resource": {
 			Type:     model.ResourceProperty_REFERENCE,
 			Required: true,
 			Reference: &model.Reference{
@@ -35,8 +34,7 @@ var ResourceActionResource = &model.Resource{
 				Cascade:   false,
 			},
 		},
-		{
-			Name:     "name",
+		"name": {
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: true,
@@ -45,8 +43,7 @@ var ResourceActionResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:     "title",
+		"title": {
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
@@ -55,8 +52,7 @@ var ResourceActionResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:     "description",
+		"description": {
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
@@ -65,8 +61,7 @@ var ResourceActionResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:         "internal",
+		"internal": {
 			Type:         model.ResourceProperty_BOOL,
 			Required:     true,
 			DefaultValue: structpb.NewBoolValue(false),
@@ -74,8 +69,7 @@ var ResourceActionResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:     "types",
+		"types": {
 			Type:     model.ResourceProperty_LIST,
 			Required: false,
 			Item: &model.ResourceProperty{
@@ -83,20 +77,18 @@ var ResourceActionResource = &model.Resource{
 				TypeRef: util.Pointer("SubType"),
 			},
 		},
-		{
-			Name: "input",
-			Type: model.ResourceProperty_LIST,
+		"input": {
+			Type: model.ResourceProperty_MAP,
 			Item: &model.ResourceProperty{
 				Type:    model.ResourceProperty_STRUCT,
 				TypeRef: util.Pointer("Property"),
 			},
 		},
-		{
-			Name:    "output",
+		"output": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer("Property"),
 		},
-		special.AnnotationsProperty,
+		"annotations": special.AnnotationsProperty,
 	},
 	Indexes: []*model.ResourceIndex{
 		{

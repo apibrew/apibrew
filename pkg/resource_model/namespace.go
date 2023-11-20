@@ -18,9 +18,6 @@ type Namespace struct {
 	Details     interface{}         `json:"details,omitempty"`
 }
 
-func (s *Namespace) GetId() *uuid.UUID {
-	return s.Id
-}
 func (s *Namespace) GetVersion() int32 {
 	return s.Version
 }
@@ -36,12 +33,15 @@ func (s *Namespace) GetDescription() *string {
 func (s *Namespace) GetDetails() interface{} {
 	return s.Details
 }
+func (s *Namespace) GetId() *uuid.UUID {
+	return s.Id
+}
 
 type NamespaceAuditData struct {
-	CreatedBy *string    `json:"createdBy,omitempty"`
-	UpdatedBy *string    `json:"updatedBy,omitempty"`
 	CreatedOn *time.Time `json:"createdOn,omitempty"`
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
 }
 
 func (s *NamespaceAuditData) GetCreatedBy() *string {

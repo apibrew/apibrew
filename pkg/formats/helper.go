@@ -10,15 +10,11 @@ func FixResourceForApply(resource *model.Resource) *model.Resource {
 	resource.AuditData = nil
 	resource.Version = 0
 
-	var newProperties []*model.ResourceProperty
-	for _, property := range resource.Properties {
+	for name, property := range resource.Properties {
 		// if property has special annotation, remove it
-		if !annotations.IsEnabled(property, annotations.SpecialProperty) {
-			newProperties = append(newProperties, property)
+		if annotations.IsEnabled(property, annotations.SpecialProperty) {
+			delete(resource.Properties, name)
 		}
 	}
-
-	resource.Properties = newProperties
-
 	return resource
 }

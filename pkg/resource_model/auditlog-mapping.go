@@ -13,9 +13,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-import "github.com/google/uuid"
 import "time"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "github.com/google/uuid"
 
 type AuditLogMapper struct {
 }
@@ -49,96 +49,6 @@ func (m *AuditLogMapper) FromRecord(record *model.Record) *AuditLog {
 
 func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
-
-	var_Id := auditLog.Id
-
-	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
-
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Version := auditLog.Version
-
-	var var_Version_mapped *structpb.Value
-
-	var var_Version_err error
-	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
-	if var_Version_err != nil {
-		panic(var_Version_err)
-	}
-	properties["version"] = var_Version_mapped
-
-	var_Namespace := auditLog.Namespace
-
-	var var_Namespace_mapped *structpb.Value
-
-	var var_Namespace_err error
-	var_Namespace_mapped, var_Namespace_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Namespace)
-	if var_Namespace_err != nil {
-		panic(var_Namespace_err)
-	}
-	properties["namespace"] = var_Namespace_mapped
-
-	var_Resource := auditLog.Resource
-
-	var var_Resource_mapped *structpb.Value
-
-	var var_Resource_err error
-	var_Resource_mapped, var_Resource_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Resource)
-	if var_Resource_err != nil {
-		panic(var_Resource_err)
-	}
-	properties["resource"] = var_Resource_mapped
-
-	var_RecordId := auditLog.RecordId
-
-	var var_RecordId_mapped *structpb.Value
-
-	var var_RecordId_err error
-	var_RecordId_mapped, var_RecordId_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_RecordId)
-	if var_RecordId_err != nil {
-		panic(var_RecordId_err)
-	}
-	properties["recordId"] = var_RecordId_mapped
-
-	var_Time := auditLog.Time
-
-	var var_Time_mapped *structpb.Value
-
-	var var_Time_err error
-	var_Time_mapped, var_Time_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(var_Time)
-	if var_Time_err != nil {
-		panic(var_Time_err)
-	}
-	properties["time"] = var_Time_mapped
-
-	var_Username := auditLog.Username
-
-	var var_Username_mapped *structpb.Value
-
-	var var_Username_err error
-	var_Username_mapped, var_Username_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Username)
-	if var_Username_err != nil {
-		panic(var_Username_err)
-	}
-	properties["username"] = var_Username_mapped
-
-	var_Operation := auditLog.Operation
-
-	var var_Operation_mapped *structpb.Value
-
-	var var_Operation_err error
-	var_Operation_mapped, var_Operation_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Operation))
-	if var_Operation_err != nil {
-		panic(var_Operation_err)
-	}
-	properties["operation"] = var_Operation_mapped
 
 	var_Properties := auditLog.Properties
 
@@ -176,51 +86,101 @@ func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]*structpb.V
 		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
 		properties["annotations"] = var_Annotations_mapped
 	}
+
+	var_Namespace := auditLog.Namespace
+
+	var var_Namespace_mapped *structpb.Value
+
+	var var_Namespace_err error
+	var_Namespace_mapped, var_Namespace_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Namespace)
+	if var_Namespace_err != nil {
+		panic(var_Namespace_err)
+	}
+	properties["namespace"] = var_Namespace_mapped
+
+	var_Time := auditLog.Time
+
+	var var_Time_mapped *structpb.Value
+
+	var var_Time_err error
+	var_Time_mapped, var_Time_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(var_Time)
+	if var_Time_err != nil {
+		panic(var_Time_err)
+	}
+	properties["time"] = var_Time_mapped
+
+	var_Resource := auditLog.Resource
+
+	var var_Resource_mapped *structpb.Value
+
+	var var_Resource_err error
+	var_Resource_mapped, var_Resource_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Resource)
+	if var_Resource_err != nil {
+		panic(var_Resource_err)
+	}
+	properties["resource"] = var_Resource_mapped
+
+	var_RecordId := auditLog.RecordId
+
+	var var_RecordId_mapped *structpb.Value
+
+	var var_RecordId_err error
+	var_RecordId_mapped, var_RecordId_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_RecordId)
+	if var_RecordId_err != nil {
+		panic(var_RecordId_err)
+	}
+	properties["recordId"] = var_RecordId_mapped
+
+	var_Username := auditLog.Username
+
+	var var_Username_mapped *structpb.Value
+
+	var var_Username_err error
+	var_Username_mapped, var_Username_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Username)
+	if var_Username_err != nil {
+		panic(var_Username_err)
+	}
+	properties["username"] = var_Username_mapped
+
+	var_Operation := auditLog.Operation
+
+	var var_Operation_mapped *structpb.Value
+
+	var var_Operation_err error
+	var_Operation_mapped, var_Operation_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Operation))
+	if var_Operation_err != nil {
+		panic(var_Operation_err)
+	}
+	properties["operation"] = var_Operation_mapped
+
+	var_Id := auditLog.Id
+
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
+
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
+		}
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := auditLog.Version
+
+	var var_Version_mapped *structpb.Value
+
+	var var_Version_err error
+	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
+	if var_Version_err != nil {
+		panic(var_Version_err)
+	}
+	properties["version"] = var_Version_mapped
 	return properties
 }
 
 func (m *AuditLogMapper) FromProperties(properties map[string]*structpb.Value) *AuditLog {
 	var s = m.New()
-	if properties["id"] != nil && properties["id"].AsInterface() != nil {
-
-		var_Id := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Id_mapped := new(uuid.UUID)
-		*var_Id_mapped = val.(uuid.UUID)
-
-		s.Id = var_Id_mapped
-	}
-	if properties["version"] != nil && properties["version"].AsInterface() != nil {
-
-		var_Version := properties["version"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Version_mapped := val.(int32)
-
-		s.Version = var_Version_mapped
-	}
-	if properties["namespace"] != nil && properties["namespace"].AsInterface() != nil {
-
-		var_Namespace := properties["namespace"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Namespace)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Namespace_mapped := val.(string)
-
-		s.Namespace = var_Namespace_mapped
-	}
 	if properties["resource"] != nil && properties["resource"].AsInterface() != nil {
 
 		var_Resource := properties["resource"]
@@ -247,19 +207,6 @@ func (m *AuditLogMapper) FromProperties(properties map[string]*structpb.Value) *
 
 		s.RecordId = var_RecordId_mapped
 	}
-	if properties["time"] != nil && properties["time"].AsInterface() != nil {
-
-		var_Time := properties["time"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_Time)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Time_mapped := val.(time.Time)
-
-		s.Time = var_Time_mapped
-	}
 	if properties["username"] != nil && properties["username"].AsInterface() != nil {
 
 		var_Username := properties["username"]
@@ -279,6 +226,33 @@ func (m *AuditLogMapper) FromProperties(properties map[string]*structpb.Value) *
 		var_Operation_mapped := (AuditLogOperation)(var_Operation.GetStringValue())
 
 		s.Operation = var_Operation_mapped
+	}
+	if properties["id"] != nil && properties["id"].AsInterface() != nil {
+
+		var_Id := properties["id"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Id_mapped := new(uuid.UUID)
+		*var_Id_mapped = val.(uuid.UUID)
+
+		s.Id = var_Id_mapped
+	}
+	if properties["version"] != nil && properties["version"].AsInterface() != nil {
+
+		var_Version := properties["version"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Version_mapped := val.(int32)
+
+		s.Version = var_Version_mapped
 	}
 	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
 
@@ -307,6 +281,32 @@ func (m *AuditLogMapper) FromProperties(properties map[string]*structpb.Value) *
 		}
 
 		s.Annotations = var_Annotations_mapped
+	}
+	if properties["namespace"] != nil && properties["namespace"].AsInterface() != nil {
+
+		var_Namespace := properties["namespace"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Namespace)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Namespace_mapped := val.(string)
+
+		s.Namespace = var_Namespace_mapped
+	}
+	if properties["time"] != nil && properties["time"].AsInterface() != nil {
+
+		var_Time := properties["time"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_Time)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Time_mapped := val.(time.Time)
+
+		s.Time = var_Time_mapped
 	}
 	return s
 }

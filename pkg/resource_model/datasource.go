@@ -10,21 +10,15 @@ import "github.com/google/uuid"
 import "time"
 
 type DataSource struct {
-	Id          *uuid.UUID           `json:"id,omitempty"`
-	Version     int32                `json:"version,omitempty"`
-	AuditData   *DataSourceAuditData `json:"auditData,omitempty"`
 	Name        string               `json:"name,omitempty"`
 	Description string               `json:"description,omitempty"`
 	Backend     DataSourceBackend    `json:"backend,omitempty"`
 	Options     map[string]string    `json:"options,omitempty"`
+	Id          *uuid.UUID           `json:"id,omitempty"`
+	Version     int32                `json:"version,omitempty"`
+	AuditData   *DataSourceAuditData `json:"auditData,omitempty"`
 }
 
-func (s *DataSource) GetId() *uuid.UUID {
-	return s.Id
-}
-func (s *DataSource) GetVersion() int32 {
-	return s.Version
-}
 func (s *DataSource) GetAuditData() *DataSourceAuditData {
 	return s.AuditData
 }
@@ -40,6 +34,12 @@ func (s *DataSource) GetBackend() DataSourceBackend {
 func (s *DataSource) GetOptions() map[string]string {
 	return s.Options
 }
+func (s *DataSource) GetId() *uuid.UUID {
+	return s.Id
+}
+func (s *DataSource) GetVersion() int32 {
+	return s.Version
+}
 
 type DataSourceAuditData struct {
 	CreatedBy *string    `json:"createdBy,omitempty"`
@@ -48,9 +48,6 @@ type DataSourceAuditData struct {
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
-func (s *DataSourceAuditData) GetCreatedBy() *string {
-	return s.CreatedBy
-}
 func (s *DataSourceAuditData) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
@@ -59,6 +56,9 @@ func (s *DataSourceAuditData) GetCreatedOn() *time.Time {
 }
 func (s *DataSourceAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
+}
+func (s *DataSourceAuditData) GetCreatedBy() *string {
+	return s.CreatedBy
 }
 
 type DataSourceBackend string

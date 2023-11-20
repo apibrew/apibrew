@@ -22,9 +22,8 @@ var UserResource = &model.Resource{
 			Name:        "AuditData",
 			Title:       "Audit Data",
 			Description: "Audit Data is a type that represents the audit data of a resource/record. ",
-			Properties: []*model.ResourceProperty{
-				{
-					Name:         "createdBy",
+			Properties: map[string]*model.ResourceProperty{
+				"createdBy": {
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					Immutable:    true,
@@ -34,8 +33,7 @@ var UserResource = &model.Resource{
 						"SpecialProperty": "true",
 					},
 				},
-				{
-					Name:         "updatedBy",
+				"updatedBy": {
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					ExampleValue: structpb.NewStringValue("admin"),
@@ -44,20 +42,18 @@ var UserResource = &model.Resource{
 						"SpecialProperty": "true",
 					},
 				},
-				{
-					Name:         "createdOn",
+				"createdOn": {
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-20T23:38:43+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
 					},
 				},
-				{
-					Name:         "updatedOn",
+				"updatedOn": {
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-13T01:12:12+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-20T23:38:43+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -71,9 +67,8 @@ var UserResource = &model.Resource{
 			},
 		},
 	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name:         "id",
+	Properties: map[string]*model.ResourceProperty{
+		"id": {
 			Type:         model.ResourceProperty_UUID,
 			Required:     true,
 			Immutable:    true,
@@ -84,8 +79,7 @@ var UserResource = &model.Resource{
 				"PrimaryProperty": "true",
 			},
 		},
-		{
-			Name:         "version",
+		"version": {
 			Type:         model.ResourceProperty_INT32,
 			Required:     true,
 			DefaultValue: structpb.NewNumberValue(1),
@@ -96,17 +90,15 @@ var UserResource = &model.Resource{
 				"AllowEmptyPrimitive": "true",
 			},
 		},
-		{
-			Name:         "auditData",
+		"auditData": {
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00"), "updatedOn": structpb.NewStringValue("2023-11-13T01:12:12+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-20T23:38:43+04:00"), "updatedOn": structpb.NewStringValue("2023-11-20T23:38:43+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
 			},
 		},
-		{
-			Name:     "username",
+		"username": {
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: true,
@@ -116,21 +108,17 @@ var UserResource = &model.Resource{
 				"IsHclLabel": "true",
 			},
 		},
-		{
-			Name:   "password",
+		"password": {
 			Type:   model.ResourceProperty_STRING,
 			Length: 256,
 		},
-		{
-			Name: "roles",
+		"roles": {
 			Type: model.ResourceProperty_LIST,
 		},
-		{
-			Name: "permissions",
+		"permissions": {
 			Type: model.ResourceProperty_LIST,
 		},
-		{
-			Name: "details",
+		"details": {
 			Type: model.ResourceProperty_OBJECT,
 		},
 	},

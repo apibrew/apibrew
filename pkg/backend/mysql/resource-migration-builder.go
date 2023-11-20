@@ -36,19 +36,8 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 	var colsEscaped []string
 
 	for _, indexProp := range index.Properties {
-		var prop *model.ResourceProperty
-		for _, prop = range params.MigrationPlan.CurrentResource.Properties {
-			if prop.Name == indexProp.Name {
-				break
-			}
-		}
-
-		if prop == nil {
-			return "", errors.LogicalError.WithDetails("Property not found with name: " + prop.Name)
-		}
-
-		cols = append(cols, prop.Name)
-		colsEscaped = append(colsEscaped, r.options.Quote(prop.Name))
+		cols = append(cols, indexProp.Name)
+		colsEscaped = append(colsEscaped, r.options.Quote(indexProp.Name))
 	}
 
 	var indexName = resource.SourceConfig.Entity + "_" + strings.Join(cols, "_")
@@ -63,7 +52,7 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 	return sql, nil
 }
 
-func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) string {
+func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, propertyName string, schema abs.Schema) string {
 	uniqModifier := ""
 	nullModifier := "NULL"
 	if property.Required {
@@ -75,7 +64,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 
 	sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
-	var def = []string{r.options.Quote(property.Name), sqlType, nullModifier, uniqModifier}
+	var def = []string{r.options.Quote(propertyName), sqlType, nullModifier, uniqModifier}
 
 	if property.Type == model.ResourceProperty_REFERENCE {
 		if property.Reference != nil {
@@ -88,7 +77,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 			if property.Reference.Cascade {
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
-			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
+			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+propertyName+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
 
 		}
 	}
@@ -105,7 +94,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 
 func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
 	var pk []string
-	for _, prop := range resource.Properties {
+	for propName, prop := range resource.Properties {
 		if annotations.IsEnabled(prop, annotations.PrimaryProperty) {
 			var typ = r.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
 
@@ -117,8 +106,8 @@ func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resour
 				}
 			}
 
-			builder.Define(r.options.Quote(prop.Name), typ, "NOT NULL")
-			pk = append(pk, r.options.Quote(prop.Name))
+			builder.Define(r.options.Quote(propName), typ, "NOT NULL")
+			pk = append(pk, r.options.Quote(propName))
 		}
 	}
 
@@ -176,7 +165,7 @@ func (r *resourceMigrationBuilder) DeleteResource(resource *model.Resource) help
 	return r
 }
 
-func (r *resourceMigrationBuilder) AddProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
+func (r *resourceMigrationBuilder) AddProperty(prop *model.ResourceProperty, property string) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
 		sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig), r.prepareResourceTableColumnDefinition(r.params.MigrationPlan.CurrentResource, prop, *r.schema))
 
@@ -194,27 +183,27 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		var sqlParts []string
 		changes := 0
 		if r.options.GetSqlTypeFromProperty(prevProperty.Type, property.Length) != r.options.GetSqlTypeFromProperty(property.Type, property.Length) {
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", r.options.Quote(property.Name), r.options.GetSqlTypeFromProperty(property.Type, property.Length)))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", r.options.Quote(propertyName), r.options.GetSqlTypeFromProperty(property.Type, property.Length)))
 			changes++
 		}
 
 		if prevProperty.Required && !property.Required {
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", r.options.Quote(property.Name)))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", r.options.Quote(propertyName)))
 			changes++
 		}
 
 		if !prevProperty.Required && property.Required {
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", r.options.Quote(property.Name)))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", r.options.Quote(propertyName)))
 			changes++
 		}
 
 		if prevProperty.Unique && !property.Unique {
-			sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT %s", r.options.Quote(property.Name+"_uniq")))
+			sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT %s", r.options.Quote(propertyName+"_uniq")))
 			changes++
 		}
 
 		if !prevProperty.Unique && property.Unique {
-			sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s UNIQUE (%s)", r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_uniq"), r.options.Quote(property.Name)))
+			sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s UNIQUE (%s)", r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+propertyName+"_uniq"), r.options.Quote(propertyName)))
 			changes++
 		}
 
@@ -232,7 +221,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 				}
 
-				sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(property.Name), r.options.Quote(referencedResource.SourceConfig.Entity), r.options.Quote("id")))
+				sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+propertyName+"_fk"), r.options.Quote(propertyName), r.options.Quote(referencedResource.SourceConfig.Entity), r.options.Quote("id")))
 				changes++
 			}
 		}
@@ -253,7 +242,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 
 func (r *resourceMigrationBuilder) DeleteProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
 	r.execs = append(r.execs, func() errors.ServiceError {
-		sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", r.options.Quote(r.tableName), r.options.Quote(prop.Name))
+		sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", r.options.Quote(r.tableName), r.options.Quote(propName))
 
 		_, sqlError := r.runner.ExecContext(r.ctx, sql)
 

@@ -32,6 +32,10 @@ type Executor struct {
 }
 
 func (a *Executor) Apply(ctx context.Context, inputFilePath string, format string) error {
+	return a.ApplyWithType(ctx, inputFilePath, format, "")
+}
+
+func (a *Executor) ApplyWithType(ctx context.Context, inputFilePath string, format string, givenType string) error {
 	reader := reader.Reader{}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -40,6 +44,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 
 	unstructuredExecutor := &ops.Executor{
 		Client: a.client,
+		Type:   givenType,
 		RecordHandler: func(namespace string, resource string, record *model.Record) error {
 			if a.mode == APPLY {
 				appliedRecord, err := a.client.ApplyRecord(ctx, namespace, resource, record)

@@ -10,7 +10,7 @@
 
 //go:build !codeanalysis
 package {%s pkgName %}
-
+{% code initResource(resource) %}
 {%- for _, importLine := range getImportsForResource(resource) -%}
 import "{%s importLine %}"
 {%- endfor -%}
@@ -23,7 +23,7 @@ import "{%s importLine %}"
 {%= GenerateStructCode(pkg, resource, getSubTypeName(resource, subType), subType.Properties, subType) %}
 {%- endfor -%}
 {%- for _, enumProperty := range getAllEnums(resource) -%}
-{%= GenerateEnumCode(enumProperty) %}
+{%= GenerateEnumCode(resource, enumProperty) %}
 {%- endfor -%}
 
 {%- endfunc -%}

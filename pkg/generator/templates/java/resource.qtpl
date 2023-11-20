@@ -33,15 +33,15 @@ public class {%s javaClassName(resource.Name) %} extends Entity {
         {%- endfor -%}
 
         {%- for _, property := range subType.Properties -%}
-        public {%s= getJavaType(resource, property, false) %} get{%s= javaClassName(property.Name) %}() {
+        public {%s= getJavaType(resource, property, false) %} get{%s= javaClassName(propertyName) %}() {
             return {%s= propertyName(property) %};
         }
 
-        public void set{%s= javaClassName(property.Name) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
+        public void set{%s= javaClassName(propertyName) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
             this.{%s= propertyName(property) %} = {%s= propertyName(property) %};
         }
 
-        public {%s javaClassName(subType.Name) %} with{%s= javaClassName(property.Name) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
+        public {%s javaClassName(subType.Name) %} with{%s= javaClassName(propertyName) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
             this.{%s= propertyName(property) %} = {%s= propertyName(property) %};
 
             return this;
@@ -118,15 +118,15 @@ public class {%s javaClassName(resource.Name) %} extends Entity {
     }
 
     {%- for _, property := range resource.Properties -%}
-    public {%s= getJavaType(resource, property, false) %} get{%s= javaClassName(property.Name) %}() {
+    public {%s= getJavaType(resource, property, false) %} get{%s= javaClassName(propertyName) %}() {
         return {%s= propertyName(property) %};
     }
 
-    public void set{%s= javaClassName(property.Name) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
+    public void set{%s= javaClassName(propertyName) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
         this.{%s= propertyName(property) %} = {%s= propertyName(property) %};
     }
 
-    public {%s javaClassName(resource.Name) %} with{%s= javaClassName(property.Name) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
+    public {%s javaClassName(resource.Name) %} with{%s= javaClassName(propertyName) %}({%s= getJavaType(resource, property, false) %} {%s= propertyName(property) %}) {
         this.{%s= propertyName(property) %} = {%s= propertyName(property) %};
 
         return this;

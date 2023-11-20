@@ -178,7 +178,7 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, reco
 	var columns []string
 
 	for _, prop := range resource.Properties {
-		columns = append(columns, util.ToDashCase(prop.Name))
+		columns = append(columns, util.ToDashCase(propName))
 	}
 
 	table.SetHeader(columns)
@@ -190,7 +190,7 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, reco
 
 		for _, prop := range resource.Properties {
 			typeHandler := types.ByResourcePropertyType(prop.Type)
-			packedVal := item.Properties[prop.Name]
+			packedVal := item.Properties[propName]
 
 			if packedVal == nil {
 				row = append(row, "Null")

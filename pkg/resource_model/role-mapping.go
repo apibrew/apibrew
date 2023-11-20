@@ -50,39 +50,6 @@ func (m *RoleMapper) FromRecord(record *model.Record) *Role {
 func (m *RoleMapper) ToProperties(role *Role) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := role.Id
-
-	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
-
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Version := role.Version
-
-	var var_Version_mapped *structpb.Value
-
-	var var_Version_err error
-	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
-	if var_Version_err != nil {
-		panic(var_Version_err)
-	}
-	properties["version"] = var_Version_mapped
-
-	var_AuditData := role.AuditData
-
-	if var_AuditData != nil {
-		var var_AuditData_mapped *structpb.Value
-
-		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: RoleAuditDataMapperInstance.ToProperties(var_AuditData)})
-		properties["auditData"] = var_AuditData_mapped
-	}
-
 	var_Name := role.Name
 
 	var var_Name_mapped *structpb.Value
@@ -124,6 +91,39 @@ func (m *RoleMapper) ToProperties(role *Role) map[string]*structpb.Value {
 			panic(var_Details_err)
 		}
 		properties["details"] = var_Details_mapped
+	}
+
+	var_Id := role.Id
+
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
+
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
+		}
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := role.Version
+
+	var var_Version_mapped *structpb.Value
+
+	var var_Version_err error
+	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
+	if var_Version_err != nil {
+		panic(var_Version_err)
+	}
+	properties["version"] = var_Version_mapped
+
+	var_AuditData := role.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped *structpb.Value
+
+		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: RoleAuditDataMapperInstance.ToProperties(var_AuditData)})
+		properties["auditData"] = var_AuditData_mapped
 	}
 	return properties
 }

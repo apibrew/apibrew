@@ -19,12 +19,11 @@ var UserResource = &model.Resource{
 	Types: []*model.ResourceSubType{
 		special.AuditDataSubType,
 	},
-	Properties: []*model.ResourceProperty{
-		special.IdProperty,
-		special.VersionProperty,
-		special.AuditProperty,
-		{
-			Name:     "username",
+	Properties: map[string]*model.ResourceProperty{
+		"id":        special.IdProperty,
+		"version":   special.VersionProperty,
+		"auditData": special.AuditProperty,
+		"username": {
 			Title:    util.Pointer("Username"),
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
@@ -34,15 +33,13 @@ var UserResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:     "password",
+		"password": {
 			Title:    util.Pointer("Password"),
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
 		},
-		{
-			Name:  "roles",
+		"roles": {
 			Title: util.Pointer("Roles"),
 			Type:  model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
@@ -53,8 +50,7 @@ var UserResource = &model.Resource{
 				},
 			},
 		},
-		{
-			Name:        "permissions",
+		"permissions": {
 			Title:       util.Pointer("Permissions"),
 			Description: util.Pointer(`The permissions of the user. It is used to define the access control rules for resources for users. When you set permissions it is automatically created though Permission Resource. No need to manage it manually`),
 			Type:        model.ResourceProperty_LIST,
@@ -70,8 +66,7 @@ var UserResource = &model.Resource{
 			},
 			Required: false,
 		},
-		{
-			Name:        "details",
+		"details": {
 			Title:       util.Pointer("Details"),
 			Description: util.Pointer(`The details of the user. It is used to store additional information about the user.`),
 			Type:        model.ResourceProperty_OBJECT,

@@ -8,21 +8,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-var ResourcePropertyProperties = []*model.ResourceProperty{
-	{
-		Name:  "name",
-		Title: util.Pointer("Name"),
-		Description: util.Pointer(`The name of the property. 
-Name is the main parameter of property, it is used to identify the property. It is also used to name record properties. 
-For example {"title": "Lord of the Rings"} And there "title" is a property, and it is defined by name "title", in its Resource 
-		`),
-		Type:         model.ResourceProperty_STRING,
-		Length:       256,
-		ExampleValue: structpb.NewStringValue("title"),
-		Required:     false, // can be optional for item types
-	},
-	{
-		Name:        "type",
+var ResourcePropertyProperties = map[string]*model.ResourceProperty{
+	"type": {
 		Title:       util.Pointer("Type"),
 		Description: util.Pointer(`The type of the property. Property Data Types can be one of it. Types can be written with all capital letters.`),
 		Type:        model.ResourceProperty_ENUM,
@@ -48,18 +35,16 @@ For example {"title": "Lord of the Rings"} And there "title" is a property, and 
 		ExampleValue: structpb.NewStringValue("STRING"),
 		Required:     true,
 	},
-	{
-		Name:  "typeRef",
+	"typeRef": {
 		Title: util.Pointer("Type Reference"),
-		Description: util.Pointer(`The type reference of the property. It is only used for STRUCT type. 
+		Description: util.Pointer(`The type reference of the property. It is only used for STRUCT type.
 When you used STRUCT type, you need to define your type inside types of resource and then you can use its name as typeRef.`),
 		Type:         model.ResourceProperty_STRING,
 		Length:       256,
 		ExampleValue: structpb.NewStringValue("BookPublishingDetails"),
 		Required:     false,
 	},
-	{
-		Name:  "primary",
+	"primary": {
 		Title: util.Pointer("Primary"),
 		Description: util.Pointer(`The primary property of the resource. It is used to identify the resource. When it is not supplied, an id property is automatically created.
 Normally primary property should not be provided. It is only used for special cases. If provided, it can break some functionalities of system. 
@@ -71,8 +56,7 @@ If Primary is provided, internal id property will not be created.
 
 		DefaultValue: structpb.NewBoolValue(false),
 	},
-	{
-		Name:  "required",
+	"required": {
 		Title: util.Pointer("Required"),
 		Description: util.Pointer(`This property indicates that whether or not given property is required.
 When creating/updating records, if required property is not and defaultValue is given in property, the system will allow request but will use default value instead.
@@ -83,8 +67,7 @@ When creating/updating records, if required property is not and defaultValue is 
 
 		DefaultValue: structpb.NewBoolValue(false),
 	},
-	{
-		Name:  "unique",
+	"unique": {
 		Title: util.Pointer("Unique"),
 		Description: util.Pointer(`This property indicates that whether or not given property is unique.
 Unique property is only working for single property, for combination of properties to become unique, you can use indexes with unique flag 
@@ -94,8 +77,7 @@ Unique property is only working for single property, for combination of properti
 
 		DefaultValue: structpb.NewBoolValue(false),
 	},
-	{
-		Name:        "immutable",
+	"immutable": {
 		Title:       util.Pointer("Immutable"),
 		Description: util.Pointer("This property indicates that whether or not given property is immutable. Immutable properties can not be updated."),
 		Type:        model.ResourceProperty_BOOL,
@@ -103,8 +85,7 @@ Unique property is only working for single property, for combination of properti
 
 		DefaultValue: structpb.NewBoolValue(false),
 	},
-	{
-		Name:         "length",
+	"length": {
 		Title:        util.Pointer("Length"),
 		Description:  util.Pointer("This property indicates the length of the property. It is only used for STRING type."),
 		Type:         model.ResourceProperty_INT32,
@@ -112,8 +93,7 @@ Unique property is only working for single property, for combination of properti
 		ExampleValue: structpb.NewNumberValue(256),
 		DefaultValue: structpb.NewNumberValue(256),
 	},
-	{
-		Name:        "item",
+	"item": {
 		Title:       util.Pointer("Item"),
 		Description: util.Pointer(`This property indicates the item type of the property. It is only used for LIST and MAP types.`),
 		Type:        model.ResourceProperty_STRUCT,
@@ -125,8 +105,7 @@ Unique property is only working for single property, for combination of properti
 		}),
 		TypeRef: util.Pointer("Property"),
 	},
-	{
-		Name:  "reference",
+	"reference": {
 		Title: util.Pointer("Reference"),
 		Description: util.Pointer(`This property indicates the reference type of the property. It is only used for REFERENCE type.
 When you use REFERENCE type, you need to provide reference details.
@@ -147,18 +126,16 @@ If you don't provide namespace, it will be assumed as the same namespace with th
 		}),
 		TypeRef: util.Pointer("Reference"),
 	},
-	{
-		Name:  "defaultValue",
+	"defaultValue": {
 		Title: util.Pointer("Default Value"),
-		Description: util.Pointer(`This property indicates the default value of the property. 
+		Description: util.Pointer(`This property indicates the default value of the property.
 It is used when creating/updating records and property is not provided.
 `),
 		Type:         model.ResourceProperty_OBJECT,
 		ExampleValue: structpb.NewStringValue("Lord of the Rings"),
 		Required:     false,
 	},
-	{
-		Name:        "enumValues",
+	"enumValues": {
 		Title:       util.Pointer("Enum Values"),
 		Description: util.Pointer(`This property is only used with ENUM type. This property indicates the enum values of the property.`),
 		Type:        model.ResourceProperty_LIST,
@@ -174,16 +151,14 @@ It is used when creating/updating records and property is not provided.
 		}),
 		Required: false,
 	},
-	{
-		Name:         "exampleValue",
+	"exampleValue": {
 		Title:        util.Pointer("Example Value"),
 		Description:  util.Pointer(`This property indicates the example value of the property.`),
 		Type:         model.ResourceProperty_OBJECT,
 		ExampleValue: structpb.NewStringValue(`no-book-name`),
 		Required:     false,
 	},
-	{
-		Name:         "title",
+	"title": {
 		Title:        util.Pointer("Title"),
 		Description:  util.Pointer(`This property indicates the title of the property. It is used to have meaningful names for the properties.`),
 		Type:         model.ResourceProperty_STRING,
@@ -191,8 +166,7 @@ It is used when creating/updating records and property is not provided.
 		ExampleValue: structpb.NewStringValue(`Book Title`),
 		Required:     false,
 	},
-	{
-		Name:         "description",
+	"description": {
 		Title:        util.Pointer("Description"),
 		Description:  util.Pointer(`This property indicates the description of the property. It is used to have meaningful description for the properties.`),
 		Type:         model.ResourceProperty_STRING,
@@ -200,7 +174,7 @@ It is used when creating/updating records and property is not provided.
 		ExampleValue: structpb.NewStringValue(`Book Title is a property of Book Resource. It represents the title of the book.`),
 		Required:     false,
 	},
-	special.AnnotationsProperty,
+	"annotations": special.AnnotationsProperty,
 }
 
 var PropertyType = &model.ResourceSubType{
@@ -220,17 +194,15 @@ var SubTypeType = &model.ResourceSubType{
 	Annotations: map[string]string{
 		annotations.CommonType: annotations.Enabled,
 	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name:         "name",
+	Properties: map[string]*model.ResourceProperty{
+		"name": {
 			Title:        util.Pointer("Name"),
 			Description:  util.Pointer("The name of the sub type. "),
 			Type:         model.ResourceProperty_STRING,
 			ExampleValue: structpb.NewStringValue("Book"),
 			Required:     true,
 		},
-		{
-			Name:         "title",
+		"title": {
 			Title:        util.Pointer("Title"),
 			Description:  util.Pointer("The title of the sub type. It is used to have meaningful names for the sub types."),
 			Type:         model.ResourceProperty_STRING,
@@ -238,8 +210,7 @@ var SubTypeType = &model.ResourceSubType{
 			ExampleValue: structpb.NewStringValue("Book"),
 			Required:     false,
 		},
-		{
-			Name:         "description",
+		"description": {
 			Title:        util.Pointer("Description"),
 			Description:  util.Pointer("The description of the sub type. It is used to have meaningful description for the sub types. "),
 			Type:         model.ResourceProperty_STRING,
@@ -247,21 +218,19 @@ var SubTypeType = &model.ResourceSubType{
 			ExampleValue: structpb.NewStringValue("Book is a sub type of Resource. It represents a book in the system. "),
 			Required:     false,
 		},
-		{
-			Name:        "properties",
+		"properties": {
 			Title:       util.Pointer("Properties"),
 			Description: util.Pointer("The properties of the sub type. It is used to define the properties of the sub type. "),
-			Type:        model.ResourceProperty_LIST,
+			Type:        model.ResourceProperty_MAP,
 			Required:    true,
 			Item: &model.ResourceProperty{
 				Type:    model.ResourceProperty_STRUCT,
 				TypeRef: util.Pointer("Property"),
 			},
-			ExampleValue: structpb.NewListValue(&structpb.ListValue{
-				Values: []*structpb.Value{
-					structpb.NewStructValue(&structpb.Struct{
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"title": structpb.NewStructValue(&structpb.Struct{
 						Fields: map[string]*structpb.Value{
-							"name": structpb.NewStringValue("title"),
 							"type": structpb.NewStringValue("STRING"),
 						},
 					}),
@@ -278,9 +247,8 @@ var ReferenceType = &model.ResourceSubType{
 	Annotations: map[string]string{
 		annotations.CommonType: annotations.Enabled,
 	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name:  "resource",
+	Properties: map[string]*model.ResourceProperty{
+		"resource": {
 			Title: util.Pointer("Resource"),
 			Description: util.Pointer(`This property indicates the resource of the reference.
 When providing resource, you need to provide namespace and resource name of the referenced resource.
@@ -302,16 +270,14 @@ If you don't provide namespace, it will be assumed as the same namespace with th
 				},
 			}),
 		},
-		{
-			Name:  "cascade",
+		"cascade": {
 			Title: util.Pointer("Cascade"),
 			Description: util.Pointer(`This property indicates that whether or not given reference is cascade.
 If it is true, when referenced resource record is deleted, all the records that are referencing to that resource will be deleted.
 `),
 			Type: model.ResourceProperty_BOOL,
 		},
-		{
-			Name:  "backReference",
+		"backReference": {
 			Title: util.Pointer("Back Reference"),
 			Description: util.Pointer(`This property indicates that whether or not given reference is back reference.
 Back reference is reverse of reference, If resource A has reference to resource B, in that case resource B can have back reference to resource A.
@@ -343,14 +309,12 @@ var ResourceResource = &model.Resource{
 		special.AuditDataSubType,
 		{
 			Name: "IndexProperty",
-			Properties: []*model.ResourceProperty{
-				{
-					Name:     "name",
+			Properties: map[string]*model.ResourceProperty{
+				"name": {
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
-				{
-					Name:     "order",
+				"order": {
 					Type:     model.ResourceProperty_ENUM,
 					Required: false,
 					EnumValues: []string{
@@ -362,17 +326,15 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name: "Index",
-			Properties: []*model.ResourceProperty{
-				{
-					Name: "properties",
+			Properties: map[string]*model.ResourceProperty{
+				"properties": {
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{
 						Type:    model.ResourceProperty_STRUCT,
 						TypeRef: util.Pointer("IndexProperty"),
 					},
 				},
-				{
-					Name:     "indexType",
+				"indexType": {
 					Type:     model.ResourceProperty_ENUM,
 					Required: false,
 					EnumValues: []string{
@@ -380,22 +342,20 @@ var ResourceResource = &model.Resource{
 					},
 					DefaultValue: structpb.NewStringValue("BTREE"),
 				},
-				{
-					Name:     "unique",
+				"unique": {
 					Type:     model.ResourceProperty_BOOL,
 					Required: false,
 				},
-				special.AnnotationsProperty,
+				"annotations": special.AnnotationsProperty,
 			},
 		},
 		ReferenceType,
 	},
-	Properties: []*model.ResourceProperty{
-		special.IdProperty,
-		special.VersionProperty,
-		special.AuditProperty,
-		{
-			Name:         "name",
+	Properties: map[string]*model.ResourceProperty{
+		"id":        special.IdProperty,
+		"version":   special.VersionProperty,
+		"auditData": special.AuditProperty,
+		"name": {
 			Title:        util.Pointer("Name"),
 			Description:  util.Pointer("The name of the resource. Name is the main parameter of resource, it is used to identify the resource. It is also used to name API endpoints."),
 			Type:         model.ResourceProperty_STRING,
@@ -407,8 +367,7 @@ var ResourceResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:        "namespace",
+		"namespace": {
 			Title:       util.Pointer("Namespace"),
 			Description: util.Pointer("The namespace of the resource. Namespace is used to group resources. It is also used to name API endpoints together with Resource. "),
 			Type:        model.ResourceProperty_REFERENCE,
@@ -424,10 +383,9 @@ var ResourceResource = &model.Resource{
 				},
 			}),
 		},
-		{
-			Name:  "virtual",
+		"virtual": {
 			Title: util.Pointer("Virtual"),
-			Description: util.Pointer(`This property indicates that whether or not given resource is virtual. 
+			Description: util.Pointer(`This property indicates that whether or not given resource is virtual.
 Virtual resources are not stored in database. They are created on the fly.
 Virtual resources are used to prepare bind them to extensions or nano codes, etc. without touching to database.
 `),
@@ -436,35 +394,26 @@ Virtual resources are used to prepare bind them to extensions or nano codes, etc
 
 			DefaultValue: structpb.NewBoolValue(false),
 		},
-		{
-			Name:        "properties",
+		"properties": {
 			Title:       util.Pointer("Properties"),
 			Description: util.Pointer(`This property indicates the properties of the resource.`),
-			Type:        model.ResourceProperty_LIST,
+			Type:        model.ResourceProperty_MAP,
 			Required:    true,
 			Item: &model.ResourceProperty{
 				Type:    model.ResourceProperty_STRUCT,
 				TypeRef: util.Pointer("Property"),
 			},
-			ExampleValue: structpb.NewListValue(&structpb.ListValue{
-				Values: []*structpb.Value{
-					structpb.NewStructValue(&structpb.Struct{
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"title": structpb.NewStructValue(&structpb.Struct{
 						Fields: map[string]*structpb.Value{
-							"name": structpb.NewStringValue("title"),
-							"type": structpb.NewStringValue("name"),
-						},
-					}),
-					structpb.NewStructValue(&structpb.Struct{
-						Fields: map[string]*structpb.Value{
-							"name": structpb.NewStringValue("type"),
 							"type": structpb.NewStringValue("STRING"),
 						},
 					}),
 				},
 			}),
 		},
-		{
-			Name:  "indexes",
+		"indexes": {
 			Title: util.Pointer("Indexes"),
 			Description: util.Pointer(`This property indicates the indexes of the resource.
 Indexes are used to speed up the queries. Indexes are used to define complex unique constraints.
@@ -476,8 +425,7 @@ Indexes are used to speed up the queries. Indexes are used to define complex uni
 				TypeRef: util.Pointer("Index"),
 			},
 		},
-		{
-			Name:  "types",
+		"types": {
 			Title: util.Pointer("Types"),
 			Description: util.Pointer(`This property indicates the types of the resource.
 This is used to hav sub types, which will be used by other properties which has type STRUCT.
@@ -489,16 +437,14 @@ This is used to hav sub types, which will be used by other properties which has 
 				TypeRef: util.Pointer("SubType"),
 			},
 		},
-		{
-			Name:         "immutable",
+		"immutable": {
 			Title:        util.Pointer("Immutable"),
 			Description:  util.Pointer("This property indicates that whether or not given resource is immutable. Immutable resources can not be updated or deleted."),
 			Type:         model.ResourceProperty_BOOL,
 			Required:     true,
 			DefaultValue: structpb.NewBoolValue(false),
 		},
-		{
-			Name:  "abstract",
+		"abstract": {
 			Title: util.Pointer("Abstract"),
 			Description: util.Pointer(`This property indicates that whether or not given resource is abstract.
 Abstract resources are not stored in database. No record related operation is allowed in abstract resources.
@@ -509,8 +455,7 @@ Abstract resources are mostly used for code generation (for abstract types, etc.
 
 			DefaultValue: structpb.NewBoolValue(false),
 		},
-		{
-			Name:        "checkReferences",
+		"checkReferences": {
 			Title:       util.Pointer("Check References"),
 			Description: util.Pointer(`This property indicates that whether or not check references is enabled. Check references resources are used to check references to other resources. It is acting if enabled only in create/update operations`),
 			Type:        model.ResourceProperty_BOOL,
@@ -518,8 +463,7 @@ Abstract resources are mostly used for code generation (for abstract types, etc.
 
 			DefaultValue: structpb.NewBoolValue(false),
 		},
-		{
-			Name:  "dataSource",
+		"dataSource": {
 			Title: util.Pointer("Data Source"),
 			Description: util.Pointer(`This property indicates the data source of the resource.
 Data source is used to store the records of the resource.
@@ -536,8 +480,7 @@ If DataSource is not provided, default DataSource will be used
 				Cascade:   false,
 			},
 		},
-		{
-			Name:         "entity",
+		"entity": {
 			Title:        util.Pointer("Entity"),
 			Description:  util.Pointer(`This property indicates the entity of the resource. By entity, table name is considered for relational databases`),
 			Type:         model.ResourceProperty_STRING,
@@ -545,8 +488,7 @@ If DataSource is not provided, default DataSource will be used
 			Required:     false,
 			ExampleValue: structpb.NewStringValue("book"),
 		},
-		{
-			Name:         "catalog",
+		"catalog": {
 			Title:        util.Pointer("Catalog"),
 			Description:  util.Pointer(`This property indicates the catalog of the resource. By catalog, schema name is considered for relational databases.`),
 			Type:         model.ResourceProperty_STRING,
@@ -554,8 +496,7 @@ If DataSource is not provided, default DataSource will be used
 			Required:     false,
 			ExampleValue: structpb.NewStringValue("public"),
 		},
-		{
-			Name:         "title",
+		"title": {
 			Title:        util.Pointer("Title"),
 			Description:  util.Pointer(`This property indicates the title of the resource. It is used to have meaningful names for the resources.`),
 			Type:         model.ResourceProperty_STRING,
@@ -563,8 +504,7 @@ If DataSource is not provided, default DataSource will be used
 			Required:     false,
 			ExampleValue: structpb.NewStringValue(`Book`),
 		},
-		{
-			Name:         "description",
+		"description": {
 			Title:        util.Pointer("Description"),
 			Description:  util.Pointer(`This property indicates the description of the resource. It is used to have meaningful description for the resources.`),
 			Type:         model.ResourceProperty_STRING,
@@ -572,7 +512,7 @@ If DataSource is not provided, default DataSource will be used
 			Required:     false,
 			ExampleValue: structpb.NewStringValue(`Book is a resource in the system. It represents a book in the system.`),
 		},
-		special.AnnotationsProperty,
+		"annotations": special.AnnotationsProperty,
 	},
 	Indexes: []*model.ResourceIndex{
 		{

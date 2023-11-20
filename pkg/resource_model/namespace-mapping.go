@@ -13,8 +13,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-import "github.com/google/uuid"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "github.com/google/uuid"
 import "time"
 
 type NamespaceMapper struct {
@@ -49,19 +49,6 @@ func (m *NamespaceMapper) FromRecord(record *model.Record) *Namespace {
 
 func (m *NamespaceMapper) ToProperties(namespace *Namespace) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
-
-	var_Id := namespace.Id
-
-	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
-
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
-		properties["id"] = var_Id_mapped
-	}
 
 	var_Version := namespace.Version
 
@@ -119,38 +106,24 @@ func (m *NamespaceMapper) ToProperties(namespace *Namespace) map[string]*structp
 		}
 		properties["details"] = var_Details_mapped
 	}
+
+	var_Id := namespace.Id
+
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
+
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
+		}
+		properties["id"] = var_Id_mapped
+	}
 	return properties
 }
 
 func (m *NamespaceMapper) FromProperties(properties map[string]*structpb.Value) *Namespace {
 	var s = m.New()
-	if properties["id"] != nil && properties["id"].AsInterface() != nil {
-
-		var_Id := properties["id"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Id_mapped := new(uuid.UUID)
-		*var_Id_mapped = val.(uuid.UUID)
-
-		s.Id = var_Id_mapped
-	}
-	if properties["version"] != nil && properties["version"].AsInterface() != nil {
-
-		var_Version := properties["version"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Version_mapped := val.(int32)
-
-		s.Version = var_Version_mapped
-	}
 	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
 
 		var_AuditData := properties["auditData"]
@@ -194,6 +167,33 @@ func (m *NamespaceMapper) FromProperties(properties map[string]*structpb.Value) 
 		*var_Details_mapped = unstructured.FromValue(var_Details)
 
 		s.Details = var_Details_mapped
+	}
+	if properties["id"] != nil && properties["id"].AsInterface() != nil {
+
+		var_Id := properties["id"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Id_mapped := new(uuid.UUID)
+		*var_Id_mapped = val.(uuid.UUID)
+
+		s.Id = var_Id_mapped
+	}
+	if properties["version"] != nil && properties["version"].AsInterface() != nil {
+
+		var_Version := properties["version"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Version_mapped := val.(int32)
+
+		s.Version = var_Version_mapped
 	}
 	return s
 }
@@ -277,34 +277,6 @@ func (m *NamespaceAuditDataMapper) ToProperties(namespaceAuditData *NamespaceAud
 
 func (m *NamespaceAuditDataMapper) FromProperties(properties map[string]*structpb.Value) *NamespaceAuditData {
 	var s = m.New()
-	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
-
-		var_CreatedBy := properties["createdBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_CreatedBy_mapped := new(string)
-		*var_CreatedBy_mapped = val.(string)
-
-		s.CreatedBy = var_CreatedBy_mapped
-	}
-	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
-
-		var_UpdatedBy := properties["updatedBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_UpdatedBy_mapped := new(string)
-		*var_UpdatedBy_mapped = val.(string)
-
-		s.UpdatedBy = var_UpdatedBy_mapped
-	}
 	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
 
 		var_CreatedOn := properties["createdOn"]
@@ -332,6 +304,34 @@ func (m *NamespaceAuditDataMapper) FromProperties(properties map[string]*structp
 		*var_UpdatedOn_mapped = val.(time.Time)
 
 		s.UpdatedOn = var_UpdatedOn_mapped
+	}
+	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
+
+		var_CreatedBy := properties["createdBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_CreatedBy_mapped := new(string)
+		*var_CreatedBy_mapped = val.(string)
+
+		s.CreatedBy = var_CreatedBy_mapped
+	}
+	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
+
+		var_UpdatedBy := properties["updatedBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_UpdatedBy_mapped := new(string)
+		*var_UpdatedBy_mapped = val.(string)
+
+		s.UpdatedBy = var_UpdatedBy_mapped
 	}
 	return s
 }

@@ -8,20 +8,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type Named interface {
-	GetName() string
-}
-
-func GetNamedMap[T Named](items []T) map[string]T {
-	var result = make(map[string]T)
-
-	for _, prop := range items {
-		result[prop.GetName()] = prop
-	}
-
-	return result
-}
-
 func GetArrayIndex[T comparable](items []T, item T, comparator func(a, b T) bool) int {
 	for i, elem := range items {
 		if comparator(elem, item) {
@@ -30,16 +16,6 @@ func GetArrayIndex[T comparable](items []T, item T, comparator func(a, b T) bool
 	}
 
 	return -1
-}
-
-func LocatePropertyByName(resource *model.Resource, propertyName string) *model.ResourceProperty {
-	for _, property := range resource.Properties {
-		if property.Name == propertyName {
-			return property
-		}
-	}
-
-	return nil
 }
 
 func HistoryResource(resource *model.Resource) *model.Resource {
@@ -53,10 +29,9 @@ func HistoryResource(resource *model.Resource) *model.Resource {
 
 	annotations.Enable(historyResource, annotations.HistoryResource)
 
-	for _, prop := range historyResource.Properties {
-		if prop.Name == "version" {
-			prop.Annotations = annotations.EnableWith(prop.Annotations, annotations.PrimaryProperty)
-		}
+	if historyResource.Properties["version"] != nil {
+		historyResource.Properties["version"].Annotations = annotations.EnableWith(historyResource.Properties["version"].Annotations, annotations.PrimaryProperty)
+
 	}
 
 	return historyResource
@@ -71,35 +46,31 @@ func HistoryPlan(plan *model.ResourceMigrationPlan) *model.ResourceMigrationPlan
 }
 
 func RemarkResource(resource *model.Resource) {
-	propertyNameMap := GetNamedMap(resource.Properties)
-
 	if !annotations.IsEnabled(resource, annotations.EnableAudit) {
-		if propertyNameMap[special.AuditProperty.Name] != nil && propertyNameMap[special.AuditProperty.Name].Type == special.AuditProperty.Type {
+		if resource.Properties["auditData"] != nil && resource.Properties["auditData"].Type == special.AuditProperty.Type {
 			annotations.Enable(resource, annotations.EnableAudit)
 		}
 	}
 
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) {
-		if propertyNameMap[special.VersionProperty.Name] == nil || propertyNameMap[special.VersionProperty.Name].Type != special.VersionProperty.Type {
+		if resource.Properties["version"] == nil || resource.Properties["version"].Type != special.VersionProperty.Type {
 			annotations.Enable(resource, annotations.DisableVersion)
 		}
 	}
 }
 
 func NormalizeResource(resource *model.Resource) {
-	propertyNameMap := GetNamedMap(resource.Properties)
-
 	if resource.Annotations == nil {
 		resource.Annotations = make(map[string]string)
 	}
 
-	if !annotations.IsEnabled(resource, annotations.DisableVersion) && propertyNameMap[special.VersionProperty.Name] == nil {
-		resource.Properties = append(resource.Properties, special.VersionProperty)
+	if !annotations.IsEnabled(resource, annotations.DisableVersion) && resource.Properties["version"] == nil {
+		resource.Properties["version"] = special.VersionProperty
 	}
 
 	if annotations.IsEnabled(resource, annotations.EnableAudit) {
-		if propertyNameMap[special.AuditProperty.Name] == nil {
-			resource.Properties = append(resource.Properties, special.AuditProperty)
+		if resource.Properties["auditData"] == nil {
+			resource.Properties["auditData"] = special.AuditProperty
 		}
 
 		var found = false
@@ -114,8 +85,8 @@ func NormalizeResource(resource *model.Resource) {
 		}
 	}
 
-	if !HasResourcePrimaryProp(resource) && propertyNameMap[special.IdProperty.Name] == nil {
-		resource.Properties = append([]*model.ResourceProperty{special.IdProperty}, resource.Properties...)
+	if !HasResourcePrimaryProp(resource) && resource.Properties["id"] == nil {
+		resource.Properties["id"] = special.IdProperty
 	}
 
 	annotations.Enable(resource, annotations.NormalizedResource)
@@ -143,14 +114,14 @@ func HasResourcePrimaryProp(resource *model.Resource) bool {
 	return false
 }
 
-func GetResourceSinglePrimaryProp(resource *model.Resource) *model.ResourceProperty {
-	for _, item := range resource.Properties {
+func GetResourceSinglePrimaryProp(resource *model.Resource) string {
+	for propertyName, item := range resource.Properties {
 		if annotations.IsEnabled(item, annotations.PrimaryProperty) {
-			return item
+			return propertyName
 		}
 	}
 
-	return nil
+	return ""
 }
 
 func ResourceWalkProperties(resource *model.Resource, callback func(path string, property *model.ResourceProperty)) {
@@ -161,16 +132,16 @@ func ResourceWalkProperties(resource *model.Resource, callback func(path string,
 	}
 }
 
-func resourceWalkPropertiesRecursive(resource *model.Resource, path string, properties []*model.ResourceProperty, isCollectionItem bool, callback func(path string, property *model.ResourceProperty)) {
-	for _, property := range properties {
+func resourceWalkPropertiesRecursive(resource *model.Resource, path string, properties map[string]*model.ResourceProperty, isCollectionItem bool, callback func(path string, property *model.ResourceProperty)) {
+	for name, property := range properties {
 		var newName = path
 		if !isCollectionItem {
-			newName += "." + property.Name
+			newName += "." + name
 		}
 		callback(newName, property)
 
 		if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
-			resourceWalkPropertiesRecursive(resource, newName+"[]", []*model.ResourceProperty{property.Item}, true, callback)
+			resourceWalkPropertiesRecursive(resource, newName+"[]", map[string]*model.ResourceProperty{"item": property.Item}, true, callback)
 		}
 	}
 }

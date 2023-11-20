@@ -18,6 +18,12 @@ type Role struct {
 	Details     interface{}    `json:"details,omitempty"`
 }
 
+func (s *Role) GetPermissions() []*Permission {
+	return s.Permissions
+}
+func (s *Role) GetDetails() interface{} {
+	return s.Details
+}
 func (s *Role) GetId() *uuid.UUID {
 	return s.Id
 }
@@ -30,18 +36,12 @@ func (s *Role) GetAuditData() *RoleAuditData {
 func (s *Role) GetName() string {
 	return s.Name
 }
-func (s *Role) GetPermissions() []*Permission {
-	return s.Permissions
-}
-func (s *Role) GetDetails() interface{} {
-	return s.Details
-}
 
 type RoleAuditData struct {
+	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 	CreatedBy *string    `json:"createdBy,omitempty"`
 	UpdatedBy *string    `json:"updatedBy,omitempty"`
 	CreatedOn *time.Time `json:"createdOn,omitempty"`
-	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
 func (s *RoleAuditData) GetCreatedBy() *string {

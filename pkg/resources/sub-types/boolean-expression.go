@@ -11,14 +11,12 @@ var PairExpression = &model.ResourceSubType{
 	Annotations: map[string]string{
 		annotations.CommonType: annotations.Enabled,
 	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name:    "left",
+	Properties: map[string]*model.ResourceProperty{
+		"left": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(Expression.Name),
 		},
-		{
-			Name:    "right",
+		"right": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(Expression.Name),
 		},
@@ -30,13 +28,11 @@ var RegexMatchExpression = &model.ResourceSubType{
 	Annotations: map[string]string{
 		annotations.CommonType: annotations.Enabled,
 	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name: "pattern",
+	Properties: map[string]*model.ResourceProperty{
+		"pattern": {
 			Type: model.ResourceProperty_STRING,
 		},
-		{
-			Name:    "expression",
+		"expression": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(Expression.Name),
 		},
@@ -48,13 +44,11 @@ var Expression = &model.ResourceSubType{
 	Annotations: map[string]string{
 		annotations.CommonType: annotations.Enabled,
 	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name: "property",
+	Properties: map[string]*model.ResourceProperty{
+		"property": {
 			Type: model.ResourceProperty_STRING,
 		},
-		{
-			Name: "value",
+		"value": {
 			Type: model.ResourceProperty_OBJECT,
 		},
 	},
@@ -65,65 +59,54 @@ var BooleanExpression = &model.ResourceSubType{
 	Annotations: map[string]string{
 		annotations.CommonType: annotations.Enabled,
 	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name: "and",
+	Properties: map[string]*model.ResourceProperty{
+		"and": {
 			Type: model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
 				Type:    model.ResourceProperty_STRUCT,
 				TypeRef: util.Pointer("BooleanExpression"),
 			},
 		},
-		{
-			Name: "or",
+		"or": {
 			Type: model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
 				Type:    model.ResourceProperty_STRUCT,
 				TypeRef: util.Pointer("BooleanExpression"),
 			},
 		},
-		{
-			Name:    "not",
+		"not": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer("BooleanExpression"),
 		},
-		{
-			Name:    "equal",
+		"equal": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(PairExpression.Name),
 		},
-		{
-			Name:    "lessThan",
+		"lessThan": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(PairExpression.Name),
 		},
-		{
-			Name:    "greaterThan",
+		"greaterThan": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(PairExpression.Name),
 		},
-		{
-			Name:    "lessThanOrEqual",
+		"lessThanOrEqual": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(PairExpression.Name),
 		},
-		{
-			Name:    "greaterThanOrEqual",
+		"greaterThanOrEqual": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(PairExpression.Name),
 		},
-		{
-			Name:    "in",
+		"in": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(PairExpression.Name),
 		},
-		{
-			Name:    "isNull",
+		"isNull": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(Expression.Name),
 		},
-		{
-			Name:    "regexMatch",
+		"regexMatch": {
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(RegexMatchExpression.Name),
 		},

@@ -50,106 +50,6 @@ func (m *ResourceMapper) FromRecord(record *model.Record) *Resource {
 func (m *ResourceMapper) ToProperties(resource *Resource) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := resource.Id
-
-	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
-
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Version := resource.Version
-
-	var var_Version_mapped *structpb.Value
-
-	var var_Version_err error
-	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
-	if var_Version_err != nil {
-		panic(var_Version_err)
-	}
-	properties["version"] = var_Version_mapped
-
-	var_AuditData := resource.AuditData
-
-	if var_AuditData != nil {
-		var var_AuditData_mapped *structpb.Value
-
-		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ResourceAuditDataMapperInstance.ToProperties(var_AuditData)})
-		properties["auditData"] = var_AuditData_mapped
-	}
-
-	var_Name := resource.Name
-
-	var var_Name_mapped *structpb.Value
-
-	var var_Name_err error
-	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
-	if var_Name_err != nil {
-		panic(var_Name_err)
-	}
-	properties["name"] = var_Name_mapped
-
-	var_Namespace := resource.Namespace
-
-	if var_Namespace != nil {
-		var var_Namespace_mapped *structpb.Value
-
-		var_Namespace_mapped = structpb.NewStructValue(&structpb.Struct{Fields: NamespaceMapperInstance.ToProperties(var_Namespace)})
-		properties["namespace"] = var_Namespace_mapped
-	}
-
-	var_Virtual := resource.Virtual
-
-	var var_Virtual_mapped *structpb.Value
-
-	var var_Virtual_err error
-	var_Virtual_mapped, var_Virtual_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Virtual)
-	if var_Virtual_err != nil {
-		panic(var_Virtual_err)
-	}
-	properties["virtual"] = var_Virtual_mapped
-
-	var_Properties := resource.Properties
-
-	var var_Properties_mapped *structpb.Value
-
-	var var_Properties_l []*structpb.Value
-	for _, value := range var_Properties {
-
-		var_5x := value
-		var var_5x_mapped *structpb.Value
-
-		var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PropertyMapperInstance.ToProperties(&var_5x)})
-
-		var_Properties_l = append(var_Properties_l, var_5x_mapped)
-	}
-	var_Properties_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Properties_l})
-	properties["properties"] = var_Properties_mapped
-
-	var_Indexes := resource.Indexes
-
-	if var_Indexes != nil {
-		var var_Indexes_mapped *structpb.Value
-
-		var var_Indexes_l []*structpb.Value
-		for _, value := range var_Indexes {
-
-			var_5x := value
-			var var_5x_mapped *structpb.Value
-
-			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ResourceIndexMapperInstance.ToProperties(&var_5x)})
-
-			var_Indexes_l = append(var_Indexes_l, var_5x_mapped)
-		}
-		var_Indexes_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Indexes_l})
-		properties["indexes"] = var_Indexes_mapped
-	}
-
 	var_Types := resource.Types
 
 	if var_Types != nil {
@@ -169,6 +69,24 @@ func (m *ResourceMapper) ToProperties(resource *Resource) map[string]*structpb.V
 		properties["types"] = var_Types_mapped
 	}
 
+	var_Properties := resource.Properties
+
+	var var_Properties_mapped *structpb.Value
+
+	var var_Properties_st *structpb.Struct = new(structpb.Struct)
+	var_Properties_st.Fields = make(map[string]*structpb.Value)
+	for key, value := range var_Properties {
+
+		var_1x := value
+		var var_1x_mapped *structpb.Value
+
+		var_1x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PropertyMapperInstance.ToProperties(&var_1x)})
+
+		var_Properties_st.Fields[key] = var_1x_mapped
+	}
+	var_Properties_mapped = structpb.NewStructValue(var_Properties_st)
+	properties["properties"] = var_Properties_mapped
+
 	var_Immutable := resource.Immutable
 
 	var var_Immutable_mapped *structpb.Value
@@ -179,37 +97,6 @@ func (m *ResourceMapper) ToProperties(resource *Resource) map[string]*structpb.V
 		panic(var_Immutable_err)
 	}
 	properties["immutable"] = var_Immutable_mapped
-
-	var_Abstract := resource.Abstract
-
-	var var_Abstract_mapped *structpb.Value
-
-	var var_Abstract_err error
-	var_Abstract_mapped, var_Abstract_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Abstract)
-	if var_Abstract_err != nil {
-		panic(var_Abstract_err)
-	}
-	properties["abstract"] = var_Abstract_mapped
-
-	var_CheckReferences := resource.CheckReferences
-
-	var var_CheckReferences_mapped *structpb.Value
-
-	var var_CheckReferences_err error
-	var_CheckReferences_mapped, var_CheckReferences_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_CheckReferences)
-	if var_CheckReferences_err != nil {
-		panic(var_CheckReferences_err)
-	}
-	properties["checkReferences"] = var_CheckReferences_mapped
-
-	var_DataSource := resource.DataSource
-
-	if var_DataSource != nil {
-		var var_DataSource_mapped *structpb.Value
-
-		var_DataSource_mapped = structpb.NewStructValue(&structpb.Struct{Fields: DataSourceMapperInstance.ToProperties(var_DataSource)})
-		properties["dataSource"] = var_DataSource_mapped
-	}
 
 	var_Entity := resource.Entity
 
@@ -263,6 +150,48 @@ func (m *ResourceMapper) ToProperties(resource *Resource) map[string]*structpb.V
 		properties["description"] = var_Description_mapped
 	}
 
+	var_Name := resource.Name
+
+	var var_Name_mapped *structpb.Value
+
+	var var_Name_err error
+	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
+	if var_Name_err != nil {
+		panic(var_Name_err)
+	}
+	properties["name"] = var_Name_mapped
+
+	var_AuditData := resource.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped *structpb.Value
+
+		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ResourceAuditDataMapperInstance.ToProperties(var_AuditData)})
+		properties["auditData"] = var_AuditData_mapped
+	}
+
+	var_Virtual := resource.Virtual
+
+	var var_Virtual_mapped *structpb.Value
+
+	var var_Virtual_err error
+	var_Virtual_mapped, var_Virtual_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Virtual)
+	if var_Virtual_err != nil {
+		panic(var_Virtual_err)
+	}
+	properties["virtual"] = var_Virtual_mapped
+
+	var_Abstract := resource.Abstract
+
+	var var_Abstract_mapped *structpb.Value
+
+	var var_Abstract_err error
+	var_Abstract_mapped, var_Abstract_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Abstract)
+	if var_Abstract_err != nil {
+		panic(var_Abstract_err)
+	}
+	properties["abstract"] = var_Abstract_mapped
+
 	var_Annotations := resource.Annotations
 
 	if var_Annotations != nil {
@@ -286,11 +215,116 @@ func (m *ResourceMapper) ToProperties(resource *Resource) map[string]*structpb.V
 		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
 		properties["annotations"] = var_Annotations_mapped
 	}
+
+	var_Id := resource.Id
+
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
+
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
+		}
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Namespace := resource.Namespace
+
+	if var_Namespace != nil {
+		var var_Namespace_mapped *structpb.Value
+
+		var_Namespace_mapped = structpb.NewStructValue(&structpb.Struct{Fields: NamespaceMapperInstance.ToProperties(var_Namespace)})
+		properties["namespace"] = var_Namespace_mapped
+	}
+
+	var_Indexes := resource.Indexes
+
+	if var_Indexes != nil {
+		var var_Indexes_mapped *structpb.Value
+
+		var var_Indexes_l []*structpb.Value
+		for _, value := range var_Indexes {
+
+			var_5x := value
+			var var_5x_mapped *structpb.Value
+
+			var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ResourceIndexMapperInstance.ToProperties(&var_5x)})
+
+			var_Indexes_l = append(var_Indexes_l, var_5x_mapped)
+		}
+		var_Indexes_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Indexes_l})
+		properties["indexes"] = var_Indexes_mapped
+	}
+
+	var_CheckReferences := resource.CheckReferences
+
+	var var_CheckReferences_mapped *structpb.Value
+
+	var var_CheckReferences_err error
+	var_CheckReferences_mapped, var_CheckReferences_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_CheckReferences)
+	if var_CheckReferences_err != nil {
+		panic(var_CheckReferences_err)
+	}
+	properties["checkReferences"] = var_CheckReferences_mapped
+
+	var_DataSource := resource.DataSource
+
+	if var_DataSource != nil {
+		var var_DataSource_mapped *structpb.Value
+
+		var_DataSource_mapped = structpb.NewStructValue(&structpb.Struct{Fields: DataSourceMapperInstance.ToProperties(var_DataSource)})
+		properties["dataSource"] = var_DataSource_mapped
+	}
+
+	var_Version := resource.Version
+
+	var var_Version_mapped *structpb.Value
+
+	var var_Version_err error
+	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
+	if var_Version_err != nil {
+		panic(var_Version_err)
+	}
+	properties["version"] = var_Version_mapped
 	return properties
 }
 
 func (m *ResourceMapper) FromProperties(properties map[string]*structpb.Value) *Resource {
 	var s = m.New()
+	if properties["abstract"] != nil && properties["abstract"].AsInterface() != nil {
+
+		var_Abstract := properties["abstract"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Abstract)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Abstract_mapped := val.(bool)
+
+		s.Abstract = var_Abstract_mapped
+	}
+	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
+
+		var_Annotations := properties["annotations"]
+		var_Annotations_mapped := make(map[string]string)
+		for k, v := range var_Annotations.GetStructValue().Fields {
+
+			var_3x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
+
+			if err != nil {
+				panic(err)
+			}
+
+			var_3x_mapped := val.(string)
+
+			var_Annotations_mapped[k] = var_3x_mapped
+		}
+
+		s.Annotations = var_Annotations_mapped
+	}
 	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
 		var_Id := properties["id"]
@@ -305,19 +339,6 @@ func (m *ResourceMapper) FromProperties(properties map[string]*structpb.Value) *
 
 		s.Id = var_Id_mapped
 	}
-	if properties["version"] != nil && properties["version"].AsInterface() != nil {
-
-		var_Version := properties["version"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Version_mapped := val.(int32)
-
-		s.Version = var_Version_mapped
-	}
 	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
 
 		var_AuditData := properties["auditData"]
@@ -326,26 +347,6 @@ func (m *ResourceMapper) FromProperties(properties map[string]*structpb.Value) *
 		var_AuditData_mapped := mappedValue
 
 		s.AuditData = var_AuditData_mapped
-	}
-	if properties["name"] != nil && properties["name"].AsInterface() != nil {
-
-		var_Name := properties["name"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Name_mapped := val.(string)
-
-		s.Name = var_Name_mapped
-	}
-	if properties["namespace"] != nil && properties["namespace"].AsInterface() != nil {
-
-		var_Namespace := properties["namespace"]
-		var_Namespace_mapped := NamespaceMapperInstance.FromProperties(var_Namespace.GetStructValue().Fields)
-
-		s.Namespace = var_Namespace_mapped
 	}
 	if properties["virtual"] != nil && properties["virtual"].AsInterface() != nil {
 
@@ -360,21 +361,45 @@ func (m *ResourceMapper) FromProperties(properties map[string]*structpb.Value) *
 
 		s.Virtual = var_Virtual_mapped
 	}
-	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
+	if properties["checkReferences"] != nil && properties["checkReferences"].AsInterface() != nil {
 
-		var_Properties := properties["properties"]
-		var_Properties_mapped := []Property{}
-		for _, v := range var_Properties.GetListValue().Values {
+		var_CheckReferences := properties["checkReferences"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_CheckReferences)
 
-			var_4x := v
-			var mappedValue = PropertyMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
-
-			var_4x_mapped := *mappedValue
-
-			var_Properties_mapped = append(var_Properties_mapped, var_4x_mapped)
+		if err != nil {
+			panic(err)
 		}
 
-		s.Properties = var_Properties_mapped
+		var_CheckReferences_mapped := val.(bool)
+
+		s.CheckReferences = var_CheckReferences_mapped
+	}
+	if properties["dataSource"] != nil && properties["dataSource"].AsInterface() != nil {
+
+		var_DataSource := properties["dataSource"]
+		var_DataSource_mapped := DataSourceMapperInstance.FromProperties(var_DataSource.GetStructValue().Fields)
+
+		s.DataSource = var_DataSource_mapped
+	}
+	if properties["version"] != nil && properties["version"].AsInterface() != nil {
+
+		var_Version := properties["version"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Version_mapped := val.(int32)
+
+		s.Version = var_Version_mapped
+	}
+	if properties["namespace"] != nil && properties["namespace"].AsInterface() != nil {
+
+		var_Namespace := properties["namespace"]
+		var_Namespace_mapped := NamespaceMapperInstance.FromProperties(var_Namespace.GetStructValue().Fields)
+
+		s.Namespace = var_Namespace_mapped
 	}
 	if properties["indexes"] != nil && properties["indexes"].AsInterface() != nil {
 
@@ -407,52 +432,6 @@ func (m *ResourceMapper) FromProperties(properties map[string]*structpb.Value) *
 		}
 
 		s.Types = var_Types_mapped
-	}
-	if properties["immutable"] != nil && properties["immutable"].AsInterface() != nil {
-
-		var_Immutable := properties["immutable"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Immutable)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Immutable_mapped := val.(bool)
-
-		s.Immutable = var_Immutable_mapped
-	}
-	if properties["abstract"] != nil && properties["abstract"].AsInterface() != nil {
-
-		var_Abstract := properties["abstract"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Abstract)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Abstract_mapped := val.(bool)
-
-		s.Abstract = var_Abstract_mapped
-	}
-	if properties["checkReferences"] != nil && properties["checkReferences"].AsInterface() != nil {
-
-		var_CheckReferences := properties["checkReferences"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_CheckReferences)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_CheckReferences_mapped := val.(bool)
-
-		s.CheckReferences = var_CheckReferences_mapped
-	}
-	if properties["dataSource"] != nil && properties["dataSource"].AsInterface() != nil {
-
-		var_DataSource := properties["dataSource"]
-		var_DataSource_mapped := DataSourceMapperInstance.FromProperties(var_DataSource.GetStructValue().Fields)
-
-		s.DataSource = var_DataSource_mapped
 	}
 	if properties["entity"] != nil && properties["entity"].AsInterface() != nil {
 
@@ -510,25 +489,47 @@ func (m *ResourceMapper) FromProperties(properties map[string]*structpb.Value) *
 
 		s.Description = var_Description_mapped
 	}
-	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
+	if properties["name"] != nil && properties["name"].AsInterface() != nil {
 
-		var_Annotations := properties["annotations"]
-		var_Annotations_mapped := make(map[string]string)
-		for k, v := range var_Annotations.GetStructValue().Fields {
+		var_Name := properties["name"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
 
-			var_3x := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
-
-			if err != nil {
-				panic(err)
-			}
-
-			var_3x_mapped := val.(string)
-
-			var_Annotations_mapped[k] = var_3x_mapped
+		if err != nil {
+			panic(err)
 		}
 
-		s.Annotations = var_Annotations_mapped
+		var_Name_mapped := val.(string)
+
+		s.Name = var_Name_mapped
+	}
+	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
+
+		var_Properties := properties["properties"]
+		var_Properties_mapped := make(map[string]Property)
+		for k, v := range var_Properties.GetStructValue().Fields {
+
+			var_3x := v
+			var mappedValue = PropertyMapperInstance.FromProperties(var_3x.GetStructValue().Fields)
+
+			var_3x_mapped := *mappedValue
+
+			var_Properties_mapped[k] = var_3x_mapped
+		}
+
+		s.Properties = var_Properties_mapped
+	}
+	if properties["immutable"] != nil && properties["immutable"].AsInterface() != nil {
+
+		var_Immutable := properties["immutable"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Immutable)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Immutable_mapped := val.(bool)
+
+		s.Immutable = var_Immutable_mapped
 	}
 	return s
 }
@@ -556,29 +557,65 @@ func (m *PropertyMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *PropertyMapper) ToProperties(property *Property) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Name := property.Name
+	var_Primary := property.Primary
 
-	if var_Name != nil {
-		var var_Name_mapped *structpb.Value
+	var var_Primary_mapped *structpb.Value
 
-		var var_Name_err error
-		var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Name)
-		if var_Name_err != nil {
-			panic(var_Name_err)
+	var var_Primary_err error
+	var_Primary_mapped, var_Primary_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Primary)
+	if var_Primary_err != nil {
+		panic(var_Primary_err)
+	}
+	properties["primary"] = var_Primary_mapped
+
+	var_ExampleValue := property.ExampleValue
+
+	if var_ExampleValue != nil {
+		var var_ExampleValue_mapped *structpb.Value
+
+		var var_ExampleValue_err error
+		var_ExampleValue_mapped, var_ExampleValue_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_ExampleValue)
+		if var_ExampleValue_err != nil {
+			panic(var_ExampleValue_err)
 		}
-		properties["name"] = var_Name_mapped
+		properties["exampleValue"] = var_ExampleValue_mapped
 	}
 
-	var_Type := property.Type
+	var_EnumValues := property.EnumValues
 
-	var var_Type_mapped *structpb.Value
+	if var_EnumValues != nil {
+		var var_EnumValues_mapped *structpb.Value
 
-	var var_Type_err error
-	var_Type_mapped, var_Type_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Type))
-	if var_Type_err != nil {
-		panic(var_Type_err)
+		var var_EnumValues_l []*structpb.Value
+		for _, value := range var_EnumValues {
+
+			var_5x := value
+			var var_5x_mapped *structpb.Value
+
+			var var_5x_err error
+			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
+			if var_5x_err != nil {
+				panic(var_5x_err)
+			}
+
+			var_EnumValues_l = append(var_EnumValues_l, var_5x_mapped)
+		}
+		var_EnumValues_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_EnumValues_l})
+		properties["enumValues"] = var_EnumValues_mapped
 	}
-	properties["type"] = var_Type_mapped
+
+	var_Title := property.Title
+
+	if var_Title != nil {
+		var var_Title_mapped *structpb.Value
+
+		var var_Title_err error
+		var_Title_mapped, var_Title_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Title)
+		if var_Title_err != nil {
+			panic(var_Title_err)
+		}
+		properties["title"] = var_Title_mapped
+	}
 
 	var_TypeRef := property.TypeRef
 
@@ -592,17 +629,6 @@ func (m *PropertyMapper) ToProperties(property *Property) map[string]*structpb.V
 		}
 		properties["typeRef"] = var_TypeRef_mapped
 	}
-
-	var_Primary := property.Primary
-
-	var var_Primary_mapped *structpb.Value
-
-	var var_Primary_err error
-	var_Primary_mapped, var_Primary_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Primary)
-	if var_Primary_err != nil {
-		panic(var_Primary_err)
-	}
-	properties["primary"] = var_Primary_mapped
 
 	var_Required := property.Required
 
@@ -648,22 +674,17 @@ func (m *PropertyMapper) ToProperties(property *Property) map[string]*structpb.V
 	}
 	properties["length"] = var_Length_mapped
 
-	var_Item := property.Item
+	var_Description := property.Description
 
-	if var_Item != nil {
-		var var_Item_mapped *structpb.Value
+	if var_Description != nil {
+		var var_Description_mapped *structpb.Value
 
-		var_Item_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PropertyMapperInstance.ToProperties(var_Item)})
-		properties["item"] = var_Item_mapped
-	}
-
-	var_Reference := property.Reference
-
-	if var_Reference != nil {
-		var var_Reference_mapped *structpb.Value
-
-		var_Reference_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ReferenceMapperInstance.ToProperties(var_Reference)})
-		properties["reference"] = var_Reference_mapped
+		var var_Description_err error
+		var_Description_mapped, var_Description_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Description)
+		if var_Description_err != nil {
+			panic(var_Description_err)
+		}
+		properties["description"] = var_Description_mapped
 	}
 
 	var_DefaultValue := property.DefaultValue
@@ -677,68 +698,6 @@ func (m *PropertyMapper) ToProperties(property *Property) map[string]*structpb.V
 			panic(var_DefaultValue_err)
 		}
 		properties["defaultValue"] = var_DefaultValue_mapped
-	}
-
-	var_EnumValues := property.EnumValues
-
-	if var_EnumValues != nil {
-		var var_EnumValues_mapped *structpb.Value
-
-		var var_EnumValues_l []*structpb.Value
-		for _, value := range var_EnumValues {
-
-			var_5x := value
-			var var_5x_mapped *structpb.Value
-
-			var var_5x_err error
-			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_5x)
-			if var_5x_err != nil {
-				panic(var_5x_err)
-			}
-
-			var_EnumValues_l = append(var_EnumValues_l, var_5x_mapped)
-		}
-		var_EnumValues_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_EnumValues_l})
-		properties["enumValues"] = var_EnumValues_mapped
-	}
-
-	var_ExampleValue := property.ExampleValue
-
-	if var_ExampleValue != nil {
-		var var_ExampleValue_mapped *structpb.Value
-
-		var var_ExampleValue_err error
-		var_ExampleValue_mapped, var_ExampleValue_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_ExampleValue)
-		if var_ExampleValue_err != nil {
-			panic(var_ExampleValue_err)
-		}
-		properties["exampleValue"] = var_ExampleValue_mapped
-	}
-
-	var_Title := property.Title
-
-	if var_Title != nil {
-		var var_Title_mapped *structpb.Value
-
-		var var_Title_err error
-		var_Title_mapped, var_Title_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Title)
-		if var_Title_err != nil {
-			panic(var_Title_err)
-		}
-		properties["title"] = var_Title_mapped
-	}
-
-	var_Description := property.Description
-
-	if var_Description != nil {
-		var var_Description_mapped *structpb.Value
-
-		var var_Description_err error
-		var_Description_mapped, var_Description_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Description)
-		if var_Description_err != nil {
-			panic(var_Description_err)
-		}
-		properties["description"] = var_Description_mapped
 	}
 
 	var_Annotations := property.Annotations
@@ -764,31 +723,94 @@ func (m *PropertyMapper) ToProperties(property *Property) map[string]*structpb.V
 		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
 		properties["annotations"] = var_Annotations_mapped
 	}
+
+	var_Type := property.Type
+
+	var var_Type_mapped *structpb.Value
+
+	var var_Type_err error
+	var_Type_mapped, var_Type_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Type))
+	if var_Type_err != nil {
+		panic(var_Type_err)
+	}
+	properties["type"] = var_Type_mapped
+
+	var_Item := property.Item
+
+	if var_Item != nil {
+		var var_Item_mapped *structpb.Value
+
+		var_Item_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PropertyMapperInstance.ToProperties(var_Item)})
+		properties["item"] = var_Item_mapped
+	}
+
+	var_Reference := property.Reference
+
+	if var_Reference != nil {
+		var var_Reference_mapped *structpb.Value
+
+		var_Reference_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ReferenceMapperInstance.ToProperties(var_Reference)})
+		properties["reference"] = var_Reference_mapped
+	}
 	return properties
 }
 
 func (m *PropertyMapper) FromProperties(properties map[string]*structpb.Value) *Property {
 	var s = m.New()
-	if properties["name"] != nil && properties["name"].AsInterface() != nil {
+	if properties["primary"] != nil && properties["primary"].AsInterface() != nil {
 
-		var_Name := properties["name"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
+		var_Primary := properties["primary"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Primary)
 
 		if err != nil {
 			panic(err)
 		}
 
-		var_Name_mapped := new(string)
-		*var_Name_mapped = val.(string)
+		var_Primary_mapped := val.(bool)
 
-		s.Name = var_Name_mapped
+		s.Primary = var_Primary_mapped
 	}
-	if properties["type"] != nil && properties["type"].AsInterface() != nil {
+	if properties["exampleValue"] != nil && properties["exampleValue"].AsInterface() != nil {
 
-		var_Type := properties["type"]
-		var_Type_mapped := (ResourceType)(var_Type.GetStringValue())
+		var_ExampleValue := properties["exampleValue"]
+		var_ExampleValue_mapped := new(interface{})
+		*var_ExampleValue_mapped = unstructured.FromValue(var_ExampleValue)
 
-		s.Type = var_Type_mapped
+		s.ExampleValue = var_ExampleValue_mapped
+	}
+	if properties["enumValues"] != nil && properties["enumValues"].AsInterface() != nil {
+
+		var_EnumValues := properties["enumValues"]
+		var_EnumValues_mapped := []string{}
+		for _, v := range var_EnumValues.GetListValue().Values {
+
+			var_4x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
+
+			if err != nil {
+				panic(err)
+			}
+
+			var_4x_mapped := val.(string)
+
+			var_EnumValues_mapped = append(var_EnumValues_mapped, var_4x_mapped)
+		}
+
+		s.EnumValues = var_EnumValues_mapped
+	}
+	if properties["title"] != nil && properties["title"].AsInterface() != nil {
+
+		var_Title := properties["title"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Title)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Title_mapped := new(string)
+		*var_Title_mapped = val.(string)
+
+		s.Title = var_Title_mapped
 	}
 	if properties["typeRef"] != nil && properties["typeRef"].AsInterface() != nil {
 
@@ -803,19 +825,6 @@ func (m *PropertyMapper) FromProperties(properties map[string]*structpb.Value) *
 		*var_TypeRef_mapped = val.(string)
 
 		s.TypeRef = var_TypeRef_mapped
-	}
-	if properties["primary"] != nil && properties["primary"].AsInterface() != nil {
-
-		var_Primary := properties["primary"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Primary)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Primary_mapped := val.(bool)
-
-		s.Primary = var_Primary_mapped
 	}
 	if properties["required"] != nil && properties["required"].AsInterface() != nil {
 
@@ -869,74 +878,6 @@ func (m *PropertyMapper) FromProperties(properties map[string]*structpb.Value) *
 
 		s.Length = var_Length_mapped
 	}
-	if properties["item"] != nil && properties["item"].AsInterface() != nil {
-
-		var_Item := properties["item"]
-		var mappedValue = PropertyMapperInstance.FromProperties(var_Item.GetStructValue().Fields)
-
-		var_Item_mapped := mappedValue
-
-		s.Item = var_Item_mapped
-	}
-	if properties["reference"] != nil && properties["reference"].AsInterface() != nil {
-
-		var_Reference := properties["reference"]
-		var mappedValue = ReferenceMapperInstance.FromProperties(var_Reference.GetStructValue().Fields)
-
-		var_Reference_mapped := mappedValue
-
-		s.Reference = var_Reference_mapped
-	}
-	if properties["defaultValue"] != nil && properties["defaultValue"].AsInterface() != nil {
-
-		var_DefaultValue := properties["defaultValue"]
-		var_DefaultValue_mapped := new(interface{})
-		*var_DefaultValue_mapped = unstructured.FromValue(var_DefaultValue)
-
-		s.DefaultValue = var_DefaultValue_mapped
-	}
-	if properties["enumValues"] != nil && properties["enumValues"].AsInterface() != nil {
-
-		var_EnumValues := properties["enumValues"]
-		var_EnumValues_mapped := []string{}
-		for _, v := range var_EnumValues.GetListValue().Values {
-
-			var_4x := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_4x)
-
-			if err != nil {
-				panic(err)
-			}
-
-			var_4x_mapped := val.(string)
-
-			var_EnumValues_mapped = append(var_EnumValues_mapped, var_4x_mapped)
-		}
-
-		s.EnumValues = var_EnumValues_mapped
-	}
-	if properties["exampleValue"] != nil && properties["exampleValue"].AsInterface() != nil {
-
-		var_ExampleValue := properties["exampleValue"]
-		var_ExampleValue_mapped := new(interface{})
-		*var_ExampleValue_mapped = unstructured.FromValue(var_ExampleValue)
-
-		s.ExampleValue = var_ExampleValue_mapped
-	}
-	if properties["title"] != nil && properties["title"].AsInterface() != nil {
-
-		var_Title := properties["title"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Title)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Title_mapped := new(string)
-		*var_Title_mapped = val.(string)
-
-		s.Title = var_Title_mapped
-	}
 	if properties["description"] != nil && properties["description"].AsInterface() != nil {
 
 		var_Description := properties["description"]
@@ -950,6 +891,14 @@ func (m *PropertyMapper) FromProperties(properties map[string]*structpb.Value) *
 		*var_Description_mapped = val.(string)
 
 		s.Description = var_Description_mapped
+	}
+	if properties["defaultValue"] != nil && properties["defaultValue"].AsInterface() != nil {
+
+		var_DefaultValue := properties["defaultValue"]
+		var_DefaultValue_mapped := new(interface{})
+		*var_DefaultValue_mapped = unstructured.FromValue(var_DefaultValue)
+
+		s.DefaultValue = var_DefaultValue_mapped
 	}
 	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
 
@@ -970,6 +919,31 @@ func (m *PropertyMapper) FromProperties(properties map[string]*structpb.Value) *
 		}
 
 		s.Annotations = var_Annotations_mapped
+	}
+	if properties["type"] != nil && properties["type"].AsInterface() != nil {
+
+		var_Type := properties["type"]
+		var_Type_mapped := (ResourceType)(var_Type.GetStringValue())
+
+		s.Type = var_Type_mapped
+	}
+	if properties["item"] != nil && properties["item"].AsInterface() != nil {
+
+		var_Item := properties["item"]
+		var mappedValue = PropertyMapperInstance.FromProperties(var_Item.GetStructValue().Fields)
+
+		var_Item_mapped := mappedValue
+
+		s.Item = var_Item_mapped
+	}
+	if properties["reference"] != nil && properties["reference"].AsInterface() != nil {
+
+		var_Reference := properties["reference"]
+		var mappedValue = ReferenceMapperInstance.FromProperties(var_Reference.GetStructValue().Fields)
+
+		var_Reference_mapped := mappedValue
+
+		s.Reference = var_Reference_mapped
 	}
 	return s
 }
@@ -1038,17 +1012,18 @@ func (m *SubTypeMapper) ToProperties(subType *SubType) map[string]*structpb.Valu
 
 	var var_Properties_mapped *structpb.Value
 
-	var var_Properties_l []*structpb.Value
-	for _, value := range var_Properties {
+	var var_Properties_st *structpb.Struct = new(structpb.Struct)
+	var_Properties_st.Fields = make(map[string]*structpb.Value)
+	for key, value := range var_Properties {
 
-		var_5x := value
-		var var_5x_mapped *structpb.Value
+		var_1x := value
+		var var_1x_mapped *structpb.Value
 
-		var_5x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PropertyMapperInstance.ToProperties(&var_5x)})
+		var_1x_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PropertyMapperInstance.ToProperties(&var_1x)})
 
-		var_Properties_l = append(var_Properties_l, var_5x_mapped)
+		var_Properties_st.Fields[key] = var_1x_mapped
 	}
-	var_Properties_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_Properties_l})
+	var_Properties_mapped = structpb.NewStructValue(var_Properties_st)
 	properties["properties"] = var_Properties_mapped
 	return properties
 }
@@ -1099,15 +1074,15 @@ func (m *SubTypeMapper) FromProperties(properties map[string]*structpb.Value) *S
 	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
 
 		var_Properties := properties["properties"]
-		var_Properties_mapped := []Property{}
-		for _, v := range var_Properties.GetListValue().Values {
+		var_Properties_mapped := make(map[string]Property)
+		for k, v := range var_Properties.GetStructValue().Fields {
 
-			var_4x := v
-			var mappedValue = PropertyMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
+			var_3x := v
+			var mappedValue = PropertyMapperInstance.FromProperties(var_3x.GetStructValue().Fields)
 
-			var_4x_mapped := *mappedValue
+			var_3x_mapped := *mappedValue
 
-			var_Properties_mapped = append(var_Properties_mapped, var_4x_mapped)
+			var_Properties_mapped[k] = var_3x_mapped
 		}
 
 		s.Properties = var_Properties_mapped
@@ -1138,32 +1113,6 @@ func (m *ResourceAuditDataMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *ResourceAuditDataMapper) ToProperties(resourceAuditData *ResourceAuditData) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_CreatedBy := resourceAuditData.CreatedBy
-
-	if var_CreatedBy != nil {
-		var var_CreatedBy_mapped *structpb.Value
-
-		var var_CreatedBy_err error
-		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
-		if var_CreatedBy_err != nil {
-			panic(var_CreatedBy_err)
-		}
-		properties["createdBy"] = var_CreatedBy_mapped
-	}
-
-	var_UpdatedBy := resourceAuditData.UpdatedBy
-
-	if var_UpdatedBy != nil {
-		var var_UpdatedBy_mapped *structpb.Value
-
-		var var_UpdatedBy_err error
-		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
-		if var_UpdatedBy_err != nil {
-			panic(var_UpdatedBy_err)
-		}
-		properties["updatedBy"] = var_UpdatedBy_mapped
-	}
-
 	var_CreatedOn := resourceAuditData.CreatedOn
 
 	if var_CreatedOn != nil {
@@ -1189,25 +1138,37 @@ func (m *ResourceAuditDataMapper) ToProperties(resourceAuditData *ResourceAuditD
 		}
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
+
+	var_CreatedBy := resourceAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped *structpb.Value
+
+		var var_CreatedBy_err error
+		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
+		if var_CreatedBy_err != nil {
+			panic(var_CreatedBy_err)
+		}
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := resourceAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped *structpb.Value
+
+		var var_UpdatedBy_err error
+		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
+		if var_UpdatedBy_err != nil {
+			panic(var_UpdatedBy_err)
+		}
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
 	return properties
 }
 
 func (m *ResourceAuditDataMapper) FromProperties(properties map[string]*structpb.Value) *ResourceAuditData {
 	var s = m.New()
-	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
-
-		var_CreatedBy := properties["createdBy"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_CreatedBy_mapped := new(string)
-		*var_CreatedBy_mapped = val.(string)
-
-		s.CreatedBy = var_CreatedBy_mapped
-	}
 	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
 
 		var_UpdatedBy := properties["updatedBy"]
@@ -1249,6 +1210,20 @@ func (m *ResourceAuditDataMapper) FromProperties(properties map[string]*structpb
 		*var_UpdatedOn_mapped = val.(time.Time)
 
 		s.UpdatedOn = var_UpdatedOn_mapped
+	}
+	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
+
+		var_CreatedBy := properties["createdBy"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_CreatedBy_mapped := new(string)
+		*var_CreatedBy_mapped = val.(string)
+
+		s.CreatedBy = var_CreatedBy_mapped
 	}
 	return s
 }
@@ -1424,30 +1399,6 @@ func (m *ResourceIndexMapper) ToProperties(resourceIndex *ResourceIndex) map[str
 
 func (m *ResourceIndexMapper) FromProperties(properties map[string]*structpb.Value) *ResourceIndex {
 	var s = m.New()
-	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
-
-		var_Properties := properties["properties"]
-		var_Properties_mapped := []ResourceIndexProperty{}
-		for _, v := range var_Properties.GetListValue().Values {
-
-			var_4x := v
-			var mappedValue = ResourceIndexPropertyMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
-
-			var_4x_mapped := *mappedValue
-
-			var_Properties_mapped = append(var_Properties_mapped, var_4x_mapped)
-		}
-
-		s.Properties = var_Properties_mapped
-	}
-	if properties["indexType"] != nil && properties["indexType"].AsInterface() != nil {
-
-		var_IndexType := properties["indexType"]
-		var_IndexType_mapped := new(ResourceIndexType)
-		*var_IndexType_mapped = (ResourceIndexType)(var_IndexType.GetStringValue())
-
-		s.IndexType = var_IndexType_mapped
-	}
 	if properties["unique"] != nil && properties["unique"].AsInterface() != nil {
 
 		var_Unique := properties["unique"]
@@ -1482,6 +1433,30 @@ func (m *ResourceIndexMapper) FromProperties(properties map[string]*structpb.Val
 
 		s.Annotations = var_Annotations_mapped
 	}
+	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
+
+		var_Properties := properties["properties"]
+		var_Properties_mapped := []ResourceIndexProperty{}
+		for _, v := range var_Properties.GetListValue().Values {
+
+			var_4x := v
+			var mappedValue = ResourceIndexPropertyMapperInstance.FromProperties(var_4x.GetStructValue().Fields)
+
+			var_4x_mapped := *mappedValue
+
+			var_Properties_mapped = append(var_Properties_mapped, var_4x_mapped)
+		}
+
+		s.Properties = var_Properties_mapped
+	}
+	if properties["indexType"] != nil && properties["indexType"].AsInterface() != nil {
+
+		var_IndexType := properties["indexType"]
+		var_IndexType_mapped := new(ResourceIndexType)
+		*var_IndexType_mapped = (ResourceIndexType)(var_IndexType.GetStringValue())
+
+		s.IndexType = var_IndexType_mapped
+	}
 	return s
 }
 
@@ -1508,6 +1483,19 @@ func (m *ReferenceMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *ReferenceMapper) ToProperties(reference *Reference) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
+	var_BackReference := reference.BackReference
+
+	if var_BackReference != nil {
+		var var_BackReference_mapped *structpb.Value
+
+		var var_BackReference_err error
+		var_BackReference_mapped, var_BackReference_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_BackReference)
+		if var_BackReference_err != nil {
+			panic(var_BackReference_err)
+		}
+		properties["backReference"] = var_BackReference_mapped
+	}
+
 	var_Resource := reference.Resource
 
 	if var_Resource != nil {
@@ -1528,19 +1516,6 @@ func (m *ReferenceMapper) ToProperties(reference *Reference) map[string]*structp
 			panic(var_Cascade_err)
 		}
 		properties["cascade"] = var_Cascade_mapped
-	}
-
-	var_BackReference := reference.BackReference
-
-	if var_BackReference != nil {
-		var var_BackReference_mapped *structpb.Value
-
-		var var_BackReference_err error
-		var_BackReference_mapped, var_BackReference_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_BackReference)
-		if var_BackReference_err != nil {
-			panic(var_BackReference_err)
-		}
-		properties["backReference"] = var_BackReference_mapped
 	}
 	return properties
 }

@@ -13,8 +13,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-import "github.com/google/uuid"
 import "github.com/apibrew/apibrew/pkg/formats/unstructured"
+import "github.com/google/uuid"
 import "time"
 
 type UserMapper struct {
@@ -49,30 +49,6 @@ func (m *UserMapper) FromRecord(record *model.Record) *User {
 
 func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
-
-	var_Id := user.Id
-
-	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
-
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Version := user.Version
-
-	var var_Version_mapped *structpb.Value
-
-	var var_Version_err error
-	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
-	if var_Version_err != nil {
-		panic(var_Version_err)
-	}
-	properties["version"] = var_Version_mapped
 
 	var_AuditData := user.AuditData
 
@@ -157,6 +133,30 @@ func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {
 		}
 		properties["details"] = var_Details_mapped
 	}
+
+	var_Id := user.Id
+
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
+
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
+		}
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := user.Version
+
+	var var_Version_mapped *structpb.Value
+
+	var var_Version_err error
+	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
+	if var_Version_err != nil {
+		panic(var_Version_err)
+	}
+	properties["version"] = var_Version_mapped
 	return properties
 }
 
@@ -287,19 +287,6 @@ func (m *UserAuditDataMapper) ResourceIdentity() abs.ResourceIdentity {
 func (m *UserAuditDataMapper) ToProperties(userAuditData *UserAuditData) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_CreatedBy := userAuditData.CreatedBy
-
-	if var_CreatedBy != nil {
-		var var_CreatedBy_mapped *structpb.Value
-
-		var var_CreatedBy_err error
-		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
-		if var_CreatedBy_err != nil {
-			panic(var_CreatedBy_err)
-		}
-		properties["createdBy"] = var_CreatedBy_mapped
-	}
-
 	var_UpdatedBy := userAuditData.UpdatedBy
 
 	if var_UpdatedBy != nil {
@@ -337,6 +324,19 @@ func (m *UserAuditDataMapper) ToProperties(userAuditData *UserAuditData) map[str
 			panic(var_UpdatedOn_err)
 		}
 		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+
+	var_CreatedBy := userAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped *structpb.Value
+
+		var var_CreatedBy_err error
+		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
+		if var_CreatedBy_err != nil {
+			panic(var_CreatedBy_err)
+		}
+		properties["createdBy"] = var_CreatedBy_mapped
 	}
 	return properties
 }

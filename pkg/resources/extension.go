@@ -26,14 +26,12 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name:     "host",
+			Properties: map[string]*model.ResourceProperty{
+				"host": {
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
-				{
-					Name:     "functionName",
+				"functionName": {
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
@@ -44,14 +42,12 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name:     "uri",
+			Properties: map[string]*model.ResourceProperty{
+				"uri": {
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
-				{
-					Name:     "method",
+				"method": {
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
@@ -62,9 +58,8 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name:     "channelKey",
+			Properties: map[string]*model.ResourceProperty{
+				"channelKey": {
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
@@ -75,19 +70,16 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name:    "functionCall",
+			Properties: map[string]*model.ResourceProperty{
+				"functionCall": {
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: util.Pointer("FunctionCall"),
 				},
-				{
-					Name:    "httpCall",
+				"httpCall": {
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: util.Pointer("HttpCall"),
 				},
-				{
-					Name:    "channelCall",
+				"channelCall": {
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: util.Pointer("ChannelCall"),
 				},
@@ -98,12 +90,10 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name: "actions",
+			Properties: map[string]*model.ResourceProperty{
+				"actions": {
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{
-						Name: "action",
 						Type: model.ResourceProperty_ENUM,
 						EnumValues: []string{
 							"CREATE",
@@ -118,27 +108,23 @@ var ExtensionResource = &model.Resource{
 						},
 					},
 				},
-				{
-					Name:    "recordSelector",
+				"recordSelector": {
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: util.Pointer(sub_types.BooleanExpression.Name),
 				},
-				{
-					Name: "namespaces",
+				"namespaces": {
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{Type: model.ResourceProperty_STRING},
 				},
-				{
-					Name: "resources",
+				"resources": {
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{Type: model.ResourceProperty_STRING},
 				},
-				{
-					Name: "ids",
+				"ids": {
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{Type: model.ResourceProperty_STRING},
 				},
-				special.AnnotationsProperty,
+				"annotations": special.AnnotationsProperty,
 			},
 		},
 		{
@@ -146,22 +132,18 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name:    "query",
+			Properties: map[string]*model.ResourceProperty{
+				"query": {
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: &sub_types.BooleanExpression.Name,
 				},
-				{
-					Name: "limit",
+				"limit": {
 					Type: model.ResourceProperty_INT32,
 				},
-				{
-					Name: "offset",
+				"offset": {
 					Type: model.ResourceProperty_INT32,
 				},
-				{
-					Name: "resolveReferences",
+				"resolveReferences": {
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{
 						Type: model.ResourceProperty_STRING,
@@ -174,15 +156,13 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name:      "id",
+			Properties: map[string]*model.ResourceProperty{
+				"id": {
 					Type:      model.ResourceProperty_STRING,
 					Required:  true,
 					Immutable: true,
 				},
-				{
-					Name: "action",
+				"action": {
 					Type: model.ResourceProperty_ENUM,
 					EnumValues: []string{
 						"CREATE",
@@ -194,28 +174,23 @@ var ExtensionResource = &model.Resource{
 					},
 					Required: true,
 				},
-				{
-					Name:    "recordSearchParams",
+				"recordSearchParams": {
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: util.Pointer("RecordSearchParams"),
 				},
-				{
-					Name: "actionSummary",
+				"actionSummary": {
 					Type: model.ResourceProperty_STRING,
 				},
-				{
-					Name: "actionDescription",
+				"actionDescription": {
 					Type: model.ResourceProperty_STRING,
 				},
-				{
-					Name: "resource",
+				"resource": {
 					Type: model.ResourceProperty_REFERENCE,
 					Reference: &model.Reference{
 						Resource: "Resource",
 					},
 				},
-				{
-					Name: "records",
+				"records": {
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{
 						Type: model.ResourceProperty_REFERENCE,
@@ -224,37 +199,29 @@ var ExtensionResource = &model.Resource{
 						},
 					},
 				},
-				{
-					Name: "finalizes",
+				"finalizes": {
 					Type: model.ResourceProperty_BOOL,
 				},
-				{
-					Name: "sync",
+				"sync": {
 					Type: model.ResourceProperty_BOOL,
 				},
-				{
-					Name: "time",
+				"time": {
 					Type: model.ResourceProperty_TIMESTAMP,
 				},
-				{
-					Name: "total",
+				"total": {
 					Type: model.ResourceProperty_INT64,
 				},
-				{
-					Name: "actionName",
+				"actionName": {
 					Type: model.ResourceProperty_STRING,
 				},
-				{
-					Name: "input",
+				"input": {
 					Type: model.ResourceProperty_OBJECT,
 				},
-				{
-					Name: "output",
+				"output": {
 					Type: model.ResourceProperty_OBJECT,
 				},
-				special.AnnotationsProperty,
-				{
-					Name:    "error",
+				"annotations": special.AnnotationsProperty,
+				"error": {
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: util.Pointer("Error"),
 				},
@@ -265,21 +232,17 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name: "recordId",
+			Properties: map[string]*model.ResourceProperty{
+				"recordId": {
 					Type: model.ResourceProperty_STRING,
 				},
-				{
-					Name: "property",
+				"property": {
 					Type: model.ResourceProperty_STRING,
 				},
-				{
-					Name: "message",
+				"message": {
 					Type: model.ResourceProperty_STRING,
 				},
-				{
-					Name: "value",
+				"value": {
 					Type: model.ResourceProperty_OBJECT,
 				},
 			},
@@ -289,9 +252,8 @@ var ExtensionResource = &model.Resource{
 			Annotations: map[string]string{
 				annotations.CommonType: annotations.Enabled,
 			},
-			Properties: []*model.ResourceProperty{
-				{
-					Name: "code",
+			Properties: map[string]*model.ResourceProperty{
+				"code": {
 					Type: model.ResourceProperty_ENUM,
 					EnumValues: []string{
 						"UNKNOWN_ERROR",
@@ -314,12 +276,10 @@ var ExtensionResource = &model.Resource{
 						"RATE_LIMIT_ERROR",
 					},
 				},
-				{
-					Name: "message",
+				"message": {
 					Type: model.ResourceProperty_STRING,
 				},
-				{
-					Name: "fields",
+				"fields": {
 					Type: model.ResourceProperty_LIST,
 					Item: &model.ResourceProperty{
 						Type:    model.ResourceProperty_STRUCT,
@@ -329,12 +289,11 @@ var ExtensionResource = &model.Resource{
 			},
 		},
 	},
-	Properties: []*model.ResourceProperty{
-		special.IdProperty,
-		special.VersionProperty,
-		special.AuditProperty,
-		{
-			Name:     "name",
+	Properties: map[string]*model.ResourceProperty{
+		"id":        special.IdProperty,
+		"version":   special.VersionProperty,
+		"auditData": special.AuditProperty,
+		"name": {
 			Length:   256,
 			Type:     model.ResourceProperty_STRING,
 			Unique:   true,
@@ -343,45 +302,38 @@ var ExtensionResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		{
-			Name:     "description",
+		"description": {
 			Length:   1024,
 			Type:     model.ResourceProperty_STRING,
 			Required: false,
 		},
-		{
-			Name:     "selector",
+		"selector": {
 			Type:     model.ResourceProperty_STRUCT,
 			Required: false,
 			TypeRef:  util.Pointer("EventSelector"),
 		},
-		{
-			Name:     "order",
+		"order": {
 			Type:     model.ResourceProperty_INT32,
 			Required: true,
 		},
-		{
-			Name:     "finalizes",
+		"finalizes": {
 			Type:     model.ResourceProperty_BOOL,
 			Required: true,
 		},
-		{
-			Name:     "sync",
+		"sync": {
 			Type:     model.ResourceProperty_BOOL,
 			Required: true,
 		},
-		{
-			Name:     "responds",
+		"responds": {
 			Type:     model.ResourceProperty_BOOL,
 			Required: true,
 		},
-		{
-			Name:     "call",
+		"call": {
 			Type:     model.ResourceProperty_STRUCT,
 			Required: true,
 			TypeRef:  util.Pointer("ExternalCall"),
 		},
-		special.AnnotationsProperty,
+		"annotations": special.AnnotationsProperty,
 	},
 	Annotations: map[string]string{
 		annotations.EnableAudit:  "true",
