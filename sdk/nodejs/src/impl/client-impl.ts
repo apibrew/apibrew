@@ -239,10 +239,7 @@ export class ClientImpl implements Client {
     public headers() {
         const headers: { [key: string]: string } = {
             "Content-Type": "application/json",
-        }
-
-        if (this.tokenStorage.get(ACCESS_TOKEN)) {
-            headers["Authorization"] = "Bearer " + this.tokenStorage.get(ACCESS_TOKEN);
+            "Authorization": "Bearer " + this.tokenStorage.get(ACCESS_TOKEN),
         }
 
         if (this.bypassExtensionsEnabled) {
