@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
+	"strconv"
 	"strings"
 )
 
@@ -85,27 +86,27 @@ func ValidateResource(resource *model.Resource) errors.ServiceError {
 	return nil
 }
 
-func ValidateResourceProperties(resource *model.Resource, path string, depth int, properties map[string]*model.ResourceProperty, wrapped bool) []*model.ErrorField {
+func ValidateResourceProperties(resource *model.Resource, path string, depth int, properties []*model.ResourceProperty, wrapped bool) []*model.ErrorField {
 	var errorFields []*model.ErrorField
-	for propName, prop := range properties {
-		propertyPrefix := propName + "."
+	for i, prop := range properties {
+		propertyPrefix := prop.Name + "."
 
 		if path != "" {
 			propertyPrefix = path + propertyPrefix
 		}
 
 		if !wrapped {
-			if propName == "" {
+			if prop.Name == "" {
 				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix,
+					Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
 					Message:  "should not be blank",
 					Value:    nil,
 				})
-			} else if !NamePattern.MatchString(propName) {
+			} else if !NamePattern.MatchString(prop.Name) {
 				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix,
+					Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
 					Message:  "should match pattern " + NamePattern.String(),
-					Value:    structpb.NewStringValue(propName),
+					Value:    structpb.NewStringValue(prop.Name),
 				})
 			}
 		}
@@ -117,6 +118,16 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Message:  "EnumValues should not be empty for enum type",
 					Value:    nil,
 				})
+			}
+
+			for _, val := range prop.EnumValues {
+				if strings.ToUpper(val) != val {
+					errorFields = append(errorFields, &model.ErrorField{
+						Property: propertyPrefix + "EnumValues",
+						Message:  "Enum values should be uppercase",
+						Value:    nil,
+					})
+				}
 			}
 		}
 
@@ -156,7 +167,7 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Value:    nil,
 				})
 			} else {
-				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Item", depth+1, map[string]*model.ResourceProperty{"item": prop.Item}, true)...)
+				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Item", depth+1, []*model.ResourceProperty{prop.Item}, true)...)
 			}
 		}
 
@@ -168,7 +179,7 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Value:    nil,
 				})
 			} else {
-				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Item", depth+1, map[string]*model.ResourceProperty{"item": prop.Item}, true)...)
+				errorFields = append(errorFields, ValidateResourceProperties(resource, propertyPrefix+"Item", depth+1, []*model.ResourceProperty{prop.Item}, true)...)
 			}
 		}
 

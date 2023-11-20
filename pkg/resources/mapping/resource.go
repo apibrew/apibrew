@@ -40,12 +40,12 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 		properties["indexes"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
 	}
 
-	var propertyStructList []*structpb.Value
+	var propertiesStruct = make(map[string]*structpb.Value)
 	for _, property := range resource.Properties {
 		propertyRecord := ResourcePropertyToRecord(property, resource)
-		propertyStructList = append(propertyStructList, structpb.NewStructValue(&structpb.Struct{Fields: propertyRecord.Properties}))
+		propertiesStruct[property.Name] = structpb.NewStructValue(&structpb.Struct{Fields: propertyRecord.Properties})
 	}
-	properties["properties"] = structpb.NewListValue(&structpb.ListValue{Values: propertyStructList})
+	properties["properties"] = structpb.NewStructValue(&structpb.Struct{Fields: propertiesStruct})
 
 	if resource.Types != nil {
 		var lv []*structpb.Value
@@ -86,8 +86,8 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 			Entity:     record.Properties["entity"].GetStringValue(),
 			Catalog:    record.Properties["catalog"].GetStringValue(),
 		},
-		Properties: convertMap(record.Properties["properties"].GetStructValue().Fields, func(t *structpb.Value) *model.ResourceProperty {
-			return ResourcePropertyFromRecord(&model.Record{Properties: t.GetStructValue().Fields})
+		Properties: util.ArrayMap(util.MapToArray(record.Properties["properties"].GetStructValue().Fields), func(t util.MapEntry[*structpb.Value]) *model.ResourceProperty {
+			return ResourcePropertyFromRecord(t.Key, &model.Record{Properties: t.Val.GetStructValue().Fields})
 		}),
 		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
@@ -189,8 +189,8 @@ func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
 	var st = val.GetStructValue()
 	rt := &model.ResourceSubType{
 		Name: st.GetFields()["name"].GetStringValue(),
-		Properties: convertMap(st.GetFields()["properties"].GetStructValue().Fields, func(t *structpb.Value) *model.ResourceProperty {
-			return ResourcePropertyFromRecord(&model.Record{Properties: t.GetStructValue().Fields})
+		Properties: util.ArrayMap(st.GetFields()["properties"].GetListValue().Values, func(t *structpb.Value) *model.ResourceProperty {
+			return ResourcePropertyFromRecord("", &model.Record{Properties: t.GetStructValue().Fields})
 		}),
 	}
 

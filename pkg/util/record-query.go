@@ -9,17 +9,17 @@ import (
 
 func PrepareQueryFromFilters(resource *model.Resource, filters map[string]string) (*model.BooleanExpression, errors.ServiceError) {
 	var criteria []*model.BooleanExpression
-	for name, property := range resource.Properties {
-		if filters[name] != "" {
-			val, err := deStringifyPropertyValue(filters[name], property)
+	for _, property := range resource.Properties {
+		if filters[property.Name] != "" {
+			val, err := deStringifyPropertyValue(filters[property.Name], property)
 			if err != nil {
 				return nil, errors.RecordValidationError.WithDetails(err.Error())
 			}
 
 			if val.GetListValue() != nil {
-				criteria = append(criteria, QueryInExpression(name, val))
+				criteria = append(criteria, QueryInExpression(property.Name, val))
 			} else {
-				criteria = append(criteria, QueryEqualExpression(name, val))
+				criteria = append(criteria, QueryEqualExpression(property.Name, val))
 			}
 
 		}
@@ -84,18 +84,18 @@ func deStringifyPropertyValue(actualValue string, property *model.ResourceProper
 
 func PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError) {
 	var criteria []*model.BooleanExpression
-	for name := range resource.Properties {
-		if queryMap[name] != "" {
+	for _, property := range resource.Properties {
+		if queryMap[property.Name] != "" {
 			var val *structpb.Value
-			val, err := structpb.NewValue(queryMap[name])
+			val, err := structpb.NewValue(queryMap[property.Name])
 			if err != nil {
 				return nil, errors.RecordValidationError.WithDetails(err.Error())
 			}
 
 			if val.GetListValue() != nil {
-				criteria = append(criteria, QueryInExpression(name, val))
+				criteria = append(criteria, QueryInExpression(property.Name, val))
 			} else {
-				criteria = append(criteria, QueryEqualExpression(name, val))
+				criteria = append(criteria, QueryEqualExpression(property.Name, val))
 			}
 		}
 	}

@@ -14,29 +14,9 @@ import (
 var AuditLogResource = &model.Resource{
 	Name:      "AuditLog",
 	Namespace: "system",
-	Properties: map[string]*model.ResourceProperty{
-		"recordId": {
-			Type:     model.ResourceProperty_STRING,
-			Length:   256,
-			Required: true,
-
-			Annotations: map[string]string{
-				"SourceDef": "record_id",
-			},
-		},
-		"username": {
-			Type:     model.ResourceProperty_STRING,
-			Required: true,
-		},
-		"operation": {
-			Type:     model.ResourceProperty_ENUM,
-			Required: true,
-
-			Annotations: map[string]string{
-				"TypeName": "AuditLogOperation",
-			},
-		},
-		"id": {
+	Properties: []*model.ResourceProperty{
+		{
+			Name:         "id",
 			Type:         model.ResourceProperty_UUID,
 			Required:     true,
 			Immutable:    true,
@@ -47,7 +27,8 @@ var AuditLogResource = &model.Resource{
 				"PrimaryProperty": "true",
 			},
 		},
-		"version": {
+		{
+			Name:         "version",
 			Type:         model.ResourceProperty_INT32,
 			Required:     true,
 			DefaultValue: structpb.NewNumberValue(1),
@@ -58,30 +39,55 @@ var AuditLogResource = &model.Resource{
 				"AllowEmptyPrimitive": "true",
 			},
 		},
-		"resource": {
+		{
+			Name:     "namespace",
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: true,
 		},
-		"annotations": {
+		{
+			Name:     "resource",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: true,
+		},
+		{
+			Name:     "recordId",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: true,
+
+			Annotations: map[string]string{
+				"SourceDef": "record_id",
+			},
+		},
+		{
+			Name:     "time",
+			Type:     model.ResourceProperty_TIMESTAMP,
+			Required: true,
+		},
+		{
+			Name:     "username",
+			Type:     model.ResourceProperty_STRING,
+			Required: true,
+		},
+		{
+			Name:     "operation",
+			Type:     model.ResourceProperty_ENUM,
+			Required: true,
+		},
+		{
+			Name: "properties",
+			Type: model.ResourceProperty_OBJECT,
+		},
+		{
+			Name:         "annotations",
 			Type:         model.ResourceProperty_MAP,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
 			},
-		},
-		"namespace": {
-			Type:     model.ResourceProperty_STRING,
-			Length:   256,
-			Required: true,
-		},
-		"time": {
-			Type:     model.ResourceProperty_TIMESTAMP,
-			Required: true,
-		},
-		"properties": {
-			Type: model.ResourceProperty_OBJECT,
 		},
 	},
 	Immutable: true,

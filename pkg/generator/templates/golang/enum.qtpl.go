@@ -21,15 +21,15 @@ var (
 )
 
 //line templates/golang/enum.qtpl:3
-func StreamGenerateEnumCode(qw422016 *qt422016.Writer, resource *model.Resource, enumProperty *model.ResourceProperty) {
+func StreamGenerateEnumCode(qw422016 *qt422016.Writer, enumProperty *model.ResourceProperty) {
 //line templates/golang/enum.qtpl:4
-	typeName := PropPureGoType(resource, enumProperty)
+	typeName := GoName(enumProperty.Name)
 
 //line templates/golang/enum.qtpl:4
 	qw422016.N().S(`
 type `)
 //line templates/golang/enum.qtpl:6
-	qw422016.E().S(typeName)
+	qw422016.E().S(enumProperty.Name)
 //line templates/golang/enum.qtpl:6
 	qw422016.N().S(` string
 
@@ -65,22 +65,22 @@ const (
 }
 
 //line templates/golang/enum.qtpl:13
-func WriteGenerateEnumCode(qq422016 qtio422016.Writer, resource *model.Resource, enumProperty *model.ResourceProperty) {
+func WriteGenerateEnumCode(qq422016 qtio422016.Writer, enumProperty *model.ResourceProperty) {
 //line templates/golang/enum.qtpl:13
 	qw422016 := qt422016.AcquireWriter(qq422016)
 //line templates/golang/enum.qtpl:13
-	StreamGenerateEnumCode(qw422016, resource, enumProperty)
+	StreamGenerateEnumCode(qw422016, enumProperty)
 //line templates/golang/enum.qtpl:13
 	qt422016.ReleaseWriter(qw422016)
 //line templates/golang/enum.qtpl:13
 }
 
 //line templates/golang/enum.qtpl:13
-func GenerateEnumCode(resource *model.Resource, enumProperty *model.ResourceProperty) string {
+func GenerateEnumCode(enumProperty *model.ResourceProperty) string {
 //line templates/golang/enum.qtpl:13
 	qb422016 := qt422016.AcquireByteBuffer()
 //line templates/golang/enum.qtpl:13
-	WriteGenerateEnumCode(qb422016, resource, enumProperty)
+	WriteGenerateEnumCode(qb422016, enumProperty)
 //line templates/golang/enum.qtpl:13
 	qs422016 := string(qb422016.B)
 //line templates/golang/enum.qtpl:13

@@ -17,38 +17,49 @@ var ExtensionResource = &model.Resource{
 	Types: []*model.ResourceSubType{
 		{
 			Name: "BooleanExpression",
-			Properties: map[string]*model.ResourceProperty{
-				"and": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "and",
 					Type: model.ResourceProperty_LIST,
 				},
-				"or": {
+				{
+					Name: "or",
 					Type: model.ResourceProperty_LIST,
 				},
-				"greaterThanOrEqual": {
+				{
+					Name: "not",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"regexMatch": {
+				{
+					Name: "equal",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"isNull": {
+				{
+					Name: "lessThan",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"not": {
+				{
+					Name: "greaterThan",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"equal": {
+				{
+					Name: "lessThanOrEqual",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"lessThan": {
+				{
+					Name: "greaterThanOrEqual",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"greaterThan": {
+				{
+					Name: "in",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"lessThanOrEqual": {
+				{
+					Name: "isNull",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"in": {
+				{
+					Name: "regexMatch",
 					Type: model.ResourceProperty_STRUCT,
 				},
 			},
@@ -60,27 +71,31 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "PairExpression",
-			Properties: map[string]*model.ResourceProperty{
-				"left": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "left",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"right": {
+				{
+					Name: "right",
 					Type: model.ResourceProperty_STRUCT,
 				},
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":  "true",
 				"OpenApiGroup": "internal",
+				"EnableAudit":  "true",
 			},
 		},
 		{
 			Name: "RegexMatchExpression",
-			Properties: map[string]*model.ResourceProperty{
-				"pattern": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "pattern",
 					Type: model.ResourceProperty_STRING,
 				},
-				"expression": {
+				{
+					Name: "expression",
 					Type: model.ResourceProperty_STRUCT,
 				},
 			},
@@ -92,26 +107,29 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "Expression",
-			Properties: map[string]*model.ResourceProperty{
-				"property": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "property",
 					Type: model.ResourceProperty_STRING,
 				},
-				"value": {
+				{
+					Name: "value",
 					Type: model.ResourceProperty_OBJECT,
 				},
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
 			Name:        "AuditData",
 			Title:       "Audit Data",
 			Description: "Audit Data is a type that represents the audit data of a resource/record. ",
-			Properties: map[string]*model.ResourceProperty{
-				"createdBy": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:         "createdBy",
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					Immutable:    true,
@@ -121,7 +139,8 @@ var ExtensionResource = &model.Resource{
 						"SpecialProperty": "true",
 					},
 				},
-				"updatedBy": {
+				{
+					Name:         "updatedBy",
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					ExampleValue: structpb.NewStringValue("admin"),
@@ -130,18 +149,20 @@ var ExtensionResource = &model.Resource{
 						"SpecialProperty": "true",
 					},
 				},
-				"createdOn": {
+				{
+					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-20T23:38:43+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-21T00:08:32+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
 					},
 				},
-				"updatedOn": {
+				{
+					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-20T23:38:43+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-21T00:08:32+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -150,18 +171,20 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":  "true",
 				"OpenApiGroup": "internal",
+				"EnableAudit":  "true",
 			},
 		},
 		{
 			Name: "FunctionCall",
-			Properties: map[string]*model.ResourceProperty{
-				"host": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:     "host",
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
-				"functionName": {
+				{
+					Name:     "functionName",
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
@@ -174,12 +197,14 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "HttpCall",
-			Properties: map[string]*model.ResourceProperty{
-				"uri": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:     "uri",
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
-				"method": {
+				{
+					Name:     "method",
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
@@ -192,28 +217,32 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "ChannelCall",
-			Properties: map[string]*model.ResourceProperty{
-				"channelKey": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:     "channelKey",
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":  "true",
 				"OpenApiGroup": "internal",
+				"EnableAudit":  "true",
 			},
 		},
 		{
 			Name: "ExternalCall",
-			Properties: map[string]*model.ResourceProperty{
-				"functionCall": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "functionCall",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"httpCall": {
+				{
+					Name: "httpCall",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"channelCall": {
+				{
+					Name: "channelCall",
 					Type: model.ResourceProperty_STRUCT,
 				},
 			},
@@ -225,29 +254,35 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "EventSelector",
-			Properties: map[string]*model.ResourceProperty{
-				"resources": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "actions",
 					Type: model.ResourceProperty_LIST,
 				},
-				"ids": {
+				{
+					Name: "recordSelector",
+					Type: model.ResourceProperty_STRUCT,
+				},
+				{
+					Name: "namespaces",
 					Type: model.ResourceProperty_LIST,
 				},
-				"annotations": {
+				{
+					Name: "resources",
+					Type: model.ResourceProperty_LIST,
+				},
+				{
+					Name: "ids",
+					Type: model.ResourceProperty_LIST,
+				},
+				{
+					Name:         "annotations",
 					Type:         model.ResourceProperty_MAP,
 					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
 					},
-				},
-				"actions": {
-					Type: model.ResourceProperty_LIST,
-				},
-				"recordSelector": {
-					Type: model.ResourceProperty_STRUCT,
-				},
-				"namespaces": {
-					Type: model.ResourceProperty_LIST,
 				},
 			},
 
@@ -258,17 +293,21 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "RecordSearchParams",
-			Properties: map[string]*model.ResourceProperty{
-				"query": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "query",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"limit": {
+				{
+					Name: "limit",
 					Type: model.ResourceProperty_INT32,
 				},
-				"offset": {
+				{
+					Name: "offset",
 					Type: model.ResourceProperty_INT32,
 				},
-				"resolveReferences": {
+				{
+					Name: "resolveReferences",
 					Type: model.ResourceProperty_LIST,
 				},
 			},
@@ -280,66 +319,78 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "Event",
-			Properties: map[string]*model.ResourceProperty{
-				"time": {
-					Type: model.ResourceProperty_TIMESTAMP,
-				},
-				"actionName": {
-					Type: model.ResourceProperty_STRING,
-				},
-				"resource": {
-					Type: model.ResourceProperty_REFERENCE,
-				},
-				"records": {
-					Type: model.ResourceProperty_LIST,
-				},
-				"finalizes": {
-					Type: model.ResourceProperty_BOOL,
-				},
-				"total": {
-					Type: model.ResourceProperty_INT64,
-				},
-				"id": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:      "id",
 					Type:      model.ResourceProperty_STRING,
 					Required:  true,
 					Immutable: true,
 				},
-				"action": {
+				{
+					Name:     "action",
 					Type:     model.ResourceProperty_ENUM,
 					Required: true,
-
-					Annotations: map[string]string{
-						"TypeName": "ExtensionAction",
-					},
 				},
-				"recordSearchParams": {
+				{
+					Name: "recordSearchParams",
 					Type: model.ResourceProperty_STRUCT,
 				},
-				"actionSummary": {
+				{
+					Name: "actionSummary",
 					Type: model.ResourceProperty_STRING,
 				},
-				"error": {
-					Type: model.ResourceProperty_STRUCT,
+				{
+					Name: "actionDescription",
+					Type: model.ResourceProperty_STRING,
 				},
-				"annotations": {
+				{
+					Name: "resource",
+					Type: model.ResourceProperty_REFERENCE,
+				},
+				{
+					Name: "records",
+					Type: model.ResourceProperty_LIST,
+				},
+				{
+					Name: "finalizes",
+					Type: model.ResourceProperty_BOOL,
+				},
+				{
+					Name: "sync",
+					Type: model.ResourceProperty_BOOL,
+				},
+				{
+					Name: "time",
+					Type: model.ResourceProperty_TIMESTAMP,
+				},
+				{
+					Name: "total",
+					Type: model.ResourceProperty_INT64,
+				},
+				{
+					Name: "actionName",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "input",
+					Type: model.ResourceProperty_OBJECT,
+				},
+				{
+					Name: "output",
+					Type: model.ResourceProperty_OBJECT,
+				},
+				{
+					Name:         "annotations",
 					Type:         model.ResourceProperty_MAP,
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
 					},
 				},
-				"actionDescription": {
-					Type: model.ResourceProperty_STRING,
-				},
-				"sync": {
-					Type: model.ResourceProperty_BOOL,
-				},
-				"input": {
-					Type: model.ResourceProperty_OBJECT,
-				},
-				"output": {
-					Type: model.ResourceProperty_OBJECT,
+				{
+					Name: "error",
+					Type: model.ResourceProperty_STRUCT,
 				},
 			},
 
@@ -350,18 +401,22 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "ErrorField",
-			Properties: map[string]*model.ResourceProperty{
-				"message": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "recordId",
 					Type: model.ResourceProperty_STRING,
 				},
-				"value": {
+				{
+					Name: "property",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "message",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "value",
 					Type: model.ResourceProperty_OBJECT,
-				},
-				"recordId": {
-					Type: model.ResourceProperty_STRING,
-				},
-				"property": {
-					Type: model.ResourceProperty_STRING,
 				},
 			},
 
@@ -372,18 +427,17 @@ var ExtensionResource = &model.Resource{
 		},
 		{
 			Name: "Error",
-			Properties: map[string]*model.ResourceProperty{
-				"code": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "code",
 					Type: model.ResourceProperty_ENUM,
-
-					Annotations: map[string]string{
-						"TypeName": "ExtensionCode",
-					},
 				},
-				"message": {
+				{
+					Name: "message",
 					Type: model.ResourceProperty_STRING,
 				},
-				"fields": {
+				{
+					Name: "fields",
 					Type: model.ResourceProperty_LIST,
 				},
 			},
@@ -394,8 +448,9 @@ var ExtensionResource = &model.Resource{
 			},
 		},
 	},
-	Properties: map[string]*model.ResourceProperty{
-		"id": {
+	Properties: []*model.ResourceProperty{
+		{
+			Name:         "id",
 			Type:         model.ResourceProperty_UUID,
 			Required:     true,
 			Immutable:    true,
@@ -406,44 +461,8 @@ var ExtensionResource = &model.Resource{
 				"PrimaryProperty": "true",
 			},
 		},
-		"name": {
-			Type:     model.ResourceProperty_STRING,
-			Length:   256,
-			Required: true,
-			Unique:   true,
-
-			Annotations: map[string]string{
-				"IsHclLabel": "true",
-			},
-		},
-		"selector": {
-			Type: model.ResourceProperty_STRUCT,
-		},
-		"finalizes": {
-			Type:     model.ResourceProperty_BOOL,
-			Required: true,
-		},
-		"sync": {
-			Type:     model.ResourceProperty_BOOL,
-			Required: true,
-		},
-		"responds": {
-			Type:     model.ResourceProperty_BOOL,
-			Required: true,
-		},
-		"call": {
-			Type:     model.ResourceProperty_STRUCT,
-			Required: true,
-		},
-		"annotations": {
-			Type:         model.ResourceProperty_MAP,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
-
-			Annotations: map[string]string{
-				"SpecialProperty": "true",
-			},
-		},
-		"version": {
+		{
+			Name:         "version",
 			Type:         model.ResourceProperty_INT32,
 			Required:     true,
 			DefaultValue: structpb.NewNumberValue(1),
@@ -454,21 +473,68 @@ var ExtensionResource = &model.Resource{
 				"AllowEmptyPrimitive": "true",
 			},
 		},
-		"auditData": {
+		{
+			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-20T23:38:43+04:00"), "updatedOn": structpb.NewStringValue("2023-11-20T23:38:43+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdOn": structpb.NewStringValue("2023-11-21T00:08:32+04:00"), "updatedOn": structpb.NewStringValue("2023-11-21T00:08:32+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
 			},
 		},
-		"description": {
+		{
+			Name:     "name",
+			Type:     model.ResourceProperty_STRING,
+			Length:   256,
+			Required: true,
+			Unique:   true,
+
+			Annotations: map[string]string{
+				"IsHclLabel": "true",
+			},
+		},
+		{
+			Name:   "description",
 			Type:   model.ResourceProperty_STRING,
 			Length: 1024,
 		},
-		"order": {
+		{
+			Name: "selector",
+			Type: model.ResourceProperty_STRUCT,
+		},
+		{
+			Name:     "order",
 			Type:     model.ResourceProperty_INT32,
 			Required: true,
+		},
+		{
+			Name:     "finalizes",
+			Type:     model.ResourceProperty_BOOL,
+			Required: true,
+		},
+		{
+			Name:     "sync",
+			Type:     model.ResourceProperty_BOOL,
+			Required: true,
+		},
+		{
+			Name:     "responds",
+			Type:     model.ResourceProperty_BOOL,
+			Required: true,
+		},
+		{
+			Name:     "call",
+			Type:     model.ResourceProperty_STRUCT,
+			Required: true,
+		},
+		{
+			Name:         "annotations",
+			Type:         model.ResourceProperty_MAP,
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
+
+			Annotations: map[string]string{
+				"SpecialProperty": "true",
+			},
 		},
 	},
 

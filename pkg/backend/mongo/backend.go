@@ -73,11 +73,11 @@ func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, 
 func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.Record) bson.M {
 	var data = bson.M{}
 
-	for propName := range resource.Properties {
-		val, exists := record.Properties[propName]
+	for _, prop := range resource.Properties {
+		val, exists := record.Properties[prop.Name]
 
 		if exists {
-			data[propName] = val.AsInterface()
+			data[prop.Name] = val.AsInterface()
 		}
 	}
 
@@ -91,19 +91,19 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 		var set = bson.M{}
 		update["$set"] = set
 
-		for propName, prop := range resource.Properties {
+		for _, prop := range resource.Properties {
 			if annotations.IsEnabled(prop, annotations.PrimaryProperty) {
-				if record.Properties[propName] == nil {
-					filter[propName] = nil
+				if record.Properties[prop.Name] == nil {
+					filter[prop.Name] = nil
 				} else {
-					filter[propName] = record.Properties[propName].AsInterface()
+					filter[prop.Name] = record.Properties[prop.Name].AsInterface()
 				}
 			}
 
-			val, exists := record.Properties[propName]
+			val, exists := record.Properties[prop.Name]
 
 			if exists {
-				set[propName] = val.AsInterface()
+				set[prop.Name] = val.AsInterface()
 			}
 		}
 
@@ -147,8 +147,8 @@ func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string
 	var record = new(model.Record)
 	record.Properties = make(map[string]*structpb.Value)
 
-	for propName := range resource.Properties {
-		val, exists := (data)[propName]
+	for _, prop := range resource.Properties {
+		val, exists := (data)[prop.Name]
 
 		if exists {
 			st, err := structpb.NewValue(val)
@@ -157,7 +157,7 @@ func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string
 				return nil, r.handleError(err)
 			}
 
-			record.Properties[propName] = st
+			record.Properties[prop.Name] = st
 		}
 	}
 	return record, nil

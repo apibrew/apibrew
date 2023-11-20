@@ -115,7 +115,7 @@ func (a *authorizationService) evaluateConstraints(ctx context.Context, params s
 
 	var remainingPropertyCheck = make(map[string]bool)
 	for _, property := range params.Resource.Properties {
-		remainingPropertyCheck[propertyName] = true
+		remainingPropertyCheck[property.Name] = true
 	}
 
 	for _, permission := range permissions {

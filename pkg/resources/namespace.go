@@ -16,11 +16,12 @@ var NamespaceResource = &model.Resource{
 	Types: []*model.ResourceSubType{
 		special.AuditDataSubType,
 	},
-	Properties: map[string]*model.ResourceProperty{
-		"id":        special.IdProperty,
-		"version":   special.VersionProperty,
-		"auditData": special.AuditProperty,
-		"name": {
+	Properties: []*model.ResourceProperty{
+		special.IdProperty,
+		special.VersionProperty,
+		special.AuditProperty,
+		{
+			Name:      "name",
 			Type:      model.ResourceProperty_STRING,
 			Length:    256,
 			Required:  true,
@@ -30,12 +31,14 @@ var NamespaceResource = &model.Resource{
 				annotations.IsHclLabel: annotations.Enabled,
 			},
 		},
-		"description": {
+		{
+			Name:     "description",
 			Type:     model.ResourceProperty_STRING,
 			Length:   256,
 			Required: false,
 		},
-		"details": {
+		{
+			Name:     "details",
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},

@@ -37,6 +37,14 @@ func IsSameResourceIndex(index1, index2 *model.ResourceIndex) bool {
 }
 
 func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
+	//if property1.Mapping != property2.Mapping {
+	//	return false
+	//}
+
+	if property1.Name != property2.Name {
+		return false
+	}
+
 	if property1.Type != property2.Type {
 		return false
 	}
@@ -87,6 +95,14 @@ func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 }
 
 func IsSameIdentifiedResourceProperty(property1, property2 *model.ResourceProperty) bool {
+	//if property1.Mapping == property2.Mapping {
+	//	return true
+	//}
+
+	if property1.Name == property2.Name {
+		return true
+	}
+
 	property1MatchKey := annotations.Get(property1, annotations.SourceMatchKey)
 	property2MatchKey := annotations.Get(property2, annotations.SourceMatchKey)
 

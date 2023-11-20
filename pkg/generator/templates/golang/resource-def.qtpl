@@ -37,6 +37,7 @@
   {%- endfunc -%}
 
 {%- func GeneratePropertyDef(resource *model.Resource, property *model.ResourceProperty) -%}{
+        Name:     "{%s property.Name %}",
         Type:     model.ResourceProperty_{%s property.Type.String() %},
         {%- if property.Length > 0 %}Length:   {%d int(property.Length) %},
         {% endif-%}
@@ -95,9 +96,9 @@ var {%= GoName(resource.Name) %}Resource = &model.Resource{
 		    {% endif -%}
 		    {%- if typ.Description != "" %}Description: "{%s typ.Description %}",
 		    {% endif -%}
-		    Properties: map[string]*model.ResourceProperty{
-		        {%- for propertyName, property := range typ.Properties -%}
-		        "{%s propertyName%}": {%= GeneratePropertyDef(resource, property) %},
+		    Properties: []*model.ResourceProperty{
+		        {%- for _, property := range typ.Properties -%}
+		        {%= GeneratePropertyDef(resource, property) %},
 		        {%- endfor -%}
 		    },
 		    {%-= GenerateAnnotationsDef(resource.Annotations) -%}
@@ -105,9 +106,9 @@ var {%= GoName(resource.Name) %}Resource = &model.Resource{
 		{%- endfor -%}
 	},
 	{%- endif -%}
-	Properties: map[string]*model.ResourceProperty{
-	    {%- for propertyName, property := range resource.Properties -%}
-		"{%s propertyName %}": {%= GeneratePropertyDef(resource, property) %},
+	Properties: []*model.ResourceProperty{
+	    {%- for _, property := range resource.Properties -%}
+		{%= GeneratePropertyDef(resource, property) %},
 		{%- endfor -%}
 	},
 	{%- if len(resource.Indexes) > 0 -%}

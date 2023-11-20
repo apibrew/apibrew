@@ -13,9 +13,10 @@ var RecordResource = &model.Resource{
 	Description: util.Pointer("A generic record resource. All Apis are extended from Generic Record resource"),
 	Namespace:   "system",
 	Virtual:     true,
-	Properties: map[string]*model.ResourceProperty{
-		"id": special.IdProperty,
-		"properties": {
+	Properties: []*model.ResourceProperty{
+		special.IdProperty,
+		{
+			Name:  "properties",
 			Title: util.Pointer("Properties"),
 			Description: util.Pointer(`The properties of the record. The schema of properties are defined in the resource definition. 
 Here you will put the payload corresponding to the resource definition.
@@ -23,7 +24,8 @@ Here you will put the payload corresponding to the resource definition.
 			Type:     model.ResourceProperty_OBJECT,
 			Required: true,
 		},
-		"packedProperties": {
+		{
+			Name: "packedProperties",
 			Type: model.ResourceProperty_LIST,
 			Item: &model.ResourceProperty{
 				Type: model.ResourceProperty_OBJECT,

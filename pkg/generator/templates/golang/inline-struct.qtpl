@@ -1,8 +1,8 @@
 {% import "github.com/apibrew/apibrew/pkg/model" %}
 
-{%- func GenerateInlineStructCode(resource*model.Resource, properties map[string]*model.ResourceProperty) -%}
+{%- func GenerateInlineStructCode(resource*model.Resource, properties []*model.ResourceProperty) -%}
 struct {
-    {%- for propName, property := range properties -%}
-	    {%= GoName(propName) %} {%= PropertyType(resource, property) %}
+    {%- for _, property := range properties -%}
+	    {%= GoName(property.Name) %} {%= PropertyType(resource, property) %}
 	{%- endfor -%}
 }{%- endfunc -%}

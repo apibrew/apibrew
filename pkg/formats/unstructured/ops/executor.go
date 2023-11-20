@@ -21,10 +21,10 @@ type Executor struct {
 	resources           []*model.Resource
 	resourcePropertyMap map[string]*model.ResourceProperty
 	preprocessor        preprocessor
+	Type                string
 
 	ResourceHandler func(resource *model.Resource) error
 	RecordHandler   func(namespace string, resource string, record *model.Record) error
-	Type            string
 }
 
 func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
@@ -38,20 +38,16 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 
 	log.Debug("Restoring item: \n", string(bodyStr))
 
-	var elemType = body["type"].(string)
-	var namespace string
-	var resourceName string
-	var ok bool
+	var elemType = e.Type
 
-	if elemType, ok = body["type"].(string); ok {
-		elemType = e.Type
+	if typ, ok := body["type"].(string); ok {
+		elemType = typ
+		delete(body, "type")
 	}
 
 	if elemType == "" {
-		return errors.New("type (resource) field is required on record definition or on command arguments")
+		return errors.New("type field or arg is required")
 	}
-
-	delete(body, "type")
 
 	if err != nil {
 		return err
@@ -67,7 +63,6 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 		resourceModel := resource_model.ResourceMapperInstance.FromRecord(record)
 
 		resource := extramappings.ResourceFrom(resourceModel)
-		resource.Namespace = namespace
 
 		err = e.ResourceHandler(resource)
 
@@ -76,11 +71,15 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 			return err
 		}
 	} else {
-		if strings.Contains(elemType, "/") {
-			namespace = strings.Split(elemType, "/")[0]
-			resourceName = strings.Split(elemType, "/")[1]
-		} else {
-			resourceName = elemType
+		var namespace, resourceName string
+		if elemType != "record" {
+			if strings.Contains(elemType, "/") {
+				namespace = strings.Split(elemType, "/")[0]
+				resourceName = strings.Split(elemType, "/")[1]
+			} else {
+				namespace = "default"
+				resourceName = elemType
+			}
 		}
 
 		var record = new(model.Record)
@@ -148,8 +147,8 @@ func (e *Executor) Init(ctx context.Context) error {
 	}
 
 	for _, item := range e.resources {
-		for name, field := range item.Properties {
-			e.resourcePropertyMap[item.Namespace+"/"+item.Name+"/"+name] = field
+		for _, field := range item.Properties {
+			e.resourcePropertyMap[item.Namespace+"/"+item.Name+"/"+field.Name] = field
 		}
 	}
 

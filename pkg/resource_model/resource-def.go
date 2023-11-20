@@ -22,84 +22,95 @@ var ResourceResource = &model.Resource{
 			Name:        "Property",
 			Title:       "Property",
 			Description: "Property is a type that represents a property of a resource. It is like an API properties or properties of class in a programming language",
-			Properties: map[string]*model.ResourceProperty{
-				"enumValues": {
-					Type:         model.ResourceProperty_LIST,
-					ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("UNKNOWN"), structpb.NewStringValue("ASC"), structpb.NewStringValue("DESC")}}),
+			Properties: []*model.ResourceProperty{
+				{
+					Name:         "type",
+					Type:         model.ResourceProperty_ENUM,
+					Required:     true,
+					ExampleValue: structpb.NewStringValue("STRING"),
 				},
-				"title": {
-					Type:         model.ResourceProperty_STRING,
-					Length:       256,
-					ExampleValue: structpb.NewStringValue("Book Title"),
-				},
-				"typeRef": {
+				{
+					Name:         "typeRef",
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					ExampleValue: structpb.NewStringValue("BookPublishingDetails"),
 				},
-				"required": {
+				{
+					Name:         "primary",
 					Type:         model.ResourceProperty_BOOL,
 					Required:     true,
 					DefaultValue: nil,
 				},
-				"unique": {
+				{
+					Name:         "required",
 					Type:         model.ResourceProperty_BOOL,
 					Required:     true,
 					DefaultValue: nil,
 				},
-				"immutable": {
+				{
+					Name:         "unique",
 					Type:         model.ResourceProperty_BOOL,
 					Required:     true,
 					DefaultValue: nil,
 				},
-				"length": {
+				{
+					Name:         "immutable",
+					Type:         model.ResourceProperty_BOOL,
+					Required:     true,
+					DefaultValue: nil,
+				},
+				{
+					Name:         "length",
 					Type:         model.ResourceProperty_INT32,
 					Required:     true,
 					DefaultValue: structpb.NewNumberValue(256),
 					ExampleValue: structpb.NewNumberValue(256),
 				},
-				"description": {
+				{
+					Name:         "item",
+					Type:         model.ResourceProperty_STRUCT,
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"type": structpb.NewStringValue("STRING")}}),
+				},
+				{
+					Name:         "reference",
+					Type:         model.ResourceProperty_STRUCT,
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"resource": structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"namespace": structpb.NewStringValue("default"), "resource": structpb.NewStringValue("Book")}})}}),
+				},
+				{
+					Name:         "defaultValue",
+					Type:         model.ResourceProperty_OBJECT,
+					ExampleValue: structpb.NewStringValue("Lord of the Rings"),
+				},
+				{
+					Name:         "enumValues",
+					Type:         model.ResourceProperty_LIST,
+					ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("UNKNOWN"), structpb.NewStringValue("ASC"), structpb.NewStringValue("DESC")}}),
+				},
+				{
+					Name:         "exampleValue",
+					Type:         model.ResourceProperty_OBJECT,
+					ExampleValue: structpb.NewStringValue("no-book-name"),
+				},
+				{
+					Name:         "title",
+					Type:         model.ResourceProperty_STRING,
+					Length:       256,
+					ExampleValue: structpb.NewStringValue("Book Title"),
+				},
+				{
+					Name:         "description",
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					ExampleValue: structpb.NewStringValue("Book Title is a property of Book Resource. It represents the title of the book."),
 				},
-				"defaultValue": {
-					Type:         model.ResourceProperty_OBJECT,
-					ExampleValue: structpb.NewStringValue("Lord of the Rings"),
-				},
-				"annotations": {
+				{
+					Name:         "annotations",
 					Type:         model.ResourceProperty_MAP,
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true")}}),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
 					},
-				},
-				"type": {
-					Type:         model.ResourceProperty_ENUM,
-					Required:     true,
-					ExampleValue: structpb.NewStringValue("STRING"),
-
-					Annotations: map[string]string{
-						"TypeName": "ResourceType",
-					},
-				},
-				"item": {
-					Type:         model.ResourceProperty_STRUCT,
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"type": structpb.NewStringValue("STRING")}}),
-				},
-				"reference": {
-					Type:         model.ResourceProperty_STRUCT,
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"resource": structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"namespace": structpb.NewStringValue("default"), "resource": structpb.NewStringValue("Book")}})}}),
-				},
-				"primary": {
-					Type:         model.ResourceProperty_BOOL,
-					Required:     true,
-					DefaultValue: nil,
-				},
-				"exampleValue": {
-					Type:         model.ResourceProperty_OBJECT,
-					ExampleValue: structpb.NewStringValue("no-book-name"),
 				},
 			},
 
@@ -114,26 +125,30 @@ var ResourceResource = &model.Resource{
 			Name:        "SubType",
 			Title:       "Sub Type",
 			Description: "Sub Type is a type that represents a sub type of a resource. It is mostly used by STRUCT type to define the properties of the struct. ",
-			Properties: map[string]*model.ResourceProperty{
-				"description": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:         "name",
+					Type:         model.ResourceProperty_STRING,
+					Required:     true,
+					ExampleValue: structpb.NewStringValue("Book"),
+				},
+				{
+					Name:         "title",
+					Type:         model.ResourceProperty_STRING,
+					Length:       256,
+					ExampleValue: structpb.NewStringValue("Book"),
+				},
+				{
+					Name:         "description",
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					ExampleValue: structpb.NewStringValue("Book is a sub type of Resource. It represents a book in the system. "),
 				},
-				"properties": {
+				{
+					Name:         "properties",
 					Type:         model.ResourceProperty_MAP,
 					Required:     true,
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"title": structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"type": structpb.NewStringValue("STRING")}})}}),
-				},
-				"name": {
-					Type:         model.ResourceProperty_STRING,
-					Required:     true,
-					ExampleValue: structpb.NewStringValue("Book"),
-				},
-				"title": {
-					Type:         model.ResourceProperty_STRING,
-					Length:       256,
-					ExampleValue: structpb.NewStringValue("Book"),
+					ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("title"), "type": structpb.NewStringValue("STRING")}})}}),
 				},
 			},
 
@@ -148,8 +163,9 @@ var ResourceResource = &model.Resource{
 			Name:        "AuditData",
 			Title:       "Audit Data",
 			Description: "Audit Data is a type that represents the audit data of a resource/record. ",
-			Properties: map[string]*model.ResourceProperty{
-				"createdBy": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:         "createdBy",
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					Immutable:    true,
@@ -159,7 +175,8 @@ var ResourceResource = &model.Resource{
 						"SpecialProperty": "true",
 					},
 				},
-				"updatedBy": {
+				{
+					Name:         "updatedBy",
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					ExampleValue: structpb.NewStringValue("admin"),
@@ -168,18 +185,20 @@ var ResourceResource = &model.Resource{
 						"SpecialProperty": "true",
 					},
 				},
-				"createdOn": {
+				{
+					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-20T23:38:43+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-21T00:08:32+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
 					},
 				},
-				"updatedOn": {
+				{
+					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-20T23:38:43+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-21T00:08:32+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -188,26 +207,24 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":     "true",
-				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
 				"OpenApiRestPath": "resources",
+				"EnableAudit":     "true",
+				"RestApiDisabled": "true",
 			},
 		},
 		{
 			Name: "IndexProperty",
-			Properties: map[string]*model.ResourceProperty{
-				"name": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:     "name",
 					Type:     model.ResourceProperty_STRING,
 					Required: true,
 				},
-				"order": {
+				{
+					Name:         "order",
 					Type:         model.ResourceProperty_ENUM,
 					DefaultValue: structpb.NewStringValue("ASC"),
-
-					Annotations: map[string]string{
-						"TypeName": "ResourceOrder",
-					},
 				},
 			},
 
@@ -220,24 +237,24 @@ var ResourceResource = &model.Resource{
 		},
 		{
 			Name: "Index",
-			Properties: map[string]*model.ResourceProperty{
-				"properties": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name: "properties",
 					Type: model.ResourceProperty_LIST,
 				},
-				"indexType": {
+				{
+					Name:         "indexType",
 					Type:         model.ResourceProperty_ENUM,
 					DefaultValue: structpb.NewStringValue("BTREE"),
-
-					Annotations: map[string]string{
-						"TypeName": "ResourceIndexType",
-					},
 				},
-				"unique": {
+				{
+					Name: "unique",
 					Type: model.ResourceProperty_BOOL,
 				},
-				"annotations": {
+				{
+					Name:         "annotations",
 					Type:         model.ResourceProperty_MAP,
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -246,27 +263,30 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiRestPath": "resources",
 				"EnableAudit":     "true",
 				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
+				"OpenApiRestPath": "resources",
 			},
 		},
 		{
 			Name:        "Reference",
 			Title:       "Reference",
 			Description: "Reference is a type that represents a reference to another resource. It is used to define the reference to another resource. ",
-			Properties: map[string]*model.ResourceProperty{
-				"backReference": {
-					Type:         model.ResourceProperty_STRING,
-					ExampleValue: structpb.NewStringValue("author"),
-				},
-				"resource": {
+			Properties: []*model.ResourceProperty{
+				{
+					Name:         "resource",
 					Type:         model.ResourceProperty_REFERENCE,
 					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"namespace": structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("test-namespace")}}), "name": structpb.NewStringValue("Book")}}),
 				},
-				"cascade": {
+				{
+					Name: "cascade",
 					Type: model.ResourceProperty_BOOL,
+				},
+				{
+					Name:         "backReference",
+					Type:         model.ResourceProperty_STRING,
+					ExampleValue: structpb.NewStringValue("author"),
 				},
 			},
 
@@ -278,61 +298,9 @@ var ResourceResource = &model.Resource{
 			},
 		},
 	},
-	Properties: map[string]*model.ResourceProperty{
-		"entity": {
-			Type:         model.ResourceProperty_STRING,
-			Length:       256,
-			ExampleValue: structpb.NewStringValue("book"),
-		},
-		"catalog": {
-			Type:         model.ResourceProperty_STRING,
-			Length:       256,
-			ExampleValue: structpb.NewStringValue("public"),
-		},
-		"title": {
-			Type:         model.ResourceProperty_STRING,
-			Length:       256,
-			ExampleValue: structpb.NewStringValue("Book"),
-		},
-		"description": {
-			Type:         model.ResourceProperty_STRING,
-			Length:       256,
-			ExampleValue: structpb.NewStringValue("Book is a resource in the system. It represents a book in the system."),
-		},
-		"name": {
-			Type:         model.ResourceProperty_STRING,
-			Length:       256,
-			Required:     true,
-			ExampleValue: structpb.NewStringValue("Book"),
-
-			Annotations: map[string]string{
-				"IsHclLabel": "true",
-			},
-		},
-		"properties": {
-			Type:         model.ResourceProperty_MAP,
-			Required:     true,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"title": structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"type": structpb.NewStringValue("STRING")}})}}),
-		},
-		"immutable": {
-			Type:         model.ResourceProperty_BOOL,
-			Required:     true,
-			DefaultValue: nil,
-		},
-		"abstract": {
-			Type:         model.ResourceProperty_BOOL,
-			Required:     true,
-			DefaultValue: nil,
-		},
-		"annotations": {
-			Type:         model.ResourceProperty_MAP,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
-
-			Annotations: map[string]string{
-				"SpecialProperty": "true",
-			},
-		},
-		"id": {
+	Properties: []*model.ResourceProperty{
+		{
+			Name:         "id",
 			Type:         model.ResourceProperty_UUID,
 			Required:     true,
 			Immutable:    true,
@@ -343,28 +311,8 @@ var ResourceResource = &model.Resource{
 				"PrimaryProperty": "true",
 			},
 		},
-		"auditData": {
-			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdOn": structpb.NewStringValue("2023-11-20T23:38:43+04:00"), "updatedOn": structpb.NewStringValue("2023-11-20T23:38:43+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin")}}),
-
-			Annotations: map[string]string{
-				"SpecialProperty": "true",
-			},
-		},
-		"virtual": {
-			Type:         model.ResourceProperty_BOOL,
-			Required:     true,
-			DefaultValue: nil,
-		},
-		"checkReferences": {
-			Type:         model.ResourceProperty_BOOL,
-			Required:     true,
-			DefaultValue: nil,
-		},
-		"dataSource": {
-			Type: model.ResourceProperty_REFERENCE,
-		},
-		"version": {
+		{
+			Name:         "version",
 			Type:         model.ResourceProperty_INT32,
 			Required:     true,
 			DefaultValue: structpb.NewNumberValue(1),
@@ -375,16 +323,106 @@ var ResourceResource = &model.Resource{
 				"AllowEmptyPrimitive": "true",
 			},
 		},
-		"namespace": {
+		{
+			Name:         "auditData",
+			Type:         model.ResourceProperty_STRUCT,
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-21T00:08:32+04:00"), "updatedOn": structpb.NewStringValue("2023-11-21T00:08:32+04:00"), "createdBy": structpb.NewStringValue("admin")}}),
+
+			Annotations: map[string]string{
+				"SpecialProperty": "true",
+			},
+		},
+		{
+			Name:         "name",
+			Type:         model.ResourceProperty_STRING,
+			Length:       256,
+			Required:     true,
+			ExampleValue: structpb.NewStringValue("Book"),
+
+			Annotations: map[string]string{
+				"IsHclLabel": "true",
+			},
+		},
+		{
+			Name:         "namespace",
 			Type:         model.ResourceProperty_REFERENCE,
 			Required:     true,
 			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("system")}}),
 		},
-		"indexes": {
+		{
+			Name:         "virtual",
+			Type:         model.ResourceProperty_BOOL,
+			Required:     true,
+			DefaultValue: nil,
+		},
+		{
+			Name:         "properties",
+			Type:         model.ResourceProperty_MAP,
+			Required:     true,
+			ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("title"), "type": structpb.NewStringValue("name")}}), structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("type"), "type": structpb.NewStringValue("STRING")}})}}),
+		},
+		{
+			Name: "indexes",
 			Type: model.ResourceProperty_LIST,
 		},
-		"types": {
+		{
+			Name: "types",
 			Type: model.ResourceProperty_LIST,
+		},
+		{
+			Name:         "immutable",
+			Type:         model.ResourceProperty_BOOL,
+			Required:     true,
+			DefaultValue: nil,
+		},
+		{
+			Name:         "abstract",
+			Type:         model.ResourceProperty_BOOL,
+			Required:     true,
+			DefaultValue: nil,
+		},
+		{
+			Name:         "checkReferences",
+			Type:         model.ResourceProperty_BOOL,
+			Required:     true,
+			DefaultValue: nil,
+		},
+		{
+			Name: "dataSource",
+			Type: model.ResourceProperty_REFERENCE,
+		},
+		{
+			Name:         "entity",
+			Type:         model.ResourceProperty_STRING,
+			Length:       256,
+			ExampleValue: structpb.NewStringValue("book"),
+		},
+		{
+			Name:         "catalog",
+			Type:         model.ResourceProperty_STRING,
+			Length:       256,
+			ExampleValue: structpb.NewStringValue("public"),
+		},
+		{
+			Name:         "title",
+			Type:         model.ResourceProperty_STRING,
+			Length:       256,
+			ExampleValue: structpb.NewStringValue("Book"),
+		},
+		{
+			Name:         "description",
+			Type:         model.ResourceProperty_STRING,
+			Length:       256,
+			ExampleValue: structpb.NewStringValue("Book is a resource in the system. It represents a book in the system."),
+		},
+		{
+			Name:         "annotations",
+			Type:         model.ResourceProperty_MAP,
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
+
+			Annotations: map[string]string{
+				"SpecialProperty": "true",
+			},
 		},
 	},
 	Indexes: []*model.ResourceIndex{

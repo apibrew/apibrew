@@ -19,14 +19,14 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 
 	var resourcePropertyExists = make(map[string]bool)
 
-	for propName := range resource.GetProperties() {
-		resourcePropertyExists[propName] = true
+	for _, property := range resource.GetProperties() {
+		resourcePropertyExists[property.Name] = true
 	}
 
 	for _, record := range list {
-		for propName, property := range resource.GetProperties() {
+		for _, property := range resource.GetProperties() {
 
-			packedVal, exists := record.Properties[propName]
+			packedVal, exists := record.Properties[property.Name]
 
 			if !exists && property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
 				packedVal = property.DefaultValue
@@ -50,9 +50,9 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 				if err != nil {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
 						RecordId: util.GetRecordId(resource, record),
-						Property: propName,
+						Property: property.Name,
 						Message:  "wrong type: " + err.Error(),
-						Value:    record.Properties[propName],
+						Value:    record.Properties[property.Name],
 					})
 					continue
 				}
@@ -64,18 +64,18 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 				if annotations.IsEnabled(property, annotations.PrimaryProperty) && isUpdate {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
 						RecordId: util.GetRecordId(resource, record),
-						Property: propName,
+						Property: property.Name,
 						Message:  "required",
-						Value:    record.Properties[propName],
+						Value:    record.Properties[property.Name],
 					})
 				}
 
 				if !annotations.IsEnabled(property, annotations.PrimaryProperty) && property.Required && (exists || !isUpdate) {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
 						RecordId: util.GetRecordId(resource, record),
-						Property: propName,
+						Property: property.Name,
 						Message:  "required",
-						Value:    record.Properties[propName],
+						Value:    record.Properties[property.Name],
 					})
 				}
 			}
@@ -161,7 +161,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			var errorFields []*model.ErrorField
 
 			for i, item := range listValue.ListValue.Values {
-				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+"["+strconv.Itoa(i)+"].", item)...)
+				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
 			}
 			return errorFields
 		} else {
@@ -177,7 +177,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			var errorFields []*model.ErrorField
 
 			for key, item := range listValue.StructValue.Fields {
-				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+"["+key+"].", item)...)
+				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
 			}
 
 			return errorFields
@@ -220,7 +220,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 		var errorFields []*model.ErrorField
 
 		if structValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
-			var properties map[string]*model.ResourceProperty
+			var properties []*model.ResourceProperty
 
 			// locating type
 			typeDef := util.LocateArrayElement(resource.GetTypes(), func(elem *model.ResourceSubType) bool {
@@ -238,9 +238,9 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 				properties = typeDef.Properties
 			}
 
-			for itemName, Item := range properties {
+			for _, Item := range properties {
 				subType := types.ByResourcePropertyType(Item.Type)
-				packedVal, exists := structValue.StructValue.Fields[itemName]
+				packedVal, exists := structValue.StructValue.Fields[Item.Name]
 
 				if !exists && Item.DefaultValue != nil && Item.DefaultValue.AsInterface() != nil {
 					packedVal = Item.DefaultValue
@@ -259,7 +259,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 					if err != nil {
 						errorFields = append(errorFields, &model.ErrorField{
 							RecordId: recordId,
-							Property: propertyPath + itemName,
+							Property: propertyPath + Item.Name,
 							Message:  err.Error(),
 							Value:    value,
 						})
@@ -270,20 +270,20 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 				if subType.IsEmpty(val) && Item.Required {
 					errorFields = append(errorFields, &model.ErrorField{
 						RecordId: recordId,
-						Property: propertyPath + itemName,
-						Message:  fmt.Sprintf("required field is empty: %s", itemName),
+						Property: propertyPath + Item.Name,
+						Message:  fmt.Sprintf("required field is empty: %v[%s]", Item.Name, Item.Name),
 						Value:    value,
 					})
 					continue
 				}
 
-				errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+itemName+".", structValue.StructValue.Fields[itemName])...)
+				errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
 			}
 
 			for key := range structValue.StructValue.Fields {
 				found := false
-				for itemName := range properties {
-					if itemName == key {
+				for _, Item := range properties {
+					if Item.Name == key {
 						found = true
 						break
 					}

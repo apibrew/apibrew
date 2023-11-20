@@ -7,11 +7,11 @@ import (
 )
 
 func propertyName(property *model.ResourceProperty) string {
-	if isPythonReservedKeyword(propertyName) {
-		return propertyName + "_"
+	if isPythonReservedKeyword(property.Name) {
+		return property.Name + "_"
 	}
 
-	return propertyName
+	return property.Name
 }
 
 func getRestPath(resource *model.Resource) string {
@@ -29,7 +29,7 @@ func getPythonType(resource *model.Resource, property *model.ResourceProperty, n
 	case model.ResourceProperty_REFERENCE:
 		return pythonClassName(property.Reference.Resource)
 	case model.ResourceProperty_ENUM:
-		return pythonClassName(propertyName)
+		return pythonClassName(property.Name)
 	case model.ResourceProperty_OBJECT:
 		return "dict"
 	case model.ResourceProperty_LIST:
@@ -91,7 +91,7 @@ func getAllEnums(resource *model.Resource) []*model.ResourceProperty {
 	var enums []*model.ResourceProperty
 	var addedEnum = make(map[string]bool)
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
-		var name = propName
+		var name = prop.Name
 		if prop.Type == model.ResourceProperty_ENUM {
 			var enumName = name
 

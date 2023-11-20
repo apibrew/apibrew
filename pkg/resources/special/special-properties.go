@@ -8,6 +8,7 @@ import (
 )
 
 var IdProperty = &model.ResourceProperty{
+	Name:        "id",
 	Type:        model.ResourceProperty_UUID,
 	Required:    true,
 	Immutable:   true,
@@ -20,6 +21,7 @@ var IdProperty = &model.ResourceProperty{
 }
 
 var VersionProperty = &model.ResourceProperty{
+	Name:         "version",
 	Title:        Pointer("Version"),
 	Description:  Pointer("The version of the resource/record. It is incremented on every update."),
 	Type:         model.ResourceProperty_INT32,
@@ -33,6 +35,7 @@ var VersionProperty = &model.ResourceProperty{
 }
 
 var AuditPropertyCreatedBy = &model.ResourceProperty{
+	Name:         "createdBy",
 	Title:        Pointer("Created By"),
 	Description:  Pointer("The user who created the resource/record."),
 	Type:         model.ResourceProperty_STRING,
@@ -45,6 +48,7 @@ var AuditPropertyCreatedBy = &model.ResourceProperty{
 }
 
 var AuditPropertyUpdatedBy = &model.ResourceProperty{
+	Name:         "updatedBy",
 	Title:        Pointer("Updated By"),
 	Description:  Pointer("The user who last updated the resource/record."),
 	Type:         model.ResourceProperty_STRING,
@@ -57,6 +61,7 @@ var AuditPropertyUpdatedBy = &model.ResourceProperty{
 }
 
 var AuditPropertyCreatedOn = &model.ResourceProperty{
+	Name:         "createdOn",
 	Title:        Pointer("Created On"),
 	Description:  Pointer("The timestamp when the resource/record was created."),
 	Type:         model.ResourceProperty_TIMESTAMP,
@@ -68,6 +73,7 @@ var AuditPropertyCreatedOn = &model.ResourceProperty{
 }
 
 var AuditPropertyUpdatedOn = &model.ResourceProperty{
+	Name:         "updatedOn",
 	Title:        Pointer("Updated On"),
 	Description:  Pointer("The timestamp when the resource/record was last updated."),
 	Type:         model.ResourceProperty_TIMESTAMP,
@@ -82,15 +88,16 @@ var AuditDataSubType = &model.ResourceSubType{
 	Name:        "AuditData",
 	Title:       "Audit Data",
 	Description: "Audit Data is a type that represents the audit data of a resource/record. ",
-	Properties: map[string]*model.ResourceProperty{
-		"createdBy": AuditPropertyCreatedBy,
-		"updatedBy": AuditPropertyUpdatedBy,
-		"createdOn": AuditPropertyCreatedOn,
-		"updatedOn": AuditPropertyUpdatedOn,
+	Properties: []*model.ResourceProperty{
+		AuditPropertyCreatedBy,
+		AuditPropertyUpdatedBy,
+		AuditPropertyCreatedOn,
+		AuditPropertyUpdatedOn,
 	},
 }
 
 var AuditProperty = &model.ResourceProperty{
+	Name:        "auditData",
 	Title:       Pointer("Audit Data"),
 	Description: Pointer("The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated."),
 	Type:        model.ResourceProperty_STRUCT,
@@ -107,6 +114,7 @@ var AuditProperty = &model.ResourceProperty{
 }
 
 var AnnotationsProperty = &model.ResourceProperty{
+	Name:        "annotations",
 	Title:       Pointer("Annotations"),
 	Description: Pointer("The annotations of the resource/record. It contains information about the resource/record. For example, it can contain information about the UI representation of the resource/record."),
 	Type:        model.ResourceProperty_MAP,
@@ -125,8 +133,8 @@ var AnnotationsProperty = &model.ResourceProperty{
 	},
 }
 
-func IsIdProperty(name string, property *model.ResourceProperty) bool {
-	return name == "id" && property.Type == IdProperty.Type
+func IsIdProperty(property *model.ResourceProperty) bool {
+	return property.Name == IdProperty.Name && property.Type == IdProperty.Type
 }
 
 func Pointer[T interface{}](val T) *T {

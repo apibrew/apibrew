@@ -38,13 +38,13 @@ func (r *recordResolver) resolveReferences(ctx context.Context) errors.ServiceEr
 
 func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) errors.ServiceError {
 	for _, prop := range properties {
-		var newPath = path + "." + propName
+		var newPath = path + "." + prop.Name
 
 		if prop.Type == model.ResourceProperty_LIST || prop.Type == model.ResourceProperty_MAP {
 			newPath = newPath + "[]"
 			theProp := prop
 			prop = prop.Item
-			propName = theProp.Name
+			prop.Name = theProp.Name
 		}
 
 		if !pathsToOperate[newPath] {
@@ -55,7 +55,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 		for recordId, value := range recordValueMap {
 			valueSt := value.GetStructValue()
-			subValues[recordId] = valueSt.Fields[propName]
+			subValues[recordId] = valueSt.Fields[prop.Name]
 		}
 
 		if len(recordValueMap) == 0 {
@@ -104,7 +104,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 				for id := range subValues {
 					subValues[id] = structpb.NewListValue(&structpb.ListValue{})
-					recordValueMap[id].GetStructValue().Fields[propName] = subValues[id]
+					recordValueMap[id].GetStructValue().Fields[prop.Name] = subValues[id]
 				}
 
 				for _, record := range list {
@@ -169,7 +169,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 					if referenceValue.GetListValue() != nil {
 						subValues[recordId] = structpb.NewListValue(&structpb.ListValue{})
-						recordValueMap[recordId].GetStructValue().Fields[propName] = subValues[recordId]
+						recordValueMap[recordId].GetStructValue().Fields[prop.Name] = subValues[recordId]
 
 						for _, subRefValue := range referenceValue.GetListValue().Values {
 							for _, item := range list {
@@ -194,7 +194,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 							if matches {
 								subValues[recordId] = structpb.NewStructValue(&structpb.Struct{Fields: item.Properties})
-								recordValueMap[recordId].GetStructValue().Fields[propName] = subValues[recordId]
+								recordValueMap[recordId].GetStructValue().Fields[prop.Name] = subValues[recordId]
 								break
 							}
 						}
@@ -249,13 +249,13 @@ func (r *recordResolver) getTypeProperties(typeRef string) []*model.ResourceProp
 
 func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) errors.ServiceError {
 	for _, prop := range properties {
-		var newPath = path + "." + propName
+		var newPath = path + "." + prop.Name
 
 		if prop.Type == model.ResourceProperty_LIST || prop.Type == model.ResourceProperty_MAP {
 			newPath = newPath + "[]"
 			theProp := prop
 			prop = prop.Item
-			propName = theProp.Name
+			prop.Name = theProp.Name
 		}
 
 		if !pathsToOperate[newPath] {
@@ -266,10 +266,10 @@ func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path 
 
 		for recordId, value := range recordValueMap {
 			valueSt := value.GetStructValue()
-			if valueSt.Fields[propName] == nil {
+			if valueSt.Fields[prop.Name] == nil {
 				continue
 			}
-			subValues[recordId] = valueSt.Fields[propName]
+			subValues[recordId] = valueSt.Fields[prop.Name]
 		}
 
 		if len(recordValueMap) == 0 {

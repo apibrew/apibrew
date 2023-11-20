@@ -24,7 +24,7 @@ var (
 )
 
 //line templates/golang/struct.qtpl:4
-func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *model.Resource, name string, properties map[string]*model.ResourceProperty, annotated annotations.Annotated) {
+func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty, annotated annotations.Annotated) {
 //line templates/golang/struct.qtpl:5
 	typeName := GoName(name)
 
@@ -36,11 +36,11 @@ func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *m
 	qw422016.N().S(` struct {
 `)
 //line templates/golang/struct.qtpl:7
-	for propertyName, property := range properties {
+	for _, property := range properties {
 //line templates/golang/struct.qtpl:7
 		qw422016.N().S(`	`)
 //line templates/golang/struct.qtpl:8
-		StreamGoName(qw422016, propertyName)
+		StreamGoName(qw422016, property.Name)
 //line templates/golang/struct.qtpl:8
 		qw422016.N().S(` `)
 //line templates/golang/struct.qtpl:8
@@ -52,7 +52,7 @@ func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *m
 //line templates/golang/struct.qtpl:8
 		qw422016.N().S(`json:"`)
 //line templates/golang/struct.qtpl:8
-		qw422016.N().S(GoVarName2(propertyName))
+		qw422016.N().S(GoVarName2(property.Name))
 //line templates/golang/struct.qtpl:8
 		qw422016.N().S(`,omitempty"`)
 //line templates/golang/struct.qtpl:8
@@ -67,7 +67,7 @@ func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *m
 
 `)
 //line templates/golang/struct.qtpl:12
-	for propertyName, property := range properties {
+	for _, property := range properties {
 //line templates/golang/struct.qtpl:12
 		qw422016.N().S(`func (s *`)
 //line templates/golang/struct.qtpl:13
@@ -75,7 +75,7 @@ func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *m
 //line templates/golang/struct.qtpl:13
 		qw422016.N().S(`) Get`)
 //line templates/golang/struct.qtpl:13
-		StreamGoName(qw422016, propertyName)
+		StreamGoName(qw422016, property.Name)
 //line templates/golang/struct.qtpl:13
 		qw422016.N().S(`() `)
 //line templates/golang/struct.qtpl:13
@@ -84,7 +84,7 @@ func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *m
 		qw422016.N().S(` {
 	return s.`)
 //line templates/golang/struct.qtpl:14
-		StreamGoName(qw422016, propertyName)
+		StreamGoName(qw422016, property.Name)
 //line templates/golang/struct.qtpl:14
 		qw422016.N().S(`
 }
@@ -138,7 +138,7 @@ func (s *`)
 }
 
 //line templates/golang/struct.qtpl:30
-func WriteGenerateStructCode(qq422016 qtio422016.Writer, pkg string, resource *model.Resource, name string, properties map[string]*model.ResourceProperty, annotated annotations.Annotated) {
+func WriteGenerateStructCode(qq422016 qtio422016.Writer, pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty, annotated annotations.Annotated) {
 //line templates/golang/struct.qtpl:30
 	qw422016 := qt422016.AcquireWriter(qq422016)
 //line templates/golang/struct.qtpl:30
@@ -149,7 +149,7 @@ func WriteGenerateStructCode(qq422016 qtio422016.Writer, pkg string, resource *m
 }
 
 //line templates/golang/struct.qtpl:30
-func GenerateStructCode(pkg string, resource *model.Resource, name string, properties map[string]*model.ResourceProperty, annotated annotations.Annotated) string {
+func GenerateStructCode(pkg string, resource *model.Resource, name string, properties []*model.ResourceProperty, annotated annotations.Annotated) string {
 //line templates/golang/struct.qtpl:30
 	qb422016 := qt422016.AcquireByteBuffer()
 //line templates/golang/struct.qtpl:30

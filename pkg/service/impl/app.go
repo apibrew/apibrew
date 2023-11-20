@@ -130,7 +130,7 @@ func (app *App) initServices() {
 	// run apply paths
 
 	if app.config.ApplyPaths != nil {
-		applier := executor.NewExecutor(executor.APPLY, client.NewLocalClient(app), true, false, false, flags.OverrideConfig{})
+		applier := executor.NewExecutor(executor.APPLY, client.NewLocalClient(app), true, false, false, "", flags.OverrideConfig{})
 		for _, path := range app.config.ApplyPaths {
 			err := applier.ApplyWithPattern(util.WithSystemContext(context.TODO()), path, "")
 

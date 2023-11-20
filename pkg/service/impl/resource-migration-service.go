@@ -52,23 +52,23 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 	plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResource(resource, existingResource)...)
 
 	// check properties
-	_ = util.MapDiffer(existingResource.Properties,
+	_ = util.ArrayDiffer(existingResource.Properties,
 		resource.Properties,
 		util.IsSameIdentifiedResourceProperty,
 		util.IsSameResourceProperty,
-		func(prop util.MapEntry[*model.ResourceProperty]) errors.ServiceError { // new
+		func(prop *model.ResourceProperty) errors.ServiceError { // new
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_CreateProperty{CreateProperty: &model.ResourceMigrationCreateProperty{
-				Property: prop.Key,
+				Property: prop.Name,
 			}}})
 
 			return nil
-		}, func(e, u util.MapEntry[*model.ResourceProperty]) errors.ServiceError { // update
-			plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, u.Value, e.Value, u.Key, e.Key, "")...)
+		}, func(e, u *model.ResourceProperty) errors.ServiceError { // update
+			plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, u, e, "")...)
 
 			return nil
-		}, func(prop util.MapEntry[*model.ResourceProperty]) errors.ServiceError { // delete
+		}, func(prop *model.ResourceProperty) errors.ServiceError { // delete
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteProperty{DeleteProperty: &model.ResourceMigrationDeleteProperty{
-				ExistingProperty: prop.Key,
+				ExistingProperty: prop.Name,
 			}}})
 
 			return nil
@@ -91,24 +91,24 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 			return nil
 		}, func(e, u *model.ResourceSubType) errors.ServiceError { // update
 			// check properties
-			_ = util.MapDiffer(e.Properties,
+			_ = util.ArrayDiffer(e.Properties,
 				u.Properties,
 				util.IsSameIdentifiedResourceProperty,
 				util.IsSameResourceProperty,
-				func(prop util.MapEntry[*model.ResourceProperty]) errors.ServiceError { // new
+				func(prop *model.ResourceProperty) errors.ServiceError { // new
 					plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_CreateProperty{CreateProperty: &model.ResourceMigrationCreateProperty{
-						Property: prop.Key,
+						Property: prop.Name,
 						SubType:  u.Name,
 					}}})
 
 					return nil
-				}, func(ep, up util.MapEntry[*model.ResourceProperty]) errors.ServiceError { // update
-					plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, up.Value, ep.Value, up.Key, ep.Key, u.Name)...)
+				}, func(ep, up *model.ResourceProperty) errors.ServiceError { // update
+					plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, up, ep, u.Name)...)
 
 					return nil
-				}, func(prop util.MapEntry[*model.ResourceProperty]) errors.ServiceError { // delete
+				}, func(prop *model.ResourceProperty) errors.ServiceError { // delete
 					plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteProperty{DeleteProperty: &model.ResourceMigrationDeleteProperty{
-						ExistingProperty: prop.Key,
+						ExistingProperty: prop.Name,
 						SubType:          u.Name,
 					}}})
 
@@ -156,10 +156,10 @@ func (r *resourceMigrationService) preparePlanStepsForNewResource(resource *mode
 		Kind: &model.ResourceMigrationStep_CreateResource{CreateResource: &model.ResourceMigrationCreateResource{}},
 	})
 
-	for propName := range resource.Properties {
+	for _, prop := range resource.Properties {
 		steps = append(steps, &model.ResourceMigrationStep{
 			Kind: &model.ResourceMigrationStep_CreateProperty{CreateProperty: &model.ResourceMigrationCreateProperty{
-				Property: propName,
+				Property: prop.Name,
 			}},
 		})
 	}
@@ -192,12 +192,12 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResource(resource, e
 	existingResourceRecord := mapping.ResourceToRecord(existingResource)
 
 	var changedFields []string
-	for propName := range resources.ResourceResource.Properties {
-		if propName == "properties" {
+	for _, prop := range resources.ResourceResource.Properties {
+		if prop.Name == "properties" {
 			continue
 		}
-		if !proto.Equal(resourceRecord.Properties[propName], existingResourceRecord.Properties[propName]) {
-			changedFields = append(changedFields, propName)
+		if !proto.Equal(resourceRecord.Properties[prop.Name], existingResourceRecord.Properties[prop.Name]) {
+			changedFields = append(changedFields, prop.Name)
 		}
 	}
 
@@ -212,16 +212,16 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResource(resource, e
 	return steps
 }
 
-func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(resource, existingResource *model.Resource, resourceProperty, existingResourceProperty *model.ResourceProperty, resourcePropertyName string, existingResourcePropertyName string, subType string) []*model.ResourceMigrationStep {
+func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(resource, existingResource *model.Resource, resourceProperty, existingResourceProperty *model.ResourceProperty, subType string) []*model.ResourceMigrationStep {
 	var steps []*model.ResourceMigrationStep
 
 	resourcePropertyRecord := mapping.ResourcePropertyToRecord(resourceProperty, resource)
 	existingResourcePropertyRecord := mapping.ResourcePropertyToRecord(existingResourceProperty, existingResource)
 
 	var changedFields []string
-	for propName, prop := range resources.ResourcePropertyProperties {
-		var oldValue = resourcePropertyRecord.Properties[propName].AsInterface()
-		var newValue = existingResourcePropertyRecord.Properties[propName].AsInterface()
+	for _, prop := range resources.ResourcePropertyProperties {
+		var oldValue = resourcePropertyRecord.Properties[prop.Name].AsInterface()
+		var newValue = existingResourcePropertyRecord.Properties[prop.Name].AsInterface()
 
 		if annotations.IsEnabled(prop, annotations.SpecialProperty) {
 			continue
@@ -230,16 +230,16 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(res
 			continue
 		}
 
-		if !proto.Equal(resourcePropertyRecord.Properties[propName], existingResourcePropertyRecord.Properties[propName]) {
-			changedFields = append(changedFields, propName)
+		if !proto.Equal(resourcePropertyRecord.Properties[prop.Name], existingResourcePropertyRecord.Properties[prop.Name]) {
+			changedFields = append(changedFields, prop.Name)
 		}
 	}
 
 	if len(changedFields) > 0 {
 		steps = append(steps, &model.ResourceMigrationStep{
 			Kind: &model.ResourceMigrationStep_UpdateProperty{UpdateProperty: &model.ResourceMigrationUpdateProperty{
-				ExistingProperty: existingResourcePropertyName,
-				Property:         resourcePropertyName,
+				ExistingProperty: existingResourceProperty.Name,
+				Property:         resourceProperty.Name,
 				ChangedFields:    changedFields,
 				SubType:          subType,
 			}},

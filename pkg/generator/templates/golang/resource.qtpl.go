@@ -42,12 +42,7 @@ package `)
 	qw422016.E().S(pkgName)
 //line templates/golang/resource.qtpl:12
 	qw422016.N().S(`
-`)
-//line templates/golang/resource.qtpl:13
-	initResource(resource)
 
-//line templates/golang/resource.qtpl:13
-	qw422016.N().S(`
 `)
 //line templates/golang/resource.qtpl:14
 	for _, importLine := range getImportsForResource(resource) {
@@ -91,7 +86,7 @@ package `)
 //line templates/golang/resource.qtpl:25
 	for _, enumProperty := range getAllEnums(resource) {
 //line templates/golang/resource.qtpl:26
-		StreamGenerateEnumCode(qw422016, resource, enumProperty)
+		StreamGenerateEnumCode(qw422016, enumProperty)
 //line templates/golang/resource.qtpl:26
 		qw422016.N().S(`
 `)

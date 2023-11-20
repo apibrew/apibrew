@@ -6,51 +6,33 @@
 
 package resource_model
 
-import "time"
 import "github.com/google/uuid"
+import "time"
 
 type Permission struct {
+	Id             *uuid.UUID           `json:"id,omitempty"`
 	Version        int32                `json:"version,omitempty"`
+	AuditData      *PermissionAuditData `json:"auditData,omitempty"`
 	Namespace      *string              `json:"namespace,omitempty"`
 	Resource       *string              `json:"resource,omitempty"`
+	RecordSelector *BooleanExpression   `json:"recordSelector,omitempty"`
 	Operation      PermissionOperation  `json:"operation,omitempty"`
 	Before         *time.Time           `json:"before,omitempty"`
-	Role           *Role                `json:"role,omitempty"`
-	LocalFlags     interface{}          `json:"localFlags,omitempty"`
-	Id             *uuid.UUID           `json:"id,omitempty"`
-	RecordSelector *BooleanExpression   `json:"recordSelector,omitempty"`
 	After          *time.Time           `json:"after,omitempty"`
 	User           *User                `json:"user,omitempty"`
+	Role           *Role                `json:"role,omitempty"`
 	Permit         PermissionPermit     `json:"permit,omitempty"`
-	AuditData      *PermissionAuditData `json:"auditData,omitempty"`
+	LocalFlags     interface{}          `json:"localFlags,omitempty"`
 }
 
-func (s *Permission) GetAuditData() *PermissionAuditData {
-	return s.AuditData
-}
-func (s *Permission) GetRecordSelector() *BooleanExpression {
-	return s.RecordSelector
-}
-func (s *Permission) GetAfter() *time.Time {
-	return s.After
-}
-func (s *Permission) GetUser() *User {
-	return s.User
-}
-func (s *Permission) GetPermit() PermissionPermit {
-	return s.Permit
-}
-func (s *Permission) GetRole() *Role {
-	return s.Role
-}
-func (s *Permission) GetLocalFlags() interface{} {
-	return s.LocalFlags
-}
 func (s *Permission) GetId() *uuid.UUID {
 	return s.Id
 }
 func (s *Permission) GetVersion() int32 {
 	return s.Version
+}
+func (s *Permission) GetAuditData() *PermissionAuditData {
+	return s.AuditData
 }
 func (s *Permission) GetNamespace() *string {
 	return s.Namespace
@@ -58,11 +40,29 @@ func (s *Permission) GetNamespace() *string {
 func (s *Permission) GetResource() *string {
 	return s.Resource
 }
+func (s *Permission) GetRecordSelector() *BooleanExpression {
+	return s.RecordSelector
+}
 func (s *Permission) GetOperation() PermissionOperation {
 	return s.Operation
 }
 func (s *Permission) GetBefore() *time.Time {
 	return s.Before
+}
+func (s *Permission) GetAfter() *time.Time {
+	return s.After
+}
+func (s *Permission) GetUser() *User {
+	return s.User
+}
+func (s *Permission) GetRole() *Role {
+	return s.Role
+}
+func (s *Permission) GetPermit() PermissionPermit {
+	return s.Permit
+}
+func (s *Permission) GetLocalFlags() interface{} {
+	return s.LocalFlags
 }
 
 type PermissionAuditData struct {

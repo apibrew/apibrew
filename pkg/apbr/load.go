@@ -129,7 +129,13 @@ var loadCmd = &cobra.Command{
 }
 
 func loadApply(cmd *cobra.Command, args []string, payloadFile string) func() error {
-	applier := executor.NewExecutor(executor.APPLY, GetClient(), false, false, false, flags.OverrideConfig{})
+	var typ = ""
+
+	if args != nil && len(args) > 0 {
+		typ = args[0]
+	}
+
+	applier := executor.NewExecutor(executor.APPLY, GetClient(), false, false, false, typ, flags.OverrideConfig{})
 
 	return func() error {
 		return applier.Apply(cmd.Context(), payloadFile, "")

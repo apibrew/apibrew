@@ -3,6 +3,6 @@ package abs
 import "github.com/apibrew/apibrew/pkg/model"
 
 type ResourceLike interface {
-	GetProperties() map[string]*model.ResourceProperty
+	GetProperties() []*model.ResourceProperty
 	GetTypes() []*model.ResourceSubType
 }

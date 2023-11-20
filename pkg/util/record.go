@@ -43,12 +43,12 @@ func RecordIdentifierProperties(resource *model.Resource, properties map[string]
 func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {
 	identifierProps := make(map[string]*structpb.Value)
 
-	for name, prop := range resource.Properties {
-		if !special.IsIdProperty(name, prop) {
+	for _, prop := range resource.Properties {
+		if !special.IsIdProperty(prop) {
 			continue
 		}
 
-		val, ok := properties[name]
+		val, ok := properties[prop.Name]
 
 		if !ok {
 			return nil, false
@@ -67,20 +67,20 @@ func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[
 			return nil, false
 		}
 
-		identifierProps[name] = val
+		identifierProps[prop.Name] = val
 	}
 
 	return identifierProps, len(identifierProps) > 0
 }
 
 func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {
-	for name, prop := range resource.Properties {
+	for _, prop := range resource.Properties {
 		identifierProps := make(map[string]*structpb.Value)
 		if !prop.Unique {
 			continue
 		}
 
-		val, ok := properties[name]
+		val, ok := properties[prop.Name]
 
 		if !ok {
 			continue
@@ -99,7 +99,7 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 			continue
 		}
 
-		identifierProps[name] = val
+		identifierProps[prop.Name] = val
 
 		if properties["refValue"] != nil {
 			identifierProps["refValue"] = properties["refValue"]
@@ -108,6 +108,8 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 		return identifierProps, true
 	}
 
+	propMap := GetNamedMap(resource.Properties)
+
 	for _, index := range resource.Indexes {
 		if index.Unique {
 			var valid = true
@@ -115,9 +117,9 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 			identifierProps := make(map[string]*structpb.Value)
 
 			for _, indexProp := range index.Properties {
-				prop := resource.Properties[indexProp.Name]
+				prop := propMap[indexProp.Name]
 
-				val, ok := properties[indexProp.Name]
+				val, ok := properties[prop.Name]
 
 				if !ok {
 					valid = false
@@ -140,7 +142,7 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 					break
 				}
 
-				identifierProps[indexProp.Name] = val
+				identifierProps[prop.Name] = val
 			}
 
 			if properties["refValue"] != nil {

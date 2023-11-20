@@ -9,7 +9,7 @@ import (
 type PropertiesWithTitleAndDescription interface {
 	GetTitle() string
 	GetDescription() string
-	GetProperties() map[string]*model.ResourceProperty
+	GetProperties() []*model.ResourceProperty
 }
 
 func ResourceToJsonSchema(resource *model.Resource) *openapi3.Schema {
@@ -29,15 +29,15 @@ func PropertiesWithTitleToJsonSchema(resource *model.Resource, elem PropertiesWi
 		},
 	}
 
-	for name, property := range elem.GetProperties() {
+	for _, property := range elem.GetProperties() {
 		if annotations.IsEnabled(property, annotations.OpenApiHide) {
 			continue
 		}
 
-		recordSchema.Properties[name] = ResourcePropertyTypeToJsonSchemaType(resource, property)
+		recordSchema.Properties[property.Name] = ResourcePropertyTypeToJsonSchemaType(resource, property)
 
 		if property.Required {
-			requiredItems = append(requiredItems, name)
+			requiredItems = append(requiredItems, property.Name)
 		}
 	}
 

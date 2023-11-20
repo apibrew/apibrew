@@ -150,11 +150,11 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 		}
 
 		if r.packRecords {
-			for propName, prop := range r.resource.Properties {
+			for _, prop := range r.resource.Properties {
 				if helper.IsPropertyOmitted(prop) {
 					continue
 				}
-				record.PropertiesPacked = append(record.PropertiesPacked, record.Properties[propName])
+				record.PropertiesPacked = append(record.PropertiesPacked, record.Properties[prop.Name])
 			}
 			record.Properties = nil
 		}
@@ -179,17 +179,17 @@ func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
 func (r *recordLister) expandProps(path string, resource *model.Resource) {
 	isInner := path != "t"
 
-	for propName, prop := range resource.Properties {
+	for _, prop := range resource.Properties {
 		if helper.IsPropertyOmitted(prop) {
 			continue
 		}
 
 		r.colList = append(r.colList, colDetails{
 			resource:     resource,
-			colName:      propName,
-			path:         path + "_" + propName,
-			def:          r.quote(path) + "." + r.quote(propName),
-			alias:        r.quote(path + "_" + propName),
+			colName:      prop.Name,
+			path:         path + "_" + prop.Name,
+			def:          r.quote(path) + "." + r.quote(prop.Name),
+			alias:        r.quote(path + "_" + prop.Name),
 			property:     prop,
 			required:     prop.Required && !isInner,
 			propertyType: prop.Type,
@@ -199,7 +199,7 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 			// check resource
 			found := false
 			for _, rr := range r.ResolveReferences {
-				if rr == "*" || rr == propName || strings.HasPrefix(rr, propName+"/") {
+				if rr == "*" || rr == prop.Name || strings.HasPrefix(rr, prop.Name+"/") {
 					found = true
 				}
 			}
@@ -210,14 +210,14 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 					referenceNamespace = resource.Namespace
 				}
 				referencedResource := r.backend.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+prop.Reference.Resource]
-				newPath := path + "__" + propName
+				newPath := path + "__" + prop.Name
 
 				// add to joins
 				r.joins = append(r.joins, joinDetails{
 					targetTable:      referencedResource.SourceConfig.Entity,
 					targetTableAlias: newPath,
 					targetColumn:     "id",
-					sourcePath:       r.quote(path) + "." + r.quote(propName),
+					sourcePath:       r.quote(path) + "." + r.quote(prop.Name),
 				})
 
 				r.expandProps(newPath, referencedResource)
@@ -293,16 +293,16 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 			return nil, err
 		}
 
-		for propName, prop := range resource.Properties {
+		for _, prop := range resource.Properties {
 			if helper.IsPropertyOmitted(prop) {
 				continue
 			}
-			if pathPrefix+propName == cd.path {
+			if pathPrefix+prop.Name == cd.path {
 
 				if prop.Type == model.ResourceProperty_REFERENCE {
 					resolveReference := false
 					for _, rr := range r.ResolveReferences {
-						if rr == "*" || rr == propName || strings.HasPrefix(rr, propName+"/") {
+						if rr == "*" || rr == prop.Name || strings.HasPrefix(rr, prop.Name+"/") {
 							resolveReference = true
 						}
 					}
@@ -314,16 +314,16 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 					referencedResource := r.backend.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+prop.Reference.Resource]
 
 					if referencedResource != nil && resolveReference {
-						nv, err := r.mapRecordProperties(recordId, referencedResource, pathPrefix+"_"+propName+"_", propertyPointers)
+						nv, err := r.mapRecordProperties(recordId, referencedResource, pathPrefix+"_"+prop.Name+"_", propertyPointers)
 						if err != nil {
 							return nil, err
 						}
 
-						properties[propName] = structpb.NewStructValue(&structpb.Struct{Fields: nv})
-						v1 := properties[propName].GetStructValue().Fields["id"].GetStringValue()
+						properties[prop.Name] = structpb.NewStructValue(&structpb.Struct{Fields: nv})
+						v1 := properties[prop.Name].GetStructValue().Fields["id"].GetStringValue()
 						v2 := val.(map[string]interface{})["id"]
 						if v1 != v2 {
-							log.Print(properties[propName], val)
+							log.Print(properties[prop.Name], val)
 						}
 					} else {
 						st, err := structpb.NewStruct(val.(map[string]interface{}))
@@ -332,7 +332,7 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 							return nil, errors.InternalError.WithDetails(err.Error())
 						}
 
-						properties[propName] = structpb.NewStructValue(st)
+						properties[prop.Name] = structpb.NewStructValue(st)
 					}
 				} else {
 					v, err2 := propertyType.Pack(val)
@@ -341,7 +341,7 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 						return nil, errors.InternalError.WithDetails(err2.Error())
 					}
 
-					properties[propName] = v
+					properties[prop.Name] = v
 				}
 				break
 			}
@@ -463,13 +463,13 @@ func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model
 	var property *model.ResourceProperty
 
 	if propEx, ok := pair.Left.Expression.(*model.Expression_Property); ok {
-		property = resource.Properties[propEx.Property]
+		property = util.LocatePropertyByName(resource, propEx.Property)
 
 		if property == nil {
 			return "", "", errors.PropertyNotFoundError.WithDetails(propEx.Property)
 		}
 
-		left = fmt.Sprintf("t." + r.quote(propEx.Property))
+		left = fmt.Sprintf("t." + r.quote(property.Name))
 	} else {
 		return "", "", errors.LogicalError.WithDetails("Only property expression is allowed on the left part: " + pair.Left.String())
 	}
@@ -533,13 +533,13 @@ func (r *recordLister) applyExpression(resource *model.Resource, query *model.Ex
 	}
 
 	if propEx, ok := query.Expression.(*model.Expression_Property); ok {
-		property := resource.Properties[propEx.Property]
+		property := util.LocatePropertyByName(resource, propEx.Property)
 
 		if property == nil {
 			return "", errors.PropertyNotFoundError.WithDetails(propEx.Property)
 		}
 
-		return fmt.Sprintf("t." + r.quote(propEx.Property)), nil
+		return fmt.Sprintf("t." + r.quote(property.Name)), nil
 	} else {
 		return "", errors.LogicalError.WithDetails("Only property expression is allowed: " + query.String())
 	}

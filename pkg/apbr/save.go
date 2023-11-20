@@ -48,7 +48,13 @@ func execSave(mode executor.Mode, cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to parse override flags: %w", err)
 	}
 
-	applier := executor.NewExecutor(mode, GetClient(), doMigration, dataOnly, force, *overrideConfig)
+	var typ = ""
+
+	if args != nil && len(args) > 0 {
+		typ = args[0]
+	}
+
+	applier := executor.NewExecutor(mode, GetClient(), doMigration, dataOnly, force, typ, *overrideConfig)
 
 	for _, inputFilePath := range inputFilePathArr {
 		err = applier.ApplyWithPattern(cmd.Context(), inputFilePath, format)

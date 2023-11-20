@@ -141,446 +141,443 @@ func GenerateStructDef(value *structpb.Value) string {
 func StreamGeneratePropertyDef(qw422016 *qt422016.Writer, resource *model.Resource, property *model.ResourceProperty) {
 //line templates/golang/resource-def.qtpl:39
 	qw422016.N().S(`{
+        Name:     "`)
+//line templates/golang/resource-def.qtpl:40
+	qw422016.E().S(property.Name)
+//line templates/golang/resource-def.qtpl:40
+	qw422016.N().S(`",
         Type:     model.ResourceProperty_`)
-//line templates/golang/resource-def.qtpl:40
+//line templates/golang/resource-def.qtpl:41
 	qw422016.E().S(property.Type.String())
-//line templates/golang/resource-def.qtpl:40
+//line templates/golang/resource-def.qtpl:41
 	qw422016.N().S(`,
 `)
-//line templates/golang/resource-def.qtpl:41
+//line templates/golang/resource-def.qtpl:42
 	if property.Length > 0 {
-//line templates/golang/resource-def.qtpl:41
+//line templates/golang/resource-def.qtpl:42
 		qw422016.N().S(`Length:   `)
-//line templates/golang/resource-def.qtpl:41
+//line templates/golang/resource-def.qtpl:42
 		qw422016.N().D(int(property.Length))
-//line templates/golang/resource-def.qtpl:41
+//line templates/golang/resource-def.qtpl:42
 		qw422016.N().S(`,
         `)
-//line templates/golang/resource-def.qtpl:42
+//line templates/golang/resource-def.qtpl:43
 	}
-//line templates/golang/resource-def.qtpl:43
+//line templates/golang/resource-def.qtpl:44
 	if property.Required {
-//line templates/golang/resource-def.qtpl:43
+//line templates/golang/resource-def.qtpl:44
 		qw422016.N().S(`Required: true,
         `)
-//line templates/golang/resource-def.qtpl:44
+//line templates/golang/resource-def.qtpl:45
 	}
-//line templates/golang/resource-def.qtpl:45
+//line templates/golang/resource-def.qtpl:46
 	if property.Unique {
-//line templates/golang/resource-def.qtpl:45
+//line templates/golang/resource-def.qtpl:46
 		qw422016.N().S(`Unique: true,
         `)
-//line templates/golang/resource-def.qtpl:46
+//line templates/golang/resource-def.qtpl:47
 	}
-//line templates/golang/resource-def.qtpl:47
+//line templates/golang/resource-def.qtpl:48
 	if property.Immutable {
-//line templates/golang/resource-def.qtpl:47
+//line templates/golang/resource-def.qtpl:48
 		qw422016.N().S(`Immutable: true,
         `)
-//line templates/golang/resource-def.qtpl:48
+//line templates/golang/resource-def.qtpl:49
 	}
-//line templates/golang/resource-def.qtpl:49
-	if property.DefaultValue != nil {
-//line templates/golang/resource-def.qtpl:49
-		qw422016.N().S(`DefaultValue:`)
-//line templates/golang/resource-def.qtpl:49
-		StreamGenerateStructDef(qw422016, property.DefaultValue)
-//line templates/golang/resource-def.qtpl:49
-		qw422016.N().S(`,
-        `)
 //line templates/golang/resource-def.qtpl:50
-	}
-//line templates/golang/resource-def.qtpl:51
-	if property.ExampleValue != nil {
-//line templates/golang/resource-def.qtpl:51
-		qw422016.N().S(`ExampleValue:`)
-//line templates/golang/resource-def.qtpl:51
-		StreamGenerateStructDef(qw422016, property.ExampleValue)
-//line templates/golang/resource-def.qtpl:51
+	if property.DefaultValue != nil {
+//line templates/golang/resource-def.qtpl:50
+		qw422016.N().S(`DefaultValue:`)
+//line templates/golang/resource-def.qtpl:50
+		StreamGenerateStructDef(qw422016, property.DefaultValue)
+//line templates/golang/resource-def.qtpl:50
 		qw422016.N().S(`,
         `)
-//line templates/golang/resource-def.qtpl:52
+//line templates/golang/resource-def.qtpl:51
 	}
 //line templates/golang/resource-def.qtpl:52
+	if property.ExampleValue != nil {
+//line templates/golang/resource-def.qtpl:52
+		qw422016.N().S(`ExampleValue:`)
+//line templates/golang/resource-def.qtpl:52
+		StreamGenerateStructDef(qw422016, property.ExampleValue)
+//line templates/golang/resource-def.qtpl:52
+		qw422016.N().S(`,
+        `)
+//line templates/golang/resource-def.qtpl:53
+	}
+//line templates/golang/resource-def.qtpl:53
 	qw422016.N().S(`        `)
-//line templates/golang/resource-def.qtpl:53
+//line templates/golang/resource-def.qtpl:54
 	StreamGenerateAnnotationsDef(qw422016, property.Annotations)
-//line templates/golang/resource-def.qtpl:53
+//line templates/golang/resource-def.qtpl:54
 	qw422016.N().S(`
     }`)
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 }
 
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 func WriteGeneratePropertyDef(qq422016 qtio422016.Writer, resource *model.Resource, property *model.ResourceProperty) {
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 	StreamGeneratePropertyDef(qw422016, resource, property)
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 	qt422016.ReleaseWriter(qw422016)
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 }
 
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 func GeneratePropertyDef(resource *model.Resource, property *model.ResourceProperty) string {
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 	qb422016 := qt422016.AcquireByteBuffer()
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 	WriteGeneratePropertyDef(qb422016, resource, property)
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 	qs422016 := string(qb422016.B)
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 	qt422016.ReleaseByteBuffer(qb422016)
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 	return qs422016
-//line templates/golang/resource-def.qtpl:54
+//line templates/golang/resource-def.qtpl:55
 }
 
-//line templates/golang/resource-def.qtpl:56
+//line templates/golang/resource-def.qtpl:57
 func StreamGenerateAnnotationsDef(qw422016 *qt422016.Writer, annotations map[string]string) {
-//line templates/golang/resource-def.qtpl:56
+//line templates/golang/resource-def.qtpl:57
 	qw422016.N().S(`
 `)
-//line templates/golang/resource-def.qtpl:57
+//line templates/golang/resource-def.qtpl:58
 	if len(annotations) > 0 {
-//line templates/golang/resource-def.qtpl:57
+//line templates/golang/resource-def.qtpl:58
 		qw422016.N().S(`        Annotations: map[string]string{
 `)
-//line templates/golang/resource-def.qtpl:59
+//line templates/golang/resource-def.qtpl:60
 		for key, value := range annotations {
-//line templates/golang/resource-def.qtpl:59
+//line templates/golang/resource-def.qtpl:60
 			qw422016.N().S(`			"`)
-//line templates/golang/resource-def.qtpl:60
+//line templates/golang/resource-def.qtpl:61
 			qw422016.E().S(key)
-//line templates/golang/resource-def.qtpl:60
+//line templates/golang/resource-def.qtpl:61
 			qw422016.N().S(`": "`)
-//line templates/golang/resource-def.qtpl:60
+//line templates/golang/resource-def.qtpl:61
 			qw422016.E().S(value)
-//line templates/golang/resource-def.qtpl:60
+//line templates/golang/resource-def.qtpl:61
 			qw422016.N().S(`",
 `)
-//line templates/golang/resource-def.qtpl:61
+//line templates/golang/resource-def.qtpl:62
 		}
-//line templates/golang/resource-def.qtpl:61
+//line templates/golang/resource-def.qtpl:62
 		qw422016.N().S(`	    },
 	    `)
-//line templates/golang/resource-def.qtpl:63
+//line templates/golang/resource-def.qtpl:64
 	}
-//line templates/golang/resource-def.qtpl:63
+//line templates/golang/resource-def.qtpl:64
 	qw422016.N().S(`
 `)
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 }
 
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 func WriteGenerateAnnotationsDef(qq422016 qtio422016.Writer, annotations map[string]string) {
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 	StreamGenerateAnnotationsDef(qw422016, annotations)
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 	qt422016.ReleaseWriter(qw422016)
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 }
 
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 func GenerateAnnotationsDef(annotations map[string]string) string {
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 	qb422016 := qt422016.AcquireByteBuffer()
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 	WriteGenerateAnnotationsDef(qb422016, annotations)
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 	qs422016 := string(qb422016.B)
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 	qt422016.ReleaseByteBuffer(qb422016)
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 	return qs422016
-//line templates/golang/resource-def.qtpl:64
+//line templates/golang/resource-def.qtpl:65
 }
 
-//line templates/golang/resource-def.qtpl:66
-func StreamGenerateResourceDefCode(qw422016 *qt422016.Writer, pkg string, resource *model.Resource) {
 //line templates/golang/resource-def.qtpl:67
+func StreamGenerateResourceDefCode(qw422016 *qt422016.Writer, pkg string, resource *model.Resource) {
+//line templates/golang/resource-def.qtpl:68
 	pkgParts := strings.Split(pkg, "/")
 
-//line templates/golang/resource-def.qtpl:68
+//line templates/golang/resource-def.qtpl:69
 	pkgName := pkgParts[len(pkgParts)-1]
 
-//line templates/golang/resource-def.qtpl:68
+//line templates/golang/resource-def.qtpl:69
 	qw422016.N().S(`// Code generated by apbr generate. DO NOT EDIT.
 // versions:
 // 	apbr generate v1.2
 
 //go:build !codeanalysis
 package `)
-//line templates/golang/resource-def.qtpl:74
+//line templates/golang/resource-def.qtpl:75
 	qw422016.E().S(pkgName)
-//line templates/golang/resource-def.qtpl:74
+//line templates/golang/resource-def.qtpl:75
 	qw422016.N().S(`
 
 import (
     `)
-//line templates/golang/resource-def.qtpl:77
+//line templates/golang/resource-def.qtpl:78
 	for _, imp := range getImportsForResourceDef(resource) {
-//line templates/golang/resource-def.qtpl:77
+//line templates/golang/resource-def.qtpl:78
 		qw422016.N().S(`    "`)
-//line templates/golang/resource-def.qtpl:78
+//line templates/golang/resource-def.qtpl:79
 		qw422016.E().S(imp)
-//line templates/golang/resource-def.qtpl:78
+//line templates/golang/resource-def.qtpl:79
 		qw422016.N().S(`"
     `)
-//line templates/golang/resource-def.qtpl:79
+//line templates/golang/resource-def.qtpl:80
 	}
-//line templates/golang/resource-def.qtpl:79
+//line templates/golang/resource-def.qtpl:80
 	qw422016.N().S(`)
 
 var `)
-//line templates/golang/resource-def.qtpl:82
+//line templates/golang/resource-def.qtpl:83
 	StreamGoName(qw422016, resource.Name)
-//line templates/golang/resource-def.qtpl:82
+//line templates/golang/resource-def.qtpl:83
 	qw422016.N().S(`Resource = &model.Resource{
 	Name:      "`)
-//line templates/golang/resource-def.qtpl:83
+//line templates/golang/resource-def.qtpl:84
 	qw422016.E().S(resource.Name)
-//line templates/golang/resource-def.qtpl:83
+//line templates/golang/resource-def.qtpl:84
 	qw422016.N().S(`",
 	Namespace: "`)
-//line templates/golang/resource-def.qtpl:84
+//line templates/golang/resource-def.qtpl:85
 	qw422016.E().S(resource.Namespace)
-//line templates/golang/resource-def.qtpl:84
+//line templates/golang/resource-def.qtpl:85
 	qw422016.N().S(`",
 `)
-//line templates/golang/resource-def.qtpl:85
-	if resource.Title != nil {
-//line templates/golang/resource-def.qtpl:85
-		qw422016.N().S(`Title: util.Pointer("`)
-//line templates/golang/resource-def.qtpl:85
-		qw422016.E().S(*resource.Title)
-//line templates/golang/resource-def.qtpl:85
-		qw422016.N().S(`"),
-    `)
 //line templates/golang/resource-def.qtpl:86
-	}
-//line templates/golang/resource-def.qtpl:87
-	if resource.Description != nil {
-//line templates/golang/resource-def.qtpl:87
-		qw422016.N().S(`Description: util.Pointer("`)
-//line templates/golang/resource-def.qtpl:87
-		qw422016.E().S(*resource.Description)
-//line templates/golang/resource-def.qtpl:87
+	if resource.Title != nil {
+//line templates/golang/resource-def.qtpl:86
+		qw422016.N().S(`Title: util.Pointer("`)
+//line templates/golang/resource-def.qtpl:86
+		qw422016.E().S(*resource.Title)
+//line templates/golang/resource-def.qtpl:86
 		qw422016.N().S(`"),
     `)
-//line templates/golang/resource-def.qtpl:88
+//line templates/golang/resource-def.qtpl:87
 	}
+//line templates/golang/resource-def.qtpl:88
+	if resource.Description != nil {
+//line templates/golang/resource-def.qtpl:88
+		qw422016.N().S(`Description: util.Pointer("`)
+//line templates/golang/resource-def.qtpl:88
+		qw422016.E().S(*resource.Description)
+//line templates/golang/resource-def.qtpl:88
+		qw422016.N().S(`"),
+    `)
 //line templates/golang/resource-def.qtpl:89
+	}
+//line templates/golang/resource-def.qtpl:90
 	if len(resource.Types) > 0 {
-//line templates/golang/resource-def.qtpl:89
+//line templates/golang/resource-def.qtpl:90
 		qw422016.N().S(`	Types: []*model.ResourceSubType{
 `)
-//line templates/golang/resource-def.qtpl:91
+//line templates/golang/resource-def.qtpl:92
 		for _, typ := range resource.Types {
-//line templates/golang/resource-def.qtpl:91
+//line templates/golang/resource-def.qtpl:92
 			qw422016.N().S(`		{
 		    Name: "`)
-//line templates/golang/resource-def.qtpl:93
+//line templates/golang/resource-def.qtpl:94
 			qw422016.E().S(typ.Name)
-//line templates/golang/resource-def.qtpl:93
+//line templates/golang/resource-def.qtpl:94
 			qw422016.N().S(`",
 `)
-//line templates/golang/resource-def.qtpl:94
-			if typ.Title != "" {
-//line templates/golang/resource-def.qtpl:94
-				qw422016.N().S(`Title: "`)
-//line templates/golang/resource-def.qtpl:94
-				qw422016.E().S(typ.Title)
-//line templates/golang/resource-def.qtpl:94
-				qw422016.N().S(`",
-		    `)
 //line templates/golang/resource-def.qtpl:95
-			}
-//line templates/golang/resource-def.qtpl:96
-			if typ.Description != "" {
-//line templates/golang/resource-def.qtpl:96
-				qw422016.N().S(`Description: "`)
-//line templates/golang/resource-def.qtpl:96
-				qw422016.E().S(typ.Description)
-//line templates/golang/resource-def.qtpl:96
+			if typ.Title != "" {
+//line templates/golang/resource-def.qtpl:95
+				qw422016.N().S(`Title: "`)
+//line templates/golang/resource-def.qtpl:95
+				qw422016.E().S(typ.Title)
+//line templates/golang/resource-def.qtpl:95
 				qw422016.N().S(`",
 		    `)
-//line templates/golang/resource-def.qtpl:97
+//line templates/golang/resource-def.qtpl:96
 			}
 //line templates/golang/resource-def.qtpl:97
-			qw422016.N().S(`		    Properties: map[string]*model.ResourceProperty{
+			if typ.Description != "" {
+//line templates/golang/resource-def.qtpl:97
+				qw422016.N().S(`Description: "`)
+//line templates/golang/resource-def.qtpl:97
+				qw422016.E().S(typ.Description)
+//line templates/golang/resource-def.qtpl:97
+				qw422016.N().S(`",
+		    `)
+//line templates/golang/resource-def.qtpl:98
+			}
+//line templates/golang/resource-def.qtpl:98
+			qw422016.N().S(`		    Properties: []*model.ResourceProperty{
 `)
-//line templates/golang/resource-def.qtpl:99
-			for propertyName, property := range typ.Properties {
-//line templates/golang/resource-def.qtpl:99
-				qw422016.N().S(`		        "`)
 //line templates/golang/resource-def.qtpl:100
-				qw422016.E().S(propertyName)
+			for _, property := range typ.Properties {
 //line templates/golang/resource-def.qtpl:100
-				qw422016.N().S(`": `)
-//line templates/golang/resource-def.qtpl:100
+				qw422016.N().S(`		        `)
+//line templates/golang/resource-def.qtpl:101
 				StreamGeneratePropertyDef(qw422016, resource, property)
-//line templates/golang/resource-def.qtpl:100
+//line templates/golang/resource-def.qtpl:101
 				qw422016.N().S(`,
 `)
-//line templates/golang/resource-def.qtpl:101
+//line templates/golang/resource-def.qtpl:102
 			}
-//line templates/golang/resource-def.qtpl:101
+//line templates/golang/resource-def.qtpl:102
 			qw422016.N().S(`		    },
 `)
-//line templates/golang/resource-def.qtpl:103
+//line templates/golang/resource-def.qtpl:104
 			StreamGenerateAnnotationsDef(qw422016, resource.Annotations)
-//line templates/golang/resource-def.qtpl:103
+//line templates/golang/resource-def.qtpl:104
 			qw422016.N().S(`		},
 `)
-//line templates/golang/resource-def.qtpl:105
+//line templates/golang/resource-def.qtpl:106
 		}
-//line templates/golang/resource-def.qtpl:105
+//line templates/golang/resource-def.qtpl:106
 		qw422016.N().S(`	},
 `)
-//line templates/golang/resource-def.qtpl:107
+//line templates/golang/resource-def.qtpl:108
 	}
-//line templates/golang/resource-def.qtpl:107
-	qw422016.N().S(`	Properties: map[string]*model.ResourceProperty{
+//line templates/golang/resource-def.qtpl:108
+	qw422016.N().S(`	Properties: []*model.ResourceProperty{
 `)
-//line templates/golang/resource-def.qtpl:109
-	for propertyName, property := range resource.Properties {
-//line templates/golang/resource-def.qtpl:109
-		qw422016.N().S(`		"`)
 //line templates/golang/resource-def.qtpl:110
-		qw422016.E().S(propertyName)
+	for _, property := range resource.Properties {
 //line templates/golang/resource-def.qtpl:110
-		qw422016.N().S(`": `)
-//line templates/golang/resource-def.qtpl:110
+		qw422016.N().S(`		`)
+//line templates/golang/resource-def.qtpl:111
 		StreamGeneratePropertyDef(qw422016, resource, property)
-//line templates/golang/resource-def.qtpl:110
+//line templates/golang/resource-def.qtpl:111
 		qw422016.N().S(`,
 `)
-//line templates/golang/resource-def.qtpl:111
+//line templates/golang/resource-def.qtpl:112
 	}
-//line templates/golang/resource-def.qtpl:111
+//line templates/golang/resource-def.qtpl:112
 	qw422016.N().S(`	},
 `)
-//line templates/golang/resource-def.qtpl:113
+//line templates/golang/resource-def.qtpl:114
 	if len(resource.Indexes) > 0 {
-//line templates/golang/resource-def.qtpl:113
+//line templates/golang/resource-def.qtpl:114
 		qw422016.N().S(`	Indexes: []*model.ResourceIndex{
 `)
-//line templates/golang/resource-def.qtpl:115
+//line templates/golang/resource-def.qtpl:116
 		for _, index := range resource.Indexes {
-//line templates/golang/resource-def.qtpl:115
+//line templates/golang/resource-def.qtpl:116
 			qw422016.N().S(`        {
             Properties: []*model.ResourceIndexProperty{
 `)
-//line templates/golang/resource-def.qtpl:118
+//line templates/golang/resource-def.qtpl:119
 			for _, property := range index.Properties {
-//line templates/golang/resource-def.qtpl:118
+//line templates/golang/resource-def.qtpl:119
 				qw422016.N().S(`                {
                     Name: "`)
-//line templates/golang/resource-def.qtpl:120
+//line templates/golang/resource-def.qtpl:121
 				qw422016.E().S(property.Name)
-//line templates/golang/resource-def.qtpl:120
+//line templates/golang/resource-def.qtpl:121
 				qw422016.N().S(`",
                     Order: model.Order_`)
-//line templates/golang/resource-def.qtpl:121
+//line templates/golang/resource-def.qtpl:122
 				qw422016.E().S(property.Order.String())
-//line templates/golang/resource-def.qtpl:121
+//line templates/golang/resource-def.qtpl:122
 				qw422016.N().S(`,
                 },
 `)
-//line templates/golang/resource-def.qtpl:123
+//line templates/golang/resource-def.qtpl:124
 			}
-//line templates/golang/resource-def.qtpl:123
+//line templates/golang/resource-def.qtpl:124
 			qw422016.N().S(`            },
             IndexType: model.ResourceIndexType_`)
-//line templates/golang/resource-def.qtpl:125
+//line templates/golang/resource-def.qtpl:126
 			qw422016.E().S(index.IndexType.String())
-//line templates/golang/resource-def.qtpl:125
+//line templates/golang/resource-def.qtpl:126
 			qw422016.N().S(`,
 `)
-//line templates/golang/resource-def.qtpl:126
+//line templates/golang/resource-def.qtpl:127
 			if index.Unique {
-//line templates/golang/resource-def.qtpl:126
+//line templates/golang/resource-def.qtpl:127
 				qw422016.N().S(`Unique: true,
             `)
-//line templates/golang/resource-def.qtpl:127
+//line templates/golang/resource-def.qtpl:128
 			}
-//line templates/golang/resource-def.qtpl:127
+//line templates/golang/resource-def.qtpl:128
 			qw422016.N().S(`            `)
-//line templates/golang/resource-def.qtpl:128
+//line templates/golang/resource-def.qtpl:129
 			StreamGenerateAnnotationsDef(qw422016, index.Annotations)
-//line templates/golang/resource-def.qtpl:128
+//line templates/golang/resource-def.qtpl:129
 			qw422016.N().S(`
         },
 `)
-//line templates/golang/resource-def.qtpl:130
+//line templates/golang/resource-def.qtpl:131
 		}
-//line templates/golang/resource-def.qtpl:130
+//line templates/golang/resource-def.qtpl:131
 		qw422016.N().S(`    },
 `)
-//line templates/golang/resource-def.qtpl:132
+//line templates/golang/resource-def.qtpl:133
 	}
-//line templates/golang/resource-def.qtpl:133
+//line templates/golang/resource-def.qtpl:134
 	if resource.Virtual {
-//line templates/golang/resource-def.qtpl:133
+//line templates/golang/resource-def.qtpl:134
 		qw422016.N().S(`Virtual: true,
     `)
-//line templates/golang/resource-def.qtpl:134
+//line templates/golang/resource-def.qtpl:135
 	}
-//line templates/golang/resource-def.qtpl:135
+//line templates/golang/resource-def.qtpl:136
 	if resource.Immutable {
-//line templates/golang/resource-def.qtpl:135
+//line templates/golang/resource-def.qtpl:136
 		qw422016.N().S(`Immutable: true,
     `)
-//line templates/golang/resource-def.qtpl:136
+//line templates/golang/resource-def.qtpl:137
 	}
-//line templates/golang/resource-def.qtpl:137
+//line templates/golang/resource-def.qtpl:138
 	if resource.Abstract {
-//line templates/golang/resource-def.qtpl:137
+//line templates/golang/resource-def.qtpl:138
 		qw422016.N().S(`Abstract: true,
     `)
-//line templates/golang/resource-def.qtpl:138
+//line templates/golang/resource-def.qtpl:139
 	}
-//line templates/golang/resource-def.qtpl:139
+//line templates/golang/resource-def.qtpl:140
 	if resource.CheckReferences {
-//line templates/golang/resource-def.qtpl:139
+//line templates/golang/resource-def.qtpl:140
 		qw422016.N().S(`CheckReferences: true,
     `)
-//line templates/golang/resource-def.qtpl:140
+//line templates/golang/resource-def.qtpl:141
 	}
-//line templates/golang/resource-def.qtpl:141
+//line templates/golang/resource-def.qtpl:142
 	StreamGenerateAnnotationsDef(qw422016, resource.Annotations)
-//line templates/golang/resource-def.qtpl:141
+//line templates/golang/resource-def.qtpl:142
 	qw422016.N().S(`}
 `)
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 }
 
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 func WriteGenerateResourceDefCode(qq422016 qtio422016.Writer, pkg string, resource *model.Resource) {
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 	StreamGenerateResourceDefCode(qw422016, pkg, resource)
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 	qt422016.ReleaseWriter(qw422016)
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 }
 
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 func GenerateResourceDefCode(pkg string, resource *model.Resource) string {
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 	qb422016 := qt422016.AcquireByteBuffer()
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 	WriteGenerateResourceDefCode(qb422016, pkg, resource)
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 	qs422016 := string(qb422016.B)
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 	qt422016.ReleaseByteBuffer(qb422016)
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 	return qs422016
-//line templates/golang/resource-def.qtpl:143
+//line templates/golang/resource-def.qtpl:144
 }

@@ -14,20 +14,23 @@ var AuditLogResource = &model.Resource{
 		Entity:     "audit_log",
 	},
 	Immutable: true,
-	Properties: map[string]*model.ResourceProperty{
-		"id":      special.IdProperty,
-		"version": special.VersionProperty,
-		"namespace": {
+	Properties: []*model.ResourceProperty{
+		special.IdProperty,
+		special.VersionProperty,
+		{
+			Name:     "namespace",
 			Length:   256,
 			Type:     model.ResourceProperty_STRING,
 			Required: true,
 		},
-		"resource": {
+		{
+			Name:     "resource",
 			Length:   256,
 			Type:     model.ResourceProperty_STRING,
 			Required: true,
 		},
-		"recordId": {
+		{
+			Name:     "recordId",
 			Length:   256,
 			Type:     model.ResourceProperty_STRING,
 			Required: true,
@@ -35,15 +38,18 @@ var AuditLogResource = &model.Resource{
 				annotations.SourceDef: "record_id",
 			},
 		},
-		"time": {
+		{
+			Name:     "time",
 			Type:     model.ResourceProperty_TIMESTAMP,
 			Required: true,
 		},
-		"username": {
+		{
+			Name:     "username",
 			Type:     model.ResourceProperty_STRING,
 			Required: true,
 		},
-		"operation": {
+		{
+			Name:     "operation",
 			Type:     model.ResourceProperty_ENUM,
 			Required: true,
 			EnumValues: []string{
@@ -52,11 +58,12 @@ var AuditLogResource = &model.Resource{
 				"DELETE",
 			},
 		},
-		"properties": {
+		{
+			Name:     "properties",
 			Type:     model.ResourceProperty_OBJECT,
 			Required: false,
 		},
-		"annotations": special.AnnotationsProperty,
+		special.AnnotationsProperty,
 	},
 	Annotations: map[string]string{
 		annotations.OpenApiGroup:     OpenApiInternal,

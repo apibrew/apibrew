@@ -33,8 +33,8 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 	for _, record := range records {
 		var row []string
 
-		for propertyName, property := range resource.Properties {
-			packedVal, exists := record.Properties[propertyName]
+		for _, property := range resource.Properties {
+			packedVal, exists := record.Properties[property.Name]
 
 			if helper.IsPropertyOmitted(property) {
 				continue
@@ -104,11 +104,11 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 		return "", errors.LogicalError.WithDetails(err.Error())
 	}
 
+	namedProps := util.GetNamedMap(referencedResource.Properties)
 	if util.HasResourceSinglePrimaryProp(referencedResource) {
-		idPropName := util.GetResourceSinglePrimaryProp(referencedResource)
-		idProp := referencedResource.Properties[idPropName]
+		idProp := util.GetResourceSinglePrimaryProp(referencedResource)
 
-		if val, ok := identifierProps[idPropName]; ok {
+		if val, ok := identifierProps[idProp.Name]; ok {
 			typ := types.ByResourcePropertyType(idProp.Type)
 			unpacked, err := typ.UnPack(val)
 			if err != nil {
@@ -121,7 +121,7 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 
 	var where []string
 	for k, v := range identifierProps {
-		typ := types.ByResourcePropertyType(referencedResource.Properties[k].Type)
+		typ := types.ByResourcePropertyType(namedProps[k].Type)
 
 		if typ == types.ReferenceType { // skip reference checking for now, it is not implemented yet
 			continue
@@ -147,18 +147,18 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 
 func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record *model.Record, argPlaceHolder func(value interface{}) string) (string, errors.ServiceError) {
 	identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
+	namedProps := util.GetNamedMap(resource.Properties)
 	if util.HasResourceSinglePrimaryProp(resource) {
-		idPropName := util.GetResourceSinglePrimaryProp(resource)
-		idProp := resource.Properties[idPropName]
+		idProp := util.GetResourceSinglePrimaryProp(resource)
 
-		if val, ok := identifierProps[idPropName]; ok {
+		if val, ok := identifierProps[idProp.Name]; ok {
 			typ := types.ByResourcePropertyType(idProp.Type)
 			unpacked, err := typ.UnPack(val)
 			if err != nil {
 				return "", errors.LogicalError.WithDetails(err.Error())
 			}
 
-			return fmt.Sprintf("%s=%s", idPropName, argPlaceHolder(unpacked)), nil
+			return fmt.Sprintf("%s=%s", idProp.Name, argPlaceHolder(unpacked)), nil
 		}
 	}
 
@@ -168,7 +168,7 @@ func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record *
 
 	var where []string
 	for k, v := range identifierProps {
-		typ := types.ByResourcePropertyType(resource.Properties[k].Type)
+		typ := types.ByResourcePropertyType(namedProps[k].Type)
 
 		if typ == types.ReferenceType { // skip reference checking for now, it is not implemented yet
 			continue
@@ -209,12 +209,12 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 	}
 	updateBuilder.Where(sqlPart)
 
-	for propertyName, property := range resource.Properties {
+	for _, property := range resource.Properties {
 		if helper.IsPropertyOmitted(property) {
 			continue
 		}
 
-		packedVal, exists := record.Properties[propertyName]
+		packedVal, exists := record.Properties[property.Name]
 
 		if !exists {
 			continue
@@ -224,7 +224,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			continue
 		}
 
-		if propertyName == "version" && annotations.IsEnabled(property, annotations.SpecialProperty) && !annotations.IsEnabled(resource, annotations.DisableVersion) {
+		if property.Name == "version" && annotations.IsEnabled(property, annotations.SpecialProperty) && !annotations.IsEnabled(resource, annotations.DisableVersion) {
 			updateBuilder.SetMore("version = version + 1")
 			continue
 		}
@@ -246,9 +246,9 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			if err != nil {
 				return err
 			}
-			updateBuilder.SetMore(fmt.Sprintf("%s=%s", p.options.Quote(propertyName), item))
+			updateBuilder.SetMore(fmt.Sprintf("%s=%s", p.options.Quote(property.Name), item))
 		} else {
-			updateBuilder.SetMore(updateBuilder.Equal(p.options.Quote(propertyName), val))
+			updateBuilder.SetMore(updateBuilder.Equal(p.options.Quote(property.Name), val))
 		}
 	}
 
@@ -304,9 +304,9 @@ func (p *sqlBackend) deleteRecords(ctx context.Context, runner helper.QueryRunne
 	deleteBuilder.SetFlavor(p.options.GetFlavor())
 
 	var primaryFound = false
-	for propName, prop := range resource.Properties {
+	for _, prop := range resource.Properties {
 		if annotations.IsEnabled(prop, annotations.PrimaryProperty) {
-			deleteBuilder.Where(deleteBuilder.In(propName, util.ArrayMapToInterface(ids)...))
+			deleteBuilder.Where(deleteBuilder.In(prop.Name, util.ArrayMapToInterface(ids)...))
 			primaryFound = true
 			break
 		}

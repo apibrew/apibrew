@@ -10,7 +10,7 @@ import (
 func apbrApply(inputFilePath string) error {
 	dhClient := setup.GetTestDhClient()
 
-	exec := executor2.NewExecutor(executor2.APPLY, dhClient, true, false, false, flags.OverrideConfig{})
+	exec := executor2.NewExecutor(executor2.APPLY, dhClient, true, false, false, "", flags.OverrideConfig{})
 	return exec.Apply(setup.Ctx, inputFilePath, "yaml")
 }
 

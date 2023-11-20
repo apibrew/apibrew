@@ -49,6 +49,30 @@ func (m *DataSourceMapper) FromRecord(record *model.Record) *DataSource {
 func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
+	var_Id := dataSource.Id
+
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
+
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
+		}
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := dataSource.Version
+
+	var var_Version_mapped *structpb.Value
+
+	var var_Version_err error
+	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
+	if var_Version_err != nil {
+		panic(var_Version_err)
+	}
+	properties["version"] = var_Version_mapped
+
 	var_AuditData := dataSource.AuditData
 
 	if var_AuditData != nil {
@@ -112,30 +136,6 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]*stru
 	}
 	var_Options_mapped = structpb.NewStructValue(var_Options_st)
 	properties["options"] = var_Options_mapped
-
-	var_Id := dataSource.Id
-
-	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
-
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Version := dataSource.Version
-
-	var var_Version_mapped *structpb.Value
-
-	var var_Version_err error
-	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
-	if var_Version_err != nil {
-		panic(var_Version_err)
-	}
-	properties["version"] = var_Version_mapped
 	return properties
 }
 

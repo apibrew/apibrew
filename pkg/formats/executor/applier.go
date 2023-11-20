@@ -29,13 +29,10 @@ type Executor struct {
 	force          bool
 	overrideConfig flags.OverrideConfig
 	mode           Mode
+	Type           string
 }
 
 func (a *Executor) Apply(ctx context.Context, inputFilePath string, format string) error {
-	return a.ApplyWithType(ctx, inputFilePath, format, "")
-}
-
-func (a *Executor) ApplyWithType(ctx context.Context, inputFilePath string, format string, givenType string) error {
 	reader := reader.Reader{}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -44,7 +41,6 @@ func (a *Executor) ApplyWithType(ctx context.Context, inputFilePath string, form
 
 	unstructuredExecutor := &ops.Executor{
 		Client: a.client,
-		Type:   givenType,
 		RecordHandler: func(namespace string, resource string, record *model.Record) error {
 			if a.mode == APPLY {
 				appliedRecord, err := a.client.ApplyRecord(ctx, namespace, resource, record)
@@ -97,6 +93,8 @@ func (a *Executor) ApplyWithType(ctx context.Context, inputFilePath string, form
 		},
 	}
 
+	unstructuredExecutor.Type = a.Type
+
 	err := unstructuredExecutor.Init(ctx)
 
 	if err != nil {
@@ -136,7 +134,7 @@ func (a *Executor) ApplyWithPattern(ctx context.Context, inputFilePath string, f
 	return nil
 }
 
-func NewExecutor(mode Mode, dhClient client.Client, doMigration bool, dataOnly bool, force bool, overrideConfig flags.OverrideConfig) *Executor {
+func NewExecutor(mode Mode, dhClient client.Client, doMigration bool, dataOnly bool, force bool, typ string, overrideConfig flags.OverrideConfig) *Executor {
 	return &Executor{
 		client:         dhClient,
 		doMigration:    doMigration,
@@ -144,5 +142,6 @@ func NewExecutor(mode Mode, dhClient client.Client, doMigration bool, dataOnly b
 		force:          force,
 		overrideConfig: overrideConfig,
 		mode:           mode,
+		Type:           typ,
 	}
 }

@@ -93,8 +93,8 @@ var generatorCmd = &cobra.Command{
 			}
 
 			if resourceAction.Output != nil {
-				res.Properties = []resource_model.Property{
-					*resourceAction.Output,
+				res.Properties = map[string]resource_model.Property{
+					"output": *resourceAction.Output,
 				}
 			}
 

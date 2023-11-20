@@ -4,6 +4,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
+	"strings"
 )
 
 func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.Resource) *model.Record {
@@ -72,7 +73,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	}
 }
 
-func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
+func ResourcePropertyFromRecord(propertyName string, record *model.Record) *model.ResourceProperty {
 	if record == nil {
 		return nil
 	}
@@ -100,7 +101,8 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	var resourceProperty = &model.ResourceProperty{
-		Type:          model.ResourceProperty_Type(model.ResourceProperty_Type_value[record.Properties["type"].GetStringValue()]),
+		Name:          propertyName,
+		Type:          model.ResourceProperty_Type(model.ResourceProperty_Type_value[strings.ToUpper(record.Properties["type"].GetStringValue())]),
 		Required:      record.Properties["required"].GetBoolValue(),
 		Length:        uint32(record.Properties["length"].GetNumberValue()),
 		Unique:        record.Properties["unique"].GetBoolValue(),
@@ -125,7 +127,7 @@ func ResourcePropertyFromRecord(record *model.Record) *model.ResourceProperty {
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_LIST || resourceProperty.Type == model.ResourceProperty_MAP {
-		resourceProperty.Item = ResourcePropertyFromRecord(&model.Record{
+		resourceProperty.Item = ResourcePropertyFromRecord("", &model.Record{
 			Properties: record.Properties["item"].GetStructValue().GetFields(),
 		})
 	}

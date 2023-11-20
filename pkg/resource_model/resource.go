@@ -10,70 +10,58 @@ import "github.com/google/uuid"
 import "time"
 
 type Resource struct {
-	Types           []SubType           `json:"types,omitempty"`
-	Description     *string             `json:"description,omitempty"`
+	Id              *uuid.UUID          `json:"id,omitempty"`
+	Version         int32               `json:"version,omitempty"`
+	AuditData       *ResourceAuditData  `json:"auditData,omitempty"`
 	Name            string              `json:"name,omitempty"`
+	Namespace       *Namespace          `json:"namespace,omitempty"`
+	Virtual         bool                `json:"virtual,omitempty"`
 	Properties      map[string]Property `json:"properties,omitempty"`
+	Indexes         []ResourceIndex     `json:"indexes,omitempty"`
+	Types           []SubType           `json:"types,omitempty"`
 	Immutable       bool                `json:"immutable,omitempty"`
+	Abstract        bool                `json:"abstract,omitempty"`
+	CheckReferences bool                `json:"checkReferences,omitempty"`
+	DataSource      *DataSource         `json:"dataSource,omitempty"`
 	Entity          *string             `json:"entity,omitempty"`
 	Catalog         *string             `json:"catalog,omitempty"`
 	Title           *string             `json:"title,omitempty"`
-	Id              *uuid.UUID          `json:"id,omitempty"`
-	AuditData       *ResourceAuditData  `json:"auditData,omitempty"`
-	Virtual         bool                `json:"virtual,omitempty"`
-	Abstract        bool                `json:"abstract,omitempty"`
+	Description     *string             `json:"description,omitempty"`
 	Annotations     map[string]string   `json:"annotations,omitempty"`
-	Version         int32               `json:"version,omitempty"`
-	Namespace       *Namespace          `json:"namespace,omitempty"`
-	Indexes         []ResourceIndex     `json:"indexes,omitempty"`
-	CheckReferences bool                `json:"checkReferences,omitempty"`
-	DataSource      *DataSource         `json:"dataSource,omitempty"`
 }
 
-func (s *Resource) GetTitle() *string {
-	return s.Title
-}
-func (s *Resource) GetDescription() *string {
-	return s.Description
-}
-func (s *Resource) GetName() string {
-	return s.Name
-}
-func (s *Resource) GetProperties() map[string]Property {
-	return s.Properties
-}
-func (s *Resource) GetImmutable() bool {
-	return s.Immutable
-}
-func (s *Resource) GetEntity() *string {
-	return s.Entity
-}
-func (s *Resource) GetCatalog() *string {
-	return s.Catalog
-}
 func (s *Resource) GetId() *uuid.UUID {
 	return s.Id
-}
-func (s *Resource) GetAuditData() *ResourceAuditData {
-	return s.AuditData
-}
-func (s *Resource) GetVirtual() bool {
-	return s.Virtual
-}
-func (s *Resource) GetAbstract() bool {
-	return s.Abstract
-}
-func (s *Resource) GetAnnotations() map[string]string {
-	return s.Annotations
 }
 func (s *Resource) GetVersion() int32 {
 	return s.Version
 }
+func (s *Resource) GetAuditData() *ResourceAuditData {
+	return s.AuditData
+}
+func (s *Resource) GetName() string {
+	return s.Name
+}
 func (s *Resource) GetNamespace() *Namespace {
 	return s.Namespace
 }
+func (s *Resource) GetVirtual() bool {
+	return s.Virtual
+}
+func (s *Resource) GetProperties() map[string]Property {
+	return s.Properties
+}
 func (s *Resource) GetIndexes() []ResourceIndex {
 	return s.Indexes
+}
+func (s *Resource) GetTypes() []SubType {
+	return s.Types
+}
+func (s *Resource) GetImmutable() bool {
+	return s.Immutable
+}
+func (s *Resource) GetAbstract() bool {
+	return s.Abstract
 }
 func (s *Resource) GetCheckReferences() bool {
 	return s.CheckReferences
@@ -81,66 +69,54 @@ func (s *Resource) GetCheckReferences() bool {
 func (s *Resource) GetDataSource() *DataSource {
 	return s.DataSource
 }
-func (s *Resource) GetTypes() []SubType {
-	return s.Types
+func (s *Resource) GetEntity() *string {
+	return s.Entity
+}
+func (s *Resource) GetCatalog() *string {
+	return s.Catalog
+}
+func (s *Resource) GetTitle() *string {
+	return s.Title
+}
+func (s *Resource) GetDescription() *string {
+	return s.Description
+}
+func (s *Resource) GetAnnotations() map[string]string {
+	return s.Annotations
 }
 
 type Property struct {
+	Type         ResourceType      `json:"type,omitempty"`
+	TypeRef      *string           `json:"typeRef,omitempty"`
+	Primary      bool              `json:"primary,omitempty"`
+	Required     bool              `json:"required,omitempty"`
+	Unique       bool              `json:"unique,omitempty"`
 	Immutable    bool              `json:"immutable,omitempty"`
 	Length       int32             `json:"length,omitempty"`
-	Description  *string           `json:"description,omitempty"`
-	Type         ResourceType      `json:"type,omitempty"`
 	Item         *Property         `json:"item,omitempty"`
 	Reference    *Reference        `json:"reference,omitempty"`
 	DefaultValue interface{}       `json:"defaultValue,omitempty"`
-	Annotations  map[string]string `json:"annotations,omitempty"`
-	Primary      bool              `json:"primary,omitempty"`
-	ExampleValue interface{}       `json:"exampleValue,omitempty"`
-	TypeRef      *string           `json:"typeRef,omitempty"`
-	Required     bool              `json:"required,omitempty"`
-	Unique       bool              `json:"unique,omitempty"`
 	EnumValues   []string          `json:"enumValues,omitempty"`
+	ExampleValue interface{}       `json:"exampleValue,omitempty"`
 	Title        *string           `json:"title,omitempty"`
+	Description  *string           `json:"description,omitempty"`
+	Annotations  map[string]string `json:"annotations,omitempty"`
 }
 
-func (s *Property) GetReference() *Reference {
-	return s.Reference
-}
-func (s *Property) GetDefaultValue() interface{} {
-	return s.DefaultValue
-}
-func (s *Property) GetAnnotations() map[string]string {
-	return s.Annotations
-}
 func (s *Property) GetType() ResourceType {
 	return s.Type
-}
-func (s *Property) GetItem() *Property {
-	return s.Item
-}
-func (s *Property) GetPrimary() bool {
-	return s.Primary
-}
-func (s *Property) GetExampleValue() interface{} {
-	return s.ExampleValue
-}
-func (s *Property) GetUnique() bool {
-	return s.Unique
-}
-func (s *Property) GetEnumValues() []string {
-	return s.EnumValues
-}
-func (s *Property) GetTitle() *string {
-	return s.Title
 }
 func (s *Property) GetTypeRef() *string {
 	return s.TypeRef
 }
+func (s *Property) GetPrimary() bool {
+	return s.Primary
+}
 func (s *Property) GetRequired() bool {
 	return s.Required
 }
-func (s *Property) GetDescription() *string {
-	return s.Description
+func (s *Property) GetUnique() bool {
+	return s.Unique
 }
 func (s *Property) GetImmutable() bool {
 	return s.Immutable
@@ -148,25 +124,49 @@ func (s *Property) GetImmutable() bool {
 func (s *Property) GetLength() int32 {
 	return s.Length
 }
+func (s *Property) GetItem() *Property {
+	return s.Item
+}
+func (s *Property) GetReference() *Reference {
+	return s.Reference
+}
+func (s *Property) GetDefaultValue() interface{} {
+	return s.DefaultValue
+}
+func (s *Property) GetEnumValues() []string {
+	return s.EnumValues
+}
+func (s *Property) GetExampleValue() interface{} {
+	return s.ExampleValue
+}
+func (s *Property) GetTitle() *string {
+	return s.Title
+}
+func (s *Property) GetDescription() *string {
+	return s.Description
+}
+func (s *Property) GetAnnotations() map[string]string {
+	return s.Annotations
+}
 
 type SubType struct {
+	Name        string              `json:"name,omitempty"`
 	Title       *string             `json:"title,omitempty"`
 	Description *string             `json:"description,omitempty"`
 	Properties  map[string]Property `json:"properties,omitempty"`
-	Name        string              `json:"name,omitempty"`
 }
 
-func (s *SubType) GetDescription() *string {
-	return s.Description
-}
-func (s *SubType) GetProperties() map[string]Property {
-	return s.Properties
-}
 func (s *SubType) GetName() string {
 	return s.Name
 }
 func (s *SubType) GetTitle() *string {
 	return s.Title
+}
+func (s *SubType) GetDescription() *string {
+	return s.Description
+}
+func (s *SubType) GetProperties() map[string]Property {
+	return s.Properties
 }
 
 type ResourceAuditData struct {
@@ -176,6 +176,9 @@ type ResourceAuditData struct {
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
+func (s *ResourceAuditData) GetCreatedBy() *string {
+	return s.CreatedBy
+}
 func (s *ResourceAuditData) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
@@ -185,13 +188,10 @@ func (s *ResourceAuditData) GetCreatedOn() *time.Time {
 func (s *ResourceAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
-func (s *ResourceAuditData) GetCreatedBy() *string {
-	return s.CreatedBy
-}
 
 type ResourceIndexProperty struct {
-	Order *ResourceOrder `json:"order,omitempty"`
 	Name  string         `json:"name,omitempty"`
+	Order *ResourceOrder `json:"order,omitempty"`
 }
 
 func (s *ResourceIndexProperty) GetName() string {

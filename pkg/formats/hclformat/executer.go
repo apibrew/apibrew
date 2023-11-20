@@ -224,7 +224,7 @@ func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource
 			return nil, err
 		}
 
-		record.Properties[propName] = propVal
+		record.Properties[prop.Name] = propVal
 	}
 
 	for _, blockItem := range bodyContent.Blocks {
@@ -242,7 +242,7 @@ func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource
 			return nil, err
 		}
 
-		record.Properties[propName] = propVal
+		record.Properties[prop.Name] = propVal
 	}
 
 	if parseLabels && len(block.Labels) > 0 {

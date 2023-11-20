@@ -2,7 +2,7 @@ import {Code, Error as ApiBrewError} from "./model/extension";
 
 export class ApiException extends Error {
     constructor(public code: Code = Code.INTERNAL_ERROR, message?: string) {
-        super(code);
+        super(message);
     }
 
     public static fromApiBrewError(error: ApiBrewError): ApiException {

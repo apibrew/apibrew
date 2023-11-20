@@ -85,8 +85,8 @@ func TestComplexPayload1Success(t *testing.T) {
 
 	for _, property := range setup.RichResource1.Properties {
 		propertyType := types.ByResourcePropertyType(property.Type)
-		val1, _ := propertyType.UnPack(record1.Properties[propertyName])
-		val2, _ := propertyType.UnPack(getRes.Record.Properties[propertyName])
+		val1, _ := propertyType.UnPack(record1.Properties[property.Name])
+		val2, _ := propertyType.UnPack(getRes.Record.Properties[property.Name])
 
 		if !propertyType.Equals(val1, val2) {
 			t.Errorf("created and get records has different values: %v <=> %v", val1, val2)

@@ -24,6 +24,24 @@ func ArrayMap[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
 	return list
 }
 
+type MapEntry[T interface{}] struct {
+	Key string
+	Val T
+}
+
+func MapToArray[T interface{}](arr map[string]T) []MapEntry[T] {
+	var list = make([]MapEntry[T], 0)
+
+	for key, item := range arr {
+		list = append(list, MapEntry[T]{
+			Key: key,
+			Val: item,
+		})
+	}
+
+	return list
+}
+
 func ArrayMapX[T interface{}, R interface{}](arr []*T, mapper func(*T) *R) []*R {
 	var list = make([]*R, 0)
 

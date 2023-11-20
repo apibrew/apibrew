@@ -2,6 +2,7 @@ package helper
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/structpb"
 	"time"
@@ -51,26 +52,42 @@ func (q QueryBuilder) In(property string, values []interface{}) *model.BooleanEx
 	}}
 }
 
-func (q QueryBuilder) Equal(propertyName string, value *structpb.Value) *model.BooleanExpression {
+func (q QueryBuilder) Equal(property *model.ResourceProperty, value *structpb.Value) *model.BooleanExpression {
+	var right *model.Expression
+
+	if property.Type == model.ResourceProperty_REFERENCE {
+		if value.GetStringValue() != "" {
+			right = &model.Expression{Expression: &model.Expression_Value{Value: value}}
+		} else {
+			right = &model.Expression{Expression: &model.Expression_Value{
+				Value: value,
+			}}
+		}
+	} else {
+		right = &model.Expression{Expression: &model.Expression_Value{Value: value}}
+	}
+
 	return &model.BooleanExpression{
 		Expression: &model.BooleanExpression_Equal{
 			Equal: &model.PairExpression{
 				Left: &model.Expression{
-					Expression: &model.Expression_Property{Property: propertyName},
+					Expression: &model.Expression_Property{Property: property.Name},
 				},
-				Right: &model.Expression{
-					Expression: &model.Expression_Value{Value: value},
-				},
+				Right: right,
 			},
 		},
 	}
 }
 
-func (q QueryBuilder) FromProperties(props map[string]*structpb.Value) *model.BooleanExpression {
+func (q QueryBuilder) FromProperties(resource *model.Resource, props map[string]*structpb.Value) *model.BooleanExpression {
 	var list []*model.BooleanExpression
 
-	for propName, value := range props {
-		list = append(list, q.Equal(propName, value))
+	var namedProps = util.GetNamedMap(resource.Properties)
+
+	for propKey, value := range props {
+		var prop = namedProps[propKey]
+
+		list = append(list, q.Equal(prop, value))
 	}
 
 	return q.And(list...)

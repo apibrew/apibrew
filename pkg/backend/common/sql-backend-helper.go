@@ -58,12 +58,12 @@ func (p *sqlBackend) getFullTableName(sourceConfig *model.ResourceSourceConfig) 
 func (p *sqlBackend) prepareResourceRecordCols(resource *model.Resource) []string {
 	var cols []string
 
-	for propertyName, property := range resource.Properties {
+	for _, property := range resource.Properties {
 		if helper.IsPropertyOmitted(property) {
 			continue
 		}
 
-		col := p.options.Quote(propertyName)
+		col := p.options.Quote(property.Name)
 		cols = append(cols, col)
 	}
 

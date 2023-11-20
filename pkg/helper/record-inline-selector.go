@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/types"
+	"github.com/apibrew/apibrew/pkg/util"
 )
 
 type RecordInlineSelector struct {
@@ -75,12 +76,14 @@ func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *mode
 }
 
 func (s RecordInlineSelector) resolve(resource *model.Resource, record *model.Record, than *resource_model.PairExpression) (unstructured.Any, unstructured.Any, *model.ResourceProperty, errors.ServiceError) {
+	namedProps := util.GetNamedMap(resource.Properties)
+
 	var left unstructured.Any
 	var right unstructured.Any
 	var prop *model.ResourceProperty
 
 	if than.Left.Property != nil {
-		prop = resource.Properties[*than.Left.Property]
+		prop = namedProps[*than.Left.Property]
 
 		if prop == nil {
 			return nil, nil, nil, errors.PropertyNotFoundError.WithDetails("Property not found: " + *than.Left.Property)
@@ -92,7 +95,7 @@ func (s RecordInlineSelector) resolve(resource *model.Resource, record *model.Re
 	}
 
 	if than.Right.Property != nil {
-		prop = resource.Properties[*than.Right.Property]
+		prop = namedProps[*than.Right.Property]
 
 		if prop == nil {
 			return nil, nil, nil, errors.PropertyNotFoundError.WithDetails("Property not found: " + *than.Left.Property)

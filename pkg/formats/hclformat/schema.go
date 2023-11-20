@@ -93,7 +93,7 @@ func prepareResourceRecordBlockHeaderSchema(resource *model.Resource) hcl.BlockH
 		hclLabel := annotations.IsEnabled(prop, annotations.IsHclLabel)
 
 		if hclLabel {
-			bhs.LabelNames = append(bhs.LabelNames, propName)
+			bhs.LabelNames = append(bhs.LabelNames, prop.Name)
 		}
 	}
 
@@ -119,7 +119,7 @@ func prepareResourceRecordSchema(resource *model.Resource, parseLabels bool) *hc
 			})
 		} else {
 			attributes = append(attributes, hcl.AttributeSchema{
-				Name:     util.ToSnakeCase(propName),
+				Name:     util.ToSnakeCase(prop.Name),
 				Required: prop.Required && !isSpecial,
 			})
 		}

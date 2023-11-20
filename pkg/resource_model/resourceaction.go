@@ -10,34 +10,25 @@ import "github.com/google/uuid"
 import "time"
 
 type ResourceAction struct {
-	Title       *string                  `json:"title,omitempty"`
-	Internal    bool                     `json:"internal,omitempty"`
-	Input       map[string]Property      `json:"input,omitempty"`
-	Output      *Property                `json:"output,omitempty"`
 	Id          *uuid.UUID               `json:"id,omitempty"`
+	Version     int32                    `json:"version,omitempty"`
 	AuditData   *ResourceActionAuditData `json:"auditData,omitempty"`
 	Resource    *Resource                `json:"resource,omitempty"`
 	Name        string                   `json:"name,omitempty"`
-	Version     int32                    `json:"version,omitempty"`
+	Title       *string                  `json:"title,omitempty"`
 	Description *string                  `json:"description,omitempty"`
+	Internal    bool                     `json:"internal,omitempty"`
 	Types       []SubType                `json:"types,omitempty"`
+	Input       map[string]Property      `json:"input,omitempty"`
+	Output      *Property                `json:"output,omitempty"`
 	Annotations map[string]string        `json:"annotations,omitempty"`
 }
 
-func (s *ResourceAction) GetTitle() *string {
-	return s.Title
-}
-func (s *ResourceAction) GetInternal() bool {
-	return s.Internal
-}
-func (s *ResourceAction) GetInput() map[string]Property {
-	return s.Input
-}
-func (s *ResourceAction) GetOutput() *Property {
-	return s.Output
-}
 func (s *ResourceAction) GetId() *uuid.UUID {
 	return s.Id
+}
+func (s *ResourceAction) GetVersion() int32 {
+	return s.Version
 }
 func (s *ResourceAction) GetAuditData() *ResourceActionAuditData {
 	return s.AuditData
@@ -48,14 +39,23 @@ func (s *ResourceAction) GetResource() *Resource {
 func (s *ResourceAction) GetName() string {
 	return s.Name
 }
-func (s *ResourceAction) GetVersion() int32 {
-	return s.Version
+func (s *ResourceAction) GetTitle() *string {
+	return s.Title
 }
 func (s *ResourceAction) GetDescription() *string {
 	return s.Description
 }
+func (s *ResourceAction) GetInternal() bool {
+	return s.Internal
+}
 func (s *ResourceAction) GetTypes() []SubType {
 	return s.Types
+}
+func (s *ResourceAction) GetInput() map[string]Property {
+	return s.Input
+}
+func (s *ResourceAction) GetOutput() *Property {
+	return s.Output
 }
 func (s *ResourceAction) GetAnnotations() map[string]string {
 	return s.Annotations
@@ -80,3 +80,25 @@ func (s *ResourceActionAuditData) GetCreatedOn() *time.Time {
 func (s *ResourceActionAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
+
+type ResourceActionType string
+
+const (
+	ResourceActionType_BOOL      ResourceActionType = "BOOL"
+	ResourceActionType_STRING    ResourceActionType = "STRING"
+	ResourceActionType_FLOAT32   ResourceActionType = "FLOAT32"
+	ResourceActionType_FLOAT64   ResourceActionType = "FLOAT64"
+	ResourceActionType_INT32     ResourceActionType = "INT32"
+	ResourceActionType_INT64     ResourceActionType = "INT64"
+	ResourceActionType_BYTES     ResourceActionType = "BYTES"
+	ResourceActionType_UUID      ResourceActionType = "UUID"
+	ResourceActionType_DATE      ResourceActionType = "DATE"
+	ResourceActionType_TIME      ResourceActionType = "TIME"
+	ResourceActionType_TIMESTAMP ResourceActionType = "TIMESTAMP"
+	ResourceActionType_OBJECT    ResourceActionType = "OBJECT"
+	ResourceActionType_MAP       ResourceActionType = "MAP"
+	ResourceActionType_LIST      ResourceActionType = "LIST"
+	ResourceActionType_REFERENCE ResourceActionType = "REFERENCE"
+	ResourceActionType_ENUM      ResourceActionType = "ENUM"
+	ResourceActionType_STRUCT    ResourceActionType = "STRUCT"
+)
