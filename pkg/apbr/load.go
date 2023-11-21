@@ -131,7 +131,7 @@ var loadCmd = &cobra.Command{
 func loadApply(cmd *cobra.Command, args []string, payloadFile string) func() error {
 	var typ = ""
 
-	if args != nil && len(args) > 0 {
+	if len(args) > 0 {
 		typ = args[0]
 	}
 

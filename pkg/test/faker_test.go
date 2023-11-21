@@ -101,9 +101,9 @@ func fakeValidValues(propertyType model.ResourceProperty_Type) []interface{} {
 		}
 	case model.ResourceProperty_ENUM:
 		return []interface{}{
-			"enum1",
-			"enum2",
-			"enum3",
+			"ENUM1",
+			"ENUM2",
+			"ENUM3",
 		}
 	case model.ResourceProperty_MAP:
 		return []interface{}{

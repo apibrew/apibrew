@@ -219,6 +219,11 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(res
 	existingResourcePropertyRecord := mapping.ResourcePropertyToRecord(existingResourceProperty, existingResource)
 
 	var changedFields []string
+
+	if resourceProperty.Name != existingResourceProperty.Name {
+		changedFields = append(changedFields, "name")
+	}
+
 	for _, prop := range resources.ResourcePropertyProperties {
 		var oldValue = resourcePropertyRecord.Properties[prop.Name].AsInterface()
 		var newValue = existingResourcePropertyRecord.Properties[prop.Name].AsInterface()

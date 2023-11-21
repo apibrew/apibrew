@@ -236,66 +236,66 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 				})
 			} else {
 				properties = typeDef.Properties
-			}
 
-			for _, Item := range properties {
-				subType := types.ByResourcePropertyType(Item.Type)
-				packedVal, exists := structValue.StructValue.Fields[Item.Name]
+				for _, Item := range properties {
+					subType := types.ByResourcePropertyType(Item.Type)
+					packedVal, exists := structValue.StructValue.Fields[Item.Name]
 
-				if !exists && Item.DefaultValue != nil && Item.DefaultValue.AsInterface() != nil {
-					packedVal = Item.DefaultValue
-				}
+					if !exists && Item.DefaultValue != nil && Item.DefaultValue.AsInterface() != nil {
+						packedVal = Item.DefaultValue
+					}
 
-				var val interface{}
-				var err error
+					var val interface{}
+					var err error
 
-				if packedVal == nil {
-					val = nil
-				} else if _, ok := packedVal.Kind.(*structpb.Value_NullValue); ok {
-					return nil
-				} else {
-					val, err = subType.UnPack(packedVal)
+					if packedVal == nil {
+						val = nil
+					} else if _, ok := packedVal.Kind.(*structpb.Value_NullValue); ok {
+						return nil
+					} else {
+						val, err = subType.UnPack(packedVal)
 
-					if err != nil {
+						if err != nil {
+							errorFields = append(errorFields, &model.ErrorField{
+								RecordId: recordId,
+								Property: propertyPath + Item.Name,
+								Message:  err.Error(),
+								Value:    value,
+							})
+							continue
+						}
+					}
+
+					if subType.IsEmpty(val) && Item.Required {
 						errorFields = append(errorFields, &model.ErrorField{
 							RecordId: recordId,
 							Property: propertyPath + Item.Name,
-							Message:  err.Error(),
+							Message:  fmt.Sprintf("required field is empty: %v[%s]", Item.Name, Item.Name),
 							Value:    value,
 						})
 						continue
 					}
+
+					errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
 				}
 
-				if subType.IsEmpty(val) && Item.Required {
-					errorFields = append(errorFields, &model.ErrorField{
-						RecordId: recordId,
-						Property: propertyPath + Item.Name,
-						Message:  fmt.Sprintf("required field is empty: %v[%s]", Item.Name, Item.Name),
-						Value:    value,
-					})
-					continue
-				}
-
-				errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
-			}
-
-			for key := range structValue.StructValue.Fields {
-				found := false
-				for _, Item := range properties {
-					if Item.Name == key {
-						found = true
-						break
+				for key := range structValue.StructValue.Fields {
+					found := false
+					for _, Item := range properties {
+						if Item.Name == key {
+							found = true
+							break
+						}
 					}
-				}
 
-				if !found {
-					errorFields = append(errorFields, &model.ErrorField{
-						RecordId: recordId,
-						Property: propertyPath,
-						Message:  fmt.Sprintf("there is no such property: %v", key),
-						Value:    value,
-					})
+					if !found {
+						errorFields = append(errorFields, &model.ErrorField{
+							RecordId: recordId,
+							Property: propertyPath,
+							Message:  fmt.Sprintf("there is no such property: %v", key),
+							Value:    value,
+						})
+					}
 				}
 			}
 		} else {

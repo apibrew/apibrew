@@ -50,7 +50,7 @@ func execSave(mode executor.Mode, cmd *cobra.Command, args []string) error {
 
 	var typ = ""
 
-	if args != nil && len(args) > 0 {
+	if len(args) > 0 {
 		typ = args[0]
 	}
 

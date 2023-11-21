@@ -17,7 +17,6 @@ type TestRecordCreationValidationSubCase struct {
 }
 
 func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
-
 	subCases := prepareTestRecordCreationValidationSubCase()
 	var resourceIdsForRemoval []string
 	var newResources []*model.Resource
@@ -377,7 +376,7 @@ func prepareTestRecordCreationValidationSubCase() []TestRecordCreationValidation
 		for _, prop := range resource.Properties {
 			switch typ {
 			case model.ResourceProperty_ENUM:
-				prop.EnumValues = []string{"enum1", "enum2", "enum3", "enum4"}
+				prop.EnumValues = []string{"ENUM1", "ENUM2", "ENUM3", "ENUM4"}
 			case model.ResourceProperty_MAP:
 				prop.Item = &model.ResourceProperty{
 					Type: model.ResourceProperty_STRING,

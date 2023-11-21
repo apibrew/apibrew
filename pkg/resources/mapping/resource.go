@@ -189,8 +189,8 @@ func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
 	var st = val.GetStructValue()
 	rt := &model.ResourceSubType{
 		Name: st.GetFields()["name"].GetStringValue(),
-		Properties: util.ArrayMap(st.GetFields()["properties"].GetListValue().Values, func(t *structpb.Value) *model.ResourceProperty {
-			return ResourcePropertyFromRecord("", &model.Record{Properties: t.GetStructValue().Fields})
+		Properties: util.ArrayMap(util.MapToArray(st.GetFields()["properties"].GetStructValue().Fields), func(t util.MapEntry[*structpb.Value]) *model.ResourceProperty {
+			return ResourcePropertyFromRecord(t.Key, &model.Record{Properties: t.Val.GetStructValue().Fields})
 		}),
 	}
 
@@ -206,10 +206,10 @@ func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
 }
 
 func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubType) *structpb.Value {
-	var propertyStructList []*structpb.Value
+	var propertiesStruct = make(map[string]*structpb.Value)
 	for _, property := range subType.Properties {
 		propertyRecord := ResourcePropertyToRecord(property, resource)
-		propertyStructList = append(propertyStructList, structpb.NewStructValue(&structpb.Struct{Fields: propertyRecord.Properties}))
+		propertiesStruct[property.Name] = structpb.NewStructValue(&structpb.Struct{Fields: propertyRecord.Properties})
 	}
 
 	return structpb.NewStructValue(&structpb.Struct{
@@ -217,7 +217,7 @@ func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubTyp
 			"name":        structpb.NewStringValue(subType.Name),
 			"title":       structpb.NewStringValue(subType.Title),
 			"description": structpb.NewStringValue(subType.Description),
-			"properties":  structpb.NewListValue(&structpb.ListValue{Values: propertyStructList}),
+			"properties":  structpb.NewStructValue(&structpb.Struct{Fields: propertiesStruct}),
 		},
 	})
 }

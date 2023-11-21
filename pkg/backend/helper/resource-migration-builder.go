@@ -36,6 +36,10 @@ func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder
 				hp.DeleteResource(migrationPlan.ExistingResource)
 			}
 		case *model.ResourceMigrationStep_CreateProperty:
+			if sk.CreateProperty.SubType != "" {
+				continue
+			}
+
 			property := currentPropertyMap[sk.CreateProperty.Property]
 			if annotations.IsEnabled(property, annotations.PrimaryProperty) { // skip primary properties because they are already created as upon table creation, this logic should be reworked
 				continue
@@ -45,8 +49,16 @@ func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder
 			}
 			hp.AddProperty(property)
 		case *model.ResourceMigrationStep_UpdateProperty:
+			if sk.UpdateProperty.SubType != "" {
+				continue
+			}
+
 			hp.UpdateProperty(migrationPlan.CurrentResource, existingPropertyMap[sk.UpdateProperty.ExistingProperty], currentPropertyMap[sk.UpdateProperty.Property])
 		case *model.ResourceMigrationStep_DeleteProperty:
+			if sk.DeleteProperty.SubType != "" {
+				continue
+			}
+
 			if forceMigration {
 				hp.DeleteProperty(existingPropertyMap[sk.DeleteProperty.ExistingProperty])
 			}

@@ -124,8 +124,8 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 				if strings.ToUpper(val) != val {
 					errorFields = append(errorFields, &model.ErrorField{
 						Property: propertyPrefix + "EnumValues",
-						Message:  "Enum values should be uppercase",
-						Value:    nil,
+						Message:  "Enum values should be uppercase: " + val,
+						Value:    structpb.NewStringValue(val),
 					})
 				}
 			}

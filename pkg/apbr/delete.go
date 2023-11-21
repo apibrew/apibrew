@@ -29,7 +29,7 @@ var deleteCmd = &cobra.Command{
 
 		var typ = ""
 
-		if args != nil && len(args) > 0 {
+		if len(args) > 0 {
 			typ = args[0]
 		}
 
