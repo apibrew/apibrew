@@ -161,99 +161,10 @@ export const ExtensionResource = {
   "namespace": {
     "name": "system"
   },
-  "properties": [
-    {
-      "name": "id",
-      "type": "UUID",
-      "required": true,
-      "immutable": true,
-      "exampleValue": "a39621a4-6d48-11ee-b962-0242ac120002",
-      "description": "The unique identifier of the resource. It is randomly generated and immutable.",
-      "annotations": {
-        "PrimaryProperty": "true",
-        "SpecialProperty": "true"
-      }
-    },
-    {
-      "name": "version",
-      "type": "INT32",
-      "required": true,
-      "defaultValue": 1,
-      "exampleValue": 1,
-      "title": "Version",
-      "description": "The version of the resource/record. It is incremented on every update.",
-      "annotations": {
-        "AllowEmptyPrimitive": "true",
-        "SpecialProperty": "true"
-      }
-    },
-    {
-      "name": "auditData",
-      "type": "STRUCT",
-      "typeRef": "AuditData",
-      "exampleValue": {
-        "createdBy": "admin",
-        "createdOn": "2023-11-13T12:31:41+04:00",
-        "updatedBy": "admin",
-        "updatedOn": "2023-11-13T12:31:41+04:00"
-      },
-      "title": "Audit Data",
-      "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
-      "annotations": {
-        "SpecialProperty": "true"
-      }
-    },
-    {
-      "name": "name",
-      "type": "STRING",
-      "required": true,
-      "unique": true,
-      "length": 256,
-      "annotations": {
-        "IsHclLabel": "true"
-      }
-    },
-    {
-      "name": "description",
-      "type": "STRING",
-      "length": 1024
-    },
-    {
-      "name": "selector",
-      "type": "STRUCT",
-      "typeRef": "EventSelector"
-    },
-    {
-      "name": "order",
-      "type": "INT32",
-      "required": true
-    },
-    {
-      "name": "finalizes",
-      "type": "BOOL",
-      "required": true
-    },
-    {
-      "name": "sync",
-      "type": "BOOL",
-      "required": true
-    },
-    {
-      "name": "responds",
-      "type": "BOOL",
-      "required": true
-    },
-    {
-      "name": "call",
-      "type": "STRUCT",
-      "typeRef": "ExternalCall",
-      "required": true
-    },
-    {
-      "name": "annotations",
+  "properties": {
+    "annotations": {
       "type": "MAP",
       "item": {
-        "name": "",
         "type": "STRING"
       },
       "exampleValue": {
@@ -266,134 +177,190 @@ export const ExtensionResource = {
       "annotations": {
         "SpecialProperty": "true"
       }
+    },
+    "auditData": {
+      "type": "STRUCT",
+      "typeRef": "AuditData",
+      "exampleValue": {
+        "createdBy": "admin",
+        "createdOn": "2023-11-23T01:11:33+04:00",
+        "updatedBy": "admin",
+        "updatedOn": "2023-11-23T01:11:33+04:00"
+      },
+      "title": "Audit Data",
+      "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
+      "annotations": {
+        "SpecialProperty": "true"
+      }
+    },
+    "call": {
+      "type": "STRUCT",
+      "typeRef": "ExternalCall",
+      "required": true
+    },
+    "description": {
+      "type": "STRING",
+      "length": 1024
+    },
+    "finalizes": {
+      "type": "BOOL",
+      "required": true
+    },
+    "id": {
+      "type": "UUID",
+      "required": true,
+      "immutable": true,
+      "exampleValue": "a39621a4-6d48-11ee-b962-0242ac120002",
+      "description": "The unique identifier of the resource. It is randomly generated and immutable.",
+      "annotations": {
+        "PrimaryProperty": "true",
+        "SpecialProperty": "true"
+      }
+    },
+    "name": {
+      "type": "STRING",
+      "required": true,
+      "unique": true,
+      "length": 256,
+      "annotations": {
+        "IsHclLabel": "true"
+      }
+    },
+    "order": {
+      "type": "INT32",
+      "required": true
+    },
+    "responds": {
+      "type": "BOOL",
+      "required": true
+    },
+    "selector": {
+      "type": "STRUCT",
+      "typeRef": "EventSelector"
+    },
+    "sync": {
+      "type": "BOOL",
+      "required": true
+    },
+    "version": {
+      "type": "INT32",
+      "required": true,
+      "defaultValue": 1,
+      "exampleValue": 1,
+      "title": "Version",
+      "description": "The version of the resource/record. It is incremented on every update.",
+      "annotations": {
+        "AllowEmptyPrimitive": "true",
+        "SpecialProperty": "true"
+      }
     }
-  ],
+  },
   "types": [
     {
       "name": "BooleanExpression",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "and",
+      "properties": {
+        "and": {
           "type": "LIST",
           "item": {
-            "name": "",
             "type": "STRUCT",
             "typeRef": "BooleanExpression"
           }
         },
-        {
-          "name": "or",
-          "type": "LIST",
-          "item": {
-            "name": "",
-            "type": "STRUCT",
-            "typeRef": "BooleanExpression"
-          }
-        },
-        {
-          "name": "not",
-          "type": "STRUCT",
-          "typeRef": "BooleanExpression"
-        },
-        {
-          "name": "equal",
+        "equal": {
           "type": "STRUCT",
           "typeRef": "PairExpression"
         },
-        {
-          "name": "lessThan",
+        "greaterThan": {
           "type": "STRUCT",
           "typeRef": "PairExpression"
         },
-        {
-          "name": "greaterThan",
+        "greaterThanOrEqual": {
           "type": "STRUCT",
           "typeRef": "PairExpression"
         },
-        {
-          "name": "lessThanOrEqual",
+        "in": {
           "type": "STRUCT",
           "typeRef": "PairExpression"
         },
-        {
-          "name": "greaterThanOrEqual",
-          "type": "STRUCT",
-          "typeRef": "PairExpression"
-        },
-        {
-          "name": "in",
-          "type": "STRUCT",
-          "typeRef": "PairExpression"
-        },
-        {
-          "name": "isNull",
+        "isNull": {
           "type": "STRUCT",
           "typeRef": "Expression"
         },
-        {
-          "name": "regexMatch",
+        "lessThan": {
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        "lessThanOrEqual": {
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        "not": {
+          "type": "STRUCT",
+          "typeRef": "BooleanExpression"
+        },
+        "or": {
+          "type": "LIST",
+          "item": {
+            "type": "STRUCT",
+            "typeRef": "BooleanExpression"
+          }
+        },
+        "regexMatch": {
           "type": "STRUCT",
           "typeRef": "RegexMatchExpression"
         }
-      ]
+      }
     },
     {
       "name": "PairExpression",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "left",
+      "properties": {
+        "left": {
           "type": "STRUCT",
           "typeRef": "Expression"
         },
-        {
-          "name": "right",
+        "right": {
           "type": "STRUCT",
           "typeRef": "Expression"
         }
-      ]
+      }
     },
     {
       "name": "RegexMatchExpression",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "pattern",
-          "type": "STRING"
-        },
-        {
-          "name": "expression",
+      "properties": {
+        "expression": {
           "type": "STRUCT",
           "typeRef": "Expression"
+        },
+        "pattern": {
+          "type": "STRING"
         }
-      ]
+      }
     },
     {
       "name": "Expression",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "property",
+      "properties": {
+        "property": {
           "type": "STRING"
         },
-        {
-          "name": "value",
+        "value": {
           "type": "OBJECT"
         }
-      ]
+      }
     },
     {
       "name": "AuditData",
       "title": "Audit Data",
       "description": "Audit Data is a type that represents the audit data of a resource/record. ",
-      "properties": [
-        {
-          "name": "createdBy",
+      "properties": {
+        "createdBy": {
           "type": "STRING",
           "immutable": true,
           "length": 256,
@@ -404,8 +371,17 @@ export const ExtensionResource = {
             "SpecialProperty": "true"
           }
         },
-        {
-          "name": "updatedBy",
+        "createdOn": {
+          "type": "TIMESTAMP",
+          "immutable": true,
+          "exampleValue": "2023-11-23T01:11:33+04:00",
+          "title": "Created On",
+          "description": "The timestamp when the resource/record was created.",
+          "annotations": {
+            "SpecialProperty": "true"
+          }
+        },
+        "updatedBy": {
           "type": "STRING",
           "length": 256,
           "exampleValue": "admin",
@@ -415,107 +391,85 @@ export const ExtensionResource = {
             "SpecialProperty": "true"
           }
         },
-        {
-          "name": "createdOn",
+        "updatedOn": {
           "type": "TIMESTAMP",
-          "immutable": true,
-          "exampleValue": "2023-11-13T12:31:41+04:00",
-          "title": "Created On",
-          "description": "The timestamp when the resource/record was created.",
-          "annotations": {
-            "SpecialProperty": "true"
-          }
-        },
-        {
-          "name": "updatedOn",
-          "type": "TIMESTAMP",
-          "exampleValue": "2023-11-13T12:31:41+04:00",
+          "exampleValue": "2023-11-23T01:11:33+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {
             "SpecialProperty": "true"
           }
         }
-      ]
+      }
     },
     {
       "name": "FunctionCall",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "host",
+      "properties": {
+        "functionName": {
           "type": "STRING",
           "required": true
         },
-        {
-          "name": "functionName",
+        "host": {
           "type": "STRING",
           "required": true
         }
-      ]
+      }
     },
     {
       "name": "HttpCall",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "uri",
+      "properties": {
+        "method": {
           "type": "STRING",
           "required": true
         },
-        {
-          "name": "method",
+        "uri": {
           "type": "STRING",
           "required": true
         }
-      ]
+      }
     },
     {
       "name": "ChannelCall",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "channelKey",
+      "properties": {
+        "channelKey": {
           "type": "STRING",
           "required": true
         }
-      ]
+      }
     },
     {
       "name": "ExternalCall",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "functionCall",
+      "properties": {
+        "channelCall": {
+          "type": "STRUCT",
+          "typeRef": "ChannelCall"
+        },
+        "functionCall": {
           "type": "STRUCT",
           "typeRef": "FunctionCall"
         },
-        {
-          "name": "httpCall",
+        "httpCall": {
           "type": "STRUCT",
           "typeRef": "HttpCall"
-        },
-        {
-          "name": "channelCall",
-          "type": "STRUCT",
-          "typeRef": "ChannelCall"
         }
-      ]
+      }
     },
     {
       "name": "EventSelector",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "actions",
+      "properties": {
+        "actions": {
           "type": "LIST",
           "item": {
-            "name": "action",
             "type": "ENUM",
             "enumValues": [
               "CREATE",
@@ -530,40 +484,9 @@ export const ExtensionResource = {
             }
           }
         },
-        {
-          "name": "recordSelector",
-          "type": "STRUCT",
-          "typeRef": "BooleanExpression"
-        },
-        {
-          "name": "namespaces",
-          "type": "LIST",
-          "item": {
-            "name": "",
-            "type": "STRING"
-          }
-        },
-        {
-          "name": "resources",
-          "type": "LIST",
-          "item": {
-            "name": "",
-            "type": "STRING"
-          }
-        },
-        {
-          "name": "ids",
-          "type": "LIST",
-          "item": {
-            "name": "",
-            "type": "STRING"
-          }
-        },
-        {
-          "name": "annotations",
+        "annotations": {
           "type": "MAP",
           "item": {
-            "name": "",
             "type": "STRING"
           },
           "exampleValue": {
@@ -576,50 +499,60 @@ export const ExtensionResource = {
           "annotations": {
             "SpecialProperty": "true"
           }
+        },
+        "ids": {
+          "type": "LIST",
+          "item": {
+            "type": "STRING"
+          }
+        },
+        "namespaces": {
+          "type": "LIST",
+          "item": {
+            "type": "STRING"
+          }
+        },
+        "recordSelector": {
+          "type": "STRUCT",
+          "typeRef": "BooleanExpression"
+        },
+        "resources": {
+          "type": "LIST",
+          "item": {
+            "type": "STRING"
+          }
         }
-      ]
+      }
     },
     {
       "name": "RecordSearchParams",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "query",
+      "properties": {
+        "limit": {
+          "type": "INT32"
+        },
+        "offset": {
+          "type": "INT32"
+        },
+        "query": {
           "type": "STRUCT",
           "typeRef": "BooleanExpression"
         },
-        {
-          "name": "limit",
-          "type": "INT32"
-        },
-        {
-          "name": "offset",
-          "type": "INT32"
-        },
-        {
-          "name": "resolveReferences",
+        "resolveReferences": {
           "type": "LIST",
           "item": {
-            "name": "",
             "type": "STRING"
           }
         }
-      ]
+      }
     },
     {
       "name": "Event",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "id",
-          "type": "STRING",
-          "required": true,
-          "immutable": true
-        },
-        {
-          "name": "action",
+      "properties": {
+        "action": {
           "type": "ENUM",
           "required": true,
           "enumValues": [
@@ -631,37 +564,56 @@ export const ExtensionResource = {
             "OPERATE"
           ]
         },
-        {
-          "name": "recordSearchParams",
+        "actionDescription": {
+          "type": "STRING"
+        },
+        "actionName": {
+          "type": "STRING"
+        },
+        "actionSummary": {
+          "type": "STRING"
+        },
+        "annotations": {
+          "type": "MAP",
+          "item": {
+            "type": "STRING"
+          },
+          "exampleValue": {
+            "CheckVersion": "true",
+            "CommonType": "testType",
+            "IgnoreIfExists": "true"
+          },
+          "title": "Annotations",
+          "description": "The annotations of the resource/record. It contains information about the resource/record. For example, it can contain information about the UI representation of the resource/record.",
+          "annotations": {
+            "SpecialProperty": "true"
+          }
+        },
+        "error": {
+          "type": "STRUCT",
+          "typeRef": "Error"
+        },
+        "finalizes": {
+          "type": "BOOL"
+        },
+        "id": {
+          "type": "STRING",
+          "required": true,
+          "immutable": true
+        },
+        "input": {
+          "type": "OBJECT"
+        },
+        "output": {
+          "type": "OBJECT"
+        },
+        "recordSearchParams": {
           "type": "STRUCT",
           "typeRef": "RecordSearchParams"
         },
-        {
-          "name": "actionSummary",
-          "type": "STRING"
-        },
-        {
-          "name": "actionDescription",
-          "type": "STRING"
-        },
-        {
-          "name": "resource",
-          "type": "REFERENCE",
-          "reference": {
-            "resource": {
-              "name": "Resource",
-              "namespace": {
-                "name": "system"
-              }
-            },
-            "cascade": false
-          }
-        },
-        {
-          "name": "records",
+        "records": {
           "type": "LIST",
           "item": {
-            "name": "",
             "type": "REFERENCE",
             "reference": {
               "resource": {
@@ -674,89 +626,54 @@ export const ExtensionResource = {
             }
           }
         },
-        {
-          "name": "finalizes",
-          "type": "BOOL"
-        },
-        {
-          "name": "sync",
-          "type": "BOOL"
-        },
-        {
-          "name": "time",
-          "type": "TIMESTAMP"
-        },
-        {
-          "name": "total",
-          "type": "INT64"
-        },
-        {
-          "name": "actionName",
-          "type": "STRING"
-        },
-        {
-          "name": "input",
-          "type": "OBJECT"
-        },
-        {
-          "name": "output",
-          "type": "OBJECT"
-        },
-        {
-          "name": "annotations",
-          "type": "MAP",
-          "item": {
-            "name": "",
-            "type": "STRING"
-          },
-          "exampleValue": {
-            "CheckVersion": "true",
-            "CommonType": "testType",
-            "IgnoreIfExists": "true"
-          },
-          "title": "Annotations",
-          "description": "The annotations of the resource/record. It contains information about the resource/record. For example, it can contain information about the UI representation of the resource/record.",
-          "annotations": {
-            "SpecialProperty": "true"
+        "resource": {
+          "type": "REFERENCE",
+          "reference": {
+            "resource": {
+              "name": "Resource",
+              "namespace": {
+                "name": "system"
+              }
+            },
+            "cascade": false
           }
         },
-        {
-          "name": "error",
-          "type": "STRUCT",
-          "typeRef": "Error"
+        "sync": {
+          "type": "BOOL"
+        },
+        "time": {
+          "type": "TIMESTAMP"
+        },
+        "total": {
+          "type": "INT64"
         }
-      ]
+      }
     },
     {
       "name": "ErrorField",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "recordId",
+      "properties": {
+        "message": {
           "type": "STRING"
         },
-        {
-          "name": "property",
+        "property": {
           "type": "STRING"
         },
-        {
-          "name": "message",
+        "recordId": {
           "type": "STRING"
         },
-        {
-          "name": "value",
+        "value": {
           "type": "OBJECT"
         }
-      ]
+      }
     },
     {
       "name": "Error",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "code",
+      "properties": {
+        "code": {
           "type": "ENUM",
           "enumValues": [
             "UNKNOWN_ERROR",
@@ -779,20 +696,17 @@ export const ExtensionResource = {
             "RATE_LIMIT_ERROR"
           ]
         },
-        {
-          "name": "message",
-          "type": "STRING"
-        },
-        {
-          "name": "fields",
+        "fields": {
           "type": "LIST",
           "item": {
-            "name": "",
             "type": "STRUCT",
             "typeRef": "ErrorField"
           }
+        },
+        "message": {
+          "type": "STRING"
         }
-      ]
+      }
     }
   ],
   "annotations": {

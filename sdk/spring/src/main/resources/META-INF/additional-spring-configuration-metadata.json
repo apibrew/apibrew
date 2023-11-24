@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "apibrew.profile",
+      "type": "java.lang.String",
+      "description": "Description for apibrew.profile."
+    }
+  ]
+}

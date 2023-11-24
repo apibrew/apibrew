@@ -26,9 +26,30 @@ export const NamespaceResource = {
   "namespace": {
     "name": "system"
   },
-  "properties": [
-    {
-      "name": "id",
+  "properties": {
+    "auditData": {
+      "type": "STRUCT",
+      "typeRef": "AuditData",
+      "exampleValue": {
+        "createdBy": "admin",
+        "createdOn": "2023-11-23T01:11:33+04:00",
+        "updatedBy": "admin",
+        "updatedOn": "2023-11-23T01:11:33+04:00"
+      },
+      "title": "Audit Data",
+      "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
+      "annotations": {
+        "SpecialProperty": "true"
+      }
+    },
+    "description": {
+      "type": "STRING",
+      "length": 256
+    },
+    "details": {
+      "type": "OBJECT"
+    },
+    "id": {
       "type": "UUID",
       "required": true,
       "immutable": true,
@@ -39,8 +60,17 @@ export const NamespaceResource = {
         "SpecialProperty": "true"
       }
     },
-    {
-      "name": "version",
+    "name": {
+      "type": "STRING",
+      "required": true,
+      "unique": true,
+      "immutable": true,
+      "length": 256,
+      "annotations": {
+        "IsHclLabel": "true"
+      }
+    },
+    "version": {
       "type": "INT32",
       "required": true,
       "defaultValue": 1,
@@ -51,52 +81,15 @@ export const NamespaceResource = {
         "AllowEmptyPrimitive": "true",
         "SpecialProperty": "true"
       }
-    },
-    {
-      "name": "auditData",
-      "type": "STRUCT",
-      "typeRef": "AuditData",
-      "exampleValue": {
-        "createdBy": "admin",
-        "createdOn": "2023-11-13T12:31:41+04:00",
-        "updatedBy": "admin",
-        "updatedOn": "2023-11-13T12:31:41+04:00"
-      },
-      "title": "Audit Data",
-      "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
-      "annotations": {
-        "SpecialProperty": "true"
-      }
-    },
-    {
-      "name": "name",
-      "type": "STRING",
-      "required": true,
-      "unique": true,
-      "immutable": true,
-      "length": 256,
-      "annotations": {
-        "IsHclLabel": "true"
-      }
-    },
-    {
-      "name": "description",
-      "type": "STRING",
-      "length": 256
-    },
-    {
-      "name": "details",
-      "type": "OBJECT"
     }
-  ],
+  },
   "types": [
     {
       "name": "AuditData",
       "title": "Audit Data",
       "description": "Audit Data is a type that represents the audit data of a resource/record. ",
-      "properties": [
-        {
-          "name": "createdBy",
+      "properties": {
+        "createdBy": {
           "type": "STRING",
           "immutable": true,
           "length": 256,
@@ -107,8 +100,17 @@ export const NamespaceResource = {
             "SpecialProperty": "true"
           }
         },
-        {
-          "name": "updatedBy",
+        "createdOn": {
+          "type": "TIMESTAMP",
+          "immutable": true,
+          "exampleValue": "2023-11-23T01:11:33+04:00",
+          "title": "Created On",
+          "description": "The timestamp when the resource/record was created.",
+          "annotations": {
+            "SpecialProperty": "true"
+          }
+        },
+        "updatedBy": {
           "type": "STRING",
           "length": 256,
           "exampleValue": "admin",
@@ -118,28 +120,16 @@ export const NamespaceResource = {
             "SpecialProperty": "true"
           }
         },
-        {
-          "name": "createdOn",
+        "updatedOn": {
           "type": "TIMESTAMP",
-          "immutable": true,
-          "exampleValue": "2023-11-13T12:31:41+04:00",
-          "title": "Created On",
-          "description": "The timestamp when the resource/record was created.",
-          "annotations": {
-            "SpecialProperty": "true"
-          }
-        },
-        {
-          "name": "updatedOn",
-          "type": "TIMESTAMP",
-          "exampleValue": "2023-11-13T12:31:41+04:00",
+          "exampleValue": "2023-11-23T01:11:33+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {
             "SpecialProperty": "true"
           }
         }
-      ]
+      }
     }
   ],
   "annotations": {

@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Urls } from '@apibrew/client/impl/client-impl'
 import { Event } from '@apibrew/client/model/extension'
-import { EntityInfo } from '@apibrew/client'
-import { useClient } from '../context'
+import { ApiException, EntityInfo } from '@apibrew/client'
+import { useClient, useErrorHandler } from '../context'
 
 export function useWatcher(
   entityInfo: EntityInfo,
   filters?: { [key: string]: string }
 ): number {
   const client = useClient()
+  const errorHandler = useErrorHandler()
 
   const [counter, setCounter] = useState(0)
 
@@ -38,7 +39,13 @@ export function useWatcher(
           )
 
           if (!response.body) {
-            throw new Error('No response body')
+            if (controller.signal.aborted) {
+              console.log('request aborted')
+              break
+            }
+
+            console.log('watcher no content')
+            break
           }
 
           const reader = response.body
@@ -53,19 +60,31 @@ export function useWatcher(
               }
               const event = JSON.parse(value) as Event
 
+              if (response.status !== 200) {
+                throw ApiException.fromError(event)
+              }
+
               if (event.id === 'heartbeat-message') {
                 // console.log('Received heartbeat event')
               } else {
                 triggerUpdate()
               }
             } catch (e) {
-              console.error('Error reading data', e)
+              console.error(e)
               break
             }
           }
         } catch (e) {
-          console.error('Error watching', e)
-          // delay before retrying
+          console.error(e)
+
+          if (e instanceof DOMException) {
+            return
+          }
+
+          if (errorHandler) {
+            errorHandler(e)
+          }
+        } finally {
           await new Promise((resolve) => setTimeout(resolve, 1000))
         }
       }

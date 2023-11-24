@@ -1,7 +1,7 @@
 {
   "name": "@apibrew/client",
   "private": false,
-  "version": "1.1.29",
+  "version": "1.1.36",
   "description": "Client library for API Brew client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

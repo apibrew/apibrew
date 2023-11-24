@@ -104,11 +104,8 @@ export class ClientImpl implements Client {
     static ensureResponseSuccess(resp: AxiosResponse) {
         if (resp.status != 200) {
             const error = resp.data;
-
-            console.error("Error response: ", error)
-
-            if (error.code) {
-                throw ApiException.fromError(error);
+            if (error) {
+                throw ApiException.fromError(resp.data);
             } else {
                 throw new ApiException(Code.INTERNAL_ERROR, resp.statusText);
             }
@@ -145,14 +142,14 @@ export class ClientImpl implements Client {
     }
 
     public async listResources(): Promise<Resource[]> {
-        const resp = await axios.get<Resource[]>(Urls.resourceUrl(this.url), {
+        const resp = await axios.get<Container<Resource>>(Urls.resourceUrl(this.url), {
             headers: this.headers(),
             validateStatus: (status) => true,
         });
 
         ClientImpl.ensureResponseSuccess(resp);
 
-        return resp.data;
+        return resp.data.content;
     }
 
     public async createResource(resource: Resource): Promise<Resource> {
@@ -167,7 +164,7 @@ export class ClientImpl implements Client {
     }
 
     public async updateResource(resource: Resource): Promise<Resource> {
-        const resp = await axios.post<Resource>(Urls.resourceById(this.url, resource.id!), resource, {
+        const resp = await axios.put<Resource>(Urls.resourceById(this.url, resource.id!), resource, {
             headers: this.headers(),
             validateStatus: (status) => true,
         });

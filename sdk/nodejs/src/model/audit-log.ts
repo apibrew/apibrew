@@ -29,82 +29,10 @@ export const AuditLogResource = {
   "namespace": {
     "name": "system"
   },
-  "properties": [
-    {
-      "name": "id",
-      "type": "UUID",
-      "required": true,
-      "immutable": true,
-      "exampleValue": "a39621a4-6d48-11ee-b962-0242ac120002",
-      "description": "The unique identifier of the resource. It is randomly generated and immutable.",
-      "annotations": {
-        "PrimaryProperty": "true",
-        "SpecialProperty": "true"
-      }
-    },
-    {
-      "name": "version",
-      "type": "INT32",
-      "required": true,
-      "defaultValue": 1,
-      "exampleValue": 1,
-      "title": "Version",
-      "description": "The version of the resource/record. It is incremented on every update.",
-      "annotations": {
-        "AllowEmptyPrimitive": "true",
-        "SpecialProperty": "true"
-      }
-    },
-    {
-      "name": "namespace",
-      "type": "STRING",
-      "required": true,
-      "length": 256
-    },
-    {
-      "name": "resource",
-      "type": "STRING",
-      "required": true,
-      "length": 256
-    },
-    {
-      "name": "recordId",
-      "type": "STRING",
-      "required": true,
-      "length": 256,
-      "annotations": {
-        "SourceDef": "record_id"
-      }
-    },
-    {
-      "name": "time",
-      "type": "TIMESTAMP",
-      "required": true
-    },
-    {
-      "name": "username",
-      "type": "STRING",
-      "required": true
-    },
-    {
-      "name": "operation",
-      "type": "ENUM",
-      "required": true,
-      "enumValues": [
-        "CREATE",
-        "UPDATE",
-        "DELETE"
-      ]
-    },
-    {
-      "name": "properties",
-      "type": "OBJECT"
-    },
-    {
-      "name": "annotations",
+  "properties": {
+    "annotations": {
       "type": "MAP",
       "item": {
-        "name": "",
         "type": "STRING"
       },
       "exampleValue": {
@@ -117,8 +45,69 @@ export const AuditLogResource = {
       "annotations": {
         "SpecialProperty": "true"
       }
+    },
+    "id": {
+      "type": "UUID",
+      "required": true,
+      "immutable": true,
+      "exampleValue": "a39621a4-6d48-11ee-b962-0242ac120002",
+      "description": "The unique identifier of the resource. It is randomly generated and immutable.",
+      "annotations": {
+        "PrimaryProperty": "true",
+        "SpecialProperty": "true"
+      }
+    },
+    "namespace": {
+      "type": "STRING",
+      "required": true,
+      "length": 256
+    },
+    "operation": {
+      "type": "ENUM",
+      "required": true,
+      "enumValues": [
+        "CREATE",
+        "UPDATE",
+        "DELETE"
+      ]
+    },
+    "properties": {
+      "type": "OBJECT"
+    },
+    "recordId": {
+      "type": "STRING",
+      "required": true,
+      "length": 256,
+      "annotations": {
+        "SourceDef": "record_id"
+      }
+    },
+    "resource": {
+      "type": "STRING",
+      "required": true,
+      "length": 256
+    },
+    "time": {
+      "type": "TIMESTAMP",
+      "required": true
+    },
+    "username": {
+      "type": "STRING",
+      "required": true
+    },
+    "version": {
+      "type": "INT32",
+      "required": true,
+      "defaultValue": 1,
+      "exampleValue": 1,
+      "title": "Version",
+      "description": "The version of the resource/record. It is incremented on every update.",
+      "annotations": {
+        "AllowEmptyPrimitive": "true",
+        "SpecialProperty": "true"
+      }
     }
-  ],
+  },
   "immutable": true,
   "annotations": {
     "BypassExtensions": "true",

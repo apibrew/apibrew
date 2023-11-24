@@ -34,9 +34,40 @@ export const DataSourceResource = {
   "namespace": {
     "name": "system"
   },
-  "properties": [
-    {
-      "name": "id",
+  "properties": {
+    "auditData": {
+      "type": "STRUCT",
+      "typeRef": "AuditData",
+      "exampleValue": {
+        "createdBy": "admin",
+        "createdOn": "2023-11-23T01:11:33+04:00",
+        "updatedBy": "admin",
+        "updatedOn": "2023-11-23T01:11:33+04:00"
+      },
+      "title": "Audit Data",
+      "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
+      "annotations": {
+        "SpecialProperty": "true"
+      }
+    },
+    "backend": {
+      "type": "ENUM",
+      "required": true,
+      "enumValues": [
+        "POSTGRESQL",
+        "MYSQL",
+        "MONGODB",
+        "REDIS"
+      ]
+    },
+    "description": {
+      "type": "STRING",
+      "length": 64,
+      "annotations": {
+        "AllowEmptyPrimitive": "true"
+      }
+    },
+    "id": {
       "type": "UUID",
       "required": true,
       "immutable": true,
@@ -47,8 +78,23 @@ export const DataSourceResource = {
         "SpecialProperty": "true"
       }
     },
-    {
-      "name": "version",
+    "name": {
+      "type": "STRING",
+      "required": true,
+      "unique": true,
+      "length": 64,
+      "annotations": {
+        "IsHclLabel": "true"
+      }
+    },
+    "options": {
+      "type": "MAP",
+      "required": true,
+      "item": {
+        "type": "STRING"
+      }
+    },
+    "version": {
       "type": "INT32",
       "required": true,
       "defaultValue": 1,
@@ -59,70 +105,15 @@ export const DataSourceResource = {
         "AllowEmptyPrimitive": "true",
         "SpecialProperty": "true"
       }
-    },
-    {
-      "name": "auditData",
-      "type": "STRUCT",
-      "typeRef": "AuditData",
-      "exampleValue": {
-        "createdBy": "admin",
-        "createdOn": "2023-11-13T12:31:41+04:00",
-        "updatedBy": "admin",
-        "updatedOn": "2023-11-13T12:31:41+04:00"
-      },
-      "title": "Audit Data",
-      "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
-      "annotations": {
-        "SpecialProperty": "true"
-      }
-    },
-    {
-      "name": "name",
-      "type": "STRING",
-      "required": true,
-      "unique": true,
-      "length": 64,
-      "annotations": {
-        "IsHclLabel": "true"
-      }
-    },
-    {
-      "name": "description",
-      "type": "STRING",
-      "length": 64,
-      "annotations": {
-        "AllowEmptyPrimitive": "true"
-      }
-    },
-    {
-      "name": "backend",
-      "type": "ENUM",
-      "required": true,
-      "enumValues": [
-        "POSTGRESQL",
-        "MYSQL",
-        "MONGODB",
-        "REDIS"
-      ]
-    },
-    {
-      "name": "options",
-      "type": "MAP",
-      "required": true,
-      "item": {
-        "name": "",
-        "type": "STRING"
-      }
     }
-  ],
+  },
   "types": [
     {
       "name": "AuditData",
       "title": "Audit Data",
       "description": "Audit Data is a type that represents the audit data of a resource/record. ",
-      "properties": [
-        {
-          "name": "createdBy",
+      "properties": {
+        "createdBy": {
           "type": "STRING",
           "immutable": true,
           "length": 256,
@@ -133,8 +124,17 @@ export const DataSourceResource = {
             "SpecialProperty": "true"
           }
         },
-        {
-          "name": "updatedBy",
+        "createdOn": {
+          "type": "TIMESTAMP",
+          "immutable": true,
+          "exampleValue": "2023-11-23T01:11:33+04:00",
+          "title": "Created On",
+          "description": "The timestamp when the resource/record was created.",
+          "annotations": {
+            "SpecialProperty": "true"
+          }
+        },
+        "updatedBy": {
           "type": "STRING",
           "length": 256,
           "exampleValue": "admin",
@@ -144,28 +144,16 @@ export const DataSourceResource = {
             "SpecialProperty": "true"
           }
         },
-        {
-          "name": "createdOn",
+        "updatedOn": {
           "type": "TIMESTAMP",
-          "immutable": true,
-          "exampleValue": "2023-11-13T12:31:41+04:00",
-          "title": "Created On",
-          "description": "The timestamp when the resource/record was created.",
-          "annotations": {
-            "SpecialProperty": "true"
-          }
-        },
-        {
-          "name": "updatedOn",
-          "type": "TIMESTAMP",
-          "exampleValue": "2023-11-13T12:31:41+04:00",
+          "exampleValue": "2023-11-23T01:11:33+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {
             "SpecialProperty": "true"
           }
         }
-      ]
+      }
     }
   ],
   "annotations": {

@@ -17,9 +17,8 @@ export const RecordResource = {
     "name": "system"
   },
   "virtual": true,
-  "properties": [
-    {
-      "name": "id",
+  "properties": {
+    "id": {
       "type": "UUID",
       "required": true,
       "immutable": true,
@@ -30,25 +29,22 @@ export const RecordResource = {
         "SpecialProperty": "true"
       }
     },
-    {
-      "name": "properties",
-      "type": "OBJECT",
-      "required": true,
-      "title": "Properties",
-      "description": "The properties of the record. The schema of properties are defined in the resource definition. \nHere you will put the payload corresponding to the resource definition.\n"
-    },
-    {
-      "name": "packedProperties",
+    "packedProperties": {
       "type": "LIST",
       "item": {
-        "name": "",
         "type": "OBJECT"
       },
       "annotations": {
         "OpenApiHide": "true"
       }
+    },
+    "properties": {
+      "type": "OBJECT",
+      "required": true,
+      "title": "Properties",
+      "description": "The properties of the record. The schema of properties are defined in the resource definition. \nHere you will put the payload corresponding to the resource definition.\n"
     }
-  ],
+  },
   "title": "Generic Record",
   "description": "A generic record resource. All Apis are extended from Generic Record resource",
   "annotations": {

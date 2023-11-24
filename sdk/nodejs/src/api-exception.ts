@@ -9,16 +9,12 @@ export class ApiException extends Error {
         return new ApiException(error.code, error.message!);
     }
 
-    public static fromError(error: Error): ApiException {
-        return new ApiException(Code.UNKNOWN_ERROR, error.message);
-    }
-
-    public static fromCode(code: Code, message?: string): ApiException {
-        return new ApiException(code, message);
-    }
-
-    public static fromMessage(message: string): ApiException {
-        return new ApiException(Code.UNKNOWN_ERROR, message);
+    public static fromError(error: any): ApiException {
+        if (error.code) {
+            return new ApiException(error.code, error.message);
+        } else {
+            return new ApiException(Code.UNKNOWN_ERROR, error.message);
+        }
     }
 
 }

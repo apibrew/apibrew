@@ -82,6 +82,12 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 			}
 		}
 
+		if resourceName == "" || namespace == "" {
+			log.Println(body)
+
+			return errors.New("Resource not set: " + namespace + "/" + resourceName)
+		}
+
 		var record = new(model.Record)
 
 		err = unstructured.ToProtoMessage(unstructured.Unstructured{

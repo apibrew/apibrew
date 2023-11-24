@@ -77,9 +77,33 @@ export const PermissionResource = {
   "namespace": {
     "name": "system"
   },
-  "properties": [
-    {
-      "name": "id",
+  "properties": {
+    "after": {
+      "type": "TIMESTAMP",
+      "title": "After",
+      "description": "The timestamp after which the permission is valid. If given it will be used to match the timestamp of the request."
+    },
+    "auditData": {
+      "type": "STRUCT",
+      "typeRef": "AuditData",
+      "exampleValue": {
+        "createdBy": "admin",
+        "createdOn": "2023-11-23T01:11:33+04:00",
+        "updatedBy": "admin",
+        "updatedOn": "2023-11-23T01:11:33+04:00"
+      },
+      "title": "Audit Data",
+      "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
+      "annotations": {
+        "SpecialProperty": "true"
+      }
+    },
+    "before": {
+      "type": "TIMESTAMP",
+      "title": "Before",
+      "description": "The timestamp before which the permission is valid. If given it will be used to match the timestamp of the request."
+    },
+    "id": {
       "type": "UUID",
       "required": true,
       "immutable": true,
@@ -90,58 +114,17 @@ export const PermissionResource = {
         "SpecialProperty": "true"
       }
     },
-    {
-      "name": "version",
-      "type": "INT32",
-      "required": true,
-      "defaultValue": 1,
-      "exampleValue": 1,
-      "title": "Version",
-      "description": "The version of the resource/record. It is incremented on every update.",
-      "annotations": {
-        "AllowEmptyPrimitive": "true",
-        "SpecialProperty": "true"
-      }
+    "localFlags": {
+      "type": "OBJECT"
     },
-    {
-      "name": "auditData",
-      "type": "STRUCT",
-      "typeRef": "AuditData",
-      "exampleValue": {
-        "createdBy": "admin",
-        "createdOn": "2023-11-13T12:31:41+04:00",
-        "updatedBy": "admin",
-        "updatedOn": "2023-11-13T12:31:41+04:00"
-      },
-      "title": "Audit Data",
-      "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
-      "annotations": {
-        "SpecialProperty": "true"
-      }
-    },
-    {
-      "name": "namespace",
+    "namespace": {
       "type": "STRING",
       "length": 255,
       "exampleValue": "default",
       "title": "Namespace",
       "description": "The namespace(name) of the resource. If given it will be used to match the resource by namespace."
     },
-    {
-      "name": "resource",
-      "type": "STRING",
-      "length": 255,
-      "exampleValue": "Book",
-      "title": "Resource",
-      "description": "The name of the resource. If given it will be used to match the resource by name."
-    },
-    {
-      "name": "recordSelector",
-      "type": "STRUCT",
-      "typeRef": "BooleanExpression"
-    },
-    {
-      "name": "operation",
+    "operation": {
       "type": "ENUM",
       "required": true,
       "length": 255,
@@ -157,35 +140,29 @@ export const PermissionResource = {
       "title": "Operation",
       "description": "The operation of the permission. It is used to match the operation of the request. If given it will be used to match the operation of the request."
     },
-    {
-      "name": "before",
-      "type": "TIMESTAMP",
-      "title": "Before",
-      "description": "The timestamp before which the permission is valid. If given it will be used to match the timestamp of the request."
+    "permit": {
+      "type": "ENUM",
+      "required": true,
+      "length": 255,
+      "enumValues": [
+        "ALLOW",
+        "REJECT"
+      ],
+      "title": "Permit",
+      "description": "The permit of the permission. If permission is matched, this property is judging field to indicate that if operation is allowed or not"
     },
-    {
-      "name": "after",
-      "type": "TIMESTAMP",
-      "title": "After",
-      "description": "The timestamp after which the permission is valid. If given it will be used to match the timestamp of the request."
+    "recordSelector": {
+      "type": "STRUCT",
+      "typeRef": "BooleanExpression"
     },
-    {
-      "name": "user",
-      "type": "REFERENCE",
-      "reference": {
-        "resource": {
-          "name": "User",
-          "namespace": {
-            "name": "system"
-          }
-        },
-        "cascade": false
-      },
-      "title": "User",
-      "description": "The user who has the permission. If given it will be used to match the user of the request. It is ignored by default, because if permissions is set through User this property is overrides and auto-populated by system"
+    "resource": {
+      "type": "STRING",
+      "length": 255,
+      "exampleValue": "Book",
+      "title": "Resource",
+      "description": "The name of the resource. If given it will be used to match the resource by name."
     },
-    {
-      "name": "role",
+    "role": {
       "type": "REFERENCE",
       "reference": {
         "resource": {
@@ -199,31 +176,40 @@ export const PermissionResource = {
       "title": "Role",
       "description": "The role who has the permission. If given it will be used to match the role of the request. It is ignored by default, because if permissions is set through Role this property is overrides and auto-populated by system"
     },
-    {
-      "name": "permit",
-      "type": "ENUM",
-      "required": true,
-      "length": 255,
-      "enumValues": [
-        "ALLOW",
-        "REJECT"
-      ],
-      "title": "Permit",
-      "description": "The permit of the permission. If permission is matched, this property is judging field to indicate that if operation is allowed or not"
+    "user": {
+      "type": "REFERENCE",
+      "reference": {
+        "resource": {
+          "name": "User",
+          "namespace": {
+            "name": "system"
+          }
+        },
+        "cascade": false
+      },
+      "title": "User",
+      "description": "The user who has the permission. If given it will be used to match the user of the request. It is ignored by default, because if permissions is set through User this property is overrides and auto-populated by system"
     },
-    {
-      "name": "localFlags",
-      "type": "OBJECT"
+    "version": {
+      "type": "INT32",
+      "required": true,
+      "defaultValue": 1,
+      "exampleValue": 1,
+      "title": "Version",
+      "description": "The version of the resource/record. It is incremented on every update.",
+      "annotations": {
+        "AllowEmptyPrimitive": "true",
+        "SpecialProperty": "true"
+      }
     }
-  ],
+  },
   "types": [
     {
       "name": "AuditData",
       "title": "Audit Data",
       "description": "Audit Data is a type that represents the audit data of a resource/record. ",
-      "properties": [
-        {
-          "name": "createdBy",
+      "properties": {
+        "createdBy": {
           "type": "STRING",
           "immutable": true,
           "length": 256,
@@ -234,8 +220,17 @@ export const PermissionResource = {
             "SpecialProperty": "true"
           }
         },
-        {
-          "name": "updatedBy",
+        "createdOn": {
+          "type": "TIMESTAMP",
+          "immutable": true,
+          "exampleValue": "2023-11-23T01:11:33+04:00",
+          "title": "Created On",
+          "description": "The timestamp when the resource/record was created.",
+          "annotations": {
+            "SpecialProperty": "true"
+          }
+        },
+        "updatedBy": {
           "type": "STRING",
           "length": 256,
           "exampleValue": "admin",
@@ -245,146 +240,115 @@ export const PermissionResource = {
             "SpecialProperty": "true"
           }
         },
-        {
-          "name": "createdOn",
+        "updatedOn": {
           "type": "TIMESTAMP",
-          "immutable": true,
-          "exampleValue": "2023-11-13T12:31:41+04:00",
-          "title": "Created On",
-          "description": "The timestamp when the resource/record was created.",
-          "annotations": {
-            "SpecialProperty": "true"
-          }
-        },
-        {
-          "name": "updatedOn",
-          "type": "TIMESTAMP",
-          "exampleValue": "2023-11-13T12:31:41+04:00",
+          "exampleValue": "2023-11-23T01:11:33+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {
             "SpecialProperty": "true"
           }
         }
-      ]
+      }
     },
     {
       "name": "BooleanExpression",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "and",
+      "properties": {
+        "and": {
           "type": "LIST",
           "item": {
-            "name": "",
             "type": "STRUCT",
             "typeRef": "BooleanExpression"
           }
         },
-        {
-          "name": "or",
-          "type": "LIST",
-          "item": {
-            "name": "",
-            "type": "STRUCT",
-            "typeRef": "BooleanExpression"
-          }
-        },
-        {
-          "name": "not",
-          "type": "STRUCT",
-          "typeRef": "BooleanExpression"
-        },
-        {
-          "name": "equal",
+        "equal": {
           "type": "STRUCT",
           "typeRef": "PairExpression"
         },
-        {
-          "name": "lessThan",
+        "greaterThan": {
           "type": "STRUCT",
           "typeRef": "PairExpression"
         },
-        {
-          "name": "greaterThan",
+        "greaterThanOrEqual": {
           "type": "STRUCT",
           "typeRef": "PairExpression"
         },
-        {
-          "name": "lessThanOrEqual",
+        "in": {
           "type": "STRUCT",
           "typeRef": "PairExpression"
         },
-        {
-          "name": "greaterThanOrEqual",
-          "type": "STRUCT",
-          "typeRef": "PairExpression"
-        },
-        {
-          "name": "in",
-          "type": "STRUCT",
-          "typeRef": "PairExpression"
-        },
-        {
-          "name": "isNull",
+        "isNull": {
           "type": "STRUCT",
           "typeRef": "Expression"
         },
-        {
-          "name": "regexMatch",
+        "lessThan": {
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        "lessThanOrEqual": {
+          "type": "STRUCT",
+          "typeRef": "PairExpression"
+        },
+        "not": {
+          "type": "STRUCT",
+          "typeRef": "BooleanExpression"
+        },
+        "or": {
+          "type": "LIST",
+          "item": {
+            "type": "STRUCT",
+            "typeRef": "BooleanExpression"
+          }
+        },
+        "regexMatch": {
           "type": "STRUCT",
           "typeRef": "RegexMatchExpression"
         }
-      ]
+      }
     },
     {
       "name": "PairExpression",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "left",
+      "properties": {
+        "left": {
           "type": "STRUCT",
           "typeRef": "Expression"
         },
-        {
-          "name": "right",
+        "right": {
           "type": "STRUCT",
           "typeRef": "Expression"
         }
-      ]
+      }
     },
     {
       "name": "RegexMatchExpression",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "pattern",
-          "type": "STRING"
-        },
-        {
-          "name": "expression",
+      "properties": {
+        "expression": {
           "type": "STRUCT",
           "typeRef": "Expression"
+        },
+        "pattern": {
+          "type": "STRING"
         }
-      ]
+      }
     },
     {
       "name": "Expression",
       "title": "",
       "description": "",
-      "properties": [
-        {
-          "name": "property",
+      "properties": {
+        "property": {
           "type": "STRING"
         },
-        {
-          "name": "value",
+        "value": {
           "type": "OBJECT"
         }
-      ]
+      }
     }
   ],
   "title": "Permission",

@@ -33,17 +33,23 @@ public class PollerExtensionService extends AbstractExtensionServiceImpl impleme
                 log.trace("Received event: {}", objectMapper.writeValueAsString(event));
                 Extension.Event processedEvent = processEvent(event);
 
-                this.client.writeEvent(channelKey, processedEvent);
+                if (event.getSync()) {
+                    this.client.writeEvent(channelKey, processedEvent);
+                }
             } catch (ApiException e) {
                 log.error("Unable to process event[ApiException]", e);
                 event.setError(e.getError());
 
-                this.client.writeEvent(channelKey, event);
+                if (event.getSync()) {
+                    this.client.writeEvent(channelKey, event);
+                }
             } catch (Exception e) {
                 log.error("Unable to process event", e);
                 event.setError(new Extension.Error().withMessage(e.getMessage()));
 
-                this.client.writeEvent(channelKey, event);
+                if (event.getSync()) {
+                    this.client.writeEvent(channelKey, event);
+                }
             }
         });
     }
