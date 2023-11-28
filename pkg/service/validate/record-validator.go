@@ -36,7 +36,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
-				fieldErrors = append(fieldErrors, Value(resource, property, util.GetRecordId(resource, record), "", packedVal)...)
+				fieldErrors = append(fieldErrors, Value(resource, property, util.GetRecordId(resource, record), property.Name, packedVal)...)
 			}
 
 			var val interface{}

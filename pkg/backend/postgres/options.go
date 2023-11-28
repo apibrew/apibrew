@@ -92,6 +92,10 @@ func (p *postgreSqlBackendOptions) GetFullTableName(sourceConfig *model.Resource
 }
 
 func (p *postgreSqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
+	if packedVal == nil || packedVal.AsInterface() == nil {
+		return nil, nil
+	}
+
 	propertyType := types.ByResourcePropertyType(property.Type)
 	var val interface{}
 

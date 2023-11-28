@@ -125,10 +125,12 @@ public class ClientImpl implements Client {
 
         ClientImpl client = new ClientImpl(addr);
 
-        if (serverConfig.getAuthentication().getToken() != null && !serverConfig.getAuthentication().getToken().trim().isEmpty()) {
-            client.authenticateWithToken(serverConfig.getAuthentication().getToken());
-        } else {
-            client.authenticateWithUsernameAndPassword(serverConfig.getAuthentication().getUsername(), serverConfig.getAuthentication().getPassword());
+        if (serverConfig.getAuthentication() != null) {
+            if (serverConfig.getAuthentication().getToken() != null && !serverConfig.getAuthentication().getToken().trim().isEmpty()) {
+                client.authenticateWithToken(serverConfig.getAuthentication().getToken());
+            } else {
+                client.authenticateWithUsernameAndPassword(serverConfig.getAuthentication().getUsername(), serverConfig.getAuthentication().getPassword());
+            }
         }
 
         return client;
@@ -195,19 +197,22 @@ public class ClientImpl implements Client {
 
     @Override
     public void authenticateWithUsernameAndPassword(String username, String password) {
+        this.token = authenticateWithUsernameAndPassword(username, password, Token.TokenTerm.VERY_LONG);
+    }
+
+    @Override
+    public String authenticateWithUsernameAndPassword(String username, String password, Token.TokenTerm term) {
         Map<String, String> body = new HashMap<>();
 
         body.put("username", username);
         body.put("password", password);
-        body.put("term", Token.TokenTerm.VERY_LONG.name());
+        body.put("term", term.name());
 
         HttpResponse<Token.Container> tokenResponse = Unirest.post(Urls.authenticate(url)).body(body).asObject(Token.Container.class);
 
-        if (tokenResponse.getStatus() == 200) {
-            this.token = tokenResponse.getBody().getToken().getContent();
-        } else {
-            ensureResponseSuccess(tokenResponse);
-        }
+        ensureResponseSuccess(tokenResponse);
+
+        return tokenResponse.getBody().getToken().getContent();
     }
 
     @Override

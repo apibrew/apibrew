@@ -22,7 +22,7 @@ func (p *sqlBackend) handleDbError(ctx context.Context, err error) errors.Servic
 	logger.Errorf("Db Error: %s", err)
 
 	if err == sql.ErrNoRows {
-		return errors.RecordNotFoundError
+		return nil // it is not actual error
 	}
 
 	logger.Debug("Stack: " + string(debug.Stack()))

@@ -4,6 +4,7 @@ import io.apibrew.client.*;
 import io.apibrew.client.model.Extension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class RepositoryImpl<T extends Entity> implements Repository<T> {
@@ -33,6 +34,23 @@ public class RepositoryImpl<T extends Entity> implements Repository<T> {
     @Override
     public T get(String id, List<String> resolveReferences) {
         return client.getRecord(entityInfo, GetRecordParams.builder().id(id).resolveReferences(resolveReferences).build());
+    }
+
+    @Override
+    public T findBy(Map<String, String> filters, List<String> resolveReferences) {
+        Container<T> result = list(ListRecordParams.builder()
+                .filters(filters)
+                .limit(1)
+                .resolveReferences(resolveReferences)
+                .build());
+
+        if (result.getTotal() > 1) {
+            throw new ApiException(Extension.Code.RECORD_VALIDATION_ERROR, "More than one record found");
+        } else if (result.getTotal() == 1) {
+            return result.getContent().get(0);
+        } else {
+            throw new ApiException(Extension.Code.RECORD_NOT_FOUND, "Record not found");
+        }
     }
 
     @Override
@@ -66,7 +84,7 @@ public class RepositoryImpl<T extends Entity> implements Repository<T> {
     }
 
     @Override
-    public Container<T> list(Extension.BooleanExpression ...query) {
+    public Container<T> list(Extension.BooleanExpression... query) {
         if (query.length == 0) {
             return client.listRecords(entityInfo, null);
         } else if (query.length == 1) {

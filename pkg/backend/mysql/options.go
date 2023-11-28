@@ -93,6 +93,10 @@ func (p *mysqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourc
 }
 
 func (p *mysqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
+	if packedVal == nil {
+		return nil, nil
+	}
+
 	propertyType := types.ByResourcePropertyType(property.Type)
 	var val interface{}
 

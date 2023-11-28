@@ -45,7 +45,7 @@ var DataSourceResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-21T00:08:32+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-24T23:20:38+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -54,7 +54,7 @@ var DataSourceResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-21T00:08:32+04:00"),
+					ExampleValue: structpb.NewStringValue("2023-11-24T23:20:38+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -96,7 +96,7 @@ var DataSourceResource = &model.Resource{
 		{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-21T00:08:32+04:00"), "updatedOn": structpb.NewStringValue("2023-11-21T00:08:32+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-24T23:20:38+04:00"), "updatedOn": structpb.NewStringValue("2023-11-24T23:20:38+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

@@ -68,4 +68,5 @@ const (
 	DataSourceBackend_MYSQL      DataSourceBackend = "MYSQL"
 	DataSourceBackend_MONGODB    DataSourceBackend = "MONGODB"
 	DataSourceBackend_REDIS      DataSourceBackend = "REDIS"
+	DataSourceBackend_SQLITE     DataSourceBackend = "SQLITE"
 )

@@ -3,6 +3,7 @@ package io.apibrew.client;
 import io.apibrew.client.impl.ClientImpl;
 import io.apibrew.client.model.Extension;
 import io.apibrew.client.model.Resource;
+import io.apibrew.client.model.Token;
 
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ public interface Client {
     void authenticateWithToken(String token);
 
     void authenticateWithUsernameAndPassword(String username, String password);
+    String authenticateWithUsernameAndPassword(String username, String password, Token.TokenTerm term);
 
     Client newClientAuthenticateWithToken(String token);
 

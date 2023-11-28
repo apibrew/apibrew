@@ -96,7 +96,7 @@ func (h RecordSpecialColumnHelper) SetUpdatedOn(updatedOn *timestamppb.Timestamp
 
 	h.ensureAuditData()
 
-	h.Record.Properties["auditData"].GetStructValue().Fields["createdBy"] = val
+	h.Record.Properties["auditData"].GetStructValue().Fields["updatedOn"] = val
 }
 
 func (h RecordSpecialColumnHelper) HasIdSpecialProperty() bool {

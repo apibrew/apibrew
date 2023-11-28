@@ -3,6 +3,7 @@ package io.apibrew.client;
 import io.apibrew.client.model.Extension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public interface Repository<T extends Entity> {
@@ -10,6 +11,7 @@ public interface Repository<T extends Entity> {
     T create(T record);
     T get(String id);
     T get(String id, List<String> resolveReferences);
+    T findBy(Map<String, String> filters, List<String> resolveReferences);
     T update(T record);
     T delete(String id);
     T apply(T record);

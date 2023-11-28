@@ -166,6 +166,8 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
 	countBuilder := r.builder.Copy()
 	countBuilder.Select("count(*)")
+	countBuilder.Limit(1)
+	countBuilder.Offset(0)
 
 	countQuery, args := countBuilder.Build()
 	r.logger.Tracef("countQuery: %s", countQuery)

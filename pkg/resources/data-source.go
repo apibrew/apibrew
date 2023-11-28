@@ -48,6 +48,7 @@ var DataSourceResource = &model.Resource{
 				"MYSQL",
 				"MONGODB",
 				"REDIS",
+				"SQLITE",
 			},
 		},
 		{

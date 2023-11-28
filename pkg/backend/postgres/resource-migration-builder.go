@@ -278,6 +278,10 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 				}
 
+				if referencedResource == nil {
+					return errors.ReferenceViolation.WithDetails("Referenced resource not exists with name: " + referenceNamespace + "/" + property.Reference.Resource)
+				}
+
 				sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(property.Name), r.options.Quote(referencedResource.SourceConfig.Entity), r.options.Quote("id")))
 				changes++
 			}
