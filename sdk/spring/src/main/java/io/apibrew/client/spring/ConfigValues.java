@@ -15,6 +15,6 @@ public class ConfigValues {
 
     Config.Server server;
 
-    @Value("${apibrew.server.profile:default}")
+    @Value("${apibrew.profile:default}")
     String profile;
 }
