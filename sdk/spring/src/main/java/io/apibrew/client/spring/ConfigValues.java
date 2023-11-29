@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "mail")
+@ConfigurationProperties(prefix = "apibrew")
 public class ConfigValues {
     public String channelKey = "default";
     String serviceName = "default";
