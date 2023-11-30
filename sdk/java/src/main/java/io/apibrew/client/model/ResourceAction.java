@@ -30,7 +30,7 @@ public class ResourceAction extends Entity {
     
     private java.util.List<ResourceAction.SubType> types;
     
-    private java.util.List<ResourceAction.Property> input;
+    private java.util.Map<String, ResourceAction.Property> input;
     
     private ResourceAction.Property output;
     
@@ -50,7 +50,7 @@ public class ResourceAction extends Entity {
         
         private String description;
         
-        private java.util.List<ResourceAction.Property> properties;
+        private java.util.Map<String, ResourceAction.Property> properties;
 
         public String getName() {
             return name;
@@ -91,15 +91,15 @@ public class ResourceAction extends Entity {
 
             return this;
         }
-        public java.util.List<ResourceAction.Property> getProperties() {
+        public java.util.Map<String, ResourceAction.Property> getProperties() {
             return properties;
         }
 
-        public void setProperties(java.util.List<ResourceAction.Property> properties) {
+        public void setProperties(java.util.Map<String, ResourceAction.Property> properties) {
             this.properties = properties;
         }
 
-        public SubType withProperties(java.util.List<ResourceAction.Property> properties) {
+        public SubType withProperties(java.util.Map<String, ResourceAction.Property> properties) {
             this.properties = properties;
 
             return this;
@@ -210,8 +210,6 @@ public class ResourceAction extends Entity {
     }
     public static class Property {
         
-        private String name;
-        
         private ResourceAction.Type type;
         
         private String typeRef;
@@ -242,19 +240,6 @@ public class ResourceAction extends Entity {
         
         private java.util.Map<String, String> annotations;
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public Property withName(String name) {
-            this.name = name;
-
-            return this;
-        }
         public ResourceAction.Type getType() {
             return type;
         }
@@ -459,9 +444,6 @@ public class ResourceAction extends Entity {
 
             Property obj = (Property) o;
 
-            if (!Objects.equals(this.name, obj.name)) {
-                return false;
-            }
             if (!Objects.equals(this.type, obj.type)) {
                 return false;
             }
@@ -513,7 +495,7 @@ public class ResourceAction extends Entity {
 
         @Override
         public int hashCode() {
-           return Objects.hash(name, type, typeRef, primary, required, unique, immutable, length, item, reference, defaultValue, enumValues, exampleValue, title, description, annotations);
+           return Objects.hash(type, typeRef, primary, required, unique, immutable, length, item, reference, defaultValue, enumValues, exampleValue, title, description, annotations);
         }
     }
     public static class AuditData {
@@ -762,15 +744,15 @@ public class ResourceAction extends Entity {
 
         return this;
     }
-    public java.util.List<ResourceAction.Property> getInput() {
+    public java.util.Map<String, ResourceAction.Property> getInput() {
         return input;
     }
 
-    public void setInput(java.util.List<ResourceAction.Property> input) {
+    public void setInput(java.util.Map<String, ResourceAction.Property> input) {
         this.input = input;
     }
 
-    public ResourceAction withInput(java.util.List<ResourceAction.Property> input) {
+    public ResourceAction withInput(java.util.Map<String, ResourceAction.Property> input) {
         this.input = input;
 
         return this;

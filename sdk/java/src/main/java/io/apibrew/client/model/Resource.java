@@ -24,7 +24,7 @@ public class Resource extends Entity {
     
     private boolean virtual;
     
-    private java.util.List<Resource.Property> properties;
+    private java.util.Map<String, Resource.Property> properties;
     
     private java.util.List<Resource.Index> indexes;
     
@@ -56,8 +56,6 @@ public class Resource extends Entity {
 
     public static class Property {
         
-        private String name;
-        
         private Resource.Type type;
         
         private String typeRef;
@@ -88,19 +86,6 @@ public class Resource extends Entity {
         
         private java.util.Map<String, String> annotations;
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public Property withName(String name) {
-            this.name = name;
-
-            return this;
-        }
         public Resource.Type getType() {
             return type;
         }
@@ -305,9 +290,6 @@ public class Resource extends Entity {
 
             Property obj = (Property) o;
 
-            if (!Objects.equals(this.name, obj.name)) {
-                return false;
-            }
             if (!Objects.equals(this.type, obj.type)) {
                 return false;
             }
@@ -359,7 +341,7 @@ public class Resource extends Entity {
 
         @Override
         public int hashCode() {
-           return Objects.hash(name, type, typeRef, primary, required, unique, immutable, length, item, reference, defaultValue, enumValues, exampleValue, title, description, annotations);
+           return Objects.hash(type, typeRef, primary, required, unique, immutable, length, item, reference, defaultValue, enumValues, exampleValue, title, description, annotations);
         }
     }
     public static class SubType {
@@ -370,7 +352,7 @@ public class Resource extends Entity {
         
         private String description;
         
-        private java.util.List<Resource.Property> properties;
+        private java.util.Map<String, Resource.Property> properties;
 
         public String getName() {
             return name;
@@ -411,15 +393,15 @@ public class Resource extends Entity {
 
             return this;
         }
-        public java.util.List<Resource.Property> getProperties() {
+        public java.util.Map<String, Resource.Property> getProperties() {
             return properties;
         }
 
-        public void setProperties(java.util.List<Resource.Property> properties) {
+        public void setProperties(java.util.Map<String, Resource.Property> properties) {
             this.properties = properties;
         }
 
-        public SubType withProperties(java.util.List<Resource.Property> properties) {
+        public SubType withProperties(java.util.Map<String, Resource.Property> properties) {
             this.properties = properties;
 
             return this;
@@ -914,15 +896,15 @@ public class Resource extends Entity {
 
         return this;
     }
-    public java.util.List<Resource.Property> getProperties() {
+    public java.util.Map<String, Resource.Property> getProperties() {
         return properties;
     }
 
-    public void setProperties(java.util.List<Resource.Property> properties) {
+    public void setProperties(java.util.Map<String, Resource.Property> properties) {
         this.properties = properties;
     }
 
-    public Resource withProperties(java.util.List<Resource.Property> properties) {
+    public Resource withProperties(java.util.Map<String, Resource.Property> properties) {
         this.properties = properties;
 
         return this;

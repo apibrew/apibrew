@@ -129,7 +129,8 @@ public class DataSource extends Entity {
         POSTGRESQL("POSTGRESQL"),
         MYSQL("MYSQL"),
         MONGODB("MONGODB"),
-        REDIS("REDIS");
+        REDIS("REDIS"),
+        SQLITE("SQLITE");
 
         private final String value;
 

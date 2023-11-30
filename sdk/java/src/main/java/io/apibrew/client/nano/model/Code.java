@@ -12,21 +12,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Code extends Entity {
     
-    private java.util.UUID id;
-    
     private String name;
-    
-    private Code.Language language;
     
     private String content;
     
-    private Code.ContentFormat contentFormat;
+    private int version;
+    
+    private Code.Language language;
+    
+    private Code.AuditData auditData;
     
     private java.util.Map<String, String> annotations;
     
-    private int version;
+    private Code.ContentFormat contentFormat;
     
-    private Code.AuditData auditData;
+    private java.util.UUID id;
 
     public static final String NAMESPACE = "nano";
     public static final String RESOURCE = "Code";
@@ -36,27 +36,14 @@ public class Code extends Entity {
 
     public static class AuditData {
         
-        private String createdBy;
-        
         private String updatedBy;
         @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
-        private java.time.Instant createdOn;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
         private java.time.Instant updatedOn;
+        
+        private String createdBy;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
+        private java.time.Instant createdOn;
 
-        public String getCreatedBy() {
-            return createdBy;
-        }
-
-        public void setCreatedBy(String createdBy) {
-            this.createdBy = createdBy;
-        }
-
-        public AuditData withCreatedBy(String createdBy) {
-            this.createdBy = createdBy;
-
-            return this;
-        }
         public String getUpdatedBy() {
             return updatedBy;
         }
@@ -67,19 +54,6 @@ public class Code extends Entity {
 
         public AuditData withUpdatedBy(String updatedBy) {
             this.updatedBy = updatedBy;
-
-            return this;
-        }
-        public java.time.Instant getCreatedOn() {
-            return createdOn;
-        }
-
-        public void setCreatedOn(java.time.Instant createdOn) {
-            this.createdOn = createdOn;
-        }
-
-        public AuditData withCreatedOn(java.time.Instant createdOn) {
-            this.createdOn = createdOn;
 
             return this;
         }
@@ -96,6 +70,32 @@ public class Code extends Entity {
 
             return this;
         }
+        public String getCreatedBy() {
+            return createdBy;
+        }
+
+        public void setCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
+        }
+
+        public AuditData withCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
+
+            return this;
+        }
+        public java.time.Instant getCreatedOn() {
+            return createdOn;
+        }
+
+        public void setCreatedOn(java.time.Instant createdOn) {
+            this.createdOn = createdOn;
+        }
+
+        public AuditData withCreatedOn(java.time.Instant createdOn) {
+            this.createdOn = createdOn;
+
+            return this;
+        }
 
         @Override
         public boolean equals(Object o) {
@@ -105,16 +105,16 @@ public class Code extends Entity {
 
             AuditData obj = (AuditData) o;
 
-            if (!Objects.equals(this.createdBy, obj.createdBy)) {
-                return false;
-            }
             if (!Objects.equals(this.updatedBy, obj.updatedBy)) {
                 return false;
             }
-            if (!Objects.equals(this.createdOn, obj.createdOn)) {
+            if (!Objects.equals(this.updatedOn, obj.updatedOn)) {
                 return false;
             }
-            if (!Objects.equals(this.updatedOn, obj.updatedOn)) {
+            if (!Objects.equals(this.createdBy, obj.createdBy)) {
+                return false;
+            }
+            if (!Objects.equals(this.createdOn, obj.createdOn)) {
                 return false;
             }
 
@@ -123,7 +123,7 @@ public class Code extends Entity {
 
         @Override
         public int hashCode() {
-           return Objects.hash(createdBy, updatedBy, createdOn, updatedOn);
+           return Objects.hash(updatedBy, updatedOn, createdBy, createdOn);
         }
     }
 
@@ -164,19 +164,6 @@ public class Code extends Entity {
     public Code() {
     }
 
-    public java.util.UUID getId() {
-        return id;
-    }
-
-    public void setId(java.util.UUID id) {
-        this.id = id;
-    }
-
-    public Code withId(java.util.UUID id) {
-        this.id = id;
-
-        return this;
-    }
     public String getName() {
         return name;
     }
@@ -187,19 +174,6 @@ public class Code extends Entity {
 
     public Code withName(String name) {
         this.name = name;
-
-        return this;
-    }
-    public Code.Language getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(Code.Language language) {
-        this.language = language;
-    }
-
-    public Code withLanguage(Code.Language language) {
-        this.language = language;
 
         return this;
     }
@@ -216,32 +190,6 @@ public class Code extends Entity {
 
         return this;
     }
-    public Code.ContentFormat getContentFormat() {
-        return contentFormat;
-    }
-
-    public void setContentFormat(Code.ContentFormat contentFormat) {
-        this.contentFormat = contentFormat;
-    }
-
-    public Code withContentFormat(Code.ContentFormat contentFormat) {
-        this.contentFormat = contentFormat;
-
-        return this;
-    }
-    public java.util.Map<String, String> getAnnotations() {
-        return annotations;
-    }
-
-    public void setAnnotations(java.util.Map<String, String> annotations) {
-        this.annotations = annotations;
-    }
-
-    public Code withAnnotations(java.util.Map<String, String> annotations) {
-        this.annotations = annotations;
-
-        return this;
-    }
     public int getVersion() {
         return version;
     }
@@ -252,6 +200,19 @@ public class Code extends Entity {
 
     public Code withVersion(int version) {
         this.version = version;
+
+        return this;
+    }
+    public Code.Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Code.Language language) {
+        this.language = language;
+    }
+
+    public Code withLanguage(Code.Language language) {
+        this.language = language;
 
         return this;
     }
@@ -268,6 +229,45 @@ public class Code extends Entity {
 
         return this;
     }
+    public java.util.Map<String, String> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(java.util.Map<String, String> annotations) {
+        this.annotations = annotations;
+    }
+
+    public Code withAnnotations(java.util.Map<String, String> annotations) {
+        this.annotations = annotations;
+
+        return this;
+    }
+    public Code.ContentFormat getContentFormat() {
+        return contentFormat;
+    }
+
+    public void setContentFormat(Code.ContentFormat contentFormat) {
+        this.contentFormat = contentFormat;
+    }
+
+    public Code withContentFormat(Code.ContentFormat contentFormat) {
+        this.contentFormat = contentFormat;
+
+        return this;
+    }
+    public java.util.UUID getId() {
+        return id;
+    }
+
+    public void setId(java.util.UUID id) {
+        this.id = id;
+    }
+
+    public Code withId(java.util.UUID id) {
+        this.id = id;
+
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -277,28 +277,28 @@ public class Code extends Entity {
 
         Code obj = (Code) o;
 
-        if (!Objects.equals(this.id, obj.id)) {
-            return false;
-        }
         if (!Objects.equals(this.name, obj.name)) {
-            return false;
-        }
-        if (!Objects.equals(this.language, obj.language)) {
             return false;
         }
         if (!Objects.equals(this.content, obj.content)) {
             return false;
         }
-        if (!Objects.equals(this.contentFormat, obj.contentFormat)) {
+        if (!Objects.equals(this.version, obj.version)) {
+            return false;
+        }
+        if (!Objects.equals(this.language, obj.language)) {
+            return false;
+        }
+        if (!Objects.equals(this.auditData, obj.auditData)) {
             return false;
         }
         if (!Objects.equals(this.annotations, obj.annotations)) {
             return false;
         }
-        if (!Objects.equals(this.version, obj.version)) {
+        if (!Objects.equals(this.contentFormat, obj.contentFormat)) {
             return false;
         }
-        if (!Objects.equals(this.auditData, obj.auditData)) {
+        if (!Objects.equals(this.id, obj.id)) {
             return false;
         }
 
