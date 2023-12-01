@@ -21,8 +21,10 @@ public class Controller<T extends Entity & ControllerInstance> {
     private final Class<T> instanceClass;
 
     private final BiFunction<Client, T, InstanceClient> newInstanceClient;
+    private final String name;
 
-    public Controller(Class<T> instanceClass, BiFunction<Client, T, InstanceClient> newInstanceClient) {
+    public Controller(String name, Class<T> instanceClass, BiFunction<Client, T, InstanceClient> newInstanceClient) {
+        this.name = name;
         this.instanceClass = instanceClass;
         this.newInstanceClient = newInstanceClient;
     }
@@ -43,7 +45,7 @@ public class Controller<T extends Entity & ControllerInstance> {
 
         log.info("Starting controller instance listener");
 
-        PollerExtensionService extService = new PollerExtensionService("storage-instance-poller", client, "storage-instance-poller");
+        PollerExtensionService extService = new PollerExtensionService(this.name + "-instance-poller", client, "storage-instance-poller");
 
         log.info("Started controller: " + controller.getHost());
 
@@ -70,7 +72,7 @@ public class Controller<T extends Entity & ControllerInstance> {
                     return instance;
                 });
 
-        ControllerInstanceHandler.when(Condition.afterDelete())
+        ControllerInstanceHandler.when(Condition.beforeDelete())
                 .when(Condition.async())
                 .operate((event, instance) -> {
                     log.info("Deleting instance: " + instance.getName());
