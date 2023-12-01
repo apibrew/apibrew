@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.BiFunction;
 
 @Log4j2
@@ -29,7 +30,7 @@ public class Controller<T extends Entity & ControllerInstance> {
         this.newInstanceClient = newInstanceClient;
     }
 
-    private final Map<String, InstanceClient> instanceMap = new HashMap<>();
+    private final Map<UUID, InstanceClient> instanceMap = new HashMap<>();
 
     public void startUpController(T.ServerConfig controller) throws IOException {
         log.info("Starting controller: " + controller.getHost());
@@ -54,9 +55,9 @@ public class Controller<T extends Entity & ControllerInstance> {
         ControllerInstanceHandler.when(Condition.afterCreate())
                 .when(Condition.async())
                 .operate((event, instance) -> {
-                    log.info("Creating instance: " + instance.getName());
+                    log.info("Creating instance by id: " + instance.getId());
                     startUpInstance(instance);
-                    log.info("Created instance: " + instance.getName());
+                    log.info("Created instance by id: " + instance.getId());
 
                     return instance;
                 });
@@ -64,10 +65,10 @@ public class Controller<T extends Entity & ControllerInstance> {
         ControllerInstanceHandler.when(Condition.afterUpdate())
                 .when(Condition.async())
                 .operate((event, instance) -> {
-                    log.info("Updating instance: " + instance.getName());
+                    log.info("Updating instance by id: " + instance.getId());
                     destroyInstance(instance);
                     startUpInstance(instance);
-                    log.info("Updated instance: " + instance.getName());
+                    log.info("Updated instance by id: " + instance.getId());
 
                     return instance;
                 });
@@ -75,9 +76,9 @@ public class Controller<T extends Entity & ControllerInstance> {
         ControllerInstanceHandler.when(Condition.beforeDelete())
                 .when(Condition.async())
                 .operate((event, instance) -> {
-                    log.info("Deleting instance: " + instance.getName());
+                    log.info("Deleting instance by id: " + instance.getId());
                     destroyInstance(instance);
-                    log.info("Deleted instance: " + instance.getName());
+                    log.info("Deleted instance by id: " + instance.getId());
 
                     return instance;
                 });
@@ -86,13 +87,13 @@ public class Controller<T extends Entity & ControllerInstance> {
     }
 
     public void destroyInstance(T instance) {
-        if (!instanceMap.containsKey(instance.getName())) {
-            log.error("Instance not started: " + instance.getName());
+        if (!instanceMap.containsKey(instance.getId())) {
+            log.error("Instance not started: " + instance.getId());
             return;
         }
 
-        instanceMap.get(instance.getName()).stop();
-        instanceMap.remove(instance.getName());
+        instanceMap.get(instance.getId()).stop();
+        instanceMap.remove(instance.getId());
     }
 
     private io.apibrew.client.Config.Server prepareConfigServer(T.ServerConfig controller) {
@@ -110,12 +111,12 @@ public class Controller<T extends Entity & ControllerInstance> {
     }
 
     public void startUpInstance(T instance) {
-        if (instanceMap.containsKey(instance.getName())) {
-            log.error("Instance already started: " + instance.getName());
+        if (instanceMap.containsKey(instance.getId())) {
+            log.error("Instance already started: " + instance.getId());
             return;
         }
 
-        log.info("Starting instance: " + instance.getName());
+        log.info("Starting instance by id: " + instance.getId());
 
         Thread thread = new Thread(() -> {
             for (int i = 0; i < 100; i++) {
@@ -124,10 +125,10 @@ public class Controller<T extends Entity & ControllerInstance> {
 
                     InstanceClient instanceClient = newInstanceClient.apply(client, instance);
                     instanceClient.init();
-                    instanceMap.put(instance.getName(), instanceClient);
+                    instanceMap.put(instance.getId(), instanceClient);
                     break;
                 } catch (Exception e) {
-                    log.error("Unable to start instance: " + instance.getName(), e);
+                    log.error("Unable to start instance by id: " + instance.getId(), e);
                     try {
                         Thread.sleep(1000 * (i + 1));
                     } catch (InterruptedException interruptedException) {
@@ -136,10 +137,10 @@ public class Controller<T extends Entity & ControllerInstance> {
                 }
             }
 
-            log.info("Started instance: " + instance.getName());
+            log.info("Started instance by id: " + instance.getId());
         });
 
-        thread.setName("storage-instance-startup[" + instance.getName() + "]");
+        thread.setName("storage-instance-startup[" + instance.getId() + "]");
 
         thread.start();
     }
