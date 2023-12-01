@@ -56,5 +56,5 @@ type FindParams struct {
 	UseHistory        bool
 	Annotations       map[string]string
 	ResolveReferences []string
-	Query             *model.BooleanExpression
+	Filters           map[string]string
 }

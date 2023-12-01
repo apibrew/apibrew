@@ -65,7 +65,7 @@ func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, uint32
 	listParams := service.RecordListParams{
 		Namespace:         r.mapper.ResourceIdentity().Namespace,
 		Resource:          r.mapper.ResourceIdentity().Name,
-		Query:             params.Query,
+		Filters:           params.Filters,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
 		UseHistory:        params.UseHistory,
