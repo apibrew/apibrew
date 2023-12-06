@@ -8,19 +8,7 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/apibrew/apibrew)
 ![GitHub](https://img.shields.io/github/license/apibrew/apibrew)
 
-Demo http://tisserv.net:9009/    (swagger docs: http://tisserv.net:9009/docs)
-
-For using demo, you need to use following config on ~/.dhctl/config
-```yaml
-type: apbr-server
-servers:
-  - name: local
-    host: tisserv.net:9009
-    authentication:
-      username: admin
-      password: admin
-defaultServer: local
-```
+Docs: https://apibrew.io/docs/getting-started
 
 
 ## Introduction
@@ -33,14 +21,12 @@ country.yml
 type: resource
 name: country
 properties:
-  - name: name # name of the property
+  name: # name of the property
     type: STRING # type of the property
-    length: 255
     required: true
     unique: true
-  - name: description # name of the property
+  name: description # name of the property
     type: STRING # type of the property
-    length: 255
 ```
 
 ```bash
@@ -100,61 +86,3 @@ API Brew is a **Low Code software** that allows to create various Grpc and Rest 
 * Creating backend for your existing database
 * Managing your data in a CRUD fashion
 * Creating Standardized, well documented APIs for your data
-
-
-## Quick Example
-
-### Easy Installation 
-
-```bash
-curl -L https://raw.githubusercontent.com/apibrew/apibrew/master/deploy/easy-install/run.sh | bash
-```
-
-For more detailed installation, see [Installation](https://apibrew.io/docs/installation)
-
-### Let's create a resource
-
-country.yml
-
-```
-type: resource
-name: country
-properties:
-  - name: name
-    type: STRING
-    length: 255
-    required: true
-    unique: true
-  - name: description
-    type: STRING
-    length: 255
-```
-
-```
-apbr apply -f country.yml
-```
-
-Swagger: http://localhost:9009/docs/index.html
-
-```
-# Create Country
-curl -X POST --location "http://localhost:9009/country" \
-    -H "Authorization: <token>" \
-    -d "{
-   \"name\": \"Country1\",
-   \"description\": \"Sample Country 1\"
-}"
-
-# List Countries
-curl "http://localhost:9009/country" -H "Authorization: <token>"
-```
-
-# [Docs](https://apibrew.io)
-
-- [Tutorials](https://apibrew.io/docs/tutorials/index) - Tutorials
-- [Installation](https://apibrew.io/docs/installation) - Installation
-- [General](https://apibrew.io/docs/general) - General information about API Brew
-- [API](https://apibrew.io/docs/api) - GRPC and Rest API documentation
-- [CLI](https://apibrew.io/docs/apbr) - CLI interface(apbr) documentation
-- [Proto](https://apibrew.io/docs/proto) - Proto documentation
-- [SDK](https://apibrew.io/docs/sdk) - SDK documentation
