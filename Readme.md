@@ -1,4 +1,4 @@
-![](website/static/logo/logo-small.svg)    -    https://apibrew.io
+![]([website/static/logo/logo-small.svg](https://apibrew.io/apibrew_logo.png))    -    https://apibrew.io
 ======================
 [![build](https://github.com/apibrew/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/apibrew/apibrew/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/apibrew/apibrew)](https://goreportcard.com/report/github.com/apibrew/apibrew)
