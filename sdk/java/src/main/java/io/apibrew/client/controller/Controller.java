@@ -1,9 +1,6 @@
 package io.apibrew.client.controller;
 
-import io.apibrew.client.Client;
-import io.apibrew.client.Config;
-import io.apibrew.client.Entity;
-import io.apibrew.client.Repository;
+import io.apibrew.client.*;
 import io.apibrew.client.ext.Condition;
 import io.apibrew.client.ext.Handler;
 import io.apibrew.client.ext.impl.PollerExtensionService;
@@ -42,7 +39,9 @@ public class Controller<T extends Entity & ControllerInstance> {
         Repository<T> instancesRepository = client.repository(instanceClass);
 
         log.info("Starting controller instances");
-        instancesRepository.list().getContent().forEach(this::startUpInstance);
+        instancesRepository.list(ListRecordParams.builder()
+                .limit(100000)
+                .build()).getContent().forEach(this::startUpInstance);
 
         log.info("Starting controller instance listener");
 

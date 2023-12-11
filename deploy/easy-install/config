@@ -1,8 +1,0 @@
-type: server
-servers:
-  - name: local
-    host: 127.0.0.1:9009
-    authentication:
-      username: admin
-      password: admin
-defaultServer: local
