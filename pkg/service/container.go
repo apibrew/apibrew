@@ -11,4 +11,5 @@ type Container interface {
 	GetDataSourceService() DataSourceService
 	GetWatchService() WatchService
 	GetExtensionService() ExtensionService
+	GetBackendEventHandler() interface{}
 }

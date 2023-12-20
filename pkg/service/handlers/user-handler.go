@@ -5,7 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
-	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )

@@ -14,12 +14,6 @@ import (
 	"sort"
 )
 
-type BackendEventHandler interface {
-	RegisterHandler(handler Handler)
-	UnRegisterHandler(handler Handler)
-	Handle(ctx context.Context, incoming *model.Event) (*model.Event, errors.ServiceError)
-}
-
 type backendEventHandler struct {
 	handlers                      []Handler
 	authorizationService          service.AuthorizationService
@@ -155,4 +149,10 @@ func (b *backendEventHandler) filterHandlersForEvent(ctx context.Context, incomi
 
 func NewBackendEventHandler(authorizationService service.AuthorizationService) BackendEventHandler {
 	return &backendEventHandler{authorizationService: authorizationService, extensionEventSelectorMatcher: &helper.ExtensionEventSelectorMatcher{}}
+}
+
+type BackendEventHandler interface {
+	RegisterHandler(handler Handler)
+	UnRegisterHandler(handler Handler)
+	Handle(ctx context.Context, incoming *model.Event) (*model.Event, errors.ServiceError)
 }

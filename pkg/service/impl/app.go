@@ -34,6 +34,10 @@ type App struct {
 	modules                  []service.Module
 }
 
+func (app *App) GetBackendEventHandler() interface{} {
+	return app.backendEventHandler
+}
+
 func (app *App) GetAuthorizationService() service.AuthorizationService {
 	return app.authorizationService
 }

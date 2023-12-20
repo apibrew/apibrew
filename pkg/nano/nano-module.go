@@ -1,11 +1,15 @@
 package nano
 
 import (
+	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
+	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"log"
 )
@@ -66,7 +70,22 @@ func (m module) ensureResources() {
 }
 
 func (m module) initCodeListeners() {
-
+	backendEventHandler := m.container.GetBackendEventHandler().(backend_event_handler.BackendEventHandler)
+	backendEventHandler.RegisterHandler(backend_event_handler.Handler{
+		Id:   "nano-code-listener",
+		Name: "nano-code-listener",
+		Fn:   m.codeListenerHandler,
+		Selector: &model.EventSelector{
+			Actions: []model.Event_Action{
+				model.Event_CREATE, model.Event_UPDATE, model.Event_DELETE,
+			},
+			Namespaces: []string{CodeResource.Namespace},
+			Resources:  []string{CodeResource.Name},
+		},
+		Order:    90,
+		Sync:     true,
+		Internal: true,
+	})
 }
 
 func (m module) initExistingCodes() {
@@ -83,10 +102,43 @@ func (m module) initExistingCodes() {
 	for _, codeRecord := range codeRecords {
 		var code = CodeMapperInstance.FromRecord(codeRecord)
 
-		m.codeExecutor.registerCode(code)
+		err := m.codeExecutor.registerCode(code)
+
+		if err != nil {
+			logrus.WithField("CodeName", code.Name).Error(err)
+		}
 	}
 }
 
+func (m module) codeListenerHandler(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	for _, record := range event.Records {
+		code := CodeMapperInstance.FromRecord(record)
+
+		switch event.Action {
+		case model.Event_CREATE:
+			err := m.codeExecutor.registerCode(code)
+
+			if err != nil {
+				return nil, errors.RecordValidationError.WithMessage(fmt.Sprintf("%v", err))
+			}
+		case model.Event_UPDATE:
+			err := m.codeExecutor.updateCode(code)
+
+			if err != nil {
+				return nil, errors.RecordValidationError.WithMessage(fmt.Sprintf("%v", err))
+			}
+		case model.Event_DELETE:
+			err := m.codeExecutor.unRegisterCode(code)
+
+			if err != nil {
+				return nil, errors.RecordValidationError.WithMessage(fmt.Sprintf("%v", err))
+			}
+		}
+	}
+
+	return event, nil
+}
+
 func NewModule(container service.Container) service.Module {
-	return &module{container: container, codeExecutor: newCodeExecutorService()}
+	return &module{container: container, codeExecutor: newCodeExecutorService(container)}
 }
