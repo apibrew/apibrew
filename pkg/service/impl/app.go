@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/executor"
-	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
@@ -32,6 +31,7 @@ type App struct {
 	metricsService           service.MetricsService
 	auditService             service.AuditService
 	statsService             service.StatsService
+	modules                  []service.Module
 }
 
 func (app *App) GetAuthorizationService() service.AuthorizationService {
@@ -108,6 +108,9 @@ func (app *App) Init() <-chan interface{} {
 	initSignal := make(chan interface{})
 	go func() {
 		app.initServices()
+
+		app.initModules()
+
 		initSignal <- nil
 	}()
 
@@ -141,6 +144,12 @@ func (app *App) initServices() {
 	}
 }
 
+func (app *App) initModules() {
+	for _, module := range app.modules {
+		module.Init()
+	}
+}
+
 func (app *App) SetConfig(config *model.AppConfig) {
 	app.config = config
 
@@ -153,7 +162,6 @@ func (app *App) CheckInitData(config *model.AppConfig) {
 	}
 }
 
-//goland:noinspection GoUnusedParameter
-func (app *App) SetGrayLogAddr(addr string) {
-	logging.SetupGrayLog("tiswork.tisserv.net:12201", "test")
+func (app *App) RegisterModule(moduleConstructor service.ModuleConstructor) {
+	app.modules = append(app.modules, moduleConstructor(app))
 }

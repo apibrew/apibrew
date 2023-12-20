@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/nano"
 	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest"
 	"github.com/apibrew/apibrew/pkg/service/impl"
@@ -59,9 +60,7 @@ func RunServer(configPath string) {
 
 	app.SetConfig(appConfig)
 
-	//if grayLogAddr != nil {
-	//	app.SetGrayLogAddr(*grayLogAddr)
-	//}
+	app.RegisterModule(nano.NewModule)
 
 	app.Init()
 

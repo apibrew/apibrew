@@ -250,3 +250,9 @@ type MetricsResponseItem struct {
 	Time      time.Time        `json:"time"`
 	Count     uint64           `json:"count"`
 }
+
+type Module interface {
+	Init()
+}
+
+type ModuleConstructor func(container Container) Module
