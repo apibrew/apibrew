@@ -2,13 +2,13 @@ package nano
 
 import (
 	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -95,42 +95,25 @@ func (o *resourceObject) handlerSelector(action model.Event_Action) *model.Event
 func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Value) backend_event_handler.HandlerFunc {
 	return func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
 		for idx := range event.Records {
-			var recordObj = make(map[string]interface{})
-
 			record := event.Records[idx]
 
-			for key, value := range record.Properties {
-				recordObj[key] = value.AsInterface()
-			}
+			entityValue := o.recordToValue(record)
 
 			result := fn(goja.FunctionCall{
 				Arguments: []goja.Value{
-					o.vm.ToValue(recordObj),
+					entityValue,
 					o.vm.ToValue(event),
 				},
 			})
 
 			if result != nil {
-				resultObj, ok := result.Export().(map[string]interface{})
-
-				if ok {
-					recordObj = resultObj
-				} else {
-					log.Warn("Cannot accept nano function result: ", result)
-				}
-			}
-
-			for key, value := range recordObj {
-				sv, verr := structpb.NewValue(value)
-
-				if verr != nil {
-					return nil, errors.LogicalError.WithDetails(verr.Error())
+				updatedRecord, err := o.valueToRecord(result)
+				if err != nil {
+					return nil, err
 				}
 
-				record.Properties[key] = sv
+				event.Records[idx] = updatedRecord
 			}
-
-			event.Records[idx] = record
 		}
 
 		if len(event.Records) == 0 {
@@ -141,44 +124,83 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 	}
 }
 
+func (o *resourceObject) valueToRecord(result goja.Value) (*model.Record, errors.ServiceError) {
+	recordObj, ok := result.Export().(map[string]interface{})
+
+	if !ok {
+		return nil, errors.LogicalError.WithDetails(fmt.Sprintf("Cannot accept nano function result: %v", result))
+	}
+
+	var record = new(model.Record)
+	record.Properties = make(map[string]*structpb.Value)
+
+	for key, value := range recordObj {
+		sv, verr := structpb.NewValue(value)
+
+		if verr != nil {
+			return nil, errors.LogicalError.WithDetails(verr.Error())
+		}
+
+		record.Properties[key] = sv
+	}
+	return record, nil
+}
+
+func (o *resourceObject) recordToValue(record *model.Record) goja.Value {
+	var recordObj = make(map[string]interface{})
+	for key, value := range record.Properties {
+		recordObj[key] = value.AsInterface()
+	}
+	return o.vm.ToValue(recordObj)
+}
+
 func (o *resourceObject) bindRecordFn(boundResource *model.Resource, from func(call goja.FunctionCall) goja.Value, to func(call goja.FunctionCall) goja.Value) backend_event_handler.HandlerFunc {
 	srv := o.container.GetRecordService()
 
-	mapToMany := func(to func(call goja.FunctionCall) goja.Value, records []*model.Record) []*model.Record {
-		return records
-	}
+	mapper := func(to func(call goja.FunctionCall) goja.Value, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+		return util.ArrayMapWithError(records, func(record *model.Record) (*model.Record, errors.ServiceError) {
+			value := o.recordToValue(record)
 
-	mapFromMany := func(from func(call goja.FunctionCall) goja.Value, result []*model.Record) []*model.Record {
-		return result
+			mapped := to(goja.FunctionCall{Arguments: []goja.Value{value}})
+
+			return o.valueToRecord(mapped)
+		})
 	}
 
 	return func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+		toMappedRecords, err := mapper(to, event.Records)
+
+		if err != nil {
+			return nil, err
+		}
+
+		var resultRecords []*model.Record
 
 		switch event.Action {
 		case model.Event_CREATE:
 			result, err := srv.Create(util.SystemContext, service.RecordCreateParams{
 				Namespace: boundResource.Namespace,
 				Resource:  boundResource.Name,
-				Records:   mapToMany(to, event.Records),
+				Records:   toMappedRecords,
 			})
 
 			if err != nil {
 				return nil, err
 			}
 
-			event.Records = mapFromMany(from, result)
+			resultRecords = result
 		case model.Event_UPDATE:
 			result, err := srv.Update(util.SystemContext, service.RecordUpdateParams{
 				Namespace: boundResource.Namespace,
 				Resource:  boundResource.Name,
-				Records:   mapToMany(to, event.Records),
+				Records:   toMappedRecords,
 			})
 
 			if err != nil {
 				return nil, err
 			}
 
-			event.Records = mapFromMany(from, result)
+			resultRecords = result
 		case model.Event_DELETE:
 			err := srv.Delete(util.SystemContext, service.RecordDeleteParams{
 				Namespace: boundResource.Namespace,
@@ -200,7 +222,7 @@ func (o *resourceObject) bindRecordFn(boundResource *model.Resource, from func(c
 				return nil, err
 			}
 
-			event.Records = mapFromMany(from, []*model.Record{record})
+			resultRecords = []*model.Record{record}
 		case model.Event_LIST:
 			list, total, err := srv.List(util.SystemContext, service.RecordListParams{
 				Namespace:         boundResource.Namespace,
@@ -213,9 +235,17 @@ func (o *resourceObject) bindRecordFn(boundResource *model.Resource, from func(c
 				return nil, err
 			}
 
-			event.Records = mapFromMany(from, list)
+			resultRecords = list
 			event.Total = uint64(total)
 		}
+
+		fromMappedRecords, err := mapper(from, resultRecords)
+
+		if err != nil {
+			return nil, err
+		}
+
+		event.Records = fromMappedRecords
 
 		return event, nil
 	}
