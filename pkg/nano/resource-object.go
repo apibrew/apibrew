@@ -117,7 +117,11 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 		}
 
 		if len(event.Records) == 0 {
-
+			fn(goja.FunctionCall{
+				Arguments: []goja.Value{
+					o.vm.ToValue(event),
+				},
+			})
 		}
 
 		return event, nil
