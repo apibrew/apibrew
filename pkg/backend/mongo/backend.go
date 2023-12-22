@@ -165,7 +165,7 @@ func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string
 
 func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
 	var ids = util.ArrayMap(records, func(record *model.Record) string {
-		return util.GetRecordId(resource, record)
+		return util.GetRecordId(record)
 	})
 	for _, item := range ids {
 		var filter = bson.M{

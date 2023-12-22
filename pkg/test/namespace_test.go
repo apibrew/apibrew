@@ -31,7 +31,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 
 	if res.Records != nil {
 		namespace1.Id = new(uuid.UUID)
-		*namespace1.Id = uuid.MustParse(util.GetRecordId(nil, res.Records[0]))
+		*namespace1.Id = uuid.MustParse(util.GetRecordId(res.Records[0]))
 	} else {
 		t.Error("Namespace was not created")
 		return

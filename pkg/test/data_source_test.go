@@ -66,7 +66,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(util.GetRecordId(nil, resp.Records[0]))
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(resp.Records[0]))
 
 	checkNewCreatedRecordStatus(newDataSource, t)
 }
@@ -160,7 +160,7 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(util.GetRecordId(nil, resp.Records[0]))
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(resp.Records[0]))
 
 	checkNewCreatedRecordStatus(newDataSource, t)
 
@@ -276,7 +276,7 @@ func TestUpdateRecordstatus(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(util.GetRecordId(nil, resp.Records[0]))
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(resp.Records[0]))
 	createdDataSource1 := resource_model.DataSourceMapperInstance.FromRecord(resp.Records[0])
 
 	checkNewCreatedRecordStatusPasswordWrong(newDataSource, t)

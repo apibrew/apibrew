@@ -177,12 +177,12 @@ func TestListResourceWithFunctionCallExtension(t *testing.T) {
 		return
 	}
 
-	if util.GetRecordId(nil, resp.Content[0]) != util.GetRecordId(nil, simpleVirtualResourceRecords[0]) {
+	if util.GetRecordId(resp.Content[0]) != util.GetRecordId(simpleVirtualResourceRecords[0]) {
 		t.Error("record[0].id does not match")
 		return
 	}
 
-	if util.GetRecordId(nil, resp.Content[1]) != util.GetRecordId(nil, simpleVirtualResourceRecords[1]) {
+	if util.GetRecordId(resp.Content[1]) != util.GetRecordId(simpleVirtualResourceRecords[1]) {
 		t.Error("record[1].id does not match")
 		return
 	}
@@ -250,12 +250,12 @@ func TestListResourceWithHttpExtension(t *testing.T) {
 		return
 	}
 
-	if util.GetRecordId(nil, resp.Content[0]) != util.GetRecordId(nil, simpleVirtualResourceRecords[0]) {
+	if util.GetRecordId(resp.Content[0]) != util.GetRecordId(simpleVirtualResourceRecords[0]) {
 		t.Error("record[0].id does not match")
 		return
 	}
 
-	if util.GetRecordId(nil, resp.Content[1]) != util.GetRecordId(nil, simpleVirtualResourceRecords[1]) {
+	if util.GetRecordId(resp.Content[1]) != util.GetRecordId(simpleVirtualResourceRecords[1]) {
 		t.Error("record[1].id does not match")
 		return
 	}

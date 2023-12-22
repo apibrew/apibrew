@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/types"
@@ -231,7 +230,7 @@ func IdRecord(id string) *model.Record {
 	}
 }
 
-func GetRecordId(resource abs.ResourceLike, record *model.Record) string {
+func GetRecordId(record *model.Record) string {
 	if record == nil {
 		return ""
 	}

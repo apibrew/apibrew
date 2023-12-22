@@ -113,7 +113,7 @@ func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id
 
 func (p *sqlBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
 	var ids = util.ArrayMap(records, func(record *model.Record) string {
-		return util.GetRecordId(resource, record)
+		return util.GetRecordId(record)
 	})
 	logger := log.WithFields(logging.CtxFields(ctx))
 

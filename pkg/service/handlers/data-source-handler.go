@@ -21,7 +21,7 @@ func (h *dataSourceHandler) Register(eventHandler backend_event_handler.BackendE
 
 func (h *dataSourceHandler) AfterUpdate(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
 	for _, dataSource := range event.Records {
-		err := h.backendProviderService.DestroyDataSource(ctx, util.GetRecordId(resources.DataSourceResource, dataSource))
+		err := h.backendProviderService.DestroyDataSource(ctx, util.GetRecordId(dataSource))
 
 		if err != nil {
 			return nil, err
@@ -33,7 +33,7 @@ func (h *dataSourceHandler) AfterUpdate(ctx context.Context, event *model.Event)
 
 func (h *dataSourceHandler) AfterDelete(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
 	for _, record := range event.Records {
-		err := h.backendProviderService.DestroyDataSource(ctx, util.GetRecordId(event.Resource, record))
+		err := h.backendProviderService.DestroyDataSource(ctx, util.GetRecordId(record))
 
 		if err != nil {
 			return nil, err

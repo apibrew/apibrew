@@ -76,7 +76,7 @@ func TestComplexPayload1Success(t *testing.T) {
 	getRes, err := recordClient.Get(setup.Ctx, &stub.GetRecordRequest{
 		Token:    "",
 		Resource: setup.RichResource1.Name,
-		Id:       util.GetRecordId(nil, res.Records[0]),
+		Id:       util.GetRecordId(res.Records[0]),
 	})
 
 	if err != nil {

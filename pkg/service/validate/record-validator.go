@@ -36,7 +36,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {
-				fieldErrors = append(fieldErrors, Value(resource, property, util.GetRecordId(resource, record), property.Name, packedVal)...)
+				fieldErrors = append(fieldErrors, Value(resource, property, util.GetRecordId(record), property.Name, packedVal)...)
 			}
 
 			var val interface{}
@@ -49,7 +49,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 
 				if err != nil {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
-						RecordId: util.GetRecordId(resource, record),
+						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "wrong type: " + err.Error(),
 						Value:    record.Properties[property.Name],
@@ -63,7 +63,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 			if isEmpty {
 				if annotations.IsEnabled(property, annotations.PrimaryProperty) && isUpdate {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
-						RecordId: util.GetRecordId(resource, record),
+						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "required",
 						Value:    record.Properties[property.Name],
@@ -72,7 +72,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 
 				if !annotations.IsEnabled(property, annotations.PrimaryProperty) && property.Required && (exists || !isUpdate) {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
-						RecordId: util.GetRecordId(resource, record),
+						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "required",
 						Value:    record.Properties[property.Name],
@@ -84,7 +84,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 		for key := range record.Properties {
 			if !resourcePropertyExists[key] {
 				fieldErrors = append(fieldErrors, &model.ErrorField{
-					RecordId: util.GetRecordId(resource, record),
+					RecordId: util.GetRecordId(record),
 					Property: key,
 					Message:  "there are no such property",
 				})

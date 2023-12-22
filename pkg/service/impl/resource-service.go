@@ -387,7 +387,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	defer func() {
 		if err != nil {
-			log.Print("Reverting created records for resource: " + resource.Name + " with id: " + util.GetRecordId(resource, result[0]) + " due to error: " + err.Error() + " ...")
+			log.Print("Reverting created records for resource: " + resource.Name + " with id: " + util.GetRecordId(result[0]) + " due to error: " + err.Error() + " ...")
 			if err := r.backendProviderService.DeleteRecords(util.WithSystemContext(context.TODO()), resources.ResourceResource, result); err != nil {
 				log.Error(err)
 			}
@@ -398,7 +398,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	txCtx = annotations.SetWithContext(txCtx, annotations.UseJoinTable, "true")
 
-	insertedRecord, err := r.backendProviderService.GetRecord(txCtx, resources.ResourceResource, util.GetRecordId(resource, result[0]), []string{
+	insertedRecord, err := r.backendProviderService.GetRecord(txCtx, resources.ResourceResource, util.GetRecordId(result[0]), []string{
 		"*",
 	})
 
@@ -412,7 +412,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, errors.ResourceValidationError.WithMessage("DataSource not found with name: " + resource.SourceConfig.DataSource)
 	}
 
-	resource.Id = util.GetRecordId(resource, result[0])
+	resource.Id = util.GetRecordId(result[0])
 
 	if !resource.Virtual && doMigration {
 		var plan *model.ResourceMigrationPlan

@@ -491,14 +491,14 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 							continue
 						}
 
-						ids = append(ids, util.GetRecordId(resource, record))
+						ids = append(ids, util.GetRecordId(record))
 
 						if gotVal.GetListValue() != nil {
 
 							for _, item := range gotVal.GetListValue().Values {
 								st := item.GetStructValue()
 								st.Fields[backRef.Property] = structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
-									"id": structpb.NewStringValue(util.GetRecordId(resource, record)),
+									"id": structpb.NewStringValue(util.GetRecordId(record)),
 								}})
 								if st.Fields["id"] != nil {
 									backRefUpdatedRecords = append(backRefUpdatedRecords, &model.Record{
@@ -535,7 +535,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 					var backRefRecordsRemovalIds []string
 
 					for _, existingRecord := range existingRecords {
-						backRefRecordsRemovalIds = append(backRefRecordsRemovalIds, util.GetRecordId(resource, existingRecord))
+						backRefRecordsRemovalIds = append(backRefRecordsRemovalIds, util.GetRecordId(existingRecord))
 					}
 
 					if len(backRefRecordsRemovalIds) > 0 {
@@ -757,7 +757,7 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 			var found = false
 
 			for _, record := range records {
-				var foundId = util.GetRecordId(resource, record)
+				var foundId = util.GetRecordId(record)
 				if id == foundId {
 					found = true
 				}

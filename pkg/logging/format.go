@@ -12,7 +12,7 @@ func ShortEventInfo(event *model.Event) string {
 
 	for _, rec := range event.Records {
 		if rec != nil {
-			ids = append(ids, util.GetRecordId(event.Resource, rec))
+			ids = append(ids, util.GetRecordId(rec))
 		}
 	}
 

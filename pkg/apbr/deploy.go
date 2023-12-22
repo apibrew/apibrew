@@ -155,7 +155,7 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 		}
 	}
 
-	fmt.Printf("Deployed nano code %s with id: %s\n", path, util.GetRecordId(nil, record))
+	fmt.Printf("Deployed nano code %s with id: %s\n", path, util.GetRecordId(record))
 
 	return nil
 }
