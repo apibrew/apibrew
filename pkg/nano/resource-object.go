@@ -1,7 +1,6 @@
 package nano
 
 import (
-	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -11,8 +10,6 @@ import (
 	"github.com/dop251/goja"
 	"google.golang.org/protobuf/types/known/structpb"
 )
-
-type BindFunc func(resourceValue *resourceObject, mapFrom func(call goja.FunctionCall) goja.Value, mapTo func(call goja.FunctionCall) goja.Value)
 
 type resourceObject struct {
 	container service.Container
@@ -36,52 +33,30 @@ type resourceObject struct {
 	OnGet    func(fn func(call goja.FunctionCall) goja.Value) `json:"onGet"`
 	OnList   func(fn func(call goja.FunctionCall) goja.Value) `json:"onList"`
 
+	Preprocess  func(fn func(call goja.FunctionCall) goja.Value) `json:"preprocess"`
+	Postprocess func(fn func(call goja.FunctionCall) goja.Value) `json:"postprocess"`
+	Check       func(fn func(call goja.FunctionCall) goja.Value) `json:"check"`
+
 	BindCreate BindFunc `jsbind:"bindCreate"`
 	BindUpdate BindFunc `jsbind:"bindUpdate"`
 	BindDelete BindFunc `jsbind:"bindDelete"`
 	BindGet    BindFunc `jsbind:"bindGet"`
 	BindList   BindFunc `jsbind:"bindList"`
 
+	Create func(record goja.Value) goja.Value                  `js:"create"`
+	Update func(record goja.Value) goja.Value                  `js:"update"`
+	Apply  func(record goja.Value) goja.Value                  `js:"apply"`
+	Delete func(record goja.Value) goja.Value                  `js:"delete"`
+	Get    func(recordId string, params goja.Value) goja.Value `js:"get"`
+	List   func(params goja.Value) goja.Value                  `js:"list"`
+
+	Count    func(params goja.Value) goja.Value                  `js:"count"`
+	Load     func(params goja.Value) goja.Value                  `js:"load"`
+	FindById func(recordId string, params goja.Value) goja.Value `js:"findById"`
+
 	vm                  *goja.Runtime
 	cec                 *codeExecutionContext
 	backendEventHandler backend_event_handler.BackendEventHandler
-}
-
-func (o *resourceObject) registerBindHandler(action model.Event_Action) BindFunc {
-	return func(boundResource *resourceObject, mapFrom func(call goja.FunctionCall) goja.Value, mapTo func(call goja.FunctionCall) goja.Value) {
-		handlerId := "nano-" + util.RandomHex(8)
-
-		o.cec.handlerIds = append(o.cec.handlerIds, handlerId)
-
-		o.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
-			Id:        handlerId,
-			Name:      handlerId,
-			Fn:        o.bindRecordFn(boundResource.resource, mapFrom, mapTo),
-			Selector:  o.handlerSelector(action),
-			Order:     90,
-			Sync:      true,
-			Responds:  true,
-			Finalizes: true,
-		})
-	}
-}
-
-func (o *resourceObject) registerHandler(order int, sync bool, responds bool, action model.Event_Action) func(fn func(call goja.FunctionCall) goja.Value) {
-	return func(fn func(call goja.FunctionCall) goja.Value) {
-		handlerId := "nano-" + util.RandomHex(8)
-
-		o.cec.handlerIds = append(o.cec.handlerIds, handlerId)
-
-		o.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
-			Id:       handlerId,
-			Name:     handlerId,
-			Fn:       o.recordHandlerFn(fn),
-			Selector: o.handlerSelector(action),
-			Order:    order,
-			Sync:     sync,
-			Responds: responds,
-		})
-	}
 }
 
 func (o *resourceObject) handlerSelector(action model.Event_Action) *model.EventSelector {
@@ -89,44 +64,6 @@ func (o *resourceObject) handlerSelector(action model.Event_Action) *model.Event
 		Actions:    []model.Event_Action{action},
 		Namespaces: []string{o.resource.Namespace},
 		Resources:  []string{o.resource.Name},
-	}
-}
-
-func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Value) backend_event_handler.HandlerFunc {
-	return func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
-		for idx := range event.Records {
-			record := event.Records[idx]
-
-			entityValue := o.recordToValue(record)
-
-			result := fn(goja.FunctionCall{
-				Arguments: []goja.Value{
-					entityValue,
-					o.vm.ToValue(event),
-				},
-			})
-
-			resultExported := result.Export()
-
-			if resultExported != nil {
-				updatedRecord, err := o.valueToRecord(resultExported)
-				if err != nil {
-					return nil, err
-				}
-
-				event.Records[idx] = updatedRecord
-			}
-		}
-
-		if len(event.Records) == 0 {
-			fn(goja.FunctionCall{
-				Arguments: []goja.Value{
-					o.vm.ToValue(event),
-				},
-			})
-		}
-
-		return event, nil
 	}
 }
 
@@ -153,134 +90,22 @@ func (o *resourceObject) valueToRecord(resultExported interface{}) (*model.Recor
 }
 
 func (o *resourceObject) recordToValue(record *model.Record) goja.Value {
+	return o.vm.ToValue(o.recordToObject(record))
+}
+
+func (o *resourceObject) recordToObject(record *model.Record) map[string]interface{} {
 	var recordObj = make(map[string]interface{})
 	for key, value := range record.Properties {
 		recordObj[key] = value.AsInterface()
 	}
-	return o.vm.ToValue(recordObj)
-}
-
-func (o *resourceObject) bindRecordFn(boundResource *model.Resource, from func(call goja.FunctionCall) goja.Value, to func(call goja.FunctionCall) goja.Value) backend_event_handler.HandlerFunc {
-	srv := o.container.GetRecordService()
-
-	mapper := func(to func(call goja.FunctionCall) goja.Value, records []*model.Record) ([]*model.Record, errors.ServiceError) {
-		return util.ArrayMapWithError(records, func(record *model.Record) (*model.Record, errors.ServiceError) {
-			value := o.recordToValue(record)
-
-			mapped := to(goja.FunctionCall{Arguments: []goja.Value{value}})
-
-			return o.valueToRecord(mapped.Export())
-		})
-	}
-
-	return func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
-		toMappedRecords, err := mapper(to, event.Records)
-
-		if err != nil {
-			return nil, err
-		}
-
-		var resultRecords []*model.Record
-
-		switch event.Action {
-		case model.Event_CREATE:
-			result, err := srv.Create(util.SystemContext, service.RecordCreateParams{
-				Namespace: boundResource.Namespace,
-				Resource:  boundResource.Name,
-				Records:   toMappedRecords,
-			})
-
-			if err != nil {
-				return nil, err
-			}
-
-			resultRecords = result
-		case model.Event_UPDATE:
-			result, err := srv.Update(util.SystemContext, service.RecordUpdateParams{
-				Namespace: boundResource.Namespace,
-				Resource:  boundResource.Name,
-				Records:   toMappedRecords,
-			})
-
-			if err != nil {
-				return nil, err
-			}
-
-			resultRecords = result
-		case model.Event_DELETE:
-			err := srv.Delete(util.SystemContext, service.RecordDeleteParams{
-				Namespace: boundResource.Namespace,
-				Resource:  boundResource.Name,
-				Ids:       util.ArrayMap(event.Records, util.GetRecordId),
-			})
-
-			if err != nil {
-				return nil, err
-			}
-		case model.Event_GET:
-			record, err := srv.Get(util.SystemContext, service.RecordGetParams{
-				Namespace: boundResource.Namespace,
-				Resource:  boundResource.Name,
-				Id:        util.GetRecordId(event.Records[0]),
-			})
-
-			if err != nil {
-				return nil, err
-			}
-
-			resultRecords = []*model.Record{record}
-		case model.Event_LIST:
-			list, total, err := srv.List(util.SystemContext, service.RecordListParams{
-				Namespace:         boundResource.Namespace,
-				Resource:          boundResource.Name,
-				ResolveReferences: event.RecordSearchParams.ResolveReferences,
-				Query:             event.RecordSearchParams.Query,
-			})
-
-			if err != nil {
-				return nil, err
-			}
-
-			resultRecords = list
-			event.Total = uint64(total)
-		}
-
-		fromMappedRecords, err := mapper(from, resultRecords)
-
-		if err != nil {
-			return nil, err
-		}
-
-		event.Records = fromMappedRecords
-
-		return event, nil
-	}
+	return recordObj
 }
 
 func (o *resourceObject) initHandlers() {
-	o.BeforeCreate = o.registerHandler(10, true, true, model.Event_CREATE)
-	o.BeforeUpdate = o.registerHandler(10, true, true, model.Event_UPDATE)
-	o.BeforeDelete = o.registerHandler(10, true, true, model.Event_DELETE)
-	o.BeforeGet = o.registerHandler(10, true, true, model.Event_GET)
-	o.BeforeList = o.registerHandler(10, true, true, model.Event_LIST)
+	o.initHandlerMethods()
 
-	o.AfterCreate = o.registerHandler(110, true, true, model.Event_CREATE)
-	o.AfterUpdate = o.registerHandler(110, true, true, model.Event_UPDATE)
-	o.AfterDelete = o.registerHandler(110, true, true, model.Event_DELETE)
-	o.AfterGet = o.registerHandler(110, true, true, model.Event_GET)
-	o.AfterList = o.registerHandler(110, true, true, model.Event_LIST)
-
-	o.OnCreate = o.registerHandler(110, true, true, model.Event_CREATE)
-	o.OnUpdate = o.registerHandler(110, true, true, model.Event_UPDATE)
-	o.OnDelete = o.registerHandler(110, true, true, model.Event_DELETE)
-	o.OnGet = o.registerHandler(110, true, true, model.Event_GET)
-	o.OnList = o.registerHandler(110, true, true, model.Event_LIST)
-
-	o.BindCreate = o.registerBindHandler(model.Event_CREATE)
-	o.BindUpdate = o.registerBindHandler(model.Event_UPDATE)
-	o.BindDelete = o.registerBindHandler(model.Event_DELETE)
-	o.BindGet = o.registerBindHandler(model.Event_GET)
-	o.BindList = o.registerBindHandler(model.Event_LIST)
+	o.initBindMethods()
+	o.initRepositoryMethods()
 }
 
 func resourceFn(container service.Container, vm *goja.Runtime, cec *codeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler) func(args ...string) *resourceObject {
