@@ -13,6 +13,7 @@ properties:
     description: Full Qualified Name of the code, it must be unique in the system
     type: STRING
     length: 255
+    immutable: true
     required: true
     unique: true
   language:

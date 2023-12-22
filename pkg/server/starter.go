@@ -60,9 +60,9 @@ func RunServer(configPath string) {
 
 	app.SetConfig(appConfig)
 
-	app.RegisterModule(nano.NewModule)
-
 	app.Init()
+
+	app.RegisterModule(nano.NewModule)
 
 	// Create the main listener.
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", appConfig.Host, appConfig.Port))

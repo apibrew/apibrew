@@ -15,8 +15,9 @@ import (
 )
 
 type module struct {
-	container    service.Container
-	codeExecutor *codeExecutorService
+	container           service.Container
+	codeExecutor        *codeExecutorService
+	backendEventHandler backend_event_handler.BackendEventHandler
 }
 
 func (m module) Init() {
@@ -70,8 +71,7 @@ func (m module) ensureResources() {
 }
 
 func (m module) initCodeListeners() {
-	backendEventHandler := m.container.GetBackendEventHandler().(backend_event_handler.BackendEventHandler)
-	backendEventHandler.RegisterHandler(backend_event_handler.Handler{
+	m.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
 		Id:   "nano-code-listener",
 		Name: "nano-code-listener",
 		Fn:   m.codeListenerHandler,
@@ -140,5 +140,6 @@ func (m module) codeListenerHandler(ctx context.Context, event *model.Event) (*m
 }
 
 func NewModule(container service.Container) service.Module {
-	return &module{container: container, codeExecutor: newCodeExecutorService(container)}
+	backendEventHandler := container.GetBackendEventHandler().(backend_event_handler.BackendEventHandler)
+	return &module{container: container, codeExecutor: newCodeExecutorService(container, backendEventHandler), backendEventHandler: backendEventHandler}
 }

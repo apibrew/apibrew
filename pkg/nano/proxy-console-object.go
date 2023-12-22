@@ -1,6 +1,7 @@
 package nano
 
 import (
+	"github.com/dop251/goja"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,7 +21,7 @@ func (c *consoleObject) log(level log.Level) func(args ...interface{}) {
 	}
 }
 
-func newConsoleObject(codeName string) *consoleObject {
+func newConsoleObject(codeName string, vm *goja.Runtime, cec *codeExecutionContext) *consoleObject {
 	obj := &consoleObject{codeName: codeName}
 
 	obj.Log = obj.log(log.DebugLevel)

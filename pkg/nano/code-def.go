@@ -125,6 +125,7 @@ var CodeResource = &model.Resource{
 			Length:       255,
 			Required:     true,
 			Unique:       true,
+			Immutable:    true,
 			DefaultValue: nil,
 			ExampleValue: nil,
 		},
