@@ -106,8 +106,10 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 				},
 			})
 
-			if result != nil {
-				updatedRecord, err := o.valueToRecord(result)
+			resultExported := result.Export()
+
+			if resultExported != nil {
+				updatedRecord, err := o.valueToRecord(resultExported)
 				if err != nil {
 					return nil, err
 				}
@@ -128,11 +130,11 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 	}
 }
 
-func (o *resourceObject) valueToRecord(result goja.Value) (*model.Record, errors.ServiceError) {
-	recordObj, ok := result.Export().(map[string]interface{})
+func (o *resourceObject) valueToRecord(resultExported interface{}) (*model.Record, errors.ServiceError) {
+	recordObj, ok := resultExported.(map[string]interface{})
 
 	if !ok {
-		return nil, errors.LogicalError.WithDetails(fmt.Sprintf("Cannot accept nano function result: %v", result))
+		return nil, errors.LogicalError.WithDetails(fmt.Sprintf("Cannot accept nano function result: %v", resultExported))
 	}
 
 	var record = new(model.Record)
@@ -167,7 +169,7 @@ func (o *resourceObject) bindRecordFn(boundResource *model.Resource, from func(c
 
 			mapped := to(goja.FunctionCall{Arguments: []goja.Value{value}})
 
-			return o.valueToRecord(mapped)
+			return o.valueToRecord(mapped.Export())
 		})
 	}
 

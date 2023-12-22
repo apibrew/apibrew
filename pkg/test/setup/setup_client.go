@@ -3,6 +3,7 @@ package setup
 import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/client"
+	"github.com/apibrew/apibrew/pkg/nano"
 	grpc2 "github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/impl"
@@ -49,7 +50,11 @@ func initClient() {
 
 	application.SetConfig(config)
 
-	<-application.Init()
+	initWaitCh := application.Init()
+
+	application.RegisterModule(nano.NewModule)
+
+	<-initWaitCh
 
 	grpcServer := grpc2.NewGrpcServer(application)
 	grpcServer.Init()
