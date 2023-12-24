@@ -28,8 +28,9 @@ func (o *resourceObject) computeFn(prop *model.ResourceProperty) func(fn func(ca
 			if itemMap, ok := dependency.(map[string]interface{}); ok {
 				var depResourceObject = itemMap["resourceObject"].(*resourceObject)
 				var depProp = itemMap["property"].(*model.ResourceProperty)
+				var isSelf = depResourceObject.resource.Id == o.resource.Id
 
-				if depProp.Type != model.ResourceProperty_REFERENCE || depProp.Reference.Resource != o.resource.Name {
+				if !isSelf && (depProp.Type != model.ResourceProperty_REFERENCE || depProp.Reference.Resource != o.resource.Name) {
 					panic("Dependency must be a property which is pointing to computing resource")
 				}
 
@@ -40,8 +41,7 @@ func (o *resourceObject) computeFn(prop *model.ResourceProperty) func(fn func(ca
 		}
 
 		if len(dependencies) == 0 {
-			o.registerHandler(99, true, true, model.Event_CREATE)(o.recordComputeHandlerFn(fn, prop))
-			o.registerHandler(99, true, true, model.Event_UPDATE)(o.recordComputeHandlerFn(fn, prop))
+			panic("Compute with no dependency")
 		}
 	}
 }
@@ -55,12 +55,20 @@ func (o *resourceObject) recordComputeHandlerFn(fn func(call goja.FunctionCall) 
 }
 
 func (o *resourceObject) registerDepHandlers(fn func(call goja.FunctionCall) goja.Value, dep *resourceObject, depProp *model.ResourceProperty, prop *model.ResourceProperty) {
-	dep.registerHandler(101, true, true, model.Event_CREATE)(o.recordComputeHandlerFnForDep(fn, depProp, prop))
-	dep.registerHandler(101, true, true, model.Event_UPDATE)(o.recordComputeHandlerFnForDep(fn, depProp, prop))
-	dep.registerHandler(101, true, true, model.Event_DELETE)(o.recordComputeHandlerFnForDep(fn, depProp, prop))
+	var isSelf = dep.resource.Id == o.resource.Id
+
+	if isSelf {
+		dep.registerHandler(99, true, true, model.Event_CREATE)(o.recordComputeHandlerFnForDep(fn, depProp, prop, isSelf))
+		dep.registerHandler(99, true, true, model.Event_UPDATE)(o.recordComputeHandlerFnForDep(fn, depProp, prop, isSelf))
+		dep.registerHandler(99, true, true, model.Event_DELETE)(o.recordComputeHandlerFnForDep(fn, depProp, prop, isSelf))
+	} else {
+		dep.registerHandler(101, true, true, model.Event_CREATE)(o.recordComputeHandlerFnForDep(fn, depProp, prop, isSelf))
+		dep.registerHandler(101, true, true, model.Event_UPDATE)(o.recordComputeHandlerFnForDep(fn, depProp, prop, isSelf))
+		dep.registerHandler(101, true, true, model.Event_DELETE)(o.recordComputeHandlerFnForDep(fn, depProp, prop, isSelf))
+	}
 }
 
-func (o *resourceObject) recordComputeHandlerFnForDep(fn func(call goja.FunctionCall) goja.Value, depProp *model.ResourceProperty, prop *model.ResourceProperty) func(call goja.FunctionCall) goja.Value {
+func (o *resourceObject) recordComputeHandlerFnForDep(fn func(call goja.FunctionCall) goja.Value, depProp *model.ResourceProperty, prop *model.ResourceProperty, isSelf bool) func(call goja.FunctionCall) goja.Value {
 	return func(call goja.FunctionCall) goja.Value {
 		depEntity := call.Arguments[0].Export().(map[string]interface{})
 
@@ -68,13 +76,19 @@ func (o *resourceObject) recordComputeHandlerFnForDep(fn func(call goja.Function
 
 		if depPropValue != nil {
 			// locating referenced item
-			entityValue := o.loadFn(o.vm.ToValue(depPropValue))
-			entity := make(map[string]interface{})
+			if isSelf {
+				depEntity[prop.Name] = fn(call).Export()
 
-			entity["id"] = entityValue.Export().(map[string]interface{})["id"]
-			entity[prop.Name] = fn(goja.FunctionCall{Arguments: []goja.Value{entityValue}}).Export()
+				return o.vm.ToValue(depEntity)
+			} else {
+				entityValue := o.loadFn(o.vm.ToValue(depPropValue))
+				entity := make(map[string]interface{})
 
-			o.updateFn(o.vm.ToValue(entity))
+				entity["id"] = entityValue.Export().(map[string]interface{})["id"]
+				entity[prop.Name] = fn(goja.FunctionCall{Arguments: []goja.Value{entityValue}}).Export()
+
+				o.updateFn(o.vm.ToValue(entity))
+			}
 		}
 
 		return call.Arguments[0]
