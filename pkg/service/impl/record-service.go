@@ -744,38 +744,34 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 				},
 			},
 		}
+	}
 
-		records, _, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
-			Query: query,
-			Limit: 1,
-		}, nil)
+	records, _, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
+		Query: query,
+		Limit: 1,
+	}, nil)
 
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
+	}
 
-		for _, id := range params.Ids {
-			var found = false
+	for _, id := range params.Ids {
+		var found = false
 
-			for _, record := range records {
-				var foundId = util.GetRecordId(record)
-				if id == foundId {
-					found = true
-				}
-			}
-
-			if !found {
-				return errors.RecordNotFoundError.WithMessage("Record not found with id: " + id)
+		for _, record := range records {
+			var foundId = util.GetRecordId(record)
+			if id == foundId {
+				found = true
 			}
 		}
 
-		if err = r.backendServiceProvider.DeleteRecords(ctx, resource, records); err != nil {
-			return err
+		if !found {
+			return errors.RecordNotFoundError.WithMessage("Record not found with id: " + id)
 		}
-	} else {
-		if err = r.backendServiceProvider.DeleteRecords(ctx, resource, util.ArrayMap(params.Ids, util.IdRecord)); err != nil {
-			return err
-		}
+	}
+
+	if err = r.backendServiceProvider.DeleteRecords(ctx, resource, records); err != nil {
+		return err
 	}
 
 	return nil

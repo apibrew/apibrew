@@ -57,6 +57,7 @@ func (o *resourceObject) recordComputeHandlerFn(fn func(call goja.FunctionCall) 
 func (o *resourceObject) registerDepHandlers(fn func(call goja.FunctionCall) goja.Value, dep *resourceObject, depProp *model.ResourceProperty, prop *model.ResourceProperty) {
 	dep.registerHandler(101, true, true, model.Event_CREATE)(o.recordComputeHandlerFnForDep(fn, depProp, prop))
 	dep.registerHandler(101, true, true, model.Event_UPDATE)(o.recordComputeHandlerFnForDep(fn, depProp, prop))
+	dep.registerHandler(101, true, true, model.Event_DELETE)(o.recordComputeHandlerFnForDep(fn, depProp, prop))
 }
 
 func (o *resourceObject) recordComputeHandlerFnForDep(fn func(call goja.FunctionCall) goja.Value, depProp *model.ResourceProperty, prop *model.ResourceProperty) func(call goja.FunctionCall) goja.Value {
@@ -68,8 +69,9 @@ func (o *resourceObject) recordComputeHandlerFnForDep(fn func(call goja.Function
 		if depPropValue != nil {
 			// locating referenced item
 			entityValue := o.loadFn(o.vm.ToValue(depPropValue))
-			entity := entityValue.Export().(map[string]interface{})
+			entity := make(map[string]interface{})
 
+			entity["id"] = entityValue.Export().(map[string]interface{})["id"]
 			entity[prop.Name] = fn(goja.FunctionCall{Arguments: []goja.Value{entityValue}}).Export()
 
 			o.updateFn(o.vm.ToValue(entity))
