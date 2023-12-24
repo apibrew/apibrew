@@ -232,7 +232,7 @@ func (o *resourceObject) simpleAggregateFn(property string, filters map[string]s
 	}
 
 	if len(result) == 0 {
-		return goja.Undefined()
+		return o.vm.ToValue(0)
 	}
 
 	return o.vm.ToValue(result[0].Properties["result"].AsInterface())

@@ -1,0 +1,42 @@
+{
+  "serviceId": "manager-apibrew-manager",
+  "host": "0.0.0.0",
+  "port": "9009",
+  "jwtPrivateKey": "/Users/taleh/.apbr/jwt.key",
+  "jwtPublicKey": "/Users/taleh/.apbr/jwt.key.pub",
+  "disableAuthentication": false,
+  "enablePprof": false,
+  "eventChannelConfig": {
+    "maxChannelSize": 500,
+    "maxWaitTimeMs": 50000
+  },
+  "loggingConfig": {
+    "level": "DEBUG",
+    "reportCaller": false,
+    "format": "TEXT"
+  },
+  "systemDataSource": {
+    "properties": {
+      "backend": "POSTGRESQL",
+      "options": {
+        "username": "root",
+        "password": "root",
+        "host": "127.0.0.1",
+        "port": "5432",
+        "db_name": "apibrew_manager_db",
+        "defaultSchema": "public"
+      }
+    }
+  },
+  "initRecords": [
+    {
+      "namespace": "system",
+      "resource": "Namespace",
+      "record": {
+        "properties": {
+          "name": "default"
+        }
+      }
+    }
+  ]
+}
