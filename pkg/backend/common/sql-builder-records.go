@@ -313,7 +313,7 @@ func (p *sqlBackend) deleteRecords(ctx context.Context, runner helper.QueryRunne
 	}
 
 	if !primaryFound {
-		return errors.LogicalError.WithDetails("Delete operation cannot be executed without id")
+		return errors.LogicalError.WithDetails("Delete_ operation cannot be executed without id")
 	}
 
 	sqlQuery, args := deleteBuilder.Build()

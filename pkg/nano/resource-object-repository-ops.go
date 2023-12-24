@@ -191,25 +191,12 @@ func (o *resourceObject) loadFn(params goja.Value) goja.Value {
 
 	return o.recordToValue(searchRes[0])
 }
-
-func (o *resourceObject) countFn(params goja.Value) goja.Value {
+func (o *resourceObject) countFn(filters map[string]string) goja.Value {
 	var listParams = service.RecordListParams{}
-	if params != nil {
-		paramsStr, err := json.Marshal(params.Export())
-
-		if err != nil {
-			panic(err)
-		}
-
-		err = json.Unmarshal(paramsStr, &listParams)
-
-		if err != nil {
-			panic(err)
-		}
-	}
 
 	listParams.Namespace = o.resource.Namespace
 	listParams.Resource = o.resource.Name
+	listParams.Filters = filters
 	listParams.Limit = 1
 
 	_, total, err := o.container.GetRecordService().List(util.SystemContext, listParams)
@@ -221,14 +208,64 @@ func (o *resourceObject) countFn(params goja.Value) goja.Value {
 	return o.vm.ToValue(total)
 }
 
-func (o *resourceObject) initRepositoryMethods() {
-	o.Create = o.createFn
-	o.Update = o.updateFn
-	o.Apply = o.applyFn
-	o.Delete = o.deleteFn
-	o.Get = o.getFn
-	o.FindById = o.getFn
-	o.List = o.listFn
-	o.Load = o.loadFn
-	o.Count = o.countFn
+func (o *resourceObject) simpleAggregateFn(property string, filters map[string]string, algorithm model.AggregationItem_Algorithm) goja.Value {
+	var listParams = service.RecordListParams{}
+
+	listParams.Namespace = o.resource.Namespace
+	listParams.Resource = o.resource.Name
+	listParams.Limit = 1
+	listParams.Filters = filters
+	listParams.Aggregation = &model.Aggregation{
+		Items: []*model.AggregationItem{
+			{
+				Name:      "result",
+				Algorithm: algorithm,
+				Property:  property,
+			},
+		},
+	}
+
+	result, _, err := o.container.GetRecordService().List(util.SystemContext, listParams)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if len(result) == 0 {
+		return goja.Undefined()
+	}
+
+	return o.vm.ToValue(result[0].Properties["result"].AsInterface())
+}
+
+func (o *resourceObject) sumFn(property string, filters map[string]string) goja.Value {
+	return o.simpleAggregateFn(property, filters, model.AggregationItem_SUM)
+}
+
+func (o *resourceObject) maxFn(property string, filters map[string]string) goja.Value {
+	return o.simpleAggregateFn(property, filters, model.AggregationItem_MAX)
+}
+
+func (o *resourceObject) minFn(property string, filters map[string]string) goja.Value {
+	return o.simpleAggregateFn(property, filters, model.AggregationItem_MIN)
+}
+
+func (o *resourceObject) avgFn(property string, filters map[string]string) goja.Value {
+	return o.simpleAggregateFn(property, filters, model.AggregationItem_AVG)
+}
+
+func (o *resourceObject) initRepositoryMethods(object *goja.Object) {
+	_ = object.Set("create", o.createFn)
+	_ = object.Set("update", o.updateFn)
+	_ = object.Set("apply", o.applyFn)
+	_ = object.Set("delete", o.deleteFn)
+	_ = object.Set("get", o.getFn)
+	_ = object.Set("findById", o.getFn)
+	_ = object.Set("list", o.listFn)
+	_ = object.Set("load", o.loadFn)
+	_ = object.Set("count", o.countFn)
+	_ = object.Set("sum", o.sumFn)
+	_ = object.Set("max", o.maxFn)
+	_ = object.Set("min", o.minFn)
+	_ = object.Set("avg", o.avgFn)
 }

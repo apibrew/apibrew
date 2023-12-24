@@ -43,6 +43,7 @@ func (r *recordServer) Search(ctx context.Context, request *stub.SearchRecordReq
 		Offset:            request.Offset,
 		UseHistory:        request.UseHistory,
 		ResolveReferences: request.ResolveReferences,
+		Aggregation:       request.Aggregation,
 	})
 
 	return &stub.SearchRecordResponse{

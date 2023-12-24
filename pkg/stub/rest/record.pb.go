@@ -799,11 +799,11 @@ var file_stub_rest_record_proto_depIdxs = []int32{
 	0,  // 16: rest.Record.Create:input_type -> rest.CreateRecordRequest
 	2,  // 17: rest.Record.Update:input_type -> rest.UpdateRecordRequest
 	4,  // 18: rest.Record.Apply:input_type -> rest.ApplyRecordRequest
-	6,  // 19: rest.Record.Delete:input_type -> rest.DeleteRecordRequest
+	6,  // 19: rest.Record.Delete_:input_type -> rest.DeleteRecordRequest
 	1,  // 20: rest.Record.Create:output_type -> rest.CreateRecordResponse
 	3,  // 21: rest.Record.Update:output_type -> rest.UpdateRecordResponse
 	5,  // 22: rest.Record.Apply:output_type -> rest.ApplyRecordResponse
-	7,  // 23: rest.Record.Delete:output_type -> rest.DeleteRecordResponse
+	7,  // 23: rest.Record.Delete_:output_type -> rest.DeleteRecordResponse
 	20, // [20:24] is the sub-list for method output_type
 	16, // [16:20] is the sub-list for method input_type
 	16, // [16:16] is the sub-list for extension type_name

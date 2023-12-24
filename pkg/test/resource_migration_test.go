@@ -32,7 +32,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 	//			t.Error(err)
 	//		}
 	//
-	//		_, err = recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
+	//		_, err = recordClient.Delete_(setup.Ctx, &stub.DeleteRecordRequest{
 	//			Resource: resource2.Name,
 	//			Ids: util.ArrayMap(list.Content, func(record *model.Record) string {
 	//				return record.Id
@@ -57,7 +57,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //		resource2.SourceConfig.Catalog = "public"
 //		resource2.SourceConfig.Entity = "organization_copy_new"
 //
-//		defer container.resourceService.Delete(ctx, &stub.DeleteResourceRequest{
+//		defer container.resourceService.Delete_(ctx, &stub.DeleteResourceRequest{
 //			Token:          "test-token",
 //			Ids:            []string{resource2.Id},
 //			DoMigration:    true,
@@ -122,7 +122,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //			t.Error(err)
 //		}
 //
-//		_, err = container.recordService.Delete(ctx, &stub.DeleteRecordRequest{
+//		_, err = container.recordService.Delete_(ctx, &stub.DeleteRecordRequest{
 //			Token:    "test-token",
 //			resource: resource2.Name,
 //			Ids: util.ArrayMap(list.Content, func(record *model.Record) string {

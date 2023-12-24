@@ -43,6 +43,7 @@ type ListRecordParams struct {
 	Limit             uint32
 	Offset            uint64
 	ResolveReferences []string
+	Aggregation       *model.Aggregation
 }
 
 type UpgradeResourceParams struct {

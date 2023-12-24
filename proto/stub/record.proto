@@ -6,6 +6,7 @@ option go_package = "github.com/apibrew/apibrew/pkg/stub";
 
 import 'model/record.proto';
 import 'model/query.proto';
+import 'model/aggregation.proto';
 import 'model/error.proto';
 import 'model/event.proto';
 import 'google/protobuf/struct.proto';
@@ -68,6 +69,7 @@ message SearchRecordRequest {
   uint64 offset = 6;
   bool useHistory = 7;
   repeated string resolveReferences = 8;
+  model.Aggregation aggregation = 9;
 
   map<string, string> annotations = 103;
 }

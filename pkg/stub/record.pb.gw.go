@@ -908,7 +908,7 @@ func RegisterRecordHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Delete_", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -990,7 +990,7 @@ func RegisterRecordHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Get", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/stub.Record/Get_", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1142,7 +1142,7 @@ func RegisterRecordHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Delete", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Delete_", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/_bulk"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1230,7 +1230,7 @@ func RegisterRecordHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Get", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/stub.Record/Get_", runtime.WithHTTPPathPattern("/records/{namespace}/{resource}/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

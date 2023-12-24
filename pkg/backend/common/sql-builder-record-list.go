@@ -24,7 +24,6 @@ type colDetails struct {
 	path         string
 	def          string
 	alias        string
-	property     *model.ResourceProperty
 	propertyType model.ResourceProperty_Type
 	required     bool
 	resource     *model.Resource
@@ -55,6 +54,8 @@ type recordLister struct {
 	resultChan        chan<- *model.Record
 	packRecords       bool
 	backend           *sqlBackend
+	aggregation       *model.Aggregation
+	propertyNameMap   map[string]*model.ResourceProperty
 }
 
 func (r *recordLister) Prepare() errors.ServiceError {
@@ -64,6 +65,8 @@ func (r *recordLister) Prepare() errors.ServiceError {
 
 	r.builder = sqlbuilder.Select()
 	r.builder.SetFlavor(r.backend.options.GetFlavor())
+
+	r.propertyNameMap = util.GetNamedMap(r.resource.Properties)
 
 	r.builder.From(r.tableName + " as " + r.tableAlias)
 
@@ -92,6 +95,85 @@ func (r *recordLister) Prepare() errors.ServiceError {
 	r.builder.Limit(int(r.Limit))
 	r.builder.Offset(int(r.Offset))
 
+	if r.aggregation != nil {
+		if err := r.prepareAggregation(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *recordLister) prepareAggregation() errors.ServiceError {
+	r.colList = nil
+
+	if len(r.aggregation.Grouping) > 0 {
+		var groupByCols []string
+		var path = "t"
+
+		for _, item := range r.aggregation.Grouping {
+			var prop = r.propertyNameMap[item.Property]
+			if prop == nil {
+				return errors.RecordValidationError.WithDetails("Grouping property not exists: " + item.Property)
+			}
+
+			groupByCols = append(groupByCols, path+"."+r.quote(item.Property))
+
+			r.colList = append(r.colList, colDetails{
+				resource:     r.resource,
+				colName:      item.Property,
+				path:         "t_" + item.Property,
+				def:          "t." + r.quote(item.Property),
+				alias:        r.quote("t_" + item.Property),
+				required:     true,
+				propertyType: prop.Type,
+			})
+		}
+
+		r.builder.GroupBy(groupByCols...)
+	}
+
+	for _, item := range r.aggregation.Items {
+		var prop = r.propertyNameMap[item.Property]
+		if prop == nil {
+			return errors.RecordValidationError.WithDetails("Grouping property not exists: " + item.Property)
+		}
+
+		var fnName string
+		var propType model.ResourceProperty_Type
+
+		switch item.Algorithm {
+		case model.AggregationItem_COUNT:
+			fnName = "count"
+			propType = model.ResourceProperty_INT32
+		case model.AggregationItem_MIN:
+			fnName = "min"
+			propType = prop.Type
+		case model.AggregationItem_MAX:
+			fnName = "max"
+			propType = prop.Type
+		case model.AggregationItem_SUM:
+			fnName = "sum"
+			if prop.Type == model.ResourceProperty_INT32 || prop.Type == model.ResourceProperty_INT64 {
+				propType = model.ResourceProperty_INT64
+			} else {
+				propType = model.ResourceProperty_FLOAT64
+			}
+		case model.AggregationItem_AVG:
+			fnName = "avg"
+			propType = model.ResourceProperty_FLOAT64
+		}
+
+		r.colList = append(r.colList, colDetails{
+			resource:     r.resource,
+			colName:      item.Name,
+			path:         "t_" + item.Name,
+			def:          fmt.Sprintf("%s(%s)", fnName, "t."+r.quote(item.Property)),
+			alias:        r.quote("t_" + item.Property),
+			required:     true,
+			propertyType: propType,
+		})
+	}
 	return nil
 }
 
@@ -106,6 +188,7 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 	}
 
 	selectBuilder := r.builder
+
 	selectBuilder.Select(r.prepareCols()...)
 
 	for _, jd := range r.joins {
@@ -192,7 +275,6 @@ func (r *recordLister) expandProps(path string, resource *model.Resource) {
 			path:         path + "_" + prop.Name,
 			def:          r.quote(path) + "." + r.quote(prop.Name),
 			alias:        r.quote(path + "_" + prop.Name),
-			property:     prop,
 			required:     prop.Required && !isInner,
 			propertyType: prop.Type,
 		})
@@ -278,9 +360,6 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 	properties := make(map[string]*structpb.Value)
 
 	for _, cd := range r.colList {
-		if cd.property == nil {
-			continue
-		}
 		propertyType := r.backend.options.TypeModifier(cd.propertyType)
 		propPointer := propertyPointers[cd.path]
 
@@ -289,10 +368,24 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 			continue
 		}
 
-		val, err := DbDecode(cd.property, propV)
+		val, err := DbDecode(cd.propertyType, propV)
 
 		if err != nil {
 			return nil, err
+		}
+
+		if r.aggregation != nil {
+			for _, item := range r.aggregation.Items {
+				if cd.path == "t_"+item.Name {
+					v, err2 := propertyType.Pack(val)
+
+					if err2 != nil {
+						return nil, errors.InternalError.WithDetails(err2.Error())
+					}
+
+					properties[item.Name] = v
+				}
+			}
 		}
 
 		for _, prop := range resource.Properties {
@@ -563,6 +656,7 @@ func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, 
 		runner:            runner,
 		resource:          resource,
 		query:             params.Query,
+		aggregation:       params.Aggregation,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
 		ResolveReferences: params.ResolveReferences,
@@ -571,8 +665,8 @@ func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, 
 	}).Exec()
 }
 
-func DbDecode(property *model.ResourceProperty, val interface{}) (interface{}, errors.ServiceError) {
-	if property.Type == model.ResourceProperty_STRUCT || property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
+func DbDecode(propertyType model.ResourceProperty_Type, val interface{}) (interface{}, errors.ServiceError) {
+	if propertyType == model.ResourceProperty_STRUCT || propertyType == model.ResourceProperty_OBJECT || propertyType == model.ResourceProperty_MAP || propertyType == model.ResourceProperty_LIST {
 		var data = new(interface{})
 		err2 := json.Unmarshal([]byte(val.(string)), data)
 
@@ -581,7 +675,7 @@ func DbDecode(property *model.ResourceProperty, val interface{}) (interface{}, e
 		}
 
 		val = *data
-	} else if property.Type == model.ResourceProperty_REFERENCE {
+	} else if propertyType == model.ResourceProperty_REFERENCE {
 		return map[string]interface{}{
 			"id": val,
 		}, nil

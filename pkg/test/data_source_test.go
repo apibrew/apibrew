@@ -76,7 +76,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 //
 //	defer func() {
 //		if newDataSource.Id != nil {
-//			_, err := recordClient.Delete(setup.Ctx, &stub.DeleteRecordRequest{
+//			_, err := recordClient.Delete_(setup.Ctx, &stub.DeleteRecordRequest{
 //				Namespace: resources.DataSourceResource.Namespace,
 //				Resource:  resources.DataSourceResource.Name,
 //				Ids:       []string{newDataSource.Id.String()},

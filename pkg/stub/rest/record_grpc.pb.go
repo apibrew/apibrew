@@ -22,7 +22,7 @@ const (
 	Record_Create_FullMethodName = "/rest.Record/Create"
 	Record_Update_FullMethodName = "/rest.Record/Update"
 	Record_Apply_FullMethodName  = "/rest.Record/Apply"
-	Record_Delete_FullMethodName = "/rest.Record/Delete"
+	Record_Delete_FullMethodName = "/rest.Record/Delete_"
 )
 
 // RecordClient is the client API for Record service.
@@ -104,7 +104,7 @@ func (UnimplementedRecordServer) Apply(context.Context, *ApplyRecordRequest) (*A
 	return nil, status.Errorf(codes.Unimplemented, "method Apply not implemented")
 }
 func (UnimplementedRecordServer) Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Delete_ not implemented")
 }
 func (UnimplementedRecordServer) mustEmbedUnimplementedRecordServer() {}
 
@@ -211,7 +211,7 @@ var Record_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Record_Apply_Handler,
 		},
 		{
-			MethodName: "Delete",
+			MethodName: "Delete_",
 			Handler:    _Record_Delete_Handler,
 		},
 	},

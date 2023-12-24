@@ -48,7 +48,7 @@ func (o *resourceObject) bindRecordFn(boundResource *model.Resource, from func(c
 	return func(ctx context.Context, event *model.Event) (processedEvent *model.Event, err errors.ServiceError) {
 		defer func() {
 			if r := recover(); r != nil {
-				err = errors.LogicalError.WithDetails(fmt.Sprintf("%v", r))
+				err = errors.RecordValidationError.WithDetails(fmt.Sprintf("%v", r))
 			}
 		}()
 
@@ -135,10 +135,10 @@ func (o *resourceObject) bindRecordFn(boundResource *model.Resource, from func(c
 	}
 }
 
-func (o *resourceObject) initBindMethods() {
-	o.BindCreate = o.registerBindHandler(model.Event_CREATE)
-	o.BindUpdate = o.registerBindHandler(model.Event_UPDATE)
-	o.BindDelete = o.registerBindHandler(model.Event_DELETE)
-	o.BindGet = o.registerBindHandler(model.Event_GET)
-	o.BindList = o.registerBindHandler(model.Event_LIST)
+func (o *resourceObject) initBindMethods(object *goja.Object) {
+	_ = object.Set("bindCreate", o.registerBindHandler(model.Event_CREATE))
+	_ = object.Set("bindUpdate", o.registerBindHandler(model.Event_UPDATE))
+	_ = object.Set("bindDelete", o.registerBindHandler(model.Event_DELETE))
+	_ = object.Set("bindGet", o.registerBindHandler(model.Event_GET))
+	_ = object.Set("bindList", o.registerBindHandler(model.Event_LIST))
 }

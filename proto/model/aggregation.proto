@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/apibrew/apibrew/pkg/model";
+
+import 'google/protobuf/struct.proto';
+
+message AggregationItem {
+  string name = 1;
+  enum Algorithm {
+    COUNT = 0;
+    SUM = 1;
+    AVG = 2;
+    MAX = 3;
+    MIN = 4;
+  }
+  Algorithm algorithm = 2;
+  string property = 3;
+}
+
+message GroupingItem {
+  string property = 1;
+}
+
+message Aggregation {
+  repeated AggregationItem items = 1;
+  repeated GroupingItem grouping = 2;
+}

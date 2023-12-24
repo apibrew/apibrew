@@ -231,6 +231,7 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 			Limit:             event.RecordSearchParams.Limit,
 			Offset:            event.RecordSearchParams.Offset,
 			ResolveReferences: event.RecordSearchParams.ResolveReferences,
+			Aggregation:       event.RecordSearchParams.Aggregation,
 		}, nil)
 
 		event.Records = result

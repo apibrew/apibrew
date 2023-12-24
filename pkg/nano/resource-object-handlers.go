@@ -32,7 +32,7 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 	return func(ctx context.Context, event *model.Event) (processedEvent *model.Event, err errors.ServiceError) {
 		defer func() {
 			if r := recover(); r != nil {
-				err = errors.LogicalError.WithDetails(fmt.Sprintf("%v", r))
+				err = errors.RecordValidationError.WithDetails(fmt.Sprintf("%v", r))
 			}
 		}()
 
@@ -72,22 +72,22 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 	}
 }
 
-func (o *resourceObject) initHandlerMethods() {
-	o.BeforeCreate = o.registerHandler(10, true, true, model.Event_CREATE)
-	o.BeforeUpdate = o.registerHandler(10, true, true, model.Event_UPDATE)
-	o.BeforeDelete = o.registerHandler(10, true, true, model.Event_DELETE)
-	o.BeforeGet = o.registerHandler(10, true, true, model.Event_GET)
-	o.BeforeList = o.registerHandler(10, true, true, model.Event_LIST)
+func (o *resourceObject) initHandlerMethods(object *goja.Object) {
+	_ = object.Set("beforeCreate", o.registerHandler(10, true, true, model.Event_CREATE))
+	_ = object.Set("beforeUpdate", o.registerHandler(10, true, true, model.Event_UPDATE))
+	_ = object.Set("beforeDelete", o.registerHandler(10, true, true, model.Event_DELETE))
+	_ = object.Set("beforeGet", o.registerHandler(10, true, true, model.Event_GET))
+	_ = object.Set("beforeList", o.registerHandler(10, true, true, model.Event_LIST))
 
-	o.AfterCreate = o.registerHandler(110, true, true, model.Event_CREATE)
-	o.AfterUpdate = o.registerHandler(110, true, true, model.Event_UPDATE)
-	o.AfterDelete = o.registerHandler(110, true, true, model.Event_DELETE)
-	o.AfterGet = o.registerHandler(110, true, true, model.Event_GET)
-	o.AfterList = o.registerHandler(110, true, true, model.Event_LIST)
+	_ = object.Set("afterCreate", o.registerHandler(110, true, true, model.Event_CREATE))
+	_ = object.Set("afterUpdate", o.registerHandler(110, true, true, model.Event_UPDATE))
+	_ = object.Set("afterDelete", o.registerHandler(110, true, true, model.Event_DELETE))
+	_ = object.Set("afterGet", o.registerHandler(110, true, true, model.Event_GET))
+	_ = object.Set("afterList", o.registerHandler(110, true, true, model.Event_LIST))
 
-	o.OnCreate = o.registerHandler(110, true, true, model.Event_CREATE)
-	o.OnUpdate = o.registerHandler(110, true, true, model.Event_UPDATE)
-	o.OnDelete = o.registerHandler(110, true, true, model.Event_DELETE)
-	o.OnGet = o.registerHandler(110, true, true, model.Event_GET)
-	o.OnList = o.registerHandler(110, true, true, model.Event_LIST)
+	_ = object.Set("onCreate", o.registerHandler(110, true, true, model.Event_CREATE))
+	_ = object.Set("onUpdate", o.registerHandler(110, true, true, model.Event_UPDATE))
+	_ = object.Set("onDelete", o.registerHandler(110, true, true, model.Event_DELETE))
+	_ = object.Set("onGet", o.registerHandler(110, true, true, model.Event_GET))
+	_ = object.Set("onList", o.registerHandler(110, true, true, model.Event_LIST))
 }

@@ -173,9 +173,10 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	}
 
 	records, total, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
-		Query:  params.Query,
-		Limit:  params.Limit,
-		Offset: params.Offset,
+		Query:       params.Query,
+		Limit:       params.Limit,
+		Offset:      params.Offset,
+		Aggregation: params.Aggregation,
 	}, params.ResultChan)
 
 	// todo implement params.PackRecords
@@ -597,7 +598,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 
 	// begin metrics
 	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
-		{Name: "operation", Value: "Get"},
+		{Name: "operation", Value: "Get_"},
 		{Name: "resource", Value: resourceName},
 		{Name: "namespace", Value: namespace},
 	})
@@ -712,7 +713,7 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 
 	// begin metrics
 	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
-		{Name: "operation", Value: "Delete"},
+		{Name: "operation", Value: "Delete_"},
 		{Name: "resource", Value: params.Resource},
 		{Name: "namespace", Value: params.Namespace},
 	})

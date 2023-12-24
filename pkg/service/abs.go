@@ -144,6 +144,7 @@ type RecordListParams struct {
 	ResultChan        chan<- *model.Record
 	PackRecords       bool
 	Filters           map[string]string
+	Aggregation       *model.Aggregation
 }
 
 func (p RecordListParams) ToRequest() *stub.ListRecordRequest {

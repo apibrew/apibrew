@@ -777,8 +777,8 @@ func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 		Description: description,
 		Get: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Get item", title),
-			Description: fmt.Sprintf("%s - Get item", description),
+			Summary:     fmt.Sprintf("%s - Get_ item", title),
+			Description: fmt.Sprintf("%s - Get_ item", description),
 			OperationID: "get" + resource.GetName(),
 			Parameters: []*openapi3.ParameterRef{
 				{
@@ -807,8 +807,8 @@ func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 		},
 		Delete: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Delete item", title),
-			Description: fmt.Sprintf("%s - Delete item", description),
+			Summary:     fmt.Sprintf("%s - Delete_ item", title),
+			Description: fmt.Sprintf("%s - Delete_ item", description),
 			OperationID: "delete" + resource.GetName(),
 			Parameters: []*openapi3.ParameterRef{
 				{
@@ -1052,8 +1052,8 @@ func (s *openApiBuilder) appendRecordeGenericApi(doc *openapi3.T) {
 		Parameters:  genericParameters,
 		Get: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Get item", title),
-			Description: fmt.Sprintf("%s - Get item", description),
+			Summary:     fmt.Sprintf("%s - Get_ item", title),
+			Description: fmt.Sprintf("%s - Get_ item", description),
 			OperationID: "get" + resource.GetName(),
 			Parameters: []*openapi3.ParameterRef{
 				{
@@ -1082,8 +1082,8 @@ func (s *openApiBuilder) appendRecordeGenericApi(doc *openapi3.T) {
 		},
 		Delete: &openapi3.Operation{
 			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Delete item", title),
-			Description: fmt.Sprintf("%s - Delete item", description),
+			Summary:     fmt.Sprintf("%s - Delete_ item", title),
+			Description: fmt.Sprintf("%s - Delete_ item", description),
 			OperationID: "delete" + resource.GetName(),
 			Parameters: []*openapi3.ParameterRef{
 				{

@@ -1238,18 +1238,18 @@ var file_stub_resource_proto_depIdxs = []int32{
 	24, // 17: stub.GetSystemResourceResponse.resource:type_name -> model.Resource
 	2,  // 18: stub.Resource.Create:input_type -> stub.CreateResourceRequest
 	4,  // 19: stub.Resource.Update:input_type -> stub.UpdateResourceRequest
-	6,  // 20: stub.Resource.Delete:input_type -> stub.DeleteResourceRequest
+	6,  // 20: stub.Resource.Delete_:input_type -> stub.DeleteResourceRequest
 	8,  // 21: stub.Resource.List:input_type -> stub.ListResourceRequest
 	0,  // 22: stub.Resource.PrepareResourceMigrationPlan:input_type -> stub.PrepareResourceMigrationPlanRequest
-	10, // 23: stub.Resource.Get:input_type -> stub.GetResourceRequest
+	10, // 23: stub.Resource.Get_:input_type -> stub.GetResourceRequest
 	12, // 24: stub.Resource.GetByName:input_type -> stub.GetResourceByNameRequest
 	14, // 25: stub.Resource.GetSystemResource:input_type -> stub.GetSystemResourceRequest
 	3,  // 26: stub.Resource.Create:output_type -> stub.CreateResourceResponse
 	5,  // 27: stub.Resource.Update:output_type -> stub.UpdateResourceResponse
-	7,  // 28: stub.Resource.Delete:output_type -> stub.DeleteResourceResponse
+	7,  // 28: stub.Resource.Delete_:output_type -> stub.DeleteResourceResponse
 	9,  // 29: stub.Resource.List:output_type -> stub.ListResourceResponse
 	1,  // 30: stub.Resource.PrepareResourceMigrationPlan:output_type -> stub.PrepareResourceMigrationPlanResponse
-	11, // 31: stub.Resource.Get:output_type -> stub.GetResourceResponse
+	11, // 31: stub.Resource.Get_:output_type -> stub.GetResourceResponse
 	13, // 32: stub.Resource.GetByName:output_type -> stub.GetResourceByNameResponse
 	15, // 33: stub.Resource.GetSystemResource:output_type -> stub.GetSystemResourceResponse
 	26, // [26:34] is the sub-list for method output_type

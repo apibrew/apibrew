@@ -24,12 +24,12 @@ const (
 	Record_Update_FullMethodName      = "/stub.Record/Update"
 	Record_Apply_FullMethodName       = "/stub.Record/Apply"
 	Record_UpdateMulti_FullMethodName = "/stub.Record/UpdateMulti"
-	Record_Delete_FullMethodName      = "/stub.Record/Delete"
+	Record_Delete_FullMethodName      = "/stub.Record/Delete_"
 	Record_List_FullMethodName        = "/stub.Record/List"
 	Record_Search_FullMethodName      = "/stub.Record/Search"
 	Record_ReadStream_FullMethodName  = "/stub.Record/ReadStream"
 	Record_WriteStream_FullMethodName = "/stub.Record/WriteStream"
-	Record_Get_FullMethodName         = "/stub.Record/Get"
+	Record_Get_FullMethodName         = "/stub.Record/Get_"
 )
 
 // RecordClient is the client API for Record service.
@@ -232,7 +232,7 @@ func (UnimplementedRecordServer) UpdateMulti(context.Context, *UpdateMultiRecord
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMulti not implemented")
 }
 func (UnimplementedRecordServer) Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Delete_ not implemented")
 }
 func (UnimplementedRecordServer) List(context.Context, *ListRecordRequest) (*ListRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
@@ -247,7 +247,7 @@ func (UnimplementedRecordServer) WriteStream(Record_WriteStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method WriteStream not implemented")
 }
 func (UnimplementedRecordServer) Get(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Get_ not implemented")
 }
 func (UnimplementedRecordServer) mustEmbedUnimplementedRecordServer() {}
 
@@ -477,7 +477,7 @@ var Record_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Record_UpdateMulti_Handler,
 		},
 		{
-			MethodName: "Delete",
+			MethodName: "Delete_",
 			Handler:    _Record_Delete_Handler,
 		},
 		{
@@ -489,7 +489,7 @@ var Record_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Record_Search_Handler,
 		},
 		{
-			MethodName: "Get",
+			MethodName: "Get_",
 			Handler:    _Record_Get_Handler,
 		},
 	},

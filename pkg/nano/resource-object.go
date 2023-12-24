@@ -9,50 +9,13 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
 	"google.golang.org/protobuf/types/known/structpb"
+	"strings"
 )
 
 type resourceObject struct {
+	goja.DynamicObject
 	container service.Container
 	resource  *model.Resource
-
-	BeforeCreate func(fn func(call goja.FunctionCall) goja.Value) `json:"beforeCreate"`
-	BeforeUpdate func(fn func(call goja.FunctionCall) goja.Value) `json:"beforeUpdate"`
-	BeforeDelete func(fn func(call goja.FunctionCall) goja.Value) `json:"beforeDelete"`
-	BeforeGet    func(fn func(call goja.FunctionCall) goja.Value) `json:"beforeGet"`
-	BeforeList   func(fn func(call goja.FunctionCall) goja.Value) `json:"beforeList"`
-
-	AfterCreate func(fn func(call goja.FunctionCall) goja.Value) `json:"afterCreate"`
-	AfterUpdate func(fn func(call goja.FunctionCall) goja.Value) `json:"afterUpdate"`
-	AfterDelete func(fn func(call goja.FunctionCall) goja.Value) `json:"afterDelete"`
-	AfterGet    func(fn func(call goja.FunctionCall) goja.Value) `json:"afterGet"`
-	AfterList   func(fn func(call goja.FunctionCall) goja.Value) `json:"afterList"`
-
-	OnCreate func(fn func(call goja.FunctionCall) goja.Value) `json:"onCreate"`
-	OnUpdate func(fn func(call goja.FunctionCall) goja.Value) `json:"onUpdate"`
-	OnDelete func(fn func(call goja.FunctionCall) goja.Value) `json:"onDelete"`
-	OnGet    func(fn func(call goja.FunctionCall) goja.Value) `json:"onGet"`
-	OnList   func(fn func(call goja.FunctionCall) goja.Value) `json:"onList"`
-
-	Preprocess  func(fn func(call goja.FunctionCall) goja.Value) `json:"preprocess"`
-	Postprocess func(fn func(call goja.FunctionCall) goja.Value) `json:"postprocess"`
-	Check       func(fn func(call goja.FunctionCall) goja.Value) `json:"check"`
-
-	BindCreate BindFunc `jsbind:"bindCreate"`
-	BindUpdate BindFunc `jsbind:"bindUpdate"`
-	BindDelete BindFunc `jsbind:"bindDelete"`
-	BindGet    BindFunc `jsbind:"bindGet"`
-	BindList   BindFunc `jsbind:"bindList"`
-
-	Create func(record goja.Value) goja.Value                  `js:"create"`
-	Update func(record goja.Value) goja.Value                  `js:"update"`
-	Apply  func(record goja.Value) goja.Value                  `js:"apply"`
-	Delete func(record goja.Value) goja.Value                  `js:"delete"`
-	Get    func(recordId string, params goja.Value) goja.Value `js:"get"`
-	List   func(params goja.Value) goja.Value                  `js:"list"`
-
-	Count    func(params goja.Value) goja.Value                  `js:"count"`
-	Load     func(params goja.Value) goja.Value                  `js:"load"`
-	FindById func(recordId string, params goja.Value) goja.Value `js:"findById"`
 
 	vm                  *goja.Runtime
 	cec                 *codeExecutionContext
@@ -101,45 +64,55 @@ func (o *resourceObject) recordToObject(record *model.Record) map[string]interfa
 	return recordObj
 }
 
-func (o *resourceObject) initHandlers() {
-	o.initHandlerMethods()
+func (o *resourceObject) initValue(object *goja.Object) {
+	_ = object.Set("self", o)
+	o.initHandlerMethods(object)
 
-	o.initBindMethods()
-	o.initRepositoryMethods()
+	o.initBindMethods(object)
+	o.initRepositoryMethods(object)
+
+	o.initPropertyMethods(object)
 }
 
-func resourceFn(container service.Container, vm *goja.Runtime, cec *codeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler) func(args ...string) *resourceObject {
+func resourceFn(container service.Container, vm *goja.Runtime, cec *codeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler) func(args ...string) goja.Value {
 	resourceService := container.GetResourceService()
-	return func(args ...string) *resourceObject {
-		var resourceName string
-		var namespace string
+	return func(args ...string) goja.Value {
+		resource := resourceByName(args, resourceService)
 
-		if len(args) == 0 || len(args) > 2 {
-			panic("resource function needs 1 or 2 parameters")
-		}
+		ro := &resourceObject{resource: resource, container: container, vm: vm, cec: cec, backendEventHandler: backendEventHandler}
 
-		if len(args) == 1 {
-			namespace = "default"
-			resourceName = args[0]
-		} else {
-			namespace = args[0]
-			resourceName = args[1]
-		}
+		value := vm.NewObject()
 
-		resource, err := resourceService.GetResourceByName(util.SystemContext, namespace, resourceName)
+		ro.initValue(value)
 
-		if err != nil {
-			panic(err)
-		}
-
-		return newResourceObject(resource, container, vm, cec, backendEventHandler)
+		return value
 	}
 }
 
-func newResourceObject(resource *model.Resource, container service.Container, vm *goja.Runtime, cec *codeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler) *resourceObject {
-	ro := &resourceObject{resource: resource, container: container, vm: vm, cec: cec, backendEventHandler: backendEventHandler}
+func resourceByName(args []string, resourceService service.ResourceService) *model.Resource {
+	var resourceName string
+	var namespace string
 
-	ro.initHandlers()
+	if len(args) == 0 || len(args) > 2 {
+		panic("resource function needs 1 or 2 parameters")
+	}
 
-	return ro
+	if strings.Contains(args[0], "/") {
+		args = strings.Split(args[0], "/")
+	}
+
+	if len(args) == 1 {
+		namespace = "default"
+		resourceName = args[0]
+	} else {
+		namespace = args[0]
+		resourceName = args[1]
+	}
+
+	resource, err := resourceService.GetResourceByName(util.SystemContext, namespace, resourceName)
+
+	if err != nil {
+		panic(err)
+	}
+	return resource
 }

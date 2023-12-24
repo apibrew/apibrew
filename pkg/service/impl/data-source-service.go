@@ -65,8 +65,8 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 
 func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
-	logger.WithField("ids", ids).Debug("Begin data-source Delete")
-	defer logger.Debug("End data-source Delete")
+	logger.WithField("ids", ids).Debug("Begin data-source Delete_")
+	defer logger.Debug("End data-source Delete_")
 
 	return d.recordService.Delete(ctx, service.RecordDeleteParams{
 		Namespace: resources.DataSourceResource.Namespace,
