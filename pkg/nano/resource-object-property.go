@@ -46,14 +46,6 @@ func (o *resourceObject) computeFn(prop *model.ResourceProperty) func(fn func(ca
 	}
 }
 
-func (o *resourceObject) recordComputeHandlerFn(fn func(call goja.FunctionCall) goja.Value, prop *model.ResourceProperty) func(call goja.FunctionCall) goja.Value {
-	return func(call goja.FunctionCall) goja.Value {
-		entity := call.Arguments[0].Export().(map[string]interface{})
-		entity[prop.Name] = fn(call).Export()
-		return o.vm.ToValue(entity)
-	}
-}
-
 func (o *resourceObject) registerDepHandlers(fn func(call goja.FunctionCall) goja.Value, dep *resourceObject, depProp *model.ResourceProperty, prop *model.ResourceProperty) {
 	var isSelf = dep.resource.Id == o.resource.Id
 
