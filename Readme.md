@@ -3,8 +3,8 @@ Api Brew    -    https://apibrew.io
 [![build](https://github.com/apibrew/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/apibrew/apibrew/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/apibrew/apibrew)](https://goreportcard.com/report/github.com/apibrew/apibrew)
 [![Go Reference](https://pkg.go.dev/badge/github.com/apibrew/apibrew.svg)](https://pkg.go.dev/github.com/apibrew/apibrew)
-[![Docker Pulls](https://img.shields.io/docker/pulls/apibrew/apibrew)](https://hub.docker.com/r/apibrew/apibrew)
-[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/apibrew/apibrew)](https://hub.docker.com/r/apibrew/apibrew)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
+[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/tislib/apibrew)](https://hub.docker.com/r/tislib/apibrew)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/apibrew/apibrew)
 ![GitHub](https://img.shields.io/github/license/apibrew/apibrew)
 
