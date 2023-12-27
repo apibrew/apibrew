@@ -1,6 +1,8 @@
 <p align="center">
-<img src="https://apibrew.io/ApiBrew%20Logo.svg" width="500px">
+<img src="https://raw.githubusercontent.com/apibrew/apibrew/master/static/ApiBrew%20Logo.svg#gh-light-mode-only">
+<img src="https://raw.githubusercontent.com/apibrew/apibrew/master/static/ApiBrew%20Logo-dark.svg#gh-dark-mode-only">
 </p>
+
 
 # Api Brew    -    https://apibrew.io
 [![build](https://github.com/apibrew/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/apibrew/apibrew/actions/workflows/build.yml)
