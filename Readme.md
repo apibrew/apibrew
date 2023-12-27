@@ -15,9 +15,18 @@ Docs: https://apibrew.io/docs/getting-started
 
 
 ## Introduction
+
+### Run your instance
+
+```shell
+docker run tislib/apibrew:full-latest -v data:/var/lib/postgresql/data -p 9009:9009
+```
+
 **Everything is a *Resource***. And **Everything has a *CRUD API***
 
 With API Brew, you can create CRUD APIs for your data in a few minutes
+
+### Create first resource
 
 country.yml
 ```yaml
@@ -40,6 +49,8 @@ So you are ready, you have fully established Rest API for book resource
 <img src="https://apibrew.io/files/book-swagger.png" width="300"/>
 
 You can build entire application with resources and references between them (like relations in relational databases)
+
+### Change its behaviour with power of nano code
 
 Everything can be written by resources, not?
 **Let's extend our Book resource with help of nano code**
