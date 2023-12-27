@@ -19,41 +19,45 @@ With API Brew, you can create CRUD APIs for your data in a few minutes
 country.yml
 ```yaml
 type: resource
-name: country
+name: Book
 properties:
-  name: # name of the property
-    type: STRING # type of the property
-    required: true
+  title:
+    type: STRING
     unique: true
-  name: description # name of the property
-    type: STRING # type of the property
+    required: true
+  description:
+    type: STRING
 ```
 
 ```bash
 apbr apply -f country.yml
 ```
-So you are ready, you have fully established Rest API for country resource
+So you are ready, you have fully established Rest API for book resource
 
-```javascript
-axios.post('http://localhost:9009/country', {
-  name: 'Country1',
-  description: 'Sample Country 1'
-})
-```
+<img src="https://apibrew.io/files/book-swagger.png" width="300"/>
 
 You can build entire application with resources and references between them (like relations in relational databases)
 
 Everything can be written by resources, not?
-**Let's extend our country resource**
+**Let's extend our Book resource with help of nano code**
 
+BookLogic.js
 ```javascript
-countryExtension.onCreate(async (country) => {
-        country.description = country.description + ' - Extended'
+const book = resource('Book')
 
-        return country
-    })
+book.beforeCreate((book) => {
+  if (!book.description) {
+    book.description = 'No description'
+  }
+});
 ```
-So we have extended our country resource with modification description on create
+```bash
+apbr deploy -f BookLogic.js --override
+```
+
+See the docs for nano: https://apibrew.io/docs/nano
+
+So we have extended our book resource with help of nano code
 
 So, with **API Brew**, you can create your application with resources and you can customize behavior of your resources with extensions
 
@@ -77,8 +81,8 @@ API Brew is a **Low Code software** that allows to create various Grpc and Rest 
 * ***Extensible*** - API Brew is extensible. You can extend your resources with extensions. You can also extend your APIs with extensions
 * ***CLI support*** - API Brew has a cli tool to manage your resources, dataSources, etc. It is called `apbr`
 * ***Docker*** - API Brew is dockerized. You can run it on docker
-* ***Docker Compose*** - API Brew is docker-compose ready. You can run it on docker-compose, see [docker-compose](deploy/docker-compose)
-* ***Kubernetes*** - API Brew is kubernetes ready. You can run it on kubernetes, see [kubernetes](deploy/kubernetes)
+* ***Docker Compose*** - API Brew is docker-compose ready. You can run it on docker-compose
+* ***Kubernetes*** - API Brew is kubernetes ready. You can run it on kubernetes
 
 ## Use Cases
 
