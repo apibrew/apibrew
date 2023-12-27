@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://user-images.githubusercontent.com/8291514/213727234-cda046d6-28c6-491a-b284-b86c5cede25d.png" width="500px">
+<img src="https://apibrew.io/ApiBrew%20Logo.svg" width="500px">
 </p>
 
 # Api Brew    -    https://apibrew.io
