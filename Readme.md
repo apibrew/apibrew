@@ -1,5 +1,8 @@
-Api Brew    -    https://apibrew.io
-======================
+<p align="center">
+<img src="https://user-images.githubusercontent.com/8291514/213727234-cda046d6-28c6-491a-b284-b86c5cede25d.png" width="500px">
+</p>
+
+# Api Brew    -    https://apibrew.io
 [![build](https://github.com/apibrew/apibrew/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/apibrew/apibrew/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/apibrew/apibrew)](https://goreportcard.com/report/github.com/apibrew/apibrew)
 [![Go Reference](https://pkg.go.dev/badge/github.com/apibrew/apibrew.svg)](https://pkg.go.dev/github.com/apibrew/apibrew)
