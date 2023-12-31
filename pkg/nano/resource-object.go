@@ -1,14 +1,11 @@
 package nano
 
 import (
-	"fmt"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
-	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 )
 
@@ -20,6 +17,7 @@ type resourceObject struct {
 	vm                  *goja.Runtime
 	cec                 *codeExecutionContext
 	backendEventHandler backend_event_handler.BackendEventHandler
+	global              *globalObject
 }
 
 func (o *resourceObject) handlerSelector(action model.Event_Action) *model.EventSelector {
@@ -28,28 +26,6 @@ func (o *resourceObject) handlerSelector(action model.Event_Action) *model.Event
 		Namespaces: []string{o.resource.Namespace},
 		Resources:  []string{o.resource.Name},
 	}
-}
-
-func (o *resourceObject) valueToRecord(resultExported interface{}) (*model.Record, errors.ServiceError) {
-	recordObj, ok := resultExported.(map[string]interface{})
-
-	if !ok {
-		return nil, errors.LogicalError.WithDetails(fmt.Sprintf("Cannot accept nano function result: %v", resultExported))
-	}
-
-	var record = new(model.Record)
-	record.Properties = make(map[string]*structpb.Value)
-
-	for key, value := range recordObj {
-		sv, verr := structpb.NewValue(value)
-
-		if verr != nil {
-			return nil, errors.LogicalError.WithDetails(verr.Error())
-		}
-
-		record.Properties[key] = sv
-	}
-	return record, nil
 }
 
 func (o *resourceObject) recordToValue(record *model.Record) goja.Value {
@@ -72,14 +48,41 @@ func (o *resourceObject) initValue(object *goja.Object) {
 	o.initRepositoryMethods(object)
 
 	o.initPropertyMethods(object)
+
+	_ = object.Set("define", o.defineFn)
+	_ = object.Set("call", o.callFn)
 }
 
-func resourceFn(container service.Container, vm *goja.Runtime, cec *codeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler) func(args ...string) goja.Value {
+func (o *resourceObject) defineFn(name string, value interface{}) {
+	o.global.Define(o.locateGlobalName(name), value)
+}
+
+func (o *resourceObject) callFn(name string, args ...goja.Value) goja.Value {
+	fnObj := o.global.Get(o.locateGlobalName(name))
+
+	if fnObj == nil {
+		panic("definition not found: " + name)
+	}
+
+	if fn, ok := fnObj.(func(call goja.FunctionCall) goja.Value); ok {
+		return fn(goja.FunctionCall{
+			Arguments: args,
+		})
+	} else {
+		panic("definition is not a function: " + name)
+	}
+}
+
+func (o *resourceObject) locateGlobalName(name string) string {
+	return o.resource.Namespace + "_" + o.resource.Name + "_" + name
+}
+
+func resourceFn(container service.Container, vm *goja.Runtime, cec *codeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler, global *globalObject) func(args ...string) goja.Value {
 	resourceService := container.GetResourceService()
 	return func(args ...string) goja.Value {
 		resource := resourceByName(args, resourceService)
 
-		ro := &resourceObject{resource: resource, container: container, vm: vm, cec: cec, backendEventHandler: backendEventHandler}
+		ro := &resourceObject{resource: resource, container: container, vm: vm, cec: cec, backendEventHandler: backendEventHandler, global: global}
 
 		value := vm.NewObject()
 

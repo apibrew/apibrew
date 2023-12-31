@@ -13,6 +13,7 @@ type codeExecutorService struct {
 	container           service.Container
 	backendEventHandler backend_event_handler.BackendEventHandler
 	codeContext         map[string]*codeExecutionContext
+	globalObject        *globalObject
 }
 
 func (s codeExecutorService) registerCode(code *Code) (err error) {
@@ -80,7 +81,25 @@ func (s codeExecutorService) registerBuiltIns(code *Code, vm *goja.Runtime, cec 
 		return err
 	}
 
-	err = vm.Set("resource", resourceFn(s.container, vm, cec, s.backendEventHandler))
+	err = vm.Set("resource", resourceFn(s.container, vm, cec, s.backendEventHandler, s.globalObject))
+
+	if err != nil {
+		return err
+	}
+
+	err = vm.Set("lambda", lambdaFn(s.container, vm, cec, s.backendEventHandler))
+
+	if err != nil {
+		return err
+	}
+
+	err = vm.Set("http", NewHttpObject(vm))
+
+	if err != nil {
+		return err
+	}
+
+	err = vm.Set("global", s.globalObject)
 
 	if err != nil {
 		return err
@@ -90,5 +109,5 @@ func (s codeExecutorService) registerBuiltIns(code *Code, vm *goja.Runtime, cec 
 }
 
 func newCodeExecutorService(container service.Container, backendEventHandler backend_event_handler.BackendEventHandler) *codeExecutorService {
-	return &codeExecutorService{container: container, backendEventHandler: backendEventHandler, codeContext: make(map[string]*codeExecutionContext)}
+	return &codeExecutorService{container: container, backendEventHandler: backendEventHandler, codeContext: make(map[string]*codeExecutionContext), globalObject: newGlobalObject()}
 }

@@ -1,6 +1,8 @@
 package nano
 
 import (
+	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,7 +19,15 @@ type consoleObject struct {
 
 func (c *consoleObject) log(level log.Level) func(args ...interface{}) {
 	return func(args ...interface{}) {
-		log.WithField("CodeName", c.codeName).Logln(level, args...)
+		log.WithField("CodeName", c.codeName).Logln(level, util.ArrayMap(args, func(item interface{}) interface{} {
+			data, err := json.Marshal(item)
+
+			if err != nil {
+				panic(err)
+			}
+
+			return string(data)
+		})...)
 	}
 }
 

@@ -108,6 +108,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 				referenceNamespace = resource.Namespace
 			}
 			referencedResource := schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+property.Reference.Resource]
+
 			var refClause = ""
 			if property.Reference.Cascade {
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
@@ -117,8 +118,9 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 				return "", errors.LogicalError.WithDetails("Referenced resource not exists with name: " + referenceNamespace + "/" + property.Reference.Resource)
 			}
 
-			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
-
+			if !referencedResource.Virtual {
+				def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
+			}
 		}
 	}
 
@@ -282,8 +284,10 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 					return errors.ReferenceViolation.WithDetails("Referenced resource not exists with name: " + referenceNamespace + "/" + property.Reference.Resource)
 				}
 
-				sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(property.Name), r.options.Quote(referencedResource.SourceConfig.Entity), r.options.Quote("id")))
-				changes++
+				if !referencedResource.Virtual {
+					sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(property.Name), r.options.Quote(referencedResource.SourceConfig.Entity), r.options.Quote("id")))
+					changes++
+				}
 			}
 		}
 

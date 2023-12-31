@@ -51,7 +51,7 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 			resultExported := result.Export()
 
 			if resultExported != nil {
-				updatedRecord, err := o.valueToRecord(resultExported)
+				updatedRecord, err := valueToRecord(o.resource, resultExported)
 				if err != nil {
 					return nil, err
 				}
