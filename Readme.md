@@ -21,7 +21,7 @@ Docs: https://apibrew.io/docs/getting-started
 ### Run your instance
 
 ```shell
-docker run tislib/apibrew:full-latest -v data:/var/lib/postgresql/data -p 9009:9009
+docker run -v $(pwd)/data:/var/lib/postgresql/data -p 9009:9009 tislib/apibrew:full-latest
 ```
 
 **Everything is a *Resource***. And **Everything has a *CRUD API***

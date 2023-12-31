@@ -24,7 +24,7 @@
         "host": "127.0.0.1",
         "port": "5432",
         "db_name": "apibrew_manager_db",
-        "defaultSchema": "public"
+        "default_schema": "public"
       }
     }
   },

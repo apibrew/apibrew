@@ -26,12 +26,8 @@ jobs:
         uses: actions/checkout@v3
       - run: |
           version=$(cat version)
-          docker build . --progress=plain --no-cache --target=app -t tislib/apibrew:${version}
           docker build . --progress=plain --no-cache --target=app-full -t tislib/apibrew:full-${version}
-          docker tag tislib/apibrew:${version} tislib/apibrew:latest
           docker tag tislib/apibrew:full-${version} tislib/apibrew:full-latest
-          docker push tislib/apibrew:${version}
           docker push tislib/apibrew:full-${version}
-          docker push tislib/apibrew:latest
           docker push tislib/apibrew:full-latest
 

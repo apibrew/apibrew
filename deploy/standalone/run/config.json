@@ -1,66 +1,57 @@
 {
-  "config":  {
-    "host":  "0.0.0.0",
-    "port":  "9009"
-  },
-  "systemDataSource":  {
-    "id":  "system",
-    "name":  "system",
-    "backend":  "POSTGRESQL",
-    "postgresqlParams":  {
-      "username":  "root",
-      "password":  "root",
-      "host":  "127.0.0.1",
-      "port":  5432,
-      "dbName":  "dh_system",
-      "defaultSchema":  "public"
-    },
-    "auditData":  null,
-    "version":  0
-  },
-  "systemNamespace":  {
-    "name":  "system",
-    "auditData":  null,
-    "version":  0
-  },
-  "initDataSources":  [
-    {
-      "id":  "default",
-      "name":  "default",
-      "backend":  "POSTGRESQL",
-      "postgresqlParams":  {
+  "host": "0.0.0.0",
+  "port": 9009,
+  "systemDataSource": {
+    "properties": {
+      "backend": "POSTGRESQL",
+      "name": "system",
+      "options": {
         "username":  "root",
         "password":  "root",
         "host":  "127.0.0.1",
-        "port":  5432,
-        "dbName":  "dh_data",
-        "defaultSchema":  "public"
+        "port":  "5432",
+        "db_name":  "dh_system",
+        "default_schema":  "public"
       },
-      "auditData":  null,
-      "version":  0
+      "version": 0
     }
-  ],
-  "initNamespaces":  [],
-  "initUsers":  [
+  },
+  "initRecords": [
     {
-      "id":  "",
-      "username":  "admin",
-      "password":  "admin",
-      "securityContext":  {
-        "constraints": [
-          {
-            "namespace": "*",
-            "resource": "*",
-            "operation": "FULL",
-            "permit": 0
-          }
-        ]
-      },
-      "details":  null,
-      "auditData":  null,
-      "version":  0
+      "namespace": "system",
+      "resource": "DataSource",
+      "override": true,
+      "record": {
+        "properties": {
+          "backend": "POSTGRESQL",
+          "description": "",
+          "name": "default",
+          "options": {
+            "username":  "root",
+            "password":  "root",
+            "host":  "127.0.0.1",
+            "port":  "5432",
+            "db_name":  "dh_data",
+            "default_schema":  "public"
+          },
+          "version": 0
+        }
+      }
+    },
+    {
+      "namespace": "system",
+      "resource": "Namespace",
+      "override": true,
+      "record": {
+        "properties": {
+          "name": "default",
+          "version": 0
+        }
+      }
     }
   ],
-  "initResources":  [],
-  "initRecords":  []
+  "loggingConfig": {
+    "level": "DEBUG",
+    "reportCaller": true
+  }
 }

@@ -165,12 +165,12 @@ func TestUpdateDataSource(t *testing.T) {
 	checkNewCreatedRecordStatus(newDataSource, t)
 
 	newDataSource.Options = map[string]string{
-		"username":      "dhtest2",
-		"Password":      "dhtest2",
-		"Host":          "127.0.0.1",
-		"Port":          "5432",
-		"DbName":        "market",
-		"DefaultSchema": "public",
+		"username":       "dhtest2",
+		"Password":       "dhtest2",
+		"Host":           "127.0.0.1",
+		"Port":           "5432",
+		"DbName":         "market",
+		"default_schema": "public",
 	}
 
 	res, err := recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
