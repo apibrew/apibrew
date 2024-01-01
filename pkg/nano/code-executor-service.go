@@ -100,12 +100,6 @@ func (s codeExecutorService) registerBuiltIns(code *Code, vm *goja.Runtime, cec 
 		return err
 	}
 
-	err = vm.Set("http", NewHttpObject(vm))
-
-	if err != nil {
-		return err
-	}
-
 	err = vm.Set("global", s.globalObject)
 
 	if err != nil {
