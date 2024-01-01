@@ -25,11 +25,11 @@ func valueToRecord(resource *model.Resource, resultExported interface{}) (*model
 		var prop = props[key]
 		if timeValue, ok := value.(time.Time); ok {
 			if prop.Type == model.ResourceProperty_TIME {
-				value = timeValue.Format(time.TimeOnly)
+				value = timeValue.UTC().Format(time.TimeOnly)
 			} else if prop.Type == model.ResourceProperty_DATE {
-				value = timeValue.Format(time.DateOnly)
+				value = timeValue.UTC().Format(time.DateOnly)
 			} else {
-				value = timeValue.Format(time.RFC3339)
+				value = timeValue.UTC().Format(time.RFC3339)
 			}
 		}
 		sv, verr := structpb.NewValue(value)

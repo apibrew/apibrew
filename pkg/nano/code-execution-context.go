@@ -1,5 +1,6 @@
 package nano
 
 type codeExecutionContext struct {
-	handlerIds []string
+	handlerIds    []string
+	closeHandlers []func()
 }

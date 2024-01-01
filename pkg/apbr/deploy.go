@@ -80,6 +80,7 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 	var contentBytes []byte
 	var language string
 	var contentFormat string
+	var content string
 	if fileInfo.IsDir() {
 		contentFormat = "TAR_GZ"
 		if _, err := os.Stat(filepath.Join(path, "/index.js")); err != nil {
@@ -107,6 +108,8 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 		} else {
 			contentBytes = data
 		}
+
+		content = base64.StdEncoding.EncodeToString(contentBytes)
 	} else {
 		contentFormat = "TEXT"
 		contentBytes, err = os.ReadFile(path)
@@ -122,9 +125,9 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 		} else {
 			return errors.New("invalid file extension for nano code file. Only .js and .py are supported")
 		}
-	}
 
-	content := base64.StdEncoding.EncodeToString(contentBytes)
+		content = string(contentBytes)
+	}
 
 	var record *model.Record
 	if !override {

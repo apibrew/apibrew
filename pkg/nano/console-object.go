@@ -23,7 +23,7 @@ func (c *consoleObject) log(level log.Level) func(args ...interface{}) {
 			data, err := json.Marshal(item)
 
 			if err != nil {
-				panic(err)
+				return err.Error()
 			}
 
 			return string(data)
@@ -34,7 +34,7 @@ func (c *consoleObject) log(level log.Level) func(args ...interface{}) {
 func newConsoleObject(codeName string, vm *goja.Runtime, cec *codeExecutionContext) *consoleObject {
 	obj := &consoleObject{codeName: codeName}
 
-	obj.Log = obj.log(log.DebugLevel)
+	obj.Log = obj.log(log.InfoLevel)
 	obj.Debug = obj.log(log.DebugLevel)
 	obj.Trace = obj.log(log.TraceLevel)
 	obj.Info = obj.log(log.InfoLevel)
