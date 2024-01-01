@@ -8,7 +8,7 @@ require (
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/gnostic v0.6.9
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
