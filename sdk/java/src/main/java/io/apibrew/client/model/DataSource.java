@@ -30,7 +30,7 @@ public class DataSource extends Entity {
     public static final String RESOURCE = "DataSource";
 
     @JsonIgnore
-    public static final EntityInfo<DataSource> entityInfo = new EntityInfo<>("system", "DataSource", DataSource.class, "system-datasource");
+    public static final EntityInfo<DataSource> entityInfo = new EntityInfo<>("system", "DataSource", DataSource.class, "system-data-source");
 
     public static class AuditData {
         

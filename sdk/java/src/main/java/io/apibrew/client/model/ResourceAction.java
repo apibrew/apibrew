@@ -40,7 +40,7 @@ public class ResourceAction extends Entity {
     public static final String RESOURCE = "ResourceAction";
 
     @JsonIgnore
-    public static final EntityInfo<ResourceAction> entityInfo = new EntityInfo<>("system", "ResourceAction", ResourceAction.class, "system-resourceaction");
+    public static final EntityInfo<ResourceAction> entityInfo = new EntityInfo<>("system", "ResourceAction", ResourceAction.class, "system-resource-action");
 
     public static class SubType {
         

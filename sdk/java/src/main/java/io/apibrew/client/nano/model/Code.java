@@ -12,12 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Code extends Entity {
     
-    private String name;
-    
-    private String content;
-    
-    private int version;
-    
     private Code.Language language;
     
     private Code.AuditData auditData;
@@ -27,6 +21,12 @@ public class Code extends Entity {
     private Code.ContentFormat contentFormat;
     
     private java.util.UUID id;
+    
+    private String name;
+    
+    private String content;
+    
+    private int version;
 
     public static final String NAMESPACE = "nano";
     public static final String RESOURCE = "Code";
@@ -35,15 +35,28 @@ public class Code extends Entity {
     public static final EntityInfo<Code> entityInfo = new EntityInfo<>("nano", "Code", Code.class, "nano-code");
 
     public static class AuditData {
+        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
+        private java.time.Instant createdOn;
         
         private String updatedBy;
         @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
         private java.time.Instant updatedOn;
         
         private String createdBy;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
-        private java.time.Instant createdOn;
 
+        public java.time.Instant getCreatedOn() {
+            return createdOn;
+        }
+
+        public void setCreatedOn(java.time.Instant createdOn) {
+            this.createdOn = createdOn;
+        }
+
+        public AuditData withCreatedOn(java.time.Instant createdOn) {
+            this.createdOn = createdOn;
+
+            return this;
+        }
         public String getUpdatedBy() {
             return updatedBy;
         }
@@ -83,19 +96,6 @@ public class Code extends Entity {
 
             return this;
         }
-        public java.time.Instant getCreatedOn() {
-            return createdOn;
-        }
-
-        public void setCreatedOn(java.time.Instant createdOn) {
-            this.createdOn = createdOn;
-        }
-
-        public AuditData withCreatedOn(java.time.Instant createdOn) {
-            this.createdOn = createdOn;
-
-            return this;
-        }
 
         @Override
         public boolean equals(Object o) {
@@ -105,6 +105,9 @@ public class Code extends Entity {
 
             AuditData obj = (AuditData) o;
 
+            if (!Objects.equals(this.createdOn, obj.createdOn)) {
+                return false;
+            }
             if (!Objects.equals(this.updatedBy, obj.updatedBy)) {
                 return false;
             }
@@ -114,21 +117,17 @@ public class Code extends Entity {
             if (!Objects.equals(this.createdBy, obj.createdBy)) {
                 return false;
             }
-            if (!Objects.equals(this.createdOn, obj.createdOn)) {
-                return false;
-            }
 
             return true;
         }
 
         @Override
         public int hashCode() {
-           return Objects.hash(updatedBy, updatedOn, createdBy, createdOn);
+           return Objects.hash(createdOn, updatedBy, updatedOn, createdBy);
         }
     }
 
     public static enum Language {
-        PYTHON("PYTHON"),
         JAVASCRIPT("JAVASCRIPT");
 
         private final String value;
@@ -164,45 +163,6 @@ public class Code extends Entity {
     public Code() {
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Code withName(String name) {
-        this.name = name;
-
-        return this;
-    }
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Code withContent(String content) {
-        this.content = content;
-
-        return this;
-    }
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public Code withVersion(int version) {
-        this.version = version;
-
-        return this;
-    }
     public Code.Language getLanguage() {
         return language;
     }
@@ -268,6 +228,45 @@ public class Code extends Entity {
 
         return this;
     }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Code withName(String name) {
+        this.name = name;
+
+        return this;
+    }
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Code withContent(String content) {
+        this.content = content;
+
+        return this;
+    }
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public Code withVersion(int version) {
+        this.version = version;
+
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -277,15 +276,6 @@ public class Code extends Entity {
 
         Code obj = (Code) o;
 
-        if (!Objects.equals(this.name, obj.name)) {
-            return false;
-        }
-        if (!Objects.equals(this.content, obj.content)) {
-            return false;
-        }
-        if (!Objects.equals(this.version, obj.version)) {
-            return false;
-        }
         if (!Objects.equals(this.language, obj.language)) {
             return false;
         }
@@ -299,6 +289,15 @@ public class Code extends Entity {
             return false;
         }
         if (!Objects.equals(this.id, obj.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, obj.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.content, obj.content)) {
+            return false;
+        }
+        if (!Objects.equals(this.version, obj.version)) {
             return false;
         }
 

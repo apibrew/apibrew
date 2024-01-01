@@ -15,7 +15,7 @@ export interface AuditLog {
 export const AuditLogEntityInfo = {
     namespace: "system",
     resource: "AuditLog",
-    restPath: "system-auditlog",
+    restPath: "system-audit-log",
 }
 
 export enum Operation {

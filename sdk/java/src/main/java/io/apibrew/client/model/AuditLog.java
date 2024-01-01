@@ -36,7 +36,7 @@ public class AuditLog extends Entity {
     public static final String RESOURCE = "AuditLog";
 
     @JsonIgnore
-    public static final EntityInfo<AuditLog> entityInfo = new EntityInfo<>("system", "AuditLog", AuditLog.class, "system-auditlog");
+    public static final EntityInfo<AuditLog> entityInfo = new EntityInfo<>("system", "AuditLog", AuditLog.class, "system-audit-log");
 
 
     public static enum Operation {
