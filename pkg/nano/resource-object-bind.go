@@ -41,7 +41,7 @@ func (o *resourceObject) bindRecordFn(boundResource *model.Resource, from func(c
 
 			mapped := to(goja.FunctionCall{Arguments: []goja.Value{value}})
 
-			return o.valueToRecord(mapped.Export())
+			return valueToRecord(o.resource, mapped.Export())
 		})
 	}
 

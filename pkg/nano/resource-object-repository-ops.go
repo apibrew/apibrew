@@ -6,13 +6,15 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
+	"github.com/apibrew/apibrew/pkg/server/rest"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
 )
 
 func (o *resourceObject) createFn(recordValue goja.Value) goja.Value {
-	record, err := o.valueToRecord(recordValue.Export())
+	record, err := valueToRecord(o.resource, recordValue.Export())
 
 	if err != nil {
 		panic(err)
@@ -32,7 +34,7 @@ func (o *resourceObject) createFn(recordValue goja.Value) goja.Value {
 }
 
 func (o *resourceObject) updateFn(recordValue goja.Value) goja.Value {
-	record, err := o.valueToRecord(recordValue.Export())
+	record, err := valueToRecord(o.resource, recordValue.Export())
 
 	if err != nil {
 		panic(err)
@@ -52,7 +54,7 @@ func (o *resourceObject) updateFn(recordValue goja.Value) goja.Value {
 }
 
 func (o *resourceObject) applyFn(recordValue goja.Value) goja.Value {
-	record, err := o.valueToRecord(recordValue.Export())
+	record, err := valueToRecord(o.resource, recordValue.Export())
 
 	if err != nil {
 		panic(err)
@@ -72,7 +74,7 @@ func (o *resourceObject) applyFn(recordValue goja.Value) goja.Value {
 }
 
 func (o *resourceObject) deleteFn(recordValue goja.Value) goja.Value {
-	record, err := o.valueToRecord(recordValue.Export())
+	record, err := valueToRecord(o.resource, recordValue.Export())
 
 	if err != nil {
 		panic(err)
@@ -96,18 +98,12 @@ func (o *resourceObject) deleteFn(recordValue goja.Value) goja.Value {
 	return goja.Undefined()
 }
 
-func (o *resourceObject) getFn(recordId string, params goja.Value) goja.Value {
+func (o *resourceObject) getFn(recordId string, params map[string]interface{}) goja.Value {
 	var resolveReferences []string
 
-	if params.Export() != nil {
-		paramsMap, ok := params.Export().(map[string]interface{})
-
-		if !ok {
-			panic(fmt.Sprintf("Params must be an object: %v", params.Export()))
-		}
-
-		if paramsMap["resolveReferences"] != nil {
-			resolveReferences = paramsMap["resolveReferences"].([]string)
+	if params != nil {
+		if params["resolveReferences"] != nil {
+			resolveReferences = params["resolveReferences"].([]string)
 		}
 	}
 
@@ -125,10 +121,10 @@ func (o *resourceObject) getFn(recordId string, params goja.Value) goja.Value {
 	return o.recordToValue(record)
 }
 
-func (o *resourceObject) listFn(params goja.Value) goja.Value {
+func (o *resourceObject) listFn(params map[string]interface{}) goja.Value {
 	var listParams = service.RecordListParams{}
 	if params != nil {
-		paramsStr, err := json.Marshal(params.Export())
+		paramsStr, err := json.Marshal(params)
 
 		if err != nil {
 			panic(err)
@@ -159,8 +155,38 @@ func (o *resourceObject) listFn(params goja.Value) goja.Value {
 	return o.vm.ToValue(resultMap)
 }
 
+func (o *resourceObject) searchFn(params *rest.SearchRecordRequest) goja.Value {
+	var listParams = service.RecordListParams{}
+	if params != nil {
+		listParams.Limit = params.Limit
+		listParams.Offset = params.Offset
+		listParams.UseHistory = params.UseHistory
+
+		if params.Query != nil {
+			listParams.Query = extramappings.BooleanExpressionToProto(*params.Query)
+		}
+	}
+
+	listParams.Namespace = o.resource.Namespace
+	listParams.Resource = o.resource.Name
+
+	content, total, err := o.container.GetRecordService().List(util.SystemContext, listParams)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var resultMap = make(map[string]interface{})
+
+	resultMap["content"] = util.ArrayMap(content, o.recordToObject)
+	resultMap["total"] = total
+	resultMap["total"] = total
+
+	return o.vm.ToValue(resultMap)
+}
+
 func (o *resourceObject) loadFn(params goja.Value) goja.Value {
-	recordToLoad, err := o.valueToRecord(params.Export())
+	recordToLoad, err := valueToRecord(o.resource, params.Export())
 
 	if err != nil {
 		panic(err)
@@ -262,6 +288,7 @@ func (o *resourceObject) initRepositoryMethods(object *goja.Object) {
 	_ = object.Set("get", o.getFn)
 	_ = object.Set("findById", o.getFn)
 	_ = object.Set("list", o.listFn)
+	_ = object.Set("search", o.searchFn)
 	_ = object.Set("load", o.loadFn)
 	_ = object.Set("count", o.countFn)
 	_ = object.Set("sum", o.sumFn)

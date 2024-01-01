@@ -1,6 +1,8 @@
 package nano
 
 import (
+	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,14 +19,22 @@ type consoleObject struct {
 
 func (c *consoleObject) log(level log.Level) func(args ...interface{}) {
 	return func(args ...interface{}) {
-		log.WithField("CodeName", c.codeName).Logln(level, args...)
+		log.WithField("CodeName", c.codeName).Logln(level, util.ArrayMap(args, func(item interface{}) interface{} {
+			data, err := json.Marshal(item)
+
+			if err != nil {
+				return err.Error()
+			}
+
+			return string(data)
+		})...)
 	}
 }
 
 func newConsoleObject(codeName string, vm *goja.Runtime, cec *codeExecutionContext) *consoleObject {
 	obj := &consoleObject{codeName: codeName}
 
-	obj.Log = obj.log(log.DebugLevel)
+	obj.Log = obj.log(log.InfoLevel)
 	obj.Debug = obj.log(log.DebugLevel)
 	obj.Trace = obj.log(log.TraceLevel)
 	obj.Info = obj.log(log.InfoLevel)

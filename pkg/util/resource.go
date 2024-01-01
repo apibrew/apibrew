@@ -4,7 +4,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/gosimple/slug"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -179,8 +178,8 @@ func ResourceRestPath(resource *model.Resource) string {
 	if annotations.Get(resource, annotations.OpenApiRestPath) != "" {
 		return annotations.Get(resource, annotations.OpenApiRestPath)
 	} else if resource.Namespace == "default" {
-		return slug.Make(resource.Name)
+		return PathSlug(resource.Name)
 	} else {
-		return slug.Make(resource.Namespace + "/" + resource.Name)
+		return PathSlug(resource.Namespace) + "-" + PathSlug(resource.Name)
 	}
 }

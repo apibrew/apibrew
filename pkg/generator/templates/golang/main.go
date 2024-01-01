@@ -2,7 +2,7 @@ package golang
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/gosimple/slug"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"go/format"
 	"os"
@@ -36,7 +36,7 @@ func generaMappingCode(pkg string, resources []*model.Resource, path string, res
 		log.Warn(err)
 	}
 
-	resourceFileName := slug.Make(resource.Name) + "-mapping.go"
+	resourceFileName := util.PathSlug(resource.Name) + "-mapping.go"
 
 	if err := os.MkdirAll(path, 0777); err != nil {
 		log.Fatal(err)
@@ -60,7 +60,7 @@ func generateResourceCode(pkg string, resource *model.Resource, path string) err
 		log.Warn(err)
 	}
 
-	resourceFileName := slug.Make(resource.Name) + ".go"
+	resourceFileName := util.PathSlug(resource.Name) + ".go"
 
 	if err := os.MkdirAll(path, 0777); err != nil {
 		log.Fatal(err)
@@ -84,7 +84,7 @@ func generaDefCode(pkg string, resource *model.Resource, path string) error {
 		log.Warn(err)
 	}
 
-	resourceFileName := slug.Make(resource.Name) + "-def" + ".go"
+	resourceFileName := util.PathSlug(resource.Name) + "-def" + ".go"
 
 	if err := os.MkdirAll(path, 0777); err != nil {
 		log.Fatal(err)
