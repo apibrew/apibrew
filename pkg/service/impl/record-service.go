@@ -748,7 +748,7 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 
 	records, _, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
 		Query: query,
-		Limit: 1,
+		Limit: uint32(len(params.Ids)),
 	}, nil)
 
 	if err != nil {
