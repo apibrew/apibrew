@@ -73,6 +73,9 @@ export enum Permit {
 }
 
 export const PermissionResource = {
+  "auditData": {
+    "createdBy": ""
+  },
   "name": "Permission",
   "namespace": {
     "name": "system"
@@ -88,9 +91,9 @@ export const PermissionResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2024-01-02T02:32:09+04:00",
+        "createdOn": "2024-01-03T15:12:15+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2024-01-02T02:32:09+04:00"
+        "updatedOn": "2024-01-03T15:12:15+04:00"
       },
       "title": "Audit Data",
       "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
@@ -164,29 +167,13 @@ export const PermissionResource = {
     },
     "role": {
       "type": "REFERENCE",
-      "reference": {
-        "resource": {
-          "name": "Role",
-          "namespace": {
-            "name": "system"
-          }
-        },
-        "cascade": false
-      },
+      "reference": "system/Role",
       "title": "Role",
       "description": "The role who has the permission. If given it will be used to match the role of the request. It is ignored by default, because if permissions is set through Role this property is overrides and auto-populated by system"
     },
     "user": {
       "type": "REFERENCE",
-      "reference": {
-        "resource": {
-          "name": "User",
-          "namespace": {
-            "name": "system"
-          }
-        },
-        "cascade": false
-      },
+      "reference": "system/User",
       "title": "User",
       "description": "The user who has the permission. If given it will be used to match the user of the request. It is ignored by default, because if permissions is set through User this property is overrides and auto-populated by system"
     },
@@ -223,7 +210,7 @@ export const PermissionResource = {
         "createdOn": {
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Created On",
           "description": "The timestamp when the resource/record was created.",
           "annotations": {
@@ -242,7 +229,7 @@ export const PermissionResource = {
         },
         "updatedOn": {
           "type": "TIMESTAMP",
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {

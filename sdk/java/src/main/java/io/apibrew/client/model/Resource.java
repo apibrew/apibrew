@@ -72,7 +72,9 @@ public class Resource extends Entity {
         
         private Resource.Property item;
         
-        private Resource.Reference reference;
+        private String reference;
+        
+        private String backReference;
         
         private Object defaultValue;
         
@@ -190,16 +192,29 @@ public class Resource extends Entity {
 
             return this;
         }
-        public Resource.Reference getReference() {
+        public String getReference() {
             return reference;
         }
 
-        public void setReference(Resource.Reference reference) {
+        public void setReference(String reference) {
             this.reference = reference;
         }
 
-        public Property withReference(Resource.Reference reference) {
+        public Property withReference(String reference) {
             this.reference = reference;
+
+            return this;
+        }
+        public String getBackReference() {
+            return backReference;
+        }
+
+        public void setBackReference(String backReference) {
+            this.backReference = backReference;
+        }
+
+        public Property withBackReference(String backReference) {
+            this.backReference = backReference;
 
             return this;
         }
@@ -317,6 +332,9 @@ public class Resource extends Entity {
             if (!Objects.equals(this.reference, obj.reference)) {
                 return false;
             }
+            if (!Objects.equals(this.backReference, obj.backReference)) {
+                return false;
+            }
             if (!Objects.equals(this.defaultValue, obj.defaultValue)) {
                 return false;
             }
@@ -341,7 +359,7 @@ public class Resource extends Entity {
 
         @Override
         public int hashCode() {
-           return Objects.hash(type, typeRef, primary, required, unique, immutable, length, item, reference, defaultValue, enumValues, exampleValue, title, description, annotations);
+           return Objects.hash(type, typeRef, primary, required, unique, immutable, length, item, reference, backReference, defaultValue, enumValues, exampleValue, title, description, annotations);
         }
     }
     public static class SubType {
@@ -674,80 +692,6 @@ public class Resource extends Entity {
         @Override
         public int hashCode() {
            return Objects.hash(properties, indexType, unique, annotations);
-        }
-    }
-    public static class Reference {
-        
-        private Resource resource;
-        
-        private Boolean cascade;
-        
-        private String backReference;
-
-        public Resource getResource() {
-            return resource;
-        }
-
-        public void setResource(Resource resource) {
-            this.resource = resource;
-        }
-
-        public Reference withResource(Resource resource) {
-            this.resource = resource;
-
-            return this;
-        }
-        public Boolean getCascade() {
-            return cascade;
-        }
-
-        public void setCascade(Boolean cascade) {
-            this.cascade = cascade;
-        }
-
-        public Reference withCascade(Boolean cascade) {
-            this.cascade = cascade;
-
-            return this;
-        }
-        public String getBackReference() {
-            return backReference;
-        }
-
-        public void setBackReference(String backReference) {
-            this.backReference = backReference;
-        }
-
-        public Reference withBackReference(String backReference) {
-            this.backReference = backReference;
-
-            return this;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof Reference)) {
-                return false;
-            }
-
-            Reference obj = (Reference) o;
-
-            if (!Objects.equals(this.resource, obj.resource)) {
-                return false;
-            }
-            if (!Objects.equals(this.cascade, obj.cascade)) {
-                return false;
-            }
-            if (!Objects.equals(this.backReference, obj.backReference)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-           return Objects.hash(resource, cascade, backReference);
         }
     }
 

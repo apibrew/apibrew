@@ -25,6 +25,9 @@ export enum Operation {
 }
 
 export const AuditLogResource = {
+  "auditData": {
+    "createdBy": ""
+  },
   "name": "AuditLog",
   "namespace": {
     "name": "system"

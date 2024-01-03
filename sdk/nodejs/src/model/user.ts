@@ -26,6 +26,9 @@ export interface AuditData {
 }
 
 export const UserResource = {
+  "auditData": {
+    "createdBy": ""
+  },
   "name": "User",
   "namespace": {
     "name": "system"
@@ -36,9 +39,9 @@ export const UserResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2024-01-02T02:32:09+04:00",
+        "createdOn": "2024-01-03T15:12:15+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2024-01-02T02:32:09+04:00"
+        "updatedOn": "2024-01-03T15:12:15+04:00"
       },
       "title": "Audit Data",
       "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
@@ -71,16 +74,8 @@ export const UserResource = {
       "type": "LIST",
       "item": {
         "type": "REFERENCE",
-        "reference": {
-          "resource": {
-            "name": "Permission",
-            "namespace": {
-              "name": "system"
-            }
-          },
-          "cascade": false,
-          "backReference": "user"
-        }
+        "reference": "system/Permission",
+        "backReference": "user"
       },
       "title": "Permissions",
       "description": "The permissions of the user. It is used to define the access control rules for resources for users. When you set permissions it is automatically created though Permission Resource. No need to manage it manually"
@@ -89,15 +84,7 @@ export const UserResource = {
       "type": "LIST",
       "item": {
         "type": "REFERENCE",
-        "reference": {
-          "resource": {
-            "name": "Role",
-            "namespace": {
-              "name": "system"
-            }
-          },
-          "cascade": false
-        }
+        "reference": "system/Role"
       },
       "title": "Roles"
     },
@@ -144,7 +131,7 @@ export const UserResource = {
         "createdOn": {
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Created On",
           "description": "The timestamp when the resource/record was created.",
           "annotations": {
@@ -163,7 +150,7 @@ export const UserResource = {
         },
         "updatedOn": {
           "type": "TIMESTAMP",
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {

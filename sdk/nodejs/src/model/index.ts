@@ -6,6 +6,6 @@ export {
 export {Namespace} from './namespace'
 export {Permission} from './permission'
 // export {Record} from './record'
-export {Resource, Property, SubType, Index, Reference} from './resource'
+export {Resource, Property, SubType, Index} from './resource'
 export {User} from './user'
 export {Role} from './role'

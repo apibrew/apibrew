@@ -157,6 +157,9 @@ export enum Code {
 }
 
 export const ExtensionResource = {
+  "auditData": {
+    "createdBy": ""
+  },
   "name": "Extension",
   "namespace": {
     "name": "system"
@@ -183,9 +186,9 @@ export const ExtensionResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2024-01-02T02:32:09+04:00",
+        "createdOn": "2024-01-03T15:12:15+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2024-01-02T02:32:09+04:00"
+        "updatedOn": "2024-01-03T15:12:15+04:00"
       },
       "title": "Audit Data",
       "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
@@ -374,7 +377,7 @@ export const ExtensionResource = {
         "createdOn": {
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Created On",
           "description": "The timestamp when the resource/record was created.",
           "annotations": {
@@ -393,7 +396,7 @@ export const ExtensionResource = {
         },
         "updatedOn": {
           "type": "TIMESTAMP",
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {
@@ -615,28 +618,12 @@ export const ExtensionResource = {
           "type": "LIST",
           "item": {
             "type": "REFERENCE",
-            "reference": {
-              "resource": {
-                "name": "Record",
-                "namespace": {
-                  "name": "system"
-                }
-              },
-              "cascade": false
-            }
+            "reference": "system/Record"
           }
         },
         "resource": {
           "type": "REFERENCE",
-          "reference": {
-            "resource": {
-              "name": "Resource",
-              "namespace": {
-                "name": "system"
-              }
-            },
-            "cascade": false
-          }
+          "reference": "system/Resource"
         },
         "sync": {
           "type": "BOOL"

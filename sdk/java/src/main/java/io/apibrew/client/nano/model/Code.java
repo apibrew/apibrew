@@ -12,14 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Code extends Entity {
     
-    private Code.Language language;
-    
-    private Code.AuditData auditData;
-    
-    private java.util.Map<String, String> annotations;
-    
-    private Code.ContentFormat contentFormat;
-    
     private java.util.UUID id;
     
     private String name;
@@ -27,6 +19,14 @@ public class Code extends Entity {
     private String content;
     
     private int version;
+    
+    private Code.Language language;
+    
+    private Code.AuditData auditData;
+    
+    private java.util.Map<String, String> annotations;
+    
+    private Code.ContentFormat contentFormat;
 
     public static final String NAMESPACE = "nano";
     public static final String RESOURCE = "Code";
@@ -163,58 +163,6 @@ public class Code extends Entity {
     public Code() {
     }
 
-    public Code.Language getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(Code.Language language) {
-        this.language = language;
-    }
-
-    public Code withLanguage(Code.Language language) {
-        this.language = language;
-
-        return this;
-    }
-    public Code.AuditData getAuditData() {
-        return auditData;
-    }
-
-    public void setAuditData(Code.AuditData auditData) {
-        this.auditData = auditData;
-    }
-
-    public Code withAuditData(Code.AuditData auditData) {
-        this.auditData = auditData;
-
-        return this;
-    }
-    public java.util.Map<String, String> getAnnotations() {
-        return annotations;
-    }
-
-    public void setAnnotations(java.util.Map<String, String> annotations) {
-        this.annotations = annotations;
-    }
-
-    public Code withAnnotations(java.util.Map<String, String> annotations) {
-        this.annotations = annotations;
-
-        return this;
-    }
-    public Code.ContentFormat getContentFormat() {
-        return contentFormat;
-    }
-
-    public void setContentFormat(Code.ContentFormat contentFormat) {
-        this.contentFormat = contentFormat;
-    }
-
-    public Code withContentFormat(Code.ContentFormat contentFormat) {
-        this.contentFormat = contentFormat;
-
-        return this;
-    }
     public java.util.UUID getId() {
         return id;
     }
@@ -267,6 +215,58 @@ public class Code extends Entity {
 
         return this;
     }
+    public Code.Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Code.Language language) {
+        this.language = language;
+    }
+
+    public Code withLanguage(Code.Language language) {
+        this.language = language;
+
+        return this;
+    }
+    public Code.AuditData getAuditData() {
+        return auditData;
+    }
+
+    public void setAuditData(Code.AuditData auditData) {
+        this.auditData = auditData;
+    }
+
+    public Code withAuditData(Code.AuditData auditData) {
+        this.auditData = auditData;
+
+        return this;
+    }
+    public java.util.Map<String, String> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(java.util.Map<String, String> annotations) {
+        this.annotations = annotations;
+    }
+
+    public Code withAnnotations(java.util.Map<String, String> annotations) {
+        this.annotations = annotations;
+
+        return this;
+    }
+    public Code.ContentFormat getContentFormat() {
+        return contentFormat;
+    }
+
+    public void setContentFormat(Code.ContentFormat contentFormat) {
+        this.contentFormat = contentFormat;
+    }
+
+    public Code withContentFormat(Code.ContentFormat contentFormat) {
+        this.contentFormat = contentFormat;
+
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -276,18 +276,6 @@ public class Code extends Entity {
 
         Code obj = (Code) o;
 
-        if (!Objects.equals(this.language, obj.language)) {
-            return false;
-        }
-        if (!Objects.equals(this.auditData, obj.auditData)) {
-            return false;
-        }
-        if (!Objects.equals(this.annotations, obj.annotations)) {
-            return false;
-        }
-        if (!Objects.equals(this.contentFormat, obj.contentFormat)) {
-            return false;
-        }
         if (!Objects.equals(this.id, obj.id)) {
             return false;
         }
@@ -298,6 +286,18 @@ public class Code extends Entity {
             return false;
         }
         if (!Objects.equals(this.version, obj.version)) {
+            return false;
+        }
+        if (!Objects.equals(this.language, obj.language)) {
+            return false;
+        }
+        if (!Objects.equals(this.auditData, obj.auditData)) {
+            return false;
+        }
+        if (!Objects.equals(this.annotations, obj.annotations)) {
+            return false;
+        }
+        if (!Objects.equals(this.contentFormat, obj.contentFormat)) {
             return false;
         }
 

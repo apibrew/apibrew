@@ -1,13 +1,13 @@
 
 export interface Code {
-    language: Language
-    auditData?: AuditData
-    annotations?: { [key: string]: string }
-    contentFormat: ContentFormat
     id: string
     name: string
     content: string
     version: number
+    language: Language
+    auditData?: AuditData
+    annotations?: { [key: string]: string }
+    contentFormat: ContentFormat
 }
 
 export const CodeEntityInfo = {
@@ -36,9 +36,7 @@ export enum ContentFormat {
 export const CodeResource = {
   "auditData": {
     "createdBy": "system",
-    "updatedBy": "system",
-    "createdOn": "2023-12-20T17:23:46Z",
-    "updatedOn": "2024-01-01T22:32:10Z"
+    "createdOn": "2024-01-03T11:12:15Z"
   },
   "name": "Code",
   "namespace": {

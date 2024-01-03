@@ -23,6 +23,9 @@ export interface AuditData {
 }
 
 export const RoleResource = {
+  "auditData": {
+    "createdBy": ""
+  },
   "name": "Role",
   "namespace": {
     "name": "system"
@@ -33,9 +36,9 @@ export const RoleResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2024-01-02T02:32:09+04:00",
+        "createdOn": "2024-01-03T15:12:15+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2024-01-02T02:32:09+04:00"
+        "updatedOn": "2024-01-03T15:12:15+04:00"
       },
       "title": "Audit Data",
       "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
@@ -74,16 +77,8 @@ export const RoleResource = {
       "type": "LIST",
       "item": {
         "type": "REFERENCE",
-        "reference": {
-          "resource": {
-            "name": "Permission",
-            "namespace": {
-              "name": "system"
-            }
-          },
-          "cascade": false,
-          "backReference": "role"
-        }
+        "reference": "system/Permission",
+        "backReference": "role"
       },
       "description": "The permissions of the role. It is used to define the access control rules for resources for roles. When you set permissions it is automatically created though Permission Resource. No need to manage it manually"
     },
@@ -120,7 +115,7 @@ export const RoleResource = {
         "createdOn": {
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Created On",
           "description": "The timestamp when the resource/record was created.",
           "annotations": {
@@ -139,7 +134,7 @@ export const RoleResource = {
         },
         "updatedOn": {
           "type": "TIMESTAMP",
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {

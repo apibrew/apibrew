@@ -24,7 +24,7 @@
     "deploy": "gh-pages -d example/build"
   },
   "dependencies": {
-    "@apibrew/client": "^1.1.40"
+    "@apibrew/client": "^1.1.41"
   },
   "peerDependencies": {
     "react": "^18.2.0"

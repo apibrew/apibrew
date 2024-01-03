@@ -28,12 +28,6 @@ export interface SubType {
     properties: { [key: string]: Property }
 }
 
-export interface Reference {
-    resource: Resource
-    cascade: boolean
-    backReference: string
-}
-
 export interface Property {
     type: Type
     typeRef: string
@@ -43,7 +37,8 @@ export interface Property {
     immutable: boolean
     length: number
     item: Property
-    reference: Reference
+    reference: string
+    backReference: string
     defaultValue: object
     enumValues: string[]
     exampleValue: object
@@ -80,6 +75,9 @@ export enum Type {
 }
 
 export const ResourceActionResource = {
+  "auditData": {
+    "createdBy": ""
+  },
   "name": "ResourceAction",
   "namespace": {
     "name": "system"
@@ -106,9 +104,9 @@ export const ResourceActionResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2024-01-02T02:32:09+04:00",
+        "createdOn": "2024-01-03T15:12:15+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2024-01-02T02:32:09+04:00"
+        "updatedOn": "2024-01-03T15:12:15+04:00"
       },
       "title": "Audit Data",
       "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
@@ -164,15 +162,7 @@ export const ResourceActionResource = {
     "resource": {
       "type": "REFERENCE",
       "required": true,
-      "reference": {
-        "resource": {
-          "name": "Resource",
-          "namespace": {
-            "name": "system"
-          }
-        },
-        "cascade": false
-      }
+      "reference": "system/Resource"
     },
     "title": {
       "type": "STRING",
@@ -262,44 +252,6 @@ export const ResourceActionResource = {
       }
     },
     {
-      "name": "Reference",
-      "title": "Reference",
-      "description": "Reference is a type that represents a reference to another resource. It is used to define the reference to another resource. ",
-      "properties": {
-        "backReference": {
-          "type": "STRING",
-          "exampleValue": "author",
-          "title": "Back Reference",
-          "description": "This property indicates that whether or not given reference is back reference.\nBack reference is reverse of reference, If resource A has reference to resource B, in that case resource B can have back reference to resource A.\nBack reference is used only as List.\nBackreference should be the name of property in the referenced resource. (like author inside book)\nFor example:\n\tBook -\u003e Author.\n\tBook will have reference to Author. And Author can have back reference to the list of books\n\n"
-        },
-        "cascade": {
-          "type": "BOOL",
-          "title": "Cascade",
-          "description": "This property indicates that whether or not given reference is cascade.\nIf it is true, when referenced resource record is deleted, all the records that are referencing to that resource will be deleted.\n"
-        },
-        "resource": {
-          "type": "REFERENCE",
-          "reference": {
-            "resource": {
-              "name": "Resource",
-              "namespace": {
-                "name": "system"
-              }
-            },
-            "cascade": false
-          },
-          "exampleValue": {
-            "name": "Book",
-            "namespace": {
-              "name": "test-namespace"
-            }
-          },
-          "title": "Resource",
-          "description": "This property indicates the resource of the reference.\nWhen providing resource, you need to provide namespace and resource name of the referenced resource.\nIf you don't provide namespace, it will be assumed as the same namespace with the resource.\n"
-        }
-      }
-    },
-    {
       "name": "Property",
       "title": "Property",
       "description": "Property is a type that represents a property of a resource. It is like an API properties or properties of class in a programming language",
@@ -319,6 +271,12 @@ export const ResourceActionResource = {
           "annotations": {
             "SpecialProperty": "true"
           }
+        },
+        "backReference": {
+          "type": "STRING",
+          "exampleValue": "Book",
+          "title": "Back Reference",
+          "description": "This property is to indicate the back reference property of the property. It is only used for REFERENCE type."
         },
         "defaultValue": {
           "type": "OBJECT",
@@ -384,14 +342,8 @@ export const ResourceActionResource = {
           "description": "The primary property of the resource. It is used to identify the resource. When it is not supplied, an id property is automatically created.\nNormally primary property should not be provided. It is only used for special cases. If provided, it can break some functionalities of system. \nIf Primary is provided, it should be a single property. It can not be a list or map.\nIf Primary is provided, internal id property will not be created.\n"
         },
         "reference": {
-          "type": "STRUCT",
-          "typeRef": "Reference",
-          "exampleValue": {
-            "resource": {
-              "namespace": "default",
-              "resource": "Book"
-            }
-          },
+          "type": "STRING",
+          "exampleValue": "Book",
           "title": "Reference",
           "description": "This property indicates the reference type of the property. It is only used for REFERENCE type.\nWhen you use REFERENCE type, you need to provide reference details.\nReference details is used to locate referenced resource\nWhen providing reference details, you need to provide namespace and resource name of the referenced resource.\nIf you don't provide namespace, it will be assumed as the same namespace with the resource.\n"
         },
@@ -470,7 +422,7 @@ export const ResourceActionResource = {
         "createdOn": {
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Created On",
           "description": "The timestamp when the resource/record was created.",
           "annotations": {
@@ -489,7 +441,7 @@ export const ResourceActionResource = {
         },
         "updatedOn": {
           "type": "TIMESTAMP",
-          "exampleValue": "2024-01-02T02:32:09+04:00",
+          "exampleValue": "2024-01-03T15:12:15+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {

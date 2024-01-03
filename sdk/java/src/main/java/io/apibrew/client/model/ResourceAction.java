@@ -134,80 +134,6 @@ public class ResourceAction extends Entity {
            return Objects.hash(name, title, description, properties);
         }
     }
-    public static class Reference {
-        
-        private Resource resource;
-        
-        private Boolean cascade;
-        
-        private String backReference;
-
-        public Resource getResource() {
-            return resource;
-        }
-
-        public void setResource(Resource resource) {
-            this.resource = resource;
-        }
-
-        public Reference withResource(Resource resource) {
-            this.resource = resource;
-
-            return this;
-        }
-        public Boolean getCascade() {
-            return cascade;
-        }
-
-        public void setCascade(Boolean cascade) {
-            this.cascade = cascade;
-        }
-
-        public Reference withCascade(Boolean cascade) {
-            this.cascade = cascade;
-
-            return this;
-        }
-        public String getBackReference() {
-            return backReference;
-        }
-
-        public void setBackReference(String backReference) {
-            this.backReference = backReference;
-        }
-
-        public Reference withBackReference(String backReference) {
-            this.backReference = backReference;
-
-            return this;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof Reference)) {
-                return false;
-            }
-
-            Reference obj = (Reference) o;
-
-            if (!Objects.equals(this.resource, obj.resource)) {
-                return false;
-            }
-            if (!Objects.equals(this.cascade, obj.cascade)) {
-                return false;
-            }
-            if (!Objects.equals(this.backReference, obj.backReference)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-           return Objects.hash(resource, cascade, backReference);
-        }
-    }
     public static class Property {
         
         private ResourceAction.Type type;
@@ -226,7 +152,9 @@ public class ResourceAction extends Entity {
         
         private ResourceAction.Property item;
         
-        private ResourceAction.Reference reference;
+        private String reference;
+        
+        private String backReference;
         
         private Object defaultValue;
         
@@ -344,16 +272,29 @@ public class ResourceAction extends Entity {
 
             return this;
         }
-        public ResourceAction.Reference getReference() {
+        public String getReference() {
             return reference;
         }
 
-        public void setReference(ResourceAction.Reference reference) {
+        public void setReference(String reference) {
             this.reference = reference;
         }
 
-        public Property withReference(ResourceAction.Reference reference) {
+        public Property withReference(String reference) {
             this.reference = reference;
+
+            return this;
+        }
+        public String getBackReference() {
+            return backReference;
+        }
+
+        public void setBackReference(String backReference) {
+            this.backReference = backReference;
+        }
+
+        public Property withBackReference(String backReference) {
+            this.backReference = backReference;
 
             return this;
         }
@@ -471,6 +412,9 @@ public class ResourceAction extends Entity {
             if (!Objects.equals(this.reference, obj.reference)) {
                 return false;
             }
+            if (!Objects.equals(this.backReference, obj.backReference)) {
+                return false;
+            }
             if (!Objects.equals(this.defaultValue, obj.defaultValue)) {
                 return false;
             }
@@ -495,7 +439,7 @@ public class ResourceAction extends Entity {
 
         @Override
         public int hashCode() {
-           return Objects.hash(type, typeRef, primary, required, unique, immutable, length, item, reference, defaultValue, enumValues, exampleValue, title, description, annotations);
+           return Objects.hash(type, typeRef, primary, required, unique, immutable, length, item, reference, backReference, defaultValue, enumValues, exampleValue, title, description, annotations);
         }
     }
     public static class AuditData {
