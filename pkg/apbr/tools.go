@@ -29,8 +29,6 @@ var toolsCmd = &cobra.Command{
 		default:
 			return errors.New("unknown tool name")
 		}
-
-		return nil
 	},
 }
 

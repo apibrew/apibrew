@@ -2,25 +2,13 @@ package nano
 
 import (
 	"encoding/json"
-	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/service"
-	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/dop251/goja"
 	"io"
 	"net/http"
 )
 
 type httpObject struct {
-	goja.DynamicObject
-	container service.Container
-	resource  *model.Resource
-
-	Fire   func(event map[string]interface{})       `json:"fire"`
-	Listen func(func(event map[string]interface{})) `json:"listen"`
-
-	vm                  *goja.Runtime
-	cec                 *codeExecutionContext
-	backendEventHandler backend_event_handler.BackendEventHandler
+	vm *goja.Runtime
 }
 
 type HttpRequest struct {
@@ -64,10 +52,10 @@ func (h *httpObject) Get(url string, params HttpRequest) HttpResponse {
 		panic(err)
 	}
 
-	return h.makeResponse(resp, err)
+	return h.makeResponse(resp)
 }
 
-func (h *httpObject) makeResponse(resp *http.Response, err error) HttpResponse {
+func (h *httpObject) makeResponse(resp *http.Response) HttpResponse {
 	bodyRaw, err := io.ReadAll(resp.Body)
 
 	if err != nil {
