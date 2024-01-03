@@ -30,24 +30,24 @@ func (s RecordInlineSelector) SelectRecords(ctx context.Context, resource *model
 }
 
 func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *model.Resource, record *model.Record, selector *resource_model.BooleanExpression) (bool, errors.ServiceError) {
-	if selector.GetAnd() != nil {
-		for _, expression := range selector.GetAnd() {
+	if selector.And != nil {
+		for _, expression := range selector.And {
 			if ok, err := s.EvaluateRecord(ctx, resource, record, &expression); !ok || err != nil {
 				return ok, err
 			}
 		}
 	}
 
-	if selector.GetOr() != nil {
-		for _, expression := range selector.GetOr() {
+	if selector.Or != nil {
+		for _, expression := range selector.Or {
 			if ok, err := s.EvaluateRecord(ctx, resource, record, &expression); ok || err != nil {
 				return ok, err
 			}
 		}
 	}
 
-	if selector.GetNot() != nil {
-		ok, err := s.EvaluateRecord(ctx, resource, record, selector.GetNot())
+	if selector.Not != nil {
+		ok, err := s.EvaluateRecord(ctx, resource, record, selector.Not)
 
 		if err != nil {
 			return false, err
@@ -56,8 +56,8 @@ func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *mode
 		return !ok, nil
 	}
 
-	if selector.GetEqual() != nil {
-		left, right, prop, err := s.resolve(resource, record, selector.GetEqual())
+	if selector.Equal != nil {
+		left, right, prop, err := s.resolve(resource, record, selector.Equal)
 
 		if err != nil {
 			return false, err

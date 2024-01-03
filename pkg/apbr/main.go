@@ -34,6 +34,7 @@ func init() {
 	rootCmd.AddCommand(deployCmd)
 	rootCmd.AddCommand(loadCmd)
 	rootCmd.AddCommand(watchCmd)
+	rootCmd.AddCommand(toolsCmd)
 	defineRootFlags(rootCmd)
 }
 

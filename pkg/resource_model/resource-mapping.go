@@ -650,8 +650,25 @@ func (m *PropertyMapper) ToProperties(property *Property) map[string]*structpb.V
 	if var_Reference != nil {
 		var var_Reference_mapped *structpb.Value
 
-		var_Reference_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ReferenceMapperInstance.ToProperties(var_Reference)})
+		var var_Reference_err error
+		var_Reference_mapped, var_Reference_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Reference)
+		if var_Reference_err != nil {
+			panic(var_Reference_err)
+		}
 		properties["reference"] = var_Reference_mapped
+	}
+
+	var_BackReference := property.BackReference
+
+	if var_BackReference != nil {
+		var var_BackReference_mapped *structpb.Value
+
+		var var_BackReference_err error
+		var_BackReference_mapped, var_BackReference_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_BackReference)
+		if var_BackReference_err != nil {
+			panic(var_BackReference_err)
+		}
+		properties["backReference"] = var_BackReference_mapped
 	}
 
 	var_DefaultValue := property.DefaultValue
@@ -855,11 +872,30 @@ func (m *PropertyMapper) FromProperties(properties map[string]*structpb.Value) *
 	if properties["reference"] != nil && properties["reference"].AsInterface() != nil {
 
 		var_Reference := properties["reference"]
-		var mappedValue = ReferenceMapperInstance.FromProperties(var_Reference.GetStructValue().Fields)
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Reference)
 
-		var_Reference_mapped := mappedValue
+		if err != nil {
+			panic(err)
+		}
+
+		var_Reference_mapped := new(string)
+		*var_Reference_mapped = val.(string)
 
 		s.Reference = var_Reference_mapped
+	}
+	if properties["backReference"] != nil && properties["backReference"].AsInterface() != nil {
+
+		var_BackReference := properties["backReference"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_BackReference)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_BackReference_mapped := new(string)
+		*var_BackReference_mapped = val.(string)
+
+		s.BackReference = var_BackReference_mapped
 	}
 	if properties["defaultValue"] != nil && properties["defaultValue"].AsInterface() != nil {
 
@@ -1456,106 +1492,6 @@ func (m *ResourceIndexMapper) FromProperties(properties map[string]*structpb.Val
 		}
 
 		s.Annotations = var_Annotations_mapped
-	}
-	return s
-}
-
-type ReferenceMapper struct {
-}
-
-func NewReferenceMapper() *ReferenceMapper {
-	return &ReferenceMapper{}
-}
-
-var ReferenceMapperInstance = NewReferenceMapper()
-
-func (m *ReferenceMapper) New() *Reference {
-	return &Reference{}
-}
-
-func (m *ReferenceMapper) ResourceIdentity() abs.ResourceIdentity {
-	return abs.ResourceIdentity{
-		Namespace: "system",
-		Name:      "Resource",
-	}
-}
-
-func (m *ReferenceMapper) ToProperties(reference *Reference) map[string]*structpb.Value {
-	var properties = make(map[string]*structpb.Value)
-
-	var_Resource := reference.Resource
-
-	if var_Resource != nil {
-		var var_Resource_mapped *structpb.Value
-
-		var_Resource_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ResourceMapperInstance.ToProperties(var_Resource)})
-		properties["resource"] = var_Resource_mapped
-	}
-
-	var_Cascade := reference.Cascade
-
-	if var_Cascade != nil {
-		var var_Cascade_mapped *structpb.Value
-
-		var var_Cascade_err error
-		var_Cascade_mapped, var_Cascade_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(*var_Cascade)
-		if var_Cascade_err != nil {
-			panic(var_Cascade_err)
-		}
-		properties["cascade"] = var_Cascade_mapped
-	}
-
-	var_BackReference := reference.BackReference
-
-	if var_BackReference != nil {
-		var var_BackReference_mapped *structpb.Value
-
-		var var_BackReference_err error
-		var_BackReference_mapped, var_BackReference_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_BackReference)
-		if var_BackReference_err != nil {
-			panic(var_BackReference_err)
-		}
-		properties["backReference"] = var_BackReference_mapped
-	}
-	return properties
-}
-
-func (m *ReferenceMapper) FromProperties(properties map[string]*structpb.Value) *Reference {
-	var s = m.New()
-	if properties["resource"] != nil && properties["resource"].AsInterface() != nil {
-
-		var_Resource := properties["resource"]
-		var_Resource_mapped := ResourceMapperInstance.FromProperties(var_Resource.GetStructValue().Fields)
-
-		s.Resource = var_Resource_mapped
-	}
-	if properties["cascade"] != nil && properties["cascade"].AsInterface() != nil {
-
-		var_Cascade := properties["cascade"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Cascade)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Cascade_mapped := new(bool)
-		*var_Cascade_mapped = val.(bool)
-
-		s.Cascade = var_Cascade_mapped
-	}
-	if properties["backReference"] != nil && properties["backReference"].AsInterface() != nil {
-
-		var_BackReference := properties["backReference"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_BackReference)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_BackReference_mapped := new(string)
-		*var_BackReference_mapped = val.(string)
-
-		s.BackReference = var_BackReference_mapped
 	}
 	return s
 }

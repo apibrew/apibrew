@@ -73,7 +73,7 @@ func StreamGenerateStructCode(qw422016 *qt422016.Writer, pkg string, resource *m
 //line templates/golang/struct.qtpl:13
 		qw422016.E().S(typeName)
 //line templates/golang/struct.qtpl:13
-		qw422016.N().S(`) Get_`)
+		qw422016.N().S(`) Get`)
 //line templates/golang/struct.qtpl:13
 		StreamGoName(qw422016, property.Name)
 //line templates/golang/struct.qtpl:13

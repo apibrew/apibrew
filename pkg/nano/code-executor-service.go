@@ -100,6 +100,12 @@ func (s codeExecutorService) registerBuiltIns(code *Code, vm *goja.Runtime, cec 
 		return err
 	}
 
+	err = vm.Set("http", NewHttpObject(vm))
+
+	if err != nil {
+		return err
+	}
+
 	err = vm.Set("global", s.globalObject)
 
 	if err != nil {
@@ -127,6 +133,10 @@ func (s codeExecutorService) registerTimeoutFunctions(code *Code, vm *goja.Runti
 	}
 
 	if err := vm.Set("clearInterval", s.clearIntervalFn(cec)); err != nil {
+		return err
+	}
+
+	if err := vm.Set("sleep", s.sleepFn(cec)); err != nil {
 		return err
 	}
 
@@ -205,6 +215,12 @@ func (s codeExecutorService) clearIntervalFn(cec *codeExecutionContext) func(cle
 			}
 		}()
 		clearFn()
+	}
+}
+
+func (s codeExecutorService) sleepFn(cec *codeExecutionContext) func(duration int32) {
+	return func(duration int32) {
+		time.Sleep(time.Duration(duration) * time.Millisecond)
 	}
 }
 

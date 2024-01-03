@@ -86,21 +86,22 @@ func (s *Resource) GetAnnotations() map[string]string {
 }
 
 type Property struct {
-	Type         ResourceType      `json:"type,omitempty"`
-	TypeRef      *string           `json:"typeRef,omitempty"`
-	Primary      bool              `json:"primary,omitempty"`
-	Required     bool              `json:"required,omitempty"`
-	Unique       bool              `json:"unique,omitempty"`
-	Immutable    bool              `json:"immutable,omitempty"`
-	Length       int32             `json:"length,omitempty"`
-	Item         *Property         `json:"item,omitempty"`
-	Reference    *Reference        `json:"reference,omitempty"`
-	DefaultValue interface{}       `json:"defaultValue,omitempty"`
-	EnumValues   []string          `json:"enumValues,omitempty"`
-	ExampleValue interface{}       `json:"exampleValue,omitempty"`
-	Title        *string           `json:"title,omitempty"`
-	Description  *string           `json:"description,omitempty"`
-	Annotations  map[string]string `json:"annotations,omitempty"`
+	Type          ResourceType      `json:"type,omitempty"`
+	TypeRef       *string           `json:"typeRef,omitempty"`
+	Primary       bool              `json:"primary,omitempty"`
+	Required      bool              `json:"required,omitempty"`
+	Unique        bool              `json:"unique,omitempty"`
+	Immutable     bool              `json:"immutable,omitempty"`
+	Length        int32             `json:"length,omitempty"`
+	Item          *Property         `json:"item,omitempty"`
+	Reference     *string           `json:"reference,omitempty"`
+	BackReference *string           `json:"backReference,omitempty"`
+	DefaultValue  interface{}       `json:"defaultValue,omitempty"`
+	EnumValues    []string          `json:"enumValues,omitempty"`
+	ExampleValue  interface{}       `json:"exampleValue,omitempty"`
+	Title         *string           `json:"title,omitempty"`
+	Description   *string           `json:"description,omitempty"`
+	Annotations   map[string]string `json:"annotations,omitempty"`
 }
 
 func (s *Property) GetType() ResourceType {
@@ -127,8 +128,11 @@ func (s *Property) GetLength() int32 {
 func (s *Property) GetItem() *Property {
 	return s.Item
 }
-func (s *Property) GetReference() *Reference {
+func (s *Property) GetReference() *string {
 	return s.Reference
+}
+func (s *Property) GetBackReference() *string {
+	return s.BackReference
 }
 func (s *Property) GetDefaultValue() interface{} {
 	return s.DefaultValue
@@ -219,22 +223,6 @@ func (s *ResourceIndex) GetUnique() *bool {
 }
 func (s *ResourceIndex) GetAnnotations() map[string]string {
 	return s.Annotations
-}
-
-type Reference struct {
-	Resource      *Resource `json:"resource,omitempty"`
-	Cascade       *bool     `json:"cascade,omitempty"`
-	BackReference *string   `json:"backReference,omitempty"`
-}
-
-func (s *Reference) GetResource() *Resource {
-	return s.Resource
-}
-func (s *Reference) GetCascade() *bool {
-	return s.Cascade
-}
-func (s *Reference) GetBackReference() *string {
-	return s.BackReference
 }
 
 type ResourceType string

@@ -118,6 +118,11 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 			for _, indexProp := range index.Properties {
 				prop := propMap[indexProp.Name]
 
+				if prop == nil {
+					valid = false
+					break
+				}
+
 				val, ok := properties[prop.Name]
 
 				if !ok {

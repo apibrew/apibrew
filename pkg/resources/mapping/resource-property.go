@@ -43,20 +43,11 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 			referenceNamespace = resource.Namespace
 		}
 
-		var fieldsMap = map[string]*structpb.Value{
-			"resource": util.StructKv2("name", property.Reference.Resource, "namespace", map[string]interface{}{
-				"name": referenceNamespace,
-			}),
-			"cascade": structpb.NewBoolValue(property.Reference.Cascade),
-		}
-
 		if property.BackReference != nil {
-			fieldsMap["backReference"] = structpb.NewStringValue(property.BackReference.Property)
+			properties["backReference"] = structpb.NewStringValue(property.BackReference.Property)
 		}
 
-		properties["reference"] = structpb.NewStructValue(&structpb.Struct{
-			Fields: fieldsMap,
-		})
+		properties["reference"] = structpb.NewStringValue(referenceNamespace + "/" + property.Reference.Resource)
 	}
 
 	properties["defaultValue"] = property.DefaultValue
@@ -83,19 +74,40 @@ func ResourcePropertyFromRecord(propertyName string, record *model.Record) *mode
 
 	if record.Properties["reference"] != nil {
 		reference = &model.Reference{}
-		var referenceProperties = record.Properties["reference"].GetStructValue().GetFields()
-		reference.Resource = referenceProperties["resource"].GetStructValue().GetFields()["name"].GetStringValue()
-		if referenceProperties["resource"].GetStructValue().GetFields()["namespace"] != nil && referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue() != nil {
-			reference.Namespace = referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue().GetFields()["name"].GetStringValue()
-		}
+		if record.Properties["reference"].GetStructValue() != nil {
+			var referenceProperties = record.Properties["reference"].GetStructValue().GetFields()
+			reference.Resource = referenceProperties["resource"].GetStructValue().GetFields()["name"].GetStringValue()
+			if referenceProperties["resource"].GetStructValue().GetFields()["namespace"] != nil && referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue() != nil {
+				reference.Namespace = referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue().GetFields()["name"].GetStringValue()
+			}
 
-		if referenceProperties["cascade"] != nil {
-			reference.Cascade = referenceProperties["cascade"].GetBoolValue()
-		}
+			if referenceProperties["cascade"] != nil {
+				reference.Cascade = referenceProperties["cascade"].GetBoolValue()
+			}
 
-		if record.Properties["backReference"] != nil && record.Properties["backReference"].GetStringValue() != "" {
-			backReference = &model.BackReference{
-				Property: record.Properties["backReference"].GetStringValue(),
+			if record.Properties["backReference"] != nil && record.Properties["backReference"].GetStringValue() != "" {
+				backReference = &model.BackReference{
+					Property: record.Properties["backReference"].GetStringValue(),
+				}
+			}
+		} else {
+			var referenceParts = strings.Split(record.Properties["reference"].GetStringValue(), "/")
+
+			if len(referenceParts) == 1 {
+				reference.Resource = referenceParts[0]
+			} else if len(referenceParts) == 2 {
+				reference.Resource = referenceParts[1]
+				reference.Namespace = referenceParts[0]
+			} else {
+				panic("Invalid reference format")
+			}
+
+			// reference.Cascade //todo implement it
+
+			if record.Properties["backReference"] != nil && record.Properties["backReference"].GetStringValue() != "" {
+				backReference = &model.BackReference{
+					Property: record.Properties["backReference"].GetStringValue(),
+				}
 			}
 		}
 	}

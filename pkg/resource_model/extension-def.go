@@ -83,8 +83,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
@@ -119,8 +119,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":  "true",
 				"OpenApiGroup": "internal",
+				"EnableAudit":  "true",
 			},
 		},
 		{
@@ -153,7 +153,7 @@ var ExtensionResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2023-11-24T23:20:38+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-01-03T15:02:45+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -162,7 +162,7 @@ var ExtensionResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2023-11-24T23:20:38+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-01-03T15:02:45+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -248,8 +248,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
@@ -476,7 +476,7 @@ var ExtensionResource = &model.Resource{
 		{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-11-24T23:20:38+04:00"), "updatedOn": structpb.NewStringValue("2023-11-24T23:20:38+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdOn": structpb.NewStringValue("2024-01-03T15:02:45+04:00"), "updatedOn": structpb.NewStringValue("2024-01-03T15:02:45+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -539,7 +539,7 @@ var ExtensionResource = &model.Resource{
 	},
 
 	Annotations: map[string]string{
-		"OpenApiGroup": "internal",
 		"EnableAudit":  "true",
+		"OpenApiGroup": "internal",
 	},
 }

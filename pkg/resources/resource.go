@@ -122,18 +122,15 @@ Reference details is used to locate referenced resource
 When providing reference details, you need to provide namespace and resource name of the referenced resource.
 If you don't provide namespace, it will be assumed as the same namespace with the resource.
 `),
-		Type: model.ResourceProperty_STRUCT,
-		ExampleValue: structpb.NewStructValue(&structpb.Struct{
-			Fields: map[string]*structpb.Value{
-				"resource": structpb.NewStructValue(&structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"namespace": structpb.NewStringValue("default"),
-						"resource":  structpb.NewStringValue("Book"),
-					},
-				}),
-			},
-		}),
-		TypeRef: util.Pointer("Reference"),
+		Type:         model.ResourceProperty_STRING,
+		ExampleValue: structpb.NewStringValue("Book"),
+	},
+	{
+		Name:         "backReference",
+		Title:        util.Pointer("Back Reference"),
+		Description:  util.Pointer(`This property is to indicate the back reference property of the property. It is only used for REFERENCE type.`),
+		Type:         model.ResourceProperty_STRING,
+		ExampleValue: structpb.NewStringValue("Book"),
 	},
 	{
 		Name:  "defaultValue",
@@ -259,63 +256,6 @@ var SubTypeType = &model.ResourceSubType{
 	},
 }
 
-var ReferenceType = &model.ResourceSubType{
-	Name:        "Reference",
-	Title:       "Reference",
-	Description: "Reference is a type that represents a reference to another resource. It is used to define the reference to another resource. ",
-	Annotations: map[string]string{
-		annotations.CommonType: annotations.Enabled,
-	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name:  "resource",
-			Title: util.Pointer("Resource"),
-			Description: util.Pointer(`This property indicates the resource of the reference.
-When providing resource, you need to provide namespace and resource name of the referenced resource.
-If you don't provide namespace, it will be assumed as the same namespace with the resource.
-`),
-			Type: model.ResourceProperty_REFERENCE,
-			Reference: &model.Reference{
-				Namespace: "system",
-				Resource:  "Resource",
-			},
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"namespace": structpb.NewStructValue(&structpb.Struct{
-						Fields: map[string]*structpb.Value{
-							"name": structpb.NewStringValue("test-namespace"),
-						},
-					}),
-					"name": structpb.NewStringValue("Book"),
-				},
-			}),
-		},
-		{
-			Name:  "cascade",
-			Title: util.Pointer("Cascade"),
-			Description: util.Pointer(`This property indicates that whether or not given reference is cascade.
-If it is true, when referenced resource record is deleted, all the records that are referencing to that resource will be deleted.
-`),
-			Type: model.ResourceProperty_BOOL,
-		},
-		{
-			Name:  "backReference",
-			Title: util.Pointer("Back Reference"),
-			Description: util.Pointer(`This property indicates that whether or not given reference is back reference.
-Back reference is reverse of reference, If resource A has reference to resource B, in that case resource B can have back reference to resource A.
-Back reference is used only as List.
-Backreference should be the name of property in the referenced resource. (like author inside book)
-For example:
-	Book -> Author.
-	Book will have reference to Author. And Author can have back reference to the list of books
-
-`),
-			Type:         model.ResourceProperty_STRING,
-			ExampleValue: structpb.NewStringValue("author"),
-		},
-	},
-}
-
 var ResourceResource = &model.Resource{
 	Name:        "Resource",
 	Namespace:   "system",
@@ -376,7 +316,6 @@ var ResourceResource = &model.Resource{
 				special.AnnotationsProperty,
 			},
 		},
-		ReferenceType,
 	},
 	Properties: []*model.ResourceProperty{
 		special.IdProperty,

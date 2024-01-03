@@ -41,7 +41,7 @@ func (w *Writer) WriteResource(resource *model.Resource) (unstructured.Unstructu
 
 	var data = unstructured.Unstructured{}
 
-	err := unstructured.FromProtoMessage(unstructured.Unstructured{}, resource)
+	err := unstructured.FromProtoMessage(data, resource)
 
 	if err != nil {
 		return nil, err

@@ -17,7 +17,6 @@ var ResourceActionResource = &model.Resource{
 	},
 	Types: []*model.ResourceSubType{
 		SubTypeType,
-		ReferenceType,
 		PropertyType,
 		special.AuditDataSubType,
 	},

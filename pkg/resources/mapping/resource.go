@@ -73,10 +73,12 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 		return nil
 	}
 
+	var namespace = record.Properties["namespace"].GetStructValue().GetFields()["name"].GetStringValue()
+
 	var resource = &model.Resource{
 		Id:              record.Properties["id"].GetStringValue(),
 		Name:            record.Properties["name"].GetStringValue(),
-		Namespace:       record.Properties["namespace"].GetStructValue().GetFields()["name"].GetStringValue(),
+		Namespace:       namespace,
 		Virtual:         record.Properties["virtual"].GetBoolValue(),
 		Abstract:        record.Properties["abstract"].GetBoolValue(),
 		Immutable:       record.Properties["immutable"].GetBoolValue(),
