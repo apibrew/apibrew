@@ -1,4 +1,4 @@
-package nano
+package resource
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/nano/abs"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/server/rest"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -14,7 +15,7 @@ import (
 )
 
 func (o *resourceObject) createFn(recordValue goja.Value) goja.Value {
-	record, err := valueToRecord(o.resource, recordValue.Export())
+	record, err := abs.ValueToRecord(o.resource, recordValue.Export())
 
 	if err != nil {
 		panic(err)
@@ -34,7 +35,7 @@ func (o *resourceObject) createFn(recordValue goja.Value) goja.Value {
 }
 
 func (o *resourceObject) updateFn(recordValue goja.Value) goja.Value {
-	record, err := valueToRecord(o.resource, recordValue.Export())
+	record, err := abs.ValueToRecord(o.resource, recordValue.Export())
 
 	if err != nil {
 		panic(err)
@@ -54,7 +55,7 @@ func (o *resourceObject) updateFn(recordValue goja.Value) goja.Value {
 }
 
 func (o *resourceObject) applyFn(recordValue goja.Value) goja.Value {
-	record, err := valueToRecord(o.resource, recordValue.Export())
+	record, err := abs.ValueToRecord(o.resource, recordValue.Export())
 
 	if err != nil {
 		panic(err)
@@ -74,7 +75,7 @@ func (o *resourceObject) applyFn(recordValue goja.Value) goja.Value {
 }
 
 func (o *resourceObject) deleteFn(recordValue goja.Value) goja.Value {
-	record, err := valueToRecord(o.resource, recordValue.Export())
+	record, err := abs.ValueToRecord(o.resource, recordValue.Export())
 
 	if err != nil {
 		panic(err)
@@ -186,7 +187,7 @@ func (o *resourceObject) searchFn(params *rest.SearchRecordRequest) goja.Value {
 }
 
 func (o *resourceObject) loadFn(params goja.Value) goja.Value {
-	recordToLoad, err := valueToRecord(o.resource, params.Export())
+	recordToLoad, err := abs.ValueToRecord(o.resource, params.Export())
 
 	if err != nil {
 		panic(err)

@@ -1,4 +1,4 @@
-package nano
+package http
 
 import (
 	"encoding/json"
@@ -66,8 +66,4 @@ func (h *httpObject) makeResponse(resp *http.Response) HttpResponse {
 		StatusCode: resp.StatusCode,
 		Body:       bodyRaw,
 	}
-}
-
-func NewHttpObject(vm *goja.Runtime) goja.Value {
-	return vm.ToValue(&httpObject{vm: vm})
 }

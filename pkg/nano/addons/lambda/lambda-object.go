@@ -1,10 +1,12 @@
-package nano
+package lambda
 
 import (
 	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/nano/abs"
+	resource2 "github.com/apibrew/apibrew/pkg/nano/addons/resource"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/service/validate"
@@ -22,7 +24,7 @@ type lambdaObject struct {
 	Listen func(func(event map[string]interface{})) `json:"listen"`
 
 	vm                  *goja.Runtime
-	cec                 *codeExecutionContext
+	cec                 abs.CodeExecutionContext
 	backendEventHandler backend_event_handler.BackendEventHandler
 }
 
@@ -48,7 +50,7 @@ func (o *lambdaObject) init() {
 }
 
 func (o *lambdaObject) fireFn(event map[string]interface{}) {
-	record, err := valueToRecord(o.resource, event)
+	record, err := abs.ValueToRecord(o.resource, event)
 
 	if err != nil {
 		panic(err)
@@ -79,7 +81,7 @@ func (o *lambdaObject) fireFn(event map[string]interface{}) {
 func (o *lambdaObject) listenFn(f func(event map[string]interface{})) {
 	handlerId := "nano-lambda-" + util.RandomHex(8)
 
-	o.cec.handlerIds = append(o.cec.handlerIds, handlerId)
+	o.cec.AddHandlerId(handlerId)
 
 	o.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
 		Id:       handlerId,
@@ -111,10 +113,10 @@ func (o *lambdaObject) recordHandlerFn(fn func(event map[string]interface{})) ba
 	}
 }
 
-func lambdaFn(container service.Container, vm *goja.Runtime, cec *codeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler) func(args ...string) goja.Value {
+func lambdaFn(container service.Container, vm *goja.Runtime, cec abs.CodeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler) func(args ...string) goja.Value {
 	resourceService := container.GetResourceService()
 	return func(args ...string) goja.Value {
-		resource := resourceByName(args, resourceService)
+		resource := resource2.ResourceByName(args, resourceService)
 
 		lo := &lambdaObject{resource: resource, container: container, vm: vm, cec: cec, backendEventHandler: backendEventHandler}
 

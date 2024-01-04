@@ -3,6 +3,8 @@ package nano
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/nano/abs"
+	"github.com/apibrew/apibrew/pkg/nano/addons"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/dop251/goja"
@@ -15,6 +17,18 @@ type codeExecutorService struct {
 	backendEventHandler backend_event_handler.BackendEventHandler
 	codeContext         map[string]*codeExecutionContext
 	globalObject        *globalObject
+}
+
+func (s codeExecutorService) GetContainer() service.Container {
+	return s.container
+}
+
+func (s codeExecutorService) GetBackendEventHandler() backend_event_handler.BackendEventHandler {
+	return s.backendEventHandler
+}
+
+func (s codeExecutorService) GetGlobalObject() abs.GlobalObject {
+	return s.globalObject
 }
 
 func (s codeExecutorService) registerCode(code *Code) (err error) {
@@ -82,37 +96,15 @@ func (s codeExecutorService) unRegisterCode(code *Code) error {
 }
 
 func (s codeExecutorService) registerBuiltIns(code *Code, vm *goja.Runtime, cec *codeExecutionContext) error {
-	err := vm.Set("console", newConsoleObject(code.Name, vm, cec))
-
-	if err != nil {
+	if err := addons.Register(vm, cec, s, code.Name); err != nil {
 		return err
 	}
 
-	err = vm.Set("resource", resourceFn(s.container, vm, cec, s.backendEventHandler, s.globalObject))
-
-	if err != nil {
+	if err := vm.Set("global", s.globalObject); err != nil {
 		return err
 	}
 
-	err = vm.Set("lambda", lambdaFn(s.container, vm, cec, s.backendEventHandler))
-
-	if err != nil {
-		return err
-	}
-
-	err = vm.Set("http", NewHttpObject(vm))
-
-	if err != nil {
-		return err
-	}
-
-	err = vm.Set("global", s.globalObject)
-
-	if err != nil {
-		return err
-	}
-
-	if err = s.registerTimeoutFunctions(code, vm, cec); err != nil {
+	if err := s.registerTimeoutFunctions(code, vm, cec); err != nil {
 		return err
 	}
 

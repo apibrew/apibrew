@@ -1,4 +1,4 @@
-package nano
+package abs
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func valueToRecord(resource *model.Resource, resultExported interface{}) (*model.Record, errors.ServiceError) {
+func ValueToRecord(resource *model.Resource, resultExported interface{}) (*model.Record, errors.ServiceError) {
 	recordObj, ok := resultExported.(map[string]interface{})
 
 	if !ok {

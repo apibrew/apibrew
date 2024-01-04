@@ -1,7 +1,8 @@
-package nano
+package resource
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/nano/abs"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -15,9 +16,9 @@ type resourceObject struct {
 	resource  *model.Resource
 
 	vm                  *goja.Runtime
-	cec                 *codeExecutionContext
+	cec                 abs.CodeExecutionContext
 	backendEventHandler backend_event_handler.BackendEventHandler
-	global              *globalObject
+	global              abs.GlobalObject
 }
 
 func (o *resourceObject) handlerSelector(action model.Event_Action) *model.EventSelector {
@@ -77,10 +78,10 @@ func (o *resourceObject) locateGlobalName(name string) string {
 	return o.resource.Namespace + "_" + o.resource.Name + "_" + name
 }
 
-func resourceFn(container service.Container, vm *goja.Runtime, cec *codeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler, global *globalObject) func(args ...string) goja.Value {
+func resourceFn(container service.Container, vm *goja.Runtime, cec abs.CodeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler, global abs.GlobalObject) func(args ...string) goja.Value {
 	resourceService := container.GetResourceService()
 	return func(args ...string) goja.Value {
-		resource := resourceByName(args, resourceService)
+		resource := ResourceByName(args, resourceService)
 
 		ro := &resourceObject{resource: resource, container: container, vm: vm, cec: cec, backendEventHandler: backendEventHandler, global: global}
 
@@ -92,7 +93,7 @@ func resourceFn(container service.Container, vm *goja.Runtime, cec *codeExecutio
 	}
 }
 
-func resourceByName(args []string, resourceService service.ResourceService) *model.Resource {
+func ResourceByName(args []string, resourceService service.ResourceService) *model.Resource {
 	var resourceName string
 	var namespace string
 

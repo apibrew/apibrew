@@ -1,4 +1,4 @@
-package nano
+package console
 
 import (
 	"encoding/json"
@@ -31,7 +31,7 @@ func (c *consoleObject) log(level log.Level) func(args ...interface{}) {
 	}
 }
 
-func newConsoleObject(codeName string, vm *goja.Runtime, cec *codeExecutionContext) *consoleObject {
+func Register(vm *goja.Runtime, codeName string) error {
 	obj := &consoleObject{codeName: codeName}
 
 	obj.Log = obj.log(log.InfoLevel)
@@ -41,5 +41,5 @@ func newConsoleObject(codeName string, vm *goja.Runtime, cec *codeExecutionConte
 	obj.Warn = obj.log(log.WarnLevel)
 	obj.Error = obj.log(log.ErrorLevel)
 
-	return obj
+	return vm.Set("console", obj)
 }

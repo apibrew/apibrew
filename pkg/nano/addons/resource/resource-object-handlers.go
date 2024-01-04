@@ -1,10 +1,11 @@
-package nano
+package resource
 
 import (
 	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/nano/abs"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
@@ -14,7 +15,7 @@ func (o *resourceObject) registerHandler(order int, sync bool, responds bool, ac
 	return func(fn func(call goja.FunctionCall) goja.Value) {
 		handlerId := "nano-" + util.RandomHex(8)
 
-		o.cec.handlerIds = append(o.cec.handlerIds, handlerId)
+		o.cec.AddHandlerId(handlerId)
 
 		o.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
 			Id:       handlerId,
@@ -51,7 +52,7 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 			resultExported := result.Export()
 
 			if resultExported != nil {
-				updatedRecord, err := valueToRecord(o.resource, resultExported)
+				updatedRecord, err := abs.ValueToRecord(o.resource, resultExported)
 				if err != nil {
 					return nil, err
 				}

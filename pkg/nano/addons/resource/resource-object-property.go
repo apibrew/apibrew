@@ -1,4 +1,4 @@
-package nano
+package resource
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
