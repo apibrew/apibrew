@@ -135,6 +135,7 @@ func (b *backendEventHandler) filterHandlersForEvent(ctx context.Context, incomi
 			if err != nil {
 				log.Error(err)
 			} else {
+				log.Debugf("Handler bypassed: %s [%v]", handler.Id, handler)
 				continue
 			}
 		}
