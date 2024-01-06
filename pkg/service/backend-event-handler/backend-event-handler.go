@@ -78,6 +78,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 			}
 
 			if nextEvent == nil {
+				logger.Debugf("Handler [%s] breaks", handler.Name)
 				break
 			}
 
