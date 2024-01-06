@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/dop251/goja v0.0.0-20231027120936-b396bb4c349d
 	github.com/dop251/goja_nodejs v0.0.0-20211022123610-8dd9abb0616d
-	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
+	github.com/gemnasium/logrus-graylog-hook/v3 v3.2.0
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
@@ -24,7 +24,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/rs/cors v1.9.0
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.3
 	github.com/soheilhy/cmux v0.1.5
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
