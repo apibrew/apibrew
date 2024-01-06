@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -27,7 +28,7 @@ func (b backendProviderService) DestroyDataSource(ctx context.Context, dataSourc
 }
 
 func (b backendProviderService) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_CREATE,
 		Resource: resource,
 		Records:  records,
@@ -45,7 +46,7 @@ func (b backendProviderService) AddRecords(ctx context.Context, resource *model.
 }
 
 func (b backendProviderService) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_UPDATE,
 		Resource: resource,
 		Records:  records,
@@ -63,7 +64,7 @@ func (b backendProviderService) UpdateRecords(ctx context.Context, resource *mod
 }
 
 func (b backendProviderService) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_GET,
 		Resource: resource,
 		Records:  []*model.Record{util.IdRecord(id)},
@@ -88,7 +89,7 @@ func (b backendProviderService) GetRecord(ctx context.Context, resource *model.R
 }
 
 func (b backendProviderService) DeleteRecords(ctx context.Context, resource *model.Resource, list []*model.Record) errors.ServiceError {
-	_, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
+	_, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_DELETE,
 		Resource: resource,
 		Records:  list,
@@ -98,7 +99,7 @@ func (b backendProviderService) DeleteRecords(ctx context.Context, resource *mod
 }
 
 func (b backendProviderService) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_LIST,
 		Resource: resource,
 		RecordSearchParams: &model.Event_RecordSearchParams{
@@ -125,7 +126,7 @@ func (b backendProviderService) ExecuteAction(ctx context.Context, resource *mod
 		return nil, errors.InternalError.WithDetails(ierr.Error())
 	}
 
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(&model.Event{
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:     model.Event_OPERATE,
 		Resource:   resource,
 		Records:    []*model.Record{rec},
@@ -144,9 +145,10 @@ func (b backendProviderService) ExecuteAction(ctx context.Context, resource *mod
 	return unstructured.FromStructValue(endEvent.Output.GetStructValue()), nil
 }
 
-func (b backendProviderService) PrepareInternalEvent(event *model.Event) *model.Event {
+func (b backendProviderService) PrepareInternalEvent(ctx context.Context, event *model.Event) *model.Event {
 	event.Id = fmt.Sprintf("internal-event-%s-%s-%s-%s", event.Resource.Namespace, event.Resource.Name, event.Action, util.RandomHex(6))
 	event.Time = timestamppb.Now()
+	event.Annotations = annotations.FromCtx(annotations.WithContext(ctx, event.Resource)).GetAnnotations()
 
 	return event
 }

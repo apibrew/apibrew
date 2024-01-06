@@ -15,6 +15,7 @@ import (
 type AuthenticationService interface {
 	Init(config *model.AppConfig)
 	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError)
+	AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
 	ParseAndVerifyToken(token string) (*jwt_model.UserDetails, errors.ServiceError)
 	AuthenticationDisabled() bool

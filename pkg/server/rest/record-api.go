@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
@@ -106,7 +107,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 
 	filters := r.makeFilters(request)
 
-	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
+	result, total, serviceErr := r.recordService.List(r.prepareContext(request), service.RecordListParams{
 		Filters:           filters,
 		Namespace:         resource.Namespace,
 		Resource:          resource.Name,
@@ -152,7 +153,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	res, serviceErr := r.recordService.Create(request.Context(), service.RecordCreateParams{
+	res, serviceErr := r.recordService.Create(r.prepareContext(request), service.RecordCreateParams{
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
 		Records:   []*model.Record{record1.toRecord()},
@@ -190,7 +191,7 @@ func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	res, serviceErr := r.recordService.Apply(request.Context(), service.RecordUpdateParams{
+	res, serviceErr := r.recordService.Apply(r.prepareContext(request), service.RecordUpdateParams{
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
 		Records:   []*model.Record{record1.toRecord()},
@@ -217,7 +218,7 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 
 	resolveReferences := request.URL.Query().Get("resolve-references")
 
-	record, serviceErr := r.recordService.Get(request.Context(), service.RecordGetParams{
+	record, serviceErr := r.recordService.Get(r.prepareContext(request), service.RecordGetParams{
 		Namespace:         resource.Namespace,
 		Resource:          resource.Name,
 		Id:                id,
@@ -250,7 +251,7 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 
 	record.Properties["id"] = structpb.NewStringValue(id)
 
-	result, serviceErr := r.recordService.Update(request.Context(), service.RecordUpdateParams{
+	result, serviceErr := r.recordService.Update(r.prepareContext(request), service.RecordUpdateParams{
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
 		Records:   []*model.Record{record},
@@ -275,7 +276,7 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 	id := vars["id"]
 
-	serviceErr := r.recordService.Delete(request.Context(), service.RecordDeleteParams{
+	serviceErr := r.recordService.Delete(r.prepareContext(request), service.RecordDeleteParams{
 		Namespace: resource.Namespace,
 		Resource:  resource.Name,
 		Ids:       []string{id},
@@ -305,7 +306,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		query = extramappings.BooleanExpressionToProto(*listRecordRequest.Query)
 	}
 
-	result, total, serviceErr := r.recordService.List(request.Context(), service.RecordListParams{
+	result, total, serviceErr := r.recordService.List(r.prepareContext(request), service.RecordListParams{
 		Query:             query,
 		Namespace:         resource.Namespace,
 		Resource:          resource.Name,
@@ -359,7 +360,7 @@ func (r *recordApi) handleAction(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	result, err := r.recordService.ExecuteAction(request.Context(), service.ExecuteActionParams{
+	result, err := r.recordService.ExecuteAction(r.prepareContext(request), service.ExecuteActionParams{
 		Namespace:  resource.Namespace,
 		Resource:   resource.Name,
 		Id:         vars["id"],
@@ -393,7 +394,7 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 		}
 	}
 
-	res, err := r.watchService.WatchResource(request.Context(), service.WatchParams{
+	res, err := r.watchService.WatchResource(r.prepareContext(request), service.WatchParams{
 		Selector: &model.EventSelector{
 			Actions: []model.Event_Action{
 				model.Event_CREATE,
@@ -447,6 +448,10 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 		}
 
 	}
+}
+
+func (r *recordApi) prepareContext(request *http.Request) context.Context {
+	return annotations.SetWithContext(request.Context(), "requestUrl", request.URL.String())
 }
 
 func NewRecordApi(container service.Container) RecordApi {

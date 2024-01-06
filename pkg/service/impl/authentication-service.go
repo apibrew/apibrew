@@ -57,6 +57,32 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 	return s.prepareToken(systemCtx, term, user)
 }
 
+func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
+	if s.DisableAuthentication {
+		return &model.Token{
+			Term:       term,
+			Content:    "",
+			Expiration: timestamppb.New(time.Now().Add(time.Minute).UTC()),
+		}, nil
+	}
+	logger := log.WithFields(logging.CtxFields(ctx))
+
+	logger.Debug("Begin Authenticate")
+
+	defer logger.Debug("End Authenticate")
+
+	systemCtx := util.WithSystemContext(ctx)
+
+	// locate user
+	user, err := s.FindUser(ctx, username)
+
+	if err != nil {
+		return nil, errors.AuthenticationFailedError
+	}
+
+	return s.prepareToken(systemCtx, term, user)
+}
+
 func (s *authenticationService) prepareToken(ctx context.Context, term model.TokenTerm, user *resource_model.User) (*model.Token, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	// Prepare token

@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/dop251/goja"
+	"github.com/dop251/goja_nodejs/require"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
@@ -49,6 +50,11 @@ func (s codeExecutorService) registerCode(code *Code) (err error) {
 	vm.SetFieldNameMapper(goja.UncapFieldNameMapper())
 
 	cec := &codeExecutionContext{}
+
+	registry := new(require.Registry) // this can be shared by multiple runtimes
+
+	runtime := goja.New()
+	registry.Enable(runtime)
 
 	err = s.registerBuiltIns(code, vm, cec)
 
@@ -96,7 +102,7 @@ func (s codeExecutorService) unRegisterCode(code *Code) error {
 }
 
 func (s codeExecutorService) registerBuiltIns(code *Code, vm *goja.Runtime, cec *codeExecutionContext) error {
-	if err := addons.Register(vm, cec, s, code.Name); err != nil {
+	if err := addons.Register(vm, cec, s, code.Name, s.container); err != nil {
 		return err
 	}
 

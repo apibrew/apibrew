@@ -2,7 +2,9 @@ package mail
 
 import (
 	"crypto/tls"
+	"fmt"
 	"github.com/dop251/goja"
+	log "github.com/sirupsen/logrus"
 )
 import gomail "gopkg.in/mail.v2"
 
@@ -21,7 +23,9 @@ type EmailConfig struct {
 
 type EmailMessage struct {
 	From        string `json:"from"`
+	FromName    string `json:"fromName"`
 	To          string `json:"to"`
+	ToName      string `json:"toName"`
 	Subject     string `json:"subject"`
 	Body        string `json:"body"`
 	ContentType string `json:"contentType"`
@@ -49,11 +53,19 @@ func mailFn(config EmailConfig) *mailObject {
 	return obj
 }
 
-func (m *mailObject) Send(message EmailMessage) {
+func (m *mailObject) Send(message EmailMessage) bool {
 	mail := gomail.NewMessage()
 
-	mail.SetHeader("From", message.From)
-	mail.SetHeader("To", message.To)
+	if message.FromName != "" {
+		mail.SetHeader("From", fmt.Sprintf("%s <%s>", message.FromName, message.From))
+	} else {
+		mail.SetHeader("From", message.From)
+	}
+	if message.ToName != "" {
+		mail.SetHeader("To", fmt.Sprintf("%s <%s>", message.ToName, message.To))
+	} else {
+		mail.SetHeader("To", message.To)
+	}
 	mail.SetHeader("Subject", message.Subject)
 	mail.SetBody(message.ContentType, message.Body)
 
@@ -66,8 +78,10 @@ func (m *mailObject) Send(message EmailMessage) {
 	err := d.DialAndSend(mail)
 
 	if err != nil {
-		panic(err)
+		log.Error(err)
+		return false
 	}
+	return true
 }
 
 func Register(vm *goja.Runtime) error {
