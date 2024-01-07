@@ -1,3 +1,3 @@
 package nano
 
-//go:generate statik -src=builtin -dest=. -ns=nano
+//go:generate apbr generate --platform=golang --path=. --package=nano

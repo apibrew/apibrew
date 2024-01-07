@@ -28,7 +28,16 @@ var CodeResource = &model.Resource{
 					Type:         model.ResourceProperty_STRING,
 					Length:       256,
 					Immutable:    true,
-					DefaultValue: nil,
+					ExampleValue: structpb.NewStringValue("admin"),
+
+					Annotations: map[string]string{
+						"SpecialProperty": "true",
+					},
+				},
+				{
+					Name:         "updatedBy",
+					Type:         model.ResourceProperty_STRING,
+					Length:       256,
 					ExampleValue: structpb.NewStringValue("admin"),
 
 					Annotations: map[string]string{
@@ -39,19 +48,7 @@ var CodeResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					DefaultValue: nil,
-					ExampleValue: structpb.NewStringValue("2023-12-13T21:18:29Z"),
-
-					Annotations: map[string]string{
-						"SpecialProperty": "true",
-					},
-				},
-				{
-					Name:         "updatedBy",
-					Type:         model.ResourceProperty_STRING,
-					Length:       256,
-					DefaultValue: nil,
-					ExampleValue: structpb.NewStringValue("admin"),
+					ExampleValue: structpb.NewStringValue("2024-01-08T00:42:20+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -60,8 +57,7 @@ var CodeResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					DefaultValue: nil,
-					ExampleValue: structpb.NewStringValue("2023-12-13T21:18:29Z"),
+					ExampleValue: structpb.NewStringValue("2024-01-08T00:42:20+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -70,48 +66,17 @@ var CodeResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"NormalizedResource": "true",
 				"EnableAudit":        "true",
+				"NormalizedResource": "true",
 			},
 		},
 	},
 	Properties: []*model.ResourceProperty{
 		{
-			Name:         "auditData",
-			Type:         model.ResourceProperty_STRUCT,
-			DefaultValue: nil,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedBy": structpb.NewStringValue("admin"), "updatedOn": structpb.NewStringValue("2023-12-13T21:18:29Z"), "createdBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2023-12-13T21:18:29Z")}}),
-			TypeRef:      util.Pointer("AuditData"),
-
-			Annotations: map[string]string{
-				"SpecialProperty": "true",
-			},
-		},
-		{
-			Name:         "annotations",
-			Type:         model.ResourceProperty_MAP,
-			DefaultValue: nil,
-			ExampleValue: nil,
-			Item: &model.ResourceProperty{
-				Type: model.ResourceProperty_STRING,
-			},
-		},
-		{
-			Name:         "contentFormat",
-			Type:         model.ResourceProperty_ENUM,
-			Required:     true,
-			DefaultValue: structpb.NewStringValue("TEXT"),
-			ExampleValue: nil,
-			EnumValues: []string{
-				"TEXT", "TAR", "TAR_GZ",
-			},
-		},
-		{
 			Name:         "id",
 			Type:         model.ResourceProperty_UUID,
 			Required:     true,
 			Immutable:    true,
-			DefaultValue: nil,
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
@@ -120,25 +85,42 @@ var CodeResource = &model.Resource{
 			},
 		},
 		{
-			Name:         "name",
-			Type:         model.ResourceProperty_STRING,
-			Length:       255,
-			Required:     true,
-			Unique:       true,
-			Immutable:    true,
-			DefaultValue: nil,
-			ExampleValue: nil,
+			Name:      "name",
+			Type:      model.ResourceProperty_STRING,
+			Length:    255,
+			Required:  true,
+			Unique:    true,
+			Immutable: true,
 		},
 		{
-			Name:         "content",
-			Type:         model.ResourceProperty_STRING,
-			Length:       64000,
-			Required:     true,
-			DefaultValue: nil,
-			ExampleValue: nil,
+			Name:       "language",
+			Type:       model.ResourceProperty_ENUM,
+			Required:   true,
+			EnumValues: []string{"PYTHON", "JAVASCRIPT"},
+		},
+		{
+			Name:     "content",
+			Type:     model.ResourceProperty_STRING,
+			Length:   64000,
+			Required: true,
 
 			Annotations: map[string]string{
 				"SQLType": "TEXT",
+			},
+		},
+		{
+			Name:         "contentFormat",
+			Type:         model.ResourceProperty_ENUM,
+			Required:     true,
+			DefaultValue: structpb.NewStringValue("TEXT"),
+			EnumValues:   []string{"TEXT", "TAR", "TAR_GZ"},
+		},
+		{
+			Name: "annotations",
+			Type: model.ResourceProperty_MAP,
+			Item: &model.ResourceProperty{
+				Name: "",
+				Type: model.ResourceProperty_STRING,
 			},
 		},
 		{
@@ -149,18 +131,18 @@ var CodeResource = &model.Resource{
 			ExampleValue: structpb.NewNumberValue(1),
 
 			Annotations: map[string]string{
-				"AllowEmptyPrimitive": "true",
 				"SpecialProperty":     "true",
+				"AllowEmptyPrimitive": "true",
 			},
 		},
 		{
-			Name:         "language",
-			Type:         model.ResourceProperty_ENUM,
-			Required:     true,
-			DefaultValue: nil,
-			ExampleValue: nil,
-			EnumValues: []string{
-				"JAVASCRIPT",
+			Name:         "auditData",
+			Type:         model.ResourceProperty_STRUCT,
+			TypeRef:      util.Pointer("AuditData"),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-01-08T00:42:20+04:00"), "updatedOn": structpb.NewStringValue("2024-01-08T00:42:20+04:00")}}),
+
+			Annotations: map[string]string{
+				"SpecialProperty": "true",
 			},
 		},
 	},

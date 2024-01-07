@@ -3,12 +3,10 @@ package apbr
 import (
 	"errors"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
+	"github.com/apibrew/apibrew/pkg/formats/executor"
 	"github.com/apibrew/apibrew/pkg/generator"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resource_model"
-	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
-	resources2 "github.com/apibrew/apibrew/pkg/resources"
-	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +14,11 @@ var generatorCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "generate - Generate codes",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		parseRootFlags(cmd)
+		sourceFile, err := cmd.Flags().GetString("source-file")
+
+		if sourceFile == "" {
+			parseRootFlags(cmd)
+		}
 
 		namespace, err := cmd.Flags().GetString("namespace")
 
@@ -52,61 +54,39 @@ var generatorCmd = &cobra.Command{
 
 		selectorFlags.Filters = filters
 
-		var selection = &flags.SelectedRecordsResult{}
-		err = selectorFlags.Parse(selection, cmd, []string{"resources"})
+		if sourceFile == "" {
+			var selection = &flags.SelectedRecordsResult{}
+			err = selectorFlags.Parse(selection, cmd, []string{"resources"})
 
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
+
+			resources = selection.Resources
+		} else {
+			applier := executor.NewExecutor(executor.COLLECT, GetClient(), false, false, false, "", flags.OverrideConfig{})
+
+			err = applier.Apply(cmd.Context(), sourceFile, "yaml")
+
+			if err != nil {
+				return err
+			}
+
+			resources = applier.CollectedResources
+
+			for _, resource := range resources {
+				util.NormalizeResource(resource)
+			}
 		}
-
-		resources = selection.Resources
 
 		if pkg == "" {
 			pkg = "model"
 		}
 
-		var resourceActionsRecords, _, err2 = GetClient().ListRecords(cmd.Context(), service.RecordListParams{
-			Namespace: resources2.ResourceActionResource.Namespace,
-			Resource:  resources2.ResourceActionResource.Name,
-			Limit:     1000000,
-		})
-
-		if err2 != nil {
-			return err2
-		}
-
 		var mappedResourceActions = map[*model.Resource][]*model.Resource{}
 
-		for _, resourceActionRecord := range resourceActionsRecords {
-			resourceAction := resource_model.ResourceActionMapperInstance.FromRecord(resourceActionRecord)
-
-			res := &resource_model.Resource{
-				Name:  resourceAction.Name,
-				Types: resourceAction.Types,
-			}
-
-			if resourceAction.Input != nil {
-				res.Types = append(res.Types, resource_model.SubType{
-					Name:       resourceAction.Name + "Input",
-					Properties: resourceAction.Input,
-				})
-			}
-
-			if resourceAction.Output != nil {
-				res.Properties = map[string]resource_model.Property{
-					"output": *resourceAction.Output,
-				}
-			}
-
-			for _, resource := range resources {
-				if resource.Id == resourceAction.Resource.Id.String() {
-					mappedResourceActions[resource] = append(mappedResourceActions[resource], extramappings.ResourceFrom(res))
-				}
-			}
-		}
-
 		if len(resources) == 0 {
-			return errors.New("No resources matched the filter")
+			return errors.New("no resources matched the filter")
 		}
 
 		return generator.GenerateResourceCodes(platform, pkg, resources, mappedResourceActions, path, namespace)
@@ -118,5 +98,6 @@ func init() {
 	generatorCmd.PersistentFlags().String("package", "", "Package")
 	generatorCmd.PersistentFlags().String("platform", "", "Platform: [golang, javascript, typescript, java]")
 	generatorCmd.PersistentFlags().StringSlice("filter", nil, "filter")
+	generatorCmd.PersistentFlags().String("source-file", "", "Generate models from a source file")
 	selectorFlags.Declare(generatorCmd)
 }

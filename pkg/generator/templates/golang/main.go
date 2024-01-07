@@ -47,6 +47,9 @@ func generaMappingCode(pkg string, resources []*model.Resource, path string, res
 	if err != nil {
 		return err
 	}
+
+	log.Println("Written to file: " + path + "/" + resourceFileName)
+
 	return nil
 }
 
@@ -71,6 +74,9 @@ func generateResourceCode(pkg string, resource *model.Resource, path string) err
 	if err != nil {
 		return err
 	}
+
+	log.Println("Written to file: " + path + "/" + resourceFileName)
+
 	return nil
 }
 
@@ -95,5 +101,8 @@ func generaDefCode(pkg string, resource *model.Resource, path string) error {
 	if err != nil {
 		return err
 	}
+
+	log.Println("Written to file: " + path + "/" + resourceFileName)
+
 	return nil
 }

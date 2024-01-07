@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
+	resources2 "github.com/apibrew/apibrew/pkg/resources"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gopkg.in/yaml.v3"
@@ -164,6 +165,28 @@ func (e *Executor) Init(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (e *Executor) InitSystemOnly() {
+	resources := resources2.GetAllSystemResources()
+
+	e.resources = resources
+	e.resourcePropertyMap = make(map[string]*model.ResourceProperty)
+
+	if len(e.resources) == 0 {
+		panic("Could not load resources")
+	}
+
+	for _, item := range e.resources {
+		for _, field := range item.Properties {
+			e.resourcePropertyMap[item.Namespace+"/"+item.Name+"/"+field.Name] = field
+		}
+	}
+
+	e.preprocessor = preprocessor{
+		dhClient: e.Client,
+		writer:   &Writer{},
+	}
 }
 
 type OverrideConfig struct {

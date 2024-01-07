@@ -16,20 +16,23 @@ import (
 type Mode string
 
 const (
-	APPLY  Mode = "APPLY"
-	CREATE Mode = "CREATE"
-	UPDATE Mode = "UPDATE"
-	DELETE Mode = "DELETE"
+	APPLY   Mode = "APPLY"
+	CREATE  Mode = "CREATE"
+	UPDATE  Mode = "UPDATE"
+	DELETE  Mode = "DELETE"
+	COLLECT Mode = "COLLECT"
 )
 
 type Executor struct {
-	client         client.Client
-	doMigration    bool
-	dataOnly       bool
-	force          bool
-	overrideConfig flags.OverrideConfig
-	mode           Mode
-	Type           string
+	client             client.Client
+	doMigration        bool
+	dataOnly           bool
+	force              bool
+	overrideConfig     flags.OverrideConfig
+	mode               Mode
+	Type               string
+	CollectedResources []*model.Resource
+	CollectedRecords   []*model.Record
 }
 
 func (a *Executor) Apply(ctx context.Context, inputFilePath string, format string) error {
@@ -71,6 +74,9 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 				return err
 			} else if a.mode == DELETE {
 				return a.client.DeleteRecord(ctx, namespace, resource, record) // fixme locate id if not exists
+			} else if a.mode == COLLECT {
+				a.CollectedRecords = append(a.CollectedRecords, record)
+				return nil
 			} else {
 				return errors.New("unknown mode")
 			}
@@ -87,6 +93,9 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 				return a.client.UpdateResource(ctx, resource, a.doMigration, a.force)
 			} else if a.mode == DELETE {
 				return a.client.DeleteResource(ctx, resource.Id, a.doMigration, a.force)
+			} else if a.mode == COLLECT {
+				a.CollectedResources = append(a.CollectedResources, resource)
+				return nil
 			} else {
 				return errors.New("unknown mode")
 			}
@@ -95,10 +104,14 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 
 	unstructuredExecutor.Type = a.Type
 
-	err := unstructuredExecutor.Init(ctx)
+	if a.mode != COLLECT {
+		err := unstructuredExecutor.Init(ctx)
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+	} else {
+		unstructuredExecutor.InitSystemOnly()
 	}
 
 	return reader.Read(ctx, inputFilePath, format, unstructuredExecutor.RestoreItem)

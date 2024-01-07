@@ -49,14 +49,62 @@ func (m *CodeMapper) FromRecord(record *model.Record) *Code {
 func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_AuditData := code.AuditData
+	var_Id := code.Id
 
-	if var_AuditData != nil {
-		var var_AuditData_mapped *structpb.Value
+	if var_Id != nil {
+		var var_Id_mapped *structpb.Value
 
-		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: CodeAuditDataMapperInstance.ToProperties(var_AuditData)})
-		properties["auditData"] = var_AuditData_mapped
+		var var_Id_err error
+		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
+		if var_Id_err != nil {
+			panic(var_Id_err)
+		}
+		properties["id"] = var_Id_mapped
 	}
+
+	var_Name := code.Name
+
+	var var_Name_mapped *structpb.Value
+
+	var var_Name_err error
+	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
+	if var_Name_err != nil {
+		panic(var_Name_err)
+	}
+	properties["name"] = var_Name_mapped
+
+	var_Language := code.Language
+
+	var var_Language_mapped *structpb.Value
+
+	var var_Language_err error
+	var_Language_mapped, var_Language_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Language))
+	if var_Language_err != nil {
+		panic(var_Language_err)
+	}
+	properties["language"] = var_Language_mapped
+
+	var_Content := code.Content
+
+	var var_Content_mapped *structpb.Value
+
+	var var_Content_err error
+	var_Content_mapped, var_Content_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Content)
+	if var_Content_err != nil {
+		panic(var_Content_err)
+	}
+	properties["content"] = var_Content_mapped
+
+	var_ContentFormat := code.ContentFormat
+
+	var var_ContentFormat_mapped *structpb.Value
+
+	var var_ContentFormat_err error
+	var_ContentFormat_mapped, var_ContentFormat_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_ContentFormat))
+	if var_ContentFormat_err != nil {
+		panic(var_ContentFormat_err)
+	}
+	properties["contentFormat"] = var_ContentFormat_mapped
 
 	var_Annotations := code.Annotations
 
@@ -82,52 +130,6 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 		properties["annotations"] = var_Annotations_mapped
 	}
 
-	var_ContentFormat := code.ContentFormat
-
-	var var_ContentFormat_mapped *structpb.Value
-
-	var var_ContentFormat_err error
-	var_ContentFormat_mapped, var_ContentFormat_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_ContentFormat))
-	if var_ContentFormat_err != nil {
-		panic(var_ContentFormat_err)
-	}
-	properties["contentFormat"] = var_ContentFormat_mapped
-
-	var_Id := code.Id
-
-	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
-
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Name := code.Name
-
-	var var_Name_mapped *structpb.Value
-
-	var var_Name_err error
-	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
-	if var_Name_err != nil {
-		panic(var_Name_err)
-	}
-	properties["name"] = var_Name_mapped
-
-	var_Content := code.Content
-
-	var var_Content_mapped *structpb.Value
-
-	var var_Content_err error
-	var_Content_mapped, var_Content_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Content)
-	if var_Content_err != nil {
-		panic(var_Content_err)
-	}
-	properties["content"] = var_Content_mapped
-
 	var_Version := code.Version
 
 	var var_Version_mapped *structpb.Value
@@ -139,57 +141,19 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 	}
 	properties["version"] = var_Version_mapped
 
-	var_Language := code.Language
+	var_AuditData := code.AuditData
 
-	var var_Language_mapped *structpb.Value
+	if var_AuditData != nil {
+		var var_AuditData_mapped *structpb.Value
 
-	var var_Language_err error
-	var_Language_mapped, var_Language_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Language))
-	if var_Language_err != nil {
-		panic(var_Language_err)
+		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: CodeAuditDataMapperInstance.ToProperties(var_AuditData)})
+		properties["auditData"] = var_AuditData_mapped
 	}
-	properties["language"] = var_Language_mapped
 	return properties
 }
 
 func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code {
 	var s = m.New()
-	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
-
-		var_AuditData := properties["auditData"]
-		var mappedValue = CodeAuditDataMapperInstance.FromProperties(var_AuditData.GetStructValue().Fields)
-
-		var_AuditData_mapped := mappedValue
-
-		s.AuditData = var_AuditData_mapped
-	}
-	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
-
-		var_Annotations := properties["annotations"]
-		var_Annotations_mapped := make(map[string]string)
-		for k, v := range var_Annotations.GetStructValue().Fields {
-
-			var_3x := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
-
-			if err != nil {
-				panic(err)
-			}
-
-			var_3x_mapped := val.(string)
-
-			var_Annotations_mapped[k] = var_3x_mapped
-		}
-
-		s.Annotations = var_Annotations_mapped
-	}
-	if properties["contentFormat"] != nil && properties["contentFormat"].AsInterface() != nil {
-
-		var_ContentFormat := properties["contentFormat"]
-		var_ContentFormat_mapped := (CodeContentFormat)(var_ContentFormat.GetStringValue())
-
-		s.ContentFormat = var_ContentFormat_mapped
-	}
 	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
 		var_Id := properties["id"]
@@ -217,6 +181,13 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 
 		s.Name = var_Name_mapped
 	}
+	if properties["language"] != nil && properties["language"].AsInterface() != nil {
+
+		var_Language := properties["language"]
+		var_Language_mapped := (CodeLanguage)(var_Language.GetStringValue())
+
+		s.Language = var_Language_mapped
+	}
 	if properties["content"] != nil && properties["content"].AsInterface() != nil {
 
 		var_Content := properties["content"]
@@ -229,6 +200,33 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 		var_Content_mapped := val.(string)
 
 		s.Content = var_Content_mapped
+	}
+	if properties["contentFormat"] != nil && properties["contentFormat"].AsInterface() != nil {
+
+		var_ContentFormat := properties["contentFormat"]
+		var_ContentFormat_mapped := (CodeContentFormat)(var_ContentFormat.GetStringValue())
+
+		s.ContentFormat = var_ContentFormat_mapped
+	}
+	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
+
+		var_Annotations := properties["annotations"]
+		var_Annotations_mapped := make(map[string]string)
+		for k, v := range var_Annotations.GetStructValue().Fields {
+
+			var_3x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
+
+			if err != nil {
+				panic(err)
+			}
+
+			var_3x_mapped := val.(string)
+
+			var_Annotations_mapped[k] = var_3x_mapped
+		}
+
+		s.Annotations = var_Annotations_mapped
 	}
 	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 
@@ -243,12 +241,14 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 
 		s.Version = var_Version_mapped
 	}
-	if properties["language"] != nil && properties["language"].AsInterface() != nil {
+	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
 
-		var_Language := properties["language"]
-		var_Language_mapped := (CodeLanguage)(var_Language.GetStringValue())
+		var_AuditData := properties["auditData"]
+		var mappedValue = CodeAuditDataMapperInstance.FromProperties(var_AuditData.GetStructValue().Fields)
 
-		s.Language = var_Language_mapped
+		var_AuditData_mapped := mappedValue
+
+		s.AuditData = var_AuditData_mapped
 	}
 	return s
 }
@@ -289,19 +289,6 @@ func (m *CodeAuditDataMapper) ToProperties(codeAuditData *CodeAuditData) map[str
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_CreatedOn := codeAuditData.CreatedOn
-
-	if var_CreatedOn != nil {
-		var var_CreatedOn_mapped *structpb.Value
-
-		var var_CreatedOn_err error
-		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
-		if var_CreatedOn_err != nil {
-			panic(var_CreatedOn_err)
-		}
-		properties["createdOn"] = var_CreatedOn_mapped
-	}
-
 	var_UpdatedBy := codeAuditData.UpdatedBy
 
 	if var_UpdatedBy != nil {
@@ -313,6 +300,19 @@ func (m *CodeAuditDataMapper) ToProperties(codeAuditData *CodeAuditData) map[str
 			panic(var_UpdatedBy_err)
 		}
 		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := codeAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped *structpb.Value
+
+		var var_CreatedOn_err error
+		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
+		if var_CreatedOn_err != nil {
+			panic(var_CreatedOn_err)
+		}
+		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
 	var_UpdatedOn := codeAuditData.UpdatedOn
@@ -346,20 +346,6 @@ func (m *CodeAuditDataMapper) FromProperties(properties map[string]*structpb.Val
 
 		s.CreatedBy = var_CreatedBy_mapped
 	}
-	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
-
-		var_CreatedOn := properties["createdOn"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_CreatedOn_mapped := new(time.Time)
-		*var_CreatedOn_mapped = val.(time.Time)
-
-		s.CreatedOn = var_CreatedOn_mapped
-	}
 	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
 
 		var_UpdatedBy := properties["updatedBy"]
@@ -373,6 +359,20 @@ func (m *CodeAuditDataMapper) FromProperties(properties map[string]*structpb.Val
 		*var_UpdatedBy_mapped = val.(string)
 
 		s.UpdatedBy = var_UpdatedBy_mapped
+	}
+	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
+
+		var_CreatedOn := properties["createdOn"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_CreatedOn_mapped := new(time.Time)
+		*var_CreatedOn_mapped = val.(time.Time)
+
+		s.CreatedOn = var_CreatedOn_mapped
 	}
 	if properties["updatedOn"] != nil && properties["updatedOn"].AsInterface() != nil {
 
