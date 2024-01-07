@@ -1,0 +1,183 @@
+type: system/Namespace
+name: testing
+---
+type: resource
+name: TestSuite
+namespace:
+  name: testing
+title: Test Suite
+description: Test Suite is a collection of test cases
+properties:
+  name:
+    title: Name
+    description: Full Qualified Name of the test suite, it must be unique in the system
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  description:
+    title: Description
+    description: Description of the test suite
+    type: STRING
+    length: 64000
+  annotations:
+    type: MAP
+    required: false
+    item:
+      type: STRING
+annotations:
+  EnableAudit: "true"
+  OpenApiGroup: "meta"
+---
+type: resource
+name: TestCase
+namespace:
+  name: testing
+title: Test Case
+description: Test Case is a test case
+properties:
+  testSuite:
+    title: Test Suite
+    description: Test Suite of the test case
+    type: REFERENCE
+    required: true
+    reference: testing/TestSuite
+  name:
+    title: Name
+    description: Full Qualified Name of the test case, it must be unique in the test suite
+    type: STRING
+    length: 255
+    required: true
+  description:
+    title: Description
+    description: Description of the test case
+    type: STRING
+    length: 64000
+  annotations:
+    type: MAP
+    required: false
+    item:
+      type: STRING
+  steps:
+    title: Steps
+    description: Steps of the test case
+    type: LIST
+    required: false
+    item:
+      type: STRUCT
+      typeRef: TestCaseStep
+  assertions:
+    title: Assertions
+    description: Assertions of the test case
+    type: LIST
+    required: false
+    item:
+      type: STRUCT
+      typeRef: TestCaseAssertion
+types:
+  - name: TestCaseStep
+    properties:
+      name:
+        title: Name
+        description: Full Qualified Name of the test case step, it must be unique in the test case, it is used to reference the step in the assertions
+        type: STRING
+        length: 255
+        unique: true
+      operation:
+        title: Operation
+        description: Operation of the test case step
+        type: ENUM
+        required: true
+        enumValues:
+          - CREATE
+          - UPDATE
+          - APPLY
+          - DELETE
+          - GET
+          - LIST
+          - NANO
+      payload:
+        title: Payload
+        description: Payload of the test case step
+        type: OBJECT
+  - name: TestCaseAssertion
+    properties:
+      name:
+        title: Name
+        description: Full Qualified Name of the test case assertion
+        type: STRING
+        length: 255
+      operation:
+        title: Operation
+        description: Operation of the test case assertion
+        type: ENUM
+        required: true
+        enumValues:
+          - EQUAL
+          - NOT_EQUAL
+          - CONTAINS
+          - NOT_CONTAINS
+          - EXISTS
+          - NOT_EXISTS
+          - NANO
+      left:
+        title: Left
+        description: Left of the test case assertion
+        type: STRING
+      right:
+        title: Right
+        description: Right of the test case assertion
+        type: OBJECT
+indexes:
+  - unique: true
+    properties:
+      - name:
+          testSuite
+      - name:
+          name
+---
+type: resource
+name: TestExecution
+namespace:
+  name: testing
+title: Test Case
+description: Test Case is a test case
+properties:
+  name:
+    title: Name
+    description: Full Qualified Name of the test execution, it must be in the test case
+    type: STRING
+    length: 255
+    required: true
+    unique: true
+  testCase:
+    title: Test Case
+    description: Test Suite of the test case
+    type: REFERENCE
+    required: true
+    reference: testing/TestCase
+  result:
+    title: Result
+    description: Result of the test case
+    type: ENUM
+    enumValues:
+      - SUCCESS
+      - FAILURE
+  logs:
+    title: Logs
+    description: Logs of the test case
+    type: STRING
+    length: 64000
+  stored:
+    title: Stored
+    description: Store execution result
+    type: BOOLEAN
+    required: true
+    defaultValue: false
+indexes:
+  - unique: true
+    properties:
+      - name:
+          testCase
+      - name:
+          name

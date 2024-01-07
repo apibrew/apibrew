@@ -49,3 +49,4 @@ properties:
       type: STRING
 annotations:
   EnableAudit: "true"
+  OpenApiGroup: "meta"

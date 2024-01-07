@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest"
 	"github.com/apibrew/apibrew/pkg/service/impl"
+	"github.com/apibrew/apibrew/pkg/testing"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
@@ -63,6 +64,7 @@ func RunServer(configPath string) {
 	app.Init()
 
 	app.RegisterModule(nano.NewModule)
+	app.RegisterModule(testing.NewModule)
 
 	// Create the main listener.
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", appConfig.Host, appConfig.Port))

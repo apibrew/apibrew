@@ -4,7 +4,7 @@
 
 //go:build !codeanalysis
 
-package nano
+package testing
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
@@ -12,11 +12,11 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-var CodeResource = &model.Resource{
-	Name:        "Code",
-	Namespace:   "nano",
-	Title:       util.Pointer("Code"),
-	Description: util.Pointer("Nano code"),
+var TestSuiteResource = &model.Resource{
+	Name:        "TestSuite",
+	Namespace:   "testing",
+	Title:       util.Pointer("Test Suite"),
+	Description: util.Pointer("Test Suite is a collection of test cases"),
 	Types: []*model.ResourceSubType{
 		{
 			Name:        "AuditData",
@@ -48,7 +48,7 @@ var CodeResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-01-08T01:40:41+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-01-08T02:17:10+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -57,7 +57,7 @@ var CodeResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-01-08T01:40:41+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-01-08T02:17:10+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -66,8 +66,8 @@ var CodeResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":        "true",
 				"OpenApiGroup":       "meta",
+				"EnableAudit":        "true",
 				"NormalizedResource": "true",
 			},
 		},
@@ -86,29 +86,6 @@ var CodeResource = &model.Resource{
 			},
 		},
 		{
-			Name:       "language",
-			Type:       model.ResourceProperty_ENUM,
-			Required:   true,
-			EnumValues: []string{"PYTHON", "JAVASCRIPT"},
-		},
-		{
-			Name:     "content",
-			Type:     model.ResourceProperty_STRING,
-			Length:   64000,
-			Required: true,
-
-			Annotations: map[string]string{
-				"SQLType": "TEXT",
-			},
-		},
-		{
-			Name:         "contentFormat",
-			Type:         model.ResourceProperty_ENUM,
-			Required:     true,
-			DefaultValue: structpb.NewStringValue("TEXT"),
-			EnumValues:   []string{"TEXT", "TAR", "TAR_GZ"},
-		},
-		{
 			Name: "annotations",
 			Type: model.ResourceProperty_MAP,
 			Item: &model.ResourceProperty{
@@ -117,12 +94,16 @@ var CodeResource = &model.Resource{
 			},
 		},
 		{
-			Name:      "name",
-			Type:      model.ResourceProperty_STRING,
-			Length:    255,
-			Required:  true,
-			Unique:    true,
-			Immutable: true,
+			Name:     "name",
+			Type:     model.ResourceProperty_STRING,
+			Length:   255,
+			Required: true,
+			Unique:   true,
+		},
+		{
+			Name:   "description",
+			Type:   model.ResourceProperty_STRING,
+			Length: 64000,
 		},
 		{
 			Name:         "version",
@@ -140,7 +121,7 @@ var CodeResource = &model.Resource{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
 			TypeRef:      util.Pointer("AuditData"),
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-01-08T01:40:41+04:00"), "updatedOn": structpb.NewStringValue("2024-01-08T01:40:41+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-01-08T02:17:10+04:00"), "updatedOn": structpb.NewStringValue("2024-01-08T02:17:10+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -149,8 +130,8 @@ var CodeResource = &model.Resource{
 	},
 
 	Annotations: map[string]string{
-		"EnableAudit":        "true",
 		"OpenApiGroup":       "meta",
+		"EnableAudit":        "true",
 		"NormalizedResource": "true",
 	},
 }

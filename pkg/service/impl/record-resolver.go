@@ -118,6 +118,10 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 				var referencedResource = r.resourceService.LocateResourceByReference(r.resource, prop.Reference)
 				var query *model.BooleanExpression
 
+				if referencedResource == nil {
+					return errors.LogicalError.WithDetails(fmt.Sprintf("Could not locate resource %s.%s", prop.Reference.Namespace, prop.Reference.Resource))
+				}
+
 				for _, referenceValue := range subValues {
 					if referenceValue == nil {
 						continue

@@ -42,6 +42,10 @@ func RecordIdentifierProperties(resource *model.Resource, properties map[string]
 func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {
 	identifierProps := make(map[string]*structpb.Value)
 
+	if resource == nil || resource.Properties == nil {
+		return nil, false
+	}
+
 	for _, prop := range resource.Properties {
 		if !special.IsIdProperty(prop) {
 			continue
@@ -169,9 +173,18 @@ func RecordMatchIdentifiableProperties(resource *model.Resource, record *model.R
 		return false, err
 	}
 
+	namedProps := GetNamedMap(resource.Properties)
+
 	for key, val := range idProps {
-		if !proto.Equal(record.Properties[key], val) {
-			return false, nil
+		prop := namedProps[key]
+
+		if prop.Type == model.ResourceProperty_REFERENCE {
+			//matches, err := RecordMatchIdentifiableProperties(prop.Reference, record, val.GetStructValue().Fields)
+			//return true, nil // fixme
+		} else {
+			if !proto.Equal(record.Properties[key], val) {
+				return false, nil
+			}
 		}
 	}
 

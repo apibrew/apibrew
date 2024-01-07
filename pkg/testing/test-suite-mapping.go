@@ -4,7 +4,7 @@
 
 //go:build !codeanalysis
 
-package nano
+package testing
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
@@ -16,40 +16,40 @@ import (
 import "github.com/google/uuid"
 import "time"
 
-type CodeMapper struct {
+type TestSuiteMapper struct {
 }
 
-func NewCodeMapper() *CodeMapper {
-	return &CodeMapper{}
+func NewTestSuiteMapper() *TestSuiteMapper {
+	return &TestSuiteMapper{}
 }
 
-var CodeMapperInstance = NewCodeMapper()
+var TestSuiteMapperInstance = NewTestSuiteMapper()
 
-func (m *CodeMapper) New() *Code {
-	return &Code{}
+func (m *TestSuiteMapper) New() *TestSuite {
+	return &TestSuite{}
 }
 
-func (m *CodeMapper) ResourceIdentity() abs.ResourceIdentity {
+func (m *TestSuiteMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
-		Namespace: "nano",
-		Name:      "Code",
+		Namespace: "testing",
+		Name:      "TestSuite",
 	}
 }
 
-func (m *CodeMapper) ToRecord(code *Code) *model.Record {
+func (m *TestSuiteMapper) ToRecord(testSuite *TestSuite) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(code)
+	rec.Properties = m.ToProperties(testSuite)
 	return rec
 }
 
-func (m *CodeMapper) FromRecord(record *model.Record) *Code {
+func (m *TestSuiteMapper) FromRecord(record *model.Record) *TestSuite {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
+func (m *TestSuiteMapper) ToProperties(testSuite *TestSuite) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := code.Id
+	var_Id := testSuite.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -62,40 +62,7 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Language := code.Language
-
-	var var_Language_mapped *structpb.Value
-
-	var var_Language_err error
-	var_Language_mapped, var_Language_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Language))
-	if var_Language_err != nil {
-		panic(var_Language_err)
-	}
-	properties["language"] = var_Language_mapped
-
-	var_Content := code.Content
-
-	var var_Content_mapped *structpb.Value
-
-	var var_Content_err error
-	var_Content_mapped, var_Content_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Content)
-	if var_Content_err != nil {
-		panic(var_Content_err)
-	}
-	properties["content"] = var_Content_mapped
-
-	var_ContentFormat := code.ContentFormat
-
-	var var_ContentFormat_mapped *structpb.Value
-
-	var var_ContentFormat_err error
-	var_ContentFormat_mapped, var_ContentFormat_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_ContentFormat))
-	if var_ContentFormat_err != nil {
-		panic(var_ContentFormat_err)
-	}
-	properties["contentFormat"] = var_ContentFormat_mapped
-
-	var_Annotations := code.Annotations
+	var_Annotations := testSuite.Annotations
 
 	if var_Annotations != nil {
 		var var_Annotations_mapped *structpb.Value
@@ -119,7 +86,7 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 		properties["annotations"] = var_Annotations_mapped
 	}
 
-	var_Name := code.Name
+	var_Name := testSuite.Name
 
 	var var_Name_mapped *structpb.Value
 
@@ -130,7 +97,20 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 	}
 	properties["name"] = var_Name_mapped
 
-	var_Version := code.Version
+	var_Description := testSuite.Description
+
+	if var_Description != nil {
+		var var_Description_mapped *structpb.Value
+
+		var var_Description_err error
+		var_Description_mapped, var_Description_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Description)
+		if var_Description_err != nil {
+			panic(var_Description_err)
+		}
+		properties["description"] = var_Description_mapped
+	}
+
+	var_Version := testSuite.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -141,18 +121,18 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 	}
 	properties["version"] = var_Version_mapped
 
-	var_AuditData := code.AuditData
+	var_AuditData := testSuite.AuditData
 
 	if var_AuditData != nil {
 		var var_AuditData_mapped *structpb.Value
 
-		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: CodeAuditDataMapperInstance.ToProperties(var_AuditData)})
+		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: TestSuiteAuditDataMapperInstance.ToProperties(var_AuditData)})
 		properties["auditData"] = var_AuditData_mapped
 	}
 	return properties
 }
 
-func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code {
+func (m *TestSuiteMapper) FromProperties(properties map[string]*structpb.Value) *TestSuite {
 	var s = m.New()
 	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
@@ -167,33 +147,6 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 		*var_Id_mapped = val.(uuid.UUID)
 
 		s.Id = var_Id_mapped
-	}
-	if properties["language"] != nil && properties["language"].AsInterface() != nil {
-
-		var_Language := properties["language"]
-		var_Language_mapped := (CodeLanguage)(var_Language.GetStringValue())
-
-		s.Language = var_Language_mapped
-	}
-	if properties["content"] != nil && properties["content"].AsInterface() != nil {
-
-		var_Content := properties["content"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Content)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Content_mapped := val.(string)
-
-		s.Content = var_Content_mapped
-	}
-	if properties["contentFormat"] != nil && properties["contentFormat"].AsInterface() != nil {
-
-		var_ContentFormat := properties["contentFormat"]
-		var_ContentFormat_mapped := (CodeContentFormat)(var_ContentFormat.GetStringValue())
-
-		s.ContentFormat = var_ContentFormat_mapped
 	}
 	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
 
@@ -228,6 +181,20 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 
 		s.Name = var_Name_mapped
 	}
+	if properties["description"] != nil && properties["description"].AsInterface() != nil {
+
+		var_Description := properties["description"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Description)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Description_mapped := new(string)
+		*var_Description_mapped = val.(string)
+
+		s.Description = var_Description_mapped
+	}
 	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 
 		var_Version := properties["version"]
@@ -244,7 +211,7 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
 
 		var_AuditData := properties["auditData"]
-		var mappedValue = CodeAuditDataMapperInstance.FromProperties(var_AuditData.GetStructValue().Fields)
+		var mappedValue = TestSuiteAuditDataMapperInstance.FromProperties(var_AuditData.GetStructValue().Fields)
 
 		var_AuditData_mapped := mappedValue
 
@@ -253,30 +220,30 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 	return s
 }
 
-type CodeAuditDataMapper struct {
+type TestSuiteAuditDataMapper struct {
 }
 
-func NewCodeAuditDataMapper() *CodeAuditDataMapper {
-	return &CodeAuditDataMapper{}
+func NewTestSuiteAuditDataMapper() *TestSuiteAuditDataMapper {
+	return &TestSuiteAuditDataMapper{}
 }
 
-var CodeAuditDataMapperInstance = NewCodeAuditDataMapper()
+var TestSuiteAuditDataMapperInstance = NewTestSuiteAuditDataMapper()
 
-func (m *CodeAuditDataMapper) New() *CodeAuditData {
-	return &CodeAuditData{}
+func (m *TestSuiteAuditDataMapper) New() *TestSuiteAuditData {
+	return &TestSuiteAuditData{}
 }
 
-func (m *CodeAuditDataMapper) ResourceIdentity() abs.ResourceIdentity {
+func (m *TestSuiteAuditDataMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
-		Namespace: "nano",
-		Name:      "Code",
+		Namespace: "testing",
+		Name:      "TestSuite",
 	}
 }
 
-func (m *CodeAuditDataMapper) ToProperties(codeAuditData *CodeAuditData) map[string]*structpb.Value {
+func (m *TestSuiteAuditDataMapper) ToProperties(testSuiteAuditData *TestSuiteAuditData) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_CreatedBy := codeAuditData.CreatedBy
+	var_CreatedBy := testSuiteAuditData.CreatedBy
 
 	if var_CreatedBy != nil {
 		var var_CreatedBy_mapped *structpb.Value
@@ -289,7 +256,7 @@ func (m *CodeAuditDataMapper) ToProperties(codeAuditData *CodeAuditData) map[str
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
-	var_UpdatedBy := codeAuditData.UpdatedBy
+	var_UpdatedBy := testSuiteAuditData.UpdatedBy
 
 	if var_UpdatedBy != nil {
 		var var_UpdatedBy_mapped *structpb.Value
@@ -302,7 +269,7 @@ func (m *CodeAuditDataMapper) ToProperties(codeAuditData *CodeAuditData) map[str
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
-	var_CreatedOn := codeAuditData.CreatedOn
+	var_CreatedOn := testSuiteAuditData.CreatedOn
 
 	if var_CreatedOn != nil {
 		var var_CreatedOn_mapped *structpb.Value
@@ -315,7 +282,7 @@ func (m *CodeAuditDataMapper) ToProperties(codeAuditData *CodeAuditData) map[str
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
-	var_UpdatedOn := codeAuditData.UpdatedOn
+	var_UpdatedOn := testSuiteAuditData.UpdatedOn
 
 	if var_UpdatedOn != nil {
 		var var_UpdatedOn_mapped *structpb.Value
@@ -330,7 +297,7 @@ func (m *CodeAuditDataMapper) ToProperties(codeAuditData *CodeAuditData) map[str
 	return properties
 }
 
-func (m *CodeAuditDataMapper) FromProperties(properties map[string]*structpb.Value) *CodeAuditData {
+func (m *TestSuiteAuditDataMapper) FromProperties(properties map[string]*structpb.Value) *TestSuiteAuditData {
 	var s = m.New()
 	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
 

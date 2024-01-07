@@ -115,6 +115,8 @@ func (app *App) Init() <-chan interface{} {
 
 		app.initModules()
 
+		app.initData()
+
 		initSignal <- nil
 	}()
 
@@ -133,9 +135,9 @@ func (app *App) initServices() {
 	app.eventChannelService.Init(app.config)
 	app.auditService.Init(app.config)
 	app.statsService.Init(app.config)
+}
 
-	// run apply paths
-
+func (app *App) initData() {
 	if app.config.ApplyPaths != nil {
 		applier := executor.NewExecutor(executor.APPLY, client.NewLocalClient(app), true, false, false, "", flags.OverrideConfig{})
 		for _, path := range app.config.ApplyPaths {

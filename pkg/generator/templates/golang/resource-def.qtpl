@@ -51,6 +51,8 @@
         {% endif-%}
         {%- if property.TypeRef != nil %}TypeRef: util.Pointer("{%s *property.TypeRef %}"),
         {% endif-%}
+        {%- if property.Reference != nil %}Reference: &model.Reference{Resource: "{%s property.Reference.Resource %}", Namespace: "{%s property.Reference.Namespace %}"},
+        {% endif-%}
         {%- if property.Item != nil %}Item: &model.ResourceProperty{%-= GeneratePropertyDef(resource, property.Item) -%},
         {% endif-%}
         {%- if property.ExampleValue != nil %}ExampleValue: {%-= GenerateStructDef(property.ExampleValue) -%},

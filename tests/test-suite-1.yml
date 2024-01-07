@@ -1,0 +1,54 @@
+type: resource
+name: Person
+properties:
+  firstName:
+    type: STRING
+    required: true
+  lastName:
+    type: STRING
+    required: true
+  age:
+    type: INT32
+  age_group:
+    type: INT32
+---
+type: nano/Code
+name: PersonLogicTest1.js
+language: JAVASCRIPT
+content: |
+  const Person = resource('Person')
+  
+  Person.beforeCreate(item => {
+    item.age_group = Math.floor(item.age / 10)
+  })
+---
+type: testing/TestSuite
+name: test-suite-1
+description: Test Suite 1
+---
+type: testing/TestCase
+name: test-case-1
+description: Test Case 1
+testSuite:
+  name: test-suite-1
+steps:
+  - name: createPerson
+    operation: CREATE
+    payload:
+      firstName: John
+      lastName: Doe
+      age: 20
+assertions:
+  - name: checkPerson
+    operation: EQUAL
+    left: $createPerson.age_group
+    right: 2
+---
+type: testing/TestExecution
+name: test-execution-1
+stored: false
+testCase:
+  name: test-case-1
+  testSuite:
+    name: test-suite-1
+
