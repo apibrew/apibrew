@@ -574,7 +574,7 @@ func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model
 			if propEx.Value.GetStructValue() != nil {
 				properties := propEx.Value.GetStructValue().Fields
 				if properties["id"] != nil {
-					right = properties["id"].GetStringValue()
+					right = r.applyValue(properties["id"])
 				} else {
 					referenceNamespace := property.Reference.Namespace
 

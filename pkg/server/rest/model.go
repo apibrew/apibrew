@@ -104,6 +104,7 @@ type SearchRecordRequest struct {
 	UseHistory        bool                              `json:"useHistory,omitempty"`
 	ResolveReferences []string                          `json:"resolveReferences,omitempty"`
 	Annotations       map[string]string                 `json:"annotations,omitempty"`
+	Filters           map[string]string                 `json:"filters,omitempty"`
 }
 
 type HealthResponse struct {

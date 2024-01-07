@@ -308,6 +308,7 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 
 	result, total, serviceErr := r.recordService.List(r.prepareContext(request), service.RecordListParams{
 		Query:             query,
+		Filters:           listRecordRequest.Filters,
 		Namespace:         resource.Namespace,
 		Resource:          resource.Name,
 		Limit:             listRecordRequest.Limit,

@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
@@ -122,21 +121,13 @@ func (o *resourceObject) getFn(recordId string, params map[string]interface{}) g
 	return o.recordToValue(record)
 }
 
-func (o *resourceObject) listFn(params map[string]interface{}) goja.Value {
-	var listParams = service.RecordListParams{}
-	if params != nil {
-		paramsStr, err := json.Marshal(params)
+func (o *resourceObject) listFn(params rest.SearchRecordRequest) goja.Value {
+	listParams := service.RecordListParams{}
 
-		if err != nil {
-			panic(err)
-		}
-
-		err = json.Unmarshal(paramsStr, &listParams)
-
-		if err != nil {
-			panic(err)
-		}
-	}
+	listParams.Limit = params.Limit
+	listParams.Offset = params.Offset
+	listParams.Filters = params.Filters
+	listParams.UseHistory = params.UseHistory
 
 	listParams.Namespace = o.resource.Namespace
 	listParams.Resource = o.resource.Name
