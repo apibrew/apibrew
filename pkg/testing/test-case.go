@@ -10,17 +10,23 @@ import "github.com/google/uuid"
 
 type TestCase struct {
 	Id          *uuid.UUID                  `json:"id,omitempty"`
+	Steps       []TestCaseTestCaseStep      `json:"steps,omitempty"`
+	Assertions  []TestCaseTestCaseAssertion `json:"assertions,omitempty"`
 	TestSuite   *TestSuite                  `json:"testSuite,omitempty"`
 	Name        string                      `json:"name,omitempty"`
 	Description *string                     `json:"description,omitempty"`
 	Annotations map[string]string           `json:"annotations,omitempty"`
-	Steps       []TestCaseTestCaseStep      `json:"steps,omitempty"`
-	Assertions  []TestCaseTestCaseAssertion `json:"assertions,omitempty"`
 	Version     int32                       `json:"version,omitempty"`
 }
 
 func (s *TestCase) GetId() *uuid.UUID {
 	return s.Id
+}
+func (s *TestCase) GetSteps() []TestCaseTestCaseStep {
+	return s.Steps
+}
+func (s *TestCase) GetAssertions() []TestCaseTestCaseAssertion {
+	return s.Assertions
 }
 func (s *TestCase) GetTestSuite() *TestSuite {
 	return s.TestSuite
@@ -34,50 +40,52 @@ func (s *TestCase) GetDescription() *string {
 func (s *TestCase) GetAnnotations() map[string]string {
 	return s.Annotations
 }
-func (s *TestCase) GetSteps() []TestCaseTestCaseStep {
-	return s.Steps
-}
-func (s *TestCase) GetAssertions() []TestCaseTestCaseAssertion {
-	return s.Assertions
-}
 func (s *TestCase) GetVersion() int32 {
 	return s.Version
 }
 
 type TestCaseTestCaseStep struct {
+	Operation TestCaseOperation `json:"operation,omitempty"`
 	Payload   interface{}       `json:"payload,omitempty"`
 	Name      *string           `json:"name,omitempty"`
-	Operation TestCaseOperation `json:"operation,omitempty"`
 }
 
+func (s *TestCaseTestCaseStep) GetOperation() TestCaseOperation {
+	return s.Operation
+}
 func (s *TestCaseTestCaseStep) GetPayload() interface{} {
 	return s.Payload
 }
 func (s *TestCaseTestCaseStep) GetName() *string {
 	return s.Name
 }
-func (s *TestCaseTestCaseStep) GetOperation() TestCaseOperation {
-	return s.Operation
-}
 
 type TestCaseTestCaseAssertion struct {
-	Name      *string           `json:"name,omitempty"`
-	Operation TestCaseOperation `json:"operation,omitempty"`
-	Left      *string           `json:"left,omitempty"`
-	Right     interface{}       `json:"right,omitempty"`
+	Name          *string               `json:"name,omitempty"`
+	AssertionType TestCaseAssertionType `json:"assertionType,omitempty"`
+	Left          *string               `json:"left,omitempty"`
+	Right         interface{}           `json:"right,omitempty"`
+	Script        *string               `json:"script,omitempty"`
+	ErrorCode     *string               `json:"errorCode,omitempty"`
 }
 
 func (s *TestCaseTestCaseAssertion) GetName() *string {
 	return s.Name
 }
-func (s *TestCaseTestCaseAssertion) GetOperation() TestCaseOperation {
-	return s.Operation
+func (s *TestCaseTestCaseAssertion) GetAssertionType() TestCaseAssertionType {
+	return s.AssertionType
 }
 func (s *TestCaseTestCaseAssertion) GetLeft() *string {
 	return s.Left
 }
 func (s *TestCaseTestCaseAssertion) GetRight() interface{} {
 	return s.Right
+}
+func (s *TestCaseTestCaseAssertion) GetScript() *string {
+	return s.Script
+}
+func (s *TestCaseTestCaseAssertion) GetErrorCode() *string {
+	return s.ErrorCode
 }
 
 type TestCaseOperation string
@@ -90,4 +98,13 @@ const (
 	TestCaseOperation_GET    TestCaseOperation = "GET"
 	TestCaseOperation_LIST   TestCaseOperation = "LIST"
 	TestCaseOperation_NANO   TestCaseOperation = "NANO"
+)
+
+type TestCaseAssertionType string
+
+const (
+	TestCaseAssertionType_EQUAL       TestCaseAssertionType = "EQUAL"
+	TestCaseAssertionType_NOTEQUAL    TestCaseAssertionType = "NOT_EQUAL"
+	TestCaseAssertionType_EXPECTERROR TestCaseAssertionType = "EXPECT_ERROR"
+	TestCaseAssertionType_NANO        TestCaseAssertionType = "NANO"
 )

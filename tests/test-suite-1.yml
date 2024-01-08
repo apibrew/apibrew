@@ -13,14 +13,14 @@ properties:
     type: INT32
 ---
 type: nano/Code
-name: PersonLogicTest1.js
+name: PersonLogic.js
 language: JAVASCRIPT
 content: |
   const Person = resource('Person')
   
-  Person.beforeCreate(item => {
-    item.age_group = Math.floor(item.age / 10)
-  })
+  Person.age_group.compute(person => {
+    return (person.age - (person.age % 10)) / 10
+  }, [Person.age])
 ---
 type: testing/TestSuite
 name: test-suite-1
@@ -32,18 +32,44 @@ description: Test Case 1
 testSuite:
   name: test-suite-1
 steps:
-  - name: createPerson
+  - name: createPerson1
     operation: CREATE
     payload:
       type: Person
       firstName: John
       lastName: Doe
       age: 20
+  - name: createPerson2
+    operation: CREATE
+    payload:
+      type: Person
+      firstName: John
+      lastName: Doe
+      age: 25
+  - name: createPerson3
+    operation: CREATE
+    payload:
+      type: Person
+      firstName: John
+      lastName: Doe
+      age: 76
 assertions:
-  - name: checkPerson
-    operation: EQUAL
-    left: $createPerson.age_group
+  - name: checkPerson1Age
+    assertionType: EQUAL
+    left: $createPerson1_result.age
+    right: 20
+  - name: checkPersonAge1Group
+    assertionType: EQUAL
+    left: $createPerson1_result.age_group
     right: 2
+  - name: checkPersonAge2Group
+    assertionType: EQUAL
+    left: $createPerson2_result.age_group
+    right: 2
+  - name: checkPersonAge3Group
+    assertionType: EQUAL
+    left: $createPerson3_result.age_group
+    right: 7
 ---
 type: testing/TestExecution
 name: test-execution-1

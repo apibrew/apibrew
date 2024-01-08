@@ -107,27 +107,33 @@ types:
         description: Full Qualified Name of the test case assertion
         type: STRING
         length: 255
-      operation:
-        title: Operation
-        description: Operation of the test case assertion
+      assertionType:
+        title: AssertionType
+        description: AssertionType of the test case assertion
         type: ENUM
         required: true
         enumValues:
           - EQUAL
           - NOT_EQUAL
-          - CONTAINS
-          - NOT_CONTAINS
-          - EXISTS
-          - NOT_EXISTS
+          - EXPECT_ERROR
           - NANO
       left:
         title: Left
-        description: Left of the test case assertion
+        description: Used by Equal and NotEqual assertion types
         type: STRING
       right:
         title: Right
-        description: Right of the test case assertion
+        description: Used by Equal and NotEqual assertion types
         type: OBJECT
+      script: # for nano
+        title: Script
+        description: Used by Nano assertion type
+        type: STRING
+      errorCode: # for nano
+        title: ErrorCode (in string format) e.g. "RECORD_NOT_FOUND"
+        description: Used by expectError assertion type
+        type: STRING
+
 indexes:
   - unique: true
     properties:

@@ -83,7 +83,7 @@ func FromRecord(record *model.Record) (Unstructured, error) {
 		return nil, err
 	}
 
-	return *result, nil
+	return (*result)["properties"].(Unstructured), nil
 }
 
 var jsonMo = protojson.MarshalOptions{

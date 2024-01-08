@@ -31,17 +31,6 @@ var TestExecutionResource = &model.Resource{
 			},
 		},
 		{
-			Name:   "logs",
-			Type:   model.ResourceProperty_STRING,
-			Length: 64000,
-		},
-		{
-			Name:         "stored",
-			Type:         model.ResourceProperty_BOOL,
-			Required:     true,
-			DefaultValue: nil,
-		},
-		{
 			Name:     "name",
 			Type:     model.ResourceProperty_STRING,
 			Length:   255,
@@ -58,6 +47,17 @@ var TestExecutionResource = &model.Resource{
 			Name:       "result",
 			Type:       model.ResourceProperty_ENUM,
 			EnumValues: []string{"SUCCESS", "FAILURE"},
+		},
+		{
+			Name:   "logs",
+			Type:   model.ResourceProperty_STRING,
+			Length: 64000,
+		},
+		{
+			Name:         "stored",
+			Type:         model.ResourceProperty_BOOL,
+			Required:     true,
+			DefaultValue: nil,
 		},
 		{
 			Name:         "version",
