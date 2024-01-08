@@ -38,6 +38,10 @@ var RecordResource = &model.Resource{
 		{
 			Name: "packedProperties",
 			Type: model.ResourceProperty_LIST,
+			Item: &model.ResourceProperty{
+				Name: "",
+				Type: model.ResourceProperty_OBJECT,
+			},
 
 			Annotations: map[string]string{
 				"OpenApiHide": "true",

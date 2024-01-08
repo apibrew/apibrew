@@ -48,7 +48,7 @@ var PermissionResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-01-03T15:02:45+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-01-08T20:37:11+03:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -57,7 +57,7 @@ var PermissionResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-01-03T15:02:45+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-01-08T20:37:11+03:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -76,46 +76,65 @@ var PermissionResource = &model.Resource{
 				{
 					Name: "and",
 					Type: model.ResourceProperty_LIST,
+					Item: &model.ResourceProperty{
+						Name:    "",
+						Type:    model.ResourceProperty_STRUCT,
+						TypeRef: util.Pointer("BooleanExpression"),
+					},
 				},
 				{
 					Name: "or",
 					Type: model.ResourceProperty_LIST,
+					Item: &model.ResourceProperty{
+						Name:    "",
+						Type:    model.ResourceProperty_STRUCT,
+						TypeRef: util.Pointer("BooleanExpression"),
+					},
 				},
 				{
-					Name: "not",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "not",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("BooleanExpression"),
 				},
 				{
-					Name: "equal",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "equal",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("PairExpression"),
 				},
 				{
-					Name: "lessThan",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "lessThan",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("PairExpression"),
 				},
 				{
-					Name: "greaterThan",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "greaterThan",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("PairExpression"),
 				},
 				{
-					Name: "lessThanOrEqual",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "lessThanOrEqual",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("PairExpression"),
 				},
 				{
-					Name: "greaterThanOrEqual",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "greaterThanOrEqual",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("PairExpression"),
 				},
 				{
-					Name: "in",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "in",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("PairExpression"),
 				},
 				{
-					Name: "isNull",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "isNull",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("Expression"),
 				},
 				{
-					Name: "regexMatch",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "regexMatch",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("RegexMatchExpression"),
 				},
 			},
 
@@ -128,12 +147,14 @@ var PermissionResource = &model.Resource{
 			Name: "PairExpression",
 			Properties: []*model.ResourceProperty{
 				{
-					Name: "left",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "left",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("Expression"),
 				},
 				{
-					Name: "right",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "right",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("Expression"),
 				},
 			},
 
@@ -150,14 +171,15 @@ var PermissionResource = &model.Resource{
 					Type: model.ResourceProperty_STRING,
 				},
 				{
-					Name: "expression",
-					Type: model.ResourceProperty_STRUCT,
+					Name:    "expression",
+					Type:    model.ResourceProperty_STRUCT,
+					TypeRef: util.Pointer("Expression"),
 				},
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "meta",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "meta",
 			},
 		},
 		{
@@ -188,8 +210,8 @@ var PermissionResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
-				"PrimaryProperty": "true",
 				"SpecialProperty": "true",
+				"PrimaryProperty": "true",
 			},
 		},
 		{
@@ -207,7 +229,8 @@ var PermissionResource = &model.Resource{
 		{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdOn": structpb.NewStringValue("2024-01-03T15:02:45+04:00"), "updatedOn": structpb.NewStringValue("2024-01-03T15:02:45+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin")}}),
+			TypeRef:      util.Pointer("AuditData"),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdOn": structpb.NewStringValue("2024-01-08T20:37:11+03:00"), "updatedOn": structpb.NewStringValue("2024-01-08T20:37:11+03:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -226,8 +249,9 @@ var PermissionResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("Book"),
 		},
 		{
-			Name: "recordSelector",
-			Type: model.ResourceProperty_STRUCT,
+			Name:    "recordSelector",
+			Type:    model.ResourceProperty_STRUCT,
+			TypeRef: util.Pointer("BooleanExpression"),
 		},
 		{
 			Name:         "operation",
@@ -236,6 +260,7 @@ var PermissionResource = &model.Resource{
 			Required:     true,
 			DefaultValue: structpb.NewStringValue("FULL"),
 			ExampleValue: structpb.NewStringValue("READ"),
+			EnumValues:   []string{"READ", "CREATE", "UPDATE", "DELETE", "FULL"},
 		},
 		{
 			Name: "before",
@@ -246,18 +271,21 @@ var PermissionResource = &model.Resource{
 			Type: model.ResourceProperty_TIMESTAMP,
 		},
 		{
-			Name: "user",
-			Type: model.ResourceProperty_REFERENCE,
+			Name:      "user",
+			Type:      model.ResourceProperty_REFERENCE,
+			Reference: &model.Reference{Resource: "User", Namespace: "system"},
 		},
 		{
-			Name: "role",
-			Type: model.ResourceProperty_REFERENCE,
+			Name:      "role",
+			Type:      model.ResourceProperty_REFERENCE,
+			Reference: &model.Reference{Resource: "Role", Namespace: "system"},
 		},
 		{
-			Name:     "permit",
-			Type:     model.ResourceProperty_ENUM,
-			Length:   255,
-			Required: true,
+			Name:       "permit",
+			Type:       model.ResourceProperty_ENUM,
+			Length:     255,
+			Required:   true,
+			EnumValues: []string{"ALLOW", "REJECT"},
 		},
 		{
 			Name: "localFlags",

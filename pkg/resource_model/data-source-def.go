@@ -8,6 +8,7 @@ package resource_model
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -45,7 +46,7 @@ var DataSourceResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-01-03T15:02:45+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-01-08T20:37:11+03:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -54,7 +55,7 @@ var DataSourceResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-01-03T15:02:45+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-01-08T20:37:11+03:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -96,7 +97,8 @@ var DataSourceResource = &model.Resource{
 		{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-01-03T15:02:45+04:00"), "updatedOn": structpb.NewStringValue("2024-01-03T15:02:45+04:00")}}),
+			TypeRef:      util.Pointer("AuditData"),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-01-08T20:37:11+03:00"), "updatedOn": structpb.NewStringValue("2024-01-08T20:37:11+03:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -123,19 +125,24 @@ var DataSourceResource = &model.Resource{
 			},
 		},
 		{
-			Name:     "backend",
-			Type:     model.ResourceProperty_ENUM,
-			Required: true,
+			Name:       "backend",
+			Type:       model.ResourceProperty_ENUM,
+			Required:   true,
+			EnumValues: []string{"POSTGRESQL", "MYSQL", "MONGODB", "REDIS", "SQLITE"},
 		},
 		{
 			Name:     "options",
 			Type:     model.ResourceProperty_MAP,
 			Required: true,
+			Item: &model.ResourceProperty{
+				Name: "",
+				Type: model.ResourceProperty_STRING,
+			},
 		},
 	},
 
 	Annotations: map[string]string{
-		"EnableAudit":  "true",
 		"OpenApiGroup": "internal",
+		"EnableAudit":  "true",
 	},
 }

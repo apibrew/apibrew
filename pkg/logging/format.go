@@ -10,6 +10,10 @@ import (
 func ShortEventInfo(event *model.Event) string {
 	var ids []string
 
+	if event == nil {
+		return "[removed event]"
+	}
+
 	if event.Records == nil {
 		return fmt.Sprintf("%s [no records]", event.Id)
 	}

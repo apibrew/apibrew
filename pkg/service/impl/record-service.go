@@ -303,6 +303,39 @@ func isResourceRelatedResource(resource *model.Resource) bool {
 	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name)
 }
 
+func (r *recordService) Load(ctx context.Context, namespace string, resourceName string, properties map[string]*structpb.Value) (*model.Record, errors.ServiceError) {
+	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
+
+	if resource == nil {
+		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + resourceName)
+	}
+
+	identifierProps, err := util.RecordIdentifierProperties(resource, properties)
+
+	if err != nil {
+		return nil, errors.RecordValidationError.WithMessage(err.Error())
+	}
+
+	qb := helper.NewQueryBuilder()
+
+	searchRes, total, serr := r.List(ctx, service.RecordListParams{
+		Namespace: resource.Namespace,
+		Resource:  resource.Name,
+		Limit:     1,
+		Query:     qb.FromProperties(resource, identifierProps),
+	})
+
+	if err != nil {
+		return nil, serr
+	}
+
+	if total > 0 {
+		return searchRes[0], nil
+	} else {
+		return nil, errors.RecordNotFoundError.WithMessage("Could not locate record with properties")
+	}
+}
+
 func (r *recordService) Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
 	if params.Resource == "" {
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")

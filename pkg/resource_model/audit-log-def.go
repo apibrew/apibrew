@@ -72,18 +72,23 @@ var AuditLogResource = &model.Resource{
 			Required: true,
 		},
 		{
-			Name:     "operation",
-			Type:     model.ResourceProperty_ENUM,
-			Required: true,
+			Name:       "operation",
+			Type:       model.ResourceProperty_ENUM,
+			Required:   true,
+			EnumValues: []string{"CREATE", "UPDATE", "DELETE"},
 		},
 		{
 			Name: "properties",
 			Type: model.ResourceProperty_OBJECT,
 		},
 		{
-			Name:         "annotations",
-			Type:         model.ResourceProperty_MAP,
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
+			Name: "annotations",
+			Type: model.ResourceProperty_MAP,
+			Item: &model.ResourceProperty{
+				Name: "",
+				Type: model.ResourceProperty_STRING,
+			},
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

@@ -35,6 +35,7 @@ steps:
   - name: createPerson
     operation: CREATE
     payload:
+      type: Person
       firstName: John
       lastName: Doe
       age: 20

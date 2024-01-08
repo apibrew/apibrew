@@ -9,6 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/util/jwt-model"
+	"google.golang.org/protobuf/types/known/structpb"
 	"time"
 )
 
@@ -60,6 +61,7 @@ type RecordService interface {
 	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
 	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
 	ExecuteAction(ctx context.Context, params ExecuteActionParams) (unstructured.Unstructured, errors.ServiceError)
+	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value) (*model.Record, errors.ServiceError)
 }
 
 type ResourceService interface {

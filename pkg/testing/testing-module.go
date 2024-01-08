@@ -3,7 +3,9 @@ package testing
 import (
 	"context"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/api"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -16,6 +18,7 @@ import (
 type module struct {
 	container           service.Container
 	backendEventHandler backend_event_handler.BackendEventHandler
+	apiInterface        api.Interface
 }
 
 func (m module) Init() {
@@ -161,37 +164,37 @@ func (m module) executeStep(ctx context.Context, execution *TestExecution, step 
 }
 
 func (m module) executeCreate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
-	res, err := m.container.GetRecordService().Apply(ctx, service.RecordUpdateParams{
-		Namespace: "",
-		Resource:  "",
-		Records:   []*model.Record{},
-	})
+	_, err := m.apiInterface.Create(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
 
 	return err
 }
 
 func (m module) executeUpdate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+	_, err := m.apiInterface.Update(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
 
+	return err
 }
 
 func (m module) executeDelete(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
-
+	return m.apiInterface.Delete(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
 }
 
 func (m module) executeGet(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+	_, err := m.apiInterface.Load(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
 
+	return err
 }
 
 func (m module) executeList(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
-
+	panic("implement me")
 }
 
 func (m module) executeApply(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
-
+	panic("implement me")
 }
 
 func (m module) executeNano(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
-
+	panic("implement me")
 }
 
 func (m module) log(execution *TestExecution, args ...interface{}) {
@@ -204,5 +207,5 @@ func (m module) log(execution *TestExecution, args ...interface{}) {
 
 func NewModule(container service.Container) service.Module {
 	backendEventHandler := container.GetBackendEventHandler().(backend_event_handler.BackendEventHandler)
-	return &module{container: container, backendEventHandler: backendEventHandler}
+	return &module{container: container, backendEventHandler: backendEventHandler, apiInterface: api.NewInterface(container)}
 }

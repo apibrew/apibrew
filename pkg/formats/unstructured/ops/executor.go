@@ -9,12 +9,12 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	resources2 "github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gopkg.in/yaml.v3"
 	"io"
 	"os"
-	"strings"
 )
 
 type Executor struct {
@@ -72,16 +72,12 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 			return err
 		}
 	} else {
+		resourceIdentity := util.ParseType(elemType)
+
 		var namespace, resourceName string
-		if elemType != "record" {
-			if strings.Contains(elemType, "/") {
-				namespace = strings.Split(elemType, "/")[0]
-				resourceName = strings.Split(elemType, "/")[1]
-			} else {
-				namespace = "default"
-				resourceName = elemType
-			}
-		}
+
+		namespace = resourceIdentity.Namespace
+		resourceName = resourceIdentity.Name
 
 		if resourceName == "" || namespace == "" {
 			log.Println(body)

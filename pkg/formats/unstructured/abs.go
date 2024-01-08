@@ -69,6 +69,23 @@ func FromProtoMessage(u Unstructured, msg proto.Message) error {
 	return nil
 }
 
+func FromRecord(record *model.Record) (Unstructured, error) {
+	var result = new(Unstructured)
+
+	b, err := jsonMo.Marshal(record)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(b, result)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return *result, nil
+}
+
 var jsonMo = protojson.MarshalOptions{
 	Multiline:       true,
 	EmitUnpopulated: false,
