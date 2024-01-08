@@ -1,5 +1,5 @@
 type: resource
-name: Person
+name: Human
 properties:
   firstName:
     type: STRING
@@ -13,14 +13,14 @@ properties:
     type: INT32
 ---
 type: nano/Code
-name: PersonLogic.js
+name: HumanLogic.js
 language: JAVASCRIPT
 content: |
-  const Person = resource('Person')
+  const Human = resource('Human')
   
-  Person.age_group.compute(person => {
-    return (person.age - (person.age % 10)) / 10
-  }, [Person.age])
+  Human.age_group.compute(Human => {
+    return (Human.age - (Human.age % 10)) / 10
+  }, [Human.age])
 ---
 type: testing/TestSuite
 name: test-suite-1
@@ -32,43 +32,43 @@ description: Test Case 1
 testSuite:
   name: test-suite-1
 steps:
-  - name: createPerson1
+  - name: createHuman1
     operation: CREATE
     payload:
-      type: Person
+      type: Human
       firstName: John
       lastName: Doe
       age: 20
-  - name: createPerson2
+  - name: createHuman2
     operation: CREATE
     payload:
-      type: Person
+      type: Human
       firstName: John
       lastName: Doe
       age: 25
-  - name: createPerson3
+  - name: createHuman3
     operation: CREATE
     payload:
-      type: Person
+      type: Human
       firstName: John
       lastName: Doe
       age: 76
 assertions:
-  - name: checkPerson1Age
+  - name: checkHuman1Age
     assertionType: EQUAL
-    left: $createPerson1_result.age
+    left: $createHuman1_result.age
     right: 20
-  - name: checkPersonAge1Group
+  - name: checkHumanAge1Group
     assertionType: EQUAL
-    left: $createPerson1_result.age_group
+    left: $createHuman1_result.age_group
     right: 2
-  - name: checkPersonAge2Group
+  - name: checkHumanAge2Group
     assertionType: EQUAL
-    left: $createPerson2_result.age_group
+    left: $createHuman2_result.age_group
     right: 2
-  - name: checkPersonAge3Group
+  - name: checkHumanAge3Group
     assertionType: EQUAL
-    left: $createPerson3_result.age_group
+    left: $createHuman3_result.age_group
     right: 7
 ---
 type: testing/TestExecution

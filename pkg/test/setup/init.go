@@ -16,6 +16,9 @@ func prepareInitData() *model.AppConfig {
 		SystemDataSource:      resource_model.DataSourceMapperInstance.ToRecord(prepareSystemDataSource()),
 		InitResources:         prepareInitResources(),
 		InitRecords:           prepareInitRecords(),
+		ApplyPaths: []string{
+			"../../tests/*.yml",
+		},
 	}
 }
 
