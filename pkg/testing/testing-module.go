@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -118,13 +119,87 @@ func (m module) executeTest(ctx context.Context, record *model.Record) (errors.S
 	}
 
 	testExecution := TestExecutionMapperInstance.FromRecord(record)
+	testExecution.Logs = util.Pointer("")
 
 	// executing test
 	return m.executeTestCase(ctx, testExecution), testExecution.Stored
 }
 
 func (m module) executeTestCase(ctx context.Context, execution *TestExecution) errors.ServiceError {
+	m.log(execution, "Executing test case %s", execution.TestCase.Name)
+	// executing steps
+	for _, step := range execution.TestCase.Steps {
+		err := m.executeStep(ctx, execution, step)
+
+		if err != nil {
+			return err
+		}
+	}
+	m.log(execution, "Test case %s executed", execution.TestCase.Name)
 	return nil
+}
+
+func (m module) executeStep(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+	switch step.Operation {
+	case TestCaseOperation_CREATE:
+		return m.executeCreate(ctx, execution, step)
+	case TestCaseOperation_UPDATE:
+		return m.executeUpdate(ctx, execution, step)
+	case TestCaseOperation_DELETE:
+		return m.executeDelete(ctx, execution, step)
+	case TestCaseOperation_GET:
+		return m.executeGet(ctx, execution, step)
+	case TestCaseOperation_LIST:
+		return m.executeList(ctx, execution, step)
+	case TestCaseOperation_APPLY:
+		return m.executeApply(ctx, execution, step)
+	case TestCaseOperation_NANO:
+		return m.executeNano(ctx, execution, step)
+	}
+
+	return nil
+}
+
+func (m module) executeCreate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+	res, err := m.container.GetRecordService().Apply(ctx, service.RecordUpdateParams{
+		Namespace: "",
+		Resource:  "",
+		Records:   []*model.Record{},
+	})
+
+	return err
+}
+
+func (m module) executeUpdate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+
+}
+
+func (m module) executeDelete(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+
+}
+
+func (m module) executeGet(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+
+}
+
+func (m module) executeList(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+
+}
+
+func (m module) executeApply(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+
+}
+
+func (m module) executeNano(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep) errors.ServiceError {
+
+}
+
+func (m module) log(execution *TestExecution, args ...interface{}) {
+	logStr := fmt.Sprint(args...)
+
+	log.Printf("[TESTING] %s: %s", execution.TestCase.Name, logStr)
+
+	execution.Logs = util.Pointer(fmt.Sprintf("%s\n%s", *execution.Logs, logStr))
 }
 
 func NewModule(container service.Container) service.Module {
