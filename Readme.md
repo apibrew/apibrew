@@ -15,8 +15,11 @@
 
 Docs: https://apibrew.io/docs/getting-started
 
-
 ## Introduction
+
+**Everything is a *Resource***. And **Everything has a *CRUD API***
+
+With API Brew, you can create CRUD APIs for your data in a few minutes
 
 ### Run your instance
 
@@ -24,11 +27,11 @@ Docs: https://apibrew.io/docs/getting-started
 docker run -v $(pwd)/data:/var/lib/postgresql/data -p 9009:9009 tislib/apibrew:full-latest
 ```
 
-**Everything is a *Resource***. And **Everything has a *CRUD API***
-
-With API Brew, you can create CRUD APIs for your data in a few minutes
+Your instance is ready: Swagger docs: http://localhost:9009/docs/swagger
 
 ### Create first resource
+
+Configure Apbr cli: https://apibrew.io/docs/cli
 
 country.yml
 ```yaml
