@@ -31,19 +31,6 @@ var TestExecutionResource = &model.Resource{
 			},
 		},
 		{
-			Name:     "name",
-			Type:     model.ResourceProperty_STRING,
-			Length:   255,
-			Required: true,
-			Unique:   true,
-		},
-		{
-			Name:      "testCase",
-			Type:      model.ResourceProperty_REFERENCE,
-			Required:  true,
-			Reference: &model.Reference{Resource: "TestCase", Namespace: "testing"},
-		},
-		{
 			Name:       "result",
 			Type:       model.ResourceProperty_ENUM,
 			EnumValues: []string{"SUCCESS", "FAILURE"},
@@ -58,6 +45,19 @@ var TestExecutionResource = &model.Resource{
 			Type:         model.ResourceProperty_BOOL,
 			Required:     true,
 			DefaultValue: nil,
+		},
+		{
+			Name:     "name",
+			Type:     model.ResourceProperty_STRING,
+			Length:   255,
+			Required: true,
+			Unique:   true,
+		},
+		{
+			Name:      "testCase",
+			Type:      model.ResourceProperty_REFERENCE,
+			Required:  true,
+			Reference: &model.Reference{Resource: "TestCase", Namespace: "testing"},
 		},
 		{
 			Name:         "version",

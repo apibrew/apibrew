@@ -22,15 +22,10 @@ content: |
     return (Human.age - (Human.age % 10)) / 10
   }, [Human.age])
 ---
-type: testing/TestSuite
-name: test-suite-1
-description: Test Suite 1
----
 type: testing/TestCase
 name: test-case-1
 description: Test Case 1
-testSuite:
-  name: test-suite-1
+autoRun: true
 steps:
   - name: createHuman1
     operation: CREATE
@@ -70,12 +65,3 @@ assertions:
     assertionType: EQUAL
     left: $createHuman3_result.age_group
     right: 7
----
-type: testing/TestExecution
-name: test-execution-1
-stored: false
-testCase:
-  name: test-case-1
-  testSuite:
-    name: test-suite-1
-

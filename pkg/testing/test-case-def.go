@@ -22,6 +22,12 @@ var TestCaseResource = &model.Resource{
 			Name: "TestCaseStep",
 			Properties: []*model.ResourceProperty{
 				{
+					Name:   "name",
+					Type:   model.ResourceProperty_STRING,
+					Length: 255,
+					Unique: true,
+				},
+				{
 					Name:       "operation",
 					Type:       model.ResourceProperty_ENUM,
 					Required:   true,
@@ -30,12 +36,6 @@ var TestCaseResource = &model.Resource{
 				{
 					Name: "payload",
 					Type: model.ResourceProperty_OBJECT,
-				},
-				{
-					Name:   "name",
-					Type:   model.ResourceProperty_STRING,
-					Length: 255,
-					Unique: true,
 				},
 			},
 
@@ -46,11 +46,6 @@ var TestCaseResource = &model.Resource{
 		{
 			Name: "TestCaseAssertion",
 			Properties: []*model.ResourceProperty{
-				{
-					Name:   "name",
-					Type:   model.ResourceProperty_STRING,
-					Length: 255,
-				},
 				{
 					Name:       "assertionType",
 					Type:       model.ResourceProperty_ENUM,
@@ -73,6 +68,11 @@ var TestCaseResource = &model.Resource{
 					Name: "errorCode",
 					Type: model.ResourceProperty_STRING,
 				},
+				{
+					Name:   "name",
+					Type:   model.ResourceProperty_STRING,
+					Length: 255,
+				},
 			},
 
 			Annotations: map[string]string{
@@ -89,17 +89,8 @@ var TestCaseResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
-				"PrimaryProperty": "true",
 				"SpecialProperty": "true",
-			},
-		},
-		{
-			Name: "steps",
-			Type: model.ResourceProperty_LIST,
-			Item: &model.ResourceProperty{
-				Name:    "",
-				Type:    model.ResourceProperty_STRUCT,
-				TypeRef: util.Pointer("TestCaseStep"),
+				"PrimaryProperty": "true",
 			},
 		},
 		{
@@ -112,16 +103,17 @@ var TestCaseResource = &model.Resource{
 			},
 		},
 		{
-			Name:      "testSuite",
-			Type:      model.ResourceProperty_REFERENCE,
-			Required:  true,
-			Reference: &model.Reference{Resource: "TestSuite", Namespace: "testing"},
+			Name:         "autoRun",
+			Type:         model.ResourceProperty_BOOL,
+			Required:     true,
+			DefaultValue: nil,
 		},
 		{
 			Name:     "name",
 			Type:     model.ResourceProperty_STRING,
 			Length:   255,
 			Required: true,
+			Unique:   true,
 		},
 		{
 			Name:   "description",
@@ -137,6 +129,15 @@ var TestCaseResource = &model.Resource{
 			},
 		},
 		{
+			Name: "steps",
+			Type: model.ResourceProperty_LIST,
+			Item: &model.ResourceProperty{
+				Name:    "",
+				Type:    model.ResourceProperty_STRUCT,
+				TypeRef: util.Pointer("TestCaseStep"),
+			},
+		},
+		{
 			Name:         "version",
 			Type:         model.ResourceProperty_INT32,
 			Required:     true,
@@ -147,22 +148,6 @@ var TestCaseResource = &model.Resource{
 				"SpecialProperty":     "true",
 				"AllowEmptyPrimitive": "true",
 			},
-		},
-	},
-	Indexes: []*model.ResourceIndex{
-		{
-			Properties: []*model.ResourceIndexProperty{
-				{
-					Name:  "testSuite",
-					Order: model.Order_ORDER_UNKNOWN,
-				},
-				{
-					Name:  "name",
-					Order: model.Order_ORDER_UNKNOWN,
-				},
-			},
-			IndexType: model.ResourceIndexType_BTREE,
-			Unique:    true,
 		},
 	},
 

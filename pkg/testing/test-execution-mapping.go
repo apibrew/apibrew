@@ -61,26 +61,6 @@ func (m *TestExecutionMapper) ToProperties(testExecution *TestExecution) map[str
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Name := testExecution.Name
-
-	var var_Name_mapped *structpb.Value
-
-	var var_Name_err error
-	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
-	if var_Name_err != nil {
-		panic(var_Name_err)
-	}
-	properties["name"] = var_Name_mapped
-
-	var_TestCase := testExecution.TestCase
-
-	if var_TestCase != nil {
-		var var_TestCase_mapped *structpb.Value
-
-		var_TestCase_mapped = structpb.NewStructValue(&structpb.Struct{Fields: TestCaseMapperInstance.ToProperties(var_TestCase)})
-		properties["testCase"] = var_TestCase_mapped
-	}
-
 	var_Result := testExecution.Result
 
 	if var_Result != nil {
@@ -118,6 +98,26 @@ func (m *TestExecutionMapper) ToProperties(testExecution *TestExecution) map[str
 	}
 	properties["stored"] = var_Stored_mapped
 
+	var_Name := testExecution.Name
+
+	var var_Name_mapped *structpb.Value
+
+	var var_Name_err error
+	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
+	if var_Name_err != nil {
+		panic(var_Name_err)
+	}
+	properties["name"] = var_Name_mapped
+
+	var_TestCase := testExecution.TestCase
+
+	if var_TestCase != nil {
+		var var_TestCase_mapped *structpb.Value
+
+		var_TestCase_mapped = structpb.NewStructValue(&structpb.Struct{Fields: TestCaseMapperInstance.ToProperties(var_TestCase)})
+		properties["testCase"] = var_TestCase_mapped
+	}
+
 	var_Version := testExecution.Version
 
 	var var_Version_mapped *structpb.Value
@@ -146,26 +146,6 @@ func (m *TestExecutionMapper) FromProperties(properties map[string]*structpb.Val
 		*var_Id_mapped = val.(uuid.UUID)
 
 		s.Id = var_Id_mapped
-	}
-	if properties["name"] != nil && properties["name"].AsInterface() != nil {
-
-		var_Name := properties["name"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Name_mapped := val.(string)
-
-		s.Name = var_Name_mapped
-	}
-	if properties["testCase"] != nil && properties["testCase"].AsInterface() != nil {
-
-		var_TestCase := properties["testCase"]
-		var_TestCase_mapped := TestCaseMapperInstance.FromProperties(var_TestCase.GetStructValue().Fields)
-
-		s.TestCase = var_TestCase_mapped
 	}
 	if properties["result"] != nil && properties["result"].AsInterface() != nil {
 
@@ -201,6 +181,26 @@ func (m *TestExecutionMapper) FromProperties(properties map[string]*structpb.Val
 		var_Stored_mapped := val.(bool)
 
 		s.Stored = var_Stored_mapped
+	}
+	if properties["name"] != nil && properties["name"].AsInterface() != nil {
+
+		var_Name := properties["name"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Name_mapped := val.(string)
+
+		s.Name = var_Name_mapped
+	}
+	if properties["testCase"] != nil && properties["testCase"].AsInterface() != nil {
+
+		var_TestCase := properties["testCase"]
+		var_TestCase_mapped := TestCaseMapperInstance.FromProperties(var_TestCase.GetStructValue().Fields)
+
+		s.TestCase = var_TestCase_mapped
 	}
 	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 
