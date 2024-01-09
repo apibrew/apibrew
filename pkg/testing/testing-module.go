@@ -423,9 +423,7 @@ func (m module) evaluate(expr string, variableMap *map[string]interface{}) (inte
 	// e.g.
 	// $test_case_result.id => It will return the id of the test case result
 
-	if strings.HasPrefix(expr, "$") {
-		expr = expr[1:]
-	}
+	expr = strings.TrimSpace(expr)
 
 	if strings.Contains(expr, ".") {
 		left := expr[0:strings.Index(expr, ".")]

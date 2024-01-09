@@ -16,6 +16,10 @@ var generatorCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		sourceFile, err := cmd.Flags().GetString("source-file")
 
+		if err != nil {
+			return err
+		}
+
 		if sourceFile == "" {
 			parseRootFlags(cmd)
 		}
