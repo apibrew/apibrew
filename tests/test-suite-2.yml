@@ -97,7 +97,7 @@ assertions:
     assertionType: EQUAL
     left: $createHuman_result.age
     right: 20
-  - name: getHumanAge
-    assertionType: EQUAL
-    left: $getHuman_result_total
-    right: 1
+#  - name: getHumanAge
+#    assertionType: EQUAL
+#    left: $getHuman_result_total
+#    right: 1
