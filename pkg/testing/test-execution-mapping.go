@@ -61,32 +61,6 @@ func (m *TestExecutionMapper) ToProperties(testExecution *TestExecution) map[str
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Result := testExecution.Result
-
-	if var_Result != nil {
-		var var_Result_mapped *structpb.Value
-
-		var var_Result_err error
-		var_Result_mapped, var_Result_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(*var_Result))
-		if var_Result_err != nil {
-			panic(var_Result_err)
-		}
-		properties["result"] = var_Result_mapped
-	}
-
-	var_Logs := testExecution.Logs
-
-	if var_Logs != nil {
-		var var_Logs_mapped *structpb.Value
-
-		var var_Logs_err error
-		var_Logs_mapped, var_Logs_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Logs)
-		if var_Logs_err != nil {
-			panic(var_Logs_err)
-		}
-		properties["logs"] = var_Logs_mapped
-	}
-
 	var_Stored := testExecution.Stored
 
 	var var_Stored_mapped *structpb.Value
@@ -118,6 +92,32 @@ func (m *TestExecutionMapper) ToProperties(testExecution *TestExecution) map[str
 		properties["testCase"] = var_TestCase_mapped
 	}
 
+	var_Result := testExecution.Result
+
+	if var_Result != nil {
+		var var_Result_mapped *structpb.Value
+
+		var var_Result_err error
+		var_Result_mapped, var_Result_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(*var_Result))
+		if var_Result_err != nil {
+			panic(var_Result_err)
+		}
+		properties["result"] = var_Result_mapped
+	}
+
+	var_Logs := testExecution.Logs
+
+	if var_Logs != nil {
+		var var_Logs_mapped *structpb.Value
+
+		var var_Logs_err error
+		var_Logs_mapped, var_Logs_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Logs)
+		if var_Logs_err != nil {
+			panic(var_Logs_err)
+		}
+		properties["logs"] = var_Logs_mapped
+	}
+
 	var_Version := testExecution.Version
 
 	var var_Version_mapped *structpb.Value
@@ -146,28 +146,6 @@ func (m *TestExecutionMapper) FromProperties(properties map[string]*structpb.Val
 		*var_Id_mapped = val.(uuid.UUID)
 
 		s.Id = var_Id_mapped
-	}
-	if properties["result"] != nil && properties["result"].AsInterface() != nil {
-
-		var_Result := properties["result"]
-		var_Result_mapped := new(TestExecutionResult)
-		*var_Result_mapped = (TestExecutionResult)(var_Result.GetStringValue())
-
-		s.Result = var_Result_mapped
-	}
-	if properties["logs"] != nil && properties["logs"].AsInterface() != nil {
-
-		var_Logs := properties["logs"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Logs)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Logs_mapped := new(string)
-		*var_Logs_mapped = val.(string)
-
-		s.Logs = var_Logs_mapped
 	}
 	if properties["stored"] != nil && properties["stored"].AsInterface() != nil {
 
@@ -201,6 +179,28 @@ func (m *TestExecutionMapper) FromProperties(properties map[string]*structpb.Val
 		var_TestCase_mapped := TestCaseMapperInstance.FromProperties(var_TestCase.GetStructValue().Fields)
 
 		s.TestCase = var_TestCase_mapped
+	}
+	if properties["result"] != nil && properties["result"].AsInterface() != nil {
+
+		var_Result := properties["result"]
+		var_Result_mapped := new(TestExecutionResult)
+		*var_Result_mapped = (TestExecutionResult)(var_Result.GetStringValue())
+
+		s.Result = var_Result_mapped
+	}
+	if properties["logs"] != nil && properties["logs"].AsInterface() != nil {
+
+		var_Logs := properties["logs"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Logs)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Logs_mapped := new(string)
+		*var_Logs_mapped = val.(string)
+
+		s.Logs = var_Logs_mapped
 	}
 	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 

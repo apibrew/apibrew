@@ -196,13 +196,20 @@ func (m module) executeTestCase(ctx context.Context, execution *TestExecution, v
 	m.log(execution, "Executing test case '%s'", execution.TestCase.Name)
 	// executing steps
 	m.log(execution, "Executing test case steps begin '%s'", execution.TestCase.Name)
+
 	for _, step := range execution.TestCase.Steps {
+		// check if there are error from previous step
+
+		if (*variableMap)["error"] != nil {
+			m.log(execution, "Executing test case step skipped '%s' => %s", util.DePointer(step.Name, ""), (*variableMap)["error"].(error).Error())
+			return nil
+		}
+
 		m.log(execution, "Executing test case step '%s'", util.DePointer(step.Name, ""))
 		err := m.executeStep(ctx, execution, step, variableMap)
 
 		if err != nil {
-			m.log(execution, "Executing test case step failed '%s' => %s", util.DePointer(step.Name, ""), err.Error())
-			return err
+			(*variableMap)["error"] = err
 		}
 		m.log(execution, "Executing test case step done '%s'", util.DePointer(step.Name, ""))
 	}
@@ -219,6 +226,12 @@ func (m module) executeTestCase(ctx context.Context, execution *TestExecution, v
 		}
 		m.log(execution, "Executing test case assertion done '%s'", util.DePointer(assertion.Name, ""))
 	}
+
+	if (*variableMap)["error"] != nil {
+		m.log(execution, "Executing test case step failed(last step) %s", (*variableMap)["error"].(error).Error())
+		return errors.RecordValidationError.WithMessage((*variableMap)["error"].(error).Error())
+	}
+
 	m.log(execution, "Executing test case assertions done '%s'", execution.TestCase.Name)
 	// executing assertions done
 	m.log(execution, "Test case %s executed", execution.TestCase.Name)
@@ -270,6 +283,18 @@ func (m module) executeAssertion(ctx context.Context, execution *TestExecution, 
 		if reflect.DeepEqual(left, right) {
 			return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed: %v == %v", left, right))
 		}
+	case TestCaseAssertionType_EXPECTERROR:
+		if serr, ok := (*variableMap)["error"].(errors.ServiceError); ok {
+			if step.ErrorCode != nil && *step.ErrorCode != serr.Code().String() {
+				return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed for error code: %v != %v", util.DePointer(step.ErrorCode, ""), serr.Code().String()))
+			}
+
+			if step.ErrorMessage != nil && *step.ErrorMessage != serr.GetFullMessage() {
+				return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed for error code: %s != %s", util.DePointer(step.ErrorMessage, ""), serr.GetFullMessage()))
+			}
+
+			delete(*variableMap, "error")
+		}
 	}
 
 	return nil
@@ -277,12 +302,21 @@ func (m module) executeAssertion(ctx context.Context, execution *TestExecution, 
 
 func (m module) resolveValue(value interface{}, variableMap *map[string]interface{}) (interface{}, errors.ServiceError) {
 	if ptr, ok := value.(*interface{}); ok {
+		if ptr == nil {
+			return nil, nil
+		}
 		value = *ptr
 	}
 	if ptr, ok := value.(*string); ok {
+		if ptr == nil {
+			return nil, nil
+		}
 		value = *ptr
 	}
 	if uns, ok := value.(*unstructured.Unstructured); ok {
+		if uns == nil {
+			return nil, nil
+		}
 		value = *uns
 	}
 
@@ -316,7 +350,13 @@ func (m module) resolveValue(value interface{}, variableMap *map[string]interfac
 }
 
 func (m module) executeCreate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	res, err := m.apiInterface.Create(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := m.apiInterface.Create(ctx, (payload).(unstructured.Unstructured))
 
 	if step.Name != nil {
 		(*variableMap)[*step.Name+"_result"] = res
@@ -326,7 +366,13 @@ func (m module) executeCreate(ctx context.Context, execution *TestExecution, ste
 }
 
 func (m module) executeUpdate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	res, err := m.apiInterface.Update(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := m.apiInterface.Update(ctx, (payload).(unstructured.Unstructured))
 
 	if step.Name != nil {
 		(*variableMap)[*step.Name+"_result"] = res
@@ -336,7 +382,13 @@ func (m module) executeUpdate(ctx context.Context, execution *TestExecution, ste
 }
 
 func (m module) executeDelete(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	return m.apiInterface.Delete(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	return m.apiInterface.Delete(ctx, (payload).(unstructured.Unstructured))
 }
 
 func (m module) executeGet(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
@@ -353,6 +405,26 @@ func (m module) executeGet(ctx context.Context, execution *TestExecution, step T
 	}
 
 	return err
+}
+
+func (m module) executeApply(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := m.apiInterface.Apply(ctx, (payload).(unstructured.Unstructured))
+
+	if step.Name != nil {
+		(*variableMap)[*step.Name+"_result"] = res
+	}
+
+	return err
+}
+
+func (m module) executeNano(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+	panic("not implement me")
 }
 
 func (m module) executeList(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
@@ -410,20 +482,12 @@ func (m module) executeList(ctx context.Context, execution *TestExecution, step 
 	return err
 }
 
-func (m module) executeApply(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	panic("implement me")
-}
-
-func (m module) executeNano(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	panic("implement me")
-}
-
 func (m module) evaluate(expr string, variableMap *map[string]interface{}) (interface{}, errors.ServiceError) {
 	// it is recursively evulating the string
 	// e.g.
 	// $test_case_result.id => It will return the id of the test case result
 
-	expr = strings.TrimSpace(expr)
+	expr = strings.TrimPrefix(expr, "$")
 
 	if strings.Contains(expr, ".") {
 		left := expr[0:strings.Index(expr, ".")]

@@ -26,19 +26,9 @@ var TestExecutionResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
-				"SpecialProperty": "true",
 				"PrimaryProperty": "true",
+				"SpecialProperty": "true",
 			},
-		},
-		{
-			Name:       "result",
-			Type:       model.ResourceProperty_ENUM,
-			EnumValues: []string{"SUCCESS", "FAILURE"},
-		},
-		{
-			Name:   "logs",
-			Type:   model.ResourceProperty_STRING,
-			Length: 64000,
 		},
 		{
 			Name:         "stored",
@@ -58,6 +48,16 @@ var TestExecutionResource = &model.Resource{
 			Type:      model.ResourceProperty_REFERENCE,
 			Required:  true,
 			Reference: &model.Reference{Resource: "TestCase", Namespace: "testing"},
+		},
+		{
+			Name:       "result",
+			Type:       model.ResourceProperty_ENUM,
+			EnumValues: []string{"SUCCESS", "FAILURE"},
+		},
+		{
+			Name:   "logs",
+			Type:   model.ResourceProperty_STRING,
+			Length: 64000,
 		},
 		{
 			Name:         "version",

@@ -22,12 +22,6 @@ var TestCaseResource = &model.Resource{
 			Name: "TestCaseStep",
 			Properties: []*model.ResourceProperty{
 				{
-					Name:   "name",
-					Type:   model.ResourceProperty_STRING,
-					Length: 255,
-					Unique: true,
-				},
-				{
 					Name:       "operation",
 					Type:       model.ResourceProperty_ENUM,
 					Required:   true,
@@ -36,6 +30,12 @@ var TestCaseResource = &model.Resource{
 				{
 					Name: "payload",
 					Type: model.ResourceProperty_OBJECT,
+				},
+				{
+					Name:   "name",
+					Type:   model.ResourceProperty_STRING,
+					Length: 255,
+					Unique: true,
 				},
 			},
 
@@ -46,6 +46,19 @@ var TestCaseResource = &model.Resource{
 		{
 			Name: "TestCaseAssertion",
 			Properties: []*model.ResourceProperty{
+				{
+					Name: "errorCode",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "errorMessage",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name:   "name",
+					Type:   model.ResourceProperty_STRING,
+					Length: 255,
+				},
 				{
 					Name:       "assertionType",
 					Type:       model.ResourceProperty_ENUM,
@@ -63,15 +76,6 @@ var TestCaseResource = &model.Resource{
 				{
 					Name: "script",
 					Type: model.ResourceProperty_STRING,
-				},
-				{
-					Name: "errorCode",
-					Type: model.ResourceProperty_STRING,
-				},
-				{
-					Name:   "name",
-					Type:   model.ResourceProperty_STRING,
-					Length: 255,
 				},
 			},
 
@@ -91,6 +95,15 @@ var TestCaseResource = &model.Resource{
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
 				"PrimaryProperty": "true",
+			},
+		},
+		{
+			Name: "steps",
+			Type: model.ResourceProperty_LIST,
+			Item: &model.ResourceProperty{
+				Name:    "",
+				Type:    model.ResourceProperty_STRUCT,
+				TypeRef: util.Pointer("TestCaseStep"),
 			},
 		},
 		{
@@ -126,15 +139,6 @@ var TestCaseResource = &model.Resource{
 			Item: &model.ResourceProperty{
 				Name: "",
 				Type: model.ResourceProperty_STRING,
-			},
-		},
-		{
-			Name: "steps",
-			Type: model.ResourceProperty_LIST,
-			Item: &model.ResourceProperty{
-				Name:    "",
-				Type:    model.ResourceProperty_STRUCT,
-				TypeRef: util.Pointer("TestCaseStep"),
 			},
 		},
 		{

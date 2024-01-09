@@ -106,6 +106,10 @@ types:
         title: ErrorCode (in string format) e.g. "RECORD_NOT_FOUND"
         description: Used by expectError assertion type
         type: STRING
+      errorMessage: # for nano
+        title: ErrorCode (in string format) e.g. "RECORD_NOT_FOUND"
+        description: Used by expectError assertion type
+        type: STRING
 ---
 type: resource
 name: TestExecution

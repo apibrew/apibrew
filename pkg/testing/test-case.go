@@ -10,17 +10,20 @@ import "github.com/google/uuid"
 
 type TestCase struct {
 	Id          *uuid.UUID                  `json:"id,omitempty"`
+	Steps       []TestCaseTestCaseStep      `json:"steps,omitempty"`
 	Assertions  []TestCaseTestCaseAssertion `json:"assertions,omitempty"`
 	AutoRun     bool                        `json:"autoRun,omitempty"`
 	Name        string                      `json:"name,omitempty"`
 	Description *string                     `json:"description,omitempty"`
 	Annotations map[string]string           `json:"annotations,omitempty"`
-	Steps       []TestCaseTestCaseStep      `json:"steps,omitempty"`
 	Version     int32                       `json:"version,omitempty"`
 }
 
 func (s *TestCase) GetId() *uuid.UUID {
 	return s.Id
+}
+func (s *TestCase) GetSteps() []TestCaseTestCaseStep {
+	return s.Steps
 }
 func (s *TestCase) GetAssertions() []TestCaseTestCaseAssertion {
 	return s.Assertions
@@ -37,38 +40,45 @@ func (s *TestCase) GetDescription() *string {
 func (s *TestCase) GetAnnotations() map[string]string {
 	return s.Annotations
 }
-func (s *TestCase) GetSteps() []TestCaseTestCaseStep {
-	return s.Steps
-}
 func (s *TestCase) GetVersion() int32 {
 	return s.Version
 }
 
 type TestCaseTestCaseStep struct {
-	Name      *string           `json:"name,omitempty"`
 	Operation TestCaseOperation `json:"operation,omitempty"`
 	Payload   interface{}       `json:"payload,omitempty"`
+	Name      *string           `json:"name,omitempty"`
 }
 
-func (s *TestCaseTestCaseStep) GetName() *string {
-	return s.Name
-}
 func (s *TestCaseTestCaseStep) GetOperation() TestCaseOperation {
 	return s.Operation
 }
 func (s *TestCaseTestCaseStep) GetPayload() interface{} {
 	return s.Payload
 }
+func (s *TestCaseTestCaseStep) GetName() *string {
+	return s.Name
+}
 
 type TestCaseTestCaseAssertion struct {
+	ErrorCode     *string               `json:"errorCode,omitempty"`
+	ErrorMessage  *string               `json:"errorMessage,omitempty"`
+	Name          *string               `json:"name,omitempty"`
 	AssertionType TestCaseAssertionType `json:"assertionType,omitempty"`
 	Left          *string               `json:"left,omitempty"`
 	Right         interface{}           `json:"right,omitempty"`
 	Script        *string               `json:"script,omitempty"`
-	ErrorCode     *string               `json:"errorCode,omitempty"`
-	Name          *string               `json:"name,omitempty"`
 }
 
+func (s *TestCaseTestCaseAssertion) GetErrorCode() *string {
+	return s.ErrorCode
+}
+func (s *TestCaseTestCaseAssertion) GetErrorMessage() *string {
+	return s.ErrorMessage
+}
+func (s *TestCaseTestCaseAssertion) GetName() *string {
+	return s.Name
+}
 func (s *TestCaseTestCaseAssertion) GetAssertionType() TestCaseAssertionType {
 	return s.AssertionType
 }
@@ -80,12 +90,6 @@ func (s *TestCaseTestCaseAssertion) GetRight() interface{} {
 }
 func (s *TestCaseTestCaseAssertion) GetScript() *string {
 	return s.Script
-}
-func (s *TestCaseTestCaseAssertion) GetErrorCode() *string {
-	return s.ErrorCode
-}
-func (s *TestCaseTestCaseAssertion) GetName() *string {
-	return s.Name
 }
 
 type TestCaseOperation string
