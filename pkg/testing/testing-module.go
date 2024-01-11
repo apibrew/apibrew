@@ -6,6 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/api"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured/ops"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -13,6 +14,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
+	"time"
 
 	"reflect"
 	"strings"
@@ -49,9 +51,9 @@ func (m module) ensureNamespace() {
 }
 
 func (m module) ensureResources() {
-	var resources = []*model.Resource{TestSuiteResource, TestCaseResource, TestExecutionResource}
+	var list = []*model.Resource{TestCaseResource, TestExecutionResource}
 
-	for _, resource := range resources {
+	for _, resource := range list {
 		existingResource, err := m.container.GetResourceService().GetResourceByName(util.SystemContext, resource.Namespace, resource.Name)
 
 		if err == nil {
@@ -90,6 +92,50 @@ func (m module) initTestExecutionListeners() {
 		Responds: true,
 		Internal: true,
 	})
+
+	m.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
+		Id:   "test-case-listener",
+		Name: "test-case-listener",
+		Fn:   m.handleTestCase,
+		Selector: &model.EventSelector{
+			Actions: []model.Event_Action{
+				model.Event_CREATE,
+				model.Event_UPDATE,
+			},
+			Namespaces: []string{TestCaseResource.Namespace},
+			Resources:  []string{TestCaseResource.Name},
+		},
+		Order:    90,
+		Sync:     true,
+		Responds: true,
+		Internal: true,
+	})
+}
+
+func (m module) handleTestCase(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+	for idx, record := range event.Records {
+		testCase := TestCaseMapperInstance.FromRecord(record)
+
+		if testCase.AutoRun {
+			testCase.AutoRun = false
+			record = TestCaseMapperInstance.ToRecord(testCase)
+			event.Records[idx] = record
+
+			execution := &TestExecution{
+				TestCase: testCase,
+			}
+
+			var variableMap = &map[string]interface{}{}
+
+			err := m.executeTestCase(ctx, execution, variableMap)
+
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return event, nil
 }
 
 func (m module) handleTestExecution(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
@@ -97,6 +143,7 @@ func (m module) handleTestExecution(ctx context.Context, event *model.Event) (*m
 
 	defer func() {
 		go func() {
+			time.Sleep(1 * time.Second)
 			if len(recordsToDelete) > 0 {
 				err := m.container.GetRecordService().Delete(util.SystemContext, service.RecordDeleteParams{
 					Namespace: TestExecutionResource.Namespace,
@@ -105,7 +152,7 @@ func (m module) handleTestExecution(ctx context.Context, event *model.Event) (*m
 				})
 
 				if err != nil {
-					log.Panic(err)
+					log.Warn(err)
 				}
 			}
 		}()
@@ -130,7 +177,7 @@ func (m module) executeTest(ctx context.Context, record *model.Record) (errors.S
 	// locating records
 	// locating test execution
 
-	err := m.container.GetRecordService().ResolveReferences(ctx, TestExecutionResource, []*model.Record{record}, []string{"$.testCase"})
+	err := m.container.GetRecordService().ResolveReferences(ctx, TestExecutionResource, []*model.Record{record}, []string{"$.testCase", "$.testCase.testSuite"})
 
 	if err != nil {
 		return err, false
@@ -149,13 +196,20 @@ func (m module) executeTestCase(ctx context.Context, execution *TestExecution, v
 	m.log(execution, "Executing test case '%s'", execution.TestCase.Name)
 	// executing steps
 	m.log(execution, "Executing test case steps begin '%s'", execution.TestCase.Name)
+
 	for _, step := range execution.TestCase.Steps {
+		// check if there are error from previous step
+
+		if (*variableMap)["error"] != nil {
+			m.log(execution, "Executing test case step skipped '%s' => %s", util.DePointer(step.Name, ""), (*variableMap)["error"].(error).Error())
+			return nil
+		}
+
 		m.log(execution, "Executing test case step '%s'", util.DePointer(step.Name, ""))
 		err := m.executeStep(ctx, execution, step, variableMap)
 
 		if err != nil {
-			m.log(execution, "Executing test case step failed '%s' => %s", util.DePointer(step.Name, ""), err.Error())
-			return err
+			(*variableMap)["error"] = err
 		}
 		m.log(execution, "Executing test case step done '%s'", util.DePointer(step.Name, ""))
 	}
@@ -172,6 +226,12 @@ func (m module) executeTestCase(ctx context.Context, execution *TestExecution, v
 		}
 		m.log(execution, "Executing test case assertion done '%s'", util.DePointer(assertion.Name, ""))
 	}
+
+	if (*variableMap)["error"] != nil {
+		m.log(execution, "Executing test case step failed(last step) %s", (*variableMap)["error"].(error).Error())
+		return errors.RecordValidationError.WithMessage((*variableMap)["error"].(error).Error())
+	}
+
 	m.log(execution, "Executing test case assertions done '%s'", execution.TestCase.Name)
 	// executing assertions done
 	m.log(execution, "Test case %s executed", execution.TestCase.Name)
@@ -202,13 +262,13 @@ func (m module) executeStep(ctx context.Context, execution *TestExecution, step 
 
 func (m module) executeAssertion(ctx context.Context, execution *TestExecution, step TestCaseTestCaseAssertion, variableMap *map[string]interface{}) errors.ServiceError {
 
-	left, err := m.resolveValue(ctx, execution, step.Left, variableMap)
+	left, err := m.resolveValue(step.Left, variableMap)
 
 	if err != nil {
 		return err
 	}
 
-	right, err := m.resolveValue(ctx, execution, step.Right, variableMap)
+	right, err := m.resolveValue(step.Right, variableMap)
 
 	if err != nil {
 		return err
@@ -223,18 +283,59 @@ func (m module) executeAssertion(ctx context.Context, execution *TestExecution, 
 		if reflect.DeepEqual(left, right) {
 			return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed: %v == %v", left, right))
 		}
+	case TestCaseAssertionType_EXPECTERROR:
+		if serr, ok := (*variableMap)["error"].(errors.ServiceError); ok {
+			if step.ErrorCode != nil && *step.ErrorCode != serr.Code().String() {
+				return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed for error code: %v != %v", util.DePointer(step.ErrorCode, ""), serr.Code().String()))
+			}
+
+			if step.ErrorMessage != nil && *step.ErrorMessage != serr.GetFullMessage() {
+				return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed for error code: %s != %s", util.DePointer(step.ErrorMessage, ""), serr.GetFullMessage()))
+			}
+
+			delete(*variableMap, "error")
+		}
 	}
 
 	return nil
 }
 
-func (m module) resolveValue(ctx context.Context, execution *TestExecution, value interface{}, variableMap *map[string]interface{}) (interface{}, errors.ServiceError) {
+func (m module) resolveValue(value interface{}, variableMap *map[string]interface{}) (interface{}, errors.ServiceError) {
 	if ptr, ok := value.(*interface{}); ok {
+		if ptr == nil {
+			return nil, nil
+		}
 		value = *ptr
 	}
 	if ptr, ok := value.(*string); ok {
+		if ptr == nil {
+			return nil, nil
+		}
 		value = *ptr
 	}
+	if uns, ok := value.(*unstructured.Unstructured); ok {
+		if uns == nil {
+			return nil, nil
+		}
+		value = *uns
+	}
+
+	if uns, ok := value.(unstructured.Unstructured); ok {
+		processed, err := ops.WalkUnstructured(uns, func(value interface{}) (interface{}, error) {
+			if str, ok := value.(string); ok {
+				return m.resolveValue(str, variableMap)
+			}
+
+			return value, nil
+		})
+
+		if err != nil {
+			return nil, errors.RecordValidationError.WithMessage(err.Error())
+		}
+
+		return processed, nil
+	}
+
 	if _, ok := value.(string); !ok {
 		return value, nil
 	}
@@ -242,14 +343,20 @@ func (m module) resolveValue(ctx context.Context, execution *TestExecution, valu
 	valueStr := value.(string)
 
 	if strings.HasPrefix(valueStr, "$") {
-		return m.evaluate(ctx, execution, valueStr, variableMap)
+		return m.evaluate(valueStr, variableMap)
 	}
 
 	return valueStr, nil
 }
 
 func (m module) executeCreate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	res, err := m.apiInterface.Create(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := m.apiInterface.Create(ctx, (payload).(unstructured.Unstructured))
 
 	if step.Name != nil {
 		(*variableMap)[*step.Name+"_result"] = res
@@ -259,7 +366,13 @@ func (m module) executeCreate(ctx context.Context, execution *TestExecution, ste
 }
 
 func (m module) executeUpdate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	res, err := m.apiInterface.Update(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := m.apiInterface.Update(ctx, (payload).(unstructured.Unstructured))
 
 	if step.Name != nil {
 		(*variableMap)[*step.Name+"_result"] = res
@@ -269,11 +382,23 @@ func (m module) executeUpdate(ctx context.Context, execution *TestExecution, ste
 }
 
 func (m module) executeDelete(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	return m.apiInterface.Delete(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	return m.apiInterface.Delete(ctx, (payload).(unstructured.Unstructured))
 }
 
 func (m module) executeGet(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	res, err := m.apiInterface.Load(ctx, (*step.Payload.(*interface{})).(unstructured.Unstructured))
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := m.apiInterface.Load(ctx, payload.(unstructured.Unstructured))
 
 	if step.Name != nil {
 		(*variableMap)[*step.Name+"_result"] = res
@@ -282,14 +407,87 @@ func (m module) executeGet(ctx context.Context, execution *TestExecution, step T
 	return err
 }
 
-func (m module) evaluate(ctx context.Context, execution *TestExecution, expr string, variableMap *map[string]interface{}) (interface{}, errors.ServiceError) {
+func (m module) executeApply(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := m.apiInterface.Apply(ctx, (payload).(unstructured.Unstructured))
+
+	if step.Name != nil {
+		(*variableMap)[*step.Name+"_result"] = res
+	}
+
+	return err
+}
+
+func (m module) executeNano(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+	panic("not implement me")
+}
+
+func (m module) executeList(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
+
+	if err != nil {
+		return err
+	}
+
+	if _, ok := payload.(unstructured.Unstructured); !ok {
+		return errors.RecordValidationError.WithMessage("On List operation payload must be an an object")
+	}
+
+	payloadObj := payload.(unstructured.Unstructured)
+
+	var params = api.ListParams{}
+
+	if payloadObj["filters"] != nil {
+		if _, ok := payloadObj["filters"].(map[string]string); !ok {
+			return errors.RecordValidationError.WithMessage("On List operation payload.filters must be an an object")
+		}
+		params.Filters = payloadObj["filters"].(map[string]string)
+	}
+
+	if payloadObj["type"] != nil {
+		if _, ok := payloadObj["type"].(string); !ok {
+			return errors.RecordValidationError.WithMessage("On List operation payload.type must be an an string")
+		}
+		params.Type = payloadObj["type"].(string)
+	} else {
+		return errors.RecordValidationError.WithMessage("On List operation payload.type must be provided")
+	}
+
+	if payloadObj["limit"] != nil {
+		if _, ok := payloadObj["limit"].(float64); !ok {
+			return errors.RecordValidationError.WithMessage("On List operation payload.limit must be an an number")
+		}
+		params.Limit = uint32(payloadObj["limit"].(float64))
+	}
+
+	if payloadObj["offset"] != nil {
+		if _, ok := payloadObj["offset"].(float64); !ok {
+			return errors.RecordValidationError.WithMessage("On List operation payload.offset must be an an number")
+		}
+		params.Offset = uint64(payloadObj["offset"].(float64))
+	}
+
+	res, total, err := m.apiInterface.List(ctx, params)
+
+	if step.Name != nil {
+		(*variableMap)[*step.Name+"_result"] = res
+		(*variableMap)[*step.Name+"_result_total"] = total
+	}
+
+	return err
+}
+
+func (m module) evaluate(expr string, variableMap *map[string]interface{}) (interface{}, errors.ServiceError) {
 	// it is recursively evulating the string
 	// e.g.
 	// $test_case_result.id => It will return the id of the test case result
 
-	if strings.HasPrefix(expr, "$") {
-		expr = expr[1:]
-	}
+	expr = strings.TrimPrefix(expr, "$")
 
 	if strings.Contains(expr, ".") {
 		left := expr[0:strings.Index(expr, ".")]
@@ -297,9 +495,12 @@ func (m module) evaluate(ctx context.Context, execution *TestExecution, expr str
 
 		// if left is a variable
 		if (*variableMap)[left] != nil {
+			if _, ok := (*variableMap)[left].(map[string]interface{}); !ok {
+				return nil, errors.RecordValidationError.WithMessage(fmt.Sprintf("Variable %s is not an object", left))
+			}
 			var newVars = (*variableMap)[left].(map[string]interface{})
 
-			return m.evaluate(ctx, execution, right, &newVars)
+			return m.evaluate(right, &newVars)
 		} else {
 			return nil, errors.RecordValidationError.WithMessage(fmt.Sprintf("Variable %s not found", left))
 		}
@@ -312,24 +513,14 @@ func (m module) evaluate(ctx context.Context, execution *TestExecution, expr str
 	return nil, errors.RecordValidationError.WithMessage(fmt.Sprintf("Variable %s not found", expr))
 }
 
-func (m module) executeList(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	panic("implement me")
-}
-
-func (m module) executeApply(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	panic("implement me")
-}
-
-func (m module) executeNano(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
-	panic("implement me")
-}
-
 func (m module) log(execution *TestExecution, format string, args ...interface{}) {
 	logStr := fmt.Sprintf(format, args...)
 
 	log.Infof("[TESTING] %s: %s", execution.TestCase.Name, logStr)
 
-	execution.Logs = util.Pointer(fmt.Sprintf("%s\n%s", *execution.Logs, logStr))
+	if execution.Logs != nil {
+		execution.Logs = util.Pointer(fmt.Sprintf("%s\n%s", *execution.Logs, logStr))
+	}
 }
 
 func NewModule(container service.Container) service.Module {

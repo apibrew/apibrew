@@ -47,6 +47,14 @@ var TestCaseResource = &model.Resource{
 			Name: "TestCaseAssertion",
 			Properties: []*model.ResourceProperty{
 				{
+					Name: "errorCode",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
+					Name: "errorMessage",
+					Type: model.ResourceProperty_STRING,
+				},
+				{
 					Name:   "name",
 					Type:   model.ResourceProperty_STRING,
 					Length: 255,
@@ -69,10 +77,6 @@ var TestCaseResource = &model.Resource{
 					Name: "script",
 					Type: model.ResourceProperty_STRING,
 				},
-				{
-					Name: "errorCode",
-					Type: model.ResourceProperty_STRING,
-				},
 			},
 
 			Annotations: map[string]string{
@@ -89,8 +93,8 @@ var TestCaseResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
-				"PrimaryProperty": "true",
 				"SpecialProperty": "true",
+				"PrimaryProperty": "true",
 			},
 		},
 		{
@@ -112,16 +116,17 @@ var TestCaseResource = &model.Resource{
 			},
 		},
 		{
-			Name:      "testSuite",
-			Type:      model.ResourceProperty_REFERENCE,
-			Required:  true,
-			Reference: &model.Reference{Resource: "TestSuite", Namespace: "testing"},
+			Name:         "autoRun",
+			Type:         model.ResourceProperty_BOOL,
+			Required:     true,
+			DefaultValue: nil,
 		},
 		{
 			Name:     "name",
 			Type:     model.ResourceProperty_STRING,
 			Length:   255,
 			Required: true,
+			Unique:   true,
 		},
 		{
 			Name:   "description",
@@ -147,22 +152,6 @@ var TestCaseResource = &model.Resource{
 				"SpecialProperty":     "true",
 				"AllowEmptyPrimitive": "true",
 			},
-		},
-	},
-	Indexes: []*model.ResourceIndex{
-		{
-			Properties: []*model.ResourceIndexProperty{
-				{
-					Name:  "testSuite",
-					Order: model.Order_ORDER_UNKNOWN,
-				},
-				{
-					Name:  "name",
-					Order: model.Order_ORDER_UNKNOWN,
-				},
-			},
-			IndexType: model.ResourceIndexType_BTREE,
-			Unique:    true,
 		},
 	},
 

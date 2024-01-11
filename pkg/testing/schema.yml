@@ -2,52 +2,19 @@ type: system/Namespace
 name: testing
 ---
 type: resource
-name: TestSuite
-namespace:
-  name: testing
-title: Test Suite
-description: Test Suite is a collection of test cases
-properties:
-  name:
-    title: Name
-    description: Full Qualified Name of the test suite, it must be unique in the system
-    type: STRING
-    length: 255
-    required: true
-    unique: true
-  description:
-    title: Description
-    description: Description of the test suite
-    type: STRING
-    length: 64000
-  annotations:
-    type: MAP
-    required: false
-    item:
-      type: STRING
-annotations:
-  EnableAudit: "true"
-  OpenApiGroup: "meta"
----
-type: resource
 name: TestCase
 namespace:
   name: testing
 title: Test Case
 description: Test Case is a test case
 properties:
-  testSuite:
-    title: Test Suite
-    description: Test Suite of the test case
-    type: REFERENCE
-    required: true
-    reference: testing/TestSuite
   name:
     title: Name
     description: Full Qualified Name of the test case, it must be unique in the test suite
     type: STRING
     length: 255
     required: true
+    unique: true
   description:
     title: Description
     description: Description of the test case
@@ -74,6 +41,12 @@ properties:
     item:
       type: STRUCT
       typeRef: TestCaseAssertion
+  autoRun:
+    title: Auto Run, this will be stored as false to allow re-run on each apply
+    description: Auto Run the test case
+    type: BOOLEAN
+    required: true
+    defaultValue: false
 types:
   - name: TestCaseStep
     properties:
@@ -133,14 +106,10 @@ types:
         title: ErrorCode (in string format) e.g. "RECORD_NOT_FOUND"
         description: Used by expectError assertion type
         type: STRING
-
-indexes:
-  - unique: true
-    properties:
-      - name:
-          testSuite
-      - name:
-          name
+      errorMessage: # for nano
+        title: ErrorCode (in string format) e.g. "RECORD_NOT_FOUND"
+        description: Used by expectError assertion type
+        type: STRING
 ---
 type: resource
 name: TestExecution

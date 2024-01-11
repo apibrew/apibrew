@@ -1,0 +1,103 @@
+type: resource
+name: TestSuite2Human
+virtual: true
+properties:
+  firstName:
+    type: STRING
+    required: true
+  lastName:
+    type: STRING
+    required: true
+  age:
+    type: INT32
+---
+type: resource
+name: TestSuite2Human
+properties:
+  firstName:
+    type: STRING
+    required: true
+  lastName:
+    type: STRING
+    required: true
+  age:
+    type: INT32
+---
+type: testing/TestCase
+name: test-case-2
+description: Test Case 1
+autoRun: true
+steps:
+  - name: createHuman
+    operation: CREATE
+    payload:
+      type: TestSuite2Human
+      firstName: John
+      lastName: Doe
+      age: 20
+  - name: getHuman
+    operation: GET
+    payload:
+      type: TestSuite2Human
+      id: $createHuman_result.id
+assertions:
+  - name: checkHumanAge
+    assertionType: EQUAL
+    left: $createHuman_result.age
+    right: 20
+  - name: getHumanAge
+    assertionType: EQUAL
+    left: $getHuman_result.age
+    right: 20
+---
+type: resource
+name: TestSuite2Human
+virtual: true
+properties:
+  firstName:
+    type: STRING
+    required: true
+  lastName:
+    type: STRING
+    required: true
+  age:
+    type: INT32
+---
+type: resource
+name: TestSuite2Human
+properties:
+  firstName:
+    type: STRING
+    required: true
+  lastName:
+    type: STRING
+    required: true
+  age:
+    type: INT32
+---
+type: testing/TestCase
+name: test-case-3
+description: Test Case 3
+autoRun: true
+steps:
+  - name: createHuman
+    operation: CREATE
+    payload:
+      type: TestSuite2Human
+      firstName: John
+      lastName: Doe
+      age: 20
+  - name: getHuman
+    operation: LIST
+    payload:
+      type: TestSuite2Human
+      id: $createHuman_result.id
+assertions:
+  - name: checkHumanAge
+    assertionType: EQUAL
+    left: $createHuman_result.age
+    right: 20
+#  - name: getHumanAge
+#    assertionType: EQUAL
+#    left: $getHuman_result_total
+#    right: 1

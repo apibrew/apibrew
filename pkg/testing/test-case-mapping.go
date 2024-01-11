@@ -100,14 +100,16 @@ func (m *TestCaseMapper) ToProperties(testCase *TestCase) map[string]*structpb.V
 		properties["assertions"] = var_Assertions_mapped
 	}
 
-	var_TestSuite := testCase.TestSuite
+	var_AutoRun := testCase.AutoRun
 
-	if var_TestSuite != nil {
-		var var_TestSuite_mapped *structpb.Value
+	var var_AutoRun_mapped *structpb.Value
 
-		var_TestSuite_mapped = structpb.NewStructValue(&structpb.Struct{Fields: TestSuiteMapperInstance.ToProperties(var_TestSuite)})
-		properties["testSuite"] = var_TestSuite_mapped
+	var var_AutoRun_err error
+	var_AutoRun_mapped, var_AutoRun_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_AutoRun)
+	if var_AutoRun_err != nil {
+		panic(var_AutoRun_err)
 	}
+	properties["autoRun"] = var_AutoRun_mapped
 
 	var_Name := testCase.Name
 
@@ -218,12 +220,18 @@ func (m *TestCaseMapper) FromProperties(properties map[string]*structpb.Value) *
 
 		s.Assertions = var_Assertions_mapped
 	}
-	if properties["testSuite"] != nil && properties["testSuite"].AsInterface() != nil {
+	if properties["autoRun"] != nil && properties["autoRun"].AsInterface() != nil {
 
-		var_TestSuite := properties["testSuite"]
-		var_TestSuite_mapped := TestSuiteMapperInstance.FromProperties(var_TestSuite.GetStructValue().Fields)
+		var_AutoRun := properties["autoRun"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_AutoRun)
 
-		s.TestSuite = var_TestSuite_mapped
+		if err != nil {
+			panic(err)
+		}
+
+		var_AutoRun_mapped := val.(bool)
+
+		s.AutoRun = var_AutoRun_mapped
 	}
 	if properties["name"] != nil && properties["name"].AsInterface() != nil {
 
@@ -407,6 +415,32 @@ func (m *TestCaseTestCaseAssertionMapper) ResourceIdentity() abs.ResourceIdentit
 func (m *TestCaseTestCaseAssertionMapper) ToProperties(testCaseTestCaseAssertion *TestCaseTestCaseAssertion) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
+	var_ErrorCode := testCaseTestCaseAssertion.ErrorCode
+
+	if var_ErrorCode != nil {
+		var var_ErrorCode_mapped *structpb.Value
+
+		var var_ErrorCode_err error
+		var_ErrorCode_mapped, var_ErrorCode_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ErrorCode)
+		if var_ErrorCode_err != nil {
+			panic(var_ErrorCode_err)
+		}
+		properties["errorCode"] = var_ErrorCode_mapped
+	}
+
+	var_ErrorMessage := testCaseTestCaseAssertion.ErrorMessage
+
+	if var_ErrorMessage != nil {
+		var var_ErrorMessage_mapped *structpb.Value
+
+		var var_ErrorMessage_err error
+		var_ErrorMessage_mapped, var_ErrorMessage_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ErrorMessage)
+		if var_ErrorMessage_err != nil {
+			panic(var_ErrorMessage_err)
+		}
+		properties["errorMessage"] = var_ErrorMessage_mapped
+	}
+
 	var_Name := testCaseTestCaseAssertion.Name
 
 	if var_Name != nil {
@@ -469,24 +503,39 @@ func (m *TestCaseTestCaseAssertionMapper) ToProperties(testCaseTestCaseAssertion
 		}
 		properties["script"] = var_Script_mapped
 	}
-
-	var_ErrorCode := testCaseTestCaseAssertion.ErrorCode
-
-	if var_ErrorCode != nil {
-		var var_ErrorCode_mapped *structpb.Value
-
-		var var_ErrorCode_err error
-		var_ErrorCode_mapped, var_ErrorCode_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ErrorCode)
-		if var_ErrorCode_err != nil {
-			panic(var_ErrorCode_err)
-		}
-		properties["errorCode"] = var_ErrorCode_mapped
-	}
 	return properties
 }
 
 func (m *TestCaseTestCaseAssertionMapper) FromProperties(properties map[string]*structpb.Value) *TestCaseTestCaseAssertion {
 	var s = m.New()
+	if properties["errorCode"] != nil && properties["errorCode"].AsInterface() != nil {
+
+		var_ErrorCode := properties["errorCode"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ErrorCode)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_ErrorCode_mapped := new(string)
+		*var_ErrorCode_mapped = val.(string)
+
+		s.ErrorCode = var_ErrorCode_mapped
+	}
+	if properties["errorMessage"] != nil && properties["errorMessage"].AsInterface() != nil {
+
+		var_ErrorMessage := properties["errorMessage"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ErrorMessage)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_ErrorMessage_mapped := new(string)
+		*var_ErrorMessage_mapped = val.(string)
+
+		s.ErrorMessage = var_ErrorMessage_mapped
+	}
 	if properties["name"] != nil && properties["name"].AsInterface() != nil {
 
 		var_Name := properties["name"]
@@ -543,20 +592,6 @@ func (m *TestCaseTestCaseAssertionMapper) FromProperties(properties map[string]*
 		*var_Script_mapped = val.(string)
 
 		s.Script = var_Script_mapped
-	}
-	if properties["errorCode"] != nil && properties["errorCode"].AsInterface() != nil {
-
-		var_ErrorCode := properties["errorCode"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ErrorCode)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_ErrorCode_mapped := new(string)
-		*var_ErrorCode_mapped = val.(string)
-
-		s.ErrorCode = var_ErrorCode_mapped
 	}
 	return s
 }

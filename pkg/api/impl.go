@@ -106,6 +106,8 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured) (uns
 
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
 
+	delete(recordObj, "type")
+
 	properties, err2 := unstructured.ToProperties(recordObj)
 
 	if err2 != nil {
@@ -134,6 +136,8 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
 
+	delete(recordObj, "type")
+
 	if recordObj["id"] == nil {
 		var err errors.ServiceError
 		recordObj, err = a.Load(ctx, recordObj)
@@ -153,7 +157,11 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 func (a api) List(ctx context.Context, params ListParams) ([]unstructured.Unstructured, uint32, errors.ServiceError) {
 	var resourceIdentity = util.ParseType(params.Type)
 
-	var query = extramappings.BooleanExpressionToProto(params.Query)
+	var query *model.BooleanExpression
+
+	if params.Query != nil {
+		query = extramappings.BooleanExpressionToProto(*params.Query)
+	}
 
 	var records []*model.Record
 

@@ -26,9 +26,15 @@ var TestExecutionResource = &model.Resource{
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
-				"SpecialProperty": "true",
 				"PrimaryProperty": "true",
+				"SpecialProperty": "true",
 			},
+		},
+		{
+			Name:         "stored",
+			Type:         model.ResourceProperty_BOOL,
+			Required:     true,
+			DefaultValue: nil,
 		},
 		{
 			Name:     "name",
@@ -52,12 +58,6 @@ var TestExecutionResource = &model.Resource{
 			Name:   "logs",
 			Type:   model.ResourceProperty_STRING,
 			Length: 64000,
-		},
-		{
-			Name:         "stored",
-			Type:         model.ResourceProperty_BOOL,
-			Required:     true,
-			DefaultValue: nil,
 		},
 		{
 			Name:         "version",

@@ -124,16 +124,29 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 		typ := types.ByResourcePropertyType(namedProps[k].Type)
 
 		if typ == types.ReferenceType { // skip reference checking for now, it is not implemented yet
-			continue
+			prop := namedProps[k]
+			nestedReferencedResource := p.schema.ResourceByNamespaceSlashName[prop.Reference.Namespace+"/"+prop.Reference.Resource]
+
+			if nestedReferencedResource == nil {
+				return "", errors.LogicalError.WithDetails("Referenced resource not found: " + prop.Reference.Namespace + "/" + prop.Reference.Resource)
+			}
+
+			refValue, err := p.resolveReference(v.GetStructValue().Fields, argPlaceHolder, nestedReferencedResource)
+
+			if err != nil {
+				return "", err
+			}
+
+			where = append(where, fmt.Sprintf("%s=%s", p.options.Quote(k), refValue))
+		} else {
+			unpacked, err := typ.UnPack(v)
+
+			if err != nil {
+				return "", errors.LogicalError.WithDetails(err.Error())
+			}
+
+			where = append(where, fmt.Sprintf("%s=%s", p.options.Quote(k), argPlaceHolder(unpacked)))
 		}
-
-		unpacked, err := typ.UnPack(v)
-
-		if err != nil {
-			return "", errors.LogicalError.WithDetails(err.Error())
-		}
-
-		where = append(where, fmt.Sprintf("%s=%s", p.options.Quote(k), argPlaceHolder(unpacked)))
 	}
 
 	if len(where) == 0 {

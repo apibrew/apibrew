@@ -235,6 +235,14 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(res
 			continue
 		}
 
+		if prop.Name == "description" || prop.Name == "title" || prop.Name == "exampleValue" || prop.Name == "immutable" {
+			continue
+		}
+
+		if prop.Name == "defaultValue" { // todo checkme
+			continue
+		}
+
 		if !proto.Equal(resourcePropertyRecord.Properties[prop.Name], existingResourcePropertyRecord.Properties[prop.Name]) {
 			changedFields = append(changedFields, prop.Name)
 		}

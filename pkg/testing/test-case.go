@@ -12,7 +12,7 @@ type TestCase struct {
 	Id          *uuid.UUID                  `json:"id,omitempty"`
 	Steps       []TestCaseTestCaseStep      `json:"steps,omitempty"`
 	Assertions  []TestCaseTestCaseAssertion `json:"assertions,omitempty"`
-	TestSuite   *TestSuite                  `json:"testSuite,omitempty"`
+	AutoRun     bool                        `json:"autoRun,omitempty"`
 	Name        string                      `json:"name,omitempty"`
 	Description *string                     `json:"description,omitempty"`
 	Annotations map[string]string           `json:"annotations,omitempty"`
@@ -28,8 +28,8 @@ func (s *TestCase) GetSteps() []TestCaseTestCaseStep {
 func (s *TestCase) GetAssertions() []TestCaseTestCaseAssertion {
 	return s.Assertions
 }
-func (s *TestCase) GetTestSuite() *TestSuite {
-	return s.TestSuite
+func (s *TestCase) GetAutoRun() bool {
+	return s.AutoRun
 }
 func (s *TestCase) GetName() string {
 	return s.Name
@@ -61,14 +61,21 @@ func (s *TestCaseTestCaseStep) GetName() *string {
 }
 
 type TestCaseTestCaseAssertion struct {
+	ErrorCode     *string               `json:"errorCode,omitempty"`
+	ErrorMessage  *string               `json:"errorMessage,omitempty"`
 	Name          *string               `json:"name,omitempty"`
 	AssertionType TestCaseAssertionType `json:"assertionType,omitempty"`
 	Left          *string               `json:"left,omitempty"`
 	Right         interface{}           `json:"right,omitempty"`
 	Script        *string               `json:"script,omitempty"`
-	ErrorCode     *string               `json:"errorCode,omitempty"`
 }
 
+func (s *TestCaseTestCaseAssertion) GetErrorCode() *string {
+	return s.ErrorCode
+}
+func (s *TestCaseTestCaseAssertion) GetErrorMessage() *string {
+	return s.ErrorMessage
+}
 func (s *TestCaseTestCaseAssertion) GetName() *string {
 	return s.Name
 }
@@ -83,9 +90,6 @@ func (s *TestCaseTestCaseAssertion) GetRight() interface{} {
 }
 func (s *TestCaseTestCaseAssertion) GetScript() *string {
 	return s.Script
-}
-func (s *TestCaseTestCaseAssertion) GetErrorCode() *string {
-	return s.ErrorCode
 }
 
 type TestCaseOperation string

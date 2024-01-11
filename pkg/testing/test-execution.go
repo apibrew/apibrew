@@ -10,16 +10,19 @@ import "github.com/google/uuid"
 
 type TestExecution struct {
 	Id       *uuid.UUID           `json:"id,omitempty"`
+	Stored   bool                 `json:"stored,omitempty"`
 	Name     string               `json:"name,omitempty"`
 	TestCase *TestCase            `json:"testCase,omitempty"`
 	Result   *TestExecutionResult `json:"result,omitempty"`
 	Logs     *string              `json:"logs,omitempty"`
-	Stored   bool                 `json:"stored,omitempty"`
 	Version  int32                `json:"version,omitempty"`
 }
 
 func (s *TestExecution) GetId() *uuid.UUID {
 	return s.Id
+}
+func (s *TestExecution) GetStored() bool {
+	return s.Stored
 }
 func (s *TestExecution) GetName() string {
 	return s.Name
@@ -32,9 +35,6 @@ func (s *TestExecution) GetResult() *TestExecutionResult {
 }
 func (s *TestExecution) GetLogs() *string {
 	return s.Logs
-}
-func (s *TestExecution) GetStored() bool {
-	return s.Stored
 }
 func (s *TestExecution) GetVersion() int32 {
 	return s.Version

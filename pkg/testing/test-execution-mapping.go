@@ -61,6 +61,17 @@ func (m *TestExecutionMapper) ToProperties(testExecution *TestExecution) map[str
 		properties["id"] = var_Id_mapped
 	}
 
+	var_Stored := testExecution.Stored
+
+	var var_Stored_mapped *structpb.Value
+
+	var var_Stored_err error
+	var_Stored_mapped, var_Stored_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Stored)
+	if var_Stored_err != nil {
+		panic(var_Stored_err)
+	}
+	properties["stored"] = var_Stored_mapped
+
 	var_Name := testExecution.Name
 
 	var var_Name_mapped *structpb.Value
@@ -107,17 +118,6 @@ func (m *TestExecutionMapper) ToProperties(testExecution *TestExecution) map[str
 		properties["logs"] = var_Logs_mapped
 	}
 
-	var_Stored := testExecution.Stored
-
-	var var_Stored_mapped *structpb.Value
-
-	var var_Stored_err error
-	var_Stored_mapped, var_Stored_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Stored)
-	if var_Stored_err != nil {
-		panic(var_Stored_err)
-	}
-	properties["stored"] = var_Stored_mapped
-
 	var_Version := testExecution.Version
 
 	var var_Version_mapped *structpb.Value
@@ -146,6 +146,19 @@ func (m *TestExecutionMapper) FromProperties(properties map[string]*structpb.Val
 		*var_Id_mapped = val.(uuid.UUID)
 
 		s.Id = var_Id_mapped
+	}
+	if properties["stored"] != nil && properties["stored"].AsInterface() != nil {
+
+		var_Stored := properties["stored"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Stored)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Stored_mapped := val.(bool)
+
+		s.Stored = var_Stored_mapped
 	}
 	if properties["name"] != nil && properties["name"].AsInterface() != nil {
 
@@ -188,19 +201,6 @@ func (m *TestExecutionMapper) FromProperties(properties map[string]*structpb.Val
 		*var_Logs_mapped = val.(string)
 
 		s.Logs = var_Logs_mapped
-	}
-	if properties["stored"] != nil && properties["stored"].AsInterface() != nil {
-
-		var_Stored := properties["stored"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Stored)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Stored_mapped := val.(bool)
-
-		s.Stored = var_Stored_mapped
 	}
 	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 

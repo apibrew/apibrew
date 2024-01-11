@@ -341,7 +341,7 @@ func (r *resourceMigrationBuilder) DeleteIndex(index *model.ResourceIndex) helpe
 	r.execs = append(r.execs, func() errors.ServiceError {
 		var indexName = r.prepareIndexName(index, r.params.MigrationPlan.CurrentResource)
 
-		sql := fmt.Sprintf("DROP INDEX %s", indexName)
+		sql := fmt.Sprintf("DROP INDEX %s(\"%s\")", r.tableName, indexName)
 
 		_, sqlError := r.runner.ExecContext(r.ctx, sql)
 		return r.options.handleDbError(r.ctx, sqlError)

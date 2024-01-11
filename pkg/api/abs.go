@@ -21,14 +21,14 @@ type Interface interface {
 }
 
 type ListParams struct {
-	Query             resource_model.BooleanExpression `json:"query,omitempty"`
-	Type              string                           `type:"and,omitempty"`
-	Limit             uint32                           `json:"limit,omitempty"`
-	Offset            uint64                           `json:"offset,omitempty"`
-	UseHistory        bool                             `json:"useHistory,omitempty"`
-	ResolveReferences []string                         `json:"resolveReferences,omitempty"`
-	Filters           map[string]string                `json:"filters,omitempty"`
-	Aggregation       *Aggregation                     `json:"aggregation,omitempty"`
+	Query             *resource_model.BooleanExpression `json:"query,omitempty"`
+	Type              string                            `type:"and,omitempty"`
+	Limit             uint32                            `json:"limit,omitempty"`
+	Offset            uint64                            `json:"offset,omitempty"`
+	UseHistory        bool                              `json:"useHistory,omitempty"`
+	ResolveReferences []string                          `json:"resolveReferences,omitempty"`
+	Filters           map[string]string                 `json:"filters,omitempty"`
+	Aggregation       *Aggregation                      `json:"aggregation,omitempty"`
 }
 
 type Aggregation struct {
