@@ -15,6 +15,9 @@
 
 Docs: https://apibrew.io/docs/getting-started
 
+Getting Started Video: https://youtu.be/VxG6b6iactc?si=AgyfrclHonsRO3Fn
+
+
 ## Introduction
 
 **Everything is a *Resource***. And **Everything has a *CRUD API***
