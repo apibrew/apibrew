@@ -33,8 +33,9 @@ require (
 	github.com/yargevad/filepathx v1.0.0
 	github.com/zclconf/go-cty v1.13.1
 	go.mongodb.org/mongo-driver v1.11.4
-	golang.org/x/crypto v0.14.0
+	golang.org/x/crypto v0.18.0
 	golang.org/x/net v0.17.0
+	golang.org/x/sync v0.1.0
 	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
@@ -90,9 +91,8 @@ require (
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
-	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
