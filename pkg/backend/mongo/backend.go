@@ -6,7 +6,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
-	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -92,7 +91,7 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 		update["$set"] = set
 
 		for _, prop := range resource.Properties {
-			if annotations.IsEnabled(prop, annotations.PrimaryProperty) {
+			if prop.Primary {
 				if record.Properties[prop.Name] == nil {
 					filter[prop.Name] = nil
 				} else {

@@ -9,6 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	resources2 "github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -58,6 +59,10 @@ func (e *Executor) RestoreItem(body unstructured.Unstructured) error {
 		record, err := unstructured.ToRecord(body)
 
 		if err != nil {
+			return err
+		}
+
+		if err = validate.Records(resources2.ResourceResource, []*model.Record{record}, false); err != nil {
 			return err
 		}
 

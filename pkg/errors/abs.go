@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 type ServiceError interface {
@@ -38,7 +39,13 @@ func (s serviceError) GetFullMessage() string {
 	if len(s.errorFields) > 0 {
 		message = message + " -"
 		for _, ef := range s.errorFields {
-			message = fmt.Sprintf("%s (%s:%s)", message, ef.Property, ef.Message)
+			var valueBytes []byte
+
+			if ef.Value != nil {
+				valueBytes, _ = protojson.Marshal(ef.Value)
+			}
+
+			message = fmt.Sprintf("%s (%s => %s => %s)", message, ef.Property, ef.Message, string(valueBytes))
 		}
 	}
 

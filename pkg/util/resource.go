@@ -54,7 +54,7 @@ func HistoryResource(resource *model.Resource) *model.Resource {
 
 	for _, prop := range historyResource.Properties {
 		if prop.Name == "version" {
-			prop.Annotations = annotations.EnableWith(prop.Annotations, annotations.PrimaryProperty)
+			prop.Primary = true
 		}
 	}
 
@@ -124,7 +124,7 @@ func HasResourceSinglePrimaryProp(resource *model.Resource) bool {
 	primaryPropCount := 0
 
 	for _, item := range resource.Properties {
-		if annotations.IsEnabled(item, annotations.PrimaryProperty) {
+		if item.Primary {
 			primaryPropCount++
 		}
 	}
@@ -134,7 +134,7 @@ func HasResourceSinglePrimaryProp(resource *model.Resource) bool {
 
 func HasResourcePrimaryProp(resource *model.Resource) bool {
 	for _, item := range resource.Properties {
-		if annotations.IsEnabled(item, annotations.PrimaryProperty) {
+		if item.Primary {
 			return true
 		}
 	}
@@ -144,7 +144,7 @@ func HasResourcePrimaryProp(resource *model.Resource) bool {
 
 func GetResourceSinglePrimaryProp(resource *model.Resource) *model.ResourceProperty {
 	for _, item := range resource.Properties {
-		if annotations.IsEnabled(item, annotations.PrimaryProperty) {
+		if item.Primary {
 			return item
 		}
 	}

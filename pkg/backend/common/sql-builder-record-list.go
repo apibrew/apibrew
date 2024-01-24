@@ -191,6 +191,10 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 
 	selectBuilder.Select(r.prepareCols()...)
 
+	if r.aggregation == nil {
+		selectBuilder.OrderBy("t.id ASC")
+	}
+
 	for _, jd := range r.joins {
 		selectBuilder.JoinWithOption(sqlbuilder.LeftJoin, fmt.Sprintf("%s as %s", r.quote(jd.targetTable), r.quote(jd.targetTableAlias)), fmt.Sprintf("%s.%s = %s", r.quote(jd.targetTableAlias), r.quote(jd.targetColumn), jd.sourcePath))
 	}

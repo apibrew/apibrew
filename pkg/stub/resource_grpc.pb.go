@@ -21,10 +21,10 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Resource_Create_FullMethodName                       = "/stub.Resource/Create"
 	Resource_Update_FullMethodName                       = "/stub.Resource/Update"
-	Resource_Delete_FullMethodName                       = "/stub.Resource/Delete_"
+	Resource_Delete_FullMethodName                       = "/stub.Resource/Delete"
 	Resource_List_FullMethodName                         = "/stub.Resource/List"
 	Resource_PrepareResourceMigrationPlan_FullMethodName = "/stub.Resource/PrepareResourceMigrationPlan"
-	Resource_Get_FullMethodName                          = "/stub.Resource/Get_"
+	Resource_Get_FullMethodName                          = "/stub.Resource/Get"
 	Resource_GetByName_FullMethodName                    = "/stub.Resource/GetByName"
 	Resource_GetSystemResource_FullMethodName            = "/stub.Resource/GetSystemResource"
 )
@@ -151,7 +151,7 @@ func (UnimplementedResourceServer) Update(context.Context, *UpdateResourceReques
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedResourceServer) Delete(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete_ not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedResourceServer) List(context.Context, *ListResourceRequest) (*ListResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
@@ -160,7 +160,7 @@ func (UnimplementedResourceServer) PrepareResourceMigrationPlan(context.Context,
 	return nil, status.Errorf(codes.Unimplemented, "method PrepareResourceMigrationPlan not implemented")
 }
 func (UnimplementedResourceServer) Get(context.Context, *GetResourceRequest) (*GetResourceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get_ not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedResourceServer) GetByName(context.Context, *GetResourceByNameRequest) (*GetResourceByNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByName not implemented")
@@ -341,7 +341,7 @@ var Resource_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Resource_Update_Handler,
 		},
 		{
-			MethodName: "Delete_",
+			MethodName: "Delete",
 			Handler:    _Resource_Delete_Handler,
 		},
 		{
@@ -353,7 +353,7 @@ var Resource_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Resource_PrepareResourceMigrationPlan_Handler,
 		},
 		{
-			MethodName: "Get_",
+			MethodName: "Get",
 			Handler:    _Resource_Get_Handler,
 		},
 		{

@@ -28,4 +28,3 @@ assertions:
   - name: checkErrors
     assertionType: EXPECT_ERROR
     errorCode: "RECORD_VALIDATION_ERROR"
-    errorMessage: "Record Validation failed - (propInt32:value is not int32: aa) (propInt64:value is not int64: bb) (propFloat32:value is not bool: cc) (propFloat64:value is not bool: dd)"

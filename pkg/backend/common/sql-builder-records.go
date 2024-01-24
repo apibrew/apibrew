@@ -318,7 +318,7 @@ func (p *sqlBackend) deleteRecords(ctx context.Context, runner helper.QueryRunne
 
 	var primaryFound = false
 	for _, prop := range resource.Properties {
-		if annotations.IsEnabled(prop, annotations.PrimaryProperty) {
+		if prop.Primary {
 			deleteBuilder.Where(deleteBuilder.In(prop.Name, util.ArrayMapToInterface(ids)...))
 			primaryFound = true
 			break

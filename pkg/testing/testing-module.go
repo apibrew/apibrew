@@ -289,7 +289,8 @@ func (m module) executeAssertion(ctx context.Context, execution *TestExecution, 
 				return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed for error code: %v != %v", util.DePointer(step.ErrorCode, ""), serr.Code().String()))
 			}
 
-			if step.ErrorMessage != nil && *step.ErrorMessage != serr.GetFullMessage() {
+			var actualMessage = serr.GetFullMessage()
+			if step.ErrorMessage != nil && *step.ErrorMessage != actualMessage {
 				return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed for error code: %s != %s", util.DePointer(step.ErrorMessage, ""), serr.GetFullMessage()))
 			}
 
@@ -527,3 +528,6 @@ func NewModule(container service.Container) service.Module {
 	backendEventHandler := container.GetBackendEventHandler().(backend_event_handler.BackendEventHandler)
 	return &module{container: container, backendEventHandler: backendEventHandler, apiInterface: api.NewInterface(container)}
 }
+
+// Record Validation failed - (propInt32:value is not int32: aa) (propInt64:value is not int64: bb) (propFloat32:value is not bool: cc) (propFloat64:value is not bool: dd)
+// Record Validation failed - (propFloat32:value is not bool: cc) (propFloat64:value is not bool: dd) (propInt32:value is not int32: aa) (propInt64:value is not int64: bb)

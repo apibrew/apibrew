@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
@@ -61,7 +60,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 			isEmpty := propertyType.IsEmpty(val)
 
 			if isEmpty {
-				if annotations.IsEnabled(property, annotations.PrimaryProperty) && isUpdate {
+				if property.Primary && isUpdate {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
 						RecordId: util.GetRecordId(record),
 						Property: property.Name,
@@ -70,7 +69,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 					})
 				}
 
-				if !annotations.IsEnabled(property, annotations.PrimaryProperty) && property.Required && (exists || !isUpdate) {
+				if !property.Primary && property.Required && (exists || !isUpdate) {
 					fieldErrors = append(fieldErrors, &model.ErrorField{
 						RecordId: util.GetRecordId(record),
 						Property: property.Name,
@@ -161,14 +160,14 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			var errorFields []*model.ErrorField
 
 			for i, item := range listValue.ListValue.Values {
-				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+property.Name+"["+strconv.Itoa(i)+"].", item)...)
+				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+"."+property.Name+"["+strconv.Itoa(i)+"].", item)...)
 			}
 			return errorFields
 		} else {
 			return []*model.ErrorField{{
 				RecordId: recordId,
 				Property: propertyPath,
-				Message:  fmt.Sprintf("value is not list: %v", value),
+				Message:  fmt.Sprintf("value is not list"),
 				Value:    value,
 			}}
 		}
@@ -177,7 +176,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			var errorFields []*model.ErrorField
 
 			for key, item := range listValue.StructValue.Fields {
-				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+property.Name+"["+key+"].", item)...)
+				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+"["+key+"].", item)...)
 			}
 
 			return errorFields
@@ -185,7 +184,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			return []*model.ErrorField{{
 				RecordId: recordId,
 				Property: propertyPath,
-				Message:  fmt.Sprintf("value is not map: %v", value),
+				Message:  fmt.Sprintf("value is not map"),
 				Value:    value,
 			}}
 		}
@@ -204,7 +203,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 		valStr := value.GetStringValue()
 
 		for _, enumValue := range property.EnumValues {
-			if enumValue == valStr {
+			if enumValue == strings.ToUpper(valStr) {
 				return nil
 			}
 		}
@@ -270,13 +269,13 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 						errorFields = append(errorFields, &model.ErrorField{
 							RecordId: recordId,
 							Property: propertyPath + Item.Name,
-							Message:  fmt.Sprintf("required field is empty: %v[%s]", Item.Name, Item.Name),
+							Message:  fmt.Sprintf("required field is empty"),
 							Value:    value,
 						})
 						continue
 					}
 
-					errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+Item.Name+".", structValue.StructValue.Fields[Item.Name])...)
+					errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+Item.Name, structValue.StructValue.Fields[Item.Name])...)
 				}
 
 				for key := range structValue.StructValue.Fields {
@@ -292,7 +291,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 						errorFields = append(errorFields, &model.ErrorField{
 							RecordId: recordId,
 							Property: propertyPath,
-							Message:  fmt.Sprintf("there is no such property: %v", key),
+							Message:  fmt.Sprintf("there is no such property"),
 							Value:    value,
 						})
 					}

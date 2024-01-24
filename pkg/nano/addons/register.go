@@ -4,6 +4,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/nano/abs"
 	"github.com/apibrew/apibrew/pkg/nano/addons/auth"
 	"github.com/apibrew/apibrew/pkg/nano/addons/console"
+	"github.com/apibrew/apibrew/pkg/nano/addons/execute"
 	"github.com/apibrew/apibrew/pkg/nano/addons/http"
 	"github.com/apibrew/apibrew/pkg/nano/addons/lambda"
 	"github.com/apibrew/apibrew/pkg/nano/addons/mail"
@@ -34,6 +35,10 @@ func Register(vm *goja.Runtime, cec abs.CodeExecutionContext, s abs.CodeExecutor
 	}
 
 	if err := auth.Register(vm, container); err != nil {
+		return nil
+	}
+
+	if err := execute.Register(vm); err != nil {
 		return nil
 	}
 

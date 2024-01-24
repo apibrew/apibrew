@@ -106,7 +106,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
 	var pk []string
 	for _, prop := range resource.Properties {
-		if annotations.IsEnabled(prop, annotations.PrimaryProperty) {
+		if prop.Primary {
 			var typ = r.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
 
 			if annotations.IsEnabled(prop, annotations.Identity) {

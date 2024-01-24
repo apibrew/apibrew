@@ -194,7 +194,7 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 	return nil
 }
 
-func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
+func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (err errors.ServiceError) {
 	r.mu.Lock()
 	defer func() {
 		r.mu.Unlock()
@@ -209,6 +209,12 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	if existingResource == nil {
 		return errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", resource.Namespace, resource.Name))
 	}
+
+	defer func() {
+		if err != nil {
+			log.Print(err)
+		}
+	}()
 
 	if resource.Namespace == "" {
 		resource.Namespace = existingResource.Namespace

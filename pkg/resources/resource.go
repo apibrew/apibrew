@@ -54,9 +54,8 @@ Normally primary property should not be provided. It is only used for special ca
 If Primary is provided, it should be a single property. It can not be a list or map.
 If Primary is provided, internal id property will not be created.
 `),
-		Type:     model.ResourceProperty_BOOL,
-		Required: true,
-
+		Type:         model.ResourceProperty_BOOL,
+		Required:     true,
 		DefaultValue: structpb.NewBoolValue(false),
 	},
 	{
@@ -345,9 +344,14 @@ var ResourceResource = &model.Resource{
 				Namespace: NamespaceResource.Namespace,
 				Cascade:   false,
 			},
+			DefaultValue: structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"name": structpb.NewStringValue("default"),
+				},
+			}),
 			ExampleValue: structpb.NewStructValue(&structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					"name": structpb.NewStringValue("system"),
+					"name": structpb.NewStringValue("default"),
 				},
 			}),
 		},

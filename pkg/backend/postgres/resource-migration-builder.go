@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resources/special"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/types"
 	"strings"
@@ -30,7 +29,7 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 	var uniqueStr = ""
 
 	if index.Unique {
-		uniqueStr = "unique"
+		uniqueStr = "UNIQUE"
 	}
 
 	var colsEscaped []string
@@ -52,7 +51,7 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 
 	indexName := r.prepareIndexName(index, resource)
 
-	sql := fmt.Sprintf("create %s index %s on %s(%s)", uniqueStr, r.options.Quote(indexName), r.options.Quote(resource.SourceConfig.Entity), strings.Join(colsEscaped, ","))
+	sql := fmt.Sprintf("CREATE %s INDEX %s ON %s(%s)", uniqueStr, r.options.Quote(indexName), r.options.GetFullTableName(resource.SourceConfig), strings.Join(colsEscaped, ","))
 	return sql, nil
 }
 
@@ -137,7 +136,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resource, builder *sqlbuilder.CreateTableBuilder) {
 	var pk []string
 	for _, prop := range resource.Properties {
-		if special.IsIdProperty(prop) || annotations.IsEnabled(prop, annotations.PrimaryProperty) {
+		if prop.Primary {
 			var typ = r.options.GetSqlTypeFromProperty(prop.Type, prop.Length)
 
 			if prop.Annotations != nil && prop.Annotations[annotations.SQLType] != "" {

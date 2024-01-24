@@ -32,6 +32,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 		})})
 	}
 
+	properties["primary"] = structpb.NewBoolValue(property.Primary)
 	properties["required"] = structpb.NewBoolValue(property.Required)
 	properties["length"] = structpb.NewNumberValue(float64(property.Length))
 	properties["unique"] = structpb.NewBoolValue(property.Unique)
@@ -118,6 +119,7 @@ func ResourcePropertyFromRecord(propertyName string, record *model.Record) *mode
 		Required:      record.Properties["required"].GetBoolValue(),
 		Length:        uint32(record.Properties["length"].GetNumberValue()),
 		Unique:        record.Properties["unique"].GetBoolValue(),
+		Primary:       record.Properties["primary"].GetBoolValue(),
 		Immutable:     record.Properties["immutable"].GetBoolValue(),
 		DefaultValue:  record.Properties["defaultValue"],
 		ExampleValue:  record.Properties["exampleValue"],

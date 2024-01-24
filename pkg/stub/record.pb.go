@@ -1793,22 +1793,22 @@ var file_stub_record_proto_depIdxs = []int32{
 	8,  // 34: stub.Record.Update:input_type -> stub.UpdateRecordRequest
 	10, // 35: stub.Record.Apply:input_type -> stub.ApplyRecordRequest
 	12, // 36: stub.Record.UpdateMulti:input_type -> stub.UpdateMultiRecordRequest
-	14, // 37: stub.Record.Delete_:input_type -> stub.DeleteRecordRequest
+	14, // 37: stub.Record.Delete:input_type -> stub.DeleteRecordRequest
 	0,  // 38: stub.Record.List:input_type -> stub.ListRecordRequest
 	2,  // 39: stub.Record.Search:input_type -> stub.SearchRecordRequest
 	3,  // 40: stub.Record.ReadStream:input_type -> stub.ReadStreamRequest
 	29, // 41: stub.Record.WriteStream:input_type -> model.Record
-	16, // 42: stub.Record.Get_:input_type -> stub.GetRecordRequest
+	16, // 42: stub.Record.Get:input_type -> stub.GetRecordRequest
 	7,  // 43: stub.Record.Create:output_type -> stub.CreateRecordResponse
 	9,  // 44: stub.Record.Update:output_type -> stub.UpdateRecordResponse
 	11, // 45: stub.Record.Apply:output_type -> stub.ApplyRecordResponse
 	13, // 46: stub.Record.UpdateMulti:output_type -> stub.UpdateMultiRecordResponse
-	15, // 47: stub.Record.Delete_:output_type -> stub.DeleteRecordResponse
+	15, // 47: stub.Record.Delete:output_type -> stub.DeleteRecordResponse
 	1,  // 48: stub.Record.List:output_type -> stub.ListRecordResponse
 	5,  // 49: stub.Record.Search:output_type -> stub.SearchRecordResponse
 	29, // 50: stub.Record.ReadStream:output_type -> model.Record
 	4,  // 51: stub.Record.WriteStream:output_type -> stub.WriteStreamResponse
-	17, // 52: stub.Record.Get_:output_type -> stub.GetRecordResponse
+	17, // 52: stub.Record.Get:output_type -> stub.GetRecordResponse
 	43, // [43:53] is the sub-list for method output_type
 	33, // [33:43] is the sub-list for method input_type
 	33, // [33:33] is the sub-list for extension type_name

@@ -49,6 +49,7 @@ message ResourceProperty {
 
   // this is to mark property as required
   bool required = 5;
+  bool primary = 6;
   uint32 length = 7; // length property is only valid and required for String typed properties
   bool unique = 8;
   bool immutable = 9; // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded

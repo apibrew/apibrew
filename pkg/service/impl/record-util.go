@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -18,7 +19,12 @@ func InitRecord(ctx context.Context, resource *model.Resource, record *model.Rec
 		record.Properties = make(map[string]*structpb.Value)
 	}
 
-	record.Properties["id"] = structpb.NewStringValue(recordNewId.String())
+	if util.HasResourceSinglePrimaryProp(resource) {
+		idProp := util.GetResourceSinglePrimaryProp(resource)
+		if idProp.Type == model.ResourceProperty_UUID {
+			record.Properties[idProp.Name] = structpb.NewStringValue(recordNewId.String())
+		}
+	}
 
 	ah := helper.RecordSpecialColumnHelper{
 		Resource: resource,

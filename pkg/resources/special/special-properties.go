@@ -10,12 +10,12 @@ import (
 var IdProperty = &model.ResourceProperty{
 	Name:        "id",
 	Type:        model.ResourceProperty_UUID,
+	Primary:     true,
 	Required:    true,
 	Immutable:   true,
 	Description: Pointer("The unique identifier of the resource. It is randomly generated and immutable."),
 	Annotations: map[string]string{
 		annotations.SpecialProperty: "true",
-		annotations.PrimaryProperty: "true",
 	},
 	ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 }
@@ -131,10 +131,6 @@ var AnnotationsProperty = &model.ResourceProperty{
 	Annotations: map[string]string{
 		annotations.SpecialProperty: annotations.Enabled,
 	},
-}
-
-func IsIdProperty(property *model.ResourceProperty) bool {
-	return property.Name == IdProperty.Name && property.Type == IdProperty.Type
 }
 
 func Pointer[T interface{}](val T) *T {

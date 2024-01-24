@@ -19,7 +19,6 @@ const SourceIdentity = "SourceIdentity"
 const SourceMatchKey = "SourceMatchKey"
 const Identity = "Identity"
 const SpecialProperty = "SpecialProperty"
-const PrimaryProperty = "PrimaryProperty"
 
 // hcl
 const IsHclLabel = "IsHclLabel"

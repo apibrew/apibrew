@@ -5,7 +5,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 )
 
@@ -41,7 +40,7 @@ func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder
 			}
 
 			property := currentPropertyMap[sk.CreateProperty.Property]
-			if annotations.IsEnabled(property, annotations.PrimaryProperty) { // skip primary properties because they are already created as upon table creation, this logic should be reworked
+			if property.Primary { // skip primary properties because they are already created as upon table creation, this logic should be reworked
 				continue
 			}
 			if IsPropertyOmitted(property) {

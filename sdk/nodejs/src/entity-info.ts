@@ -16,17 +16,25 @@ export function fromResource(resource: Resource): EntityInfo {
 }
 
 // getRestPath
-function getRestPath(resource: Resource): string {
+export function getRestPath(resource: Resource): string {
     if (resource.annotations && (resource.annotations as any)["OpenApiRestPath"]) {
         return (resource.annotations as any)["OpenApiRestPath"];
     } else if (!resource.namespace.name || resource.namespace.name === "default") {
         return slug(resource.name);
     } else {
-        return slug(resource.namespace.name + "/" + resource.name);
+        return slug(resource.namespace.name) + "-" + slug(resource.name);
     }
 }
 
 // slug
-function slug(name: string): string {
-    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+function slug(s: string): string {
+    let result = '';
+    for (let i = 0; i < s.length; i++) {
+        const char = s[i];
+        if (i > 0 && char !== char.toLowerCase()) {
+            result += '-';
+        }
+        result += char.toLowerCase();
+    }
+    return result;
 }
