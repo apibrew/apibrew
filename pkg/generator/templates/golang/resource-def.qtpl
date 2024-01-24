@@ -41,6 +41,8 @@
         Type:     model.ResourceProperty_{%s property.Type.String() %},
         {%- if property.Length > 0 %}Length:   {%d int(property.Length) %},
         {% endif-%}
+        {%- if property.Primary %}Primary: true,
+        {% endif-%}
         {%- if property.Required %}Required: true,
         {% endif-%}
         {%- if property.Unique %}Unique: true,
