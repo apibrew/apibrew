@@ -33,6 +33,8 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	if resource.Indexes != nil {
 		var lv []*structpb.Value
 
+		lv = make([]*structpb.Value, 0)
+
 		for _, index := range resource.Indexes {
 			lv = append(lv, ResourceIndexToValue(index))
 		}
@@ -49,6 +51,8 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 
 	if resource.Types != nil {
 		var lv []*structpb.Value
+
+		lv = make([]*structpb.Value, 0)
 
 		for _, subType := range resource.Types {
 			lv = append(lv, ResourceTypeToValue(resource, subType))
@@ -99,6 +103,8 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 	if record.Properties["indexes"] != nil {
 		list := record.Properties["indexes"].GetListValue()
 
+		resource.Indexes = make([]*model.ResourceIndex, 0)
+
 		for _, val := range list.Values {
 			resource.Indexes = append(resource.Indexes, ResourceIndexFromValue(val))
 		}
@@ -106,6 +112,8 @@ func ResourceFromRecord(record *model.Record) *model.Resource {
 
 	if record.Properties["types"] != nil {
 		list := record.Properties["types"].GetListValue()
+
+		resource.Types = make([]*model.ResourceSubType, 0)
 
 		for _, val := range list.Values {
 			resource.Types = append(resource.Types, ResourceTypeFromValue(val))
