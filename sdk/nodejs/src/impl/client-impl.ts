@@ -152,9 +152,12 @@ export class ClientImpl implements Client {
         return resp.data.content;
     }
 
-    public async createResource(resource: Resource): Promise<Resource> {
+    public async createResource(resource: Resource, forceMigrate?: boolean): Promise<Resource> {
         const resp = await axios.post<Resource>(Urls.resourceUrl(this.url), resource, {
-            headers: this.headers(),
+            headers: {
+                ...this.headers(),
+                "X-Force-Migrate": forceMigrate ? "true" : "false",
+            },
             validateStatus: (status) => true,
         });
 
@@ -163,9 +166,12 @@ export class ClientImpl implements Client {
         return resp.data;
     }
 
-    public async updateResource(resource: Resource): Promise<Resource> {
+    public async updateResource(resource: Resource, forceMigrate?: boolean): Promise<Resource> {
         const resp = await axios.put<Resource>(Urls.resourceById(this.url, resource.id!), resource, {
-            headers: this.headers(),
+            headers: {
+                ...this.headers(),
+                "X-Force-Migrate": forceMigrate ? "true" : "false",
+            },
             validateStatus: (status) => true,
         });
 
@@ -174,9 +180,12 @@ export class ClientImpl implements Client {
         return resp.data;
     }
 
-    public async deleteResource(resource: Resource): Promise<void> {
+    public async deleteResource(resource: Resource, forceMigrate?: boolean): Promise<void> {
         const resp = await axios.delete(Urls.resourceById(this.url, resource.id!), {
-            headers: this.headers(),
+            headers: {
+                ...this.headers(),
+                "X-Force-Migrate": forceMigrate ? "true" : "false",
+            },
             validateStatus: (status) => true,
         });
 

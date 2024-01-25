@@ -78,7 +78,9 @@ func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *
 		return
 	}
 
-	res, serviceErr := r.resourceService.Create(request.Context(), resourceFrom(rw), true, false)
+	var forceMigrate = request.Header.Get("X-Force-Migrate") == "true" || request.URL.Query().Get("forceMigrate") == "true"
+
+	res, serviceErr := r.resourceService.Create(request.Context(), resourceFrom(rw), true, forceMigrate)
 
 	ServiceResponder().
 		Writer(writer).
@@ -132,7 +134,9 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 
 	resource.Id = id
 
-	serviceErr = r.resourceService.Update(request.Context(), resourceFrom(resourceForUpdate), true, false)
+	var forceMigrate = request.Header.Get("X-Force-Migrate") == "true" || request.URL.Query().Get("forceMigrate") == "true"
+
+	serviceErr = r.resourceService.Update(request.Context(), resourceFrom(resourceForUpdate), true, forceMigrate)
 
 	if serviceErr != nil {
 		resource = nil
@@ -147,7 +151,9 @@ func (r *resourceApi) handleResourceDelete(writer http.ResponseWriter, request *
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	serviceErr := r.resourceService.Delete(request.Context(), []string{id}, true, false)
+	var forceMigrate = request.Header.Get("X-Force-Migrate") == "true" || request.URL.Query().Get("forceMigrate") == "true"
+
+	serviceErr := r.resourceService.Delete(request.Context(), []string{id}, true, forceMigrate)
 
 	ServiceResponder().
 		Writer(writer).

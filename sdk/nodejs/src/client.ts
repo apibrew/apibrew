@@ -26,11 +26,11 @@ export interface Client {
 
     listResources(): Promise<Resource[]>;
 
-    createResource(resource: Resource): Promise<Resource>;
+    createResource(resource: Resource, forceMigrate?: boolean): Promise<Resource>;
 
-    updateResource(resource: Resource): Promise<Resource>;
+    updateResource(resource: Resource, forceMigrate?: boolean): Promise<Resource>;
 
-    deleteResource(resource: Resource): Promise<void>;
+    deleteResource(resource: Resource, forceMigrate?: boolean): Promise<void>;
 
     authenticateWithToken(token: string): void;
 
