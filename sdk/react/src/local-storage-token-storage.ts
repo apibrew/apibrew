@@ -41,4 +41,25 @@ export class LocalStorageTokenStorage implements TokenStorage {
       throw new Error('Cannot set token in non-browser environment')
     }
   }
+
+  list(): { name: string; token: string }[] {
+    const list: { name: string; token: string }[] = []
+
+    if (typeof window !== 'undefined') {
+      const tokens = JSON.parse(
+        window.localStorage.getItem(this.getKey()) || '{}'
+      )
+
+      for (const name in tokens) {
+        if (tokens.hasOwnProperty(name)) {
+          list.push({
+            name,
+            token: tokens[name]
+          })
+        }
+      }
+    }
+
+    return list
+  }
 }

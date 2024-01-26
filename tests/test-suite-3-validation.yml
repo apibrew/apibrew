@@ -7,9 +7,9 @@ properties:
   propInt64:
     type: INT64
   propFloat32:
-    type: FLOAT_32
+    type: FLOAT32
   propFloat64:
-    type: FLOAT_64
+    type: FLOAT64
 ---
 type: testing/TestCase
 name: test-case-3-validation

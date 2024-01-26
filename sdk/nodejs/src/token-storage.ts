@@ -3,5 +3,7 @@ export interface TokenStorage {
 
     set(name: string, token: string): void;
 
+    list(): {name: string, token: string}[];
+
     clear(): void;
 }

@@ -81,6 +81,18 @@ export class DefaultTokenStorage implements TokenStorage {
     set(name: string, token: string): void {
         this.data.set(name, token);
     }
+    list(): { name: string; token: string; }[] {
+        const result: { name: string; token: string; }[] = [];
+
+        this.data.forEach((value, key) => {
+            result.push({
+                name: key,
+                token: value,
+            })
+        })
+
+        return result;
+    }
 
 }
 
@@ -96,6 +108,10 @@ export class ClientImpl implements Client {
     }
 
     useTokenStorage(tokenStorage: TokenStorage): void {
+        this.tokenStorage.list().forEach(token => {
+            tokenStorage.set(token.name, token.token)
+        })
+
         this.tokenStorage = tokenStorage
 
         this.setupTokenRefresher()
