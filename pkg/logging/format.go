@@ -18,9 +18,14 @@ func ShortEventInfo(event *model.Event) string {
 		return fmt.Sprintf("%s [no records]", event.Id)
 	}
 
-	for _, rec := range event.Records {
+	for index, rec := range event.Records {
 		if rec != nil {
 			ids = append(ids, util.GetRecordId(rec))
+		}
+
+		if index > 5 {
+			ids = append(ids, "...")
+			break
 		}
 	}
 

@@ -3,6 +3,7 @@ package abs
 import (
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/dop251/goja"
 )
 
 type GlobalObject interface {
@@ -10,10 +11,14 @@ type GlobalObject interface {
 	Get(name string) interface{}
 }
 
+type VmOptions struct {
+}
+
 type CodeExecutorService interface {
 	GetContainer() service.Container
 	GetBackendEventHandler() backend_event_handler.BackendEventHandler
 	GetGlobalObject() GlobalObject
+	NewVm(options VmOptions) (*goja.Runtime, error)
 }
 
 type CodeExecutionContext interface {

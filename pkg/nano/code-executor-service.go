@@ -20,6 +20,25 @@ type codeExecutorService struct {
 	globalObject        *globalObject
 }
 
+func (s codeExecutorService) NewVm(options abs.VmOptions) (*goja.Runtime, error) {
+	vm := goja.New()
+	vm.SetFieldNameMapper(goja.UncapFieldNameMapper())
+
+	registry := new(require.Registry) // this can be shared by multiple runtimes
+
+	runtime := goja.New()
+	registry.Enable(runtime)
+
+	cec := &codeExecutionContext{}
+	err := s.registerBuiltIns("", vm, cec)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return vm, nil
+}
+
 func (s codeExecutorService) GetContainer() service.Container {
 	return s.container
 }
@@ -49,14 +68,13 @@ func (s codeExecutorService) registerCode(code *Code) (err error) {
 	vm := goja.New()
 	vm.SetFieldNameMapper(goja.UncapFieldNameMapper())
 
-	cec := &codeExecutionContext{}
-
 	registry := new(require.Registry) // this can be shared by multiple runtimes
 
 	runtime := goja.New()
 	registry.Enable(runtime)
 
-	err = s.registerBuiltIns(code, vm, cec)
+	cec := &codeExecutionContext{}
+	err = s.registerBuiltIns(code.Name, vm, cec)
 
 	s.codeContext[code.Name] = cec
 
@@ -101,8 +119,8 @@ func (s codeExecutorService) unRegisterCode(code *Code) error {
 	return nil
 }
 
-func (s codeExecutorService) registerBuiltIns(code *Code, vm *goja.Runtime, cec *codeExecutionContext) error {
-	if err := addons.Register(vm, cec, s, code.Name, s.container); err != nil {
+func (s codeExecutorService) registerBuiltIns(codeName string, vm *goja.Runtime, cec *codeExecutionContext) error {
+	if err := addons.Register(vm, cec, s, codeName, s.container); err != nil {
 		return err
 	}
 
@@ -110,14 +128,14 @@ func (s codeExecutorService) registerBuiltIns(code *Code, vm *goja.Runtime, cec 
 		return err
 	}
 
-	if err := s.registerTimeoutFunctions(code, vm, cec); err != nil {
+	if err := s.registerTimeoutFunctions(vm, cec); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s codeExecutorService) registerTimeoutFunctions(code *Code, vm *goja.Runtime, cec *codeExecutionContext) error {
+func (s codeExecutorService) registerTimeoutFunctions(vm *goja.Runtime, cec *codeExecutionContext) error {
 	if err := vm.Set("setTimeout", s.setTimeoutFn(cec)); err != nil {
 		return err
 	}

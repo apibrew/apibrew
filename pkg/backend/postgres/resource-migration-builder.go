@@ -118,7 +118,15 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 			}
 
 			if !referencedResource.Virtual {
-				def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
+				def = append(def,
+					fmt.Sprintf(
+						" CONSTRAINT %s REFERENCES %s (%s) %s",
+						r.options.Quote(resource.SourceConfig.Entity+"_"+property.Name+"_fk"),
+						r.options.GetFullTableName(referencedResource.SourceConfig),
+						"id",
+						refClause,
+					),
+				)
 			}
 		}
 	}
@@ -284,7 +292,16 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 				}
 
 				if !referencedResource.Virtual {
-					sqlParts = append(sqlParts, fmt.Sprintf("ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause, r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(property.Name), r.options.Quote(referencedResource.SourceConfig.Entity), r.options.Quote("id")))
+					sqlParts = append(
+						sqlParts,
+						fmt.Sprintf(
+							"ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause,
+							r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_fk"),
+							r.options.Quote(property.Name),
+							r.options.GetFullTableName(referencedResource.SourceConfig),
+							r.options.Quote("id"),
+						),
+					)
 					changes++
 				}
 			}

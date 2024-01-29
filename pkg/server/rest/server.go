@@ -166,6 +166,7 @@ func (s *server) configureRoutes() {
 		AllowCredentials: true,
 		AllowedOrigins:   []string{"*"},
 		AllowedHeaders:   []string{"*"},
+		MaxAge:           86400,
 	})
 
 	if log.GetLevel() >= log.TraceLevel {

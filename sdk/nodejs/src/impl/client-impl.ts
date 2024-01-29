@@ -81,6 +81,7 @@ export class DefaultTokenStorage implements TokenStorage {
     set(name: string, token: string): void {
         this.data.set(name, token);
     }
+
     list(): { name: string; token: string; }[] {
         const result: { name: string; token: string; }[] = [];
 
@@ -128,18 +129,15 @@ export class ClientImpl implements Client {
         }
     }
 
-    public async applyResource(resource: Resource): Promise<Resource> {
-        const resp = await axios.post<Resource>(Urls.resourceUrl(this.url), resource, {
-            headers: this.headers(),
-            validateStatus: (status) => true,
-        });
+    public async applyResource(resource: Resource, forceMigrate?: boolean): Promise<Resource> {
+        const resp = await axios.get<Resource>(Urls.resourceByName(this.url, resource.namespace.name, resource.name));
 
         const existsStatus = resp.status;
 
         if (existsStatus == 200) {
-            return this.updateResource(resource);
+            return this.updateResource(resource, forceMigrate);
         } else if (existsStatus == 404) {
-            return this.createResource(resource);
+            return this.createResource(resource, forceMigrate);
         } else {
             ClientImpl.ensureResponseSuccess(resp);
             throw new Error("Unreachable");

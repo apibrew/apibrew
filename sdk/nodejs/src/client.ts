@@ -20,7 +20,7 @@ export interface Client {
 
     invalidateAuthentication(): void;
 
-    applyResource(resource: Resource): Promise<Resource>
+    applyResource(resource: Resource, forceMigrate?: boolean): Promise<Resource>
 
     getResourceByName(namespace: string, name: string): Promise<Resource>
 
