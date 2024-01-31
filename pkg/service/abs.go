@@ -61,7 +61,7 @@ type RecordService interface {
 	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
 	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
 	ExecuteAction(ctx context.Context, params ExecuteActionParams) (unstructured.Unstructured, errors.ServiceError)
-	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value) (*model.Record, errors.ServiceError)
+	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (*model.Record, errors.ServiceError)
 }
 
 type ResourceService interface {
@@ -148,6 +148,12 @@ type RecordListParams struct {
 	PackRecords       bool
 	Filters           map[string]string
 	Aggregation       *model.Aggregation
+	Sorting           *model.Sorting
+}
+
+type RecordLoadParams struct {
+	UseHistory        bool
+	ResolveReferences []string
 }
 
 func (p RecordListParams) ToRequest() *stub.ListRecordRequest {

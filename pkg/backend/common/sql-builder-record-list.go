@@ -55,6 +55,7 @@ type recordLister struct {
 	packRecords       bool
 	backend           *sqlBackend
 	aggregation       *model.Aggregation
+	sorting           *model.Sorting
 	propertyNameMap   map[string]*model.ResourceProperty
 }
 
@@ -177,21 +178,44 @@ func (r *recordLister) prepareAggregation() errors.ServiceError {
 	return nil
 }
 
+func (r *recordLister) prepareSorting() errors.ServiceError {
+	var orderBy []string
+
+	for _, item := range r.sorting.Items {
+		var prop = r.propertyNameMap[item.Property]
+		if prop == nil {
+			return errors.RecordValidationError.WithDetails("Sorting property not exists: " + item.Property)
+		}
+
+		orderBy = append(orderBy, fmt.Sprintf("%s %s", r.quote("t_"+item.Property), item.Direction))
+	}
+
+	r.builder.OrderBy(orderBy...)
+
+	return nil
+}
+
 func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.ServiceError) {
 	if err := r.Prepare(); err != nil {
 		return nil, 0, err
 	}
 
 	total, err = r.ExecCount()
-	if err != nil || total == 0 {
+	if err != nil || total == 0 || r.Limit == 0 {
 		return
 	}
 
 	selectBuilder := r.builder
 
+	if r.sorting != nil {
+		if err = r.prepareSorting(); err != nil {
+			return nil, 0, err
+		}
+	}
+
 	selectBuilder.Select(r.prepareCols()...)
 
-	if r.aggregation == nil {
+	if r.sorting == nil && r.aggregation == nil {
 		selectBuilder.OrderBy("t.id ASC")
 	}
 
@@ -661,6 +685,7 @@ func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, 
 		resource:          resource,
 		query:             params.Query,
 		aggregation:       params.Aggregation,
+		sorting:           params.Sorting,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
 		ResolveReferences: params.ResolveReferences,

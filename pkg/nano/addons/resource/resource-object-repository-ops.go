@@ -1,240 +1,113 @@
 package resource
 
 import (
-	"fmt"
-	"github.com/apibrew/apibrew/pkg/errors"
-	"github.com/apibrew/apibrew/pkg/helper"
-	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/nano/abs"
-	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
-	"github.com/apibrew/apibrew/pkg/server/rest"
-	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/api"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
 )
 
-func (o *resourceObject) createFn(recordValue goja.Value) goja.Value {
-	record, err := abs.ValueToRecord(o.resource, recordValue.Export())
+func (o *resourceObject) createFn(record unstructured.Unstructured) unstructured.Unstructured {
+	record["type"] = o.resource.Namespace + "/" + o.resource.Name
+
+	result, err := o.api.Create(util.SystemContext, record)
 
 	if err != nil {
 		panic(err)
 	}
 
-	result, err := o.container.GetRecordService().Create(util.SystemContext, service.RecordCreateParams{
-		Namespace: o.resource.Namespace,
-		Resource:  o.resource.Name,
-		Records:   []*model.Record{record},
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	return o.recordToValue(result[0])
+	return result
 }
 
-func (o *resourceObject) updateFn(recordValue goja.Value) goja.Value {
-	record, err := abs.ValueToRecord(o.resource, recordValue.Export())
+func (o *resourceObject) updateFn(record unstructured.Unstructured) unstructured.Unstructured {
+	record["type"] = o.resource.Namespace + "/" + o.resource.Name
+
+	result, err := o.api.Update(util.SystemContext, record)
 
 	if err != nil {
 		panic(err)
 	}
 
-	result, err := o.container.GetRecordService().Update(util.SystemContext, service.RecordUpdateParams{
-		Namespace: o.resource.Namespace,
-		Resource:  o.resource.Name,
-		Records:   []*model.Record{record},
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	return o.recordToValue(result[0])
+	return result
 }
 
-func (o *resourceObject) applyFn(recordValue goja.Value) goja.Value {
-	record, err := abs.ValueToRecord(o.resource, recordValue.Export())
+func (o *resourceObject) applyFn(record unstructured.Unstructured) unstructured.Unstructured {
+	record["type"] = o.resource.Namespace + "/" + o.resource.Name
+
+	result, err := o.api.Apply(util.SystemContext, record)
 
 	if err != nil {
 		panic(err)
 	}
 
-	result, err := o.container.GetRecordService().Apply(util.SystemContext, service.RecordUpdateParams{
-		Namespace: o.resource.Namespace,
-		Resource:  o.resource.Name,
-		Records:   []*model.Record{record},
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	return o.recordToValue(result[0])
+	return result
 }
 
-func (o *resourceObject) deleteFn(recordValue goja.Value) goja.Value {
-	record, err := abs.ValueToRecord(o.resource, recordValue.Export())
+func (o *resourceObject) deleteFn(record unstructured.Unstructured) {
+	record["type"] = o.resource.Namespace + "/" + o.resource.Name
+
+	err := o.api.Delete(util.SystemContext, record)
 
 	if err != nil {
 		panic(err)
 	}
-
-	var id = util.GetRecordId(record)
-	if id == "" {
-		return o.deleteFn(o.loadFn(recordValue))
-	}
-
-	err = o.container.GetRecordService().Delete(util.SystemContext, service.RecordDeleteParams{
-		Namespace: o.resource.Namespace,
-		Resource:  o.resource.Name,
-		Ids:       []string{id},
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	return goja.Undefined()
 }
 
-func (o *resourceObject) getFn(recordId string, params map[string]interface{}) goja.Value {
-	var resolveReferences []string
-
-	if params != nil {
-		if params["resolveReferences"] != nil {
-			resolveReferences = params["resolveReferences"].([]string)
-		}
-	}
-
-	record, err := o.container.GetRecordService().Get(util.SystemContext, service.RecordGetParams{
-		Namespace:         o.resource.Namespace,
-		Resource:          o.resource.Name,
-		Id:                recordId,
-		ResolveReferences: resolveReferences,
-	})
+func (o *resourceObject) getFn(recordId string, params api.LoadParams) unstructured.Unstructured {
+	record, err := o.api.Load(util.SystemContext, map[string]interface{}{
+		"type": o.resource.Namespace + "/" + o.resource.Name,
+		"id":   recordId,
+	}, params)
 
 	if err != nil {
 		panic(err)
 	}
 
-	return o.recordToValue(record)
+	return record
 }
 
-func (o *resourceObject) listFn(params rest.SearchRecordRequest) goja.Value {
-	listParams := service.RecordListParams{}
+func (o *resourceObject) listFn(params api.ListParams) api.RecordListResult {
+	params.Type = o.resource.Namespace + "/" + o.resource.Name
 
-	listParams.Limit = params.Limit
-	listParams.Offset = params.Offset
-	listParams.Filters = params.Filters
-	listParams.UseHistory = params.UseHistory
-
-	listParams.Namespace = o.resource.Namespace
-	listParams.Resource = o.resource.Name
-
-	content, total, err := o.container.GetRecordService().List(util.SystemContext, listParams)
+	result, err := o.api.List(util.SystemContext, params)
 
 	if err != nil {
 		panic(err)
 	}
 
-	var resultMap = make(map[string]interface{})
-
-	resultMap["content"] = util.ArrayMap(content, o.recordToObject)
-	resultMap["total"] = total
-	resultMap["total"] = total
-
-	return o.vm.ToValue(resultMap)
+	return result
 }
 
-func (o *resourceObject) searchFn(params *rest.SearchRecordRequest) goja.Value {
-	var listParams = service.RecordListParams{}
-	if params != nil {
-		listParams.Limit = params.Limit
-		listParams.Offset = params.Offset
-		listParams.UseHistory = params.UseHistory
-
-		if params.Query != nil {
-			listParams.Query = extramappings.BooleanExpressionToProto(*params.Query)
-		}
-	}
-
-	listParams.Namespace = o.resource.Namespace
-	listParams.Resource = o.resource.Name
-
-	content, total, err := o.container.GetRecordService().List(util.SystemContext, listParams)
+func (o *resourceObject) loadFn(record unstructured.Unstructured, params api.LoadParams) unstructured.Unstructured {
+	record["type"] = o.resource.Namespace + "/" + o.resource.Name
+	record, err := o.api.Load(util.SystemContext, record, params)
 
 	if err != nil {
 		panic(err)
 	}
 
-	var resultMap = make(map[string]interface{})
-
-	resultMap["content"] = util.ArrayMap(content, o.recordToObject)
-	resultMap["total"] = total
-	resultMap["total"] = total
-
-	return o.vm.ToValue(resultMap)
+	return record
 }
+func (o *resourceObject) countFn(params api.ListParams) uint32 {
+	params.Type = o.resource.Namespace + "/" + o.resource.Name
 
-func (o *resourceObject) loadFn(params goja.Value) goja.Value {
-	recordToLoad, err := abs.ValueToRecord(o.resource, params.Export())
+	params.Limit = 0
+
+	result, err := o.api.List(util.SystemContext, params)
 
 	if err != nil {
 		panic(err)
 	}
 
-	identifierProps, rerr := util.RecordIdentifierProperties(o.resource, recordToLoad.Properties)
-
-	if rerr != nil {
-		panic(rerr)
-	}
-
-	qb := helper.NewQueryBuilder()
-
-	searchRes, total, serr := o.container.GetRecordService().List(util.SystemContext, service.RecordListParams{
-		Namespace: o.resource.Namespace,
-		Resource:  o.resource.Name,
-		Limit:     1,
-		Query:     qb.FromProperties(o.resource, identifierProps),
-	})
-
-	if err != nil {
-		panic(serr)
-	}
-
-	if total == 0 {
-		panic(errors.LogicalError.WithDetails(fmt.Sprintf("Record not found with params: %v", identifierProps)))
-	}
-
-	return o.recordToValue(searchRes[0])
-}
-func (o *resourceObject) countFn(filters map[string]string) goja.Value {
-	var listParams = service.RecordListParams{}
-
-	listParams.Namespace = o.resource.Namespace
-	listParams.Resource = o.resource.Name
-	listParams.Filters = filters
-	listParams.Limit = 1
-
-	_, total, err := o.container.GetRecordService().List(util.SystemContext, listParams)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return o.vm.ToValue(total)
+	return result.Total
 }
 
-func (o *resourceObject) simpleAggregateFn(property string, filters map[string]string, algorithm model.AggregationItem_Algorithm) goja.Value {
-	var listParams = service.RecordListParams{}
+func (o *resourceObject) simpleAggregateFn(property string, filters map[string]string, algorithm api.AggregationAlgorithm) unstructured.Any {
+	var params = api.ListParams{}
+	params.Filters = filters
 
-	listParams.Namespace = o.resource.Namespace
-	listParams.Resource = o.resource.Name
-	listParams.Limit = 1
-	listParams.Filters = filters
-	listParams.Aggregation = &model.Aggregation{
-		Items: []*model.AggregationItem{
+	params.Aggregation = &api.Aggregation{
+		Items: []api.AggregationItem{
 			{
 				Name:      "result",
 				Algorithm: algorithm,
@@ -243,33 +116,35 @@ func (o *resourceObject) simpleAggregateFn(property string, filters map[string]s
 		},
 	}
 
-	result, _, err := o.container.GetRecordService().List(util.SystemContext, listParams)
+	params.Type = o.resource.Namespace + "/" + o.resource.Name
+
+	result, err := o.api.List(util.SystemContext, params)
 
 	if err != nil {
 		panic(err)
 	}
 
-	if len(result) == 0 {
+	if result.Total == 0 {
 		return o.vm.ToValue(0)
 	}
 
-	return o.vm.ToValue(result[0].Properties["result"].AsInterface())
+	return result.Content[0][property]
 }
 
-func (o *resourceObject) sumFn(property string, filters map[string]string) goja.Value {
-	return o.simpleAggregateFn(property, filters, model.AggregationItem_SUM)
+func (o *resourceObject) sumFn(property string, filters map[string]string) unstructured.Any {
+	return o.simpleAggregateFn(property, filters, api.Sum)
 }
 
-func (o *resourceObject) maxFn(property string, filters map[string]string) goja.Value {
-	return o.simpleAggregateFn(property, filters, model.AggregationItem_MAX)
+func (o *resourceObject) maxFn(property string, filters map[string]string) unstructured.Any {
+	return o.simpleAggregateFn(property, filters, api.Max)
 }
 
-func (o *resourceObject) minFn(property string, filters map[string]string) goja.Value {
-	return o.simpleAggregateFn(property, filters, model.AggregationItem_MIN)
+func (o *resourceObject) minFn(property string, filters map[string]string) unstructured.Any {
+	return o.simpleAggregateFn(property, filters, api.Min)
 }
 
-func (o *resourceObject) avgFn(property string, filters map[string]string) goja.Value {
-	return o.simpleAggregateFn(property, filters, model.AggregationItem_AVG)
+func (o *resourceObject) avgFn(property string, filters map[string]string) unstructured.Any {
+	return o.simpleAggregateFn(property, filters, api.Avg)
 }
 
 func (o *resourceObject) initRepositoryMethods(object *goja.Object) {
@@ -280,7 +155,6 @@ func (o *resourceObject) initRepositoryMethods(object *goja.Object) {
 	_ = object.Set("get", o.getFn)
 	_ = object.Set("findById", o.getFn)
 	_ = object.Set("list", o.listFn)
-	_ = object.Set("search", o.searchFn)
 	_ = object.Set("load", o.loadFn)
 	_ = object.Set("count", o.countFn)
 	_ = object.Set("sum", o.sumFn)

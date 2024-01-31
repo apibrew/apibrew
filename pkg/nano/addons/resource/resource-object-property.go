@@ -1,6 +1,8 @@
 package resource
 
 import (
+	"github.com/apibrew/apibrew/pkg/api"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/dop251/goja"
 	log "github.com/sirupsen/logrus"
@@ -12,8 +14,8 @@ func (o *resourceObject) initPropertyMethods(object *goja.Object) {
 	}
 }
 
-func (o *resourceObject) aggFnForProp(property string, algorithm model.AggregationItem_Algorithm) func(filters map[string]string) goja.Value {
-	return func(filters map[string]string) goja.Value {
+func (o *resourceObject) aggFnForProp(property string, algorithm api.AggregationAlgorithm) func(filters map[string]string) unstructured.Any {
+	return func(filters map[string]string) unstructured.Any {
 		return o.simpleAggregateFn(property, filters, algorithm)
 	}
 }
@@ -73,13 +75,13 @@ func (o *resourceObject) recordComputeHandlerFnForDep(fn func(call goja.Function
 
 				return o.vm.ToValue(depEntity)
 			} else {
-				entityValue := o.loadFn(o.vm.ToValue(depPropValue))
+				entityValue := o.loadFn(depPropValue.(unstructured.Unstructured), api.LoadParams{})
 				entity := make(map[string]interface{})
 
-				entity["id"] = entityValue.Export().(map[string]interface{})["id"]
-				entity[prop.Name] = fn(goja.FunctionCall{Arguments: []goja.Value{entityValue}}).Export()
+				entity["id"] = entityValue["id"]
+				entity[prop.Name] = fn(goja.FunctionCall{Arguments: []goja.Value{o.vm.ToValue(entityValue)}}).Export()
 
-				o.updateFn(o.vm.ToValue(entity))
+				o.updateFn(entity)
 			}
 		}
 
@@ -92,10 +94,10 @@ func (o *resourceObject) propertyObject(prop *model.ResourceProperty) goja.Value
 
 	_ = object.Set("resourceObject", o)
 	_ = object.Set("property", prop)
-	_ = object.Set("sum", o.aggFnForProp(prop.Name, model.AggregationItem_SUM))
-	_ = object.Set("max", o.aggFnForProp(prop.Name, model.AggregationItem_MAX))
-	_ = object.Set("min", o.aggFnForProp(prop.Name, model.AggregationItem_MIN))
-	_ = object.Set("avg", o.aggFnForProp(prop.Name, model.AggregationItem_AVG))
+	_ = object.Set("sum", o.aggFnForProp(prop.Name, api.Sum))
+	_ = object.Set("max", o.aggFnForProp(prop.Name, api.Max))
+	_ = object.Set("min", o.aggFnForProp(prop.Name, api.Min))
+	_ = object.Set("avg", o.aggFnForProp(prop.Name, api.Avg))
 	_ = object.Set("compute", o.computeFn(prop))
 
 	return object

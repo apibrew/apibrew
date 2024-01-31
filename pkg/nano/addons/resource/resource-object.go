@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"github.com/apibrew/apibrew/pkg/api"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/nano/abs"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -19,6 +20,7 @@ type resourceObject struct {
 	cec                 abs.CodeExecutionContext
 	backendEventHandler backend_event_handler.BackendEventHandler
 	global              abs.GlobalObject
+	api                 api.Interface
 }
 
 func (o *resourceObject) handlerSelector(action model.Event_Action) *model.EventSelector {
@@ -83,7 +85,15 @@ func resourceFn(container service.Container, vm *goja.Runtime, cec abs.CodeExecu
 	return func(args ...string) goja.Value {
 		resource := ResourceByName(args, resourceService)
 
-		ro := &resourceObject{resource: resource, container: container, vm: vm, cec: cec, backendEventHandler: backendEventHandler, global: global}
+		ro := &resourceObject{
+			resource:            resource,
+			container:           container,
+			api:                 api.NewInterface(container),
+			vm:                  vm,
+			cec:                 cec,
+			backendEventHandler: backendEventHandler,
+			global:              global,
+		}
 
 		value := vm.NewObject()
 

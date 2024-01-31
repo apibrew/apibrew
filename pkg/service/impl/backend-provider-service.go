@@ -232,6 +232,7 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 			Offset:            event.RecordSearchParams.Offset,
 			ResolveReferences: event.RecordSearchParams.ResolveReferences,
 			Aggregation:       event.RecordSearchParams.Aggregation,
+			Sorting:           event.RecordSearchParams.Sorting,
 		}, nil)
 
 		event.Records = result

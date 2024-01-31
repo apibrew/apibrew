@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
+	"strings"
 )
 
 type api struct {
@@ -99,7 +100,7 @@ func (a api) Save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 	return processedRecordObj, nil
 }
 
-func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, params LoadParams) (unstructured.Unstructured, errors.ServiceError) {
 	if err := a.checkType(recordObj); err != nil {
 		return nil, err
 	}
@@ -114,7 +115,10 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured) (uns
 		return nil, errors.RecordValidationError.WithMessage(err2.Error())
 	}
 
-	record, err := a.container.GetRecordService().Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, properties)
+	record, err := a.container.GetRecordService().Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, properties, service.RecordLoadParams{
+		UseHistory:        params.UseHistory,
+		ResolveReferences: params.ResolveReferences,
+	})
 
 	if err != nil {
 		return nil, err
@@ -140,7 +144,7 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 
 	if recordObj["id"] == nil {
 		var err errors.ServiceError
-		recordObj, err = a.Load(ctx, recordObj)
+		recordObj, err = a.Load(ctx, recordObj, LoadParams{})
 
 		if err != nil {
 			return err
@@ -154,7 +158,7 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 	})
 }
 
-func (a api) List(ctx context.Context, params ListParams) ([]unstructured.Unstructured, uint32, errors.ServiceError) {
+func (a api) List(ctx context.Context, params ListParams) (RecordListResult, errors.ServiceError) {
 	var resourceIdentity = util.ParseType(params.Type)
 
 	var query *model.BooleanExpression
@@ -163,9 +167,8 @@ func (a api) List(ctx context.Context, params ListParams) ([]unstructured.Unstru
 		query = extramappings.BooleanExpressionToProto(*params.Query)
 	}
 
-	var records []*model.Record
-
 	var aggregation *model.Aggregation
+	var sorting *model.Sorting
 
 	if params.Aggregation != nil {
 		aggregation = &model.Aggregation{
@@ -188,7 +191,18 @@ func (a api) List(ctx context.Context, params ListParams) ([]unstructured.Unstru
 		}
 	}
 
-	records, count, err := a.container.GetRecordService().List(ctx, service.RecordListParams{
+	if len(params.Sorting) > 0 {
+		sorting = &model.Sorting{}
+
+		for _, item := range params.Sorting {
+			sorting.Items = append(sorting.Items, &model.SortItem{
+				Property:  item.Property,
+				Direction: model.SortItem_Direction(model.SortItem_Direction_value[strings.ToUpper(string(item.Direction))]),
+			})
+		}
+	}
+
+	records, total, err := a.container.GetRecordService().List(ctx, service.RecordListParams{
 		Namespace:         resourceIdentity.Namespace,
 		Resource:          resourceIdentity.Name,
 		Query:             query,
@@ -198,10 +212,11 @@ func (a api) List(ctx context.Context, params ListParams) ([]unstructured.Unstru
 		ResolveReferences: params.ResolveReferences,
 		Filters:           params.Filters,
 		Aggregation:       aggregation,
+		Sorting:           sorting,
 	})
 
 	if err != nil {
-		return nil, 0, err
+		return RecordListResult{}, err
 	}
 
 	var result []unstructured.Unstructured
@@ -210,13 +225,16 @@ func (a api) List(ctx context.Context, params ListParams) ([]unstructured.Unstru
 		recordObj, err2 := unstructured.FromRecord(record)
 
 		if err2 != nil {
-			return nil, 0, errors.RecordValidationError.WithMessage(err2.Error())
+			return RecordListResult{}, errors.RecordValidationError.WithMessage(err2.Error())
 		}
 
 		result = append(result, recordObj)
 	}
 
-	return result, count, nil
+	return RecordListResult{
+		Total:   total,
+		Content: result,
+	}, nil
 }
 
 func NewInterface(container service.Container) Interface {

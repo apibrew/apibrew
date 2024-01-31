@@ -108,6 +108,7 @@ func (b backendProviderService) ListRecords(ctx context.Context, resource *model
 			Offset:            params.Offset,
 			ResolveReferences: params.ResolveReferences,
 			Aggregation:       params.Aggregation,
+			Sorting:           params.Sorting,
 		},
 	}))
 

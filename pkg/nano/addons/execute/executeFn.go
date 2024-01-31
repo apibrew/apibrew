@@ -62,7 +62,7 @@ func executeFn(vm *goja.Runtime) func(script string, params Params) interface{} 
 				panic(err)
 			}
 
-			return value
+			return value.Export()
 		}
 	}
 }

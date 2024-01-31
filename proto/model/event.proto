@@ -8,6 +8,7 @@ import "model/resource.proto";
 import "model/record.proto";
 import "model/query.proto";
 import "model/aggregation.proto";
+import "model/sort.proto";
 import "model/error.proto";
 import 'google/protobuf/timestamp.proto';
 import 'google/protobuf/struct.proto';
@@ -28,6 +29,7 @@ message Event {
     uint64 offset = 6;
     repeated string resolveReferences = 8;
     model.Aggregation aggregation = 9;
+    model.Sorting sorting = 10;
   }
   Action action = 2;
   string actionSummary = 3;

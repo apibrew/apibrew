@@ -177,6 +177,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		Limit:       params.Limit,
 		Offset:      params.Offset,
 		Aggregation: params.Aggregation,
+		Sorting:     params.Sorting,
 	}, params.ResultChan)
 
 	// todo implement params.PackRecords
@@ -303,7 +304,7 @@ func isResourceRelatedResource(resource *model.Resource) bool {
 	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name)
 }
 
-func (r *recordService) Load(ctx context.Context, namespace string, resourceName string, properties map[string]*structpb.Value) (*model.Record, errors.ServiceError) {
+func (r *recordService) Load(ctx context.Context, namespace string, resourceName string, properties map[string]*structpb.Value, loadParams service.RecordLoadParams) (*model.Record, errors.ServiceError) {
 	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
@@ -318,19 +319,26 @@ func (r *recordService) Load(ctx context.Context, namespace string, resourceName
 
 	qb := helper.NewQueryBuilder()
 
-	searchRes, total, serr := r.List(ctx, service.RecordListParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
-		Limit:     1,
-		Query:     qb.FromProperties(resource, identifierProps),
-	})
+	var listParams = service.RecordListParams{}
+
+	listParams.Query = qb.FromProperties(resource, identifierProps)
+	listParams.Namespace = namespace
+	listParams.Resource = resourceName
+	listParams.Limit = 1
+	listParams.Offset = 0
+	listParams.ResolveReferences = loadParams.ResolveReferences
+	listParams.UseHistory = loadParams.UseHistory
+
+	searchRes, total, serr := r.List(ctx, listParams)
 
 	if err != nil {
 		return nil, serr
 	}
 
-	if total > 0 {
+	if total == 1 {
 		return searchRes[0], nil
+	} else if total > 1 {
+		return nil, errors.RecordNotFoundError.WithMessage("multiple records found with properties")
 	} else {
 		return nil, errors.RecordNotFoundError.WithMessage("Could not locate record with properties")
 	}

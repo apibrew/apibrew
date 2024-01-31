@@ -44,6 +44,7 @@ type ListRecordParams struct {
 	Offset            uint64
 	ResolveReferences []string
 	Aggregation       *model.Aggregation
+	Sorting           *model.Sorting
 }
 
 type UpgradeResourceParams struct {

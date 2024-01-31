@@ -285,7 +285,7 @@ export class ClientImpl implements Client {
             params = {}
         }
 
-        if (!params.query) {
+        if (!params.query && !params.sorting && !params.aggregation) {
             let url = Urls.recordUrl(this.url, entityInfo.restPath)
             const queryParams: { [key: string]: string } = {}
 

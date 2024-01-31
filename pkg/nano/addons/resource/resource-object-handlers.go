@@ -9,6 +9,7 @@ import (
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
+	"runtime/debug"
 )
 
 func (o *resourceObject) registerHandler(order int, sync bool, responds bool, action model.Event_Action) func(fn func(call goja.FunctionCall) goja.Value) {
@@ -33,6 +34,7 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 	return func(ctx context.Context, event *model.Event) (processedEvent *model.Event, err errors.ServiceError) {
 		defer func() {
 			if r := recover(); r != nil {
+				debug.Stack()
 				err = errors.RecordValidationError.WithDetails(fmt.Sprintf("%v", r))
 			}
 		}()

@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/api"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -13,8 +14,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/types/known/structpb"
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -25,7 +24,7 @@ type RecordApi interface {
 }
 
 type recordApi struct {
-	recordService   service.RecordService
+	api             api.Interface
 	resourceService service.ResourceService
 	watchService    service.WatchService
 }
@@ -39,6 +38,7 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 
 	// internal actions
 	subRoute.HandleFunc("/{resourceSlug}/_search", r.handleRecordSearch).Methods("POST")
+	subRoute.HandleFunc("/{resourceSlug}/_load", r.handleRecordLoad).Methods("POST")
 	subRoute.HandleFunc("/{resourceSlug}/_watch", r.handleRecordWatch).Methods("GET")
 	subRoute.HandleFunc("/{resourceSlug}/_resource", r.handleRecordResource).Methods("GET")
 
@@ -46,10 +46,6 @@ func (r *recordApi) ConfigureRouter(router *mux.Router) {
 	subRoute.HandleFunc("/{resourceSlug}/{id}", r.handleRecordGet).Methods("GET")
 	subRoute.HandleFunc("/{resourceSlug}/{id}", r.handleRecordUpdate).Methods("PUT")
 	subRoute.HandleFunc("/{resourceSlug}/{id}", r.handleRecordDelete).Methods("DELETE")
-
-	// user defined actions
-	subRoute.HandleFunc("/{resourceSlug}/{id}/_{action}", r.handleAction).Methods("GET")
-	subRoute.HandleFunc("/{resourceSlug}/{id}/_{action}", r.handleAction).Methods("POST")
 }
 
 func (r *recordApi) matchFunc(request *http.Request, match *mux.RouteMatch) bool {
@@ -107,10 +103,9 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 
 	filters := r.makeFilters(request)
 
-	result, total, serviceErr := r.recordService.List(r.prepareContext(request), service.RecordListParams{
+	result, serviceErr := r.api.List(r.prepareContext(request), api.ListParams{
+		Type:              resource.Namespace + "/" + resource.Name,
 		Filters:           filters,
-		Namespace:         resource.Namespace,
-		Resource:          resource.Name,
 		Limit:             uint32(limit),
 		Offset:            uint64(offset),
 		UseHistory:        getRequestBoolFlag(request, "useHistory"),
@@ -122,10 +117,7 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	respondSuccess(writer, &RecordList{
-		Total:   uint64(total),
-		Records: util.ArrayMap(result, NewRecordWrapper),
-	})
+	respondSuccess(writer, result)
 }
 
 func (r *recordApi) makeFilters(request *http.Request) map[string]string {
@@ -144,71 +136,50 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
-	record1 := NewEmptyRecordWrapper()
+	record := new(unstructured.Unstructured)
 
-	err := parseRequestMessage(request, record1)
+	err := parseRequestMessage(request, record)
 
 	if err != nil {
 		handleError(writer, err)
 		return
 	}
 
-	res, serviceErr := r.recordService.Create(r.prepareContext(request), service.RecordCreateParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
-		Records:   []*model.Record{record1.toRecord()},
-	})
+	(*record)["type"] = resource.Namespace + "/" + resource.Name
+
+	result, serviceErr := r.api.Create(r.prepareContext(request), *record)
 
 	if serviceErr != nil {
 		handleServiceError(writer, serviceErr)
 		return
 	}
 
-	var createdRecord *model.Record = nil
-
-	if len(res) > 0 {
-		createdRecord = res[0]
-	}
-
-	respondSuccess(writer, NewRecordWrapper(createdRecord))
+	respondSuccess(writer, result)
 }
 
 func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
-	record1 := NewEmptyRecordWrapper()
+	record := new(unstructured.Unstructured)
 
-	err := parseRequestMessage(request, record1)
-
-	if err != nil {
-		handleError(writer, err)
-		return
-	}
+	err := parseRequestMessage(request, record)
 
 	if err != nil {
 		handleError(writer, err)
 		return
 	}
 
-	res, serviceErr := r.recordService.Apply(r.prepareContext(request), service.RecordUpdateParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
-		Records:   []*model.Record{record1.toRecord()},
-	})
+	(*record)["type"] = resource.Namespace + "/" + resource.Name
+
+	result, serviceErr := r.api.Apply(r.prepareContext(request), *record)
 
 	if serviceErr != nil {
 		handleServiceError(writer, serviceErr)
 		return
 	}
 
-	var appliedRecord *model.Record = nil
-
-	if len(res) > 0 {
-		appliedRecord = res[0]
-	}
-
-	respondSuccess(writer, NewRecordWrapper(appliedRecord))
+	respondSuccess(writer, result)
 }
 
 func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Request) {
@@ -218,57 +189,73 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 
 	resolveReferences := request.URL.Query().Get("resolve-references")
 
-	record, serviceErr := r.recordService.Get(r.prepareContext(request), service.RecordGetParams{
-		Namespace:         resource.Namespace,
-		Resource:          resource.Name,
-		Id:                id,
+	record, err := r.api.Load(util.SystemContext, map[string]interface{}{
+		"type": resource.Namespace + "/" + resource.Name,
+		"id":   id,
+	}, api.LoadParams{
+		UseHistory:        getRequestBoolFlag(request, "useHistory"),
 		ResolveReferences: strings.Split(resolveReferences, ","),
 	})
 
-	if serviceErr != nil {
-		handleServiceError(writer, serviceErr)
-		return
+	if err != nil {
+		panic(err)
 	}
 
-	respondSuccess(writer, NewRecordWrapper(record))
+	respondSuccess(writer, record)
 }
 
-func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http.Request) {
+func (r *recordApi) handleRecordLoad(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
-	id := vars["id"]
 
-	recordWrap := NewEmptyRecordWrapper()
+	record := new(unstructured.Unstructured)
 
-	err := parseRequestMessage(request, recordWrap)
-
-	record := recordWrap.toRecord()
+	err := parseRequestMessage(request, record)
 
 	if err != nil {
 		handleError(writer, err)
 		return
 	}
 
-	record.Properties["id"] = structpb.NewStringValue(id)
+	(*record)["type"] = resource.Namespace + "/" + resource.Name
 
-	result, serviceErr := r.recordService.Update(r.prepareContext(request), service.RecordUpdateParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
-		Records:   []*model.Record{record},
+	resolveReferences := request.URL.Query().Get("resolve-references")
+
+	result, err := r.api.Load(util.SystemContext, *record, api.LoadParams{
+		UseHistory:        getRequestBoolFlag(request, "useHistory"),
+		ResolveReferences: strings.Split(resolveReferences, ","),
 	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	respondSuccess(writer, result)
+}
+
+func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	record := new(unstructured.Unstructured)
+
+	err := parseRequestMessage(request, record)
+
+	if err != nil {
+		handleError(writer, err)
+		return
+	}
+
+	(*record)["type"] = resource.Namespace + "/" + resource.Name
+
+	result, serviceErr := r.api.Update(r.prepareContext(request), *record)
 
 	if serviceErr != nil {
 		handleServiceError(writer, serviceErr)
 		return
 	}
 
-	var updatedRecord *model.Record = nil
-
-	if len(result) == 1 {
-		updatedRecord = result[0]
-	}
-
-	respondSuccess(writer, NewRecordWrapper(updatedRecord))
+	respondSuccess(writer, result)
 }
 
 func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http.Request) {
@@ -276,10 +263,9 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 	id := vars["id"]
 
-	serviceErr := r.recordService.Delete(r.prepareContext(request), service.RecordDeleteParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
-		Ids:       []string{id},
+	serviceErr := r.api.Delete(r.prepareContext(request), unstructured.Unstructured{
+		"type": resource.Namespace + "/" + resource.Name,
+		"id":   id,
 	})
 
 	ServiceResponder().
@@ -291,7 +277,8 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
-	listRecordRequest := new(SearchRecordRequest)
+	listRecordRequest := new(api.ListParams)
+	listRecordRequest.Type = resource.Namespace + "/" + resource.Name
 
 	err := parseRequestMessage(request, listRecordRequest)
 
@@ -300,32 +287,14 @@ func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http
 		return
 	}
 
-	var query *model.BooleanExpression
-
-	if listRecordRequest.Query != nil {
-		query = extramappings.BooleanExpressionToProto(*listRecordRequest.Query)
-	}
-
-	result, total, serviceErr := r.recordService.List(r.prepareContext(request), service.RecordListParams{
-		Query:             query,
-		Filters:           listRecordRequest.Filters,
-		Namespace:         resource.Namespace,
-		Resource:          resource.Name,
-		Limit:             listRecordRequest.Limit,
-		Offset:            listRecordRequest.Offset,
-		UseHistory:        listRecordRequest.UseHistory,
-		ResolveReferences: listRecordRequest.ResolveReferences,
-	})
+	result, serviceErr := r.api.List(r.prepareContext(request), *listRecordRequest)
 
 	if serviceErr != nil {
 		handleServiceError(writer, serviceErr)
 		return
 	}
 
-	respondSuccess(writer, &RecordList{
-		Total:   uint64(total),
-		Records: util.ArrayMap(result, NewRecordWrapper),
-	})
+	respondSuccess(writer, result)
 }
 
 func (r *recordApi) handleRecordResource(writer http.ResponseWriter, request *http.Request) {
@@ -335,46 +304,6 @@ func (r *recordApi) handleRecordResource(writer http.ResponseWriter, request *ht
 	ServiceResponder().
 		Writer(writer).
 		Respond(resourceTo(resource), nil)
-}
-
-func (r *recordApi) handleAction(writer http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
-
-	var input = new(unstructured.Unstructured)
-
-	data, serr := io.ReadAll(request.Body)
-
-	if serr != nil {
-		handleError(writer, serr)
-		return
-	}
-
-	if len(data) == 0 {
-		data = []byte("{}")
-	}
-
-	serr = json.Unmarshal(data, input)
-
-	if serr != nil {
-		handleError(writer, serr)
-		return
-	}
-
-	result, err := r.recordService.ExecuteAction(r.prepareContext(request), service.ExecuteActionParams{
-		Namespace:  resource.Namespace,
-		Resource:   resource.Name,
-		Id:         vars["id"],
-		ActionName: vars["action"],
-		Input:      *input,
-	})
-
-	if err != nil {
-		handleError(writer, err)
-		return
-	}
-
-	respondSuccess(writer, result)
 }
 
 func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.Request) {
@@ -457,7 +386,7 @@ func (r *recordApi) prepareContext(request *http.Request) context.Context {
 
 func NewRecordApi(container service.Container) RecordApi {
 	return &recordApi{
-		recordService:   container.GetRecordService(),
+		api:             api.NewInterface(container),
 		resourceService: container.GetResourceService(),
 		watchService:    container.GetWatchService(),
 	}

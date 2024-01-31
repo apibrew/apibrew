@@ -399,7 +399,7 @@ func (m module) executeGet(ctx context.Context, execution *TestExecution, step T
 		return err
 	}
 
-	res, err := m.apiInterface.Load(ctx, payload.(unstructured.Unstructured))
+	res, err := m.apiInterface.Load(ctx, payload.(unstructured.Unstructured), api.LoadParams{})
 
 	if step.Name != nil {
 		(*variableMap)[*step.Name+"_result"] = res
@@ -473,11 +473,11 @@ func (m module) executeList(ctx context.Context, execution *TestExecution, step 
 		params.Offset = uint64(payloadObj["offset"].(float64))
 	}
 
-	res, total, err := m.apiInterface.List(ctx, params)
+	res, err := m.apiInterface.List(ctx, params)
 
 	if step.Name != nil {
-		(*variableMap)[*step.Name+"_result"] = res
-		(*variableMap)[*step.Name+"_result_total"] = total
+		(*variableMap)[*step.Name+"_result"] = res.Content
+		(*variableMap)[*step.Name+"_result_total"] = res.Total
 	}
 
 	return err

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "github.com/apibrew/apibrew/pkg/model";
+
+import 'google/protobuf/struct.proto';
+
+message SortItem {
+  string property = 1;
+  enum Direction {
+    ASC = 0;
+    DESC = 1;
+  }
+  Direction direction = 2;
+}
+
+message Sorting {
+  repeated SortItem items = 1;
+}
