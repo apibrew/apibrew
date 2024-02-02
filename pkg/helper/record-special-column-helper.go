@@ -61,7 +61,7 @@ func (h RecordSpecialColumnHelper) SetCreatedOn(createdOn *timestamppb.Timestamp
 }
 
 func (h RecordSpecialColumnHelper) ensureAuditData() {
-	if h.Record.Properties["auditData"] == nil {
+	if h.Record.Properties["auditData"] == nil || h.Record.Properties["auditData"].AsInterface() == nil {
 		h.Record.Properties["auditData"] = structpb.NewStructValue(&structpb.Struct{
 			Fields: map[string]*structpb.Value{},
 		})
@@ -69,7 +69,7 @@ func (h RecordSpecialColumnHelper) ensureAuditData() {
 }
 
 func (h RecordSpecialColumnHelper) GetCreatedBy() *string {
-	if h.Record.Properties["auditData"] == nil {
+	if h.Record.Properties["auditData"] == nil || h.Record.Properties["auditData"].AsInterface() == nil {
 		return nil
 	}
 

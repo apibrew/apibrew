@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -40,6 +41,8 @@ func (r *logApi) pollLogs(writer http.ResponseWriter, request *http.Request) {
 
 	levelStr := request.URL.Query().Get("level")
 
+	format := request.URL.Query().Get("format")
+
 	if levelStr == "" {
 		levelStr = "debug"
 	}
@@ -68,14 +71,33 @@ func (r *logApi) pollLogs(writer http.ResponseWriter, request *http.Request) {
 			return
 		case entry := <-handler:
 			if entry.Level <= level {
-				data, err := entry.Bytes()
+				if format == "json" {
+					data, err := json.Marshal(map[string]interface{}{
+						"caller":  entry.Caller,
+						"time":    entry.Time,
+						"level":   entry.Level.String(),
+						"message": entry.Message,
+						"fields":  entry.Data,
+					})
 
-				if err != nil {
-					handleError(writer, err)
-					return
+					if err != nil {
+						handleError(writer, err)
+						return
+					}
+
+					data = append(data, []byte("\n")...)
+
+					_, _ = writer.Write(data)
+				} else {
+					data, err := entry.Bytes()
+
+					if err != nil {
+						handleError(writer, err)
+						return
+					}
+
+					_, _ = writer.Write(data)
 				}
-
-				_, _ = writer.Write(data)
 			}
 		}
 	}

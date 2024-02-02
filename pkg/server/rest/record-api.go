@@ -189,7 +189,7 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 
 	resolveReferences := request.URL.Query().Get("resolve-references")
 
-	record, err := r.api.Load(util.SystemContext, map[string]interface{}{
+	record, err := r.api.Load(r.prepareContext(request), map[string]interface{}{
 		"type": resource.Namespace + "/" + resource.Name,
 		"id":   id,
 	}, api.LoadParams{
@@ -221,7 +221,7 @@ func (r *recordApi) handleRecordLoad(writer http.ResponseWriter, request *http.R
 
 	resolveReferences := request.URL.Query().Get("resolve-references")
 
-	result, err := r.api.Load(util.SystemContext, *record, api.LoadParams{
+	result, err := r.api.Load(r.prepareContext(request), *record, api.LoadParams{
 		UseHistory:        getRequestBoolFlag(request, "useHistory"),
 		ResolveReferences: strings.Split(resolveReferences, ","),
 	})

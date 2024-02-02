@@ -34,7 +34,7 @@ func (c *consoleObject) log(level log.Level) func(args ...interface{}) {
 func Register(vm *goja.Runtime, codeName string) error {
 	obj := &consoleObject{codeName: codeName}
 
-	obj.Log = obj.log(log.InfoLevel)
+	obj.Log = obj.log(log.DebugLevel)
 	obj.Debug = obj.log(log.DebugLevel)
 	obj.Trace = obj.log(log.TraceLevel)
 	obj.Info = obj.log(log.InfoLevel)
