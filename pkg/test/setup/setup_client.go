@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/impl"
 	"github.com/apibrew/apibrew/pkg/stub"
-	"github.com/apibrew/apibrew/pkg/testing"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -54,7 +53,7 @@ func initClient() {
 	initWaitCh := application.Init()
 
 	application.RegisterModule(nano.NewModule)
-	application.RegisterModule(testing.NewModule)
+	//application.RegisterModule(testing.NewModule)
 
 	<-initWaitCh
 

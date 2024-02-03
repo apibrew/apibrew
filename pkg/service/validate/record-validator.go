@@ -167,7 +167,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			return []*model.ErrorField{{
 				RecordId: recordId,
 				Property: propertyPath,
-				Message:  fmt.Sprintf("value is not list"),
+				Message:  "value is not list",
 				Value:    value,
 			}}
 		}
@@ -184,7 +184,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			return []*model.ErrorField{{
 				RecordId: recordId,
 				Property: propertyPath,
-				Message:  fmt.Sprintf("value is not map"),
+				Message:  "value is not map",
 				Value:    value,
 			}}
 		}
@@ -269,7 +269,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 						errorFields = append(errorFields, &model.ErrorField{
 							RecordId: recordId,
 							Property: propertyPath + Item.Name,
-							Message:  fmt.Sprintf("required field is empty"),
+							Message:  "required field is empty",
 							Value:    value,
 						})
 						continue
@@ -291,7 +291,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 						errorFields = append(errorFields, &model.ErrorField{
 							RecordId: recordId,
 							Property: propertyPath,
-							Message:  fmt.Sprintf("there is no such property"),
+							Message:  "there is no such property",
 							Value:    value,
 						})
 					}
@@ -301,7 +301,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			errorFields = append(errorFields, &model.ErrorField{
 				RecordId: recordId,
 				Property: propertyPath,
-				Message:  fmt.Sprintf("value is not struct: %v", value),
+				Message:  "value is not struct",
 				Value:    value,
 			})
 		}

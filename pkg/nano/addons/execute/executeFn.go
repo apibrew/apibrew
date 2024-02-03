@@ -25,7 +25,7 @@ func executeFn(vm *goja.Runtime) func(script string, params Params) interface{} 
 		var argNames []string
 		var argValues []goja.Value
 
-		for key, _ := range params.Args {
+		for key := range params.Args {
 			argNames = append(argNames, key)
 			argValues = append(argValues, executionVm.ToValue(params.Args[key]))
 		}

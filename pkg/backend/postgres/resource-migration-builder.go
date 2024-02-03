@@ -131,7 +131,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 		}
 	}
 
-	if property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
+	if property.Type != model.ResourceProperty_REFERENCE && property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
 		propertyType := types.ByResourcePropertyType(property.Type)
 		val, _ := propertyType.UnPack(property.DefaultValue)
 
