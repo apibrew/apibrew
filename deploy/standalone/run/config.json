@@ -48,6 +48,22 @@
           "version": 0
         }
       }
+    },
+    {
+      "namespace": "system",
+      "resource": "User",
+      "record": {
+        "properties": {
+          "username": "admin",
+          "password": "admin",
+          "permissions": [
+            {
+              "operation": "FULL",
+              "permit": "ALLOW"
+            }
+          ]
+        }
+      }
     }
   ],
   "loggingConfig": {
