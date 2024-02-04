@@ -219,7 +219,7 @@ func (a api) List(ctx context.Context, params ListParams) (RecordListResult, err
 		return RecordListResult{}, err
 	}
 
-	var result []unstructured.Unstructured
+	var result = make([]unstructured.Unstructured, 0)
 
 	for _, record := range records {
 		recordObj, err2 := unstructured.FromRecord(record)
