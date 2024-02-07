@@ -14,8 +14,8 @@ import (
 
 type BindFunc func(resourceValue *resourceObject, mapFrom func(call goja.FunctionCall) goja.Value, mapTo func(call goja.FunctionCall) goja.Value)
 
-func (o *resourceObject) registerBindHandler(action model.Event_Action) BindFunc {
-	return func(boundResource *resourceObject, mapFrom func(call goja.FunctionCall) goja.Value, mapTo func(call goja.FunctionCall) goja.Value) {
+func (o *resourceObject) registerBindHandler(action model.Event_Action) interface{} {
+	return func(boundResource map[string]interface{}, mapFrom interface{}, mapTo interface{}) {
 		handlerId := "nano-" + util.RandomHex(8)
 
 		o.cec.AddHandlerId(handlerId)
@@ -23,7 +23,7 @@ func (o *resourceObject) registerBindHandler(action model.Event_Action) BindFunc
 		o.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
 			Id:        handlerId,
 			Name:      handlerId,
-			Fn:        o.bindRecordFn(boundResource.resource, mapFrom, mapTo),
+			Fn:        o.bindRecordFn(boundResource["self"].(*resourceObject).resource, mapFrom.(func(call goja.FunctionCall) goja.Value), mapTo.(func(call goja.FunctionCall) goja.Value)),
 			Selector:  o.handlerSelector(action),
 			Order:     90,
 			Sync:      true,
