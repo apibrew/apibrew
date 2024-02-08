@@ -78,6 +78,10 @@ func handleError(writer http.ResponseWriter, err error) {
 	}
 }
 
+func handleAuthenticationError(writer http.ResponseWriter, message string) {
+	handleServiceError(writer, errors.AuthenticationFailedError.WithMessage(message))
+}
+
 var errorCodeHttpStatusMap = map[model.ErrorCode]int{
 	model.ErrorCode_RECORD_NOT_FOUND:                     404,
 	model.ErrorCode_UNABLE_TO_LOCATE_PRIMARY_KEY:         400,

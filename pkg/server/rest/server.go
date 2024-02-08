@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"fmt"
+	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -68,12 +68,12 @@ func (s *server) AuthenticationMiddleWare(next http.Handler) http.Handler {
 			tokenParts := strings.Split(authorizationHeader, " ")
 
 			if len(tokenParts) != 2 {
-				http.Error(w, "authorization header should contain two part", 400)
+				handleAuthenticationError(w, "authorization header should contain two part")
 				return
 			}
 
 			if strings.ToLower(tokenParts[0]) != "bearer" {
-				http.Error(w, "authorization token type should be bearer", 400)
+				handleAuthenticationError(w, "authorization token type should be bearer")
 				return
 			}
 
@@ -108,7 +108,8 @@ func (s *server) setRequestToken(w http.ResponseWriter, req *http.Request, token
 
 		req = req.WithContext(ctx)
 	} else {
-		http.Error(w, err.Error(), 401)
+		log.Warn(err.Error())
+		handleAuthenticationError(w, err.Error())
 		return nil, true
 	}
 	return req, false
@@ -230,7 +231,8 @@ func (s *server) TraceLogMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		x, err := httputil.DumpRequest(req, true)
 		if err != nil {
-			http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
+			log.Warn(err)
+			handleServiceError(w, errors.InternalError.WithMessage(err.Error()))
 			return
 		}
 		log.Tracef("Request: \n===============\n%s\n===============", string(x))
