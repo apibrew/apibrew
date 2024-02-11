@@ -39,9 +39,8 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 			}
 		}()
 
-		for idx := range event.Records {
-			record := event.Records[idx]
-
+		var processedRecords []*model.Record
+		for _, record := range event.Records {
 			entityValue := o.recordToValue(record)
 
 			result := fn(goja.FunctionCall{
@@ -54,12 +53,6 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 			resultExported := result.Export()
 
 			if resultExported == false || result.SameAs(goja.Null()) {
-				event.Records = append(event.Records[:idx], event.Records[idx+1:]...)
-				idx--
-
-				if len(event.Records) == 0 {
-					return nil, nil
-				}
 				continue
 			}
 
@@ -69,9 +62,17 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 					return nil, err
 				}
 
-				event.Records[idx] = updatedRecord
+				processedRecords = append(processedRecords, updatedRecord)
+			} else {
+				processedRecords = append(processedRecords, record)
 			}
 		}
+
+		if len(processedRecords) == 0 {
+			return nil, nil
+		}
+
+		event.Records = processedRecords
 
 		if len(event.Records) == 0 {
 			fn(goja.FunctionCall{
