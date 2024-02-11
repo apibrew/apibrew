@@ -1,6 +1,6 @@
 {
   "name": "@apibrew/react",
-  "version": "1.0.64",
+  "version": "1.0.71",
   "description": "Api Brew react library",
   "author": "apibrew",
   "license": "MIT",
@@ -24,7 +24,8 @@
     "deploy": "gh-pages -d example/build"
   },
   "dependencies": {
-    "@apibrew/client": "^1.1.48"
+    "@apibrew/client": "^1.1.52",
+    "react-router-dom": "^6.22.0"
   },
   "peerDependencies": {
     "react": "^18.2.0"
@@ -39,7 +40,6 @@
     "@types/react-dom": "^16.9.7",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
-    "microbundle-crl": "^0.13.10",
     "babel-eslint": "^10.0.3",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
@@ -53,6 +53,7 @@
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-standard": "^4.0.1",
     "gh-pages": "^2.2.0",
+    "microbundle-crl": "^0.13.10",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.4",
     "react": "^16.13.1",

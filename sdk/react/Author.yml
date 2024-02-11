@@ -1,0 +1,7 @@
+type: Author
+properties:
+  name:
+    type: STRING
+  title:
+    type: INT32
+

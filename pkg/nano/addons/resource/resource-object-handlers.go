@@ -53,6 +53,16 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 
 			resultExported := result.Export()
 
+			if resultExported == false || result.SameAs(goja.Null()) {
+				event.Records = append(event.Records[:idx], event.Records[idx+1:]...)
+				idx--
+
+				if len(event.Records) == 0 {
+					return nil, nil
+				}
+				continue
+			}
+
 			if resultExported != nil {
 				updatedRecord, err := abs.ValueToRecord(o.resource, resultExported)
 				if err != nil {

@@ -474,10 +474,12 @@ export class ClientImpl implements Client {
 
         const client = ClientImpl.newClient(addr);
 
-        if (serverConfig.authentication.token) {
-            await client.authenticateWithToken(serverConfig.authentication.token);
-        } else {
-            await client.authenticateWithUsernameAndPassword(serverConfig.authentication.username, serverConfig.authentication.password);
+        if (serverConfig.authentication) {
+            if (serverConfig.authentication.token) {
+                await client.authenticateWithToken(serverConfig.authentication.token);
+            } else {
+                await client.authenticateWithUsernameAndPassword(serverConfig.authentication.username, serverConfig.authentication.password);
+            }
         }
 
         return client;

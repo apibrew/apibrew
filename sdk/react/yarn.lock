@@ -10,10 +10,10 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@apibrew/client@^1.1.48":
-  version "1.1.48"
-  resolved "https://registry.npmjs.org/@apibrew/client/-/client-1.1.48.tgz"
-  integrity sha512-cpzRaJ9rqjkovzYSexD145M+Zarn0bF0Hwpm7EFMBGkH+aE9jjUT8pnq/wQX9dMh/IlyN/FGB6yn754MiUhc5w==
+"@apibrew/client@^1.1.52":
+  version "1.1.52"
+  resolved "https://registry.npmjs.org/@apibrew/client/-/client-1.1.52.tgz"
+  integrity sha512-xlhWTOgg8+bEs+eEt3Df0zrTCmVZGBd7kpMRBkup+hC+6tKpsHsJBcCk6orrvc0yzA7ATh9hDzylKG8UWtQaDg==
   dependencies:
     axios "^1.6.1"
     js-yaml "^4.1.0"
@@ -1635,6 +1635,11 @@
   version "1.1.3"
   resolved "https://registry.npmjs.org/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
+
+"@remix-run/router@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.npmjs.org/@remix-run/router/-/router-1.15.0.tgz"
+  integrity sha512-HOil5aFtme37dVQTB6M34G95kPM3MMuqSmIRVCC52eKV+Y/tGSqw9P3rWhlAx6A+mz+MoX+XxsGsNJbaI5qCgQ==
 
 "@rollup/plugin-alias@^3.0.1":
   version "3.1.9"
@@ -10359,7 +10364,7 @@ react-dev-utils@^10.2.1:
     strip-ansi "6.0.0"
     text-table "0.2.0"
 
-react-dom@*, react-dom@^16.13.1:
+react-dom@*, react-dom@^16.13.1, react-dom@>=16.8:
   version "16.14.0"
   resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.14.0.tgz"
   integrity sha512-1gCeQXDLoIqMgqD3IO2Ah9bnf0w9kzhwN5q4FGnHZ67hBm9yePzB5JJAIQCc8x3pFnNlwFq4RidZggNAAkzWWw==
@@ -10383,6 +10388,21 @@ react-is@^17.0.1:
   version "17.0.2"
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
+
+react-router-dom@^6.22.0:
+  version "6.22.0"
+  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.22.0.tgz"
+  integrity sha512-z2w+M4tH5wlcLmH3BMMOMdrtrJ9T3oJJNsAlBJbwk+8Syxd5WFJ7J5dxMEW0/GEXD1BBis4uXRrNIz3mORr0ag==
+  dependencies:
+    "@remix-run/router" "1.15.0"
+    react-router "6.22.0"
+
+react-router@6.22.0:
+  version "6.22.0"
+  resolved "https://registry.npmjs.org/react-router/-/react-router-6.22.0.tgz"
+  integrity sha512-q2yemJeg6gw/YixRlRnVx6IRJWZD6fonnfZhN1JIOhV2iJCPeRNSH3V1ISwHf+JWcESzLC3BOLD1T07tmO5dmg==
+  dependencies:
+    "@remix-run/router" "1.15.0"
 
 react-scripts@^3.4.1:
   version "3.4.4"
@@ -10444,7 +10464,7 @@ react-scripts@^3.4.1:
   optionalDependencies:
     fsevents "2.1.2"
 
-react@*, react@^16.13.1, react@^16.14.0:
+react@*, react@^16.13.1, react@^16.14.0, react@>=16.8:
   version "16.14.0"
   resolved "https://registry.npmjs.org/react/-/react-16.14.0.tgz"
   integrity sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g==
