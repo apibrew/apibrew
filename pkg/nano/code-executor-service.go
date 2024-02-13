@@ -63,7 +63,7 @@ func (s codeExecutorService) registerCode(code *Code) (err error) {
 		code.Content = string(decodedBytes)
 	}
 
-	log.Debug("Registering code: " + code.Name + " / " + code.Content)
+	log.Debug("Registering code: " + code.Name)
 
 	vm := goja.New()
 	vm.SetFieldNameMapper(goja.UncapFieldNameMapper())

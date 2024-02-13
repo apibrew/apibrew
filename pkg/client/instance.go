@@ -353,7 +353,9 @@ func (d *client) WriteEvent(ctx context.Context, key string, event *model.Event)
 }
 
 func NewClientWithParams(params Params) (Client, error) {
-	var opts []grpc.DialOption
+	var opts = []grpc.DialOption{
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
+	}
 	if params.Insecure {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else {

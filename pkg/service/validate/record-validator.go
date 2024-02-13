@@ -329,16 +329,5 @@ func canCastNumber[T number](typeName string, val interface{}) error {
 	if val == T(0) {
 		return nil
 	}
-	err := canCast[float64](typeName, val)
-
-	if err != nil {
-		return err
-	}
-
-	castedValue := float64(T(val.(float64)))
-	if val.(float64)-castedValue > 0.000001 {
-		return fmt.Errorf("value is not in type %s: %v", typeName, val)
-	}
-
-	return nil
+	return canCast[float64](typeName, val)
 }

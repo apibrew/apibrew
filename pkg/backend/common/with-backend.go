@@ -20,7 +20,19 @@ type queryLoggerStruct struct {
 func (q queryLoggerStruct) logQuery(ctx context.Context, query string, args ...any) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
-	logger.Debugf("Log SQL[%s/%s]: %s ; Bind Params: %v", q.dataSourceName, q.transactionKey, query, args)
+	var argsToPrint []string
+
+	for _, arg := range args {
+		str := fmt.Sprintf("%v", arg)
+
+		if len(str) > 10 {
+			str = fmt.Sprintf("%s...", str[:10])
+		}
+
+		argsToPrint = append(argsToPrint, str)
+	}
+
+	logger.Debugf("Log SQL[%s/%s]: %s ; Bind Params: %v", q.dataSourceName, q.transactionKey, query, argsToPrint)
 }
 
 func (q queryLoggerStruct) QueryRow(query string, args ...any) *sql.Row {

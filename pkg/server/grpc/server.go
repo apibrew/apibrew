@@ -43,6 +43,7 @@ func (g *grpcServer) Init() {
 	var opts = []grpc.ServerOption{
 		grpc.UnaryInterceptor(g.grpcIntercept),
 		grpc.StreamInterceptor(g.grpcStreamIntercept),
+		grpc.MaxRecvMsgSize(10 * 1024 * 1024),
 	}
 
 	g.grpcServer = grpc.NewServer(opts...)
