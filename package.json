@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@apibrew/client": "^1.0.44",
-    "js-yaml": "^4.1.0"
-  },
-  "devDependencies": {
-    "esbuild": "0.20.0"
-  }
-}
