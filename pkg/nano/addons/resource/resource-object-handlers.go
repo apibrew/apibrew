@@ -17,6 +17,7 @@ func (o *resourceObject) registerHandler(order int, sync bool, responds bool, ac
 		handlerId := "nano-" + util.RandomHex(8)
 
 		o.cec.AddHandlerId(handlerId)
+		o.handlerIds = append(o.handlerIds, handlerId)
 
 		o.backendEventHandler.RegisterHandler(backend_event_handler.Handler{
 			Id:       handlerId,
@@ -86,6 +87,16 @@ func (o *resourceObject) recordHandlerFn(fn func(call goja.FunctionCall) goja.Va
 	}
 }
 
+func (o *resourceObject) unregisterAllHandlers() {
+	for _, handlerId := range o.handlerIds {
+		o.backendEventHandler.UnRegisterHandler(backend_event_handler.Handler{
+			Id: handlerId,
+		})
+		o.cec.RemoveHandlerId(handlerId)
+	}
+	o.handlerIds = []string{}
+}
+
 func (o *resourceObject) initHandlerMethods(object *goja.Object) {
 	_ = object.Set("beforeCreate", o.registerHandler(10, true, true, model.Event_CREATE))
 	_ = object.Set("beforeUpdate", o.registerHandler(10, true, true, model.Event_UPDATE))
@@ -104,4 +115,5 @@ func (o *resourceObject) initHandlerMethods(object *goja.Object) {
 	_ = object.Set("onDelete", o.registerHandler(110, true, true, model.Event_DELETE))
 	_ = object.Set("onGet", o.registerHandler(110, true, true, model.Event_GET))
 	_ = object.Set("onList", o.registerHandler(110, true, true, model.Event_LIST))
+	_ = object.Set("unregisterAllHandlers", o.unregisterAllHandlers)
 }

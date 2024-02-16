@@ -6,11 +6,15 @@ import (
 )
 
 func Register(vm *goja.Runtime, cec abs.CodeExecutionContext, s abs.CodeExecutorService) error {
-	return vm.Set("resource", resourceFn(
+	if err := vm.Set("resource", resourceFn(
 		s.GetContainer(),
 		vm,
 		cec,
 		s.GetBackendEventHandler(),
 		s.GetGlobalObject(),
-	))
+	)); err != nil {
+		return err
+	}
+
+	return nil
 }

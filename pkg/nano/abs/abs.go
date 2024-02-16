@@ -23,4 +23,5 @@ type CodeExecutorService interface {
 
 type CodeExecutionContext interface {
 	AddHandlerId(id string)
+	RemoveHandlerId(id string)
 }

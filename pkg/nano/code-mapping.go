@@ -62,17 +62,6 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Name := code.Name
-
-	var var_Name_mapped *structpb.Value
-
-	var var_Name_err error
-	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
-	if var_Name_err != nil {
-		panic(var_Name_err)
-	}
-	properties["name"] = var_Name_mapped
-
 	var_Language := code.Language
 
 	var var_Language_mapped *structpb.Value
@@ -130,6 +119,17 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 		properties["annotations"] = var_Annotations_mapped
 	}
 
+	var_Name := code.Name
+
+	var var_Name_mapped *structpb.Value
+
+	var var_Name_err error
+	var_Name_mapped, var_Name_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name)
+	if var_Name_err != nil {
+		panic(var_Name_err)
+	}
+	properties["name"] = var_Name_mapped
+
 	var_Version := code.Version
 
 	var var_Version_mapped *structpb.Value
@@ -167,19 +167,6 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 		*var_Id_mapped = val.(uuid.UUID)
 
 		s.Id = var_Id_mapped
-	}
-	if properties["name"] != nil && properties["name"].AsInterface() != nil {
-
-		var_Name := properties["name"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Name_mapped := val.(string)
-
-		s.Name = var_Name_mapped
 	}
 	if properties["language"] != nil && properties["language"].AsInterface() != nil {
 
@@ -227,6 +214,19 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 		}
 
 		s.Annotations = var_Annotations_mapped
+	}
+	if properties["name"] != nil && properties["name"].AsInterface() != nil {
+
+		var_Name := properties["name"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Name)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Name_mapped := val.(string)
+
+		s.Name = var_Name_mapped
 	}
 	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 

@@ -21,6 +21,7 @@ type resourceObject struct {
 	backendEventHandler backend_event_handler.BackendEventHandler
 	global              abs.GlobalObject
 	api                 api.Interface
+	handlerIds          []string
 }
 
 func (o *resourceObject) handlerSelector(action model.Event_Action) *model.EventSelector {
