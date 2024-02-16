@@ -16,7 +16,7 @@ type api struct {
 }
 
 func (a api) Create(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
-	return a.Save(ctx, Create, record)
+	return a.save(ctx, Create, record)
 }
 
 func (a api) checkType(record unstructured.Unstructured) errors.ServiceError {
@@ -32,14 +32,14 @@ func (a api) checkType(record unstructured.Unstructured) errors.ServiceError {
 }
 
 func (a api) Update(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
-	return a.Save(ctx, Update, record)
+	return a.save(ctx, Update, record)
 }
 
 func (a api) Apply(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
-	return a.Save(ctx, Apply, record)
+	return a.save(ctx, Apply, record)
 }
 
-func (a api) Save(ctx context.Context, saveMode SaveMode, recordObj unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
 	if err := a.checkType(recordObj); err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package addons
 import (
 	"github.com/apibrew/apibrew/pkg/nano/abs"
 	"github.com/apibrew/apibrew/pkg/nano/addons/auth"
+	"github.com/apibrew/apibrew/pkg/nano/addons/aws"
 	"github.com/apibrew/apibrew/pkg/nano/addons/console"
 	"github.com/apibrew/apibrew/pkg/nano/addons/execute"
 	"github.com/apibrew/apibrew/pkg/nano/addons/global"
@@ -44,6 +45,10 @@ func Register(vm *goja.Runtime, cec abs.CodeExecutionContext, s abs.CodeExecutor
 	}
 
 	if err := global.Register(vm, s); err != nil {
+		return err
+	}
+
+	if err := aws.Register(vm); err != nil {
 		return err
 	}
 

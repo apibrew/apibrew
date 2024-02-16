@@ -14,7 +14,6 @@ type Interface interface {
 	Create(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError)
 	Update(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError)
 	Apply(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError)
-	Save(ctx context.Context, saveMode SaveMode, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError)
 	Load(ctx context.Context, record unstructured.Unstructured, params LoadParams) (unstructured.Unstructured, errors.ServiceError)
 	Delete(ctx context.Context, record unstructured.Unstructured) errors.ServiceError
 	List(ctx context.Context, params ListParams) (RecordListResult, errors.ServiceError)
@@ -37,11 +36,6 @@ type ListParams struct {
 	Sorting           []SortingItem                     `json:"sorting,omitempty"`
 }
 
-type LoadParams struct {
-	UseHistory        bool     `json:"useHistory,omitempty"`
-	ResolveReferences []string `json:"resolveReferences,omitempty"`
-}
-
 type Aggregation struct {
 	Items    []AggregationItem `json:"items,omitempty"`
 	Grouping []GroupingItem    `json:"grouping,omitempty"`
@@ -60,6 +54,11 @@ type GroupingItem struct {
 type SortingItem struct {
 	Property  string    `json:"property,omitempty"`
 	Direction Direction `json:"direction,omitempty"`
+}
+
+type LoadParams struct {
+	UseHistory        bool     `json:"useHistory,omitempty"`
+	ResolveReferences []string `json:"resolveReferences,omitempty"`
 }
 
 type SaveMode int
