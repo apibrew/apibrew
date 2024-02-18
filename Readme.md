@@ -15,7 +15,7 @@
 
 Docs: https://apibrew.io/docs/getting-started
 
-Getting Started Video: https://youtu.be/VxG6b6iactc?si=AgyfrclHonsRO3Fn
+Getting Started Video: https://www.youtube.com/watch?v=6iJ5qCUbdgs
 
 
 ## Introduction
