@@ -46,11 +46,11 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 
 	var list []unstructured.Unstructured
 
-	switch processed.(type) {
+	switch value := processed.(type) {
 	case unstructured.Unstructured:
-		list = append(list, processed.(unstructured.Unstructured))
+		list = append(list, value)
 	case []unstructured.Unstructured:
-		list = processed.([]unstructured.Unstructured)
+		list = value
 	default:
 		return errors.New("Invalid type: " + reflect.TypeOf(processed).String())
 	}
