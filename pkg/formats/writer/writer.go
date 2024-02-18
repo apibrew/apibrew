@@ -1,4 +1,4 @@
-package ops
+package writer
 
 import (
 	"github.com/apibrew/apibrew/pkg/formats"

@@ -8,27 +8,32 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/client"
+	"github.com/apibrew/apibrew/pkg/formats/jsonformat"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
+	writer2 "github.com/apibrew/apibrew/pkg/formats/writer"
+	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
+	"io"
+	"net/http"
 	"os"
 	"strings"
 )
 
 type preprocessor struct {
 	dhClient client.Client
-	writer   *Writer
+	writer   *writer2.Writer
 }
 
-func (p *preprocessor) preprocess(body unstructured.Unstructured) (unstructured.Unstructured, error) {
+func (p *preprocessor) preprocess(cfPath string, body unstructured.Unstructured) (interface{}, error) {
 	visitedBody, err := WalkUnstructured(body, func(value interface{}) (interface{}, error) {
 		if un, ok := value.(unstructured.Unstructured); ok {
 			for key := range un {
 				if isPreprocessorKey(key) {
-					return p.runPreprocess(value.(unstructured.Unstructured))
+					return p.runPreprocess(cfPath, value.(unstructured.Unstructured))
 				}
 			}
 		}
@@ -40,15 +45,15 @@ func (p *preprocessor) preprocess(body unstructured.Unstructured) (unstructured.
 		return nil, err
 	}
 
-	return visitedBody.(unstructured.Unstructured), nil
+	return visitedBody, nil
 }
 
-func (p *preprocessor) runPreprocess(un unstructured.Unstructured) (interface{}, error) {
+func (p *preprocessor) runPreprocess(cfPath string, un unstructured.Unstructured) (interface{}, error) {
 	var err error
 	var keys = unstructured.Keys(un)
 
 	if util.ArrayContains(keys, "$file") {
-		return p.runIncludeFile(un)
+		return p.runIncludeFile(cfPath, un)
 	}
 
 	if util.ArrayContains(keys, "$base64File") {
@@ -66,17 +71,17 @@ func (p *preprocessor) runPreprocess(un unstructured.Unstructured) (interface{},
 			return nil, err
 		}
 
-		return p.runPreprocess(un)
+		return p.runPreprocess(cfPath, un)
 	}
 
 	if util.ArrayContains(keys, "$include") {
-		un, err = p.runPreprocessInclude(un)
+		result, err := p.runPreprocessInclude(cfPath, un)
 
 		if err != nil {
 			return nil, err
 		}
 
-		return p.runPreprocess(un)
+		return result, nil
 	}
 
 	if util.ArrayContains(keys, "$properties") {
@@ -86,7 +91,7 @@ func (p *preprocessor) runPreprocess(un unstructured.Unstructured) (interface{},
 			return nil, err
 		}
 
-		return p.runPreprocess(un)
+		return p.runPreprocess(cfPath, un)
 	}
 
 	if util.ArrayContains(keys, "$override") {
@@ -96,11 +101,11 @@ func (p *preprocessor) runPreprocess(un unstructured.Unstructured) (interface{},
 			return nil, err
 		}
 
-		return p.runPreprocess(un)
+		return p.runPreprocess(cfPath, un)
 	}
 
 	if util.ArrayContains(keys, "$syntax") {
-		err = p.checkSyntax(un)
+		err = p.checkSyntax(cfPath, un)
 
 		if err != nil {
 			return nil, err
@@ -112,14 +117,89 @@ func (p *preprocessor) runPreprocess(un unstructured.Unstructured) (interface{},
 	return un, nil
 }
 
-func (p *preprocessor) runPreprocessInclude(un unstructured.Unstructured) (unstructured.Unstructured, error) {
-	return un, nil
+func (p *preprocessor) runPreprocessInclude(cfPath string, un unstructured.Unstructured) (interface{}, error) {
+	filePath := un["$include"].(string)
+
+	if strings.HasPrefix(filePath, "./") {
+		filePath = p.resolveAbsolutePath(cfPath, filePath)
+	}
+
+	var result []unstructured.Unstructured
+	var handler = func(data unstructured.Unstructured) error {
+		processed, err := p.preprocess(filePath, data)
+
+		if err != nil {
+			return err
+		}
+		result = append(result, processed.(unstructured.Unstructured))
+		return nil
+	}
+
+	var in io.Reader
+	if strings.HasPrefix(filePath, "https://") {
+		resp, err := http.Get(filePath)
+
+		if err != nil {
+			return nil, err
+		}
+
+		defer resp.Body.Close()
+
+		in = resp.Body
+	} else {
+		var err error
+		in, err = os.Open(filePath)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if strings.HasSuffix(filePath, ".json") {
+		if err := jsonformat.Parse(in, context.TODO(), handler); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := yamlformat.Parse(in, context.TODO(), handler); err != nil {
+			return nil, err
+		}
+	}
+
+	if len(result) == 1 {
+		return result[0], nil
+	} else {
+		return result, nil
+	}
 }
 
-func (p *preprocessor) runIncludeFile(un unstructured.Unstructured) (string, error) {
-	filePath := un["$file"]
+func (p *preprocessor) runIncludeFile(cfPath string, un unstructured.Unstructured) (string, error) {
+	filePath := un["$file"].(string)
 
-	dat, err := os.ReadFile(filePath.(string))
+	if strings.HasPrefix(filePath, "./") {
+		filePath = p.resolveAbsolutePath(cfPath, filePath)
+	}
+
+	var in io.Reader
+	if strings.HasPrefix(filePath, "https://") {
+		resp, err := http.Get(filePath)
+
+		if err != nil {
+			return "", err
+		}
+
+		defer resp.Body.Close()
+
+		in = resp.Body
+	} else {
+		var err error
+		in, err = os.Open(filePath)
+
+		if err != nil {
+			return "", err
+		}
+	}
+
+	dat, err := io.ReadAll(in)
 
 	if err != nil {
 		return "", err
@@ -259,9 +339,9 @@ func (p *preprocessor) runPreprocessOverride(un unstructured.Unstructured) (unst
 	return un, nil
 }
 
-func (p *preprocessor) checkSyntax(un unstructured.Unstructured) error {
+func (p *preprocessor) checkSyntax(cfPath string, un unstructured.Unstructured) error {
 	if un["$syntax"] != nil {
-		syntax, err := p.runPreprocess(un["$syntax"].(unstructured.Unstructured))
+		syntax, err := p.runPreprocess(cfPath, un["$syntax"].(unstructured.Unstructured))
 
 		if err != nil {
 			return err
@@ -335,6 +415,18 @@ func (p *preprocessor) runPreprocessProperties(un unstructured.Unstructured) (un
 	unstructured.DeleteKey(un, "$properties")
 	un["properties"] = properties
 	return un, nil
+}
+
+func (p *preprocessor) resolveAbsolutePath(baseURL, relativePath string) string {
+	// Remove './' from the beginning of the relative path, if present
+	relativePath = strings.TrimPrefix(relativePath, "./")
+
+	// Modify the path of the URL
+	parts := strings.Split(baseURL, "/")
+
+	pp := strings.Join(parts[:len(parts)-1], "/")
+
+	return pp + "/" + relativePath
 }
 
 var preprocessKeywords = []string{

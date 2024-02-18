@@ -6,7 +6,13 @@ import (
 	"reflect"
 )
 
-func WalkUnstructured(body interface{}, visitor func(value interface{}) (interface{}, error)) (interface{}, error) {
+func WalkUnstructured(in interface{}, visitor func(value interface{}) (interface{}, error)) (interface{}, error) {
+	body, err := visitor(in)
+
+	if err != nil {
+		return nil, err
+	}
+
 	switch x := body.(type) {
 	case unstructured.Unstructured:
 		for key, value := range x {
@@ -21,6 +27,20 @@ func WalkUnstructured(body interface{}, visitor func(value interface{}) (interfa
 			}
 
 			x[key] = visitedVal
+		}
+	case []unstructured.Unstructured:
+		for i, value := range x {
+			newVal, err := WalkUnstructured(value, visitor)
+			if err != nil {
+				return nil, err
+			}
+
+			visitedVal, err := visitor(newVal)
+			if err != nil {
+				return nil, err
+			}
+
+			x[i] = visitedVal.(unstructured.Unstructured)
 		}
 	case []interface{}:
 		for i, value := range x {

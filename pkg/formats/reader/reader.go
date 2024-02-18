@@ -28,11 +28,17 @@ func (r *Reader) Read(ctx context.Context, inputFilePath string, format string, 
 		format = "yaml"
 	}
 
-	in, err := os.Open(inputFilePath)
-	if err != nil {
-		return fmt.Errorf("failed to open YAML file: %w", err)
+	var in io.Reader
+	if strings.HasPrefix(inputFilePath, "https://") {
+		in = strings.NewReader("$include: " + inputFilePath)
+	} else {
+		file, err := os.Open(inputFilePath)
+		if err != nil {
+			return fmt.Errorf("failed to open YAML file: %w", err)
+		}
+		defer file.Close()
+		in = file
 	}
-	defer in.Close()
 
 	var parseFunc func(r io.Reader, ctx context.Context, handler func(unstructured.Unstructured) error) error
 

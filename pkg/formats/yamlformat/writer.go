@@ -2,7 +2,7 @@ package yamlformat
 
 import (
 	"github.com/apibrew/apibrew/pkg/formats"
-	"github.com/apibrew/apibrew/pkg/formats/unstructured/ops"
+	writer2 "github.com/apibrew/apibrew/pkg/formats/writer"
 	"github.com/apibrew/apibrew/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
@@ -13,7 +13,7 @@ type writer struct {
 	output             io.Writer
 	hasMessageWritten  bool
 	annotations        map[string]string
-	unstructuredWriter ops.Writer
+	unstructuredWriter writer2.Writer
 }
 
 func (w *writer) WriteRecord(namespace string, resourceName string, records ...*model.Record) error {
@@ -94,5 +94,5 @@ func (w *writer) writePrefix() {
 }
 
 func NewWriter(output io.Writer, annotations map[string]string) formats.Writer {
-	return &writer{output: output, annotations: annotations, unstructuredWriter: ops.Writer{Annotations: annotations}}
+	return &writer{output: output, annotations: annotations, unstructuredWriter: writer2.Writer{Annotations: annotations}}
 }

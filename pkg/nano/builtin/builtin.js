@@ -26,7 +26,13 @@ const dynamicResource = function (params, handler) {
 
     const registerResourceHandler = res => {
         console.log('registerResourceHandler', res.name)
-        const ItemResource = resource(`${res.namespace.name}/${res.name}`)
+        let type = res.name
+
+        if (res.namespace.name) {
+            type = `${res.namespace.name}/${res.name}`
+        }
+
+        const ItemResource = resource(type)
 
         resourceMap[res.id] = ItemResource
         handler(ItemResource)
@@ -42,9 +48,9 @@ const dynamicResource = function (params, handler) {
         delete resourceMap[res.id]
     }
 
-    Resource.beforeCreate(res => {
-        registerResourceHandler(res)
-    })
+    // Resource.afterCreate(res => {
+    //     registerResourceHandler(res)
+    // })
 
     Resource.beforeUpdate(res => {
         if (resourceMap[res.id] && !matchResource(res)) {
