@@ -17,6 +17,7 @@ type Interface interface {
 	Load(ctx context.Context, record unstructured.Unstructured, params LoadParams) (unstructured.Unstructured, errors.ServiceError)
 	Delete(ctx context.Context, record unstructured.Unstructured) errors.ServiceError
 	List(ctx context.Context, params ListParams) (RecordListResult, errors.ServiceError)
+	GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, errors.ServiceError)
 }
 
 type RecordListResult struct {

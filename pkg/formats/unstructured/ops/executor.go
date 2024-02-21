@@ -38,7 +38,7 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 		return err
 	}
 
-	processed, err := e.preprocessor.preprocess(cfPath, in)
+	processed, err := e.preprocessor.preprocess(cfPath+"/main.go", in)
 
 	if err != nil {
 		return err

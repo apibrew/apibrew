@@ -20,8 +20,8 @@ func init() {
 	}
 }
 
-func GetBuiltinJs() string {
-	entityExistsFile, err := statikFS.Open("/builtin.js")
+func GetBuiltinJs(name string) string {
+	entityExistsFile, err := statikFS.Open("/" + name)
 
 	if err != nil {
 		log.Fatal(err)

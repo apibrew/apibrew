@@ -12,3 +12,9 @@ Person.afterCreate(person => {
     console.log('Person created: ', person.firstName)
 })
 
+Person.afterCreate(person => {
+    if (person.firstName === 'PreventDelete') {
+        console.log('Preventing delete')
+        return false;
+    }
+})

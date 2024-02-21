@@ -1,0 +1,13 @@
+type: resource
+name: Human
+virtual: true
+properties:
+  name:
+    type: STRING
+    required: true
+---
+type: nano/Code
+name: human.js
+language: JAVASCRIPT
+content:
+  $file: 'data/human.js'

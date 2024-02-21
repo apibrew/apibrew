@@ -1,12 +1,14 @@
 package nano
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/nano/abs"
 	"github.com/apibrew/apibrew/pkg/nano/addons"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
+	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	log "github.com/sirupsen/logrus"
@@ -30,6 +32,7 @@ func (s codeExecutorService) NewVm(options abs.VmOptions) (*goja.Runtime, error)
 	registry.Enable(runtime)
 
 	cec := &codeExecutionContext{}
+	cec.ctx = util.WithSystemContext(context.Background())
 	err := s.registerBuiltIns("", vm, cec)
 
 	if err != nil {
@@ -74,6 +77,7 @@ func (s codeExecutorService) registerCode(code *Code) (err error) {
 	registry.Enable(runtime)
 
 	cec := &codeExecutionContext{}
+	cec.ctx = util.WithSystemContext(context.Background())
 	err = s.registerBuiltIns(code.Name, vm, cec)
 
 	s.codeContext[code.Name] = cec
@@ -132,7 +136,11 @@ func (s codeExecutorService) registerBuiltIns(codeName string, vm *goja.Runtime,
 		return err
 	}
 
-	if _, err := vm.RunScript("builtin.js", GetBuiltinJs()); err != nil {
+	if _, err := vm.RunScript("builtin.js", GetBuiltinJs("builtin.js")); err != nil {
+		return err
+	}
+
+	if _, err := vm.RunScript("resource.js", GetBuiltinJs("resource.js")); err != nil {
 		return err
 	}
 

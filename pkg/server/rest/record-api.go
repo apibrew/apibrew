@@ -303,7 +303,7 @@ func (r *recordApi) handleRecordResource(writer http.ResponseWriter, request *ht
 
 	ServiceResponder().
 		Writer(writer).
-		Respond(resourceTo(resource), nil)
+		Respond(extramappings.ResourceTo(resource), nil)
 }
 
 func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.Request) {

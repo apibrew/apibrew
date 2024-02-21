@@ -5,8 +5,12 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
+	"github.com/apibrew/apibrew/pkg/resources"
+	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	"strings"
 )
@@ -53,6 +57,10 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 
 	if err2 != nil {
 		return nil, errors.RecordValidationError.WithMessage(err2.Error())
+	}
+
+	if resourceIdentity.Namespace == resources.ResourceResource.Namespace && resourceIdentity.Name == resources.ResourceResource.Name {
+		return a.saveResource(ctx, saveMode, recordObj)
 	}
 
 	switch saveMode {
@@ -115,6 +123,10 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, para
 		return nil, errors.RecordValidationError.WithMessage(err2.Error())
 	}
 
+	if resourceIdentity.Namespace == resources.ResourceResource.Namespace && resourceIdentity.Name == resources.ResourceResource.Name {
+		return nil, errors.InternalError.WithMessage("Resource load is not supported")
+	}
+
 	record, err := a.container.GetRecordService().Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, properties, service.RecordLoadParams{
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
@@ -141,6 +153,10 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
 
 	delete(recordObj, "type")
+
+	if resourceIdentity.Namespace == resources.ResourceResource.Namespace && resourceIdentity.Name == resources.ResourceResource.Name {
+		return a.deleteResource(ctx, recordObj)
+	}
 
 	if recordObj["id"] == nil {
 		var err errors.ServiceError
@@ -169,6 +185,10 @@ func (a api) List(ctx context.Context, params ListParams) (RecordListResult, err
 
 	var aggregation *model.Aggregation
 	var sorting *model.Sorting
+
+	if resourceIdentity.Namespace == resources.ResourceResource.Namespace && resourceIdentity.Name == resources.ResourceResource.Name {
+		return a.listResource(ctx, params)
+	}
 
 	if params.Aggregation != nil {
 		aggregation = &model.Aggregation{
@@ -233,6 +253,131 @@ func (a api) List(ctx context.Context, params ListParams) (RecordListResult, err
 
 	return RecordListResult{
 		Total:   total,
+		Content: result,
+	}, nil
+}
+
+func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+	record, err := unstructured.ToRecord(body)
+
+	if err != nil {
+		return nil, errors.ResourceValidationError.WithMessage(err.Error())
+	}
+
+	if err = validate.Records(resources.ResourceResource, []*model.Record{record}, false); err != nil {
+		return nil, errors.ResourceValidationError.WithMessage(err.Error())
+	}
+
+	resourceModel := resource_model.ResourceMapperInstance.FromRecord(record)
+
+	resource := extramappings.ResourceFrom(resourceModel)
+
+	switch saveMode {
+	case Create:
+		result, err := a.container.GetResourceService().Create(ctx, resource, true, false)
+
+		if err != nil {
+			return nil, err
+		}
+		record = mapping.ResourceToRecord(result)
+	case Update:
+		err := a.container.GetResourceService().Update(ctx, resource, true, false)
+
+		if err != nil {
+			return nil, err
+		}
+	case Apply:
+		result, err := a.container.GetResourceService().GetResourceByName(ctx, resource.Namespace, resource.Name)
+
+		if !errors.ResourceNotFoundError.Is(err) && err != nil {
+			return nil, err
+		}
+
+		if errors.ResourceNotFoundError.Is(err) || result == nil { // create
+			result, err := a.container.GetResourceService().Create(ctx, resource, true, false)
+
+			if err != nil {
+				return nil, err
+			}
+			record = mapping.ResourceToRecord(result)
+		} else {
+			err := a.container.GetResourceService().Update(ctx, resource, true, false)
+
+			if err != nil {
+				return nil, err
+			}
+		}
+	default:
+		return nil, errors.InternalError.WithMessage("Unknown save mode")
+	}
+
+	processedRecordObj, err2 := unstructured.FromRecord(record)
+
+	if err2 != nil {
+		return nil, errors.RecordValidationError.WithMessage(err2.Error())
+	}
+
+	return processedRecordObj, nil
+}
+
+func (a api) GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, errors.ServiceError) {
+	var namespace = "default"
+	var resourceName string
+
+	var parts = strings.Split(typeName, "/")
+
+	if len(parts) == 2 {
+		namespace = parts[0]
+		resourceName = parts[1]
+	} else if len(parts) == 1 {
+		resourceName = parts[0]
+	} else {
+		return nil, errors.ResourceValidationError.WithMessage("Invalid resource type")
+	}
+
+	resource, err := a.container.GetResourceService().GetResourceByName(ctx, namespace, resourceName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return extramappings.ResourceTo(resource), nil
+}
+
+func (a api) deleteResource(ctx context.Context, obj unstructured.Unstructured) errors.ServiceError {
+	if obj["id"] == nil {
+		return errors.RecordValidationError.WithMessage("id field is required")
+	}
+	var id, ok = obj["id"].(string)
+
+	if !ok {
+		return errors.RecordValidationError.WithMessage("id field must be string")
+	}
+
+	return a.container.GetResourceService().Delete(ctx, []string{id}, true, false)
+}
+
+func (a api) listResource(ctx context.Context, params ListParams) (RecordListResult, errors.ServiceError) {
+	list, err := a.container.GetResourceService().List(ctx)
+
+	if err != nil {
+		return RecordListResult{}, err
+	}
+
+	var result = make([]unstructured.Unstructured, 0)
+
+	for _, resource := range list {
+		recordObj, err2 := unstructured.FromRecord(mapping.ResourceToRecord(resource))
+
+		if err2 != nil {
+			return RecordListResult{}, errors.RecordValidationError.WithMessage(err2.Error())
+		}
+
+		result = append(result, recordObj)
+	}
+
+	return RecordListResult{
+		Total:   uint32(len(list)),
 		Content: result,
 	}, nil
 }

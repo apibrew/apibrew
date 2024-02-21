@@ -1,8 +1,11 @@
 package nano
 
+import "context"
+
 type codeExecutionContext struct {
 	handlerIds    []string
 	closeHandlers []func()
+	ctx           context.Context
 }
 
 func (c *codeExecutionContext) AddHandlerId(id string) {
@@ -16,4 +19,8 @@ func (c *codeExecutionContext) RemoveHandlerId(id string) {
 			return
 		}
 	}
+}
+
+func (c *codeExecutionContext) Context() context.Context {
+	return c.ctx
 }

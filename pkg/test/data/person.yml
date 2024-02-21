@@ -12,4 +12,4 @@ type: nano/Code
 name: person.js
 language: JAVASCRIPT
 content:
-  $base64File: 'data/person.js'
+  $file: 'data/person.js'

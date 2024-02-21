@@ -6,7 +6,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/resources"
-	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/gorilla/mux"
@@ -48,24 +47,8 @@ func (r *resourceApi) handleResourceList(writer http.ResponseWriter, request *ht
 		Writer(writer).
 		Respond(map[string]interface{}{
 			"total":   len(resources),
-			"content": util.ArrayMap(resources, resourceTo),
+			"content": util.ArrayMap(resources, extramappings.ResourceTo),
 		}, err)
-}
-
-func resourceTo(resource *model.Resource) *resource_model.Resource {
-	if resource == nil {
-		return nil
-	}
-	resourceRec := mapping.ResourceToRecord(resource)
-	return resource_model.ResourceMapperInstance.FromRecord(resourceRec)
-}
-
-func resourceFrom(resource *resource_model.Resource) *model.Resource {
-	if resource == nil {
-		return nil
-	}
-	resourceRec := resource_model.ResourceMapperInstance.ToRecord(resource)
-	return mapping.ResourceFromRecord(resourceRec)
 }
 
 func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *http.Request) {
@@ -80,11 +63,11 @@ func (r *resourceApi) handleResourceCreate(writer http.ResponseWriter, request *
 
 	var forceMigrate = request.Header.Get("X-Force-Migrate") == "true" || request.URL.Query().Get("forceMigrate") == "true"
 
-	res, serviceErr := r.resourceService.Create(request.Context(), resourceFrom(rw), true, forceMigrate)
+	res, serviceErr := r.resourceService.Create(request.Context(), extramappings.ResourceFrom(rw), true, forceMigrate)
 
 	ServiceResponder().
 		Writer(writer).
-		Respond(resourceTo(res), serviceErr)
+		Respond(extramappings.ResourceTo(res), serviceErr)
 }
 
 func (r *resourceApi) handleResourceGet(writer http.ResponseWriter, request *http.Request) {
@@ -95,7 +78,7 @@ func (r *resourceApi) handleResourceGet(writer http.ResponseWriter, request *htt
 
 	ServiceResponder().
 		Writer(writer).
-		Respond(resourceTo(resource), serviceErr)
+		Respond(extramappings.ResourceTo(resource), serviceErr)
 }
 
 func (r *resourceApi) handleResourceByName(writer http.ResponseWriter, request *http.Request) {
@@ -107,7 +90,7 @@ func (r *resourceApi) handleResourceByName(writer http.ResponseWriter, request *
 
 	ServiceResponder().
 		Writer(writer).
-		Respond(resourceTo(resource), serviceErr)
+		Respond(extramappings.ResourceTo(resource), serviceErr)
 }
 
 func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *http.Request) {
@@ -136,7 +119,7 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 
 	var forceMigrate = request.Header.Get("X-Force-Migrate") == "true" || request.URL.Query().Get("forceMigrate") == "true"
 
-	serviceErr = r.resourceService.Update(request.Context(), resourceFrom(resourceForUpdate), true, forceMigrate)
+	serviceErr = r.resourceService.Update(request.Context(), extramappings.ResourceFrom(resourceForUpdate), true, forceMigrate)
 
 	if serviceErr != nil {
 		resource = nil
@@ -144,7 +127,7 @@ func (r *resourceApi) handleResourceUpdate(writer http.ResponseWriter, request *
 
 	ServiceResponder().
 		Writer(writer).
-		Respond(resourceTo(resource), serviceErr)
+		Respond(extramappings.ResourceTo(resource), serviceErr)
 }
 
 func (r *resourceApi) handleResourceDelete(writer http.ResponseWriter, request *http.Request) {
