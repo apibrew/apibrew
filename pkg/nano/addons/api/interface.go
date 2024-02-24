@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/nano/abs"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/util"
 )
 
 func create(cec abs.CodeExecutionContext, apiInterface api.Interface) func(record unstructured.Unstructured) unstructured.Unstructured {
@@ -65,15 +66,20 @@ func load(cec abs.CodeExecutionContext, apiInterface api.Interface) func(record 
 	}
 }
 
-func list(cec abs.CodeExecutionContext, apiInterface api.Interface) func(params api.ListParams) api.RecordListResult {
-	return func(params api.ListParams) api.RecordListResult {
+func list(cec abs.CodeExecutionContext, apiInterface api.Interface) func(params api.ListParams) unstructured.Unstructured {
+	return func(params api.ListParams) unstructured.Unstructured {
 		result, err := apiInterface.List(cec.Context(), params)
 
 		if err != nil {
 			panic(err)
 		}
 
-		return result
+		return unstructured.Unstructured{
+			"content": util.ArrayMap(result.Content, func(item unstructured.Unstructured) interface{} {
+				return item
+			}),
+			"total": result.Total,
+		}
 	}
 }
 

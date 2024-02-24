@@ -62,30 +62,6 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Annotations := code.Annotations
-
-	if var_Annotations != nil {
-		var var_Annotations_mapped *structpb.Value
-
-		var var_Annotations_st *structpb.Struct = new(structpb.Struct)
-		var_Annotations_st.Fields = make(map[string]*structpb.Value)
-		for key, value := range var_Annotations {
-
-			var_1x := value
-			var var_1x_mapped *structpb.Value
-
-			var var_1x_err error
-			var_1x_mapped, var_1x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_1x)
-			if var_1x_err != nil {
-				panic(var_1x_err)
-			}
-
-			var_Annotations_st.Fields[key] = var_1x_mapped
-		}
-		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
-		properties["annotations"] = var_Annotations_mapped
-	}
-
 	var_Name := code.Name
 
 	var var_Name_mapped *structpb.Value
@@ -130,6 +106,30 @@ func (m *CodeMapper) ToProperties(code *Code) map[string]*structpb.Value {
 	}
 	properties["contentFormat"] = var_ContentFormat_mapped
 
+	var_Annotations := code.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped *structpb.Value
+
+		var var_Annotations_st *structpb.Struct = new(structpb.Struct)
+		var_Annotations_st.Fields = make(map[string]*structpb.Value)
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped *structpb.Value
+
+			var var_1x_err error
+			var_1x_mapped, var_1x_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_1x)
+			if var_1x_err != nil {
+				panic(var_1x_err)
+			}
+
+			var_Annotations_st.Fields[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = structpb.NewStructValue(var_Annotations_st)
+		properties["annotations"] = var_Annotations_mapped
+	}
+
 	var_Version := code.Version
 
 	var var_Version_mapped *structpb.Value
@@ -167,26 +167,6 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 		*var_Id_mapped = val.(uuid.UUID)
 
 		s.Id = var_Id_mapped
-	}
-	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
-
-		var_Annotations := properties["annotations"]
-		var_Annotations_mapped := make(map[string]string)
-		for k, v := range var_Annotations.GetStructValue().Fields {
-
-			var_3x := v
-			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
-
-			if err != nil {
-				panic(err)
-			}
-
-			var_3x_mapped := val.(string)
-
-			var_Annotations_mapped[k] = var_3x_mapped
-		}
-
-		s.Annotations = var_Annotations_mapped
 	}
 	if properties["name"] != nil && properties["name"].AsInterface() != nil {
 
@@ -227,6 +207,26 @@ func (m *CodeMapper) FromProperties(properties map[string]*structpb.Value) *Code
 		var_ContentFormat_mapped := (CodeContentFormat)(var_ContentFormat.GetStringValue())
 
 		s.ContentFormat = var_ContentFormat_mapped
+	}
+	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
+
+		var_Annotations := properties["annotations"]
+		var_Annotations_mapped := make(map[string]string)
+		for k, v := range var_Annotations.GetStructValue().Fields {
+
+			var_3x := v
+			val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_3x)
+
+			if err != nil {
+				panic(err)
+			}
+
+			var_3x_mapped := val.(string)
+
+			var_Annotations_mapped[k] = var_3x_mapped
+		}
+
+		s.Annotations = var_Annotations_mapped
 	}
 	if properties["version"] != nil && properties["version"].AsInterface() != nil {
 

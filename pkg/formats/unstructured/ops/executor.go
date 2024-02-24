@@ -51,6 +51,10 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 		list = append(list, value)
 	case []unstructured.Unstructured:
 		list = value
+	case []interface{}:
+		for _, item := range value {
+			list = append(list, item.(unstructured.Unstructured))
+		}
 	default:
 		return errors.New("Invalid type: " + reflect.TypeOf(processed).String())
 	}

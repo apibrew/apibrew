@@ -21,7 +21,7 @@ class Resource {
         }
     }
 
-    handle(fn, order, action) {
+    handle(fn, order, action, sync = true) {
         var orderNumber = 49
         if (order === 'after') {
             orderNumber = 101
@@ -34,7 +34,7 @@ class Resource {
                 actions: [action.toUpperCase()],
             },
             order: orderNumber,
-            sync: true,
+            sync: sync,
             responds: true,
             fn: fn
         })
@@ -103,6 +103,13 @@ class Resource {
 
     update(record) {
         return update({
+            type: this.type,
+            ...record
+        })
+    }
+
+    apply(record) {
+        return apply({
             type: this.type,
             ...record
         })
@@ -235,6 +242,17 @@ class Resource {
             }
         })
 
+        setTimeout(() => {
+            const listResponse = this.list({
+                limit: 1000
+            })
+
+            if (!listResponse) {
+                return
+            }
+
+            listResponse.content.forEach(register)
+        }, 0)
     }
 }
 

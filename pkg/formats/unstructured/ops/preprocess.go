@@ -124,14 +124,14 @@ func (p *preprocessor) runPreprocessInclude(cfPath string, un unstructured.Unstr
 		filePath = p.resolveAbsolutePath(cfPath, filePath)
 	}
 
-	var result []unstructured.Unstructured
+	var result []interface{}
 	var handler = func(data unstructured.Unstructured) error {
 		processed, err := p.preprocess(filePath, data)
 
 		if err != nil {
 			return err
 		}
-		result = append(result, processed.(unstructured.Unstructured))
+		result = append(result, processed)
 		return nil
 	}
 
@@ -164,6 +164,8 @@ func (p *preprocessor) runPreprocessInclude(cfPath string, un unstructured.Unstr
 			return nil, err
 		}
 	}
+
+	result = p.flat(result)
 
 	if len(result) == 1 {
 		return result[0], nil
@@ -427,6 +429,23 @@ func (p *preprocessor) resolveAbsolutePath(baseURL, relativePath string) string 
 	pp := strings.Join(parts[:len(parts)-1], "/")
 
 	return pp + "/" + relativePath
+}
+
+func (p *preprocessor) flat(processed interface{}) []interface{} {
+	if arr, ok := processed.([]interface{}); ok {
+		if len(arr) == 1 {
+			return p.flat(arr[0])
+		} else {
+			var result []interface{}
+			for _, item := range arr {
+				result = append(result, p.flat(item)...)
+			}
+
+			return result
+		}
+	}
+
+	return []interface{}{processed}
 }
 
 var preprocessKeywords = []string{
