@@ -1,5 +1,5 @@
 const selectorRe = /^((([$a-zA-Z][$a-zA-Z0-9_-]*)\/)?([*$a-zA-Z][$a-zA-Z0-9_-]*))?(\[([$a-zA-Z][$a-zA-Z0-9_-]*)(=([$a-zA-Z][$a-zA-Z0-9_-]*))?])?$/
-const orderRe = /^(before|after|on\((\d+)\))(create|update|delete|get|list)?$/
+const orderRe = /^(before|after|on\((\d+)\))?(create|update|delete|get|list)?$/
 
 function parseSelector(str) {
     if (!selectorRe.test(str)) {

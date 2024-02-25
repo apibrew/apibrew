@@ -136,10 +136,6 @@ func (s codeExecutorService) registerBuiltIns(codeName string, vm *goja.Runtime,
 		return err
 	}
 
-	if _, err := vm.RunScript("builtin.js", GetBuiltinJs("builtin.js")); err != nil {
-		return err
-	}
-
 	if _, err := vm.RunScript("resource.js", GetBuiltinJs("resource.js")); err != nil {
 		return err
 	}

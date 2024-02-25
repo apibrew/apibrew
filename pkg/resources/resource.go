@@ -8,6 +8,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// see https://docs.apibrew.io/fundamentals/resource
+
 var ResourcePropertyProperties = []*model.ResourceProperty{
 	{
 		Name:        "type",

@@ -129,6 +129,15 @@ class Resource {
         })
     }
 
+    count(filters) {
+        const result = this.list({
+            filters: filters,
+            limit: 0
+        })
+
+        return result.total
+    }
+
     bind(toResource, action, mapFrom, mapTo) {
         handle({
             name: `${this.type}[bind${action.charAt(0).toUpperCase() + action.slice(1)}]`,
