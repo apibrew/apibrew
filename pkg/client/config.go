@@ -24,9 +24,9 @@ type ServerConfig struct {
 }
 
 type Config struct {
-	Type          string
-	Servers       []ServerConfig
-	DefaultServer string
+	Type          string         `yaml:"type"`
+	Servers       []ServerConfig `yaml:"servers"`
+	DefaultServer string         `yaml:"defaultServer"`
 }
 
 var configFileFound = false

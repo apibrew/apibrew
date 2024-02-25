@@ -1,14 +1,11 @@
 package apbr
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/spf13/cobra"
 	"net/http"
-	"os"
-	"strconv"
 )
 
 var configureCmd = &cobra.Command{
@@ -34,131 +31,126 @@ var configureCmd = &cobra.Command{
 		}
 
 		var serverConfig = client.ServerConfig{
+			Name:           "default",
 			Authentication: &client.ConfigServerAuthentication{},
 		}
 
-		reader := bufio.NewReader(os.Stdin)
-
-		fmt.Print("Do you want to connect to Api Brew cloud or your own server? (0 => Api Brew Cloud; 1 => Your own server): ")
-
-		serverType, err := reader.ReadString('\n')
+		cloud, err := cmd.Flags().GetBool("cloud")
 
 		if err != nil {
 			return err
 		}
 
-		serverType = serverType[:len(serverType)-1]
-
-		if serverType == "0" || serverType == "" {
-			if err := configureCloudServerConfig(reader, &serverConfig); err != nil {
-				return err
-			}
-		} else if serverType == "1" {
-			if err := configureOwnServerConfig(reader, &serverConfig); err != nil {
-				return err
-			}
-		} else {
-			return errors.New("invalid server type")
-		}
-
-		for {
-			fmt.Print("Enter Name[default]: ")
-			serverName, err := reader.ReadString('\n')
-
-			if err != nil {
-				return err
-			}
-
-			serverName = serverName[:len(serverName)-1]
-
-			if err != nil {
-				return err
-			}
-
-			if serverName == "" {
-				serverName = "default"
-			}
-
-			var serverNameExists = false
-			for _, server := range config.Servers {
-				if server.Name == serverName {
-					fmt.Println("Server with name " + serverName + " already exists")
-					serverNameExists = true
-					break
-				}
-			}
-
-			if !serverNameExists {
-				serverConfig.Name = serverName
-				break
-			} else {
-				fmt.Print("Do you want to overwrite the existing server? (0 => No; 1 => Yes) [0]: ")
-
-				overwriteServerStr, err := reader.ReadString('\n')
-
-				if err != nil {
-					return err
-				}
-
-				overwriteServerStr = overwriteServerStr[:len(overwriteServerStr)-1]
-
-				if overwriteServerStr == "0" || overwriteServerStr == "" {
-					continue
-				} else if overwriteServerStr == "1" {
-					break
-				} else {
-					return errors.New("invalid option")
-				}
-			}
-		}
-
-		fmt.Println("Configuring authentication")
-
-		fmt.Print("Which authentication method do you want to use? (0 => credentials; 1 => token) [0]: ")
-
-		authMethodStr, err := reader.ReadString('\n')
+		local, err := cmd.Flags().GetBool("local")
 
 		if err != nil {
 			return err
 		}
 
-		authMethodStr = authMethodStr[:len(authMethodStr)-1]
+		if !cloud && !local {
+			return errors.New("either cloud or local configuration must be chosen")
+		}
 
-		if authMethodStr == "0" || authMethodStr == "" {
-			fmt.Print("Enter Username: ")
-			_, err = fmt.Scanln(&serverConfig.Authentication.Username)
+		if cloud {
+			projectName, err := cmd.Flags().GetString("project")
 
 			if err != nil {
 				return err
 			}
 
-			fmt.Print("Enter Password: ")
-			_, err = fmt.Scanln(&serverConfig.Authentication.Password)
+			if projectName == "" {
+				return errors.New("project name must be provided")
+			}
+
+			serverConfig.Host = projectName + ".apibrew.io"
+			serverConfig.Port = 9443
+			serverConfig.HttpPort = 8443
+
+			res, err := http.Get("https://" + serverConfig.Host + ":" + fmt.Sprint(serverConfig.HttpPort) + "/health")
 
 			if err != nil {
 				return err
+			}
+
+			if res.StatusCode != 200 {
+				return errors.New("project with name " + projectName + " does not exist or is not accessible")
 			}
 		} else {
-			fmt.Print("Enter Token: ")
-			_, err = fmt.Scanln(&serverConfig.Authentication.Token)
+			host, err := cmd.Flags().GetString("host")
 
 			if err != nil {
 				return err
 			}
-		}
 
-		var servers []client.ServerConfig
-
-		for _, server := range config.Servers {
-			if server.Name == serverConfig.Name {
-				continue
+			if host == "" {
+				return errors.New("host must be provided")
 			}
-			servers = append(servers, server)
+
+			serverConfig.Host = host
+
+			port, err := cmd.Flags().GetInt8("port")
+
+			if err != nil {
+				return err
+			}
+
+			if port == -1 {
+				return errors.New("port must be provided")
+			}
+
+			serverConfig.Port = uint32(port)
+
+			httpPort, err := cmd.Flags().GetInt8("httpPort")
+
+			if err != nil {
+				return err
+			}
+
+			if httpPort != -1 {
+				serverConfig.HttpPort = uint32(httpPort)
+			}
 		}
 
-		servers = append(servers, serverConfig)
+		// authentication
 
-		config.Servers = servers
+		username, err := cmd.Flags().GetString("username")
+
+		if err != nil {
+			return err
+		}
+
+		password, err := cmd.Flags().GetString("password")
+
+		if err != nil {
+			return err
+		}
+
+		token, err := cmd.Flags().GetString("token")
+
+		if err != nil {
+			return err
+		}
+
+		if username != "" && password != "" {
+			serverConfig.Authentication.Username = username
+			serverConfig.Authentication.Password = password
+		} else if token != "" {
+			serverConfig.Authentication.Token = token
+		} else {
+			return errors.New("either username and password or token must be provided")
+		}
+
+		serverName, err := cmd.Flags().GetString("server-name")
+
+		if err != nil {
+			return err
+		}
+
+		if serverName != "" {
+			serverConfig.Name = serverName
+		}
+
+		config.Servers = append(config.Servers, serverConfig)
 
 		err = client.WriteConfig()
 
@@ -166,88 +158,20 @@ var configureCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Print("All done!\n")
-
 		return nil
 	},
 }
 
-func configureCloudServerConfig(reader *bufio.Reader, serverConfig *client.ServerConfig) error {
-	for {
-		fmt.Print("Enter Project ID (e.g. project-77fbc4): ")
-		projectName, err := reader.ReadString('\n')
-
-		if err != nil {
-			return err
-		}
-
-		projectName = projectName[:len(projectName)-1]
-
-		if projectName == "" {
-			fmt.Println("Error: project name cannot be empty")
-			continue
-		}
-
-		serverConfig.Host = projectName + ".apibrew.io"
-		serverConfig.Port = 9443
-		serverConfig.HttpPort = 8443
-
-		res, err := http.Get("https://" + serverConfig.Host + ":" + fmt.Sprint(serverConfig.HttpPort) + "/health")
-
-		if err != nil {
-			return err
-		}
-
-		if res.StatusCode != 200 {
-			fmt.Println("Error: Project with name " + projectName + " does not exist or is not accessible")
-			continue
-		}
-
-		break
-	}
-
-	return nil
-}
-
-func configureOwnServerConfig(reader *bufio.Reader, serverConfig *client.ServerConfig) error {
-	fmt.Print("Enter Host[localhost]: ")
-	serverHost, err := reader.ReadString('\n')
-
-	serverConfig.Host = serverHost[:len(serverHost)-1]
-
-	if serverConfig.Host == "" {
-		serverConfig.Host = "localhost"
-	}
-
-	if err != nil {
-		return err
-	}
-
-	fmt.Print("Enter Port[9009]: ")
-
-	serverPortStr, err := reader.ReadString('\n')
-
-	if err != nil {
-		return err
-	}
-
-	serverPortStr = serverPortStr[:len(serverPortStr)-1]
-
-	if serverPortStr == "" {
-		serverConfig.Port = 9009
-	} else {
-		port, err := strconv.Atoi(serverPortStr)
-
-		if err != nil {
-			return err
-		}
-
-		serverConfig.Port = uint32(port)
-	}
-
-	serverConfig.HttpPort = serverConfig.Port
-
-	serverConfig.Insecure = true
-
-	return nil
+func init() {
+	configureCmd.PersistentFlags().Bool("cloud", false, "Cloud instance")
+	configureCmd.PersistentFlags().String("project", "", "Cloud Project name")
+	configureCmd.PersistentFlags().Bool("local", false, "Local instance")
+	configureCmd.PersistentFlags().String("host", "", "ApiBrew instance Host address: e.g. localhost")
+	configureCmd.PersistentFlags().Int8("port", -1, "ApiBrew instance Host port: e.g. 9009")
+	configureCmd.PersistentFlags().Int8("httpPort", -1, "ApiBrew instance Host http port: e.g. 9009, http port is used by some services")
+	configureCmd.PersistentFlags().Bool("insecure", false, "Insecure connection(ssl=false)")
+	configureCmd.PersistentFlags().String("username", "", "Authentication / Username")
+	configureCmd.PersistentFlags().String("password", "", "Authentication / Password")
+	configureCmd.PersistentFlags().String("token", "", "Authentication / Token")
+	configureCmd.PersistentFlags().String("server-name", "", "Server Name")
 }
