@@ -26,7 +26,7 @@ export interface ConnectionProvider {
 
 const connectionProviderName = process.env.REACT_APP_CONNECTION_PROVIDER
 
-let _connectionProvider: ConnectionProvider
+let _connectionProvider: ConnectionProvider = undefined as any
 
 if (connectionProviderName === 'LOCAL_ENV') {
   _connectionProvider = {
@@ -93,9 +93,6 @@ if (connectionProviderName === 'LOCAL_ENV') {
   }
 } else if (connectionProviderName === 'WEB_CLOUD') {
   _connectionProvider = cloudConnectionProvider
-} else {
-  console.log('process.env', process.env)
-  throw new Error('Unknown connection provider: ' + connectionProviderName)
 }
 
 export const connectionProvider = _connectionProvider

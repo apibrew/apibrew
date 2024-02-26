@@ -10,10 +10,10 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@apibrew/client@^1.1.52":
-  version "1.1.52"
-  resolved "https://registry.npmjs.org/@apibrew/client/-/client-1.1.52.tgz"
-  integrity sha512-xlhWTOgg8+bEs+eEt3Df0zrTCmVZGBd7kpMRBkup+hC+6tKpsHsJBcCk6orrvc0yzA7ATh9hDzylKG8UWtQaDg==
+"@apibrew/client@^1.1.55":
+  version "1.1.55"
+  resolved "https://registry.npmjs.org/@apibrew/client/-/client-1.1.55.tgz"
+  integrity sha512-g7Q5LQTCh30PK8MQaoOfkJimqS3q8AC4K432H2jK2fKGumJ0EXiQk5iBrsCrCYxm2/JQCC63JeQZdEsv25X/pA==
   dependencies:
     axios "^1.6.1"
     js-yaml "^4.1.0"

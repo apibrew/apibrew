@@ -1,6 +1,6 @@
 {
   "name": "@apibrew/react",
-  "version": "1.0.71",
+  "version": "1.0.72",
   "description": "Api Brew react library",
   "author": "apibrew",
   "license": "MIT",
@@ -24,7 +24,7 @@
     "deploy": "gh-pages -d example/build"
   },
   "dependencies": {
-    "@apibrew/client": "^1.1.52",
+    "@apibrew/client": "^1.1.55",
     "react-router-dom": "^6.22.0"
   },
   "peerDependencies": {
