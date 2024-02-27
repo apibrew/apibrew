@@ -1,11 +1,16 @@
 package nano
 
-import "context"
+import (
+	"context"
+	"github.com/dop251/goja"
+)
 
 type codeExecutionContext struct {
 	handlerIds    []string
 	closeHandlers []func()
 	ctx           context.Context
+	vm            *goja.Runtime
+	code          *Code
 }
 
 func (c *codeExecutionContext) AddHandlerId(id string) {
@@ -23,4 +28,8 @@ func (c *codeExecutionContext) RemoveHandlerId(id string) {
 
 func (c *codeExecutionContext) Context() context.Context {
 	return c.ctx
+}
+
+func (c *codeExecutionContext) GetCode() *Code {
+	return c.code
 }

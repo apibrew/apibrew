@@ -78,6 +78,8 @@ func (s codeExecutorService) registerCode(code *Code) (err error) {
 
 	cec := &codeExecutionContext{}
 	cec.ctx = util.WithSystemContext(context.Background())
+	cec.vm = vm
+	cec.code = code
 	err = s.registerBuiltIns(code.Name, vm, cec)
 
 	s.codeContext[code.Name] = cec
