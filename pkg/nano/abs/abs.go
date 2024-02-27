@@ -2,7 +2,6 @@ package abs
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/nano"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/dop251/goja"
@@ -27,5 +26,5 @@ type CodeExecutionContext interface {
 	AddHandlerId(id string)
 	RemoveHandlerId(id string)
 	Context() context.Context
-	GetCode() *nano.Code
+	GetCodeIdentifier() string
 }

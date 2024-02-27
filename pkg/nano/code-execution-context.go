@@ -3,6 +3,7 @@ package nano
 import (
 	"context"
 	"github.com/dop251/goja"
+	"strconv"
 )
 
 type codeExecutionContext struct {
@@ -30,6 +31,6 @@ func (c *codeExecutionContext) Context() context.Context {
 	return c.ctx
 }
 
-func (c *codeExecutionContext) GetCode() *Code {
-	return c.code
+func (c *codeExecutionContext) GetCodeIdentifier() string {
+	return c.code.Id.String() + "-" + strconv.Itoa(int(c.code.Version))
 }

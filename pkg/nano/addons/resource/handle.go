@@ -12,7 +12,6 @@ import (
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	"runtime/debug"
-	"strconv"
 )
 
 type HandlerFunc func(entity map[string]interface{}, event *resource_model.Event) interface{}
@@ -29,9 +28,7 @@ type Handler struct {
 
 func handle(cec abs.CodeExecutionContext, backendEventHandler backend_event_handler.BackendEventHandler) func(handler Handler) {
 	return func(handler Handler) {
-		codeName := cec.GetCode().Id.String() + "[" + strconv.Itoa(int(cec.GetCode().Version)) + "]"
-
-		handlerId := "nano-" + codeName + util.RandomHex(8)
+		handlerId := "nano-" + cec.GetCodeIdentifier() + "-" + util.RandomHex(8)
 
 		cec.AddHandlerId(handlerId)
 
