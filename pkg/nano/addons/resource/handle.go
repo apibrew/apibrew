@@ -34,7 +34,7 @@ func handle(cec abs.CodeExecutionContext, backendEventHandler backend_event_hand
 
 		backendEventHandler.RegisterHandler(backend_event_handler.Handler{
 			Id:        handlerId,
-			Name:      handler.Name,
+			Name:      cec.GetCodeIdentifier() + "-" + handler.Name,
 			Fn:        recordHandlerFn(handler),
 			Selector:  extramappings.EventSelectorToProto(handler.Selector),
 			Order:     handler.Order,
