@@ -31,7 +31,7 @@ func (s *authenticationService) AuthenticationDisabled() bool {
 	return s.DisableAuthentication
 }
 
-func (s *authenticationService) Authenticate(ctx context.Context, username string, password string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
+func (s *authenticationService) Authenticate(ctx context.Context, username string, password string, term model.TokenTerm, minimizeToken bool) (*model.Token, errors.ServiceError) {
 	if s.DisableAuthentication {
 		return &model.Token{
 			Term:       term,
@@ -54,7 +54,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 		return nil, errors.AuthenticationFailedError
 	}
 
-	return s.prepareToken(systemCtx, term, user)
+	return s.prepareToken(systemCtx, term, user, minimizeToken)
 }
 
 func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
@@ -80,10 +80,10 @@ func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context,
 		return nil, errors.AuthenticationFailedError
 	}
 
-	return s.prepareToken(systemCtx, term, user)
+	return s.prepareToken(systemCtx, term, user, false)
 }
 
-func (s *authenticationService) prepareToken(ctx context.Context, term model.TokenTerm, user *resource_model.User) (*model.Token, errors.ServiceError) {
+func (s *authenticationService) prepareToken(ctx context.Context, term model.TokenTerm, user *resource_model.User, minimizeToken bool) (*model.Token, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	// Prepare token
 	expiration := s.ExpirationFromTerm(term)
@@ -106,7 +106,7 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 		},
 		ExpiresAt: expiration,
 		Issuer:    "github.com/apibrew/apibrew",
-	})
+	}, minimizeToken)
 
 	logger.Tracef("Token prepared: %s", token)
 
@@ -137,7 +137,7 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 		return nil, err
 	}
 
-	return s.prepareToken(systemCtx, term, user)
+	return s.prepareToken(systemCtx, term, user, false)
 }
 
 func (s *authenticationService) ParseAndVerifyToken(token string) (*jwt_model.UserDetails, errors.ServiceError) {

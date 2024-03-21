@@ -12,7 +12,7 @@ type authObject struct {
 }
 
 func (c *authObject) Authenticate(username string, password string, term string) interface{} {
-	token, err := c.container.GetAuthenticationService().Authenticate(util.SystemContext, username, password, model.TokenTerm(model.TokenTerm_value[term]))
+	token, err := c.container.GetAuthenticationService().Authenticate(util.SystemContext, username, password, model.TokenTerm(model.TokenTerm_value[term]), false)
 
 	if err != nil {
 		panic(err)

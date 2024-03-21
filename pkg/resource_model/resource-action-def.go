@@ -48,7 +48,7 @@ var ResourceActionResource = &model.Resource{
 						Type:    model.ResourceProperty_STRUCT,
 						TypeRef: util.Pointer("Property"),
 					},
-					ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"name": structpb.NewStringValue("title"), "type": structpb.NewStringValue("STRING")}})}}),
+					ExampleValue: structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"type": structpb.NewStringValue("STRING"), "name": structpb.NewStringValue("title")}})}}),
 				},
 			},
 
@@ -96,6 +96,12 @@ var ResourceActionResource = &model.Resource{
 				},
 				{
 					Name:         "immutable",
+					Type:         model.ResourceProperty_BOOL,
+					Required:     true,
+					DefaultValue: nil,
+				},
+				{
+					Name:         "virtual",
 					Type:         model.ResourceProperty_BOOL,
 					Required:     true,
 					DefaultValue: nil,
@@ -161,7 +167,7 @@ var ResourceActionResource = &model.Resource{
 						Name: "",
 						Type: model.ResourceProperty_STRING,
 					},
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true")}}),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -170,9 +176,9 @@ var ResourceActionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
+				"OpenApiGroup":    "meta",
 				"EnableAudit":     "true",
 				"RestApiDisabled": "true",
-				"OpenApiGroup":    "meta",
 			},
 		},
 		{
@@ -205,7 +211,7 @@ var ResourceActionResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-01-08T20:37:11+03:00"),
+					ExampleValue: structpb.NewStringValue("2024-03-21T17:03:31+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -214,7 +220,7 @@ var ResourceActionResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-01-08T20:37:11+03:00"),
+					ExampleValue: structpb.NewStringValue("2024-03-21T17:03:31+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -223,9 +229,9 @@ var ResourceActionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
+				"EnableAudit":     "true",
 				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
-				"EnableAudit":     "true",
 			},
 		},
 	},
@@ -233,13 +239,13 @@ var ResourceActionResource = &model.Resource{
 		{
 			Name:         "id",
 			Type:         model.ResourceProperty_UUID,
+			Primary:      true,
 			Required:     true,
 			Immutable:    true,
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
-				"PrimaryProperty": "true",
 			},
 		},
 		{
@@ -258,7 +264,7 @@ var ResourceActionResource = &model.Resource{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
 			TypeRef:      util.Pointer("AuditData"),
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-01-08T20:37:11+03:00"), "updatedOn": structpb.NewStringValue("2024-01-08T20:37:11+03:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-03-21T17:03:31+04:00"), "updatedOn": structpb.NewStringValue("2024-03-21T17:03:31+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -338,7 +344,7 @@ var ResourceActionResource = &model.Resource{
 				Name: "",
 				Type: model.ResourceProperty_STRING,
 			},
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

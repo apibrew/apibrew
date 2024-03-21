@@ -193,7 +193,7 @@ func (a *authorizationService) evaluateConstraint(ctx context.Context, params se
 		return nil, false
 	}
 
-	if permission.User != nil && permission.User.Id.String() != userDetails.UserId {
+	if permission.User != nil && permission.User.Username != userDetails.Username {
 		logger.Tracef("Skipping permission as username not matched: %v", permission)
 		return nil, false
 	}

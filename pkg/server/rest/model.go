@@ -9,9 +9,10 @@ type HealthResponse struct {
 }
 
 type AuthenticationRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Term     string `json:"term"`
+	Username      string `json:"username"`
+	Password      string `json:"password"`
+	Term          string `json:"term"`
+	MinimizeToken bool   `json:"minimize"`
 }
 
 type Token struct {

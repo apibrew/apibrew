@@ -93,6 +93,15 @@ Unique property is only working for single property, for combination of properti
 		DefaultValue: structpb.NewBoolValue(false),
 	},
 	{
+		Name:        "virtual",
+		Title:       util.Pointer("Virtual"),
+		Description: util.Pointer("This property indicates that whether or not given property is virtual. Virtual properties are not stored in database."),
+		Type:        model.ResourceProperty_BOOL,
+		Required:    true,
+
+		DefaultValue: structpb.NewBoolValue(false),
+	},
+	{
 		Name:         "length",
 		Title:        util.Pointer("Length"),
 		Description:  util.Pointer("This property indicates the length of the property. It is only used for STRING type."),

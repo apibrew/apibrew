@@ -92,6 +92,7 @@ type Property struct {
 	Required      bool              `json:"required,omitempty"`
 	Unique        bool              `json:"unique,omitempty"`
 	Immutable     bool              `json:"immutable,omitempty"`
+	Virtual       bool              `json:"virtual,omitempty"`
 	Length        int32             `json:"length,omitempty"`
 	Item          *Property         `json:"item,omitempty"`
 	Reference     *string           `json:"reference,omitempty"`
@@ -121,6 +122,9 @@ func (s *Property) GetUnique() bool {
 }
 func (s *Property) GetImmutable() bool {
 	return s.Immutable
+}
+func (s *Property) GetVirtual() bool {
+	return s.Virtual
 }
 func (s *Property) GetLength() int32 {
 	return s.Length

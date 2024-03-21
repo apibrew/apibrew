@@ -18,13 +18,17 @@ export class PollerExtensionService extends AbstractExtensionService implements 
 
         try {
             const processedEvent = this.processEvent(event);
-            this.client.writeEvent(this.channelKey, processedEvent);
+            if (event.sync) {
+                this.client.writeEvent(this.channelKey, processedEvent);
+            }
         } catch (e: any) {
             console.error("Unable to process event", e);
             event.error = {
                 message: e.message,
             } as Error;
-            this.client.writeEvent(this.channelKey, event);
+            if (event.sync) {
+                this.client.writeEvent(this.channelKey, event);
+            }
         }
     }
 

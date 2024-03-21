@@ -625,6 +625,17 @@ func (m *PropertyMapper) ToProperties(property *Property) map[string]*structpb.V
 	}
 	properties["immutable"] = var_Immutable_mapped
 
+	var_Virtual := property.Virtual
+
+	var var_Virtual_mapped *structpb.Value
+
+	var var_Virtual_err error
+	var_Virtual_mapped, var_Virtual_err = types.ByResourcePropertyType(model.ResourceProperty_BOOL).Pack(var_Virtual)
+	if var_Virtual_err != nil {
+		panic(var_Virtual_err)
+	}
+	properties["virtual"] = var_Virtual_mapped
+
 	var_Length := property.Length
 
 	var var_Length_mapped *structpb.Value
@@ -846,6 +857,19 @@ func (m *PropertyMapper) FromProperties(properties map[string]*structpb.Value) *
 		var_Immutable_mapped := val.(bool)
 
 		s.Immutable = var_Immutable_mapped
+	}
+	if properties["virtual"] != nil && properties["virtual"].AsInterface() != nil {
+
+		var_Virtual := properties["virtual"]
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_BOOL).UnPack(var_Virtual)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Virtual_mapped := val.(bool)
+
+		s.Virtual = var_Virtual_mapped
 	}
 	if properties["length"] != nil && properties["length"].AsInterface() != nil {
 

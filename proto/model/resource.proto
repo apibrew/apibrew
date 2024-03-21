@@ -53,6 +53,7 @@ message ResourceProperty {
   uint32 length = 7; // length property is only valid and required for String typed properties
   bool unique = 8;
   bool immutable = 9; // immutable is to mark property as immutable. If marked, updates on this field on records will be discarded
+  bool virtual = 10; // virtual is to mark property as virtual. Virtual properties are not stored on backend. They are calculated on the fly
   optional google.protobuf.Value defaultValue = 11; // defaultValue is default value.
   optional google.protobuf.Value exampleValue = 12; // exampleValue is example value. It is an informative column
   repeated string enumValues = 13; // enumValues is used if property type is an enum

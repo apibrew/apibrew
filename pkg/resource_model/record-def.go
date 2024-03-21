@@ -21,13 +21,13 @@ var RecordResource = &model.Resource{
 		{
 			Name:         "id",
 			Type:         model.ResourceProperty_UUID,
+			Primary:      true,
 			Required:     true,
 			Immutable:    true,
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
-				"PrimaryProperty": "true",
 			},
 		},
 		{

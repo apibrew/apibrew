@@ -88,7 +88,7 @@ var configureCmd = &cobra.Command{
 
 			serverConfig.Host = host
 
-			port, err := cmd.Flags().GetInt8("port")
+			port, err := cmd.Flags().GetInt32("port")
 
 			if err != nil {
 				return err
@@ -100,7 +100,7 @@ var configureCmd = &cobra.Command{
 
 			serverConfig.Port = uint32(port)
 
-			httpPort, err := cmd.Flags().GetInt8("httpPort")
+			httpPort, err := cmd.Flags().GetInt32("httpPort")
 
 			if err != nil {
 				return err
@@ -109,6 +109,14 @@ var configureCmd = &cobra.Command{
 			if httpPort != -1 {
 				serverConfig.HttpPort = uint32(httpPort)
 			}
+
+			insecure, err := cmd.Flags().GetBool("insecure")
+
+			if err != nil {
+				return err
+			}
+
+			serverConfig.Insecure = insecure
 		}
 
 		// authentication
@@ -167,9 +175,9 @@ func init() {
 	configureCmd.PersistentFlags().String("project", "", "Cloud Project name")
 	configureCmd.PersistentFlags().Bool("local", false, "Local instance")
 	configureCmd.PersistentFlags().String("host", "", "ApiBrew instance Host address: e.g. localhost")
-	configureCmd.PersistentFlags().Int8("port", -1, "ApiBrew instance Host port: e.g. 9009")
-	configureCmd.PersistentFlags().Int8("httpPort", -1, "ApiBrew instance Host http port: e.g. 9009, http port is used by some services")
-	configureCmd.PersistentFlags().Bool("insecure", false, "Insecure connection(ssl=false)")
+	configureCmd.PersistentFlags().Int32("port", -1, "ApiBrew instance Host port: e.g. 9009")
+	configureCmd.PersistentFlags().Int32("httpPort", -1, "ApiBrew instance Host http port: e.g. 9009, http port is used by some services")
+	configureCmd.PersistentFlags().Bool("insecure", true, "Insecure connection(ssl=false)")
 	configureCmd.PersistentFlags().String("username", "", "Authentication / Username")
 	configureCmd.PersistentFlags().String("password", "", "Authentication / Password")
 	configureCmd.PersistentFlags().String("token", "", "Authentication / Token")

@@ -32,7 +32,7 @@ func (m authenticationApi) handleAuthentication(writer http.ResponseWriter, requ
 		return
 	}
 
-	token, serr := m.service.Authenticate(request.Context(), authReq.Username, authReq.Password, model.TokenTerm(model.TokenTerm_value[authReq.Term]))
+	token, serr := m.service.Authenticate(request.Context(), authReq.Username, authReq.Password, model.TokenTerm(model.TokenTerm_value[authReq.Term]), authReq.MinimizeToken)
 
 	var resp = &AuthenticationResponse{}
 

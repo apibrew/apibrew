@@ -35,6 +35,7 @@ export interface Property {
     required: boolean
     unique: boolean
     immutable: boolean
+    virtual: boolean
     length: number
     item: Property
     reference: string
@@ -370,6 +371,13 @@ export const ResourceResource = {
           "defaultValue": false,
           "title": "Immutable",
           "description": "This property indicates that whether or not given property is immutable. Immutable properties can not be updated."
+        },
+        "virtual": {
+          "type": "BOOL",
+          "required": true,
+          "defaultValue": false,
+          "title": "Virtual",
+          "description": "This property indicates that whether or not given property is virtual. Virtual properties are not stored in database. They are created on the fly."
         },
         "item": {
           "type": "STRUCT",

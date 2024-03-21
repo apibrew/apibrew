@@ -60,6 +60,11 @@ class Resource {
         this.handle(fn, 'before', 'list')
     }
 
+    beforeRead(fn) {
+        this.handle(fn, 'before', 'get')
+        this.handle(fn, 'before', 'list')
+    }
+
     afterCreate(fn) {
         this.handle(fn, 'after', 'create')
     }
@@ -78,6 +83,23 @@ class Resource {
 
     afterList(fn) {
         this.handle(fn, 'after', 'list')
+    }
+
+    afterRead(fn) {
+        this.handle(fn, 'after', 'get')
+        this.handle(fn, 'after', 'list')
+    }
+
+    modifier(fn) {
+        this.afterRead((record, event) => {
+            const result = fn(record, event)
+
+            if (result) {
+                return result
+            }
+
+            return record
+        })
     }
 
     list(params) {

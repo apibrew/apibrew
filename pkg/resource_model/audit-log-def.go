@@ -18,13 +18,13 @@ var AuditLogResource = &model.Resource{
 		{
 			Name:         "id",
 			Type:         model.ResourceProperty_UUID,
+			Primary:      true,
 			Required:     true,
 			Immutable:    true,
 			ExampleValue: structpb.NewStringValue("a39621a4-6d48-11ee-b962-0242ac120002"),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
-				"PrimaryProperty": "true",
 			},
 		},
 		{
@@ -88,7 +88,7 @@ var AuditLogResource = &model.Resource{
 				Name: "",
 				Type: model.ResourceProperty_STRING,
 			},
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

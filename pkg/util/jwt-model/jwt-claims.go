@@ -33,6 +33,7 @@ type JwtUserClaims struct {
 	Username string   `json:"username,omitempty"`
 	Roles    []string `json:"roles,omitempty"`
 	UserId   string   `json:"uid,omitempty"`
+	Scopes   []string `json:"scopes,omitempty"`
 
 	Permissions []*resource_model.Permission `json:"permissions,omitempty"`
 }

@@ -24,7 +24,7 @@ func (s *authenticationServer) Authenticate(ctx context.Context, req *stub.Authe
 	logger.Debug("Begin Authenticate")
 	logger.WithField("req", req).Trace("Params")
 
-	token, err := s.service.Authenticate(ctx, req.Username, req.Password, req.Term)
+	token, err := s.service.Authenticate(ctx, req.Username, req.Password, req.Term, false)
 
 	logger.Debug("End Authenticate")
 

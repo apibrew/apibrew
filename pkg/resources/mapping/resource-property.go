@@ -37,6 +37,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["length"] = structpb.NewNumberValue(float64(property.Length))
 	properties["unique"] = structpb.NewBoolValue(property.Unique)
 	properties["immutable"] = structpb.NewBoolValue(property.Immutable)
+	properties["virtual"] = structpb.NewBoolValue(property.Virtual)
 
 	if property.Reference != nil {
 		referenceNamespace := property.Reference.Namespace
@@ -128,6 +129,10 @@ func ResourcePropertyFromRecord(propertyName string, record *model.Record) *mode
 		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
 		}),
+	}
+
+	if record.Properties["virtual"] != nil {
+		resourceProperty.Virtual = record.Properties["virtual"].GetBoolValue()
 	}
 
 	if record.Properties["title"] != nil {
