@@ -20,6 +20,7 @@ func (m authenticationApi) ConfigureRouter(router *mux.Router) {
 	// collection level operations
 	subRoute.HandleFunc("", m.handleAuthentication).Methods("POST")
 	subRoute.HandleFunc("", m.handleRefreshToken).Methods("PUT")
+	subRoute.HandleFunc("", m.handleGetToken).Methods("GET")
 }
 
 func (m authenticationApi) handleAuthentication(writer http.ResponseWriter, request *http.Request) {
@@ -74,6 +75,14 @@ func (m authenticationApi) handleRefreshToken(writer http.ResponseWriter, reques
 	ServiceResponder().
 		Writer(writer).
 		Respond(resp, serr)
+}
+
+func (m authenticationApi) handleGetToken(writer http.ResponseWriter, request *http.Request) {
+	token, serr := m.service.GetToken(request.Context())
+
+	ServiceResponder().
+		Writer(writer).
+		Respond(token, serr)
 }
 
 func NewAuthenticationApi(service service.AuthenticationService) AuthenticationApi {

@@ -123,6 +123,29 @@ var authenticationTokenApi = &openapi3.PathItem{
 			"400": error400,
 		},
 	},
+	Get: &openapi3.Operation{
+		Tags:        []string{"Authentication"},
+		OperationID: "ViewToken",
+		Summary:     "This endpoint is used to view the content of the access token.",
+		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
+		Security: &openapi3.SecurityRequirements{
+			{
+				"bearerAuth": []string{},
+			},
+		},
+		Responses: map[string]*openapi3.ResponseRef{
+			"200": {
+				Value: &openapi3.Response{
+					Description: util.Pointer("Authentication Response"),
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/ViewTokenResponse",
+					}),
+				},
+			},
+			"401": error401,
+			"400": error400,
+		},
+	},
 }
 
 var resourcesApi = &openapi3.PathItem{
@@ -404,6 +427,9 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 							},
 						},
 					},
+				},
+				"ViewTokenResponse": {
+					Value: &openapi3.Schema{},
 				},
 				"Token": {
 					Value: &openapi3.Schema{

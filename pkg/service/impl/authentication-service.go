@@ -83,6 +83,16 @@ func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context,
 	return s.prepareToken(systemCtx, term, user, false)
 }
 
+func (s *authenticationService) GetToken(ctx context.Context) (*jwt_model.UserDetails, errors.ServiceError) {
+	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
+
+	if userDetails == nil {
+		return nil, errors.AuthenticationFailedError
+	}
+
+	return userDetails, nil
+}
+
 func (s *authenticationService) prepareToken(ctx context.Context, term model.TokenTerm, user *resource_model.User, minimizeToken bool) (*model.Token, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	// Prepare token
