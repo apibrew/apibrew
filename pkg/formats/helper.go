@@ -1,24 +1,27 @@
 package formats
 
 import (
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 )
 
-func FixResourceForApply(resource *model.Resource) *model.Resource {
-	resource.Id = ""
+func FixResourceForApply(resource *resource_model.Resource) *resource_model.Resource {
+	resource.Id = nil
 	resource.AuditData = nil
 	resource.Version = 0
 
-	var newProperties []*model.ResourceProperty
-	for _, property := range resource.Properties {
+	for name, property := range resource.Properties {
 		// if property has special annotation, remove it
 		if !annotations.IsEnabled(property, annotations.SpecialProperty) {
-			newProperties = append(newProperties, property)
+			delete(resource.Properties, name)
 		}
 	}
 
-	resource.Properties = newProperties
+	for _, typ := range resource.Types {
+		if typ.Name == "AuditData" {
+
+		}
+	}
 
 	return resource
 }

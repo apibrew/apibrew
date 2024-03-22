@@ -14,6 +14,7 @@ import (
 )
 
 import "github.com/google/uuid"
+import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 import "time"
 
 type ResourceActionMapper struct {
@@ -376,6 +377,144 @@ func (m *ResourceActionMapper) FromProperties(properties map[string]*structpb.Va
 	return s
 }
 
+func (m *ResourceActionMapper) ToUnstructured(resourceAction *ResourceAction) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := resourceAction.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := resourceAction.Version
+
+	var var_Version_mapped interface{}
+
+	var_Version_mapped = var_Version
+	properties["version"] = var_Version_mapped
+
+	var_AuditData := resourceAction.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped interface{}
+
+		var_AuditData_mapped = ResourceActionAuditDataMapperInstance.ToUnstructured(var_AuditData)
+		properties["auditData"] = var_AuditData_mapped
+	}
+
+	var_Resource := resourceAction.Resource
+
+	if var_Resource != nil {
+		var var_Resource_mapped interface{}
+
+		var_Resource_mapped = ResourceMapperInstance.ToUnstructured(var_Resource)
+		properties["resource"] = var_Resource_mapped
+	}
+
+	var_Name := resourceAction.Name
+
+	var var_Name_mapped interface{}
+
+	var_Name_mapped = var_Name
+	properties["name"] = var_Name_mapped
+
+	var_Title := resourceAction.Title
+
+	if var_Title != nil {
+		var var_Title_mapped interface{}
+
+		var_Title_mapped = *var_Title
+		properties["title"] = var_Title_mapped
+	}
+
+	var_Description := resourceAction.Description
+
+	if var_Description != nil {
+		var var_Description_mapped interface{}
+
+		var_Description_mapped = *var_Description
+		properties["description"] = var_Description_mapped
+	}
+
+	var_Internal := resourceAction.Internal
+
+	var var_Internal_mapped interface{}
+
+	var_Internal_mapped = var_Internal
+	properties["internal"] = var_Internal_mapped
+
+	var_Types := resourceAction.Types
+
+	if var_Types != nil {
+		var var_Types_mapped interface{}
+
+		var var_Types_l []interface{}
+		for _, value := range var_Types {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = SubTypeMapperInstance.ToUnstructured(&var_5x)
+
+			var_Types_l = append(var_Types_l, var_5x_mapped)
+		}
+		var_Types_mapped = var_Types_l
+		properties["types"] = var_Types_mapped
+	}
+
+	var_Input := resourceAction.Input
+
+	if var_Input != nil {
+		var var_Input_mapped interface{}
+
+		var var_Input_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Input {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = PropertyMapperInstance.ToUnstructured(&var_1x)
+
+			var_Input_st[key] = var_1x_mapped
+		}
+		var_Input_mapped = var_Input_st
+		properties["input"] = var_Input_mapped
+	}
+
+	var_Output := resourceAction.Output
+
+	if var_Output != nil {
+		var var_Output_mapped interface{}
+
+		var_Output_mapped = PropertyMapperInstance.ToUnstructured(var_Output)
+		properties["output"] = var_Output_mapped
+	}
+
+	var_Annotations := resourceAction.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped interface{}
+
+		var var_Annotations_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Annotations_st[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = var_Annotations_st
+		properties["annotations"] = var_Annotations_mapped
+	}
+
+	return properties
+}
+
 type ResourceActionAuditDataMapper struct {
 }
 
@@ -512,4 +651,46 @@ func (m *ResourceActionAuditDataMapper) FromProperties(properties map[string]*st
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	return s
+}
+
+func (m *ResourceActionAuditDataMapper) ToUnstructured(resourceActionAuditData *ResourceActionAuditData) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_CreatedBy := resourceActionAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped interface{}
+
+		var_CreatedBy_mapped = *var_CreatedBy
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := resourceActionAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped interface{}
+
+		var_UpdatedBy_mapped = *var_UpdatedBy
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := resourceActionAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped interface{}
+
+		var_CreatedOn_mapped = *var_CreatedOn
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := resourceActionAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped interface{}
+
+		var_UpdatedOn_mapped = *var_UpdatedOn
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+
+	return properties
 }

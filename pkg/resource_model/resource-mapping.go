@@ -534,6 +534,200 @@ func (m *ResourceMapper) FromProperties(properties map[string]*structpb.Value) *
 	return s
 }
 
+func (m *ResourceMapper) ToUnstructured(resource *Resource) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := resource.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := resource.Version
+
+	var var_Version_mapped interface{}
+
+	var_Version_mapped = var_Version
+	properties["version"] = var_Version_mapped
+
+	var_AuditData := resource.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped interface{}
+
+		var_AuditData_mapped = ResourceAuditDataMapperInstance.ToUnstructured(var_AuditData)
+		properties["auditData"] = var_AuditData_mapped
+	}
+
+	var_Name := resource.Name
+
+	var var_Name_mapped interface{}
+
+	var_Name_mapped = var_Name
+	properties["name"] = var_Name_mapped
+
+	var_Namespace := resource.Namespace
+
+	if var_Namespace != nil {
+		var var_Namespace_mapped interface{}
+
+		var_Namespace_mapped = NamespaceMapperInstance.ToUnstructured(var_Namespace)
+		properties["namespace"] = var_Namespace_mapped
+	}
+
+	var_Virtual := resource.Virtual
+
+	var var_Virtual_mapped interface{}
+
+	var_Virtual_mapped = var_Virtual
+	properties["virtual"] = var_Virtual_mapped
+
+	var_Properties := resource.Properties
+
+	var var_Properties_mapped interface{}
+
+	var var_Properties_st map[string]interface{} = make(map[string]interface{})
+	for key, value := range var_Properties {
+
+		var_1x := value
+		var var_1x_mapped interface{}
+
+		var_1x_mapped = PropertyMapperInstance.ToUnstructured(&var_1x)
+
+		var_Properties_st[key] = var_1x_mapped
+	}
+	var_Properties_mapped = var_Properties_st
+	properties["properties"] = var_Properties_mapped
+
+	var_Indexes := resource.Indexes
+
+	if var_Indexes != nil {
+		var var_Indexes_mapped interface{}
+
+		var var_Indexes_l []interface{}
+		for _, value := range var_Indexes {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = ResourceIndexMapperInstance.ToUnstructured(&var_5x)
+
+			var_Indexes_l = append(var_Indexes_l, var_5x_mapped)
+		}
+		var_Indexes_mapped = var_Indexes_l
+		properties["indexes"] = var_Indexes_mapped
+	}
+
+	var_Types := resource.Types
+
+	if var_Types != nil {
+		var var_Types_mapped interface{}
+
+		var var_Types_l []interface{}
+		for _, value := range var_Types {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = SubTypeMapperInstance.ToUnstructured(&var_5x)
+
+			var_Types_l = append(var_Types_l, var_5x_mapped)
+		}
+		var_Types_mapped = var_Types_l
+		properties["types"] = var_Types_mapped
+	}
+
+	var_Immutable := resource.Immutable
+
+	var var_Immutable_mapped interface{}
+
+	var_Immutable_mapped = var_Immutable
+	properties["immutable"] = var_Immutable_mapped
+
+	var_Abstract := resource.Abstract
+
+	var var_Abstract_mapped interface{}
+
+	var_Abstract_mapped = var_Abstract
+	properties["abstract"] = var_Abstract_mapped
+
+	var_CheckReferences := resource.CheckReferences
+
+	var var_CheckReferences_mapped interface{}
+
+	var_CheckReferences_mapped = var_CheckReferences
+	properties["checkReferences"] = var_CheckReferences_mapped
+
+	var_DataSource := resource.DataSource
+
+	if var_DataSource != nil {
+		var var_DataSource_mapped interface{}
+
+		var_DataSource_mapped = DataSourceMapperInstance.ToUnstructured(var_DataSource)
+		properties["dataSource"] = var_DataSource_mapped
+	}
+
+	var_Entity := resource.Entity
+
+	if var_Entity != nil {
+		var var_Entity_mapped interface{}
+
+		var_Entity_mapped = *var_Entity
+		properties["entity"] = var_Entity_mapped
+	}
+
+	var_Catalog := resource.Catalog
+
+	if var_Catalog != nil {
+		var var_Catalog_mapped interface{}
+
+		var_Catalog_mapped = *var_Catalog
+		properties["catalog"] = var_Catalog_mapped
+	}
+
+	var_Title := resource.Title
+
+	if var_Title != nil {
+		var var_Title_mapped interface{}
+
+		var_Title_mapped = *var_Title
+		properties["title"] = var_Title_mapped
+	}
+
+	var_Description := resource.Description
+
+	if var_Description != nil {
+		var var_Description_mapped interface{}
+
+		var_Description_mapped = *var_Description
+		properties["description"] = var_Description_mapped
+	}
+
+	var_Annotations := resource.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped interface{}
+
+		var var_Annotations_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Annotations_st[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = var_Annotations_st
+		properties["annotations"] = var_Annotations_mapped
+	}
+
+	return properties
+}
+
 type PropertyMapper struct {
 }
 
@@ -1008,6 +1202,171 @@ func (m *PropertyMapper) FromProperties(properties map[string]*structpb.Value) *
 	return s
 }
 
+func (m *PropertyMapper) ToUnstructured(property *Property) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Type := property.Type
+
+	var var_Type_mapped interface{}
+
+	var_Type_mapped = string(var_Type)
+	properties["type"] = var_Type_mapped
+
+	var_TypeRef := property.TypeRef
+
+	if var_TypeRef != nil {
+		var var_TypeRef_mapped interface{}
+
+		var_TypeRef_mapped = *var_TypeRef
+		properties["typeRef"] = var_TypeRef_mapped
+	}
+
+	var_Primary := property.Primary
+
+	var var_Primary_mapped interface{}
+
+	var_Primary_mapped = var_Primary
+	properties["primary"] = var_Primary_mapped
+
+	var_Required := property.Required
+
+	var var_Required_mapped interface{}
+
+	var_Required_mapped = var_Required
+	properties["required"] = var_Required_mapped
+
+	var_Unique := property.Unique
+
+	var var_Unique_mapped interface{}
+
+	var_Unique_mapped = var_Unique
+	properties["unique"] = var_Unique_mapped
+
+	var_Immutable := property.Immutable
+
+	var var_Immutable_mapped interface{}
+
+	var_Immutable_mapped = var_Immutable
+	properties["immutable"] = var_Immutable_mapped
+
+	var_Virtual := property.Virtual
+
+	var var_Virtual_mapped interface{}
+
+	var_Virtual_mapped = var_Virtual
+	properties["virtual"] = var_Virtual_mapped
+
+	var_Length := property.Length
+
+	var var_Length_mapped interface{}
+
+	var_Length_mapped = var_Length
+	properties["length"] = var_Length_mapped
+
+	var_Item := property.Item
+
+	if var_Item != nil {
+		var var_Item_mapped interface{}
+
+		var_Item_mapped = PropertyMapperInstance.ToUnstructured(var_Item)
+		properties["item"] = var_Item_mapped
+	}
+
+	var_Reference := property.Reference
+
+	if var_Reference != nil {
+		var var_Reference_mapped interface{}
+
+		var_Reference_mapped = *var_Reference
+		properties["reference"] = var_Reference_mapped
+	}
+
+	var_BackReference := property.BackReference
+
+	if var_BackReference != nil {
+		var var_BackReference_mapped interface{}
+
+		var_BackReference_mapped = *var_BackReference
+		properties["backReference"] = var_BackReference_mapped
+	}
+
+	var_DefaultValue := property.DefaultValue
+
+	if var_DefaultValue != nil {
+		var var_DefaultValue_mapped interface{}
+
+		var_DefaultValue_mapped = var_DefaultValue
+		properties["defaultValue"] = var_DefaultValue_mapped
+	}
+
+	var_EnumValues := property.EnumValues
+
+	if var_EnumValues != nil {
+		var var_EnumValues_mapped interface{}
+
+		var var_EnumValues_l []interface{}
+		for _, value := range var_EnumValues {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = var_5x
+
+			var_EnumValues_l = append(var_EnumValues_l, var_5x_mapped)
+		}
+		var_EnumValues_mapped = var_EnumValues_l
+		properties["enumValues"] = var_EnumValues_mapped
+	}
+
+	var_ExampleValue := property.ExampleValue
+
+	if var_ExampleValue != nil {
+		var var_ExampleValue_mapped interface{}
+
+		var_ExampleValue_mapped = var_ExampleValue
+		properties["exampleValue"] = var_ExampleValue_mapped
+	}
+
+	var_Title := property.Title
+
+	if var_Title != nil {
+		var var_Title_mapped interface{}
+
+		var_Title_mapped = *var_Title
+		properties["title"] = var_Title_mapped
+	}
+
+	var_Description := property.Description
+
+	if var_Description != nil {
+		var var_Description_mapped interface{}
+
+		var_Description_mapped = *var_Description
+		properties["description"] = var_Description_mapped
+	}
+
+	var_Annotations := property.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped interface{}
+
+		var var_Annotations_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Annotations_st[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = var_Annotations_st
+		properties["annotations"] = var_Annotations_mapped
+	}
+
+	return properties
+}
+
 type SubTypeMapper struct {
 }
 
@@ -1150,6 +1509,54 @@ func (m *SubTypeMapper) FromProperties(properties map[string]*structpb.Value) *S
 	return s
 }
 
+func (m *SubTypeMapper) ToUnstructured(subType *SubType) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Name := subType.Name
+
+	var var_Name_mapped interface{}
+
+	var_Name_mapped = var_Name
+	properties["name"] = var_Name_mapped
+
+	var_Title := subType.Title
+
+	if var_Title != nil {
+		var var_Title_mapped interface{}
+
+		var_Title_mapped = *var_Title
+		properties["title"] = var_Title_mapped
+	}
+
+	var_Description := subType.Description
+
+	if var_Description != nil {
+		var var_Description_mapped interface{}
+
+		var_Description_mapped = *var_Description
+		properties["description"] = var_Description_mapped
+	}
+
+	var_Properties := subType.Properties
+
+	var var_Properties_mapped interface{}
+
+	var var_Properties_st map[string]interface{} = make(map[string]interface{})
+	for key, value := range var_Properties {
+
+		var_1x := value
+		var var_1x_mapped interface{}
+
+		var_1x_mapped = PropertyMapperInstance.ToUnstructured(&var_1x)
+
+		var_Properties_st[key] = var_1x_mapped
+	}
+	var_Properties_mapped = var_Properties_st
+	properties["properties"] = var_Properties_mapped
+
+	return properties
+}
+
 type ResourceAuditDataMapper struct {
 }
 
@@ -1288,6 +1695,48 @@ func (m *ResourceAuditDataMapper) FromProperties(properties map[string]*structpb
 	return s
 }
 
+func (m *ResourceAuditDataMapper) ToUnstructured(resourceAuditData *ResourceAuditData) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_CreatedBy := resourceAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped interface{}
+
+		var_CreatedBy_mapped = *var_CreatedBy
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := resourceAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped interface{}
+
+		var_UpdatedBy_mapped = *var_UpdatedBy
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := resourceAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped interface{}
+
+		var_CreatedOn_mapped = *var_CreatedOn
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := resourceAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped interface{}
+
+		var_UpdatedOn_mapped = *var_UpdatedOn
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+
+	return properties
+}
+
 type ResourceIndexPropertyMapper struct {
 }
 
@@ -1361,6 +1810,28 @@ func (m *ResourceIndexPropertyMapper) FromProperties(properties map[string]*stru
 		s.Order = var_Order_mapped
 	}
 	return s
+}
+
+func (m *ResourceIndexPropertyMapper) ToUnstructured(resourceIndexProperty *ResourceIndexProperty) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Name := resourceIndexProperty.Name
+
+	var var_Name_mapped interface{}
+
+	var_Name_mapped = var_Name
+	properties["name"] = var_Name_mapped
+
+	var_Order := resourceIndexProperty.Order
+
+	if var_Order != nil {
+		var var_Order_mapped interface{}
+
+		var_Order_mapped = string(*var_Order)
+		properties["order"] = var_Order_mapped
+	}
+
+	return properties
 }
 
 type ResourceIndexMapper struct {
@@ -1518,4 +1989,66 @@ func (m *ResourceIndexMapper) FromProperties(properties map[string]*structpb.Val
 		s.Annotations = var_Annotations_mapped
 	}
 	return s
+}
+
+func (m *ResourceIndexMapper) ToUnstructured(resourceIndex *ResourceIndex) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Properties := resourceIndex.Properties
+
+	if var_Properties != nil {
+		var var_Properties_mapped interface{}
+
+		var var_Properties_l []interface{}
+		for _, value := range var_Properties {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = ResourceIndexPropertyMapperInstance.ToUnstructured(&var_5x)
+
+			var_Properties_l = append(var_Properties_l, var_5x_mapped)
+		}
+		var_Properties_mapped = var_Properties_l
+		properties["properties"] = var_Properties_mapped
+	}
+
+	var_IndexType := resourceIndex.IndexType
+
+	if var_IndexType != nil {
+		var var_IndexType_mapped interface{}
+
+		var_IndexType_mapped = string(*var_IndexType)
+		properties["indexType"] = var_IndexType_mapped
+	}
+
+	var_Unique := resourceIndex.Unique
+
+	if var_Unique != nil {
+		var var_Unique_mapped interface{}
+
+		var_Unique_mapped = *var_Unique
+		properties["unique"] = var_Unique_mapped
+	}
+
+	var_Annotations := resourceIndex.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped interface{}
+
+		var var_Annotations_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Annotations_st[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = var_Annotations_st
+		properties["annotations"] = var_Annotations_mapped
+	}
+
+	return properties
 }

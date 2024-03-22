@@ -276,7 +276,18 @@ func (p *preprocessor) runPreprocessExtend(un unstructured.Unstructured) (unstru
 		return un, fmt.Errorf("no record found for %s/%s/%v", namespace, resource, extend["$match"])
 	}
 
-	recordUn, err := p.writer.WriteRecord(namespace, resource, records[0])
+	var uRecords []unstructured.Unstructured
+
+	for _, record := range records {
+		uRecord, err := unstructured.FromRecord(record)
+		if err != nil {
+			return nil, err
+		}
+		uRecords = append(uRecords, uRecord)
+
+	}
+
+	recordUn, err := p.writer.WriteRecord(namespace, resource, uRecords[0])
 
 	if err != nil {
 		reportError(un, err)

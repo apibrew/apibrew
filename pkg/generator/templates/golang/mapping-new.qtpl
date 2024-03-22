@@ -1,0 +1,61 @@
+{% import "github.com/apibrew/apibrew/pkg/model" %}
+
+{%- func UPropertyTo(resource *model.Resource, property *model.ResourceProperty, isCollectionItem bool, varName string) -%}
+    var {%s varName %}_mapped interface{}
+
+    {%- if property.Type == model.ResourceProperty_ENUM -%}
+         {%s varName %}_mapped = string({%= NormalizePointer(property, varName, isCollectionItem, false) %})
+    {%- elseif property.Type == model.ResourceProperty_UUID -%}
+            {%s varName %}_mapped = {%s varName %}.String()
+     {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
+            {%s varName %}_mapped = {%= GoName(getSubTypeNameByProperty(resource, property)) %}MapperInstance.ToUnstructured({%= NormalizePointer(property, varName , isCollectionItem, true) %})
+    {%- elseif property.Type == model.ResourceProperty_MAP -%}
+        var {%s varName %}_st map[string]interface{} = make(map[string]interface{})
+        for key, value := range {%s varName %} {
+            {% code subVarName := "var_1x" %}
+            {%s subVarName %} := value
+            {%= UPropertyTo(resource, property.Item, true, subVarName) %}
+            {%s varName %}_st[key] = {%s subVarName %}_mapped
+        }
+        {%s varName %}_mapped = {%s varName %}_st
+    {%- elseif property.Type == model.ResourceProperty_LIST -%}
+        var {%s varName %}_l []interface{}
+        for _, value := range {%s varName %} {
+            {% code subVarName := "var_5x"  %}
+            {%s subVarName %} := value
+            {%= UPropertyTo(resource, property.Item, true, subVarName) %}
+            {%s varName %}_l = append({%s varName %}_l, {%s subVarName %}_mapped)
+        }
+        {%s varName %}_mapped = {%s varName %}_l
+    {%- elseif property.Type == model.ResourceProperty_REFERENCE -%}
+        {%s varName %}_mapped = {%= GoName(property.Reference.Resource) %}MapperInstance.ToUnstructured({%= NormalizePointer(property, varName, isCollectionItem, true) %})
+    {%- else -%}
+        {%s varName %}_mapped = {%= NormalizePointer(property, varName, isCollectionItem, false) %}
+    {%- endif -%}
+{%- endfunc -%}
+
+{%- func UGenerateResourceMappingBodyCode(pkg string, resource *model.Resource, typeName string, properties []*model.ResourceProperty, resources []*model.Resource) -%}
+func (m *{%s typeName %}Mapper) ToUnstructured({%= GoVarName(typeName)%} *{%s typeName %}) unstructured.Unstructured {
+    var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+    {%- for _, property := range properties -%}
+    {% code varName := "var_" + GoName(property.Name) %}
+    {%s varName %} := {%= GoVarName(typeName) %}.{%= GoName(property.Name) %}
+
+    {%- if isNullable(property) -%}
+    if {%s varName %} != nil {
+        {%-= UPropertyTo(resource, property, false, varName) -%}
+        properties["{%s property.Name %}"] = {%s varName %}_mapped
+    }
+    {%- else -%}
+    {%-= UPropertyTo(resource, property, false, varName) -%}
+        properties["{%s property.Name %}"] = {%s varName %}_mapped
+    {%- endif -%}
+    {%- endfor -%}
+
+
+    return properties
+}
+
+{% endfunc %}
+

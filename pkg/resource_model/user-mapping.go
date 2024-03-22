@@ -264,6 +264,100 @@ func (m *UserMapper) FromProperties(properties map[string]*structpb.Value) *User
 	return s
 }
 
+func (m *UserMapper) ToUnstructured(user *User) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := user.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := user.Version
+
+	var var_Version_mapped interface{}
+
+	var_Version_mapped = var_Version
+	properties["version"] = var_Version_mapped
+
+	var_AuditData := user.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped interface{}
+
+		var_AuditData_mapped = UserAuditDataMapperInstance.ToUnstructured(var_AuditData)
+		properties["auditData"] = var_AuditData_mapped
+	}
+
+	var_Username := user.Username
+
+	var var_Username_mapped interface{}
+
+	var_Username_mapped = var_Username
+	properties["username"] = var_Username_mapped
+
+	var_Password := user.Password
+
+	if var_Password != nil {
+		var var_Password_mapped interface{}
+
+		var_Password_mapped = *var_Password
+		properties["password"] = var_Password_mapped
+	}
+
+	var_Roles := user.Roles
+
+	if var_Roles != nil {
+		var var_Roles_mapped interface{}
+
+		var var_Roles_l []interface{}
+		for _, value := range var_Roles {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = RoleMapperInstance.ToUnstructured(var_5x)
+
+			var_Roles_l = append(var_Roles_l, var_5x_mapped)
+		}
+		var_Roles_mapped = var_Roles_l
+		properties["roles"] = var_Roles_mapped
+	}
+
+	var_Permissions := user.Permissions
+
+	if var_Permissions != nil {
+		var var_Permissions_mapped interface{}
+
+		var var_Permissions_l []interface{}
+		for _, value := range var_Permissions {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = PermissionMapperInstance.ToUnstructured(var_5x)
+
+			var_Permissions_l = append(var_Permissions_l, var_5x_mapped)
+		}
+		var_Permissions_mapped = var_Permissions_l
+		properties["permissions"] = var_Permissions_mapped
+	}
+
+	var_Details := user.Details
+
+	if var_Details != nil {
+		var var_Details_mapped interface{}
+
+		var_Details_mapped = var_Details
+		properties["details"] = var_Details_mapped
+	}
+
+	return properties
+}
+
 type UserAuditDataMapper struct {
 }
 
@@ -400,4 +494,46 @@ func (m *UserAuditDataMapper) FromProperties(properties map[string]*structpb.Val
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	return s
+}
+
+func (m *UserAuditDataMapper) ToUnstructured(userAuditData *UserAuditData) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_CreatedBy := userAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped interface{}
+
+		var_CreatedBy_mapped = *var_CreatedBy
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := userAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped interface{}
+
+		var_UpdatedBy_mapped = *var_UpdatedBy
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := userAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped interface{}
+
+		var_CreatedOn_mapped = *var_CreatedOn
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := userAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped interface{}
+
+		var_UpdatedOn_mapped = *var_UpdatedOn
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+
+	return properties
 }

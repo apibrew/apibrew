@@ -310,3 +310,95 @@ func (m *AuditLogMapper) FromProperties(properties map[string]*structpb.Value) *
 	}
 	return s
 }
+
+func (m *AuditLogMapper) ToUnstructured(auditLog *AuditLog) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := auditLog.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := auditLog.Version
+
+	var var_Version_mapped interface{}
+
+	var_Version_mapped = var_Version
+	properties["version"] = var_Version_mapped
+
+	var_Namespace := auditLog.Namespace
+
+	var var_Namespace_mapped interface{}
+
+	var_Namespace_mapped = var_Namespace
+	properties["namespace"] = var_Namespace_mapped
+
+	var_Resource := auditLog.Resource
+
+	var var_Resource_mapped interface{}
+
+	var_Resource_mapped = var_Resource
+	properties["resource"] = var_Resource_mapped
+
+	var_RecordId := auditLog.RecordId
+
+	var var_RecordId_mapped interface{}
+
+	var_RecordId_mapped = var_RecordId
+	properties["recordId"] = var_RecordId_mapped
+
+	var_Time := auditLog.Time
+
+	var var_Time_mapped interface{}
+
+	var_Time_mapped = var_Time
+	properties["time"] = var_Time_mapped
+
+	var_Username := auditLog.Username
+
+	var var_Username_mapped interface{}
+
+	var_Username_mapped = var_Username
+	properties["username"] = var_Username_mapped
+
+	var_Operation := auditLog.Operation
+
+	var var_Operation_mapped interface{}
+
+	var_Operation_mapped = string(var_Operation)
+	properties["operation"] = var_Operation_mapped
+
+	var_Properties := auditLog.Properties
+
+	if var_Properties != nil {
+		var var_Properties_mapped interface{}
+
+		var_Properties_mapped = var_Properties
+		properties["properties"] = var_Properties_mapped
+	}
+
+	var_Annotations := auditLog.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped interface{}
+
+		var var_Annotations_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Annotations_st[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = var_Annotations_st
+		properties["annotations"] = var_Annotations_mapped
+	}
+
+	return properties
+}

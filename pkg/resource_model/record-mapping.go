@@ -137,3 +137,44 @@ func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Re
 	}
 	return s
 }
+
+func (m *RecordMapper) ToUnstructured(record *Record) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := record.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Properties := record.Properties
+
+	var var_Properties_mapped interface{}
+
+	var_Properties_mapped = var_Properties
+	properties["properties"] = var_Properties_mapped
+
+	var_PackedProperties := record.PackedProperties
+
+	if var_PackedProperties != nil {
+		var var_PackedProperties_mapped interface{}
+
+		var var_PackedProperties_l []interface{}
+		for _, value := range var_PackedProperties {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = var_5x
+
+			var_PackedProperties_l = append(var_PackedProperties_l, var_5x_mapped)
+		}
+		var_PackedProperties_mapped = var_PackedProperties_l
+		properties["packedProperties"] = var_PackedProperties_mapped
+	}
+
+	return properties
+}

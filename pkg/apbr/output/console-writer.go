@@ -2,9 +2,9 @@ package output
 
 import (
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
-	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/olekukonko/tablewriter"
 	"io"
@@ -22,7 +22,7 @@ func (c consoleWriter) IsBinary() bool {
 	return false
 }
 
-func (c consoleWriter) DescribeResource(resource *model.Resource) {
+func (c consoleWriter) DescribeResource(resource *resource_model.Resource) {
 	const padding = 3
 	w := tabwriter.NewWriter(c.writer, 0, 0, padding, ' ', 0)
 
@@ -32,17 +32,17 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	c.out(w, "")
 
 	c.out(w, "Source Config:")
-	c.out(w, "  DataSource: \t\t %s", resource.SourceConfig.DataSource)
-	c.out(w, "  Catalog: \t\t %s", resource.SourceConfig.Catalog)
-	c.out(w, "  Entity: \t\t %s", resource.SourceConfig.Entity)
+	c.out(w, "  DataSource: \t\t %s", resource.DataSource)
+	c.out(w, "  Catalog: \t\t %s", resource.Catalog)
+	c.out(w, "  Entity: \t\t %s", resource.Entity)
 	c.out(w, "")
 
 	if resource.AuditData != nil {
 		c.out(w, "AuditData:")
 		c.out(w, "  Created By: \t\t %s", resource.AuditData.CreatedBy)
-		c.out(w, "  Created On: \t\t %s", resource.AuditData.CreatedOn.AsTime().String())
+		c.out(w, "  Created On: \t\t %s", resource.AuditData.CreatedOn.String())
 		c.out(w, "  Updated By: \t\t %s", resource.AuditData.UpdatedBy)
-		c.out(w, "  Updated On: \t\t %s", resource.AuditData.UpdatedOn.AsTime().String())
+		c.out(w, "  Updated On: \t\t %s", resource.AuditData.UpdatedOn.String())
 		c.out(w, "")
 	}
 
@@ -62,17 +62,17 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 	table.SetHeader([]string{"Name", "Type", "Required", "Unique", "Length", "Annotations"})
 	c.configureTable(table)
 
-	for _, item := range resource.Properties {
+	for itemName, item := range resource.Properties {
 
-		typeStr := strings.ToLower(item.Type.String())
+		typeStr := strings.ToLower(string(item.Type))
 
 		data = append(data, []string{
-			item.Name,
+			itemName,
 			typeStr,
 			strconv.FormatBool(item.Required),
 			strconv.FormatBool(item.Unique),
 			strconv.Itoa(int(item.Length)),
-			annotations.ToString(item),
+			annotations.ToString(annotations.FromMap(item.Annotations)),
 		})
 	}
 
@@ -94,12 +94,12 @@ func (c consoleWriter) DescribeResource(resource *model.Resource) {
 
 		for _, item := range resource.Indexes {
 			data = append(data, []string{
-				item.IndexType.String(),
-				strconv.FormatBool(item.Unique),
-				strings.Join(util.ArrayMapToString(item.Properties, func(t *model.ResourceIndexProperty) string {
+				string(*item.IndexType),
+				strconv.FormatBool(util.DePointer(item.Unique, false)),
+				strings.Join(util.ArrayMapToString(item.Properties, func(t resource_model.ResourceIndexProperty) string {
 					return t.Name
 				}), ", "),
-				annotations.ToString(item),
+				annotations.ToString(annotations.FromMap(item.Annotations)),
 			})
 		}
 
@@ -131,7 +131,7 @@ func (c consoleWriter) configureTable(table *tablewriter.Table) {
 	table.SetNoWhiteSpace(true)
 }
 
-func (c consoleWriter) WriteResource(resources ...*model.Resource) error {
+func (c consoleWriter) WriteResource(resources ...*resource_model.Resource) error {
 	if c.describe {
 		for _, resource := range resources {
 			c.DescribeResource(resource)
@@ -143,7 +143,7 @@ func (c consoleWriter) WriteResource(resources ...*model.Resource) error {
 	return nil
 }
 
-func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
+func (c consoleWriter) ShowResourceTable(resources []*resource_model.Resource) {
 	var data [][]string
 
 	table := tablewriter.NewWriter(c.writer)
@@ -151,18 +151,13 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	c.configureTable(table)
 
 	for _, item := range resources {
-		var sourceConfig = item.SourceConfig
-
-		if sourceConfig == nil {
-			sourceConfig = &model.ResourceSourceConfig{}
-		}
 		data = append(data, []string{
-			item.Id,
+			item.Id.String(),
 			item.Name,
-			item.Namespace,
-			sourceConfig.DataSource,
-			sourceConfig.Catalog,
-			sourceConfig.Entity,
+			item.Namespace.Name,
+			item.DataSource.Name,
+			util.DePointer(item.Catalog, ""),
+			util.DePointer(item.Entity, ""),
 			strconv.Itoa(int(item.Version)),
 		})
 	}
@@ -173,12 +168,12 @@ func (c consoleWriter) ShowResourceTable(resources []*model.Resource) {
 	table.Render() // Send output
 }
 
-func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, records []*model.Record) error {
+func (c consoleWriter) WriteRecords(resource *resource_model.Resource, total uint32, records []unstructured.Unstructured) error {
 	table := tablewriter.NewWriter(c.writer)
 	var columns []string
 
-	for _, prop := range resource.Properties {
-		columns = append(columns, util.ToDashCase(prop.Name))
+	for propName := range resource.Properties {
+		columns = append(columns, util.ToDashCase(propName))
 	}
 
 	table.SetHeader(columns)
@@ -188,20 +183,8 @@ func (c consoleWriter) WriteRecords(resource *model.Resource, total uint32, reco
 	for _, item := range records {
 		var row []string
 
-		for _, prop := range resource.Properties {
-			typeHandler := types.ByResourcePropertyType(prop.Type)
-			packedVal := item.Properties[prop.Name]
-
-			if packedVal == nil {
-				row = append(row, "Null")
-			} else {
-				value, err := typeHandler.UnPack(packedVal)
-
-				check(err)
-				valStr := typeHandler.String(value)
-
-				row = append(row, valStr)
-			}
+		for propName := range resource.Properties {
+			row = append(row, fmt.Sprintf("%v", item[propName]))
 		}
 		i++
 

@@ -94,9 +94,16 @@ func NormalizeResource(resource *model.Resource) {
 
 	if !annotations.IsEnabled(resource, annotations.DisableVersion) && propertyNameMap[special.VersionProperty.Name] == nil {
 		resource.Properties = append(resource.Properties, special.VersionProperty)
+	} else if annotations.IsEnabled(resource, annotations.DisableVersion) && propertyNameMap[special.VersionProperty.Name] != nil {
+		// remove version property from resource.Properties
+
+		resource.Properties = ArrayFilter(resource.Properties, func(prop *model.ResourceProperty) bool {
+			return prop.Name != special.VersionProperty.Name
+		})
+
 	}
 
-	if annotations.IsEnabled(resource, annotations.EnableAudit) {
+	if annotations.IsEnabled(resource, annotations.EnableAudit) && propertyNameMap[special.AuditProperty.Name] == nil {
 		if propertyNameMap[special.AuditProperty.Name] == nil {
 			resource.Properties = append(resource.Properties, special.AuditProperty)
 		}
@@ -111,13 +118,23 @@ func NormalizeResource(resource *model.Resource) {
 		if !found {
 			resource.Types = append(resource.Types, special.AuditDataSubType)
 		}
+	} else if !annotations.IsEnabled(resource, annotations.EnableAudit) && propertyNameMap[special.AuditProperty.Name] != nil {
+		resource.Properties = ArrayFilter(resource.Properties, func(prop *model.ResourceProperty) bool {
+			return prop.Name != special.AuditProperty.Name
+		})
+
+		resource.Types = ArrayFilter(resource.Types, func(subType *model.ResourceSubType) bool {
+			return subType.Name != special.AuditDataSubType.Name
+		})
 	}
 
 	if !HasResourcePrimaryProp(resource) && propertyNameMap[special.IdProperty.Name] == nil {
 		resource.Properties = append([]*model.ResourceProperty{special.IdProperty}, resource.Properties...)
 	}
 
-	annotations.Enable(resource, annotations.NormalizedResource)
+	if resource.Types == nil {
+		resource.Types = make([]*model.ResourceSubType, 0)
+	}
 }
 
 func HasResourceSinglePrimaryProp(resource *model.Resource) bool {

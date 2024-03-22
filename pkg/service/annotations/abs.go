@@ -64,6 +64,11 @@ func FromCtx(ctx context.Context) Annotated {
 		annotations: make(map[string]string),
 	}
 }
+func FromMap(m map[string]string) Annotated {
+	return &annotated{
+		annotations: m,
+	}
+}
 
 func IsEnabled(resource Annotated, name string) bool {
 	return resource.GetAnnotations() != nil && resource.GetAnnotations()[name] == "true"

@@ -204,6 +204,72 @@ func (m *RoleMapper) FromProperties(properties map[string]*structpb.Value) *Role
 	return s
 }
 
+func (m *RoleMapper) ToUnstructured(role *Role) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := role.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := role.Version
+
+	var var_Version_mapped interface{}
+
+	var_Version_mapped = var_Version
+	properties["version"] = var_Version_mapped
+
+	var_AuditData := role.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped interface{}
+
+		var_AuditData_mapped = RoleAuditDataMapperInstance.ToUnstructured(var_AuditData)
+		properties["auditData"] = var_AuditData_mapped
+	}
+
+	var_Name := role.Name
+
+	var var_Name_mapped interface{}
+
+	var_Name_mapped = var_Name
+	properties["name"] = var_Name_mapped
+
+	var_Permissions := role.Permissions
+
+	if var_Permissions != nil {
+		var var_Permissions_mapped interface{}
+
+		var var_Permissions_l []interface{}
+		for _, value := range var_Permissions {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = PermissionMapperInstance.ToUnstructured(var_5x)
+
+			var_Permissions_l = append(var_Permissions_l, var_5x_mapped)
+		}
+		var_Permissions_mapped = var_Permissions_l
+		properties["permissions"] = var_Permissions_mapped
+	}
+
+	var_Details := role.Details
+
+	if var_Details != nil {
+		var var_Details_mapped interface{}
+
+		var_Details_mapped = var_Details
+		properties["details"] = var_Details_mapped
+	}
+
+	return properties
+}
+
 type RoleAuditDataMapper struct {
 }
 
@@ -340,4 +406,46 @@ func (m *RoleAuditDataMapper) FromProperties(properties map[string]*structpb.Val
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	return s
+}
+
+func (m *RoleAuditDataMapper) ToUnstructured(roleAuditData *RoleAuditData) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_CreatedBy := roleAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped interface{}
+
+		var_CreatedBy_mapped = *var_CreatedBy
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := roleAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped interface{}
+
+		var_UpdatedBy_mapped = *var_UpdatedBy
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := roleAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped interface{}
+
+		var_CreatedOn_mapped = *var_CreatedOn
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := roleAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped interface{}
+
+		var_UpdatedOn_mapped = *var_UpdatedOn
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+
+	return properties
 }

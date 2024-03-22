@@ -231,9 +231,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		resource.SourceConfig.Entity = existingResource.SourceConfig.Entity
 	}
 
-	if !annotations.IsEnabled(resource, annotations.NormalizedResource) {
-		util.NormalizeResource(resource)
-	}
+	util.NormalizeResource(resource)
 
 	resource.Version = existingResource.Version
 	resource.AuditData = existingResource.AuditData
@@ -355,9 +353,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
-	if !annotations.IsEnabled(resource, annotations.NormalizedResource) {
-		util.NormalizeResource(resource)
-	}
+	util.NormalizeResource(resource)
 
 	resourceRecord := mapping.ResourceToRecord(resource)
 

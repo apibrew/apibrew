@@ -57,7 +57,7 @@ func (s *ResourceAction) GetInput() map[string]Property {
 func (s *ResourceAction) GetOutput() *Property {
 	return s.Output
 }
-func (s *ResourceAction) GetAnnotations() map[string]string {
+func (s ResourceAction) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 

@@ -7,7 +7,6 @@ const Enabled = "true"
 // resource flags
 const KeepHistory = "KeepHistory"
 const HistoryResource = "HistoryResource"
-const NormalizedResource = "NormalizedResource"
 const AutoCreated = "AutoCreated"
 const EnableAudit = "EnableAudit"
 const DisableVersion = "DisableVersion"

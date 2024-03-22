@@ -4,6 +4,9 @@ import (
 	"errors"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/apbr/output"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
+	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
+	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"io"
@@ -97,7 +100,7 @@ var getCmd = &cobra.Command{
 		}
 
 		if selection.Resources != nil {
-			err := writer.WriteResource(selection.Resources...)
+			err := writer.WriteResource(util.ArrayMap(selection.Resources, extramappings.ResourceTo)...)
 
 			if err != nil {
 				return err
@@ -105,7 +108,19 @@ var getCmd = &cobra.Command{
 		}
 
 		for _, records := range selection.Records {
-			err := writer.WriteRecords(records.Resource, records.Total, records.Records)
+			var uRecords []unstructured.Unstructured
+
+			for _, record := range records.Records {
+				uRecord, err := unstructured.FromRecord(record)
+
+				if err != nil {
+					return err
+				}
+
+				uRecords = append(uRecords, uRecord)
+			}
+
+			err := writer.WriteRecords(extramappings.ResourceTo(records.Resource), records.Total, uRecords)
 
 			if err != nil {
 				return err

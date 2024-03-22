@@ -16,9 +16,9 @@ type AuthenticationRequest struct {
 }
 
 type Token struct {
-	Term       string `json:"term"`
-	Content    string `json:"content"`
-	Expiration time.Time
+	Term       string    `json:"term"`
+	Content    string    `json:"content"`
+	Expiration time.Time `json:"expiration"`
 }
 
 type AuthenticationResponse struct {

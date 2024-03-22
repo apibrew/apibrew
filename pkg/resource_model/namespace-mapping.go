@@ -198,6 +198,62 @@ func (m *NamespaceMapper) FromProperties(properties map[string]*structpb.Value) 
 	return s
 }
 
+func (m *NamespaceMapper) ToUnstructured(namespace *Namespace) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := namespace.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := namespace.Version
+
+	var var_Version_mapped interface{}
+
+	var_Version_mapped = var_Version
+	properties["version"] = var_Version_mapped
+
+	var_AuditData := namespace.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped interface{}
+
+		var_AuditData_mapped = NamespaceAuditDataMapperInstance.ToUnstructured(var_AuditData)
+		properties["auditData"] = var_AuditData_mapped
+	}
+
+	var_Name := namespace.Name
+
+	var var_Name_mapped interface{}
+
+	var_Name_mapped = var_Name
+	properties["name"] = var_Name_mapped
+
+	var_Description := namespace.Description
+
+	if var_Description != nil {
+		var var_Description_mapped interface{}
+
+		var_Description_mapped = *var_Description
+		properties["description"] = var_Description_mapped
+	}
+
+	var_Details := namespace.Details
+
+	if var_Details != nil {
+		var var_Details_mapped interface{}
+
+		var_Details_mapped = var_Details
+		properties["details"] = var_Details_mapped
+	}
+
+	return properties
+}
+
 type NamespaceAuditDataMapper struct {
 }
 
@@ -334,4 +390,46 @@ func (m *NamespaceAuditDataMapper) FromProperties(properties map[string]*structp
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	return s
+}
+
+func (m *NamespaceAuditDataMapper) ToUnstructured(namespaceAuditData *NamespaceAuditData) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_CreatedBy := namespaceAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped interface{}
+
+		var_CreatedBy_mapped = *var_CreatedBy
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := namespaceAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped interface{}
+
+		var_UpdatedBy_mapped = *var_UpdatedBy
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := namespaceAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped interface{}
+
+		var_CreatedOn_mapped = *var_CreatedOn
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := namespaceAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped interface{}
+
+		var_UpdatedOn_mapped = *var_UpdatedOn
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+
+	return properties
 }

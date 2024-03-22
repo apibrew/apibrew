@@ -4,6 +4,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/formats"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	"reflect"
 	"sort"
 )
@@ -16,36 +17,22 @@ func (w *Writer) isForApply() bool {
 	return w.Annotations != nil && w.Annotations["for-apply"] == "true"
 }
 
-func (w *Writer) WriteRecord(namespace string, resourceName string, record *model.Record) (unstructured.Unstructured, error) {
-	var data = unstructured.Unstructured{}
+func (w *Writer) WriteRecord(namespace string, resourceName string, record unstructured.Unstructured) (unstructured.Unstructured, error) {
+	record = fixBeforeWrite(record).(unstructured.Unstructured)
 
-	err := unstructured.FromProtoMessage(data, record)
+	record["type"] = "record"
+	record["namespace"] = namespace
+	record["resource"] = resourceName
 
-	if err != nil {
-		return nil, err
-	}
-
-	data = fixBeforeWrite(data).(unstructured.Unstructured)
-
-	data["type"] = "record"
-	data["namespace"] = namespace
-	data["resource"] = resourceName
-
-	return data, nil
+	return record, nil
 }
 
-func (w *Writer) WriteResource(resource *model.Resource) (unstructured.Unstructured, error) {
+func (w *Writer) WriteResource(resource *resource_model.Resource) (unstructured.Unstructured, error) {
 	if w.isForApply() {
 		resource = formats.FixResourceForApply(resource)
 	}
 
-	var data = unstructured.Unstructured{}
-
-	err := unstructured.FromProtoMessage(data, resource)
-
-	if err != nil {
-		return nil, err
-	}
+	var data = resource_model.ResourceMapperInstance.ToUnstructured(resource)
 
 	data = fixBeforeWrite(data).(unstructured.Unstructured)
 

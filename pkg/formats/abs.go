@@ -2,13 +2,14 @@ package formats
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 )
 
 type Writer interface {
-	WriteResource(resource ...*model.Resource) error
-	WriteRecord(namespace string, resourceName string, record ...*model.Record) error
-	WriteRecords(resource *model.Resource, total uint32, records []*model.Record) error
+	WriteResource(resource ...*resource_model.Resource) error
+	WriteRecord(namespace string, resourceName string, record ...unstructured.Unstructured) error
+	WriteRecords(resource *resource_model.Resource, total uint32, records []unstructured.Unstructured) error
 	IsBinary() bool
 }
 

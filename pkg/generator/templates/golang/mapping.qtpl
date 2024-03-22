@@ -49,10 +49,12 @@
 
 {%= GenerateResourceMappingHeaderCode(pkg, resource, resources) %}
 {%= GenerateResourceMappingBodyCode(pkg, resource, GoName(resource.Name), resource.Properties, resources) %}
+{%= UGenerateResourceMappingBodyCode(pkg, resource, GoName(resource.Name), resource.Properties, resources) %}
 
 {%- for _, subType := range getAllSubTypes(resource) -%}
 {%- code typeName := GoName(getSubTypeName(resource, subType)) -%}
 {%= GenerateResourceMappingBodyCode(pkg, resource, typeName, subType.Properties, resources ) %}
+{%= UGenerateResourceMappingBodyCode(pkg, resource, typeName, subType.Properties, resources ) %}
 {%- endfor -%}
 
 {%- endfunc -%}

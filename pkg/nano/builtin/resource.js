@@ -91,6 +91,22 @@ class Resource {
     }
 
     modifier(fn) {
+        this.postModifier(fn)
+    }
+
+    preModifier(fn) {
+        this.beforeRead((record, event) => {
+            const result = fn(record, event)
+
+            if (result) {
+                return result
+            }
+
+            return record
+        })
+    }
+
+    postModifier(fn) {
         this.afterRead((record, event) => {
             const result = fn(record, event)
 
@@ -100,6 +116,10 @@ class Resource {
 
             return record
         })
+    }
+
+    autoLoadBackReference(referencedProperty) {
+
     }
 
     list(params) {

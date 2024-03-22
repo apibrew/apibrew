@@ -341,6 +341,123 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 	return s
 }
 
+func (m *PermissionMapper) ToUnstructured(permission *Permission) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := permission.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := permission.Version
+
+	var var_Version_mapped interface{}
+
+	var_Version_mapped = var_Version
+	properties["version"] = var_Version_mapped
+
+	var_AuditData := permission.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped interface{}
+
+		var_AuditData_mapped = PermissionAuditDataMapperInstance.ToUnstructured(var_AuditData)
+		properties["auditData"] = var_AuditData_mapped
+	}
+
+	var_Namespace := permission.Namespace
+
+	if var_Namespace != nil {
+		var var_Namespace_mapped interface{}
+
+		var_Namespace_mapped = *var_Namespace
+		properties["namespace"] = var_Namespace_mapped
+	}
+
+	var_Resource := permission.Resource
+
+	if var_Resource != nil {
+		var var_Resource_mapped interface{}
+
+		var_Resource_mapped = *var_Resource
+		properties["resource"] = var_Resource_mapped
+	}
+
+	var_RecordSelector := permission.RecordSelector
+
+	if var_RecordSelector != nil {
+		var var_RecordSelector_mapped interface{}
+
+		var_RecordSelector_mapped = BooleanExpressionMapperInstance.ToUnstructured(var_RecordSelector)
+		properties["recordSelector"] = var_RecordSelector_mapped
+	}
+
+	var_Operation := permission.Operation
+
+	var var_Operation_mapped interface{}
+
+	var_Operation_mapped = string(var_Operation)
+	properties["operation"] = var_Operation_mapped
+
+	var_Before := permission.Before
+
+	if var_Before != nil {
+		var var_Before_mapped interface{}
+
+		var_Before_mapped = *var_Before
+		properties["before"] = var_Before_mapped
+	}
+
+	var_After := permission.After
+
+	if var_After != nil {
+		var var_After_mapped interface{}
+
+		var_After_mapped = *var_After
+		properties["after"] = var_After_mapped
+	}
+
+	var_User := permission.User
+
+	if var_User != nil {
+		var var_User_mapped interface{}
+
+		var_User_mapped = UserMapperInstance.ToUnstructured(var_User)
+		properties["user"] = var_User_mapped
+	}
+
+	var_Role := permission.Role
+
+	if var_Role != nil {
+		var var_Role_mapped interface{}
+
+		var_Role_mapped = RoleMapperInstance.ToUnstructured(var_Role)
+		properties["role"] = var_Role_mapped
+	}
+
+	var_Permit := permission.Permit
+
+	var var_Permit_mapped interface{}
+
+	var_Permit_mapped = string(var_Permit)
+	properties["permit"] = var_Permit_mapped
+
+	var_LocalFlags := permission.LocalFlags
+
+	if var_LocalFlags != nil {
+		var var_LocalFlags_mapped interface{}
+
+		var_LocalFlags_mapped = var_LocalFlags
+		properties["localFlags"] = var_LocalFlags_mapped
+	}
+
+	return properties
+}
+
 type PermissionAuditDataMapper struct {
 }
 
@@ -477,4 +594,46 @@ func (m *PermissionAuditDataMapper) FromProperties(properties map[string]*struct
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	return s
+}
+
+func (m *PermissionAuditDataMapper) ToUnstructured(permissionAuditData *PermissionAuditData) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_CreatedBy := permissionAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped interface{}
+
+		var_CreatedBy_mapped = *var_CreatedBy
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := permissionAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped interface{}
+
+		var_UpdatedBy_mapped = *var_UpdatedBy
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := permissionAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped interface{}
+
+		var_CreatedOn_mapped = *var_CreatedOn
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := permissionAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped interface{}
+
+		var_UpdatedOn_mapped = *var_UpdatedOn
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+
+	return properties
 }

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/apibrew/apibrew/pkg/apbr/output"
 	"github.com/apibrew/apibrew/pkg/resource_model"
-	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -68,7 +67,7 @@ func predictResourceFromJson(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return writer.WriteResource(extramappings.ResourceFrom(resource))
+	return writer.WriteResource(resource)
 }
 
 func predictNext(resource *resource_model.Resource, properties map[string]interface{}) {

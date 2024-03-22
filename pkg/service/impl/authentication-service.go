@@ -322,6 +322,12 @@ func (s *authenticationService) collectUserPermissions(ctx context.Context, user
 		}
 	}
 
+	for _, permission := range result {
+		permission.AuditData = nil
+		permission.User = nil
+		permission.Role = nil
+	}
+
 	return result, nil
 }
 

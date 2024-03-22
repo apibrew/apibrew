@@ -81,7 +81,7 @@ func (s *Resource) GetTitle() *string {
 func (s *Resource) GetDescription() *string {
 	return s.Description
 }
-func (s *Resource) GetAnnotations() map[string]string {
+func (s Resource) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 
@@ -153,7 +153,7 @@ func (s *Property) GetTitle() *string {
 func (s *Property) GetDescription() *string {
 	return s.Description
 }
-func (s *Property) GetAnnotations() map[string]string {
+func (s Property) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 

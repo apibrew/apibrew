@@ -3,8 +3,9 @@ package jsonformat
 import (
 	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/formats"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	writer2 "github.com/apibrew/apibrew/pkg/formats/writer"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/resource_model"
 	log "github.com/sirupsen/logrus"
 	"io"
 )
@@ -16,7 +17,7 @@ type writer struct {
 	unstructuredWriter writer2.Writer
 }
 
-func (w *writer) WriteRecord(namespace string, resourceName string, records ...*model.Record) error {
+func (w *writer) WriteRecord(namespace string, resourceName string, records ...unstructured.Unstructured) error {
 	for _, record := range records {
 		data, err := w.unstructuredWriter.WriteRecord(namespace, resourceName, record)
 
@@ -41,9 +42,9 @@ func (w *writer) WriteRecord(namespace string, resourceName string, records ...*
 	return nil
 }
 
-func (w *writer) WriteRecords(resource *model.Resource, total uint32, records []*model.Record) error {
+func (w *writer) WriteRecords(resource *resource_model.Resource, total uint32, records []unstructured.Unstructured) error {
 	for _, record := range records {
-		err := w.WriteRecord(resource.Namespace, resource.Name, record)
+		err := w.WriteRecord(resource.Namespace.Name, resource.Name, record)
 
 		if err != nil {
 			return err
@@ -57,7 +58,7 @@ func (w *writer) IsBinary() bool {
 	return false
 }
 
-func (w *writer) WriteResource(resources ...*model.Resource) error {
+func (w *writer) WriteResource(resources ...*resource_model.Resource) error {
 	for _, resource := range resources {
 		data, err := w.unstructuredWriter.WriteResource(resource)
 

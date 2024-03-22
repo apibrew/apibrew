@@ -351,6 +351,116 @@ func (m *ExtensionMapper) FromProperties(properties map[string]*structpb.Value) 
 	return s
 }
 
+func (m *ExtensionMapper) ToUnstructured(extension *Extension) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := extension.Id
+
+	if var_Id != nil {
+		var var_Id_mapped interface{}
+
+		var_Id_mapped = var_Id.String()
+		properties["id"] = var_Id_mapped
+	}
+
+	var_Version := extension.Version
+
+	var var_Version_mapped interface{}
+
+	var_Version_mapped = var_Version
+	properties["version"] = var_Version_mapped
+
+	var_AuditData := extension.AuditData
+
+	if var_AuditData != nil {
+		var var_AuditData_mapped interface{}
+
+		var_AuditData_mapped = ExtensionAuditDataMapperInstance.ToUnstructured(var_AuditData)
+		properties["auditData"] = var_AuditData_mapped
+	}
+
+	var_Name := extension.Name
+
+	var var_Name_mapped interface{}
+
+	var_Name_mapped = var_Name
+	properties["name"] = var_Name_mapped
+
+	var_Description := extension.Description
+
+	if var_Description != nil {
+		var var_Description_mapped interface{}
+
+		var_Description_mapped = *var_Description
+		properties["description"] = var_Description_mapped
+	}
+
+	var_Selector := extension.Selector
+
+	if var_Selector != nil {
+		var var_Selector_mapped interface{}
+
+		var_Selector_mapped = EventSelectorMapperInstance.ToUnstructured(var_Selector)
+		properties["selector"] = var_Selector_mapped
+	}
+
+	var_Order := extension.Order
+
+	var var_Order_mapped interface{}
+
+	var_Order_mapped = var_Order
+	properties["order"] = var_Order_mapped
+
+	var_Finalizes := extension.Finalizes
+
+	var var_Finalizes_mapped interface{}
+
+	var_Finalizes_mapped = var_Finalizes
+	properties["finalizes"] = var_Finalizes_mapped
+
+	var_Sync := extension.Sync
+
+	var var_Sync_mapped interface{}
+
+	var_Sync_mapped = var_Sync
+	properties["sync"] = var_Sync_mapped
+
+	var_Responds := extension.Responds
+
+	var var_Responds_mapped interface{}
+
+	var_Responds_mapped = var_Responds
+	properties["responds"] = var_Responds_mapped
+
+	var_Call := extension.Call
+
+	var var_Call_mapped interface{}
+
+	var_Call_mapped = ExternalCallMapperInstance.ToUnstructured(&var_Call)
+	properties["call"] = var_Call_mapped
+
+	var_Annotations := extension.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped interface{}
+
+		var var_Annotations_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Annotations_st[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = var_Annotations_st
+		properties["annotations"] = var_Annotations_mapped
+	}
+
+	return properties
+}
+
 type BooleanExpressionMapper struct {
 }
 
@@ -613,6 +723,131 @@ func (m *BooleanExpressionMapper) FromProperties(properties map[string]*structpb
 	return s
 }
 
+func (m *BooleanExpressionMapper) ToUnstructured(booleanExpression *BooleanExpression) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_And := booleanExpression.And
+
+	if var_And != nil {
+		var var_And_mapped interface{}
+
+		var var_And_l []interface{}
+		for _, value := range var_And {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = BooleanExpressionMapperInstance.ToUnstructured(&var_5x)
+
+			var_And_l = append(var_And_l, var_5x_mapped)
+		}
+		var_And_mapped = var_And_l
+		properties["and"] = var_And_mapped
+	}
+
+	var_Or := booleanExpression.Or
+
+	if var_Or != nil {
+		var var_Or_mapped interface{}
+
+		var var_Or_l []interface{}
+		for _, value := range var_Or {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = BooleanExpressionMapperInstance.ToUnstructured(&var_5x)
+
+			var_Or_l = append(var_Or_l, var_5x_mapped)
+		}
+		var_Or_mapped = var_Or_l
+		properties["or"] = var_Or_mapped
+	}
+
+	var_Not := booleanExpression.Not
+
+	if var_Not != nil {
+		var var_Not_mapped interface{}
+
+		var_Not_mapped = BooleanExpressionMapperInstance.ToUnstructured(var_Not)
+		properties["not"] = var_Not_mapped
+	}
+
+	var_Equal := booleanExpression.Equal
+
+	if var_Equal != nil {
+		var var_Equal_mapped interface{}
+
+		var_Equal_mapped = PairExpressionMapperInstance.ToUnstructured(var_Equal)
+		properties["equal"] = var_Equal_mapped
+	}
+
+	var_LessThan := booleanExpression.LessThan
+
+	if var_LessThan != nil {
+		var var_LessThan_mapped interface{}
+
+		var_LessThan_mapped = PairExpressionMapperInstance.ToUnstructured(var_LessThan)
+		properties["lessThan"] = var_LessThan_mapped
+	}
+
+	var_GreaterThan := booleanExpression.GreaterThan
+
+	if var_GreaterThan != nil {
+		var var_GreaterThan_mapped interface{}
+
+		var_GreaterThan_mapped = PairExpressionMapperInstance.ToUnstructured(var_GreaterThan)
+		properties["greaterThan"] = var_GreaterThan_mapped
+	}
+
+	var_LessThanOrEqual := booleanExpression.LessThanOrEqual
+
+	if var_LessThanOrEqual != nil {
+		var var_LessThanOrEqual_mapped interface{}
+
+		var_LessThanOrEqual_mapped = PairExpressionMapperInstance.ToUnstructured(var_LessThanOrEqual)
+		properties["lessThanOrEqual"] = var_LessThanOrEqual_mapped
+	}
+
+	var_GreaterThanOrEqual := booleanExpression.GreaterThanOrEqual
+
+	if var_GreaterThanOrEqual != nil {
+		var var_GreaterThanOrEqual_mapped interface{}
+
+		var_GreaterThanOrEqual_mapped = PairExpressionMapperInstance.ToUnstructured(var_GreaterThanOrEqual)
+		properties["greaterThanOrEqual"] = var_GreaterThanOrEqual_mapped
+	}
+
+	var_In := booleanExpression.In
+
+	if var_In != nil {
+		var var_In_mapped interface{}
+
+		var_In_mapped = PairExpressionMapperInstance.ToUnstructured(var_In)
+		properties["in"] = var_In_mapped
+	}
+
+	var_IsNull := booleanExpression.IsNull
+
+	if var_IsNull != nil {
+		var var_IsNull_mapped interface{}
+
+		var_IsNull_mapped = ExpressionMapperInstance.ToUnstructured(var_IsNull)
+		properties["isNull"] = var_IsNull_mapped
+	}
+
+	var_RegexMatch := booleanExpression.RegexMatch
+
+	if var_RegexMatch != nil {
+		var var_RegexMatch_mapped interface{}
+
+		var_RegexMatch_mapped = RegexMatchExpressionMapperInstance.ToUnstructured(var_RegexMatch)
+		properties["regexMatch"] = var_RegexMatch_mapped
+	}
+
+	return properties
+}
+
 type PairExpressionMapper struct {
 }
 
@@ -677,6 +912,30 @@ func (m *PairExpressionMapper) FromProperties(properties map[string]*structpb.Va
 		s.Right = var_Right_mapped
 	}
 	return s
+}
+
+func (m *PairExpressionMapper) ToUnstructured(pairExpression *PairExpression) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Left := pairExpression.Left
+
+	if var_Left != nil {
+		var var_Left_mapped interface{}
+
+		var_Left_mapped = ExpressionMapperInstance.ToUnstructured(var_Left)
+		properties["left"] = var_Left_mapped
+	}
+
+	var_Right := pairExpression.Right
+
+	if var_Right != nil {
+		var var_Right_mapped interface{}
+
+		var_Right_mapped = ExpressionMapperInstance.ToUnstructured(var_Right)
+		properties["right"] = var_Right_mapped
+	}
+
+	return properties
 }
 
 type RegexMatchExpressionMapper struct {
@@ -752,6 +1011,30 @@ func (m *RegexMatchExpressionMapper) FromProperties(properties map[string]*struc
 		s.Expression = var_Expression_mapped
 	}
 	return s
+}
+
+func (m *RegexMatchExpressionMapper) ToUnstructured(regexMatchExpression *RegexMatchExpression) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Pattern := regexMatchExpression.Pattern
+
+	if var_Pattern != nil {
+		var var_Pattern_mapped interface{}
+
+		var_Pattern_mapped = *var_Pattern
+		properties["pattern"] = var_Pattern_mapped
+	}
+
+	var_Expression := regexMatchExpression.Expression
+
+	if var_Expression != nil {
+		var var_Expression_mapped interface{}
+
+		var_Expression_mapped = ExpressionMapperInstance.ToUnstructured(var_Expression)
+		properties["expression"] = var_Expression_mapped
+	}
+
+	return properties
 }
 
 type ExpressionMapper struct {
@@ -830,6 +1113,30 @@ func (m *ExpressionMapper) FromProperties(properties map[string]*structpb.Value)
 		s.Value = var_Value_mapped
 	}
 	return s
+}
+
+func (m *ExpressionMapper) ToUnstructured(expression *Expression) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Property := expression.Property
+
+	if var_Property != nil {
+		var var_Property_mapped interface{}
+
+		var_Property_mapped = *var_Property
+		properties["property"] = var_Property_mapped
+	}
+
+	var_Value := expression.Value
+
+	if var_Value != nil {
+		var var_Value_mapped interface{}
+
+		var_Value_mapped = var_Value
+		properties["value"] = var_Value_mapped
+	}
+
+	return properties
 }
 
 type ExtensionAuditDataMapper struct {
@@ -970,6 +1277,48 @@ func (m *ExtensionAuditDataMapper) FromProperties(properties map[string]*structp
 	return s
 }
 
+func (m *ExtensionAuditDataMapper) ToUnstructured(extensionAuditData *ExtensionAuditData) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_CreatedBy := extensionAuditData.CreatedBy
+
+	if var_CreatedBy != nil {
+		var var_CreatedBy_mapped interface{}
+
+		var_CreatedBy_mapped = *var_CreatedBy
+		properties["createdBy"] = var_CreatedBy_mapped
+	}
+
+	var_UpdatedBy := extensionAuditData.UpdatedBy
+
+	if var_UpdatedBy != nil {
+		var var_UpdatedBy_mapped interface{}
+
+		var_UpdatedBy_mapped = *var_UpdatedBy
+		properties["updatedBy"] = var_UpdatedBy_mapped
+	}
+
+	var_CreatedOn := extensionAuditData.CreatedOn
+
+	if var_CreatedOn != nil {
+		var var_CreatedOn_mapped interface{}
+
+		var_CreatedOn_mapped = *var_CreatedOn
+		properties["createdOn"] = var_CreatedOn_mapped
+	}
+
+	var_UpdatedOn := extensionAuditData.UpdatedOn
+
+	if var_UpdatedOn != nil {
+		var var_UpdatedOn_mapped interface{}
+
+		var_UpdatedOn_mapped = *var_UpdatedOn
+		properties["updatedOn"] = var_UpdatedOn_mapped
+	}
+
+	return properties
+}
+
 type FunctionCallMapper struct {
 }
 
@@ -1046,6 +1395,26 @@ func (m *FunctionCallMapper) FromProperties(properties map[string]*structpb.Valu
 		s.FunctionName = var_FunctionName_mapped
 	}
 	return s
+}
+
+func (m *FunctionCallMapper) ToUnstructured(functionCall *FunctionCall) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Host := functionCall.Host
+
+	var var_Host_mapped interface{}
+
+	var_Host_mapped = var_Host
+	properties["host"] = var_Host_mapped
+
+	var_FunctionName := functionCall.FunctionName
+
+	var var_FunctionName_mapped interface{}
+
+	var_FunctionName_mapped = var_FunctionName
+	properties["functionName"] = var_FunctionName_mapped
+
+	return properties
 }
 
 type HttpCallMapper struct {
@@ -1126,6 +1495,26 @@ func (m *HttpCallMapper) FromProperties(properties map[string]*structpb.Value) *
 	return s
 }
 
+func (m *HttpCallMapper) ToUnstructured(httpCall *HttpCall) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Uri := httpCall.Uri
+
+	var var_Uri_mapped interface{}
+
+	var_Uri_mapped = var_Uri
+	properties["uri"] = var_Uri_mapped
+
+	var_Method := httpCall.Method
+
+	var var_Method_mapped interface{}
+
+	var_Method_mapped = var_Method
+	properties["method"] = var_Method_mapped
+
+	return properties
+}
+
 type ChannelCallMapper struct {
 }
 
@@ -1178,6 +1567,19 @@ func (m *ChannelCallMapper) FromProperties(properties map[string]*structpb.Value
 		s.ChannelKey = var_ChannelKey_mapped
 	}
 	return s
+}
+
+func (m *ChannelCallMapper) ToUnstructured(channelCall *ChannelCall) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_ChannelKey := channelCall.ChannelKey
+
+	var var_ChannelKey_mapped interface{}
+
+	var_ChannelKey_mapped = var_ChannelKey
+	properties["channelKey"] = var_ChannelKey_mapped
+
+	return properties
 }
 
 type ExternalCallMapper struct {
@@ -1262,6 +1664,39 @@ func (m *ExternalCallMapper) FromProperties(properties map[string]*structpb.Valu
 		s.ChannelCall = var_ChannelCall_mapped
 	}
 	return s
+}
+
+func (m *ExternalCallMapper) ToUnstructured(externalCall *ExternalCall) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_FunctionCall := externalCall.FunctionCall
+
+	if var_FunctionCall != nil {
+		var var_FunctionCall_mapped interface{}
+
+		var_FunctionCall_mapped = FunctionCallMapperInstance.ToUnstructured(var_FunctionCall)
+		properties["functionCall"] = var_FunctionCall_mapped
+	}
+
+	var_HttpCall := externalCall.HttpCall
+
+	if var_HttpCall != nil {
+		var var_HttpCall_mapped interface{}
+
+		var_HttpCall_mapped = HttpCallMapperInstance.ToUnstructured(var_HttpCall)
+		properties["httpCall"] = var_HttpCall_mapped
+	}
+
+	var_ChannelCall := externalCall.ChannelCall
+
+	if var_ChannelCall != nil {
+		var var_ChannelCall_mapped interface{}
+
+		var_ChannelCall_mapped = ChannelCallMapperInstance.ToUnstructured(var_ChannelCall)
+		properties["channelCall"] = var_ChannelCall_mapped
+	}
+
+	return properties
 }
 
 type EventSelectorMapper struct {
@@ -1522,6 +1957,116 @@ func (m *EventSelectorMapper) FromProperties(properties map[string]*structpb.Val
 	return s
 }
 
+func (m *EventSelectorMapper) ToUnstructured(eventSelector *EventSelector) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Actions := eventSelector.Actions
+
+	if var_Actions != nil {
+		var var_Actions_mapped interface{}
+
+		var var_Actions_l []interface{}
+		for _, value := range var_Actions {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = string(var_5x)
+
+			var_Actions_l = append(var_Actions_l, var_5x_mapped)
+		}
+		var_Actions_mapped = var_Actions_l
+		properties["actions"] = var_Actions_mapped
+	}
+
+	var_RecordSelector := eventSelector.RecordSelector
+
+	if var_RecordSelector != nil {
+		var var_RecordSelector_mapped interface{}
+
+		var_RecordSelector_mapped = BooleanExpressionMapperInstance.ToUnstructured(var_RecordSelector)
+		properties["recordSelector"] = var_RecordSelector_mapped
+	}
+
+	var_Namespaces := eventSelector.Namespaces
+
+	if var_Namespaces != nil {
+		var var_Namespaces_mapped interface{}
+
+		var var_Namespaces_l []interface{}
+		for _, value := range var_Namespaces {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = var_5x
+
+			var_Namespaces_l = append(var_Namespaces_l, var_5x_mapped)
+		}
+		var_Namespaces_mapped = var_Namespaces_l
+		properties["namespaces"] = var_Namespaces_mapped
+	}
+
+	var_Resources := eventSelector.Resources
+
+	if var_Resources != nil {
+		var var_Resources_mapped interface{}
+
+		var var_Resources_l []interface{}
+		for _, value := range var_Resources {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = var_5x
+
+			var_Resources_l = append(var_Resources_l, var_5x_mapped)
+		}
+		var_Resources_mapped = var_Resources_l
+		properties["resources"] = var_Resources_mapped
+	}
+
+	var_Ids := eventSelector.Ids
+
+	if var_Ids != nil {
+		var var_Ids_mapped interface{}
+
+		var var_Ids_l []interface{}
+		for _, value := range var_Ids {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = var_5x
+
+			var_Ids_l = append(var_Ids_l, var_5x_mapped)
+		}
+		var_Ids_mapped = var_Ids_l
+		properties["ids"] = var_Ids_mapped
+	}
+
+	var_Annotations := eventSelector.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped interface{}
+
+		var var_Annotations_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Annotations_st[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = var_Annotations_st
+		properties["annotations"] = var_Annotations_mapped
+	}
+
+	return properties
+}
+
 type RecordSearchParamsMapper struct {
 }
 
@@ -1665,6 +2210,58 @@ func (m *RecordSearchParamsMapper) FromProperties(properties map[string]*structp
 		s.ResolveReferences = var_ResolveReferences_mapped
 	}
 	return s
+}
+
+func (m *RecordSearchParamsMapper) ToUnstructured(recordSearchParams *RecordSearchParams) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Query := recordSearchParams.Query
+
+	if var_Query != nil {
+		var var_Query_mapped interface{}
+
+		var_Query_mapped = BooleanExpressionMapperInstance.ToUnstructured(var_Query)
+		properties["query"] = var_Query_mapped
+	}
+
+	var_Limit := recordSearchParams.Limit
+
+	if var_Limit != nil {
+		var var_Limit_mapped interface{}
+
+		var_Limit_mapped = *var_Limit
+		properties["limit"] = var_Limit_mapped
+	}
+
+	var_Offset := recordSearchParams.Offset
+
+	if var_Offset != nil {
+		var var_Offset_mapped interface{}
+
+		var_Offset_mapped = *var_Offset
+		properties["offset"] = var_Offset_mapped
+	}
+
+	var_ResolveReferences := recordSearchParams.ResolveReferences
+
+	if var_ResolveReferences != nil {
+		var var_ResolveReferences_mapped interface{}
+
+		var var_ResolveReferences_l []interface{}
+		for _, value := range var_ResolveReferences {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = var_5x
+
+			var_ResolveReferences_l = append(var_ResolveReferences_l, var_5x_mapped)
+		}
+		var_ResolveReferences_mapped = var_ResolveReferences_l
+		properties["resolveReferences"] = var_ResolveReferences_mapped
+	}
+
+	return properties
 }
 
 type EventMapper struct {
@@ -2099,6 +2696,172 @@ func (m *EventMapper) FromProperties(properties map[string]*structpb.Value) *Eve
 	return s
 }
 
+func (m *EventMapper) ToUnstructured(event *Event) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Id := event.Id
+
+	var var_Id_mapped interface{}
+
+	var_Id_mapped = var_Id
+	properties["id"] = var_Id_mapped
+
+	var_Action := event.Action
+
+	var var_Action_mapped interface{}
+
+	var_Action_mapped = string(var_Action)
+	properties["action"] = var_Action_mapped
+
+	var_RecordSearchParams := event.RecordSearchParams
+
+	if var_RecordSearchParams != nil {
+		var var_RecordSearchParams_mapped interface{}
+
+		var_RecordSearchParams_mapped = RecordSearchParamsMapperInstance.ToUnstructured(var_RecordSearchParams)
+		properties["recordSearchParams"] = var_RecordSearchParams_mapped
+	}
+
+	var_ActionSummary := event.ActionSummary
+
+	if var_ActionSummary != nil {
+		var var_ActionSummary_mapped interface{}
+
+		var_ActionSummary_mapped = *var_ActionSummary
+		properties["actionSummary"] = var_ActionSummary_mapped
+	}
+
+	var_ActionDescription := event.ActionDescription
+
+	if var_ActionDescription != nil {
+		var var_ActionDescription_mapped interface{}
+
+		var_ActionDescription_mapped = *var_ActionDescription
+		properties["actionDescription"] = var_ActionDescription_mapped
+	}
+
+	var_Resource := event.Resource
+
+	if var_Resource != nil {
+		var var_Resource_mapped interface{}
+
+		var_Resource_mapped = ResourceMapperInstance.ToUnstructured(var_Resource)
+		properties["resource"] = var_Resource_mapped
+	}
+
+	var_Records := event.Records
+
+	if var_Records != nil {
+		var var_Records_mapped interface{}
+
+		var var_Records_l []interface{}
+		for _, value := range var_Records {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = RecordMapperInstance.ToUnstructured(var_5x)
+
+			var_Records_l = append(var_Records_l, var_5x_mapped)
+		}
+		var_Records_mapped = var_Records_l
+		properties["records"] = var_Records_mapped
+	}
+
+	var_Finalizes := event.Finalizes
+
+	if var_Finalizes != nil {
+		var var_Finalizes_mapped interface{}
+
+		var_Finalizes_mapped = *var_Finalizes
+		properties["finalizes"] = var_Finalizes_mapped
+	}
+
+	var_Sync := event.Sync
+
+	if var_Sync != nil {
+		var var_Sync_mapped interface{}
+
+		var_Sync_mapped = *var_Sync
+		properties["sync"] = var_Sync_mapped
+	}
+
+	var_Time := event.Time
+
+	if var_Time != nil {
+		var var_Time_mapped interface{}
+
+		var_Time_mapped = *var_Time
+		properties["time"] = var_Time_mapped
+	}
+
+	var_Total := event.Total
+
+	if var_Total != nil {
+		var var_Total_mapped interface{}
+
+		var_Total_mapped = *var_Total
+		properties["total"] = var_Total_mapped
+	}
+
+	var_ActionName := event.ActionName
+
+	if var_ActionName != nil {
+		var var_ActionName_mapped interface{}
+
+		var_ActionName_mapped = *var_ActionName
+		properties["actionName"] = var_ActionName_mapped
+	}
+
+	var_Input := event.Input
+
+	if var_Input != nil {
+		var var_Input_mapped interface{}
+
+		var_Input_mapped = var_Input
+		properties["input"] = var_Input_mapped
+	}
+
+	var_Output := event.Output
+
+	if var_Output != nil {
+		var var_Output_mapped interface{}
+
+		var_Output_mapped = var_Output
+		properties["output"] = var_Output_mapped
+	}
+
+	var_Annotations := event.Annotations
+
+	if var_Annotations != nil {
+		var var_Annotations_mapped interface{}
+
+		var var_Annotations_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Annotations {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Annotations_st[key] = var_1x_mapped
+		}
+		var_Annotations_mapped = var_Annotations_st
+		properties["annotations"] = var_Annotations_mapped
+	}
+
+	var_Error := event.Error
+
+	if var_Error != nil {
+		var var_Error_mapped interface{}
+
+		var_Error_mapped = ErrorMapperInstance.ToUnstructured(var_Error)
+		properties["error"] = var_Error_mapped
+	}
+
+	return properties
+}
+
 type ErrorFieldMapper struct {
 }
 
@@ -2231,6 +2994,48 @@ func (m *ErrorFieldMapper) FromProperties(properties map[string]*structpb.Value)
 	return s
 }
 
+func (m *ErrorFieldMapper) ToUnstructured(errorField *ErrorField) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_RecordId := errorField.RecordId
+
+	if var_RecordId != nil {
+		var var_RecordId_mapped interface{}
+
+		var_RecordId_mapped = *var_RecordId
+		properties["recordId"] = var_RecordId_mapped
+	}
+
+	var_Property := errorField.Property
+
+	if var_Property != nil {
+		var var_Property_mapped interface{}
+
+		var_Property_mapped = *var_Property
+		properties["property"] = var_Property_mapped
+	}
+
+	var_Message := errorField.Message
+
+	if var_Message != nil {
+		var var_Message_mapped interface{}
+
+		var_Message_mapped = *var_Message
+		properties["message"] = var_Message_mapped
+	}
+
+	var_Value := errorField.Value
+
+	if var_Value != nil {
+		var var_Value_mapped interface{}
+
+		var_Value_mapped = var_Value
+		properties["value"] = var_Value_mapped
+	}
+
+	return properties
+}
+
 type ErrorMapper struct {
 }
 
@@ -2342,4 +3147,47 @@ func (m *ErrorMapper) FromProperties(properties map[string]*structpb.Value) *Err
 		s.Fields = var_Fields_mapped
 	}
 	return s
+}
+
+func (m *ErrorMapper) ToUnstructured(error_ *Error) unstructured.Unstructured {
+	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+
+	var_Code := error_.Code
+
+	if var_Code != nil {
+		var var_Code_mapped interface{}
+
+		var_Code_mapped = string(*var_Code)
+		properties["code"] = var_Code_mapped
+	}
+
+	var_Message := error_.Message
+
+	if var_Message != nil {
+		var var_Message_mapped interface{}
+
+		var_Message_mapped = *var_Message
+		properties["message"] = var_Message_mapped
+	}
+
+	var_Fields := error_.Fields
+
+	if var_Fields != nil {
+		var var_Fields_mapped interface{}
+
+		var var_Fields_l []interface{}
+		for _, value := range var_Fields {
+
+			var_5x := value
+			var var_5x_mapped interface{}
+
+			var_5x_mapped = ErrorFieldMapperInstance.ToUnstructured(&var_5x)
+
+			var_Fields_l = append(var_Fields_l, var_5x_mapped)
+		}
+		var_Fields_mapped = var_Fields_l
+		properties["fields"] = var_Fields_mapped
+	}
+
+	return properties
 }
