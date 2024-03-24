@@ -353,7 +353,6 @@ var ResourceResource = &model.Resource{
 			Reference: &model.Reference{
 				Resource:  NamespaceResource.Name,
 				Namespace: NamespaceResource.Namespace,
-				Cascade:   false,
 			},
 			DefaultValue: structpb.NewStructValue(&structpb.Struct{
 				Fields: map[string]*structpb.Value{
@@ -475,7 +474,6 @@ If DataSource is not provided, default DataSource will be used
 			Reference: &model.Reference{
 				Resource:  DataSourceResource.Name,
 				Namespace: DataSourceResource.Namespace,
-				Cascade:   false,
 			},
 		},
 		{

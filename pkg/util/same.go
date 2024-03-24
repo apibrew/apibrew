@@ -81,10 +81,6 @@ func IsSameResourceProperty(property1, property2 *model.ResourceProperty) bool {
 		if property1.Reference.Namespace != property2.Reference.Namespace {
 			return false
 		}
-
-		if property1.Reference.Cascade != property2.Reference.Cascade {
-			return false
-		}
 	}
 
 	if !annotations.IsSame(property1.Annotations, property2.Annotations) {

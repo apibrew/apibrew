@@ -83,10 +83,6 @@ func ResourcePropertyFromRecord(propertyName string, record *model.Record) *mode
 				reference.Namespace = referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue().GetFields()["name"].GetStringValue()
 			}
 
-			if referenceProperties["cascade"] != nil {
-				reference.Cascade = referenceProperties["cascade"].GetBoolValue()
-			}
-
 			if record.Properties["backReference"] != nil && record.Properties["backReference"].GetStringValue() != "" {
 				backReference = &model.BackReference{
 					Property: record.Properties["backReference"].GetStringValue(),

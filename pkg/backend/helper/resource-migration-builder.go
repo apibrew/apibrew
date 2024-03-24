@@ -58,9 +58,7 @@ func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder
 				continue
 			}
 
-			if forceMigration {
-				hp.DeleteProperty(existingPropertyMap[sk.DeleteProperty.ExistingProperty])
-			}
+			hp.DeleteProperty(existingPropertyMap[sk.DeleteProperty.ExistingProperty])
 		}
 	}
 

@@ -70,7 +70,6 @@ message ResourceProperty {
 message Reference {
   string namespace = 1; // referenced resource namespace
   string resource = 2; // referenced resource name
-  bool cascade = 3; // if cascade is true, delete/update operations will be cascaded to back referenced resources
 }
 
 message BackReference {

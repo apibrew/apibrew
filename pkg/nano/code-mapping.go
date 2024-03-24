@@ -8,6 +8,7 @@ package nano
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"

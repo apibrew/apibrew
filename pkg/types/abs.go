@@ -79,10 +79,19 @@ func ByResourcePropertyType(resourcePropertyType model.ResourceProperty_Type) Pr
 
 func IsPrimitive(resourcePropertyType model.ResourceProperty_Type) bool {
 	switch resourcePropertyType {
-	case model.ResourceProperty_OBJECT, model.ResourceProperty_REFERENCE, model.ResourceProperty_MAP, model.ResourceProperty_LIST:
+	case model.ResourceProperty_STRUCT, model.ResourceProperty_OBJECT, model.ResourceProperty_REFERENCE, model.ResourceProperty_MAP, model.ResourceProperty_LIST:
 		return false
 	default:
 		return true
+	}
+}
+
+func IsTimeType(resourcePropertyType model.ResourceProperty_Type) bool {
+	switch resourcePropertyType {
+	case model.ResourceProperty_TIME, model.ResourceProperty_DATE, model.ResourceProperty_TIMESTAMP:
+		return true
+	default:
+		return false
 	}
 }
 

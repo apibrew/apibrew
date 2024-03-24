@@ -38,6 +38,7 @@ const AllowPublicDeleteAccess = "AllowPublicDeleteAccess"
 const SQLType = "SQLType"
 const SQLUseTextType = "SQLUseTextType"
 const UseJoinTable = "UseJoinTable"
+const CascadeReference = "CascadeReference"
 
 // code generator
 const TypeName = "TypeName"

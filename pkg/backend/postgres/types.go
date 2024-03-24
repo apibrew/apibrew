@@ -41,7 +41,7 @@ func (p postgreSqlBackendOptions) GetSqlTypeFromProperty(propertyType model.Reso
 	case model.ResourceProperty_BYTES:
 		return "BYTEA"
 	case model.ResourceProperty_ENUM:
-		return "VARCHAR(64)"
+		return "VARCHAR(255)"
 	case model.ResourceProperty_REFERENCE:
 		return "UUID"
 	case model.ResourceProperty_MAP:

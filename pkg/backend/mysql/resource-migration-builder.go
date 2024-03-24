@@ -85,7 +85,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 			}
 			referencedResource := schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+property.Reference.Resource]
 			var refClause = ""
-			if property.Reference.Cascade {
+			if annotations.IsEnabled(property, annotations.CascadeReference) {
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
 			def = append(def, fmt.Sprintf(" CONSTRAINT %s REFERENCES %s (%s) %s", r.options.Quote(resource.SourceConfig.Entity+"_"+property.Name+"_fk"), r.options.Quote(referencedResource.SourceConfig.Entity), "id", refClause))
@@ -98,6 +98,9 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 		val, _ := propertyType.UnPack(property.DefaultValue)
 
 		def = append(def, fmt.Sprintf("DEFAULT '%s'", val))
+	} else if property.Required {
+		propertyType := types.ByResourcePropertyType(property.Type)
+		def = append(def, fmt.Sprintf("DEFAULT '%s'", propertyType.Default()))
 	}
 
 	return strings.Join(def, " ")
@@ -228,7 +231,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 				}
 				referencedResource := r.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+property.Reference.Resource]
 				var refClause = ""
-				if property.Reference.Cascade {
+				if annotations.IsEnabled(property, annotations.CascadeReference) {
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 				}
 

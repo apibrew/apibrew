@@ -17,11 +17,5 @@ func FixResourceForApply(resource *resource_model.Resource) *resource_model.Reso
 		}
 	}
 
-	for _, typ := range resource.Types {
-		if typ.Name == "AuditData" {
-
-		}
-	}
-
 	return resource
 }

@@ -67,7 +67,6 @@ func prepareTestResourceReferenceResources() []*model.Resource {
 					Required: true,
 					Reference: &model.Reference{
 						Resource: "author",
-						Cascade:  false,
 					},
 				},
 			},

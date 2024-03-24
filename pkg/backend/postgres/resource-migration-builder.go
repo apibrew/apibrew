@@ -109,7 +109,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 			referencedResource := schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+property.Reference.Resource]
 
 			var refClause = ""
-			if property.Reference.Cascade {
+			if annotations.IsEnabled(property, annotations.CascadeReference) {
 				refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 			}
 
@@ -136,6 +136,11 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 		val, _ := propertyType.UnPack(property.DefaultValue)
 
 		def = append(def, fmt.Sprintf("DEFAULT '%v'", val))
+	} else if property.Required {
+		propertyType := types.ByResourcePropertyType(property.Type)
+		if types.IsPrimitive(property.Type) && !types.IsTimeType(property.Type) {
+			def = append(def, fmt.Sprintf("DEFAULT '%v'", propertyType.Default()))
+		}
 	}
 
 	return strings.Join(def, " "), nil
@@ -241,7 +246,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		var sqlPrefix = fmt.Sprintf("ALTER TABLE %s ", r.tableName)
 		var sqlParts []string
 		changes := 0
-		if r.options.GetSqlTypeFromProperty(prevProperty.Type, property.Length) != r.options.GetSqlTypeFromProperty(property.Type, property.Length) {
+		if r.options.GetSqlTypeFromProperty(prevProperty.Type, prevProperty.Length) != r.options.GetSqlTypeFromProperty(property.Type, property.Length) {
 
 			sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
@@ -256,6 +261,13 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		if prevProperty.Required && !property.Required {
 			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", r.options.Quote(property.Name)))
 			changes++
+
+			if property.DefaultValue == nil || property.DefaultValue.AsInterface() == nil {
+				propertyType := types.ByResourcePropertyType(property.Type)
+				if types.IsPrimitive(property.Type) && !types.IsTimeType(property.Type) {
+					sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DEFAULT '%v'", r.options.Quote(property.Name), propertyType.Default()))
+				}
+			}
 		}
 
 		if !prevProperty.Required && property.Required {
@@ -283,7 +295,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 				}
 				referencedResource := r.schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+property.Reference.Resource]
 				var refClause = ""
-				if property.Reference.Cascade {
+				if annotations.IsEnabled(property, annotations.CascadeReference) {
 					refClause = "ON UPDATE CASCADE ON DELETE CASCADE"
 				}
 

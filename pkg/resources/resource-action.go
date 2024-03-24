@@ -31,7 +31,6 @@ var ResourceActionResource = &model.Resource{
 			Reference: &model.Reference{
 				Resource:  ResourceResource.Name,
 				Namespace: ResourceResource.Namespace,
-				Cascade:   false,
 			},
 		},
 		{
