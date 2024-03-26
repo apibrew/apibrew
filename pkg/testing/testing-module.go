@@ -36,7 +36,7 @@ func (m module) ensureNamespace() {
 	_, err := m.container.GetRecordService().Apply(util.SystemContext, service.RecordUpdateParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			{
 				Properties: map[string]*structpb.Value{
 					"name": structpb.NewStringValue("testing"),
@@ -173,11 +173,11 @@ func (m module) handleTestExecution(ctx context.Context, event *model.Event) (*m
 	return event, nil
 }
 
-func (m module) executeTest(ctx context.Context, record *model.Record) (errors.ServiceError, bool) {
+func (m module) executeTest(ctx context.Context, record unstructured.Unstructured) (errors.ServiceError, bool) {
 	// locating records
 	// locating test execution
 
-	err := m.container.GetRecordService().ResolveReferences(ctx, TestExecutionResource, []*model.Record{record}, []string{"$.testCase", "$.testCase.testSuite"})
+	err := m.container.GetRecordService().ResolveReferences(ctx, TestExecutionResource, []unstructured.Unstructured{record}, []string{"$.testCase", "$.testCase.testSuite"})
 
 	if err != nil {
 		return err, false

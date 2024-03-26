@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/backend/helper"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
@@ -14,7 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (p *sqlBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) (result []*model.Record, total uint32, err errors.ServiceError) {
+func (p *sqlBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- unstructured.Unstructured) (result []unstructured.Unstructured, total uint32, err errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("Begin listing: %s/%s", resource.Namespace, resource.Name)
@@ -28,7 +29,7 @@ func (p *sqlBackend) ListRecords(ctx context.Context, resource *model.Resource, 
 	return
 }
 
-func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) ([]unstructured.Unstructured, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	var err errors.ServiceError
@@ -71,7 +72,7 @@ func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, r
 	return records, nil
 }
 
-func (p *sqlBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (p *sqlBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) ([]unstructured.Unstructured, errors.ServiceError) {
 	err := p.withBackend(ctx, false, func(tx helper.QueryRunner) errors.ServiceError {
 		for _, record := range records {
 			err := p.recordUpdate(ctx, tx, resource, record, annotations.IsEnabledOnCtx(ctx, annotations.CheckVersion), p.schema)
@@ -91,8 +92,8 @@ func (p *sqlBackend) UpdateRecords(ctx context.Context, resource *model.Resource
 	return records, nil
 }
 
-func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
-	var record *model.Record = nil
+func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (unstructured.Unstructured, errors.ServiceError) {
+	var record unstructured.Unstructured = nil
 	err := p.withBackend(ctx, true, func(tx helper.QueryRunner) errors.ServiceError {
 		var err errors.ServiceError
 		record, err = p.readRecord(ctx, tx, resource, id, resolveReferences)
@@ -111,8 +112,8 @@ func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id
 	return record, err
 }
 
-func (p *sqlBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
-	var ids = util.ArrayMap(records, func(record *model.Record) string {
+func (p *sqlBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) errors.ServiceError {
+	var ids = util.ArrayMap(records, func(record unstructured.Unstructured) string {
 		return util.GetRecordId(record)
 	})
 	logger := log.WithFields(logging.CtxFields(ctx))

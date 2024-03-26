@@ -35,7 +35,7 @@ func (r redisBackend) DestroyDataSource(ctx context.Context) {
 
 }
 
-func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) ([]unstructured.Unstructured, errors.ServiceError) {
 	for _, record := range records {
 		data, err := proto.Marshal(record)
 
@@ -57,7 +57,7 @@ func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, 
 	return records, nil
 }
 
-func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) ([]unstructured.Unstructured, errors.ServiceError) {
 	for _, record := range records {
 		data, err := proto.Marshal(record)
 
@@ -79,14 +79,14 @@ func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 	return records, nil
 }
 
-func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
+func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (unstructured.Unstructured, errors.ServiceError) {
 	recData, err := r.rdb.Get(ctx, r.getKey(resource, id)).Bytes()
 
 	if err != nil {
 		return nil, r.handleError(err)
 	}
 
-	var record = new(model.Record)
+	var record = make(unstructured.Unstructured)
 
 	err = proto.Unmarshal(recData, record)
 
@@ -97,8 +97,8 @@ func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, i
 	return record, nil
 }
 
-func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
-	var ids = util.ArrayMap(records, func(record *model.Record) string {
+func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) errors.ServiceError {
+	var ids = util.ArrayMap(records, func(record unstructured.Unstructured) string {
 		return util.GetRecordId(record)
 	})
 
@@ -115,7 +115,7 @@ func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (r redisBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
+func (r redisBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- unstructured.Unstructured) ([]unstructured.Unstructured, uint32, errors.ServiceError) {
 	return nil, 0, errors.UnsupportedOperation
 }
 

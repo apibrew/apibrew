@@ -88,6 +88,9 @@ var PermissionResource = &model.Resource{
 				Namespace: UserResource.Namespace,
 				Resource:  UserResource.Name,
 			},
+			Annotations: map[string]string{
+				annotations.CascadeReference: annotations.Enabled,
+			},
 		},
 		{
 			Name:        "role",
@@ -97,6 +100,9 @@ var PermissionResource = &model.Resource{
 			Reference: &model.Reference{
 				Namespace: RoleResource.Namespace,
 				Resource:  RoleResource.Name,
+			},
+			Annotations: map[string]string{
+				annotations.CascadeReference: annotations.Enabled,
 			},
 		},
 		{

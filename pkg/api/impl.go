@@ -52,7 +52,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 
 	delete(recordObj, "type")
 
-	var record *model.Record
+	var record unstructured.Unstructured
 	record, err2 := unstructured.ToRecord(recordObj)
 
 	if err2 != nil {
@@ -68,7 +68,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		result, err := a.container.GetRecordService().Create(ctx, service.RecordCreateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
-			Records:   []*model.Record{record},
+			Records:   []unstructured.Unstructured{record},
 		})
 
 		if err != nil {
@@ -79,7 +79,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		result, err := a.container.GetRecordService().Update(ctx, service.RecordUpdateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
-			Records:   []*model.Record{record},
+			Records:   []unstructured.Unstructured{record},
 		})
 
 		if err != nil {
@@ -90,7 +90,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		result, err := a.container.GetRecordService().Apply(ctx, service.RecordUpdateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
-			Records:   []*model.Record{record},
+			Records:   []unstructured.Unstructured{record},
 		})
 
 		if err != nil {
@@ -264,7 +264,7 @@ func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructu
 		return nil, errors.ResourceValidationError.WithMessage(err.Error())
 	}
 
-	if err = validate.Records(resources.ResourceResource, []*model.Record{record}, false); err != nil {
+	if err = validate.Records(resources.ResourceResource, []unstructured.Unstructured{record}, false); err != nil {
 		return nil, errors.ResourceValidationError.WithMessage(err.Error())
 	}
 

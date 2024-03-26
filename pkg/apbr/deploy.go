@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/spf13/cobra"
@@ -129,7 +130,7 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 		content = string(contentBytes)
 	}
 
-	var record *model.Record
+	var record unstructured.Unstructured
 	if !override {
 		record, err = GetClient().CreateRecord(ctx, "nano", "Code", &model.Record{
 			Properties: map[string]*structpb.Value{

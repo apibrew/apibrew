@@ -2,23 +2,23 @@ package util
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 )
 
 type PropertyAccessor struct {
 	Property *model.ResourceProperty
-	Get      func(record *model.Record) interface{}
-	Set      func(record *model.Record, val interface{})
+	Get      func(record unstructured.Unstructured) interface{}
+	Set      func(record unstructured.Unstructured, val interface{})
 }
 
-func IsSameRecord(existing, updated *model.Record) bool {
-	for key := range updated.Properties {
-		if !proto.Equal(updated.Properties[key], existing.Properties[key]) {
+func IsSameRecord(existing, updated unstructured.Unstructured) bool {
+	for key := range updated {
+		if !unstructured.Equal(updated[key], existing[key]) {
 			return false
 		}
 	}
@@ -165,7 +165,7 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 	return nil, false
 }
 
-func RecordMatchIdentifiableProperties(resource *model.Resource, record *model.Record, properties map[string]*structpb.Value) (bool, error) {
+func RecordMatchIdentifiableProperties(resource *model.Resource, record unstructured.Unstructured, properties map[string]*structpb.Value) (bool, error) {
 	idProps, err := RecordIdentifierProperties(resource, properties)
 
 	if err != nil {
@@ -181,7 +181,7 @@ func RecordMatchIdentifiableProperties(resource *model.Resource, record *model.R
 			//matches, err := RecordMatchIdentifiableProperties(prop.Reference, record, val.GetStructValue().Fields)
 			//return true, nil // fixme
 		} else {
-			if !proto.Equal(record.Properties[key], val) {
+			if !unstructured.Equal(record[key], val) {
 				return false, nil
 			}
 		}
@@ -239,25 +239,19 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 	}
 }
 
-func IdRecord(id string) *model.Record {
-	return &model.Record{
-		Properties: map[string]*structpb.Value{
-			"id": structpb.NewStringValue(id),
-		},
+func IdRecord(id string) unstructured.Unstructured {
+	return unstructured.Unstructured{
+		"id": id,
 	}
 }
 
-func GetRecordId(record *model.Record) string {
+func GetRecordId(record unstructured.Unstructured) string {
 	if record == nil {
 		return ""
 	}
 
-	if record.Properties == nil {
-		return ""
-	}
-
-	if id, ok := record.Properties["id"]; ok {
-		return id.GetStringValue()
+	if id, ok := record["id"]; ok {
+		return id.(string)
 	}
 
 	return ""

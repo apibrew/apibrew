@@ -65,7 +65,7 @@ func (r *recordServer) ReadStream(request *stub.ReadStreamRequest, resp stub.Rec
 		return err
 	}
 
-	resultChan := make(chan *model.Record, 100)
+	resultChan := make(chan unstructured.Unstructured, 100)
 
 	defer func() {
 		log.Print("Closing chan")

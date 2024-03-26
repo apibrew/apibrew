@@ -84,13 +84,13 @@ func (h *userHandler) AfterGet(ctx context.Context, event *model.Event) (*model.
 	}
 
 	if !util.IsSystemContext(ctx) {
-		h.cleanPasswords([]*model.Record{event.Records[0]})
+		h.cleanPasswords([]unstructured.Unstructured{event.Records[0]})
 	}
 
 	return event, nil
 }
 
-func (h *userHandler) cleanPasswords(users []*model.Record) {
+func (h *userHandler) cleanPasswords(users []unstructured.Unstructured) {
 	for _, user := range users {
 		delete(user.Properties, "password")
 	}

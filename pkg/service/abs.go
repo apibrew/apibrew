@@ -52,17 +52,17 @@ type DataSourceService interface {
 type RecordService interface {
 	Init(config *model.AppConfig)
 	PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError)
-	GetRecord(ctx context.Context, namespace, resourceName, id string, references []string) (*model.Record, errors.ServiceError)
-	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (*model.Record, errors.ServiceError)
-	ResolveReferences(ctx context.Context, resource *model.Resource, records []*model.Record, referencesToResolve []string) errors.ServiceError
-	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
-	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, errors.ServiceError)
-	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
-	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
-	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
+	GetRecord(ctx context.Context, namespace, resourceName, id string, references []string) (unstructured.Unstructured, errors.ServiceError)
+	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (unstructured.Unstructured, errors.ServiceError)
+	ResolveReferences(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured, referencesToResolve []string) errors.ServiceError
+	List(ctx context.Context, params RecordListParams) ([]unstructured.Unstructured, uint32, errors.ServiceError)
+	Create(ctx context.Context, params RecordCreateParams) ([]unstructured.Unstructured, errors.ServiceError)
+	Update(ctx context.Context, params RecordUpdateParams) ([]unstructured.Unstructured, errors.ServiceError)
+	Apply(ctx context.Context, params RecordUpdateParams) ([]unstructured.Unstructured, errors.ServiceError)
+	Get(ctx context.Context, params RecordGetParams) (unstructured.Unstructured, errors.ServiceError)
 	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
 	ExecuteAction(ctx context.Context, params ExecuteActionParams) (unstructured.Unstructured, errors.ServiceError)
-	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (*model.Record, errors.ServiceError)
+	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (unstructured.Unstructured, errors.ServiceError)
 }
 
 type ResourceService interface {
@@ -123,7 +123,7 @@ type ExtensionService interface {
 
 type CheckRecordAccessParams struct {
 	Resource  *model.Resource
-	Records   *[]*model.Record
+	Records   *[]unstructured.Unstructured
 	Operation resource_model.PermissionOperation
 }
 
@@ -145,7 +145,7 @@ type RecordListParams struct {
 	Offset            uint64
 	UseHistory        bool
 	ResolveReferences []string
-	ResultChan        chan<- *model.Record
+	ResultChan        chan<- unstructured.Unstructured
 	PackRecords       bool
 	Filters           map[string]string
 	Aggregation       *model.Aggregation
@@ -172,7 +172,7 @@ func (p RecordListParams) ToRequest() *stub.ListRecordRequest {
 type RecordCreateParams struct {
 	Namespace string
 	Resource  string
-	Records   []*model.Record
+	Records   []unstructured.Unstructured
 }
 
 func (p RecordCreateParams) ToRequest() *stub.CreateRecordRequest {
@@ -186,7 +186,7 @@ func (p RecordCreateParams) ToRequest() *stub.CreateRecordRequest {
 type RecordUpdateParams struct {
 	Namespace string
 	Resource  string
-	Records   []*model.Record
+	Records   []unstructured.Unstructured
 }
 
 func (p RecordUpdateParams) ToRequest() *stub.UpdateRecordRequest {

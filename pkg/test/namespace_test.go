@@ -19,7 +19,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			resource_model.NamespaceMapperInstance.ToRecord(namespace1),
 		},
 	})
@@ -54,7 +54,7 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			resource_model.NamespaceMapperInstance.ToRecord(namespace1),
 		},
 	})

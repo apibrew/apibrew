@@ -37,13 +37,13 @@ func (m *UserMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *UserMapper) ToRecord(user *User) *model.Record {
+func (m *UserMapper) ToRecord(user *User) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(user)
 	return rec
 }
 
-func (m *UserMapper) FromRecord(record *model.Record) *User {
+func (m *UserMapper) FromRecord(record unstructured.Unstructured) *User {
 	return m.FromProperties(record.Properties)
 }
 

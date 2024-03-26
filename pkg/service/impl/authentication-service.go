@@ -254,7 +254,7 @@ func (s *authenticationService) collectUserPermissions(ctx context.Context, user
 
 	var userRecord = resource_model.UserMapperInstance.ToRecord(user)
 
-	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []*model.Record{userRecord}, []string{
+	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []unstructured.Unstructured{userRecord}, []string{
 		"$.roles[]",
 		"$.permissions[]",
 		"$.permissions[].namespace",

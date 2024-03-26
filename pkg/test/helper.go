@@ -10,7 +10,7 @@ import (
 	"unicode"
 )
 
-func CheckTwoRecordEquals(t *testing.T, resource *model.Resource, a *model.Record, b *model.Record) {
+func CheckTwoRecordEquals(t *testing.T, resource *model.Resource, a unstructured.Unstructured, b unstructured.Unstructured) {
 	for _, prop := range resource.Properties {
 		if annotations.IsEnabled(prop, annotations.SpecialProperty) {
 			continue

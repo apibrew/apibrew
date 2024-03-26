@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func InitRecord(ctx context.Context, resource *model.Resource, record *model.Record) {
+func InitRecord(ctx context.Context, resource *model.Resource, record unstructured.Unstructured) {
 	now := time.Now()
 	recordNewId := uuid.Must(uuid.NewRandom())
 	if record.Properties == nil {
@@ -41,7 +41,7 @@ func InitRecord(ctx context.Context, resource *model.Resource, record *model.Rec
 	}
 }
 
-func PrepareUpdateForRecord(ctx context.Context, resource *model.Resource, record *model.Record) {
+func PrepareUpdateForRecord(ctx context.Context, resource *model.Resource, record unstructured.Unstructured) {
 	ah := &helper.RecordSpecialColumnHelper{
 		Resource: resource,
 		Record:   record,

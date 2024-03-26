@@ -86,7 +86,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 			_, err := a.recordService.Create(util.WithSystemContext(ctx), service.RecordCreateParams{
 				Namespace: resources.AuditLogResource.Namespace,
 				Resource:  resources.AuditLogResource.Name,
-				Records:   []*model.Record{resource_model.AuditLogMapperInstance.ToRecord(auditLog)},
+				Records:   []unstructured.Unstructured{resource_model.AuditLogMapperInstance.ToRecord(auditLog)},
 			})
 
 			if err != nil {

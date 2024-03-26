@@ -81,7 +81,7 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 }
 
 func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
-	var records []*model.Record
+	var records []unstructured.Unstructured
 	for i := 0; i < 30; i += 3 {
 		var properties = make(map[string]*structpb.Value, 3)
 
@@ -135,7 +135,7 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 }
 
 func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
-	var records []*model.Record
+	var records []unstructured.Unstructured
 	for i := 0; i < 30; i += 3 {
 		var properties = make(map[string]*structpb.Value, 3)
 		typ := types.ByResourcePropertyType(subCase.recordType)
@@ -194,7 +194,7 @@ func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testin
 }
 
 func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
-	var records []*model.Record
+	var records []unstructured.Unstructured
 	for i := 0; i < 30; i += 3 {
 		var properties = make(map[string]*structpb.Value, 3)
 
@@ -274,7 +274,7 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 		return
 	}
 
-	var records []*model.Record
+	var records []unstructured.Unstructured
 	for i := 0; i < 30; i += 3 {
 		var properties = make(map[string]*structpb.Value, 3)
 

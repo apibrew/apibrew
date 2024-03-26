@@ -53,7 +53,7 @@ func (d *client) UpdateResource(ctx context.Context, resource *model.Resource, m
 	return err
 }
 
-func (d *client) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
+func (d *client) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []unstructured.Unstructured)) error {
 	resp, err := d.watchClient.Watch(ctx, &stub.WatchRequest{
 		Token: d.token,
 		Selector: &model.EventSelector{
@@ -138,7 +138,7 @@ func (d *client) GetResourceByName(ctx context.Context, namespace string, getTyp
 	return resp.Resource, nil
 }
 
-func (d *client) ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error {
+func (d *client) ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan unstructured.Unstructured) error {
 	resp, err := d.recordClient.ReadStream(ctx, &stub.ReadStreamRequest{})
 
 	if err != nil {
@@ -171,12 +171,12 @@ func (d *client) ReadRecordStream(ctx context.Context, params service.RecordList
 	return nil
 }
 
-func (d *client) CreateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (d *client) CreateRecord(ctx context.Context, namespace string, resource string, record unstructured.Unstructured) (unstructured.Unstructured, error) {
 	resp, err := d.recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
 		Resource:  resource,
-		Records:   []*model.Record{record},
+		Records:   []unstructured.Unstructured{record},
 	})
 
 	if err != nil {
@@ -186,12 +186,12 @@ func (d *client) CreateRecord(ctx context.Context, namespace string, resource st
 	return resp.Records[0], nil
 }
 
-func (d *client) UpdateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (d *client) UpdateRecord(ctx context.Context, namespace string, resource string, record unstructured.Unstructured) (unstructured.Unstructured, error) {
 	resp, err := d.recordClient.Update(ctx, &stub.UpdateRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
 		Resource:  resource,
-		Records:   []*model.Record{record},
+		Records:   []unstructured.Unstructured{record},
 	})
 
 	if err != nil {
@@ -201,12 +201,12 @@ func (d *client) UpdateRecord(ctx context.Context, namespace string, resource st
 	return resp.Records[0], nil
 }
 
-func (d *client) ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (d *client) ApplyRecord(ctx context.Context, namespace string, resource string, record unstructured.Unstructured) (unstructured.Unstructured, error) {
 	resp, err := d.recordClient.Apply(ctx, &stub.ApplyRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
 		Resource:  resource,
-		Records:   []*model.Record{record},
+		Records:   []unstructured.Unstructured{record},
 	})
 
 	if err != nil {
@@ -216,7 +216,7 @@ func (d *client) ApplyRecord(ctx context.Context, namespace string, resource str
 	return resp.Records[0], nil
 }
 
-func (d *client) GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error) {
+func (d *client) GetRecord(ctx context.Context, namespace string, resource string, id string) (unstructured.Unstructured, error) {
 	resp, err := d.recordClient.Get(ctx, &stub.GetRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,
@@ -231,7 +231,7 @@ func (d *client) GetRecord(ctx context.Context, namespace string, resource strin
 	return resp.Record, nil
 }
 
-func (d *client) ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
+func (d *client) ListRecords(ctx context.Context, params service.RecordListParams) ([]unstructured.Unstructured, uint32, error) {
 	req := params.ToRequest()
 
 	req.Token = d.token
@@ -284,7 +284,7 @@ func (d *client) AuthenticateWithToken(token string) {
 	d.token = token
 }
 
-func (d *client) DeleteRecord(ctx context.Context, namespace string, name string, record *model.Record) error {
+func (d *client) DeleteRecord(ctx context.Context, namespace string, name string, record unstructured.Unstructured) error {
 	_, err := d.recordClient.Delete(ctx, &stub.DeleteRecordRequest{
 		Token:     d.token,
 		Namespace: namespace,

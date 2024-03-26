@@ -1,7 +1,6 @@
 package test
 
 import (
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -17,7 +16,7 @@ func TestNanoPersonCreate(t *testing.T) {
 		return
 	}
 
-	record1 := new(model.Record)
+	record1 := make(unstructured.Unstructured)
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"firstName": "Taleh",
 	})
@@ -31,7 +30,7 @@ func TestNanoPersonCreate(t *testing.T) {
 
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "Person",
-		Records:  []*model.Record{record1},
+		Records:  []unstructured.Unstructured{record1},
 	})
 
 	if err != nil {
@@ -59,7 +58,7 @@ func TestNanoPersonPreventDelete(t *testing.T) {
 		return
 	}
 
-	record1 := new(model.Record)
+	record1 := make(unstructured.Unstructured)
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"firstName": "PreventDelete",
 	})
@@ -73,7 +72,7 @@ func TestNanoPersonPreventDelete(t *testing.T) {
 
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "Person",
-		Records:  []*model.Record{record1},
+		Records:  []unstructured.Unstructured{record1},
 	})
 
 	if err != nil {
@@ -93,7 +92,7 @@ func TestPersonBindCreate(t *testing.T) {
 		return
 	}
 
-	record1 := new(model.Record)
+	record1 := make(unstructured.Unstructured)
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"name": "Taleh Ibrahimli",
 	})
@@ -107,7 +106,7 @@ func TestPersonBindCreate(t *testing.T) {
 
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "Human",
-		Records:  []*model.Record{record1},
+		Records:  []unstructured.Unstructured{record1},
 	})
 
 	if err != nil {
@@ -136,7 +135,7 @@ func TestPersonBindUpdate(t *testing.T) {
 		return
 	}
 
-	record1 := new(model.Record)
+	record1 := make(unstructured.Unstructured)
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"name": "Taleh Ibrahimli",
 	})
@@ -150,7 +149,7 @@ func TestPersonBindUpdate(t *testing.T) {
 
 	resp1, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "Human",
-		Records:  []*model.Record{record1},
+		Records:  []unstructured.Unstructured{record1},
 	})
 
 	if err != nil {
@@ -158,7 +157,7 @@ func TestPersonBindUpdate(t *testing.T) {
 		return
 	}
 
-	record2 := new(model.Record)
+	record2 := make(unstructured.Unstructured)
 	st2, err := structpb.NewStruct(map[string]interface{}{
 		"id":   util.GetRecordId(resp1.Record),
 		"name": "Talehx Ibrahimlix",
@@ -173,7 +172,7 @@ func TestPersonBindUpdate(t *testing.T) {
 
 	res2, err := recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Resource: "Human",
-		Records:  []*model.Record{record2},
+		Records:  []unstructured.Unstructured{record2},
 	})
 
 	if err != nil {

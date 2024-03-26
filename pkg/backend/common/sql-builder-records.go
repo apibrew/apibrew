@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/helper"
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	helper2 "github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -18,7 +19,7 @@ import (
 	"strings"
 )
 
-func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema) errors.ServiceError {
+func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []unstructured.Unstructured, ignoreIfExists bool, schema *abs.Schema) errors.ServiceError {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	query := fmt.Sprintf("INSERT INTO %s", p.getFullTableName(resource.SourceConfig))
@@ -158,7 +159,7 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 	}
 }
 
-func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record *model.Record, argPlaceHolder func(value interface{}) string) (string, errors.ServiceError) {
+func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record unstructured.Unstructured, argPlaceHolder func(value interface{}) string) (string, errors.ServiceError) {
 	identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
 	namedProps := util.GetNamedMap(resource.Properties)
 	if util.HasResourceSinglePrimaryProp(resource) {
@@ -201,7 +202,7 @@ func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record *
 	}
 }
 
-func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) errors.ServiceError {
+func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, record unstructured.Unstructured, checkVersion bool, schema *abs.Schema) errors.ServiceError {
 	updateBuilder := sqlbuilder.Update(p.getFullTableName(resource.SourceConfig))
 	updateBuilder.SetFlavor(p.options.GetFlavor())
 
@@ -286,7 +287,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 	return nil
 }
 
-func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
+func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, id string, resolveReferences []string) (unstructured.Unstructured, errors.ServiceError) {
 	list, total, err := p.recordList(ctx, runner, resource, abs.ListRecordParams{
 		Query: &model.BooleanExpression{
 			Expression: &model.BooleanExpression_Equal{

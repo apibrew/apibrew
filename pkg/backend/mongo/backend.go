@@ -55,7 +55,7 @@ func (r mongoBackend) DestroyDataSource(ctx context.Context) {
 	}
 }
 
-func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) ([]unstructured.Unstructured, errors.ServiceError) {
 	var documents []interface{}
 	for _, record := range records {
 		documents = append(documents, r.recordToDocument(resource, record))
@@ -69,7 +69,7 @@ func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, 
 	return records, nil
 }
 
-func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.Record) bson.M {
+func (r mongoBackend) recordToDocument(resource *model.Resource, record unstructured.Unstructured) bson.M {
 	var data = bson.M{}
 
 	for _, prop := range resource.Properties {
@@ -83,7 +83,7 @@ func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.R
 	return data
 }
 
-func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) ([]unstructured.Unstructured, errors.ServiceError) {
 	for _, record := range records {
 		var filter = bson.M{}
 		var update = bson.M{}
@@ -116,7 +116,7 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 	return records, nil
 }
 
-func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
+func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (unstructured.Unstructured, errors.ServiceError) {
 	res := r.getCollection(resource).FindOne(ctx, bson.M{
 		"id": id,
 	})
@@ -142,8 +142,8 @@ func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, i
 	return record, nil
 }
 
-func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string]interface{}) (*model.Record, errors.ServiceError) {
-	var record = new(model.Record)
+func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string]interface{}) (unstructured.Unstructured, errors.ServiceError) {
+	var record = make(unstructured.Unstructured)
 	record.Properties = make(map[string]*structpb.Value)
 
 	for _, prop := range resource.Properties {
@@ -162,8 +162,8 @@ func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string
 	return record, nil
 }
 
-func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
-	var ids = util.ArrayMap(records, func(record *model.Record) string {
+func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) errors.ServiceError {
+	var ids = util.ArrayMap(records, func(record unstructured.Unstructured) string {
 		return util.GetRecordId(record)
 	})
 	for _, item := range ids {
@@ -181,7 +181,7 @@ func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (r mongoBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, _ chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
+func (r mongoBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, _ chan<- unstructured.Unstructured) ([]unstructured.Unstructured, uint32, errors.ServiceError) {
 	var filter bson.M = nil
 
 	if params.Query != nil {
@@ -194,7 +194,7 @@ func (r mongoBackend) ListRecords(ctx context.Context, resource *model.Resource,
 		return nil, 0, r.handleError(err)
 	}
 
-	var records []*model.Record
+	var records []unstructured.Unstructured
 	for cursor.Next(ctx) {
 		var data = new(map[string]interface{})
 

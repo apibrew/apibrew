@@ -37,13 +37,13 @@ func (m *ExtensionMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ExtensionMapper) ToRecord(extension *Extension) *model.Record {
+func (m *ExtensionMapper) ToRecord(extension *Extension) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(extension)
 	return rec
 }
 
-func (m *ExtensionMapper) FromRecord(record *model.Record) *Extension {
+func (m *ExtensionMapper) FromRecord(record unstructured.Unstructured) *Extension {
 	return m.FromProperties(record.Properties)
 }
 

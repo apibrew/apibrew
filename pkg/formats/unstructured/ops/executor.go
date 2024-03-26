@@ -28,7 +28,7 @@ type Executor struct {
 	Type                string
 
 	ResourceHandler func(resource *model.Resource) error
-	RecordHandler   func(namespace string, resource string, record *model.Record) error
+	RecordHandler   func(namespace string, resource string, record unstructured.Unstructured) error
 }
 
 func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
@@ -86,7 +86,7 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 				return err
 			}
 
-			if err = validate.Records(resources2.ResourceResource, []*model.Record{record}, false); err != nil {
+			if err = validate.Records(resources2.ResourceResource, []unstructured.Unstructured{record}, false); err != nil {
 				return err
 			}
 
@@ -114,7 +114,7 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 				return errors.New("Resource not set: " + namespace + "/" + resourceName)
 			}
 
-			var record = new(model.Record)
+			var record = make(unstructured.Unstructured)
 
 			err = unstructured.ToProtoMessage(unstructured.Unstructured{
 				"properties": body,

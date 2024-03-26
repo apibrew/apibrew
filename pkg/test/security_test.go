@@ -18,7 +18,7 @@ func TestDhTestUserCannotCreateUser(t *testing.T) {
 	record, err := recordClient.Apply(userDhTestCtx, &stub.ApplyRecordRequest{
 		Namespace: resources.UserResource.Namespace,
 		Resource:  resources.UserResource.Name,
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			resource_model.UserMapperInstance.ToRecord(&resource_model.User{
 				Username: "test123",
 			}),

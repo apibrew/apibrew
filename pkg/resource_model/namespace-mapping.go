@@ -37,13 +37,13 @@ func (m *NamespaceMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *NamespaceMapper) ToRecord(namespace *Namespace) *model.Record {
+func (m *NamespaceMapper) ToRecord(namespace *Namespace) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(namespace)
 	return rec
 }
 
-func (m *NamespaceMapper) FromRecord(record *model.Record) *Namespace {
+func (m *NamespaceMapper) FromRecord(record unstructured.Unstructured) *Namespace {
 	return m.FromProperties(record.Properties)
 }
 

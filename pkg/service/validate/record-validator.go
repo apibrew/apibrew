@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) errors.ServiceError {
+func Records(resource abs.ResourceLike, list []unstructured.Unstructured, isUpdate bool) errors.ServiceError {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)

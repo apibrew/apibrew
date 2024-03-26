@@ -45,7 +45,7 @@ func EventToProto(result *resource_model.Event) *model.Event {
 			ResolveReferences: result.RecordSearchParams.ResolveReferences,
 		}
 	}
-	event.Records = util.ArrayMapX(result.Records, func(t *resource_model.Record) *model.Record {
+	event.Records = util.ArrayMapX(result.Records, func(t *resource_model.Record) unstructured.Unstructured {
 		return &model.Record{
 			Properties: resource_model.RecordMapperInstance.ToRecord(t).Properties["properties"].GetStructValue().Fields,
 		}
@@ -104,7 +104,7 @@ func EventFromProto(event *model.Event) *resource_model.Event {
 			ResolveReferences: event.RecordSearchParams.ResolveReferences,
 		}
 	}
-	extensionEvent.Records = util.ArrayMapX(event.Records, func(item *model.Record) *resource_model.Record {
+	extensionEvent.Records = util.ArrayMapX(event.Records, func(item unstructured.Unstructured) *resource_model.Record {
 		return resource_model.RecordMapperInstance.FromRecord(&model.Record{
 			Properties: map[string]*structpb.Value{
 				"id":         item.Properties["id"],

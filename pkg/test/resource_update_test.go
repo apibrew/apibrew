@@ -157,7 +157,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		}
 	}()
 
-	recordCreateResult1, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	recordCreateResult1, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []unstructured.Unstructured{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),
@@ -203,7 +203,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		return
 	}
 
-	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []unstructured.Unstructured{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),
@@ -250,7 +250,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		return
 	}
 
-	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{Resource: resource1.Name, Records: []unstructured.Unstructured{
 		{
 			Properties: map[string]*structpb.Value{
 				"id":     recordCreateResult1.Records[0].Properties["id"],
@@ -301,7 +301,7 @@ func TestResourceUpdateCreateNewPropertyAndMarkAsRequired(t *testing.T) {
 		return
 	}
 
-	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []*model.Record{
+	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []unstructured.Unstructured{
 		{
 			Properties: map[string]*structpb.Value{
 				"prop-1": structpb.NewStringValue("test-123321"),

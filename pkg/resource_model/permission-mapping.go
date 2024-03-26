@@ -37,13 +37,13 @@ func (m *PermissionMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *PermissionMapper) ToRecord(permission *Permission) *model.Record {
+func (m *PermissionMapper) ToRecord(permission *Permission) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(permission)
 	return rec
 }
 
-func (m *PermissionMapper) FromRecord(record *model.Record) *Permission {
+func (m *PermissionMapper) FromRecord(record unstructured.Unstructured) *Permission {
 	return m.FromProperties(record.Properties)
 }
 

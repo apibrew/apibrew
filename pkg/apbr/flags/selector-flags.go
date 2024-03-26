@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/apibrew/apibrew/pkg/client"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	log "github.com/sirupsen/logrus"
@@ -138,7 +139,7 @@ func parseFilter(filter string) (string, string) {
 type SelectedRecordData struct {
 	Total    uint32
 	Resource *model.Resource
-	Records  []*model.Record
+	Records  []unstructured.Unstructured
 }
 
 type SelectedRecordsResult struct {

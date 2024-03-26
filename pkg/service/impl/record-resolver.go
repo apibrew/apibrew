@@ -15,7 +15,7 @@ type recordResolver struct {
 	recordService   service.RecordService
 	resourceService service.ResourceService
 	resource        *model.Resource
-	records         []*model.Record
+	records         []unstructured.Unstructured
 	paths           []string
 }
 
@@ -26,9 +26,9 @@ func (r *recordResolver) resolveReferences(ctx context.Context) errors.ServiceEr
 		pathMap[path] = true
 	}
 
-	var recordValues = util.ArrayToMap(r.records, func(record *model.Record) string {
+	var recordValues = util.ArrayToMap(r.records, func(record unstructured.Unstructured) string {
 		return util.GetRecordId(record)
-	}, func(t *model.Record) *structpb.Value {
+	}, func(t unstructured.Unstructured) *structpb.Value {
 		return structpb.NewStructValue(&structpb.Struct{Fields: t.Properties})
 	})
 
@@ -77,7 +77,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 			pathToOperateNextReferenceMap["$"+rightPath] = true
 		}
 
-		var referenceRecords []*model.Record
+		var referenceRecords []unstructured.Unstructured
 
 		if prop.Type == model.ResourceProperty_REFERENCE {
 			if prop.BackReference != nil {
@@ -295,7 +295,7 @@ func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path 
 			pathToOperateNextReferenceMap["$"+rightPath] = true
 		}
 
-		var referenceRecords []*model.Record
+		var referenceRecords []unstructured.Unstructured
 
 		if prop.Type == model.ResourceProperty_REFERENCE {
 			if prop.BackReference != nil {
@@ -391,9 +391,9 @@ func (r *recordResolver) checkReferences(ctx context.Context) errors.ServiceErro
 		pathMap[path] = true
 	}
 
-	var recordValues = util.ArrayToMap(r.records, func(record *model.Record) string {
+	var recordValues = util.ArrayToMap(r.records, func(record unstructured.Unstructured) string {
 		return util.GetRecordId(record)
-	}, func(t *model.Record) *structpb.Value {
+	}, func(t unstructured.Unstructured) *structpb.Value {
 		return structpb.NewStructValue(&structpb.Struct{Fields: t.Properties})
 	})
 

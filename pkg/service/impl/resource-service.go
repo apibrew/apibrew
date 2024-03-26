@@ -244,7 +244,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	resourceRecords := []*model.Record{mapping.ResourceToRecord(resource)}
+	resourceRecords := []unstructured.Unstructured{mapping.ResourceToRecord(resource)}
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
@@ -359,7 +359,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
-		Records:   &[]*model.Record{resourceRecord},
+		Records:   &[]unstructured.Unstructured{resourceRecord},
 		Operation: resource_model.PermissionOperation_CREATE,
 	}); err != nil {
 		return nil, err
@@ -369,7 +369,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	InitRecord(ctx, resources.ResourceResource, resourceRecord)
 
-	result, err := r.backendProviderService.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
+	result, err := r.backendProviderService.AddRecords(txCtx, resources.ResourceResource, []unstructured.Unstructured{resourceRecord})
 
 	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
 		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exists: " + resource.Name))
@@ -622,7 +622,7 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 
 		if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 			Resource: resources.ResourceResource,
-			Records: &[]*model.Record{{
+			Records: &[]unstructured.Unstructured{{
 				Properties: map[string]*structpb.Value{
 					"id": structpb.NewStringValue(resourceId),
 				},
@@ -632,7 +632,7 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			return err
 		}
 
-		err = r.backendProviderService.DeleteRecords(ctx, resources.ResourceResource, []*model.Record{util.IdRecord(resourceId)})
+		err = r.backendProviderService.DeleteRecords(ctx, resources.ResourceResource, []unstructured.Unstructured{util.IdRecord(resourceId)})
 
 		if err != nil {
 			return err
@@ -713,7 +713,7 @@ func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, 
 
 			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 				Resource: resources.ResourceResource,
-				Records: &[]*model.Record{
+				Records: &[]unstructured.Unstructured{
 					{
 						Properties: map[string]*structpb.Value{
 							"id": structpb.NewStringValue(id),

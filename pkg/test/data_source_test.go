@@ -57,7 +57,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Records:   []unstructured.Unstructured{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -92,7 +92,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 //	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 //		Namespace: resources.DataSourceResource.Namespace,
 //		Resource:  resources.DataSourceResource.Name,
-//		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+//		Records:   []unstructured.Unstructured{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 //	})
 //
 //	if err != nil {
@@ -151,7 +151,7 @@ func TestUpdateDataSource(t *testing.T) {
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Records:   []unstructured.Unstructured{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -176,7 +176,7 @@ func TestUpdateDataSource(t *testing.T) {
 	res, err := recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			resource_model.DataSourceMapperInstance.ToRecord(newDataSource),
 		},
 	})
@@ -267,7 +267,7 @@ func TestUpdateRecordstatus(t *testing.T) {
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Records:   []unstructured.Unstructured{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 	})
 
 	if err != nil {
@@ -293,7 +293,7 @@ func TestUpdateRecordstatus(t *testing.T) {
 	_, _ = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
+		Records:   []unstructured.Unstructured{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
 	})
 
 	checkNewCreatedRecordStatusPasswordWrong(createdDataSource1, t)
@@ -311,7 +311,7 @@ func TestUpdateRecordstatus(t *testing.T) {
 	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
+		Records:   []unstructured.Unstructured{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
 	})
 
 	if err != nil {

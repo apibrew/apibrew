@@ -6,7 +6,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func ResourceToRecord(resource *model.Resource) *model.Record {
+func ResourceToRecord(resource *model.Resource) unstructured.Unstructured {
 	properties := make(map[string]*structpb.Value)
 
 	properties["name"] = structpb.NewStringValue(resource.Name)
@@ -72,7 +72,7 @@ func ResourceToRecord(resource *model.Resource) *model.Record {
 	}
 }
 
-func ResourceFromRecord(record *model.Record) *model.Resource {
+func ResourceFromRecord(record unstructured.Unstructured) *model.Resource {
 	if record == nil {
 		return nil
 	}

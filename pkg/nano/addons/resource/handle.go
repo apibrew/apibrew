@@ -83,7 +83,7 @@ func recordHandlerFn(handler Handler) backend_event_handler.HandlerFunc {
 			return event, nil
 		}
 
-		var processedRecords []*model.Record
+		var processedRecords []unstructured.Unstructured
 		for _, record := range event.Records {
 			entity := recordToObject(record)
 
@@ -115,7 +115,7 @@ func recordHandlerFn(handler Handler) backend_event_handler.HandlerFunc {
 	}
 }
 
-func recordToObject(record *model.Record) map[string]interface{} {
+func recordToObject(record unstructured.Unstructured) map[string]interface{} {
 	var recordObj = make(map[string]interface{})
 	for key, value := range record.Properties {
 		recordObj[key] = value.AsInterface()

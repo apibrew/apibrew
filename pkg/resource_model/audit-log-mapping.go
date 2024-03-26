@@ -37,13 +37,13 @@ func (m *AuditLogMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *AuditLogMapper) ToRecord(auditLog *AuditLog) *model.Record {
+func (m *AuditLogMapper) ToRecord(auditLog *AuditLog) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(auditLog)
 	return rec
 }
 
-func (m *AuditLogMapper) FromRecord(record *model.Record) *AuditLog {
+func (m *AuditLogMapper) FromRecord(record unstructured.Unstructured) *AuditLog {
 	return m.FromProperties(record.Properties)
 }
 

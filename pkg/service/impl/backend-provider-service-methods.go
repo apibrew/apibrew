@@ -27,7 +27,7 @@ func (b backendProviderService) DestroyDataSource(ctx context.Context, dataSourc
 	return b.DestroyBackend(ctx, dataSourceId)
 }
 
-func (b backendProviderService) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (b backendProviderService) AddRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) ([]unstructured.Unstructured, errors.ServiceError) {
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_CREATE,
 		Resource: resource,
@@ -45,7 +45,7 @@ func (b backendProviderService) AddRecords(ctx context.Context, resource *model.
 	return endEvent.Records, nil
 }
 
-func (b backendProviderService) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (b backendProviderService) UpdateRecords(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) ([]unstructured.Unstructured, errors.ServiceError) {
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_UPDATE,
 		Resource: resource,
@@ -63,11 +63,11 @@ func (b backendProviderService) UpdateRecords(ctx context.Context, resource *mod
 	return endEvent.Records, nil
 }
 
-func (b backendProviderService) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
+func (b backendProviderService) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (unstructured.Unstructured, errors.ServiceError) {
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_GET,
 		Resource: resource,
-		Records:  []*model.Record{util.IdRecord(id)},
+		Records:  []unstructured.Unstructured{util.IdRecord(id)},
 		RecordSearchParams: &model.Event_RecordSearchParams{
 			ResolveReferences: resolveReferences,
 		},
@@ -88,7 +88,7 @@ func (b backendProviderService) GetRecord(ctx context.Context, resource *model.R
 	return endEvent.Records[0], nil
 }
 
-func (b backendProviderService) DeleteRecords(ctx context.Context, resource *model.Resource, list []*model.Record) errors.ServiceError {
+func (b backendProviderService) DeleteRecords(ctx context.Context, resource *model.Resource, list []unstructured.Unstructured) errors.ServiceError {
 	_, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_DELETE,
 		Resource: resource,
@@ -98,7 +98,7 @@ func (b backendProviderService) DeleteRecords(ctx context.Context, resource *mod
 	return err
 }
 
-func (b backendProviderService) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
+func (b backendProviderService) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- unstructured.Unstructured) ([]unstructured.Unstructured, uint32, errors.ServiceError) {
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_LIST,
 		Resource: resource,
@@ -119,7 +119,7 @@ func (b backendProviderService) ListRecords(ctx context.Context, resource *model
 	return endEvent.Records, uint32(endEvent.Total), nil
 }
 
-func (b backendProviderService) ExecuteAction(ctx context.Context, resource *model.Resource, rec *model.Record, actionName string, input unstructured.Any) (unstructured.Unstructured, errors.ServiceError) {
+func (b backendProviderService) ExecuteAction(ctx context.Context, resource *model.Resource, rec unstructured.Unstructured, actionName string, input unstructured.Any) (unstructured.Unstructured, errors.ServiceError) {
 	inputVal, ierr := unstructured.ToValue(input)
 
 	if ierr != nil {
@@ -130,7 +130,7 @@ func (b backendProviderService) ExecuteAction(ctx context.Context, resource *mod
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:     model.Event_OPERATE,
 		Resource:   resource,
-		Records:    []*model.Record{rec},
+		Records:    []unstructured.Unstructured{rec},
 		ActionName: actionName,
 		Input:      inputVal,
 	}))

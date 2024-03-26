@@ -86,7 +86,7 @@ func (h handler[Entity]) handle(processFunc RecordProcessFunc[Entity]) {
 
 func (h handler[Entity]) prepareProcessFunc(processFunc RecordProcessFunc[Entity]) func(ctx context.Context, req *model.Event) (*model.Event, error) {
 	return func(ctx context.Context, req *model.Event) (*model.Event, error) {
-		processedRecords := make([]*model.Record, len(req.Records))
+		processedRecords := make([]unstructured.Unstructured, len(req.Records))
 
 		for i, record := range req.Records {
 			processedRecord, err := processFunc(ctx, req, h.mapper.FromRecord(record))

@@ -9,6 +9,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/helper"
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
@@ -51,8 +52,7 @@ type recordLister struct {
 	ResolveReferences []string
 	logger            *log.Entry
 	builder           *sqlbuilder.SelectBuilder
-	resultChan        chan<- *model.Record
-	packRecords       bool
+	resultChan        chan<- unstructured.Unstructured
 	backend           *sqlBackend
 	aggregation       *model.Aggregation
 	sorting           *model.Sorting
@@ -195,7 +195,7 @@ func (r *recordLister) prepareSorting() errors.ServiceError {
 	return nil
 }
 
-func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.ServiceError) {
+func (r *recordLister) Exec() (result []unstructured.Unstructured, total uint32, err errors.ServiceError) {
 	if err := r.Prepare(); err != nil {
 		return nil, 0, err
 	}
@@ -247,7 +247,7 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 		default:
 		}
 
-		record := new(model.Record)
+		record := make(unstructured.Unstructured)
 
 		err = r.scanRecord(record, rows)
 		if err != nil {
@@ -258,16 +258,6 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 			r.resultChan <- record
 		} else {
 			result = append(result, record)
-		}
-
-		if r.packRecords {
-			for _, prop := range r.resource.Properties {
-				if helper.IsPropertyOmitted(prop) {
-					continue
-				}
-				record.PropertiesPacked = append(record.PropertiesPacked, record.Properties[prop.Name])
-			}
-			record.Properties = nil
 		}
 	}
 
@@ -342,7 +332,7 @@ func (r *recordLister) quote(path string) string {
 	return r.backend.options.Quote(path)
 }
 
-func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.ServiceError {
+func (r *recordLister) scanRecord(record unstructured.Unstructured, rows *sql.Rows) errors.ServiceError {
 	var rowScanFields []any
 	var propertyPointers = make(map[string]interface{})
 
@@ -678,7 +668,7 @@ func (r *recordLister) prepareCols() []string {
 	return cols
 }
 
-func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) (result []*model.Record, total uint32, err errors.ServiceError) {
+func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- unstructured.Unstructured) (result []unstructured.Unstructured, total uint32, err errors.ServiceError) {
 	return (&recordLister{
 		ctx:               ctx,
 		runner:            runner,

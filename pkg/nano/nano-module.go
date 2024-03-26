@@ -31,7 +31,7 @@ func (m module) ensureNamespace() {
 	_, err := m.container.GetRecordService().Apply(util.SystemContext, service.RecordUpdateParams{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			{
 				Properties: map[string]*structpb.Value{
 					"name": structpb.NewStringValue("nano"),

@@ -2,6 +2,7 @@ package logging
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	"strings"
@@ -20,7 +21,13 @@ func ShortEventInfo(event *model.Event) string {
 
 	for index, rec := range event.Records {
 		if rec != nil {
-			ids = append(ids, util.GetRecordId(rec))
+			uns, err := unstructured.FromRecord(rec)
+
+			if err != nil {
+				panic(err)
+			}
+
+			ids = append(ids, util.GetRecordId(uns))
 		}
 
 		if index > 5 {

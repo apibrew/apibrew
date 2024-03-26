@@ -11,7 +11,7 @@ import (
 
 type RecordSpecialColumnHelper struct {
 	Resource *model.Resource
-	Record   *model.Record
+	Record   unstructured.Unstructured
 }
 
 func (h RecordSpecialColumnHelper) IsAuditEnabled() bool {

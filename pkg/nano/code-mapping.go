@@ -37,13 +37,13 @@ func (m *CodeMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *CodeMapper) ToRecord(code *Code) *model.Record {
+func (m *CodeMapper) ToRecord(code *Code) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(code)
 	return rec
 }
 
-func (m *CodeMapper) FromRecord(record *model.Record) *Code {
+func (m *CodeMapper) FromRecord(record unstructured.Unstructured) *Code {
 	return m.FromProperties(record.Properties)
 }
 

@@ -36,13 +36,13 @@ func (m *TestCaseMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *TestCaseMapper) ToRecord(testCase *TestCase) *model.Record {
+func (m *TestCaseMapper) ToRecord(testCase *TestCase) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(testCase)
 	return rec
 }
 
-func (m *TestCaseMapper) FromRecord(record *model.Record) *TestCase {
+func (m *TestCaseMapper) FromRecord(record unstructured.Unstructured) *TestCase {
 	return m.FromProperties(record.Properties)
 }
 

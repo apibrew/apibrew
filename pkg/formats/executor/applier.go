@@ -32,7 +32,7 @@ type Executor struct {
 	mode               Mode
 	Type               string
 	CollectedResources []*model.Resource
-	CollectedRecords   []*model.Record
+	CollectedRecords   []unstructured.Unstructured
 }
 
 func (a *Executor) Apply(ctx context.Context, inputFilePath string, format string) error {
@@ -44,7 +44,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 
 	unstructuredExecutor := &ops.Executor{
 		Client: a.client,
-		RecordHandler: func(namespace string, resource string, record *model.Record) error {
+		RecordHandler: func(namespace string, resource string, record unstructured.Unstructured) error {
 			if a.mode == APPLY {
 				appliedRecord, err := a.client.ApplyRecord(ctx, namespace, resource, record)
 

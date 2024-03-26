@@ -49,7 +49,7 @@ func TestResourceCreateRecordWithHistory(t *testing.T) {
 
 	createResp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "paper",
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			{
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-paper"),

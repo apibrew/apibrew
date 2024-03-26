@@ -19,7 +19,7 @@ import (
 	"testing"
 )
 
-var simpleVirtualResourceRecords = []*model.Record{
+var simpleVirtualResourceRecords = []unstructured.Unstructured{
 	{
 		Properties: map[string]*structpb.Value{
 			"id":          structpb.NewStringValue("5429846c-a309-11ed-a8fc-0242ac120002"),

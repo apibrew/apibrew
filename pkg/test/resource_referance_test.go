@@ -102,7 +102,7 @@ func TestResourceReferenceViolation(t *testing.T) {
 
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "book",
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			{
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-book"),
@@ -154,7 +154,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "author",
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			{
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-author"),
@@ -171,7 +171,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "book",
-		Records: []*model.Record{
+		Records: []unstructured.Unstructured{
 			{
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-book"),

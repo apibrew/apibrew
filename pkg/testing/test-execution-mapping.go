@@ -35,13 +35,13 @@ func (m *TestExecutionMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *TestExecutionMapper) ToRecord(testExecution *TestExecution) *model.Record {
+func (m *TestExecutionMapper) ToRecord(testExecution *TestExecution) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(testExecution)
 	return rec
 }
 
-func (m *TestExecutionMapper) FromRecord(record *model.Record) *TestExecution {
+func (m *TestExecutionMapper) FromRecord(record unstructured.Unstructured) *TestExecution {
 	return m.FromProperties(record.Properties)
 }
 

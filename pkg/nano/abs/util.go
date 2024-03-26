@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-func ValueToRecord(resource *model.Resource, resultExported interface{}) (*model.Record, errors.ServiceError) {
+func ValueToRecord(resource *model.Resource, resultExported interface{}) (unstructured.Unstructured, errors.ServiceError) {
 	recordObj, ok := resultExported.(map[string]interface{})
 
 	if !ok {
 		return nil, errors.LogicalError.WithDetails(fmt.Sprintf("Cannot accept nano function result: %v", resultExported))
 	}
 
-	var record = new(model.Record)
+	var record = make(unstructured.Unstructured)
 	record.Properties = make(map[string]*structpb.Value)
 
 	var props = util.GetNamedMap(resource.Properties)

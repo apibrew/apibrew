@@ -88,7 +88,7 @@ func (r *recordService) ExecuteAction(ctx context.Context, params service.Execut
 			return nil, errors.RecordValidationError.WithMessage(ierr.Error())
 		}
 
-		if err := validate.Records(resourceActionAsResourceInt, []*model.Record{inputRecord}, false); err != nil {
+		if err := validate.Records(resourceActionAsResourceInt, []unstructured.Unstructured{inputRecord}, false); err != nil {
 			return nil, err
 		}
 	}
@@ -112,7 +112,7 @@ func NewRecordService(resourceService service.ResourceService, backendProviderSe
 	}
 }
 
-func (r *recordService) List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
+func (r *recordService) List(ctx context.Context, params service.RecordListParams) ([]unstructured.Unstructured, uint32, errors.ServiceError) {
 	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), params.Namespace, params.Resource)
 
 	if resource == nil {
@@ -194,7 +194,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	return records, total, nil
 }
 
-func (r *recordService) Create(ctx context.Context, params service.RecordCreateParams) ([]*model.Record, errors.ServiceError) {
+func (r *recordService) Create(ctx context.Context, params service.RecordCreateParams) ([]unstructured.Unstructured, errors.ServiceError) {
 	if params.Resource == "" {
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
@@ -208,8 +208,8 @@ func (r *recordService) Create(ctx context.Context, params service.RecordCreateP
 	return r.CreateWithResource(ctx, resource, params)
 }
 
-func (r *recordService) CreateWithResource(ctx context.Context, resource *model.Resource, params service.RecordCreateParams) ([]*model.Record, errors.ServiceError) {
-	var result []*model.Record
+func (r *recordService) CreateWithResource(ctx context.Context, resource *model.Resource, params service.RecordCreateParams) ([]unstructured.Unstructured, errors.ServiceError) {
+	var result []unstructured.Unstructured
 
 	var err errors.ServiceError
 
@@ -264,7 +264,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		}
 	}
 
-	var records []*model.Record
+	var records []unstructured.Unstructured
 
 	if params.Records == nil {
 		return nil, nil
@@ -304,7 +304,7 @@ func isResourceRelatedResource(resource *model.Resource) bool {
 	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name)
 }
 
-func (r *recordService) Load(ctx context.Context, namespace string, resourceName string, properties map[string]*structpb.Value, loadParams service.RecordLoadParams) (*model.Record, errors.ServiceError) {
+func (r *recordService) Load(ctx context.Context, namespace string, resourceName string, properties map[string]*structpb.Value, loadParams service.RecordLoadParams) (unstructured.Unstructured, errors.ServiceError) {
 	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
@@ -344,7 +344,7 @@ func (r *recordService) Load(ctx context.Context, namespace string, resourceName
 	}
 }
 
-func (r *recordService) Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
+func (r *recordService) Apply(ctx context.Context, params service.RecordUpdateParams) ([]unstructured.Unstructured, errors.ServiceError) {
 	if params.Resource == "" {
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
@@ -355,12 +355,12 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 		return nil, errors.RecordValidationError.WithMessage("Resource not found with name: " + params.Resource)
 	}
 
-	var result []*model.Record
+	var result []unstructured.Unstructured
 
 	for _, record := range params.Records {
 
 		// locate existing record
-		var existingRecord *model.Record
+		var existingRecord unstructured.Unstructured
 
 		identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
 
@@ -389,7 +389,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 			records, err := r.CreateWithResource(ctx, resource, service.RecordCreateParams{
 				Namespace: resource.Namespace,
 				Resource:  resource.Name,
-				Records:   []*model.Record{record},
+				Records:   []unstructured.Unstructured{record},
 			})
 
 			if err != nil {
@@ -414,7 +414,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 			records, err := r.UpdateWithResource(ctx, resource, service.RecordUpdateParams{
 				Namespace: resource.Namespace,
 				Resource:  resource.Name,
-				Records:   []*model.Record{record},
+				Records:   []unstructured.Unstructured{record},
 			})
 
 			if err != nil {
@@ -428,7 +428,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 	return result, nil
 }
 
-func (r *recordService) Update(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
+func (r *recordService) Update(ctx context.Context, params service.RecordUpdateParams) ([]unstructured.Unstructured, errors.ServiceError) {
 	if params.Resource == "" {
 		return nil, errors.RecordValidationError.WithMessage("Resource name is empty")
 	}
@@ -442,8 +442,8 @@ func (r *recordService) Update(ctx context.Context, params service.RecordUpdateP
 	return r.UpdateWithResource(ctx, resource, params)
 }
 
-func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.Resource, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
-	var result []*model.Record
+func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.Resource, params service.RecordUpdateParams) ([]unstructured.Unstructured, errors.ServiceError) {
+	var result []unstructured.Unstructured
 	var err errors.ServiceError
 
 	if isResourceRelatedResource(resource) {
@@ -482,7 +482,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 		PrepareUpdateForRecord(ctx, resource, record)
 	}
 
-	var records []*model.Record
+	var records []unstructured.Unstructured
 
 	var txCtx = ctx
 
@@ -509,15 +509,15 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	return result, nil
 }
 
-func (r *recordService) applyBackReferences(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
+func (r *recordService) applyBackReferences(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) errors.ServiceError {
 	for typ, refProps := range r.resourceService.GetSchema().ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] {
 		if typ == model.ResourceProperty_REFERENCE {
 			for _, refProp := range refProps {
 				if refProp.Property.BackReference != nil {
 					backRef := refProp.Property.BackReference
 
-					var backRefNewRecords []*model.Record
-					var backRefUpdatedRecords []*model.Record
+					var backRefNewRecords []unstructured.Unstructured
+					var backRefUpdatedRecords []unstructured.Unstructured
 
 					var ids []string
 
@@ -617,7 +617,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 	return nil
 }
 
-func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
+func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, id string, resolveReferences []string) (unstructured.Unstructured, errors.ServiceError) {
 	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
@@ -677,14 +677,14 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 	var res = records[0]
 
 	// resolving references
-	if err := r.ResolveReferences(ctx, resource, []*model.Record{res}, resolveReferences); err != nil {
+	if err := r.ResolveReferences(ctx, resource, []unstructured.Unstructured{res}, resolveReferences); err != nil {
 		return nil, err
 	}
 
 	return res, nil
 }
 
-func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (*model.Record, errors.ServiceError) {
+func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (unstructured.Unstructured, errors.ServiceError) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Debug("Begin record-service FindBy")
@@ -732,7 +732,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 	return res[0], nil
 }
 
-func (r *recordService) Get(ctx context.Context, params service.RecordGetParams) (*model.Record, errors.ServiceError) {
+func (r *recordService) Get(ctx context.Context, params service.RecordGetParams) (unstructured.Unstructured, errors.ServiceError) {
 	return r.GetRecord(ctx, params.Namespace, params.Resource, params.Id, params.ResolveReferences)
 }
 
@@ -870,7 +870,7 @@ func (r *recordService) initRecords(config *model.AppConfig) {
 		_, err := r.Apply(subCtx, service.RecordUpdateParams{
 			Namespace: initRecord.Namespace,
 			Resource:  initRecord.Resource,
-			Records:   []*model.Record{initRecord.Record},
+			Records:   []unstructured.Unstructured{initRecord.Record},
 		})
 
 		if err != nil {
@@ -879,7 +879,7 @@ func (r *recordService) initRecords(config *model.AppConfig) {
 	}
 }
 
-func (r *recordService) ResolveReferences(ctx context.Context, resource *model.Resource, records []*model.Record, referencesToResolve []string) errors.ServiceError {
+func (r *recordService) ResolveReferences(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured, referencesToResolve []string) errors.ServiceError {
 	log.Debug("Begin record-service ResolveReferences: " + resource.Namespace + "/" + resource.Name)
 
 	defer func() {
@@ -907,7 +907,7 @@ func (r *recordService) ResolveReferences(ctx context.Context, resource *model.R
 	return rr.resolveReferences(ctx)
 }
 
-func (r *recordService) checkReferences(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
+func (r *recordService) checkReferences(ctx context.Context, resource *model.Resource, records []unstructured.Unstructured) errors.ServiceError {
 	log.Debug("Begin record-service ResolveReferences: " + resource.Namespace + "/" + resource.Name)
 
 	defer func() {

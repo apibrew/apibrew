@@ -505,7 +505,7 @@ func (m *`)
 //line templates/golang/mapping.qtpl:107
 		qw422016.E().S(typeName)
 //line templates/golang/mapping.qtpl:107
-		qw422016.N().S(`) *model.Record {
+		qw422016.N().S(`) unstructured.Unstructured {
     var rec = &model.Record{}
     rec.Properties = m.ToProperties(`)
 //line templates/golang/mapping.qtpl:109
@@ -519,7 +519,7 @@ func (m *`)
 //line templates/golang/mapping.qtpl:113
 		qw422016.E().S(typeName)
 //line templates/golang/mapping.qtpl:113
-		qw422016.N().S(`Mapper) FromRecord(record *model.Record) *`)
+		qw422016.N().S(`Mapper) FromRecord(record unstructured.Unstructured) *`)
 //line templates/golang/mapping.qtpl:113
 		qw422016.E().S(typeName)
 //line templates/golang/mapping.qtpl:113

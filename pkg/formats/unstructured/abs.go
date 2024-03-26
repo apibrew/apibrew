@@ -214,3 +214,50 @@ func FromListValue(value *structpb.ListValue) Any {
 
 	return list
 }
+
+func Equal(a Any, a2 Any) bool {
+	switch a := a.(type) {
+	case Unstructured:
+		b, ok := a2.(Unstructured)
+		if !ok {
+			return false
+		}
+		return EqualUnstructured(a, b)
+	case []Any:
+		b, ok := a2.([]Any)
+		if !ok {
+			return false
+		}
+		return EqualList(a, b)
+	default:
+		return a == a2
+	}
+}
+
+func EqualList(a []Any, b []Any) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		if !Equal(a[i], b[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func EqualUnstructured(a Unstructured, b Unstructured) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for key, value := range a {
+		if !Equal(value, b[key]) {
+			return false
+		}
+	}
+
+	return true
+}

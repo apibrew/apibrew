@@ -37,13 +37,13 @@ func (m *ResourceActionMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *ResourceActionMapper) ToRecord(resourceAction *ResourceAction) *model.Record {
+func (m *ResourceActionMapper) ToRecord(resourceAction *ResourceAction) unstructured.Unstructured {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(resourceAction)
 	return rec
 }
 
-func (m *ResourceActionMapper) FromRecord(record *model.Record) *ResourceAction {
+func (m *ResourceActionMapper) FromRecord(record unstructured.Unstructured) *ResourceAction {
 	return m.FromProperties(record.Properties)
 }
 

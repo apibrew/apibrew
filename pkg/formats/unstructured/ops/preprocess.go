@@ -376,7 +376,7 @@ func (p *preprocessor) checkSyntax(cfPath string, un unstructured.Unstructured) 
 			return err
 		}
 
-		err = validate.Records(subType, []*model.Record{record}, false)
+		err = validate.Records(subType, []unstructured.Unstructured{record}, false)
 
 		// recover syntax as it needs to be persisted
 		un["$syntax"] = syntax
