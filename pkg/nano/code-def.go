@@ -48,7 +48,7 @@ var CodeResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-03-22T20:11:52+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-03-28T17:16:51+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -57,7 +57,7 @@ var CodeResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-03-22T20:11:52+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-03-28T17:16:51+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -66,8 +66,8 @@ var CodeResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup":       "meta",
 				"EnableAudit":        "true",
+				"OpenApiGroup":       "meta",
 				"NormalizedResource": "true",
 			},
 		},
@@ -140,7 +140,7 @@ var CodeResource = &model.Resource{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
 			TypeRef:      util.Pointer("AuditData"),
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-03-22T20:11:52+04:00"), "updatedOn": structpb.NewStringValue("2024-03-22T20:11:52+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-03-28T17:16:51+04:00"), "updatedOn": structpb.NewStringValue("2024-03-28T17:16:51+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
@@ -149,8 +149,8 @@ var CodeResource = &model.Resource{
 	},
 
 	Annotations: map[string]string{
-		"NormalizedResource": "true",
-		"OpenApiGroup":       "meta",
 		"EnableAudit":        "true",
+		"OpenApiGroup":       "meta",
+		"NormalizedResource": "true",
 	},
 }

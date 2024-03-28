@@ -108,6 +108,9 @@ class Resource {
 
     postModifier(fn) {
         this.afterRead((record, event) => {
+            if (!record) {
+                return
+            }
             const result = fn(record, event)
 
             if (result) {
