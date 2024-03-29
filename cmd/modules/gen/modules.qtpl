@@ -15,8 +15,9 @@ import (
 )
 
 func RegisterModules(app *impl.App) {
-{%- code i=1; -%}
+{%- code i=0; -%}
 {%- for _ = range modules -%}
+{%- code i++; -%}
     app.RegisterModule(module{%d i %}.NewModule)
 {%- endfor -%}
 }

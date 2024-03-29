@@ -3,6 +3,7 @@ module github.com/apibrew/apibrew
 go 1.20
 
 require (
+	github.com/apibrew/nano v1.0.1
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-redis/redis v6.15.9+incompatible
@@ -19,6 +20,7 @@ require (
 	github.com/influxdata/influxdb-client-go/v2 v2.12.3
 	github.com/lib/pq v1.10.7
 	github.com/olekukonko/tablewriter v0.0.5
+	github.com/prometheus/common v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/rs/cors v1.9.0
@@ -41,7 +43,8 @@ require (
 
 require (
 	github.com/agext/levenshtein v1.2.1 // indirect
-	github.com/apibrew/nano v1.0.1 // indirect
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
+	github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.50.19 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -95,6 +98,7 @@ require (
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
+	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/mail.v2 v2.3.1 // indirect

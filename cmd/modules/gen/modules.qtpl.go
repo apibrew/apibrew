@@ -58,49 +58,52 @@ package apibrew
 func RegisterModules(app *impl.App) {
 `)
 //line modules.qtpl:18
-	i = 1
+	i = 0
 
 //line modules.qtpl:19
 	for _ = range modules {
-//line modules.qtpl:19
+//line modules.qtpl:20
+		i++
+
+//line modules.qtpl:20
 		qw422016.N().S(`    app.RegisterModule(module`)
-//line modules.qtpl:20
+//line modules.qtpl:21
 		qw422016.N().D(i)
-//line modules.qtpl:20
+//line modules.qtpl:21
 		qw422016.N().S(`.NewModule)
 `)
-//line modules.qtpl:21
+//line modules.qtpl:22
 	}
-//line modules.qtpl:21
+//line modules.qtpl:22
 	qw422016.N().S(`}
 
 
 `)
-//line modules.qtpl:25
+//line modules.qtpl:26
 }
 
-//line modules.qtpl:25
+//line modules.qtpl:26
 func WriteGenerateModulesContent(qq422016 qtio422016.Writer, modules map[string]string) {
-//line modules.qtpl:25
+//line modules.qtpl:26
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line modules.qtpl:25
+//line modules.qtpl:26
 	StreamGenerateModulesContent(qw422016, modules)
-//line modules.qtpl:25
+//line modules.qtpl:26
 	qt422016.ReleaseWriter(qw422016)
-//line modules.qtpl:25
+//line modules.qtpl:26
 }
 
-//line modules.qtpl:25
+//line modules.qtpl:26
 func GenerateModulesContent(modules map[string]string) string {
-//line modules.qtpl:25
+//line modules.qtpl:26
 	qb422016 := qt422016.AcquireByteBuffer()
-//line modules.qtpl:25
+//line modules.qtpl:26
 	WriteGenerateModulesContent(qb422016, modules)
-//line modules.qtpl:25
+//line modules.qtpl:26
 	qs422016 := string(qb422016.B)
-//line modules.qtpl:25
+//line modules.qtpl:26
 	qt422016.ReleaseByteBuffer(qb422016)
-//line modules.qtpl:25
+//line modules.qtpl:26
 	return qs422016
-//line modules.qtpl:25
+//line modules.qtpl:26
 }
