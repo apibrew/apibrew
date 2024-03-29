@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/nano"
 	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest"
 	"github.com/apibrew/apibrew/pkg/service/impl"
@@ -62,7 +61,7 @@ func RunServer(configPath string) {
 
 	app.Init()
 
-	app.RegisterModule(nano.NewModule)
+	//app.RegisterModule(nano.NewModule)
 	//app.RegisterModule(testing.NewModule)
 
 	// Create the main listener.
