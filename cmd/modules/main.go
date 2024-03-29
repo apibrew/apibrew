@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/apibrew/apibrew/cmd/modules/gen"
+	"github.com/prometheus/common/log"
 	"os"
 	"os/exec"
 )
@@ -41,6 +42,6 @@ func importModule(name string, version string) {
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		// Handle error
+		log.Fatalln(err)
 	}
 }
