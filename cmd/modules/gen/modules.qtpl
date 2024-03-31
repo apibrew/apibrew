@@ -4,7 +4,7 @@
 // 	apbr generate v1.2
 
 //go:build !codeanalysis
-package apibrew
+package module
 {%- code var i = 0; -%}
 import (
         "github.com/apibrew/apibrew/pkg/service/impl"
@@ -13,6 +13,12 @@ import (
         module{%d i %} "{%s= module %}"
 {%- endfor -%}
 )
+
+var Modules = map[string]string{
+{%- for module, version := range modules -%}
+	"{%s= module %}": "{%s= version %}",
+{%- endfor -%}
+}
 
 func RegisterModules(app *impl.App) {
 {%- code i=0; -%}

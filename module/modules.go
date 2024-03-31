@@ -11,6 +11,10 @@ import (
 	module1 "github.com/apibrew/nano/pkg"
 )
 
+var Modules = map[string]string{
+	"github.com/apibrew/nano/pkg": "v1.0.1",
+}
+
 func RegisterModules(app *impl.App) {
 	app.RegisterModule(module1.NewModule)
 }

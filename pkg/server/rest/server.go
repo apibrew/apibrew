@@ -47,6 +47,7 @@ type server struct {
 	config            *model.AppConfig
 	pprofApi          Api
 	logApi            LogApi
+	versionApi        VersionApi
 }
 
 func (s *server) Init() {
@@ -177,6 +178,7 @@ func (s *server) configureRoutes() {
 	s.recordApi.ConfigureRouter(r)
 	s.resourceApi.ConfigureRouter(r)
 	s.metricsApi.ConfigureRouter(r)
+	s.versionApi.ConfigureRouter(r)
 	s.healthApi.ConfigureRouter(r)
 	s.eventChannelApi.ConfigureRouter(r)
 	s.authenticationApi.ConfigureRouter(r)
@@ -248,6 +250,7 @@ func NewServer(container service.Container, config *model.AppConfig) Server {
 		recordApi:         NewRecordApi(container),
 		resourceApi:       NewResourceApi(container),
 		metricsApi:        NewMetricsApi(container.GetMetricsService()),
+		versionApi:        NewVersionApi(),
 		healthApi:         NewHealthApi(),
 		eventChannelApi:   NewEventChannelApi(container),
 		authenticationApi: NewAuthenticationApi(container.GetAuthenticationService()),
