@@ -7,7 +7,7 @@ new_version=`echo $version | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(lengt
 
 echo $new_version > ../version
 
-echo "package module\n\nconst Version = \"$version\"\n" > ../module/version.go
+echo "package module\n\nconst Version = \"$new_version\"\n" > ../module/version.go
 
-git add ../version
 git add ../module/version.go
+git add ../version
