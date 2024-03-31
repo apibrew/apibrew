@@ -2,7 +2,7 @@ package setup
 
 import (
 	"fmt"
-	"github.com/apibrew/apibrew"
+	"github.com/apibrew/apibrew/module"
 	"github.com/apibrew/apibrew/pkg/client"
 	grpc2 "github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -52,7 +52,7 @@ func initClient() {
 
 	initWaitCh := application.Init()
 
-	apibrew.RegisterModules(application)
+	module.RegisterModules(application)
 
 	<-initWaitCh
 

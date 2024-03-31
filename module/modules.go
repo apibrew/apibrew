@@ -4,7 +4,7 @@
 
 //go:build !codeanalysis
 
-package apibrew
+package module
 
 import (
 	"github.com/apibrew/apibrew/pkg/service/impl"

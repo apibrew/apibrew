@@ -29,7 +29,7 @@ func main() {
 
 	code := gen.GenerateModulesContent(modules)
 
-	err = os.WriteFile("modules.go", []byte(code), 0644)
+	err = os.WriteFile("module/modules.go", []byte(code), 0644)
 
 	if err != nil {
 		panic(err)

@@ -3,7 +3,7 @@ package server
 import (
 	"flag"
 	"fmt"
-	"github.com/apibrew/apibrew"
+	"github.com/apibrew/apibrew/module"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/server/grpc"
 	"github.com/apibrew/apibrew/pkg/server/rest"
@@ -62,7 +62,7 @@ func RunServer(configPath string) {
 
 	app.Init()
 
-	apibrew.RegisterModules(app)
+	module.RegisterModules(app)
 
 	// Create the main listener.
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", appConfig.Host, appConfig.Port))
