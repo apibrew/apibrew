@@ -14,6 +14,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	if err != nil {
+		panic(err)
+	}
 
 	var modules = make(map[string]string)
 
@@ -37,7 +40,13 @@ func main() {
 }
 
 func importModule(name string, version string) {
-	cmd := exec.Command("go", "get", name+"@"+version)
+	dep := name + "@" + version
+
+	if version == "" {
+		dep = name
+	}
+
+	cmd := exec.Command("go", "get", dep)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()

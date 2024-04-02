@@ -261,6 +261,11 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		if prevProperty.Required && !property.Required {
 			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", r.options.Quote(property.Name)))
 			changes++
+		}
+
+		if !prevProperty.Required && property.Required {
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", r.options.Quote(property.Name)))
+			changes++
 
 			if property.DefaultValue == nil || property.DefaultValue.AsInterface() == nil {
 				propertyType := types.ByResourcePropertyType(property.Type)
@@ -268,11 +273,6 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 					sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DEFAULT '%v'", r.options.Quote(property.Name), propertyType.Default()))
 				}
 			}
-		}
-
-		if !prevProperty.Required && property.Required {
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", r.options.Quote(property.Name)))
-			changes++
 		}
 
 		if prevProperty.Unique && !property.Unique {

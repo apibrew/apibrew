@@ -11,15 +11,16 @@ const NaturalOrder = 100
 type HandlerFunc func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError)
 
 type Handler struct {
-	Id        string
-	Name      string
-	Fn        HandlerFunc
-	Selector  *model.EventSelector
-	Order     int
-	Finalizes bool
-	Sync      bool
-	Responds  bool
-	Internal  bool
+	Id         string
+	Name       string
+	Fn         HandlerFunc
+	Selector   *model.EventSelector
+	Order      int
+	Finalizes  bool
+	Sync       bool
+	Responds   bool
+	Internal   bool
+	Additional any
 }
 
 type ByOrder []Handler
