@@ -510,7 +510,6 @@ func (r *resourceService) Init(config *model.AppConfig) {
 	r.migrateResource(resources.DataSourceResource)
 
 	r.migrateResource(resources.ResourceResource)
-	r.migrateResource(resources.ResourceActionResource)
 	r.migrateResource(resources.UserResource)
 	r.migrateResource(resources.RoleResource)
 	r.migrateResource(resources.PermissionResource)

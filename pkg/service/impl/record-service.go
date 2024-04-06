@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
-	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/resources"
-	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
@@ -29,73 +27,6 @@ type recordService struct {
 	backendServiceProvider service.BackendProviderService
 	authorizationService   service.AuthorizationService
 	backendEventHandler    backend_event_handler.BackendEventHandler
-}
-
-func (r *recordService) ExecuteAction(ctx context.Context, params service.ExecuteActionParams) (unstructured.Unstructured, errors.ServiceError) {
-	// locating action
-	var resource = r.resourceService.GetSchema().ResourceByNamespaceSlashName[params.Namespace+"/"+params.Resource]
-	var resourceId = resource.Id
-	resourceActions, _, err := r.List(util.WithSystemContext(context.TODO()), service.RecordListParams{
-		Namespace: resources.ResourceActionResource.Namespace,
-		Resource:  resources.ResourceActionResource.Name,
-		Limit:     1,
-		Filters: map[string]string{
-			"resource": resourceId,
-			"name":     params.ActionName,
-		},
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(resourceActions) == 0 {
-		return nil, errors.RecordValidationError.WithMessage("Action not found")
-	}
-
-	var resourceAction = resource_model.ResourceActionMapperInstance.FromRecord(resourceActions[0])
-
-	if resourceAction.Internal {
-		return nil, errors.RecordValidationError.WithMessage("Internal action cannot be executed")
-	}
-
-	rec, err := r.Get(ctx, service.RecordGetParams{
-		Namespace: params.Namespace,
-		Resource:  params.Resource,
-		Id:        params.Id,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	// validate input
-	if resourceAction.Input == nil {
-		if params.Input != nil {
-			return nil, errors.RecordValidationError.WithMessage("Input is not expected")
-		}
-	} else {
-		var resourceActionAsResource = &resource_model.Resource{
-			Properties: resourceAction.Input,
-			Types:      resourceAction.Types,
-		}
-
-		resourceActionAsResourceInt := mapping.ResourceFromRecord(resource_model.ResourceMapperInstance.ToRecord(resourceActionAsResource))
-
-		inputRecord, ierr := unstructured.ToRecord(params.Input)
-
-		if ierr != nil {
-			return nil, errors.RecordValidationError.WithMessage(ierr.Error())
-		}
-
-		if err := validate.Records(resourceActionAsResourceInt, []*model.Record{inputRecord}, false); err != nil {
-			return nil, err
-		}
-	}
-
-	// calling execute operation
-
-	return r.backendServiceProvider.(abs.BackendActionExecutor).ExecuteAction(ctx, resource, rec, resourceAction.Name, params.Input)
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError) {

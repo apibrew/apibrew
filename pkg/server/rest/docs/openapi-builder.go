@@ -6,10 +6,7 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resource_model"
-	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/resources"
-	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -549,18 +546,6 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 
 	list, _ := s.resourceService.List(util.WithSystemContext(ctx))
 
-	var resourceActionsRecords, _, err = s.recordService.List(util.WithSystemContext(context.TODO()), service.RecordListParams{
-		Namespace: resources.ResourceActionResource.Namespace,
-		Resource:  resources.ResourceActionResource.Name,
-		Limit:     1000000,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	var resourceActions = util.ArrayMap(resourceActionsRecords, resource_model.ResourceActionMapperInstance.FromRecord)
-
 	for _, item := range list {
 		if annotations.IsEnabled(item, annotations.RestApiDisabled) {
 			continue
@@ -570,17 +555,7 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 			continue
 		}
 
-		var resourceActionsForItem []*resource_model.ResourceAction
-
-		for _, resourceAction := range resourceActions {
-			if resourceAction.Resource.Id.String() == item.Id {
-				resourceAction.Resource = extramappings.ResourceTo(item)
-				resourceActionsForItem = append(resourceActionsForItem, resourceAction)
-
-			}
-		}
-
-		s.appendResourceApis(doc, item, resourceActionsForItem)
+		s.appendResourceApis(doc, item)
 	}
 
 	s.appendRecordeGenericApi(doc)
@@ -624,22 +599,6 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 		for _, subType := range item.Types {
 			doc.Components.Schemas[schemaName+subType.Name] = &openapi3.SchemaRef{
 				Value: util.PropertiesWithTitleToJsonSchema(item, subType),
-			}
-		}
-
-		for _, resourceAction := range resourceActions {
-			if resourceAction.Resource.Id.String() == item.Id && resourceAction.Input != nil {
-				var resourceActionAsResource = &resource_model.Resource{
-					Name:       item.Name + "_" + resourceAction.Name,
-					Properties: resourceAction.Input,
-					Types:      resourceAction.Types,
-				}
-
-				resourceActionAsResourceInt := mapping.ResourceFromRecord(resource_model.ResourceMapperInstance.ToRecord(resourceActionAsResource))
-
-				doc.Components.Schemas[schemaName+"_"+resourceAction.Name] = &openapi3.SchemaRef{
-					Value: util.PropertiesWithTitleToJsonSchema(resourceActionAsResourceInt, resourceActionAsResourceInt),
-				}
 			}
 		}
 	}
@@ -688,7 +647,7 @@ func checkResourceAllowed(config OpenApiDocPrepareConfig, resource *model.Resour
 	return resourceApiGroup == config.group
 }
 
-func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Resource, resourceActions []*resource_model.ResourceAction) {
+func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Resource) {
 	jsonSchemaRef := "#/components/schemas/" + util.ResourceJsonSchemaName(resource)
 
 	var tags []string
@@ -798,147 +757,174 @@ func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 		},
 	}
 
-	doc.Paths["/"+s.getResourceFQN(resource)+"/{id}"] = &openapi3.PathItem{
-		Summary:     title,
-		Description: description,
-		Get: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Get_ item", title),
-			Description: fmt.Sprintf("%s - Get_ item", description),
-			OperationID: "get" + resource.GetName(),
-			Parameters: []*openapi3.ParameterRef{
-				{
-					Value: &openapi3.Parameter{
-						Name:     "id",
-						In:       "path",
-						Required: true,
-						Schema: &openapi3.SchemaRef{
-							Value: &openapi3.Schema{
-								Type: "string",
+	if !annotations.IsEnabled(resource, annotations.ActionApi) {
+		doc.Paths["/"+s.getResourceFQN(resource)+"/{id}"] = &openapi3.PathItem{
+			Summary:     title,
+			Description: description,
+			Get: &openapi3.Operation{
+				Tags:        tags,
+				Summary:     fmt.Sprintf("%s - Get_ item", title),
+				Description: fmt.Sprintf("%s - Get_ item", description),
+				OperationID: "get" + resource.GetName(),
+				Parameters: []*openapi3.ParameterRef{
+					{
+						Value: &openapi3.Parameter{
+							Name:     "id",
+							In:       "path",
+							Required: true,
+							Schema: &openapi3.SchemaRef{
+								Value: &openapi3.Schema{
+									Type: "string",
+								},
 							},
 						},
 					},
 				},
-			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Description: util.Pointer("Item"),
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Value: itemSchema,
-						}),
-					},
-				},
-			},
-		},
-		Delete: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Delete_ item", title),
-			Description: fmt.Sprintf("%s - Delete_ item", description),
-			OperationID: "delete" + resource.GetName(),
-			Parameters: []*openapi3.ParameterRef{
-				{
-					Value: &openapi3.Parameter{
-						Name:     "id",
-						In:       "path",
-						Required: true,
-						Schema: &openapi3.SchemaRef{
-							Value: &openapi3.Schema{
-								Type: "string",
-							},
+				Responses: map[string]*openapi3.ResponseRef{
+					"200": {
+						Value: &openapi3.Response{
+							Description: util.Pointer("Item"),
+							Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+								Value: itemSchema,
+							}),
 						},
 					},
 				},
 			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Description: util.Pointer("Deleted item"),
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Value: itemSchema,
-						}),
-					},
-				},
-			},
-		},
-		Put: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Update item", title),
-			Description: fmt.Sprintf("%s - Update item", description),
-			OperationID: "update" + resource.GetName(),
-			Parameters: []*openapi3.ParameterRef{
-				{
-					Value: &openapi3.Parameter{
-						Name:     "id",
-						In:       "path",
-						Required: true,
-						Schema: &openapi3.SchemaRef{
-							Value: &openapi3.Schema{
-								Type: "string",
+			Delete: &openapi3.Operation{
+				Tags:        tags,
+				Summary:     fmt.Sprintf("%s - Delete_ item", title),
+				Description: fmt.Sprintf("%s - Delete_ item", description),
+				OperationID: "delete" + resource.GetName(),
+				Parameters: []*openapi3.ParameterRef{
+					{
+						Value: &openapi3.Parameter{
+							Name:     "id",
+							In:       "path",
+							Required: true,
+							Schema: &openapi3.SchemaRef{
+								Value: &openapi3.Schema{
+									Type: "string",
+								},
 							},
 						},
 					},
 				},
-			},
-			RequestBody: &openapi3.RequestBodyRef{
-				Value: &openapi3.RequestBody{
-					Required: true,
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: jsonSchemaRef,
-					}),
+				Responses: map[string]*openapi3.ResponseRef{
+					"200": {
+						Value: &openapi3.Response{
+							Description: util.Pointer("Deleted item"),
+							Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+								Value: itemSchema,
+							}),
+						},
+					},
 				},
 			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Description: util.Pointer("Updated item"),
+			Put: &openapi3.Operation{
+				Tags:        tags,
+				Summary:     fmt.Sprintf("%s - Update item", title),
+				Description: fmt.Sprintf("%s - Update item", description),
+				OperationID: "update" + resource.GetName(),
+				Parameters: []*openapi3.ParameterRef{
+					{
+						Value: &openapi3.Parameter{
+							Name:     "id",
+							In:       "path",
+							Required: true,
+							Schema: &openapi3.SchemaRef{
+								Value: &openapi3.Schema{
+									Type: "string",
+								},
+							},
+						},
+					},
+				},
+				RequestBody: &openapi3.RequestBodyRef{
+					Value: &openapi3.RequestBody{
+						Required: true,
 						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 							Ref: jsonSchemaRef,
 						}),
 					},
 				},
+				Responses: map[string]*openapi3.ResponseRef{
+					"200": {
+						Value: &openapi3.Response{
+							Description: util.Pointer("Updated item"),
+							Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+								Ref: jsonSchemaRef,
+							}),
+						},
+					},
+				},
 			},
-		},
+		}
 	}
 
 	if resource == resources.ResourceResource {
 		return
 	}
 
-	doc.Paths["/"+s.getResourceFQN(resource)+"/_search"] = &openapi3.PathItem{
-		Summary:     title + " - Search",
-		Description: description + " - Search",
-		Post: &openapi3.Operation{
-			Tags:        tags,
-			Summary:     fmt.Sprintf("%s - Search items", title),
-			Description: fmt.Sprintf("%s - Search items", description),
-			OperationID: "search" + resource.GetName(),
-			RequestBody: &openapi3.RequestBodyRef{
-				Value: &openapi3.RequestBody{
-					Required: true,
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/SearchRecordRequest",
-					}),
-				},
-			},
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Description: util.Pointer("List of items"),
+	if !annotations.IsEnabled(resource, annotations.ActionApi) {
+		doc.Paths["/"+s.getResourceFQN(resource)+"/_search"] = &openapi3.PathItem{
+			Summary:     title + " - Search",
+			Description: description + " - Search",
+			Post: &openapi3.Operation{
+				Tags:        tags,
+				Summary:     fmt.Sprintf("%s - Search items", title),
+				Description: fmt.Sprintf("%s - Search items", description),
+				OperationID: "search" + resource.GetName(),
+				RequestBody: &openapi3.RequestBodyRef{
+					Value: &openapi3.RequestBody{
+						Required: true,
 						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Value: itemSchema,
+							Ref: "#/components/schemas/SearchRecordRequest",
 						}),
 					},
 				},
+				Responses: map[string]*openapi3.ResponseRef{
+					"200": {
+						Value: &openapi3.Response{
+							Description: util.Pointer("List of items"),
+							Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+								Value: itemSchema,
+							}),
+						},
+					},
+				},
 			},
-		},
+		}
 	}
 
-	for _, resourceAction := range resourceActions {
-		doc.Paths["/"+s.getResourceFQN(resource)+"/{id}/_"+resourceAction.Name] = &openapi3.PathItem{
-			Summary:     title + " - " + util.DePointer(resourceAction.Title, resourceAction.Name),
-			Description: util.DePointer(resourceAction.Description, ""),
-			Post:        s.resourceActionOperation(tags, title, resourceAction, jsonSchemaRef, itemSchema),
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		doc.Paths["/"+s.getResourceFQN(resource)] = &openapi3.PathItem{
+			Summary:     title,
+			Description: description,
+			Post: &openapi3.Operation{
+				Tags:        tags,
+				Summary:     title,
+				Description: description,
+				OperationID: resource.GetName(),
+				RequestBody: &openapi3.RequestBodyRef{
+					Value: &openapi3.RequestBody{
+						Required: true,
+						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+							Ref: jsonSchemaRef,
+						}),
+					},
+				},
+				Responses: map[string]*openapi3.ResponseRef{
+					"200": {
+						Value: &openapi3.Response{
+							Description: util.Pointer("Result"),
+							Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+								Ref: jsonSchemaRef,
+							}),
+						},
+					},
+				},
+			},
 		}
 	}
 }
@@ -1205,95 +1191,4 @@ func (s *openApiBuilder) appendRecordeGenericApi(doc *openapi3.T) {
 			},
 		},
 	}
-
-	doc.Paths["/{namespace}-{resource}/{id}/{action}"] = &openapi3.PathItem{
-		Summary:    title + " - " + "Action",
-		Parameters: genericParameters,
-		Post: &openapi3.Operation{
-			Tags: tags,
-			Parameters: []*openapi3.ParameterRef{
-				{
-					Value: &openapi3.Parameter{
-						Name:     "id",
-						In:       "path",
-						Required: true,
-						Schema: &openapi3.SchemaRef{
-							Value: &openapi3.Schema{
-								Type: "string",
-							},
-						},
-					},
-				},
-				{
-					Value: &openapi3.Parameter{
-						Name:     "action",
-						In:       "path",
-						Required: true,
-						Schema: &openapi3.SchemaRef{
-							Value: &openapi3.Schema{
-								Type: "string",
-							},
-						},
-					},
-				},
-			},
-			OperationID: "action" + resource.GetName(),
-			Responses: map[string]*openapi3.ResponseRef{
-				"200": {
-					Value: &openapi3.Response{
-						Description: util.Pointer("List of items"),
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Value: itemSchema,
-						}),
-					},
-				},
-			},
-		},
-	}
-}
-
-func (s *openApiBuilder) resourceActionOperation(tags []string, title string, resourceAction *resource_model.ResourceAction, jsonSchemaRef string, itemSchema *openapi3.Schema) *openapi3.Operation {
-	var result = &openapi3.Operation{
-		Tags:        tags,
-		Summary:     title + " - " + util.DePointer(resourceAction.Title, resourceAction.Name),
-		Description: util.DePointer(resourceAction.Description, ""),
-		OperationID: "action" + resourceAction.Resource.Name + resourceAction.Name,
-		Parameters: []*openapi3.ParameterRef{
-			{
-				Value: &openapi3.Parameter{
-					Name:     "id",
-					In:       "path",
-					Required: true,
-					Schema: &openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: "string",
-						},
-					},
-				},
-			},
-		},
-		Responses: map[string]*openapi3.ResponseRef{
-			"200": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("List of items"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Value: itemSchema,
-					}),
-				},
-			},
-		},
-	}
-
-	if resourceAction.Input != nil {
-		result.RequestBody = &openapi3.RequestBodyRef{
-			Value: &openapi3.RequestBody{
-				Required: true,
-				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-					Ref: jsonSchemaRef + "_" + resourceAction.Name,
-				}),
-			},
-		}
-	}
-
-	return result
 }

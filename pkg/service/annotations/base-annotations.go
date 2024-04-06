@@ -48,6 +48,7 @@ const CommonType = "CommonType"
 
 // restapi
 const RestApiDisabled = "RestApiDisabled"
+const ActionApi = "ActionApi"
 
 // openapi
 const OpenApiGroup = "OpenApiGroup"

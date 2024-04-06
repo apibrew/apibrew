@@ -74,6 +74,11 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		handleError(writer, errors.LogicalError.WithMessage("Get action is not supported for this resource."))
+		return
+	}
+
 	resolveReferences := request.URL.Query().Get("resolve-references")
 
 	// handle query parameters
@@ -161,6 +166,11 @@ func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		handleError(writer, errors.LogicalError.WithMessage("Get action is not supported for this resource."))
+		return
+	}
+
 	record := new(unstructured.Unstructured)
 
 	err := parseRequestMessage(request, record)
@@ -185,6 +195,12 @@ func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.
 func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		handleError(writer, errors.LogicalError.WithMessage("Get action is not supported for this resource."))
+		return
+	}
+
 	id := vars["id"]
 
 	resolveReferences := request.URL.Query().Get("resolve-references")
@@ -207,6 +223,11 @@ func (r *recordApi) handleRecordGet(writer http.ResponseWriter, request *http.Re
 func (r *recordApi) handleRecordLoad(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		handleError(writer, errors.LogicalError.WithMessage("Get action is not supported for this resource."))
+		return
+	}
 
 	record := new(unstructured.Unstructured)
 
@@ -237,6 +258,11 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
 
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		handleError(writer, errors.LogicalError.WithMessage("Get action is not supported for this resource."))
+		return
+	}
+
 	record := new(unstructured.Unstructured)
 
 	err := parseRequestMessage(request, record)
@@ -261,6 +287,12 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		handleError(writer, errors.LogicalError.WithMessage("Get action is not supported for this resource."))
+		return
+	}
+
 	id := vars["id"]
 
 	serviceErr := r.api.Delete(r.prepareContext(request), unstructured.Unstructured{
@@ -276,6 +308,11 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 func (r *recordApi) handleRecordSearch(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		handleError(writer, errors.LogicalError.WithMessage("Get action is not supported for this resource."))
+		return
+	}
 
 	listRecordRequest := new(api.ListParams)
 	listRecordRequest.Type = resource.Namespace + "/" + resource.Name

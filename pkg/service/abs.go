@@ -61,7 +61,6 @@ type RecordService interface {
 	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
 	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
 	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
-	ExecuteAction(ctx context.Context, params ExecuteActionParams) (unstructured.Unstructured, errors.ServiceError)
 	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (*model.Record, errors.ServiceError)
 }
 
