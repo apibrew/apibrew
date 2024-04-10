@@ -253,106 +253,115 @@ func StreamUGenerateResourceMappingBodyCode(qw422016 *qt422016.Writer, pkg strin
 //line templates/golang/mapping-new.qtpl:38
 	qw422016.N().S(`) unstructured.Unstructured {
     var properties unstructured.Unstructured = make(unstructured.Unstructured)
+    properties["type"] = "`)
+//line templates/golang/mapping-new.qtpl:40
+	qw422016.E().S(resource.Namespace)
+//line templates/golang/mapping-new.qtpl:40
+	qw422016.N().S(`/`)
+//line templates/golang/mapping-new.qtpl:40
+	qw422016.E().S(resource.Name)
+//line templates/golang/mapping-new.qtpl:40
+	qw422016.N().S(`"
 
 `)
-//line templates/golang/mapping-new.qtpl:41
-	for _, property := range properties {
-//line templates/golang/mapping-new.qtpl:41
-		qw422016.N().S(`    `)
 //line templates/golang/mapping-new.qtpl:42
+	for _, property := range properties {
+//line templates/golang/mapping-new.qtpl:42
+		qw422016.N().S(`    `)
+//line templates/golang/mapping-new.qtpl:43
 		varName := "var_" + GoName(property.Name)
 
-//line templates/golang/mapping-new.qtpl:42
+//line templates/golang/mapping-new.qtpl:43
 		qw422016.N().S(`
     `)
-//line templates/golang/mapping-new.qtpl:43
+//line templates/golang/mapping-new.qtpl:44
 		qw422016.E().S(varName)
-//line templates/golang/mapping-new.qtpl:43
+//line templates/golang/mapping-new.qtpl:44
 		qw422016.N().S(` := `)
-//line templates/golang/mapping-new.qtpl:43
+//line templates/golang/mapping-new.qtpl:44
 		StreamGoVarName(qw422016, typeName)
-//line templates/golang/mapping-new.qtpl:43
+//line templates/golang/mapping-new.qtpl:44
 		qw422016.N().S(`.`)
-//line templates/golang/mapping-new.qtpl:43
+//line templates/golang/mapping-new.qtpl:44
 		StreamGoName(qw422016, property.Name)
-//line templates/golang/mapping-new.qtpl:43
+//line templates/golang/mapping-new.qtpl:44
 		qw422016.N().S(`
 
 `)
-//line templates/golang/mapping-new.qtpl:45
+//line templates/golang/mapping-new.qtpl:46
 		if isNullable(property) {
-//line templates/golang/mapping-new.qtpl:45
+//line templates/golang/mapping-new.qtpl:46
 			qw422016.N().S(`    if `)
-//line templates/golang/mapping-new.qtpl:46
+//line templates/golang/mapping-new.qtpl:47
 			qw422016.E().S(varName)
-//line templates/golang/mapping-new.qtpl:46
+//line templates/golang/mapping-new.qtpl:47
 			qw422016.N().S(` != nil {
 `)
-//line templates/golang/mapping-new.qtpl:47
+//line templates/golang/mapping-new.qtpl:48
 			StreamUPropertyTo(qw422016, resource, property, false, varName)
-//line templates/golang/mapping-new.qtpl:47
+//line templates/golang/mapping-new.qtpl:48
 			qw422016.N().S(`        properties["`)
-//line templates/golang/mapping-new.qtpl:48
+//line templates/golang/mapping-new.qtpl:49
 			qw422016.E().S(property.Name)
-//line templates/golang/mapping-new.qtpl:48
+//line templates/golang/mapping-new.qtpl:49
 			qw422016.N().S(`"] = `)
-//line templates/golang/mapping-new.qtpl:48
+//line templates/golang/mapping-new.qtpl:49
 			qw422016.E().S(varName)
-//line templates/golang/mapping-new.qtpl:48
+//line templates/golang/mapping-new.qtpl:49
 			qw422016.N().S(`_mapped
     }
 `)
-//line templates/golang/mapping-new.qtpl:50
+//line templates/golang/mapping-new.qtpl:51
 		} else {
-//line templates/golang/mapping-new.qtpl:51
+//line templates/golang/mapping-new.qtpl:52
 			StreamUPropertyTo(qw422016, resource, property, false, varName)
-//line templates/golang/mapping-new.qtpl:51
+//line templates/golang/mapping-new.qtpl:52
 			qw422016.N().S(`        properties["`)
-//line templates/golang/mapping-new.qtpl:52
+//line templates/golang/mapping-new.qtpl:53
 			qw422016.E().S(property.Name)
-//line templates/golang/mapping-new.qtpl:52
+//line templates/golang/mapping-new.qtpl:53
 			qw422016.N().S(`"] = `)
-//line templates/golang/mapping-new.qtpl:52
+//line templates/golang/mapping-new.qtpl:53
 			qw422016.E().S(varName)
-//line templates/golang/mapping-new.qtpl:52
+//line templates/golang/mapping-new.qtpl:53
 			qw422016.N().S(`_mapped
 `)
-//line templates/golang/mapping-new.qtpl:53
+//line templates/golang/mapping-new.qtpl:54
 		}
-//line templates/golang/mapping-new.qtpl:54
+//line templates/golang/mapping-new.qtpl:55
 	}
-//line templates/golang/mapping-new.qtpl:54
+//line templates/golang/mapping-new.qtpl:55
 	qw422016.N().S(`
 
     return properties
 }
 
 `)
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 }
 
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 func WriteUGenerateResourceMappingBodyCode(qq422016 qtio422016.Writer, pkg string, resource *model.Resource, typeName string, properties []*model.ResourceProperty, resources []*model.Resource) {
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 	StreamUGenerateResourceMappingBodyCode(qw422016, pkg, resource, typeName, properties, resources)
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 	qt422016.ReleaseWriter(qw422016)
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 }
 
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 func UGenerateResourceMappingBodyCode(pkg string, resource *model.Resource, typeName string, properties []*model.ResourceProperty, resources []*model.Resource) string {
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 	qb422016 := qt422016.AcquireByteBuffer()
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 	WriteUGenerateResourceMappingBodyCode(qb422016, pkg, resource, typeName, properties, resources)
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 	qs422016 := string(qb422016.B)
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 	qt422016.ReleaseByteBuffer(qb422016)
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 	return qs422016
-//line templates/golang/mapping-new.qtpl:60
+//line templates/golang/mapping-new.qtpl:61
 }

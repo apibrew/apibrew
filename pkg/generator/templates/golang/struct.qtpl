@@ -9,7 +9,7 @@ type {%s typeName %} struct {
 	{%- endfor -%}
 }
 
-{%- for _, property := range properties -%  }
+{%- for _, property := range properties -%}
 func (s {%s typeName %}) Get{%= GoName(property.Name) %}() {%= PropertyType(resource, property) %} {
 	return s.{%= GoName(property.Name) %}
 }

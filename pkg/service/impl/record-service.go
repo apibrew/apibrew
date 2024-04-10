@@ -293,27 +293,29 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 		// locate existing record
 		var existingRecord *model.Record
 
-		identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
+		if !resource.Virtual {
+			identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
 
-		if err != nil {
-			return nil, errors.RecordValidationError.WithMessage(err.Error())
-		}
+			if err != nil {
+				return nil, errors.RecordValidationError.WithMessage(err.Error())
+			}
 
-		qb := helper.NewQueryBuilder()
+			qb := helper.NewQueryBuilder()
 
-		searchRes, total, serr := r.List(ctx, service.RecordListParams{
-			Namespace: resource.Namespace,
-			Resource:  resource.Name,
-			Limit:     1,
-			Query:     qb.FromProperties(resource, identifierProps),
-		})
+			searchRes, total, serr := r.List(ctx, service.RecordListParams{
+				Namespace: resource.Namespace,
+				Resource:  resource.Name,
+				Limit:     1,
+				Query:     qb.FromProperties(resource, identifierProps),
+			})
 
-		if err != nil {
-			return nil, serr
-		}
+			if err != nil {
+				return nil, serr
+			}
 
-		if total > 0 {
-			existingRecord = searchRes[0]
+			if total > 0 {
+				existingRecord = searchRes[0]
+			}
 		}
 
 		if existingRecord == nil {

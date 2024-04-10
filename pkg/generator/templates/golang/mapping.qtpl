@@ -75,6 +75,7 @@ import (
     "github.com/apibrew/apibrew/pkg/types"
     "google.golang.org/protobuf/types/known/structpb"
     "github.com/apibrew/apibrew/pkg/abs"
+    "github.com/apibrew/apibrew/pkg/formats/unstructured"
 )
 
 {%- for _, importLine := range getImportsForMapping(resource) -%}
