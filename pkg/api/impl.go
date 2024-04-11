@@ -366,14 +366,10 @@ func (a api) listResource(ctx context.Context, params ListParams) (RecordListRes
 
 	var result = make([]unstructured.Unstructured, 0)
 
-	for _, resource := range list {
-		recordObj, err2 := unstructured.FromRecord(mapping.ResourceToRecord(resource))
+	for _, resourceObj := range list {
+		resourceUn := extramappings.ResourceTo(resourceObj)
 
-		if err2 != nil {
-			return RecordListResult{}, errors.RecordValidationError.WithMessage(err2.Error())
-		}
-
-		result = append(result, recordObj)
+		result = append(result, resource_model.ResourceMapperInstance.ToUnstructured(resourceUn))
 	}
 
 	return RecordListResult{
