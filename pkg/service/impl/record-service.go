@@ -262,7 +262,7 @@ func (r *recordService) Load(ctx context.Context, namespace string, resourceName
 
 	searchRes, total, serr := r.List(ctx, listParams)
 
-	if err != nil {
+	if serr != nil {
 		return nil, serr
 	}
 

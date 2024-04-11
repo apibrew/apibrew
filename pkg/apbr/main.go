@@ -32,6 +32,7 @@ func init() {
 	rootCmd.AddCommand(deleteCmd)
 	rootCmd.AddCommand(configureCmd)
 	rootCmd.AddCommand(deployCmd)
+	rootCmd.AddCommand(runCmd)
 	rootCmd.AddCommand(loadCmd)
 	rootCmd.AddCommand(watchCmd)
 	rootCmd.AddCommand(toolsCmd)
