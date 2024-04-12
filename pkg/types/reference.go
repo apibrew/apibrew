@@ -30,6 +30,12 @@ func (u referenceType) UnPack(val *structpb.Value) (interface{}, error) {
 		return nil, nil
 	}
 
+	if val.GetStringValue() != "" {
+		return map[string]interface{}{
+			"id": val.GetStringValue(),
+		}, nil
+	}
+
 	return val.GetStructValue().AsMap(), nil
 }
 
