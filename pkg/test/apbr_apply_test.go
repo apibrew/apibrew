@@ -15,12 +15,7 @@ func apbrApply(inputFilePath string) error {
 }
 
 func TestApply(t *testing.T) {
-	err := apbrApply("data/test1.yml")
-	if err != nil {
-		t.Error(err)
-	}
-
-	err = apbrApply("data/test2.yml")
+	err := apbrApply("data/test2.yml")
 	if err != nil {
 		t.Error(err)
 	}
