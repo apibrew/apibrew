@@ -379,6 +379,7 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 		return
 	}
 
+	writer.Header().Set("Content-Type", "text/event-stream")
 	writer.WriteHeader(200)
 
 	for eventProto := range res {
