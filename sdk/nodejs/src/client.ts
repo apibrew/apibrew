@@ -18,6 +18,8 @@ export interface Client {
 
     getTokenBody(): TokenBody | undefined;
 
+    refreshToken(): Promise<void>;
+
     invalidateAuthentication(): void;
 
     applyResource(resource: Resource, forceMigrate?: boolean): Promise<Resource>

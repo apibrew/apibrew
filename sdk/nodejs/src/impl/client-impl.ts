@@ -530,7 +530,12 @@ export class ClientImpl implements Client {
 
         console.warn("Access token expired, refreshing...");
 
-        axios.post<AuthenticationResponse>(Urls.authenticate(this.url), {
+        this.refreshToken();
+    }
+
+    public refreshToken() {
+        const refreshToken = this.tokenStorage.get(REFRESH_TOKEN);
+        return axios.put<AuthenticationResponse>(Urls.authenticate(this.url), {
             token: refreshToken,
             term: TokenTerm.LONG
         }, {
