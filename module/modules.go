@@ -12,7 +12,7 @@ import (
 )
 
 var Modules = map[string]string{
-	"github.com/apibrew/nano/pkg": "v1.0.8",
+	"github.com/apibrew/nano/pkg": "v1.0.10",
 }
 
 func RegisterModules(app *impl.App) {
