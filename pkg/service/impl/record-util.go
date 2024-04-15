@@ -7,6 +7,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
@@ -22,7 +23,11 @@ func InitRecord(ctx context.Context, resource *model.Resource, record *model.Rec
 	if util.HasResourceSinglePrimaryProp(resource) {
 		idProp := util.GetResourceSinglePrimaryProp(resource)
 		if idProp.Type == model.ResourceProperty_UUID {
-			record.Properties[idProp.Name] = structpb.NewStringValue(recordNewId.String())
+			if record.Properties[idProp.Name] == nil || !util.IsSystemContext(ctx) {
+				record.Properties[idProp.Name] = structpb.NewStringValue(recordNewId.String())
+			} else {
+				log.Println("FOUNDxxx")
+			}
 		}
 	}
 

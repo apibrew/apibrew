@@ -320,6 +320,7 @@ func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructu
 			}
 			record = mapping.ResourceToRecord(result)
 		} else {
+			resource.Id = result.Id
 			err := a.resourceService.Update(ctx, resource, true, false)
 
 			if err != nil {
