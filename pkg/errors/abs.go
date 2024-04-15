@@ -127,6 +127,22 @@ func NewServiceError(code model.ErrorCode, message string, grpcErrorCode codes.C
 	return &serviceError{code: code, message: message, grpcErrorCode: grpcErrorCode}
 }
 
+func FromGrpcError(err error) ServiceError {
+	st, found := status.FromError(err)
+
+	if !found {
+		return NewServiceError(model.ErrorCode_UNKNOWN_ERROR, err.Error(), codes.Unknown)
+	}
+
+	a, ok := st.Details()[0].(*model.Error)
+
+	if !ok {
+		return NewServiceError(model.ErrorCode_UNKNOWN_ERROR, err.Error(), codes.Unknown)
+	}
+
+	return FromProtoError(a)
+}
+
 func FromProtoError(err *model.Error) ServiceError {
 	return &serviceError{
 		code:          err.Code,

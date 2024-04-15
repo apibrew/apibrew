@@ -17,6 +17,14 @@ func (w *Writer) isForApply() bool {
 	return w.Annotations != nil && w.Annotations["for-apply"] == "true"
 }
 
+func (w *Writer) WriteRecord2(typ string, record unstructured.Unstructured) (unstructured.Unstructured, error) {
+	record = fixBeforeWrite(record).(unstructured.Unstructured)
+
+	record["type"] = typ
+
+	return record, nil
+}
+
 func (w *Writer) WriteRecord(namespace string, resourceName string, record unstructured.Unstructured) (unstructured.Unstructured, error) {
 	record = fixBeforeWrite(record).(unstructured.Unstructured)
 
@@ -53,18 +61,32 @@ func fixBeforeWrite(i interface{}) interface{} {
 		sort.Strings(keys)
 
 		for _, k := range keys {
+			if k == "version" || k == "auditData" || k == "id" {
+				continue
+			}
+
 			v := x[k]
 			if IsZeroOfUnderlyingType(v) {
 				continue
+			}
+
+			if k == "name" && v == "AuditData" {
+				return nil
 			}
 
 			m2[k] = fixBeforeWrite(v)
 		}
 		return m2
 	case []interface{}:
+		var result []interface{}
 		for i, v := range x {
 			x[i] = fixBeforeWrite(v)
+
+			if x[i] != nil {
+				result = append(result, x[i])
+			}
 		}
+		return result
 	}
 
 	return i
@@ -79,5 +101,17 @@ func IsZeroOfUnderlyingType(x interface{}) bool {
 		return false
 	}
 
-	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
+	if m, ok := x.(map[string]interface{}); ok {
+		return len(m) == 0
+	}
+
+	if m, ok := x.([]interface{}); ok {
+		return len(m) == 0
+	}
+
+	if reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface()) {
+		return true
+	}
+
+	return false
 }

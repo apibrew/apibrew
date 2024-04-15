@@ -12,11 +12,30 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
+	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 )
 
 type api struct {
-	container service.Container
+	recordService   InterfaceRecordService
+	resourceService InterfaceResourceService
+}
+
+type InterfaceRecordService interface {
+	Create(ctx context.Context, params service.RecordCreateParams) ([]*model.Record, errors.ServiceError)
+	Update(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError)
+	Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError)
+	Delete(ctx context.Context, params service.RecordDeleteParams) errors.ServiceError
+	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (*model.Record, errors.ServiceError)
+	List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
+}
+
+type InterfaceResourceService interface {
+	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
+	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
+	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
+	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
+	List(ctx context.Context) ([]*model.Resource, errors.ServiceError)
 }
 
 func (a api) Create(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
@@ -65,7 +84,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 
 	switch saveMode {
 	case Create:
-		result, err := a.container.GetRecordService().Create(ctx, service.RecordCreateParams{
+		result, err := a.recordService.Create(ctx, service.RecordCreateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
 			Records:   []*model.Record{record},
@@ -76,7 +95,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		}
 		record = result[0]
 	case Update:
-		result, err := a.container.GetRecordService().Update(ctx, service.RecordUpdateParams{
+		result, err := a.recordService.Update(ctx, service.RecordUpdateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
 			Records:   []*model.Record{record},
@@ -87,7 +106,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		}
 		record = result[0]
 	case Apply:
-		result, err := a.container.GetRecordService().Apply(ctx, service.RecordUpdateParams{
+		result, err := a.recordService.Apply(ctx, service.RecordUpdateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
 			Records:   []*model.Record{record},
@@ -127,7 +146,7 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, para
 		return nil, errors.InternalError.WithMessage("Resource load is not supported")
 	}
 
-	record, err := a.container.GetRecordService().Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, properties, service.RecordLoadParams{
+	record, err := a.recordService.Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, properties, service.RecordLoadParams{
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 	})
@@ -167,7 +186,7 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 		}
 	}
 
-	return a.container.GetRecordService().Delete(ctx, service.RecordDeleteParams{
+	return a.recordService.Delete(ctx, service.RecordDeleteParams{
 		Namespace: resourceIdentity.Namespace,
 		Resource:  resourceIdentity.Name,
 		Ids:       []string{recordObj["id"].(string)},
@@ -222,7 +241,7 @@ func (a api) List(ctx context.Context, params ListParams) (RecordListResult, err
 		}
 	}
 
-	records, total, err := a.container.GetRecordService().List(ctx, service.RecordListParams{
+	records, total, err := a.recordService.List(ctx, service.RecordListParams{
 		Namespace:         resourceIdentity.Namespace,
 		Resource:          resourceIdentity.Name,
 		Query:             query,
@@ -274,34 +293,34 @@ func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructu
 
 	switch saveMode {
 	case Create:
-		result, err := a.container.GetResourceService().Create(ctx, resource, true, false)
+		result, err := a.resourceService.Create(ctx, resource, true, false)
 
 		if err != nil {
 			return nil, err
 		}
 		record = mapping.ResourceToRecord(result)
 	case Update:
-		err := a.container.GetResourceService().Update(ctx, resource, true, false)
+		err := a.resourceService.Update(ctx, resource, true, false)
 
 		if err != nil {
 			return nil, err
 		}
 	case Apply:
-		result, err := a.container.GetResourceService().GetResourceByName(ctx, resource.Namespace, resource.Name)
+		result, err := a.resourceService.GetResourceByName(ctx, resource.Namespace, resource.Name)
 
 		if !errors.ResourceNotFoundError.Is(err) && err != nil {
 			return nil, err
 		}
 
 		if errors.ResourceNotFoundError.Is(err) || result == nil { // create
-			result, err := a.container.GetResourceService().Create(ctx, resource, true, false)
+			result, err := a.resourceService.Create(ctx, resource, true, false)
 
 			if err != nil {
 				return nil, err
 			}
 			record = mapping.ResourceToRecord(result)
 		} else {
-			err := a.container.GetResourceService().Update(ctx, resource, true, false)
+			err := a.resourceService.Update(ctx, resource, true, false)
 
 			if err != nil {
 				return nil, err
@@ -335,7 +354,7 @@ func (a api) GetResourceByType(ctx context.Context, typeName string) (*resource_
 		return nil, errors.ResourceValidationError.WithMessage("Invalid resource type")
 	}
 
-	resource, err := a.container.GetResourceService().GetResourceByName(ctx, namespace, resourceName)
+	resource, err := a.resourceService.GetResourceByName(ctx, namespace, resourceName)
 
 	if err != nil {
 		return nil, err
@@ -354,11 +373,11 @@ func (a api) deleteResource(ctx context.Context, obj unstructured.Unstructured) 
 		return errors.RecordValidationError.WithMessage("id field must be string")
 	}
 
-	return a.container.GetResourceService().Delete(ctx, []string{id}, true, false)
+	return a.resourceService.Delete(ctx, []string{id}, true, false)
 }
 
 func (a api) listResource(ctx context.Context, params ListParams) (RecordListResult, errors.ServiceError) {
-	list, err := a.container.GetResourceService().List(ctx)
+	list, err := a.resourceService.List(ctx)
 
 	if err != nil {
 		return RecordListResult{}, err
@@ -379,5 +398,9 @@ func (a api) listResource(ctx context.Context, params ListParams) (RecordListRes
 }
 
 func NewInterface(container service.Container) Interface {
-	return &api{container: container}
+	return &api{recordService: container.GetRecordService(), resourceService: container.GetResourceService()}
+}
+
+func NewInterface2(resourceService InterfaceResourceService, recordService InterfaceRecordService) Interface {
+	return &api{resourceService: resourceService, recordService: recordService}
 }

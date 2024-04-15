@@ -17,9 +17,9 @@ type writer struct {
 	unstructuredWriter writer2.Writer
 }
 
-func (w *writer) WriteRecord(namespace string, resourceName string, records ...unstructured.Unstructured) error {
+func (w *writer) WriteRecord(typ string, records ...unstructured.Unstructured) error {
 	for _, record := range records {
-		data, err := w.unstructuredWriter.WriteRecord(namespace, resourceName, record)
+		data, err := w.unstructuredWriter.WriteRecord2(typ, record)
 
 		if err != nil {
 			return err
@@ -44,7 +44,13 @@ func (w *writer) WriteRecord(namespace string, resourceName string, records ...u
 
 func (w *writer) WriteRecords(resource *resource_model.Resource, total uint32, records []unstructured.Unstructured) error {
 	for _, record := range records {
-		err := w.WriteRecord(resource.Namespace.Name, resource.Name, record)
+		var typ = resource.Namespace.Name + "/" + resource.Name
+
+		if resource.Namespace.Name == "" || resource.Namespace.Name == "default" {
+			typ = resource.Name
+		}
+
+		err := w.WriteRecord(typ, record)
 
 		if err != nil {
 			return err

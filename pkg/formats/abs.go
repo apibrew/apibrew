@@ -8,7 +8,7 @@ import (
 
 type Writer interface {
 	WriteResource(resource ...*resource_model.Resource) error
-	WriteRecord(namespace string, resourceName string, record ...unstructured.Unstructured) error
+	WriteRecord(typ string, record ...unstructured.Unstructured) error
 	WriteRecords(resource *resource_model.Resource, total uint32, records []unstructured.Unstructured) error
 	IsBinary() bool
 }
