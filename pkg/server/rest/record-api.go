@@ -349,6 +349,8 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 
 	filters := r.makeFilters(request)
 
+	var useEventSource = request.URL.Query().Get("use-event-source") == "true"
+
 	var recordSelector *model.BooleanExpression
 
 	if len(filters) > 0 {
@@ -379,7 +381,10 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	writer.Header().Set("Content-Type", "text/event-stream")
+	if useEventSource {
+		writer.Header().Set("Content-Type", "text/event-stream")
+	}
+
 	writer.WriteHeader(200)
 
 	for eventProto := range res {
@@ -407,9 +412,12 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 			return
 		}
 
+		if useEventSource {
+			_, _ = writer.Write([]byte("data: "))
+		}
 		_, _ = writer.Write(data)
 
-		_, _ = writer.Write([]byte("\n"))
+		_, _ = writer.Write([]byte("\n\n"))
 
 		if f, ok := writer.(http.Flusher); ok {
 			f.Flush()

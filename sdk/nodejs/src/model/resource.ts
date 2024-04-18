@@ -106,9 +106,6 @@ export enum IndexType {
 }
 
 export const ResourceResource = {
-  "auditData": {
-    "createdBy": ""
-  },
   "name": "Resource",
   "namespace": {
     "name": "system"
@@ -142,9 +139,9 @@ export const ResourceResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2024-01-03T15:12:15+04:00",
+        "createdOn": "2024-04-17T14:29:55+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2024-01-03T15:12:15+04:00"
+        "updatedOn": "2024-04-17T14:29:55+04:00"
       },
       "title": "Audit Data",
       "description": "The audit data of the resource/record. \nIt contains information about who created the resource/record, when it was created, who last updated the resource/record and when it was last updated.",
@@ -188,12 +185,12 @@ export const ResourceResource = {
     },
     "id": {
       "type": "UUID",
+      "primary": true,
       "required": true,
       "immutable": true,
       "exampleValue": "a39621a4-6d48-11ee-b962-0242ac120002",
       "description": "The unique identifier of the resource. It is randomly generated and immutable.",
       "annotations": {
-        "PrimaryProperty": "true",
         "SpecialProperty": "true"
       }
     },
@@ -228,8 +225,11 @@ export const ResourceResource = {
       "type": "REFERENCE",
       "required": true,
       "reference": "system/Namespace",
+      "defaultValue": {
+        "name": "default"
+      },
       "exampleValue": {
-        "name": "system"
+        "name": "default"
       },
       "title": "Namespace",
       "description": "The namespace of the resource. Namespace is used to group resources. It is also used to name API endpoints together with Resource. "
@@ -372,13 +372,6 @@ export const ResourceResource = {
           "title": "Immutable",
           "description": "This property indicates that whether or not given property is immutable. Immutable properties can not be updated."
         },
-        "virtual": {
-          "type": "BOOL",
-          "required": true,
-          "defaultValue": false,
-          "title": "Virtual",
-          "description": "This property indicates that whether or not given property is virtual. Virtual properties are not stored in database. They are created on the fly."
-        },
         "item": {
           "type": "STRUCT",
           "typeRef": "Property",
@@ -462,6 +455,13 @@ export const ResourceResource = {
           "defaultValue": false,
           "title": "Unique",
           "description": "This property indicates that whether or not given property is unique.\nUnique property is only working for single property, for combination of properties to become unique, you can use indexes with unique flag \n"
+        },
+        "virtual": {
+          "type": "BOOL",
+          "required": true,
+          "defaultValue": false,
+          "title": "Virtual",
+          "description": "This property indicates that whether or not given property is virtual. Virtual properties are not stored in database."
         }
       }
     },
@@ -528,7 +528,7 @@ export const ResourceResource = {
         "createdOn": {
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2024-01-03T15:12:15+04:00",
+          "exampleValue": "2024-04-17T14:29:55+04:00",
           "title": "Created On",
           "description": "The timestamp when the resource/record was created.",
           "annotations": {
@@ -547,7 +547,7 @@ export const ResourceResource = {
         },
         "updatedOn": {
           "type": "TIMESTAMP",
-          "exampleValue": "2024-01-03T15:12:15+04:00",
+          "exampleValue": "2024-04-17T14:29:55+04:00",
           "title": "Updated On",
           "description": "The timestamp when the resource/record was last updated.",
           "annotations": {

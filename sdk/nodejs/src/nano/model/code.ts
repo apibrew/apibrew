@@ -1,13 +1,13 @@
 
 export interface Code {
-    id: string
-    name: string
     content: string
     version: number
     language: Language
     auditData?: AuditData
     annotations?: { [key: string]: string }
     contentFormat: ContentFormat
+    id: string
+    name: string
 }
 
 export const CodeEntityInfo = {
@@ -36,7 +36,9 @@ export enum ContentFormat {
 export const CodeResource = {
   "auditData": {
     "createdBy": "system",
-    "createdOn": "2024-01-03T11:12:15Z"
+    "updatedBy": "system",
+    "createdOn": "2024-02-03T16:12:57Z",
+    "updatedOn": "2024-04-17T10:30:03Z"
   },
   "name": "Code",
   "namespace": {
@@ -54,9 +56,9 @@ export const CodeResource = {
       "typeRef": "AuditData",
       "exampleValue": {
         "createdBy": "admin",
-        "createdOn": "2023-12-13T21:18:29Z",
+        "createdOn": "2024-04-14T10:47:09+04:00",
         "updatedBy": "admin",
-        "updatedOn": "2023-12-13T21:18:29Z"
+        "updatedOn": "2024-04-14T10:47:09+04:00"
       },
       "annotations": {
         "SpecialProperty": "true"
@@ -82,17 +84,18 @@ export const CodeResource = {
     },
     "id": {
       "type": "UUID",
+      "primary": true,
       "required": true,
       "immutable": true,
       "exampleValue": "a39621a4-6d48-11ee-b962-0242ac120002",
       "annotations": {
-        "PrimaryProperty": "true",
         "SpecialProperty": "true"
       }
     },
     "language": {
       "type": "ENUM",
       "required": true,
+      "defaultValue": "JAVASCRIPT",
       "enumValues": [
         "JAVASCRIPT"
       ]
@@ -133,7 +136,7 @@ export const CodeResource = {
         "createdOn": {
           "type": "TIMESTAMP",
           "immutable": true,
-          "exampleValue": "2023-12-13T21:18:29Z",
+          "exampleValue": "2024-04-14T10:47:09+04:00",
           "annotations": {
             "SpecialProperty": "true"
           }
@@ -148,7 +151,7 @@ export const CodeResource = {
         },
         "updatedOn": {
           "type": "TIMESTAMP",
-          "exampleValue": "2023-12-13T21:18:29Z",
+          "exampleValue": "2024-04-14T10:47:09+04:00",
           "annotations": {
             "SpecialProperty": "true"
           }
@@ -160,7 +163,7 @@ export const CodeResource = {
   "description": "Nano code",
   "annotations": {
     "EnableAudit": "true",
-    "NormalizedResource": "true"
+    "OpenApiGroup": "meta"
   }
 } as unknown
 
