@@ -1,11 +1,9 @@
 package docs
 
 import (
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/generator/templates/typescript"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -47,25 +45,6 @@ func (s *typescriptTypesApi) ConfigureRouter(r *mux.Router) {
 	})
 }
 
-func (s *typescriptTypesApi) writeDocResult(w http.ResponseWriter, serviceErr errors.ServiceError, doc *openapi3.T) {
-	if serviceErr != nil {
-		http.Error(w, serviceErr.GetFullMessage(), 500)
-		return
-	}
-
-	data, err := doc.MarshalJSON()
-
-	if err != nil {
-		http.Error(w, serviceErr.GetFullMessage(), 400)
-		return
-	}
-
-	_, err = w.Write(data)
-
-	if err != nil {
-		log.Error(err)
-	}
-}
 func NewTypescriptTypesApi(resourceService service.ResourceService, recordService service.RecordService) TypescriptTypesApi {
 	return &typescriptTypesApi{
 		resourceService: resourceService,
