@@ -27,8 +27,6 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 		RecordService:   s.recordService,
 	}
 
-	oab.Init()
-
 	r.HandleFunc("/docs/openapi.json", func(w http.ResponseWriter, req *http.Request) {
 		config := openapi.OpenApiDocPrepareConfig{Group: "user"}
 

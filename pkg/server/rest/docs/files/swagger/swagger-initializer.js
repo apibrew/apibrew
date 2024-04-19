@@ -10,10 +10,6 @@ window.onload = function () {
                 url: "/docs/openapi.json",
             },
             {
-                name: "Meta API",
-                url: "/docs/openapi.json?group=meta",
-            },
-            {
                 name: "Internal API",
                 url: "/docs/openapi.json?group=internal",
             },

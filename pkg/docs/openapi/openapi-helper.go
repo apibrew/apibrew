@@ -6,7 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 )
 
-func (s *OpenApiBuilder) getResourceFQN(resource *model.Resource) string {
+func getResourceFQN(resource *model.Resource) string {
 	if resource == resources.ResourceResource {
 		return "Resources"
 	}
