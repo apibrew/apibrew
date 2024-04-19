@@ -98,6 +98,10 @@ func (r *logApi) pollLogs(writer http.ResponseWriter, request *http.Request) {
 
 					_, _ = writer.Write(data)
 				}
+
+				if f, ok := writer.(http.Flusher); ok {
+					f.Flush()
+				}
 			}
 		}
 	}
