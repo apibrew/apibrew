@@ -1,6 +1,7 @@
 package docs
 
 import (
+	"github.com/apibrew/apibrew/pkg/docs/openapi"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -21,27 +22,29 @@ type swaggerApi struct {
 }
 
 func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
-	var oab = &openApiBuilder{
-		resourceService: s.resourceService,
-		recordService:   s.recordService,
+	var oab = &openapi.OpenApiBuilder{
+		ResourceService: s.resourceService,
+		RecordService:   s.recordService,
 	}
 
+	oab.Init()
+
 	r.HandleFunc("/docs/openapi.json", func(w http.ResponseWriter, req *http.Request) {
-		config := OpenApiDocPrepareConfig{group: "user"}
+		config := openapi.OpenApiDocPrepareConfig{Group: "user"}
 
 		if req.URL.Query().Get("group") != "" {
-			config.group = req.URL.Query().Get("group")
+			config.Group = req.URL.Query().Get("group")
 		}
 
 		if req.URL.Query().Get("namespace") != "" {
-			config.namespaces = strings.Split(req.URL.Query().Get("namespace"), ",")
+			config.Namespaces = strings.Split(req.URL.Query().Get("namespace"), ",")
 		}
 
 		if req.URL.Query().Get("resource") != "" {
-			config.resources = strings.Split(req.URL.Query().Get("resource"), ",")
+			config.Resources = strings.Split(req.URL.Query().Get("resource"), ",")
 		}
 
-		doc, serviceErr := oab.prepareDoc(req.Context(), config)
+		doc, serviceErr := oab.PrepareDoc(req.Context(), config)
 
 		s.writeDocResult(w, serviceErr, doc)
 	})

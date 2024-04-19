@@ -6,8 +6,9 @@ import (
 )
 
 type api struct {
-	resourceService service.ResourceService
-	swaggerApi      SwaggerApi
+	resourceService    service.ResourceService
+	swaggerApi         SwaggerApi
+	typescriptTypesApi TypescriptTypesApi
 }
 
 func (a *api) ConfigureRouter(r *mux.Router) {
@@ -23,6 +24,7 @@ func (a *api) Handler() *mux.Router {
 	var r = mux.NewRouter()
 
 	a.swaggerApi.ConfigureRouter(r)
+	a.typescriptTypesApi.ConfigureRouter(r)
 	index(r)
 
 	return r
@@ -30,7 +32,8 @@ func (a *api) Handler() *mux.Router {
 
 func NewApi(resourceService service.ResourceService, recordService service.RecordService) Api {
 	return &api{
-		resourceService: resourceService,
-		swaggerApi:      NewSwaggerApi(resourceService, recordService),
+		resourceService:    resourceService,
+		swaggerApi:         NewSwaggerApi(resourceService, recordService),
+		typescriptTypesApi: NewTypescriptTypesApi(resourceService, recordService),
 	}
 }

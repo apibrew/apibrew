@@ -1,8 +1,7 @@
-package docs
+package openapi
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -11,540 +10,31 @@ import (
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/getkin/kin-openapi/openapi3"
+	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
-type openApiBuilder struct {
-	resourceService service.ResourceService
-	recordService   service.RecordService
+type OpenApiBuilder struct {
+	ResourceService service.ResourceService
+	RecordService   service.RecordService
 }
 
 type OpenApiDocPrepareConfig struct {
-	group      string
-	namespaces []string
-	resources  []string
+	Group      string
+	Namespaces []string
+	Resources  []string
 }
 
-var error401 = &openapi3.ResponseRef{
-	Value: &openapi3.Response{
-		Description: util.Pointer("Unauthorized"),
-		Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-			Ref: "#/components/schemas/Error",
-		}),
-	},
-}
+func (s *OpenApiBuilder) PrepareDoc(ctx context.Context, config OpenApiDocPrepareConfig) (*openapi3.T, errors.ServiceError) {
+	var doc = new(openapi3.T)
 
-var error400 = &openapi3.ResponseRef{
-	Value: &openapi3.Response{
-		Description: util.Pointer("Bad Request"),
-		Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-			Ref: "#/components/schemas/Error",
-		}),
-	},
-}
+	err := doc.UnmarshalJSON([]byte(openApiBaseContent))
 
-var authenticationTokenApi = &openapi3.PathItem{
-	Post: &openapi3.Operation{
-		Tags:        []string{"Authentication"},
-		OperationID: "getAuthenticationToken",
-		Summary:     "This endpoint is used to authenticate the user and get the access token.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		RequestBody: &openapi3.RequestBodyRef{
-			Value: &openapi3.RequestBody{
-				Required: true,
-				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-					Ref: "#/components/schemas/AuthenticationRequest",
-				}),
-			},
-		},
-		Responses: map[string]*openapi3.ResponseRef{
-			"200": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("Authentication Response"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/AuthenticationResponse",
-					}),
-				},
-			},
-			"401": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("Unauthorized"),
-					Content: openapi3.Content{
-						"application/json": &openapi3.MediaType{
-							Example: fromJson(`{
-						  "code": "AUTHENTICATION_FAILED",
-						  "message": "Authentication failed"
-						}`),
-						},
-					},
-				},
-			},
-			"400": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("Unauthorized"),
-					Content: openapi3.Content{
-						"application/json": &openapi3.MediaType{
-							Example: fromJson(`{
-							"code":"RECORD_VALIDATION_ERROR",
-							"message":"json: cannot unmarshal number into Go struct field AuthenticationRequest.password of type string"
-						}`),
-						},
-					},
-				},
-			},
-		},
-	},
-	Put: &openapi3.Operation{
-		Tags:        []string{"Authentication"},
-		OperationID: "refreshAuthenticationToken",
-		Summary:     "This endpoint is used to refresh the access token.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		RequestBody: &openapi3.RequestBodyRef{
-			Value: &openapi3.RequestBody{
-				Required: true,
-				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-					Ref: "#/components/schemas/RefreshTokenRequest",
-				}),
-			},
-		},
-		Responses: map[string]*openapi3.ResponseRef{
-			"200": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("Authentication Response"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/RefreshTokenResponse",
-					}),
-				},
-			},
-			"401": error401,
-			"400": error400,
-		},
-	},
-	Get: &openapi3.Operation{
-		Tags:        []string{"Authentication"},
-		OperationID: "ViewToken",
-		Summary:     "This endpoint is used to view the content of the access token.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		Security: &openapi3.SecurityRequirements{
-			{
-				"bearerAuth": []string{},
-			},
-		},
-		Responses: map[string]*openapi3.ResponseRef{
-			"200": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("Authentication Response"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/ViewTokenResponse",
-					}),
-				},
-			},
-			"401": error401,
-			"400": error400,
-		},
-	},
-}
-
-var resourcesApi = &openapi3.PathItem{
-	Get: &openapi3.Operation{
-		Tags:        []string{"Resources"},
-		OperationID: "getResources",
-		Summary:     "This endpoint is used to get the list of resources.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		Responses: map[string]*openapi3.ResponseRef{
-			"200": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("List of resources"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: openapi3.TypeArray,
-							Items: &openapi3.SchemaRef{
-								Ref: "#/components/schemas/SystemResource",
-							},
-						},
-					}),
-				},
-			},
-			"401": error401,
-			"400": error400,
-		},
-	},
-	Post: &openapi3.Operation{
-		Tags:        []string{"Resources"},
-		OperationID: "createResource",
-		Summary:     "This endpoint is used to create a new resource.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		RequestBody: &openapi3.RequestBodyRef{
-			Value: &openapi3.RequestBody{
-				Required: true,
-				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-					Ref: "#/components/schemas/SystemResource",
-				}),
-			},
-		},
-		Responses: map[string]*openapi3.ResponseRef{
-			"200": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("Created resource"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/SystemResource",
-					}),
-				},
-			},
-			"401": error401,
-			"400": error400,
-		},
-	},
-}
-
-var resourceItemApi = &openapi3.PathItem{
-	Get: &openapi3.Operation{
-		Tags:        []string{"Resources"},
-		OperationID: "getResource",
-		Summary:     "This endpoint is used to get a resource.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		Parameters: []*openapi3.ParameterRef{
-			{
-				Value: &openapi3.Parameter{
-					Name:     "id",
-					In:       "path",
-					Required: true,
-					Schema: &openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: "string",
-						},
-					},
-				},
-			},
-		},
-		Responses: map[string]*openapi3.ResponseRef{
-			"200": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("Resource"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/SystemResource",
-					}),
-				},
-			},
-			"401": error401,
-			"400": error400,
-		},
-	},
-	Put: &openapi3.Operation{
-		Tags:        []string{"Resources"},
-		OperationID: "updateResource",
-		Summary:     "This endpoint is used to update a resource.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		Parameters: []*openapi3.ParameterRef{
-			{
-				Value: &openapi3.Parameter{
-					Name:     "id",
-					In:       "path",
-					Required: true,
-					Schema: &openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: "string",
-						},
-					},
-				},
-			},
-		},
-		RequestBody: &openapi3.RequestBodyRef{
-			Value: &openapi3.RequestBody{
-				Required: true,
-				Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-					Ref: "#/components/schemas/SystemResource",
-				}),
-			},
-		},
-	},
-	Delete: &openapi3.Operation{
-		Tags:        []string{"Resources"},
-		OperationID: "deleteResource",
-		Summary:     "This endpoint is used to delete a resource.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		Parameters: []*openapi3.ParameterRef{
-			{
-				Value: &openapi3.Parameter{
-					Name:     "id",
-					In:       "path",
-					Required: true,
-					Schema: &openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: "string",
-						},
-					},
-				},
-			},
-		},
-	},
-}
-
-var resourceItemByNameApi = &openapi3.PathItem{
-	Get: &openapi3.Operation{
-		Tags:        []string{"Resources"},
-		OperationID: "getResourceByName",
-		Summary:     "This endpoint is used to get a resource by name.",
-		Description: "The access token is used to authenticate the user for all the endpoints which needs authentication.",
-		Parameters: []*openapi3.ParameterRef{
-			{
-				Value: &openapi3.Parameter{
-					Name:     "namespace",
-					In:       "path",
-					Required: true,
-					Schema: &openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: "string",
-						},
-					},
-				},
-			},
-			{
-				Value: &openapi3.Parameter{
-					Name:     "name",
-					In:       "path",
-					Required: true,
-					Schema: &openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: "string",
-						},
-					},
-				},
-			},
-		},
-		Responses: map[string]*openapi3.ResponseRef{
-			"200": {
-				Value: &openapi3.Response{
-					Description: util.Pointer("Resource"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/SystemResource",
-					}),
-				},
-			},
-		},
-	},
-}
-
-func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepareConfig) (*openapi3.T, errors.ServiceError) {
-	doc := &openapi3.T{
-		OpenAPI: "3.0.0",
-		Info: &openapi3.Info{
-			Title:       "API Brew",
-			Description: "OpenApi 3.0 definition for API Brew Rest API",
-			Version:     "1.0",
-			License: &openapi3.License{
-				Name: "Apache License",
-				URL:  "https://github.com/google/gnostic/blob/master/LICENSE",
-			},
-			Contact: &openapi3.Contact{
-				Name: "API Brew",
-			},
-		},
-		Paths: openapi3.Paths{
-			"/authentication/token": authenticationTokenApi,
-		},
-		Components: openapi3.Components{
-			Schemas: openapi3.Schemas{
-				"Error": {
-					Value: &openapi3.Schema{
-						Required: []string{"code", "message"},
-						Properties: map[string]*openapi3.SchemaRef{
-							"code": {
-								Value: &openapi3.Schema{
-									Type: "string",
-								},
-							},
-							"message": {
-								Value: &openapi3.Schema{
-									Type: "string",
-								},
-							},
-							"details": {
-								Value: &openapi3.Schema{
-									Type: "object",
-								},
-							},
-						},
-					},
-				},
-				"AuthenticationRequest": {
-					Value: &openapi3.Schema{
-						Required: []string{"username", "password"},
-						Properties: map[string]*openapi3.SchemaRef{
-							"username": {
-								Value: &openapi3.Schema{
-									Type:    "string",
-									Example: "admin",
-								},
-							},
-							"password": {
-								Value: &openapi3.Schema{
-									Type:    "string",
-									Example: "admin",
-								},
-							},
-							"term": {
-								Ref: "#/components/schemas/TokenTerm",
-							},
-						},
-					},
-				},
-				"AuthenticationResponse": {
-					Value: &openapi3.Schema{
-						Required: []string{"token"},
-						Properties: map[string]*openapi3.SchemaRef{
-							"token": {
-								Ref: "#/components/schemas/Token",
-							},
-						},
-					},
-				},
-				"RefreshTokenRequest": {
-					Value: &openapi3.Schema{
-						Required: []string{"username", "password"},
-						Properties: map[string]*openapi3.SchemaRef{
-							"token": {
-								Value: &openapi3.Schema{
-									Type:    "string",
-									Example: "admin",
-								},
-							},
-							"term": {
-								Ref: "#/components/schemas/TokenTerm",
-							},
-						},
-					},
-				},
-				"RefreshTokenResponse": {
-					Value: &openapi3.Schema{
-						Required: []string{"token"},
-						Properties: map[string]*openapi3.SchemaRef{
-							"token": {
-								Ref: "#/components/schemas/Token",
-							},
-						},
-					},
-				},
-				"ViewTokenResponse": {
-					Value: &openapi3.Schema{},
-				},
-				"Token": {
-					Value: &openapi3.Schema{
-						Type: "object",
-						Properties: map[string]*openapi3.SchemaRef{
-							"term": {
-								Ref: "#/components/schemas/TokenTerm",
-							},
-							"content": {
-								Value: &openapi3.Schema{
-									Type: "string",
-								},
-							},
-							"expiration": {
-								Value: &openapi3.Schema{
-									Type:   "string",
-									Format: "date-time",
-								},
-							},
-						},
-						Example: fromJson(`{
-							"term": "SHORT",
-							"content": "eyJhbGciOiJSUzI1NiIsI-8pl63y8h-ZOLM",
-							"expiration": "2023-10-16T15:14:11.161530Z"
-						  }`),
-					},
-				},
-				"TokenTerm": {
-					Value: &openapi3.Schema{
-						Type:   "string",
-						Format: "enum",
-						Enum: []interface{}{
-							"VERY_SHORT", "SHORT", "MIDDLE", "LONG", "VERY_LONG",
-						},
-						Example: "LONG",
-					},
-				},
-				"BooleanExpression": {
-					Value: &openapi3.Schema{
-						Type: "object",
-					},
-				},
-				"SearchRecordRequest": {
-					Value: &openapi3.Schema{
-						Type: "object",
-						Properties: map[string]*openapi3.SchemaRef{
-							"query": {
-								Ref: "#/components/schemas/BooleanExpression",
-							},
-							"limit": {
-								Value: &openapi3.Schema{
-									Type: "integer",
-								},
-							},
-							"offset": {
-								Value: &openapi3.Schema{
-									Type: "integer",
-								},
-							},
-							"useHistory": {
-								Value: &openapi3.Schema{
-									Type: "boolean",
-								},
-							},
-							"resolveReferences": {
-								Value: &openapi3.Schema{
-									Type: "array",
-									Items: &openapi3.SchemaRef{
-										Value: &openapi3.Schema{
-											Type: "string",
-										},
-									},
-								},
-							},
-							"annotations": {
-								Value: &openapi3.Schema{
-									Type: "object",
-									AdditionalProperties: &openapi3.SchemaRef{
-										Value: &openapi3.Schema{
-											Type: "string",
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			SecuritySchemes: map[string]*openapi3.SecuritySchemeRef{
-				"bearerAuth": {
-					Value: &openapi3.SecurityScheme{
-						Type:         "http",
-						Scheme:       "bearer",
-						BearerFormat: "JWT",
-					},
-				},
-			},
-		},
-		Security: []openapi3.SecurityRequirement{
-			{
-				"bearerAuth": []string{},
-			},
-		},
-		Tags: []*openapi3.Tag{
-			{
-				Name:        "Authentication",
-				Description: "Authentication APIs are used to authenticate users and get access to the resources. For all endpoints, which needs you to be authenticated, you need to pass the access token in the header.\n                The access token is obtained by calling the authenticate endpoint.",
-			},
-		},
+	if err != nil {
+		return nil, errors.InternalError.WithMessage(err.Error())
 	}
 
-	if checkResourceAllowed(config, resources.ResourceResource, false) {
-		doc.Paths["/resources"] = resourcesApi
-		doc.Paths["/resources/{id}"] = resourceItemApi
-		doc.Paths["/resources/by-name/{namespace}/{name}"] = resourceItemByNameApi
-	}
-
-	list, _ := s.resourceService.List(util.WithSystemContext(ctx))
+	list, _ := s.ResourceService.List(util.WithSystemContext(ctx))
 
 	for _, item := range list {
 		if annotations.IsEnabled(item, annotations.RestApiDisabled) {
@@ -606,31 +96,20 @@ func (s *openApiBuilder) prepareDoc(ctx context.Context, config OpenApiDocPrepar
 	return doc, nil
 }
 
-func fromJson(s string) interface{} {
-	var result interface{}
-	err := json.Unmarshal([]byte(s), &result)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return result
-}
-
 func checkResourceAllowed(config OpenApiDocPrepareConfig, resource *model.Resource, forResource bool) bool {
-	if len(config.namespaces) > 0 {
-		if !util.ArrayContains(config.namespaces, resource.Namespace) {
+	if len(config.Namespaces) > 0 {
+		if !util.ArrayContains(config.Namespaces, resource.Namespace) {
 			return false
 		}
 	}
 
-	if len(config.resources) > 0 {
-		if !util.ArrayContains(config.resources, resource.Name) {
+	if len(config.Resources) > 0 {
+		if !util.ArrayContains(config.Resources, resource.Name) {
 			return false
 		}
 	}
 
-	if config.group == "full" {
+	if config.Group == "full" {
 		return true
 	}
 
@@ -640,14 +119,14 @@ func checkResourceAllowed(config OpenApiDocPrepareConfig, resource *model.Resour
 		resourceApiGroup = "user"
 	}
 
-	if forResource && resource.Namespace == "system" && config.group == "meta" {
+	if forResource && resource.Namespace == "system" && config.Group == "meta" {
 		return true
 	}
 
-	return resourceApiGroup == config.group
+	return resourceApiGroup == config.Group
 }
 
-func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Resource) {
+func (s *OpenApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Resource) {
 	jsonSchemaRef := "#/components/schemas/" + util.ResourceJsonSchemaName(resource)
 
 	var tags []string
@@ -929,7 +408,7 @@ func (s *openApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 	}
 }
 
-func (s *openApiBuilder) appendRecordeGenericApi(doc *openapi3.T) {
+func (s *OpenApiBuilder) appendRecordeGenericApi(doc *openapi3.T) {
 	var resource = resources.RecordResource
 
 	var genericRecordSchema = &openapi3.SchemaRef{
@@ -1191,4 +670,12 @@ func (s *openApiBuilder) appendRecordeGenericApi(doc *openapi3.T) {
 			},
 		},
 	}
+}
+
+func (s *OpenApiBuilder) Init() {
+	var doc = new(openapi3.T)
+
+	err := doc.UnmarshalJSON([]byte(openApiBaseContent))
+
+	log.Println(err)
 }

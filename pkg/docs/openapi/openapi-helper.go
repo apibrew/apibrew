@@ -1,4 +1,4 @@
-package docs
+package openapi
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
@@ -6,9 +6,9 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 )
 
-func (s *openApiBuilder) getResourceFQN(resource *model.Resource) string {
+func (s *OpenApiBuilder) getResourceFQN(resource *model.Resource) string {
 	if resource == resources.ResourceResource {
-		return "resources"
+		return "Resources"
 	}
 
 	if resource.Namespace == "default" {
