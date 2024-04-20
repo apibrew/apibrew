@@ -476,7 +476,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - List items",
+        "summary": "{title} - List items",
         "tags": [
           "{tag}"
         ],
@@ -513,7 +513,7 @@
       "parameters": [
       ],
       "patch": {
-        "description": "A generic record resource. All Apis are extended from Generic Record resource - Apply an item, it will check id and unique properties, if such item is exists, update operation will be executed, if not create operation is executed. If There are no change between updating record and existing record, nothing will be done",
+        "description": "list {title}.",
         "operationId": "apply{schemaName}",
         "requestBody": {
           "content": {
@@ -542,13 +542,13 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Apply an item",
+        "summary": "{title} - Apply an item",
         "tags": [
           "{tag}"
         ]
       },
       "post": {
-        "description": "A generic record resource. All Apis are extended from Generic Record resource - Create new item",
+        "description": "Create {title}",
         "operationId": "create{schemaName}",
         "requestBody": {
           "content": {
@@ -577,16 +577,16 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Create new item",
+        "summary": "{title} - Create new item",
         "tags": [
           "{tag}"
         ]
       },
-      "summary": "Generic Record"
+      "summary": "{title}"
     },
     "/{resourceRestPath}/{id}": {
       "delete": {
-        "description": "A generic record resource. All Apis are extended from Generic Record resource - Delete item",
+        "description": "Delete {title}",
         "operationId": "delete{schemaName}",
         "parameters": [
           {
@@ -608,14 +608,14 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Delete item",
+        "summary": "{title} - Delete item",
         "tags": [
           "{tag}"
         ]
       },
-      "description": "A generic record resource. All Apis are extended from Generic Record resource",
+      "description": "List of APIs for {title} item",
       "get": {
-        "description": "A generic record resource. All Apis are extended from Generic Record resource - Get item",
+        "description": "Get {title} by ite",
         "operationId": "get{schemaName}",
         "parameters": [
           {
@@ -644,7 +644,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Get item",
+        "summary": "{title} - Get item",
         "tags": [
           "{tag}"
         ]
@@ -652,7 +652,7 @@
       "parameters": [
       ],
       "put": {
-        "description": "A generic record resource. All Apis are extended from Generic Record resource - Update item",
+        "description": "Update {title}",
         "operationId": "update{schemaName}",
         "parameters": [
           {
@@ -691,19 +691,19 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Update item",
+        "summary": "{title} - Update item",
         "tags": [
           "{tag}"
         ]
       },
-      "summary": "Generic Record"
+      "summary": "{title}"
     },
-    "/{resourceRestPath}/{id}/_search": {
-      "description": "A generic record resource. All Apis are extended from Generic Record resource - Search",
+    "/{resourceRestPath}/_search": {
+      "description": "Search {title}",
       "parameters": [
       ],
       "post": {
-        "description": "A generic record resource. All Apis are extended from Generic Record resource - Search items",
+        "description": "Search items",
         "operationId": "search{schemaName}",
         "requestBody": {
           "content": {
@@ -739,17 +739,14 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Search items",
+        "summary": "{title} - Search items",
         "tags": [
           "{tag}"
         ]
       },
-      "summary": "Generic Record - Search"
+      "summary": "{title} - Search"
     },
-    "/{resourceRestPath}/{id}/_load": {
-      "description": "A generic record resource. All Apis are extended from Generic Record resource - Search",
-      "parameters": [
-      ],
+    "/{resourceRestPath}/_load": {
       "post": {
         "description": "Load Api is to locate resource. To locate a record, you need to provide a unique property value",
         "operationId": "load{schemaName}",
@@ -784,17 +781,14 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Search items",
+        "summary": "{title} - Locate item",
         "tags": [
           "{tag}"
         ]
       },
-      "summary": "Generic Record - Search"
+      "summary": "{title} - Locate"
     },
-    "/{resourceRestPath}/{id}/_watch": {
-      "description": "A generic record resource. All Apis are extended from Generic Record resource - Search",
-      "parameters": [
-      ],
+    "/{resourceRestPath}/_watch": {
       "get": {
         "description": "Watch Api is to watch resource. To watch a record, you need to provide a search query",
         "operationId": "watch{schemaName}",
@@ -810,20 +804,17 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Search items",
+        "summary": "{title} - Watch changes on {title}. This Api is for listening to change notifications(Create/Update/Delete)",
         "tags": [
           "{tag}"
         ]
       },
-      "summary": "Generic Record - Search"
+      "summary": "{title} - Search"
     },
-    "/{resourceRestPath}/{id}/_resource": {
-      "description": "A generic record resource. All Apis are extended from Generic Record resource - Search",
-      "parameters": [
-      ],
+    "/{resourceRestPath}/_resource": {
       "get": {
-        "description": "A generic record resource. All Apis are extended from Generic Record resource - Search items",
-        "operationId": "search{schemaName}",
+        "description": "Get resource definition",
+        "operationId": "resource{schemaName}",
         "responses": {
           "200": {
             "content": {
@@ -845,12 +836,12 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Generic Record - Search items",
+        "summary": "{title} - Resource",
         "tags": [
           "{tag}"
         ]
       },
-      "summary": "Generic Record - Search"
+      "summary": "{title} - Search"
     }
   },
   "components": {
@@ -884,8 +875,89 @@
           "token"
         ]
       },
+      "PairExpression": {
+        "type": "object",
+        "properties": {
+          "left": {
+            "$ref": "#/components/schemas/Expression"
+          },
+          "right": {
+            "$ref": "#/components/schemas/Expression"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Expression": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "type": "string"
+          },
+          "value": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
       "BooleanExpression": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "and": {
+            "$ref": "#/components/schemas/BooleanExpression"
+          },
+          "or": {
+            "$ref": "#/components/schemas/BooleanExpression"
+          },
+          "not": {
+            "$ref": "#/components/schemas/BooleanExpression"
+          },
+          "equal": {
+            "$ref": "#/components/schemas/PairExpression"
+          },
+          "lessThan": {
+            "$ref": "#/components/schemas/PairExpression"
+          },
+          "greaterThan": {
+            "$ref": "#/components/schemas/PairExpression"
+          },
+          "lessThanOrEqual": {
+            "$ref": "#/components/schemas/PairExpression"
+          },
+          "greaterThanOrEqual": {
+            "$ref": "#/components/schemas/PairExpression"
+          },
+          "in": {
+            "$ref": "#/components/schemas/PairExpression"
+          },
+          "isNull": {
+            "$ref": "#/components/schemas/Expression"
+          }
+        },
+        "additionalProperties": false,
+        "example": {
+          "or": [
+            {
+              "equal": {
+                "left": {
+                  "property": "name"
+                },
+                "right": {
+                  "value": "Author1"
+                }
+              }
+            },
+            {
+              "lessThan": {
+                "left": {
+                  "property": "age"
+                },
+                "right": {
+                  "value": 31
+                }
+              }
+            }
+          ]
+        }
       },
       "Error": {
         "properties": {
@@ -946,16 +1018,20 @@
           "query": {
             "$ref": "#/components/schemas/BooleanExpression"
           },
+          "filters": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
           "resolveReferences": {
             "items": {
               "type": "string"
             },
             "type": "array"
-          },
-          "useHistory": {
-            "type": "boolean"
           }
         },
+        "additionalProperties": false,
         "type": "object"
       },
       "Token": {

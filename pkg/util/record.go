@@ -35,7 +35,7 @@ func RecordIdentifierProperties(resource *model.Resource, properties map[string]
 		return props, nil
 	}
 
-	return nil, fmt.Errorf("could not find identifiable properties of %s", resource.Name)
+	return nil, fmt.Errorf("at least one unique property is required to locate %s. None of the provided fields are unique %s", resource.Name, strings.Join(Keys(properties), ","))
 }
 
 func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {

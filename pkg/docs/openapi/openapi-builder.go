@@ -151,11 +151,11 @@ func (s *OpenApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 			}
 		}
 
-		var parameters = doc.Paths["/"+getResourceFQN(resource)].Get.Parameters
+		var filterParameters []*openapi3.ParameterRef
 
 		for _, property := range resource.Properties {
 			if util.IsFilterableProperty(property.Type) {
-				parameters = append(parameters, &openapi3.ParameterRef{
+				filterParameters = append(filterParameters, &openapi3.ParameterRef{
 					Value: &openapi3.Parameter{
 						Name:        property.Name,
 						In:          "query",
@@ -166,7 +166,8 @@ func (s *OpenApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 			}
 		}
 
-		doc.Paths["/"+getResourceFQN(resource)].Get.Parameters = parameters
+		doc.Paths["/"+getResourceFQN(resource)].Get.Parameters = append(doc.Paths["/"+getResourceFQN(resource)].Get.Parameters, filterParameters...)
+		doc.Paths["/"+getResourceFQN(resource)+"/_watch"].Get.Parameters = filterParameters
 	}
 
 }

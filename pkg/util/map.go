@@ -104,3 +104,13 @@ func ArrayMapToInterface[T interface{}](arr []T) []interface{} {
 func ArrayMapToString[T interface{}](arr []T, fn func(t T) string) []string {
 	return ArrayMap(arr, fn)
 }
+
+func Keys[T any](u map[string]T) []string {
+	var keys []string
+
+	for key := range u {
+		keys = append(keys, key)
+	}
+
+	return keys
+}

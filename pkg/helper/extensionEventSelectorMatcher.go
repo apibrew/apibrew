@@ -1,8 +1,10 @@
 package helper
 
 import (
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type ExtensionEventSelectorMatcher struct {
@@ -125,13 +127,27 @@ func (b *ExtensionEventSelectorMatcher) recordSelectorMatches(incoming *model.Ev
 		left := b.resolve(incoming, selector.GetEqual().Left)
 		right := b.resolve(incoming, selector.GetEqual().Right)
 
+		if left != nil && right != nil {
+			leftO := left.AsInterface()
+			rightO := right.AsInterface()
+
+			leftM, ok1 := leftO.(unstructured.Unstructured)
+			rightS, ok2 := rightO.(string)
+
+			if ok1 && ok2 {
+				return leftM["id"] == rightS
+			}
+
+			return leftO == rightO
+		}
+
 		return proto.Equal(left, right)
 	}
 
 	return true
 }
 
-func (b *ExtensionEventSelectorMatcher) resolve(incoming *model.Event, left *model.Expression) proto.Message {
+func (b *ExtensionEventSelectorMatcher) resolve(incoming *model.Event, left *model.Expression) *structpb.Value {
 	if left.GetProperty() != "" {
 		if len(incoming.Records) == 0 {
 			return nil

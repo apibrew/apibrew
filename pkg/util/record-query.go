@@ -86,6 +86,10 @@ func PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.
 	var criteria []*model.BooleanExpression
 	for _, property := range resource.Properties {
 		if queryMap[property.Name] != "" {
+			if !IsFilterableProperty(property.Type) {
+				return nil, errors.RecordValidationError.WithDetails("property is not filterable: " + property.Name)
+			}
+
 			var val *structpb.Value
 			val, err := structpb.NewValue(queryMap[property.Name])
 			if err != nil {
