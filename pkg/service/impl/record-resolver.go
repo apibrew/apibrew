@@ -185,6 +185,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 								if matches {
 									subValues[recordId].GetListValue().Values = append(subValues[recordId].GetListValue().Values, structpb.NewStructValue(&structpb.Struct{Fields: item.Properties}))
+									referenceRecords = append(referenceRecords, item)
 								}
 							}
 						}
@@ -199,6 +200,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 							if matches {
 								subValues[recordId] = structpb.NewStructValue(&structpb.Struct{Fields: item.Properties})
 								recordValueMap[recordId].GetStructValue().Fields[prop.Name] = subValues[recordId]
+								referenceRecords = append(referenceRecords, item)
 								break
 							}
 						}
