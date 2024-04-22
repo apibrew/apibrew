@@ -30,55 +30,55 @@ type Resource struct {
 	Annotations     map[string]string   `json:"annotations,omitempty"`
 }
 
-func (s *Resource) GetId() *uuid.UUID {
+func (s Resource) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Resource) GetVersion() int32 {
+func (s Resource) GetVersion() int32 {
 	return s.Version
 }
-func (s *Resource) GetAuditData() *ResourceAuditData {
+func (s Resource) GetAuditData() *ResourceAuditData {
 	return s.AuditData
 }
-func (s *Resource) GetName() string {
+func (s Resource) GetName() string {
 	return s.Name
 }
-func (s *Resource) GetNamespace() *Namespace {
+func (s Resource) GetNamespace() *Namespace {
 	return s.Namespace
 }
-func (s *Resource) GetVirtual() bool {
+func (s Resource) GetVirtual() bool {
 	return s.Virtual
 }
-func (s *Resource) GetProperties() map[string]Property {
+func (s Resource) GetProperties() map[string]Property {
 	return s.Properties
 }
-func (s *Resource) GetIndexes() []ResourceIndex {
+func (s Resource) GetIndexes() []ResourceIndex {
 	return s.Indexes
 }
-func (s *Resource) GetTypes() []SubType {
+func (s Resource) GetTypes() []SubType {
 	return s.Types
 }
-func (s *Resource) GetImmutable() bool {
+func (s Resource) GetImmutable() bool {
 	return s.Immutable
 }
-func (s *Resource) GetAbstract() bool {
+func (s Resource) GetAbstract() bool {
 	return s.Abstract
 }
-func (s *Resource) GetCheckReferences() bool {
+func (s Resource) GetCheckReferences() bool {
 	return s.CheckReferences
 }
-func (s *Resource) GetDataSource() *DataSource {
+func (s Resource) GetDataSource() *DataSource {
 	return s.DataSource
 }
-func (s *Resource) GetEntity() *string {
+func (s Resource) GetEntity() *string {
 	return s.Entity
 }
-func (s *Resource) GetCatalog() *string {
+func (s Resource) GetCatalog() *string {
 	return s.Catalog
 }
-func (s *Resource) GetTitle() *string {
+func (s Resource) GetTitle() *string {
 	return s.Title
 }
-func (s *Resource) GetDescription() *string {
+func (s Resource) GetDescription() *string {
 	return s.Description
 }
 func (s Resource) GetAnnotations() map[string]string {
@@ -105,52 +105,52 @@ type Property struct {
 	Annotations   map[string]string `json:"annotations,omitempty"`
 }
 
-func (s *Property) GetType() ResourceType {
+func (s Property) GetType() ResourceType {
 	return s.Type
 }
-func (s *Property) GetTypeRef() *string {
+func (s Property) GetTypeRef() *string {
 	return s.TypeRef
 }
-func (s *Property) GetPrimary() bool {
+func (s Property) GetPrimary() bool {
 	return s.Primary
 }
-func (s *Property) GetRequired() bool {
+func (s Property) GetRequired() bool {
 	return s.Required
 }
-func (s *Property) GetUnique() bool {
+func (s Property) GetUnique() bool {
 	return s.Unique
 }
-func (s *Property) GetImmutable() bool {
+func (s Property) GetImmutable() bool {
 	return s.Immutable
 }
-func (s *Property) GetVirtual() bool {
+func (s Property) GetVirtual() bool {
 	return s.Virtual
 }
-func (s *Property) GetLength() int32 {
+func (s Property) GetLength() int32 {
 	return s.Length
 }
-func (s *Property) GetItem() *Property {
+func (s Property) GetItem() *Property {
 	return s.Item
 }
-func (s *Property) GetReference() *string {
+func (s Property) GetReference() *string {
 	return s.Reference
 }
-func (s *Property) GetBackReference() *string {
+func (s Property) GetBackReference() *string {
 	return s.BackReference
 }
-func (s *Property) GetDefaultValue() interface{} {
+func (s Property) GetDefaultValue() interface{} {
 	return s.DefaultValue
 }
-func (s *Property) GetEnumValues() []string {
+func (s Property) GetEnumValues() []string {
 	return s.EnumValues
 }
-func (s *Property) GetExampleValue() interface{} {
+func (s Property) GetExampleValue() interface{} {
 	return s.ExampleValue
 }
-func (s *Property) GetTitle() *string {
+func (s Property) GetTitle() *string {
 	return s.Title
 }
-func (s *Property) GetDescription() *string {
+func (s Property) GetDescription() *string {
 	return s.Description
 }
 func (s Property) GetAnnotations() map[string]string {
@@ -164,16 +164,16 @@ type SubType struct {
 	Properties  map[string]Property `json:"properties,omitempty"`
 }
 
-func (s *SubType) GetName() string {
+func (s SubType) GetName() string {
 	return s.Name
 }
-func (s *SubType) GetTitle() *string {
+func (s SubType) GetTitle() *string {
 	return s.Title
 }
-func (s *SubType) GetDescription() *string {
+func (s SubType) GetDescription() *string {
 	return s.Description
 }
-func (s *SubType) GetProperties() map[string]Property {
+func (s SubType) GetProperties() map[string]Property {
 	return s.Properties
 }
 
@@ -184,16 +184,16 @@ type ResourceAuditData struct {
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
-func (s *ResourceAuditData) GetCreatedBy() *string {
+func (s ResourceAuditData) GetCreatedBy() *string {
 	return s.CreatedBy
 }
-func (s *ResourceAuditData) GetUpdatedBy() *string {
+func (s ResourceAuditData) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
-func (s *ResourceAuditData) GetCreatedOn() *time.Time {
+func (s ResourceAuditData) GetCreatedOn() *time.Time {
 	return s.CreatedOn
 }
-func (s *ResourceAuditData) GetUpdatedOn() *time.Time {
+func (s ResourceAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
 
@@ -202,10 +202,10 @@ type ResourceIndexProperty struct {
 	Order *ResourceOrder `json:"order,omitempty"`
 }
 
-func (s *ResourceIndexProperty) GetName() string {
+func (s ResourceIndexProperty) GetName() string {
 	return s.Name
 }
-func (s *ResourceIndexProperty) GetOrder() *ResourceOrder {
+func (s ResourceIndexProperty) GetOrder() *ResourceOrder {
 	return s.Order
 }
 
@@ -216,16 +216,16 @@ type ResourceIndex struct {
 	Annotations map[string]string       `json:"annotations,omitempty"`
 }
 
-func (s *ResourceIndex) GetProperties() []ResourceIndexProperty {
+func (s ResourceIndex) GetProperties() []ResourceIndexProperty {
 	return s.Properties
 }
-func (s *ResourceIndex) GetIndexType() *ResourceIndexType {
+func (s ResourceIndex) GetIndexType() *ResourceIndexType {
 	return s.IndexType
 }
-func (s *ResourceIndex) GetUnique() *bool {
+func (s ResourceIndex) GetUnique() *bool {
 	return s.Unique
 }
-func (s *ResourceIndex) GetAnnotations() map[string]string {
+func (s ResourceIndex) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 

@@ -24,40 +24,40 @@ type Extension struct {
 	Annotations map[string]string   `json:"annotations,omitempty"`
 }
 
-func (s *Extension) GetId() *uuid.UUID {
+func (s Extension) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Extension) GetVersion() int32 {
+func (s Extension) GetVersion() int32 {
 	return s.Version
 }
-func (s *Extension) GetAuditData() *ExtensionAuditData {
+func (s Extension) GetAuditData() *ExtensionAuditData {
 	return s.AuditData
 }
-func (s *Extension) GetName() string {
+func (s Extension) GetName() string {
 	return s.Name
 }
-func (s *Extension) GetDescription() *string {
+func (s Extension) GetDescription() *string {
 	return s.Description
 }
-func (s *Extension) GetSelector() *EventSelector {
+func (s Extension) GetSelector() *EventSelector {
 	return s.Selector
 }
-func (s *Extension) GetOrder() int32 {
+func (s Extension) GetOrder() int32 {
 	return s.Order
 }
-func (s *Extension) GetFinalizes() bool {
+func (s Extension) GetFinalizes() bool {
 	return s.Finalizes
 }
-func (s *Extension) GetSync() bool {
+func (s Extension) GetSync() bool {
 	return s.Sync
 }
-func (s *Extension) GetResponds() bool {
+func (s Extension) GetResponds() bool {
 	return s.Responds
 }
-func (s *Extension) GetCall() ExternalCall {
+func (s Extension) GetCall() ExternalCall {
 	return s.Call
 }
-func (s *Extension) GetAnnotations() map[string]string {
+func (s Extension) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 
@@ -75,37 +75,37 @@ type BooleanExpression struct {
 	RegexMatch         *RegexMatchExpression `json:"regexMatch,omitempty"`
 }
 
-func (s *BooleanExpression) GetAnd() []BooleanExpression {
+func (s BooleanExpression) GetAnd() []BooleanExpression {
 	return s.And
 }
-func (s *BooleanExpression) GetOr() []BooleanExpression {
+func (s BooleanExpression) GetOr() []BooleanExpression {
 	return s.Or
 }
-func (s *BooleanExpression) GetNot() *BooleanExpression {
+func (s BooleanExpression) GetNot() *BooleanExpression {
 	return s.Not
 }
-func (s *BooleanExpression) GetEqual() *PairExpression {
+func (s BooleanExpression) GetEqual() *PairExpression {
 	return s.Equal
 }
-func (s *BooleanExpression) GetLessThan() *PairExpression {
+func (s BooleanExpression) GetLessThan() *PairExpression {
 	return s.LessThan
 }
-func (s *BooleanExpression) GetGreaterThan() *PairExpression {
+func (s BooleanExpression) GetGreaterThan() *PairExpression {
 	return s.GreaterThan
 }
-func (s *BooleanExpression) GetLessThanOrEqual() *PairExpression {
+func (s BooleanExpression) GetLessThanOrEqual() *PairExpression {
 	return s.LessThanOrEqual
 }
-func (s *BooleanExpression) GetGreaterThanOrEqual() *PairExpression {
+func (s BooleanExpression) GetGreaterThanOrEqual() *PairExpression {
 	return s.GreaterThanOrEqual
 }
-func (s *BooleanExpression) GetIn() *PairExpression {
+func (s BooleanExpression) GetIn() *PairExpression {
 	return s.In
 }
-func (s *BooleanExpression) GetIsNull() *Expression {
+func (s BooleanExpression) GetIsNull() *Expression {
 	return s.IsNull
 }
-func (s *BooleanExpression) GetRegexMatch() *RegexMatchExpression {
+func (s BooleanExpression) GetRegexMatch() *RegexMatchExpression {
 	return s.RegexMatch
 }
 
@@ -114,10 +114,10 @@ type PairExpression struct {
 	Right *Expression `json:"right,omitempty"`
 }
 
-func (s *PairExpression) GetLeft() *Expression {
+func (s PairExpression) GetLeft() *Expression {
 	return s.Left
 }
-func (s *PairExpression) GetRight() *Expression {
+func (s PairExpression) GetRight() *Expression {
 	return s.Right
 }
 
@@ -126,10 +126,10 @@ type RegexMatchExpression struct {
 	Expression *Expression `json:"expression,omitempty"`
 }
 
-func (s *RegexMatchExpression) GetPattern() *string {
+func (s RegexMatchExpression) GetPattern() *string {
 	return s.Pattern
 }
-func (s *RegexMatchExpression) GetExpression() *Expression {
+func (s RegexMatchExpression) GetExpression() *Expression {
 	return s.Expression
 }
 
@@ -138,10 +138,10 @@ type Expression struct {
 	Value    interface{} `json:"value,omitempty"`
 }
 
-func (s *Expression) GetProperty() *string {
+func (s Expression) GetProperty() *string {
 	return s.Property
 }
-func (s *Expression) GetValue() interface{} {
+func (s Expression) GetValue() interface{} {
 	return s.Value
 }
 
@@ -152,16 +152,16 @@ type ExtensionAuditData struct {
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
-func (s *ExtensionAuditData) GetCreatedBy() *string {
+func (s ExtensionAuditData) GetCreatedBy() *string {
 	return s.CreatedBy
 }
-func (s *ExtensionAuditData) GetUpdatedBy() *string {
+func (s ExtensionAuditData) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
-func (s *ExtensionAuditData) GetCreatedOn() *time.Time {
+func (s ExtensionAuditData) GetCreatedOn() *time.Time {
 	return s.CreatedOn
 }
-func (s *ExtensionAuditData) GetUpdatedOn() *time.Time {
+func (s ExtensionAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
 
@@ -170,10 +170,10 @@ type FunctionCall struct {
 	FunctionName string `json:"functionName,omitempty"`
 }
 
-func (s *FunctionCall) GetHost() string {
+func (s FunctionCall) GetHost() string {
 	return s.Host
 }
-func (s *FunctionCall) GetFunctionName() string {
+func (s FunctionCall) GetFunctionName() string {
 	return s.FunctionName
 }
 
@@ -182,10 +182,10 @@ type HttpCall struct {
 	Method string `json:"method,omitempty"`
 }
 
-func (s *HttpCall) GetUri() string {
+func (s HttpCall) GetUri() string {
 	return s.Uri
 }
-func (s *HttpCall) GetMethod() string {
+func (s HttpCall) GetMethod() string {
 	return s.Method
 }
 
@@ -193,7 +193,7 @@ type ChannelCall struct {
 	ChannelKey string `json:"channelKey,omitempty"`
 }
 
-func (s *ChannelCall) GetChannelKey() string {
+func (s ChannelCall) GetChannelKey() string {
 	return s.ChannelKey
 }
 
@@ -203,13 +203,13 @@ type ExternalCall struct {
 	ChannelCall  *ChannelCall  `json:"channelCall,omitempty"`
 }
 
-func (s *ExternalCall) GetFunctionCall() *FunctionCall {
+func (s ExternalCall) GetFunctionCall() *FunctionCall {
 	return s.FunctionCall
 }
-func (s *ExternalCall) GetHttpCall() *HttpCall {
+func (s ExternalCall) GetHttpCall() *HttpCall {
 	return s.HttpCall
 }
-func (s *ExternalCall) GetChannelCall() *ChannelCall {
+func (s ExternalCall) GetChannelCall() *ChannelCall {
 	return s.ChannelCall
 }
 
@@ -222,22 +222,22 @@ type EventSelector struct {
 	Annotations    map[string]string  `json:"annotations,omitempty"`
 }
 
-func (s *EventSelector) GetActions() []EventAction {
+func (s EventSelector) GetActions() []EventAction {
 	return s.Actions
 }
-func (s *EventSelector) GetRecordSelector() *BooleanExpression {
+func (s EventSelector) GetRecordSelector() *BooleanExpression {
 	return s.RecordSelector
 }
-func (s *EventSelector) GetNamespaces() []string {
+func (s EventSelector) GetNamespaces() []string {
 	return s.Namespaces
 }
-func (s *EventSelector) GetResources() []string {
+func (s EventSelector) GetResources() []string {
 	return s.Resources
 }
-func (s *EventSelector) GetIds() []string {
+func (s EventSelector) GetIds() []string {
 	return s.Ids
 }
-func (s *EventSelector) GetAnnotations() map[string]string {
+func (s EventSelector) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 
@@ -248,16 +248,16 @@ type RecordSearchParams struct {
 	ResolveReferences []string           `json:"resolveReferences,omitempty"`
 }
 
-func (s *RecordSearchParams) GetQuery() *BooleanExpression {
+func (s RecordSearchParams) GetQuery() *BooleanExpression {
 	return s.Query
 }
-func (s *RecordSearchParams) GetLimit() *int32 {
+func (s RecordSearchParams) GetLimit() *int32 {
 	return s.Limit
 }
-func (s *RecordSearchParams) GetOffset() *int32 {
+func (s RecordSearchParams) GetOffset() *int32 {
 	return s.Offset
 }
-func (s *RecordSearchParams) GetResolveReferences() []string {
+func (s RecordSearchParams) GetResolveReferences() []string {
 	return s.ResolveReferences
 }
 
@@ -280,52 +280,52 @@ type Event struct {
 	Error              *Error              `json:"error,omitempty"`
 }
 
-func (s *Event) GetId() string {
+func (s Event) GetId() string {
 	return s.Id
 }
-func (s *Event) GetAction() ExtensionAction {
+func (s Event) GetAction() ExtensionAction {
 	return s.Action
 }
-func (s *Event) GetRecordSearchParams() *RecordSearchParams {
+func (s Event) GetRecordSearchParams() *RecordSearchParams {
 	return s.RecordSearchParams
 }
-func (s *Event) GetActionSummary() *string {
+func (s Event) GetActionSummary() *string {
 	return s.ActionSummary
 }
-func (s *Event) GetActionDescription() *string {
+func (s Event) GetActionDescription() *string {
 	return s.ActionDescription
 }
-func (s *Event) GetResource() *Resource {
+func (s Event) GetResource() *Resource {
 	return s.Resource
 }
-func (s *Event) GetRecords() []*Record {
+func (s Event) GetRecords() []*Record {
 	return s.Records
 }
-func (s *Event) GetFinalizes() *bool {
+func (s Event) GetFinalizes() *bool {
 	return s.Finalizes
 }
-func (s *Event) GetSync() *bool {
+func (s Event) GetSync() *bool {
 	return s.Sync
 }
-func (s *Event) GetTime() *time.Time {
+func (s Event) GetTime() *time.Time {
 	return s.Time
 }
-func (s *Event) GetTotal() *int64 {
+func (s Event) GetTotal() *int64 {
 	return s.Total
 }
-func (s *Event) GetActionName() *string {
+func (s Event) GetActionName() *string {
 	return s.ActionName
 }
-func (s *Event) GetInput() interface{} {
+func (s Event) GetInput() interface{} {
 	return s.Input
 }
-func (s *Event) GetOutput() interface{} {
+func (s Event) GetOutput() interface{} {
 	return s.Output
 }
-func (s *Event) GetAnnotations() map[string]string {
+func (s Event) GetAnnotations() map[string]string {
 	return s.Annotations
 }
-func (s *Event) GetError() *Error {
+func (s Event) GetError() *Error {
 	return s.Error
 }
 
@@ -336,16 +336,16 @@ type ErrorField struct {
 	Value    interface{} `json:"value,omitempty"`
 }
 
-func (s *ErrorField) GetRecordId() *string {
+func (s ErrorField) GetRecordId() *string {
 	return s.RecordId
 }
-func (s *ErrorField) GetProperty() *string {
+func (s ErrorField) GetProperty() *string {
 	return s.Property
 }
-func (s *ErrorField) GetMessage() *string {
+func (s ErrorField) GetMessage() *string {
 	return s.Message
 }
-func (s *ErrorField) GetValue() interface{} {
+func (s ErrorField) GetValue() interface{} {
 	return s.Value
 }
 
@@ -355,13 +355,13 @@ type Error struct {
 	Fields  []ErrorField   `json:"fields,omitempty"`
 }
 
-func (s *Error) GetCode() *ExtensionCode {
+func (s Error) GetCode() *ExtensionCode {
 	return s.Code
 }
-func (s *Error) GetMessage() *string {
+func (s Error) GetMessage() *string {
 	return s.Message
 }
-func (s *Error) GetFields() []ErrorField {
+func (s Error) GetFields() []ErrorField {
 	return s.Fields
 }
 

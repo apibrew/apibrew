@@ -8,6 +8,7 @@ package resource_model
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -15,7 +16,6 @@ import (
 
 import "github.com/google/uuid"
 import "time"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 
 type PermissionMapper struct {
 }
@@ -343,6 +343,7 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 
 func (m *PermissionMapper) ToUnstructured(permission *Permission) unstructured.Unstructured {
 	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+	properties["type"] = "system/Permission"
 
 	var_Id := permission.Id
 

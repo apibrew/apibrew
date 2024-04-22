@@ -20,28 +20,28 @@ type User struct {
 	Details     interface{}    `json:"details,omitempty"`
 }
 
-func (s *User) GetId() *uuid.UUID {
+func (s User) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *User) GetVersion() int32 {
+func (s User) GetVersion() int32 {
 	return s.Version
 }
-func (s *User) GetAuditData() *UserAuditData {
+func (s User) GetAuditData() *UserAuditData {
 	return s.AuditData
 }
-func (s *User) GetUsername() string {
+func (s User) GetUsername() string {
 	return s.Username
 }
-func (s *User) GetPassword() *string {
+func (s User) GetPassword() *string {
 	return s.Password
 }
-func (s *User) GetRoles() []*Role {
+func (s User) GetRoles() []*Role {
 	return s.Roles
 }
-func (s *User) GetPermissions() []*Permission {
+func (s User) GetPermissions() []*Permission {
 	return s.Permissions
 }
-func (s *User) GetDetails() interface{} {
+func (s User) GetDetails() interface{} {
 	return s.Details
 }
 
@@ -52,15 +52,15 @@ type UserAuditData struct {
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
-func (s *UserAuditData) GetCreatedBy() *string {
+func (s UserAuditData) GetCreatedBy() *string {
 	return s.CreatedBy
 }
-func (s *UserAuditData) GetUpdatedBy() *string {
+func (s UserAuditData) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
-func (s *UserAuditData) GetCreatedOn() *time.Time {
+func (s UserAuditData) GetCreatedOn() *time.Time {
 	return s.CreatedOn
 }
-func (s *UserAuditData) GetUpdatedOn() *time.Time {
+func (s UserAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }

@@ -14,12 +14,12 @@ type Record struct {
 	PackedProperties []interface{} `json:"packedProperties,omitempty"`
 }
 
-func (s *Record) GetId() *uuid.UUID {
+func (s Record) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Record) GetProperties() interface{} {
+func (s Record) GetProperties() interface{} {
 	return s.Properties
 }
-func (s *Record) GetPackedProperties() []interface{} {
+func (s Record) GetPackedProperties() []interface{} {
 	return s.PackedProperties
 }

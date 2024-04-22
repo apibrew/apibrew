@@ -19,25 +19,25 @@ type DataSource struct {
 	Options     map[string]string    `json:"options,omitempty"`
 }
 
-func (s *DataSource) GetId() *uuid.UUID {
+func (s DataSource) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *DataSource) GetVersion() int32 {
+func (s DataSource) GetVersion() int32 {
 	return s.Version
 }
-func (s *DataSource) GetAuditData() *DataSourceAuditData {
+func (s DataSource) GetAuditData() *DataSourceAuditData {
 	return s.AuditData
 }
-func (s *DataSource) GetName() string {
+func (s DataSource) GetName() string {
 	return s.Name
 }
-func (s *DataSource) GetDescription() string {
+func (s DataSource) GetDescription() string {
 	return s.Description
 }
-func (s *DataSource) GetBackend() DataSourceBackend {
+func (s DataSource) GetBackend() DataSourceBackend {
 	return s.Backend
 }
-func (s *DataSource) GetOptions() map[string]string {
+func (s DataSource) GetOptions() map[string]string {
 	return s.Options
 }
 
@@ -48,16 +48,16 @@ type DataSourceAuditData struct {
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
-func (s *DataSourceAuditData) GetCreatedBy() *string {
+func (s DataSourceAuditData) GetCreatedBy() *string {
 	return s.CreatedBy
 }
-func (s *DataSourceAuditData) GetUpdatedBy() *string {
+func (s DataSourceAuditData) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
-func (s *DataSourceAuditData) GetCreatedOn() *time.Time {
+func (s DataSourceAuditData) GetCreatedOn() *time.Time {
 	return s.CreatedOn
 }
-func (s *DataSourceAuditData) GetUpdatedOn() *time.Time {
+func (s DataSourceAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
 

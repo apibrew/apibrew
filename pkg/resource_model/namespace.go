@@ -18,22 +18,22 @@ type Namespace struct {
 	Details     interface{}         `json:"details,omitempty"`
 }
 
-func (s *Namespace) GetId() *uuid.UUID {
+func (s Namespace) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Namespace) GetVersion() int32 {
+func (s Namespace) GetVersion() int32 {
 	return s.Version
 }
-func (s *Namespace) GetAuditData() *NamespaceAuditData {
+func (s Namespace) GetAuditData() *NamespaceAuditData {
 	return s.AuditData
 }
-func (s *Namespace) GetName() string {
+func (s Namespace) GetName() string {
 	return s.Name
 }
-func (s *Namespace) GetDescription() *string {
+func (s Namespace) GetDescription() *string {
 	return s.Description
 }
-func (s *Namespace) GetDetails() interface{} {
+func (s Namespace) GetDetails() interface{} {
 	return s.Details
 }
 
@@ -44,15 +44,15 @@ type NamespaceAuditData struct {
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
-func (s *NamespaceAuditData) GetCreatedBy() *string {
+func (s NamespaceAuditData) GetCreatedBy() *string {
 	return s.CreatedBy
 }
-func (s *NamespaceAuditData) GetUpdatedBy() *string {
+func (s NamespaceAuditData) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
-func (s *NamespaceAuditData) GetCreatedOn() *time.Time {
+func (s NamespaceAuditData) GetCreatedOn() *time.Time {
 	return s.CreatedOn
 }
-func (s *NamespaceAuditData) GetUpdatedOn() *time.Time {
+func (s NamespaceAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }

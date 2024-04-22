@@ -25,43 +25,43 @@ type Permission struct {
 	LocalFlags     interface{}          `json:"localFlags,omitempty"`
 }
 
-func (s *Permission) GetId() *uuid.UUID {
+func (s Permission) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *Permission) GetVersion() int32 {
+func (s Permission) GetVersion() int32 {
 	return s.Version
 }
-func (s *Permission) GetAuditData() *PermissionAuditData {
+func (s Permission) GetAuditData() *PermissionAuditData {
 	return s.AuditData
 }
-func (s *Permission) GetNamespace() *string {
+func (s Permission) GetNamespace() *string {
 	return s.Namespace
 }
-func (s *Permission) GetResource() *string {
+func (s Permission) GetResource() *string {
 	return s.Resource
 }
-func (s *Permission) GetRecordSelector() *BooleanExpression {
+func (s Permission) GetRecordSelector() *BooleanExpression {
 	return s.RecordSelector
 }
-func (s *Permission) GetOperation() PermissionOperation {
+func (s Permission) GetOperation() PermissionOperation {
 	return s.Operation
 }
-func (s *Permission) GetBefore() *time.Time {
+func (s Permission) GetBefore() *time.Time {
 	return s.Before
 }
-func (s *Permission) GetAfter() *time.Time {
+func (s Permission) GetAfter() *time.Time {
 	return s.After
 }
-func (s *Permission) GetUser() *User {
+func (s Permission) GetUser() *User {
 	return s.User
 }
-func (s *Permission) GetRole() *Role {
+func (s Permission) GetRole() *Role {
 	return s.Role
 }
-func (s *Permission) GetPermit() PermissionPermit {
+func (s Permission) GetPermit() PermissionPermit {
 	return s.Permit
 }
-func (s *Permission) GetLocalFlags() interface{} {
+func (s Permission) GetLocalFlags() interface{} {
 	return s.LocalFlags
 }
 
@@ -72,16 +72,16 @@ type PermissionAuditData struct {
 	UpdatedOn *time.Time `json:"updatedOn,omitempty"`
 }
 
-func (s *PermissionAuditData) GetCreatedBy() *string {
+func (s PermissionAuditData) GetCreatedBy() *string {
 	return s.CreatedBy
 }
-func (s *PermissionAuditData) GetUpdatedBy() *string {
+func (s PermissionAuditData) GetUpdatedBy() *string {
 	return s.UpdatedBy
 }
-func (s *PermissionAuditData) GetCreatedOn() *time.Time {
+func (s PermissionAuditData) GetCreatedOn() *time.Time {
 	return s.CreatedOn
 }
-func (s *PermissionAuditData) GetUpdatedOn() *time.Time {
+func (s PermissionAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
 

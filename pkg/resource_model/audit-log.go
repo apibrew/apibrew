@@ -22,34 +22,34 @@ type AuditLog struct {
 	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
-func (s *AuditLog) GetId() *uuid.UUID {
+func (s AuditLog) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s *AuditLog) GetVersion() int32 {
+func (s AuditLog) GetVersion() int32 {
 	return s.Version
 }
-func (s *AuditLog) GetNamespace() string {
+func (s AuditLog) GetNamespace() string {
 	return s.Namespace
 }
-func (s *AuditLog) GetResource() string {
+func (s AuditLog) GetResource() string {
 	return s.Resource
 }
-func (s *AuditLog) GetRecordId() string {
+func (s AuditLog) GetRecordId() string {
 	return s.RecordId
 }
-func (s *AuditLog) GetTime() time.Time {
+func (s AuditLog) GetTime() time.Time {
 	return s.Time
 }
-func (s *AuditLog) GetUsername() string {
+func (s AuditLog) GetUsername() string {
 	return s.Username
 }
-func (s *AuditLog) GetOperation() AuditLogOperation {
+func (s AuditLog) GetOperation() AuditLogOperation {
 	return s.Operation
 }
-func (s *AuditLog) GetProperties() interface{} {
+func (s AuditLog) GetProperties() interface{} {
 	return s.Properties
 }
-func (s *AuditLog) GetAnnotations() map[string]string {
+func (s AuditLog) GetAnnotations() map[string]string {
 	return s.Annotations
 }
 

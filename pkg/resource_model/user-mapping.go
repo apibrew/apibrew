@@ -8,13 +8,13 @@ package resource_model
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 import "github.com/google/uuid"
-import "github.com/apibrew/apibrew/pkg/formats/unstructured"
 import "time"
 
 type UserMapper struct {
@@ -266,6 +266,7 @@ func (m *UserMapper) FromProperties(properties map[string]*structpb.Value) *User
 
 func (m *UserMapper) ToUnstructured(user *User) unstructured.Unstructured {
 	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+	properties["type"] = "system/User"
 
 	var_Id := user.Id
 

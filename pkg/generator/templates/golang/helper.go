@@ -43,14 +43,12 @@ func getImportsForResourceDef(resource *model.Resource) []string {
 }
 
 func getImportsForMapping(resource *model.Resource) []string {
-	imports := []string{}
+	var imports []string
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
 		if prop.Type == model.ResourceProperty_UUID {
 			imports = append(imports, "github.com/google/uuid")
 		} else if prop.Type == model.ResourceProperty_TIMESTAMP || prop.Type == model.ResourceProperty_TIME || prop.Type == model.ResourceProperty_DATE {
 			imports = append(imports, "time")
-		} else if prop.Type == model.ResourceProperty_OBJECT {
-			imports = append(imports, "github.com/apibrew/apibrew/pkg/formats/unstructured")
 		}
 	})
 

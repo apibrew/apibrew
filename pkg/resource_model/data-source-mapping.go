@@ -236,6 +236,7 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 
 func (m *DataSourceMapper) ToUnstructured(dataSource *DataSource) unstructured.Unstructured {
 	var properties unstructured.Unstructured = make(unstructured.Unstructured)
+	properties["type"] = "system/DataSource"
 
 	var_Id := dataSource.Id
 
