@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/resources"
-	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -298,7 +297,7 @@ func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructu
 		if err != nil {
 			return nil, err
 		}
-		record = mapping.ResourceToRecord(result)
+		resourceModel = extramappings.ResourceTo(result)
 	case Update:
 		err := a.resourceService.Update(ctx, resource, true, false)
 
@@ -313,29 +312,25 @@ func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructu
 		}
 
 		if errors.ResourceNotFoundError.Is(err) || result == nil { // create
-			result, err := a.resourceService.Create(ctx, resource, true, false)
+			result, err = a.resourceService.Create(ctx, resource, true, false)
 
 			if err != nil {
 				return nil, err
 			}
-			record = mapping.ResourceToRecord(result)
 		} else {
 			resource.Id = result.Id
-			err := a.resourceService.Update(ctx, resource, true, false)
+			err = a.resourceService.Update(ctx, resource, true, false)
 
 			if err != nil {
 				return nil, err
 			}
 		}
+		resourceModel = extramappings.ResourceTo(result)
 	default:
 		return nil, errors.InternalError.WithMessage("Unknown save mode")
 	}
 
-	processedRecordObj, err2 := unstructured.FromRecord(record)
-
-	if err2 != nil {
-		return nil, errors.RecordValidationError.WithMessage(err2.Error())
-	}
+	processedRecordObj := resource_model.ResourceMapperInstance.ToUnstructured(resourceModel)
 
 	return processedRecordObj, nil
 }
