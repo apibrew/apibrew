@@ -37,7 +37,9 @@
 {%- func UGenerateResourceMappingBodyCode(pkg string, resource *model.Resource, typeName string, properties []*model.ResourceProperty, resources []*model.Resource) -%}
 func (m *{%s typeName %}Mapper) ToUnstructured({%= GoVarName(typeName)%} *{%s typeName %}) unstructured.Unstructured {
     var properties unstructured.Unstructured = make(unstructured.Unstructured)
+    {%- if GoName(resource.Name) == typeName -%}
     properties["type"] = "{%s resource.Namespace %}/{%s resource.Name %}"
+    {%- endif -%}
 
     {%- for _, property := range properties -%}
     {% code varName := "var_" + GoName(property.Name) %}

@@ -450,7 +450,6 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 					backRef := refProp.Property.BackReference
 
 					var backRefNewRecords []*model.Record
-					var backRefUpdatedRecords []*model.Record
 
 					var ids []string
 
@@ -475,15 +474,10 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 								st.Fields[backRef.Property] = structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
 									"id": structpb.NewStringValue(util.GetRecordId(record)),
 								}})
-								if st.Fields["id"] != nil {
-									backRefUpdatedRecords = append(backRefUpdatedRecords, &model.Record{
-										Properties: st.Fields,
-									})
-								} else {
-									backRefNewRecords = append(backRefNewRecords, &model.Record{
-										Properties: st.Fields,
-									})
-								}
+
+								backRefNewRecords = append(backRefNewRecords, &model.Record{
+									Properties: st.Fields,
+								})
 							}
 						}
 					}
@@ -528,16 +522,6 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 							Namespace: refProp.Property.Reference.Namespace,
 							Resource:  refProp.Property.Reference.Resource,
 							Records:   backRefNewRecords,
-						}); err != nil {
-							return err
-						}
-					}
-
-					if len(backRefUpdatedRecords) > 0 {
-						if _, err := r.Update(ctx, service.RecordUpdateParams{
-							Namespace: refProp.Property.Reference.Namespace,
-							Resource:  refProp.Property.Reference.Resource,
-							Records:   backRefUpdatedRecords,
 						}); err != nil {
 							return err
 						}
