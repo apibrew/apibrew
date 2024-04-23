@@ -32,6 +32,7 @@ type App struct {
 	auditService             service.AuditService
 	statsService             service.StatsService
 	modules                  []service.Module
+	init                     bool
 }
 
 func (app *App) GetBackendEventHandler() interface{} {
@@ -118,6 +119,7 @@ func (app *App) Init() <-chan interface{} {
 		app.initData()
 
 		initSignal <- nil
+		app.init = true
 	}()
 
 	return initSignal
@@ -169,5 +171,11 @@ func (app *App) CheckInitData(config *model.AppConfig) {
 }
 
 func (app *App) RegisterModule(moduleConstructor service.ModuleConstructor) {
-	app.modules = append(app.modules, moduleConstructor(app))
+	var md = moduleConstructor(app)
+	app.modules = append(app.modules, md)
+
+	// init module if app is already initialized
+	if app.init {
+		md.Init()
+	}
 }
