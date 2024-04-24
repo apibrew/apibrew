@@ -22,24 +22,22 @@ import (
 )
 
 type recordService struct {
-	ServiceName            string
-	resourceService        service.ResourceService
-	backendServiceProvider service.BackendProviderService
-	authorizationService   service.AuthorizationService
-	backendEventHandler    backend_event_handler.BackendEventHandler
+	ServiceName          string
+	resourceService      service.ResourceService
+	authorizationService service.AuthorizationService
+	backendEventHandler  backend_event_handler.BackendEventHandler
 }
 
 func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError) {
 	return util.PrepareQuery(resource, queryMap)
 }
 
-func NewRecordService(resourceService service.ResourceService, backendProviderService service.BackendProviderService, authorizationService service.AuthorizationService, backendEventHandler backend_event_handler.BackendEventHandler) service.RecordService {
+func NewRecordService(resourceService service.ResourceService, authorizationService service.AuthorizationService, backendEventHandler backend_event_handler.BackendEventHandler) service.RecordService {
 	return &recordService{
-		ServiceName:            "RecordService",
-		resourceService:        resourceService,
-		backendServiceProvider: backendProviderService,
-		authorizationService:   authorizationService,
-		backendEventHandler:    backendEventHandler,
+		ServiceName:          "RecordService",
+		resourceService:      resourceService,
+		authorizationService: authorizationService,
+		backendEventHandler:  backendEventHandler,
 	}
 }
 
@@ -103,7 +101,7 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		}
 	}
 
-	records, total, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
+	records, total, err := r.listRecords(ctx, resource, abs.ListRecordParams{
 		Query:       params.Query,
 		Limit:       params.Limit,
 		Offset:      params.Offset,
@@ -201,7 +199,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 		return nil, nil
 	}
 
-	records, err = r.backendServiceProvider.AddRecords(txCtx, resource, params.Records)
+	records, err = r.addRecords(txCtx, resource, params.Records)
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) && annotations.IsEnabledOnCtx(ctx, annotations.IgnoreIfExists) {
 		return nil, errors.RecordValidationError.WithMessage("IgnoreIfExists must be disabled if resource has keepHistory enabled")
@@ -215,7 +213,7 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
 		historyResource := util.HistoryResource(resource)
 
-		_, err = r.backendServiceProvider.AddRecords(txCtx, historyResource, records)
+		_, err = r.addRecords(txCtx, historyResource, records)
 
 		if err != nil {
 			return nil, err
@@ -419,7 +417,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 
 	var txCtx = ctx
 
-	records, err = r.backendServiceProvider.UpdateRecords(txCtx, resource, params.Records)
+	records, err = r.updateRecords(txCtx, resource, params.Records)
 
 	if err != nil {
 		return nil, err
@@ -430,7 +428,7 @@ func (r *recordService) UpdateWithResource(ctx context.Context, resource *model.
 	}
 
 	if annotations.IsEnabled(resource, annotations.KeepHistory) {
-		_, err = r.backendServiceProvider.AddRecords(txCtx, util.HistoryResource(resource), records)
+		_, err = r.addRecords(txCtx, util.HistoryResource(resource), records)
 
 		if err != nil {
 			return nil, err
@@ -578,7 +576,7 @@ func (r *recordService) GetRecord(ctx context.Context, namespace, resourceName, 
 		}
 	}
 
-	records, total, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
+	records, total, err := r.listRecords(ctx, resource, abs.ListRecordParams{
 		Query: query,
 		Limit: 1,
 	}, nil)
@@ -704,7 +702,7 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 		}
 	}
 
-	records, _, err := r.backendServiceProvider.ListRecords(ctx, resource, abs.ListRecordParams{
+	records, _, err := r.listRecords(ctx, resource, abs.ListRecordParams{
 		Query: query,
 		Limit: uint32(len(params.Ids)),
 	}, nil)
@@ -728,7 +726,7 @@ func (r *recordService) Delete(ctx context.Context, params service.RecordDeleteP
 		}
 	}
 
-	if err = r.backendServiceProvider.DeleteRecords(ctx, resource, records); err != nil {
+	if err = r.deleteRecords(ctx, resource, records); err != nil {
 		return err
 	}
 
@@ -864,4 +862,27 @@ func (r *recordService) referenceCheckHandler(ctx context.Context, event *model.
 	}
 
 	return event, nil
+}
+
+func (r *recordService) listRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
+	records, total, err := r.listRecords(ctx, resource, params, resultChan)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return records, total, nil
+
+}
+
+func (r *recordService) addRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+	return nil, nil
+}
+
+func (r *recordService) updateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+	return nil, nil
+}
+
+func (r *recordService) deleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
+	return nil
 }

@@ -30,7 +30,6 @@ type grpcServer struct {
 	resourceMigrationService service.ResourceMigrationService
 	recordService            service.RecordService
 	authenticationService    service.AuthenticationService
-	dataSourceService        service.DataSourceService
 	watchService             service.WatchService
 	eventChannelService      service.EventChannelService
 }
@@ -52,7 +51,6 @@ func (g *grpcServer) Init() {
 
 	stub.RegisterResourceServer(g.grpcServer, NewResourceServer(g.resourceService))
 	stub.RegisterAuthenticationServer(g.grpcServer, NewAuthenticationServer(g.authenticationService))
-	stub.RegisterDataSourceServer(g.grpcServer, NewDataSourceServer(g.dataSourceService))
 	stub.RegisterRecordServer(g.grpcServer, NewRecordServer(g.recordService, g.authenticationService))
 	stub.RegisterWatchServer(g.grpcServer, NewWatchServer(g.watchService, g.authenticationService))
 	stub.RegisterEventChannelServer(g.grpcServer, NewEventChannelGrpcService(g.eventChannelService, g.authenticationService))
@@ -147,7 +145,6 @@ func NewGrpcServer(container service.Container) Server {
 		recordService:            container.GetRecordService(),
 		watchService:             container.GetWatchService(),
 		authenticationService:    container.GetAuthenticationService(),
-		dataSourceService:        container.GetDataSourceService(),
 		eventChannelService:      container.GetEventChannelService(),
 	}
 }

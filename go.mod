@@ -2,8 +2,11 @@ module github.com/apibrew/apibrew
 
 go 1.20
 
+replace github.com/apibrew/sso => ../sso
+
 require (
-	github.com/apibrew/nano v1.0.14
+	github.com/apibrew/nano v1.0.15
+	github.com/apibrew/sso v0.0.0-00010101000000-000000000000
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-redis/redis v6.15.9+incompatible
@@ -96,6 +99,7 @@ require (
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
+	golang.org/x/oauth2 v0.19.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

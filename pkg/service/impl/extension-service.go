@@ -14,13 +14,12 @@ import (
 )
 
 type extensionService struct {
-	recordService          service.RecordService
-	ServiceName            string
-	backendProviderService service.BackendProviderService
-	extensionVersionMap    map[string]uint32
-	extensionHandlerMap    map[string]*backend_event_handler.Handler
-	externalService        service.ExternalService
-	backendEventHandler    backend_event_handler.BackendEventHandler
+	recordService       service.RecordService
+	ServiceName         string
+	extensionVersionMap map[string]uint32
+	extensionHandlerMap map[string]*backend_event_handler.Handler
+	externalService     service.ExternalService
+	backendEventHandler backend_event_handler.BackendEventHandler
 }
 
 func (d *extensionService) Reload() {
@@ -116,14 +115,13 @@ func (d *extensionService) prepareExtensionHandler(extension *resource_model.Ext
 	}
 }
 
-func NewExtensionService(recordService service.RecordService, backendProviderService service.BackendProviderService, backendEventHandler backend_event_handler.BackendEventHandler, externalService service.ExternalService) service.ExtensionService {
+func NewExtensionService(recordService service.RecordService, backendEventHandler backend_event_handler.BackendEventHandler, externalService service.ExternalService) service.ExtensionService {
 	return &extensionService{
-		ServiceName:            "ExtensionService",
-		extensionVersionMap:    make(map[string]uint32),
-		extensionHandlerMap:    make(map[string]*backend_event_handler.Handler),
-		recordService:          recordService,
-		backendProviderService: backendProviderService,
-		backendEventHandler:    backendEventHandler,
-		externalService:        externalService,
+		ServiceName:         "ExtensionService",
+		extensionVersionMap: make(map[string]uint32),
+		extensionHandlerMap: make(map[string]*backend_event_handler.Handler),
+		recordService:       recordService,
+		backendEventHandler: backendEventHandler,
+		externalService:     externalService,
 	}
 }

@@ -127,7 +127,7 @@ var ResourceResource = &model.Resource{
 						Name: "",
 						Type: model.ResourceProperty_STRING,
 					},
-					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"CheckVersion": structpb.NewStringValue("true"), "IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType")}}),
+					ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"IgnoreIfExists": structpb.NewStringValue("true"), "CommonType": structpb.NewStringValue("testType"), "CheckVersion": structpb.NewStringValue("true")}}),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -179,10 +179,10 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":     "true",
-				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
 				"OpenApiRestPath": "resources",
+				"EnableAudit":     "true",
+				"RestApiDisabled": "true",
 			},
 		},
 		{
@@ -215,7 +215,7 @@ var ResourceResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-04-23T02:32:16+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-04-25T00:16:31+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -224,7 +224,7 @@ var ResourceResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-04-23T02:32:16+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-04-25T00:16:31+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -233,10 +233,10 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
+				"EnableAudit":     "true",
 				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
 				"OpenApiRestPath": "resources",
-				"EnableAudit":     "true",
 			},
 		},
 		{
@@ -256,10 +256,10 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":     "true",
-				"RestApiDisabled": "true",
 				"OpenApiGroup":    "meta",
 				"OpenApiRestPath": "resources",
+				"EnableAudit":     "true",
+				"RestApiDisabled": "true",
 			},
 		},
 		{
@@ -300,10 +300,10 @@ var ResourceResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup":    "meta",
-				"OpenApiRestPath": "resources",
 				"EnableAudit":     "true",
 				"RestApiDisabled": "true",
+				"OpenApiGroup":    "meta",
+				"OpenApiRestPath": "resources",
 			},
 		},
 	},
@@ -328,15 +328,15 @@ var ResourceResource = &model.Resource{
 			ExampleValue: structpb.NewNumberValue(1),
 
 			Annotations: map[string]string{
-				"SpecialProperty":     "true",
 				"AllowEmptyPrimitive": "true",
+				"SpecialProperty":     "true",
 			},
 		},
 		{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
 			TypeRef:      util.Pointer("AuditData"),
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-04-23T02:32:16+04:00"), "updatedOn": structpb.NewStringValue("2024-04-23T02:32:16+04:00"), "createdBy": structpb.NewStringValue("admin")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-04-25T00:16:31+04:00"), "updatedOn": structpb.NewStringValue("2024-04-25T00:16:31+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

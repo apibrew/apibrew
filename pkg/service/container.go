@@ -8,7 +8,6 @@ type Container interface {
 	GetResourceService() ResourceService
 	GetMetricsService() MetricsService
 	GetResourceMigrationService() ResourceMigrationService
-	GetDataSourceService() DataSourceService
 	GetWatchService() WatchService
 	GetExtensionService() ExtensionService
 	GetBackendEventHandler() interface{}

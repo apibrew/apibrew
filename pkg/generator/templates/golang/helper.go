@@ -14,6 +14,7 @@ import (
 
 func getImportsForResource(resource *model.Resource) []string {
 	imports := []string{}
+
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
 		if prop.Type == model.ResourceProperty_UUID {
 			imports = append(imports, "github.com/google/uuid")
@@ -29,13 +30,22 @@ func getImportsForResourceDef(resource *model.Resource) []string {
 	var imports = []string{
 		"github.com/apibrew/apibrew/pkg/model",
 	}
+	var importUtil = false
+
 	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
 		if prop.DefaultValue != nil || prop.ExampleValue != nil {
 			imports = append(imports, "google.golang.org/protobuf/types/known/structpb")
 		}
+		if prop.TypeRef != nil {
+			importUtil = true
+		}
 	})
 
 	if resource.Title != nil || resource.Description != nil {
+		importUtil = true
+	}
+
+	if importUtil {
 		imports = append(imports, "github.com/apibrew/apibrew/pkg/util")
 	}
 

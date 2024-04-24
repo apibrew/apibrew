@@ -17,10 +17,8 @@ type App struct {
 	config                   *model.AppConfig
 	authenticationService    service.AuthenticationService
 	authorizationService     service.AuthorizationService
-	dataSourceService        service.DataSourceService
 	resourceService          service.ResourceService
 	recordService            service.RecordService
-	backendProviderService   service.BackendProviderService
 	stdHandler               handlers.StdHandlers
 	watchService             service.WatchService
 	resourceMigrationService service.ResourceMigrationService
@@ -67,10 +65,6 @@ func (app *App) GetResourceService() service.ResourceService {
 	return app.resourceService
 }
 
-func (app *App) GetDataSourceService() service.DataSourceService {
-	return app.dataSourceService
-}
-
 func (app *App) GetExtensionService() service.ExtensionService {
 	return app.extensionService
 }
@@ -92,18 +86,16 @@ func (app *App) Init() <-chan interface{} {
 
 	app.backendEventHandler = backend_event_handler.NewBackendEventHandler(app.authorizationService)
 
-	app.backendProviderService = NewBackendProviderService(app.backendEventHandler)
 	app.resourceMigrationService = NewResourceMigrationService()
 
-	app.resourceService = NewResourceService(app.backendProviderService, app.resourceMigrationService, app.authorizationService)
-	app.recordService = NewRecordService(app.resourceService, app.backendProviderService, app.authorizationService, app.backendEventHandler)
+	app.resourceService = NewResourceService(app.resourceMigrationService, app.authorizationService)
+	app.recordService = NewRecordService(app.resourceService, app.authorizationService, app.backendEventHandler)
 
-	app.dataSourceService = NewDataSourceService(app.resourceService, app.recordService, app.backendProviderService)
 	app.eventChannelService = NewEventChannelService(app.authorizationService)
 	app.externalService = NewExternalService(app.eventChannelService)
-	app.extensionService = NewExtensionService(app.recordService, app.backendProviderService, app.backendEventHandler, app.externalService)
+	app.extensionService = NewExtensionService(app.recordService, app.backendEventHandler, app.externalService)
 
-	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler, app.backendProviderService, app.extensionService)
+	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler, app.extensionService)
 	app.watchService = NewWatchService(app.backendEventHandler, app.authorizationService, app.resourceService)
 	app.authenticationService = NewAuthenticationService(app.recordService)
 	app.metricsService = NewMetricService(app.recordService, app.resourceService)
@@ -126,11 +118,9 @@ func (app *App) Init() <-chan interface{} {
 }
 
 func (app *App) initServices() {
-	app.backendProviderService.Init(app.config)
 	app.stdHandler.Init(app.config)
 	app.resourceService.Init(app.config)
 	app.recordService.Init(app.config)
-	app.dataSourceService.Init(app.config)
 	app.authenticationService.Init(app.config)
 	app.metricsService.Init(app.config)
 	app.extensionService.Init(app.config)

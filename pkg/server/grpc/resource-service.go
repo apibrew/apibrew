@@ -88,14 +88,6 @@ func (r resourceGrpcService) GetSystemResource(ctx context.Context, request *stu
 	}, util.ToStatusError(err)
 }
 
-func (r resourceGrpcService) PrepareResourceMigrationPlan(ctx context.Context, request *stub.PrepareResourceMigrationPlanRequest) (*stub.PrepareResourceMigrationPlanResponse, error) {
-	plans, err := r.resourceService.PrepareResourceMigrationPlan(annotations.WithContext(ctx, request), request.Resources, request.PrepareFromDataSource)
-
-	return &stub.PrepareResourceMigrationPlanResponse{
-		Plans: plans,
-	}, util.ToStatusError(err)
-}
-
 func NewResourceServer(resourceService service.ResourceService) stub.ResourceServer {
 	return &resourceGrpcService{resourceService: resourceService}
 }

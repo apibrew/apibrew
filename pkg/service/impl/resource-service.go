@@ -21,7 +21,6 @@ import (
 )
 
 type resourceService struct {
-	backendProviderService   service.BackendProviderService
 	schema                   abs.Schema
 	resourceMigrationService service.ResourceMigrationService
 	mu                       sync.Mutex
@@ -114,49 +113,9 @@ func (r *resourceService) GetSchema() *abs.Schema {
 	return &r.schema
 }
 
-func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError) {
-	r.mu.Lock()
-	defer func() {
-		r.mu.Unlock()
-	}()
-
-	var result []*model.ResourceMigrationPlan
-
-	for _, resource := range resources {
-		var existingResource *model.Resource
-		var err errors.ServiceError
-
-		if prepareFromDataSource {
-			existingResource, err = r.backendProviderService.PrepareResourceFromEntity(ctx, "system", resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
-
-			if err != nil {
-				if !errors.RecordNotFoundError.Is(err) {
-					return nil, err
-				}
-			}
-		} else {
-			existingResource, err = r.Get(ctx, resource.Id)
-
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		plan, err := r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)
-
-		if err != nil {
-			return nil, err
-		}
-
-		result = append(result, plan)
-	}
-
-	return result, nil
-}
-
 func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError {
 	ctx = annotations.SetWithContext(ctx, annotations.UseJoinTable, "true") // O(1)
-	records, _, err := r.backendProviderService.ListRecords(ctx, resources.ResourceResource, abs.ListRecordParams{
+	records, _, err := r.listRecords(ctx, resources.ResourceResource, abs.ListRecordParams{
 		Limit: 1000000,
 		ResolveReferences: []string{
 			"dataSource",
@@ -264,7 +223,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		PrepareUpdateForRecord(ctx, resources.ResourceResource, record)
 	}
 
-	if _, err = r.backendProviderService.UpdateRecords(ctx, resources.ResourceResource, resourceRecords); err != nil {
+	if _, err = r.updateRecords(ctx, resources.ResourceResource, resourceRecords); err != nil {
 		return err
 	}
 
@@ -755,14 +714,11 @@ func (r *resourceService) validateMigration(ctx context.Context, resource *model
 	return nil
 }
 
-func NewResourceService(backendProviderService service.BackendProviderService, resourceMigrationService service.ResourceMigrationService, authorizationService service.AuthorizationService) service.ResourceService {
+func NewResourceService(resourceMigrationService service.ResourceMigrationService, authorizationService service.AuthorizationService) service.ResourceService {
 	srv := &resourceService{
-		backendProviderService:   backendProviderService,
 		resourceMigrationService: resourceMigrationService,
 		authorizationService:     authorizationService,
 	}
-
-	backendProviderService.SetSchema(&srv.schema)
 
 	return srv
 }

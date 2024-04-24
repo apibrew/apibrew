@@ -12,21 +12,18 @@ type StdHandlers interface {
 
 type stdHandlers struct {
 	backendEventHandler backend_event_handler.BackendEventHandler
-	dataSourceHandler   *dataSourceHandler
 	userHandler         *userHandler
 	extensionHandler    *extensionHandler
 }
 
 func (s *stdHandlers) Init(config *model.AppConfig) {
-	s.dataSourceHandler.Register(s.backendEventHandler)
 	s.userHandler.Register(s.backendEventHandler)
 	s.extensionHandler.Register(s.backendEventHandler)
 }
 
-func NewStdHandler(backendEventHandler backend_event_handler.BackendEventHandler, backendProviderService service.BackendProviderService, extensionService service.ExtensionService) StdHandlers {
+func NewStdHandler(backendEventHandler backend_event_handler.BackendEventHandler, extensionService service.ExtensionService) StdHandlers {
 	return &stdHandlers{
 		backendEventHandler: backendEventHandler,
-		dataSourceHandler:   &dataSourceHandler{backendProviderService: backendProviderService},
 		userHandler:         &userHandler{},
 		extensionHandler:    &extensionHandler{extensionService: extensionService},
 	}

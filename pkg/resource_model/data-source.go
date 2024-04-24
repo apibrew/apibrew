@@ -15,7 +15,7 @@ type DataSource struct {
 	AuditData   *DataSourceAuditData `json:"auditData,omitempty"`
 	Name        string               `json:"name,omitempty"`
 	Description string               `json:"description,omitempty"`
-	Backend     DataSourceBackend    `json:"backend,omitempty"`
+	Backend     string               `json:"backend,omitempty"`
 	Options     map[string]string    `json:"options,omitempty"`
 }
 
@@ -34,7 +34,7 @@ func (s DataSource) GetName() string {
 func (s DataSource) GetDescription() string {
 	return s.Description
 }
-func (s DataSource) GetBackend() DataSourceBackend {
+func (s DataSource) GetBackend() string {
 	return s.Backend
 }
 func (s DataSource) GetOptions() map[string]string {
@@ -60,13 +60,3 @@ func (s DataSourceAuditData) GetCreatedOn() *time.Time {
 func (s DataSourceAuditData) GetUpdatedOn() *time.Time {
 	return s.UpdatedOn
 }
-
-type DataSourceBackend string
-
-const (
-	DataSourceBackend_POSTGRESQL DataSourceBackend = "POSTGRESQL"
-	DataSourceBackend_MYSQL      DataSourceBackend = "MYSQL"
-	DataSourceBackend_MONGODB    DataSourceBackend = "MONGODB"
-	DataSourceBackend_REDIS      DataSourceBackend = "REDIS"
-	DataSourceBackend_SQLITE     DataSourceBackend = "SQLITE"
-)

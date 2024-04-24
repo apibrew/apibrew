@@ -29,26 +29,6 @@ type AuthorizationService interface {
 	CheckIsExtensionController(ctx context.Context) errors.ServiceError
 }
 
-type BackendProviderService interface {
-	abs.BackendRecordsInterface
-	abs.BackendActionExecutor
-	DestroyDataSource(ctx context.Context, dataSourceName string) errors.ServiceError
-	ListEntities(ctx context.Context, dataSourceId string) ([]*model.DataSourceCatalog, errors.ServiceError)
-	PrepareResourceFromEntity(ctx context.Context, dataSourceName string, catalog, entity string) (*model.Resource, errors.ServiceError)
-	UpgradeResource(ctx context.Context, dataSourceName string, params abs.UpgradeResourceParams) errors.ServiceError
-	GetStatus(ctx context.Context, dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
-	Init(config *model.AppConfig)
-	SetSchema(schema *abs.Schema)
-}
-
-type DataSourceService interface {
-	Init(config *model.AppConfig)
-	ListEntities(ctx context.Context, id string) ([]*model.DataSourceCatalog, errors.ServiceError)
-	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
-	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, catalog, entity string) (*model.Resource, errors.ServiceError)
-	Delete(ctx context.Context, ids []string) errors.ServiceError
-}
-
 type RecordService interface {
 	Init(config *model.AppConfig)
 	PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError)
@@ -74,7 +54,6 @@ type ResourceService interface {
 	List(ctx context.Context) ([]*model.Resource, errors.ServiceError)
 	Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError)
 	GetSchema() *abs.Schema
-	PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError)
 	LocateReferences(resource *model.Resource, resolve []string) []string
 	LocateLocalReferences(resource *model.Resource) []string
 	LocateResourceByReference(resource *model.Resource, reference *model.Reference) *model.Resource
