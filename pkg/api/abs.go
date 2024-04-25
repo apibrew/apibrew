@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 )
@@ -11,13 +10,13 @@ import (
 // Api interface is a facade for all api services
 // /*
 type Interface interface {
-	Create(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError)
-	Update(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError)
-	Apply(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError)
-	Load(ctx context.Context, record unstructured.Unstructured, params LoadParams) (unstructured.Unstructured, errors.ServiceError)
-	Delete(ctx context.Context, record unstructured.Unstructured) errors.ServiceError
-	List(ctx context.Context, params ListParams) (RecordListResult, errors.ServiceError)
-	GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, errors.ServiceError)
+	Create(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, error)
+	Update(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, error)
+	Apply(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, error)
+	Load(ctx context.Context, record unstructured.Unstructured, params LoadParams) (unstructured.Unstructured, error)
+	Delete(ctx context.Context, record unstructured.Unstructured) error
+	List(ctx context.Context, params ListParams) (RecordListResult, error)
+	GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, error)
 }
 
 type RecordListResult struct {

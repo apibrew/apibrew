@@ -2,7 +2,6 @@ package impl
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -104,7 +103,7 @@ func (d *extensionService) prepareExtensionHandler(extension *resource_model.Ext
 		Finalizes: extension.Finalizes,
 		Sync:      extension.Sync,
 		Responds:  extension.Responds,
-		Fn: func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+		Fn: func(ctx context.Context, event *model.Event) (*model.Event, error) {
 			if event.Annotations == nil {
 				event.Annotations = make(map[string]string)
 			}

@@ -1,9 +1,5 @@
 package util
 
-import (
-	"github.com/apibrew/apibrew/pkg/errors"
-)
-
 func FlatMap[T interface{}](arr ...[]T) []T {
 	var list []T
 
@@ -77,7 +73,7 @@ func ArrayMapToId[T HasId](arr []T) []string {
 	})
 }
 
-func ArrayMapWithError[T interface{}, R interface{}](arr []T, mapper func(T) (R, errors.ServiceError)) ([]R, errors.ServiceError) {
+func ArrayMapWithError[T interface{}, R interface{}](arr []T, mapper func(T) (R, error)) ([]R, error) {
 	var list []R
 
 	for _, item := range arr {

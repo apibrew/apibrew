@@ -29,6 +29,10 @@ type serviceError struct {
 	grpcErrorCode codes.Code
 }
 
+func (s serviceError) GetCode() model.ErrorCode {
+	return s.code
+}
+
 func (s serviceError) GetFullMessage() string {
 	message := s.message
 
@@ -125,6 +129,19 @@ func getErrorCode(err error) model.ErrorCode {
 
 func NewServiceError(code model.ErrorCode, message string, grpcErrorCode codes.Code) ServiceError {
 	return &serviceError{code: code, message: message, grpcErrorCode: grpcErrorCode}
+}
+
+func FromServiceError(err error) ServiceError {
+	if err == nil {
+		return nil
+	}
+	serr, ok := err.(ServiceError)
+
+	if !ok {
+		return NewServiceError(model.ErrorCode_UNKNOWN_ERROR, err.Error(), codes.Unknown)
+	}
+
+	return serr
 }
 
 func FromGrpcError(err error) ServiceError {

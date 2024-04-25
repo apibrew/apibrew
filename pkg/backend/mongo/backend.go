@@ -25,14 +25,14 @@ func (r *mongoBackend) SetSchema(schema *abs.Schema) {
 	r.schema = schema
 }
 
-func (r mongoBackend) handleError(err error) errors.ServiceError {
+func (r mongoBackend) handleError(err error) error {
 	if mongo.ErrNoDocuments == err {
 		return errors.RecordNotFoundError
 	}
 	return errors.InternalError.WithDetails(err.Error())
 }
 
-func (r mongoBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
+func (r mongoBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err error) {
 	var rp = new(readpref.ReadPref)
 	perr := r.client.Ping(ctx, rp)
 
@@ -55,7 +55,7 @@ func (r mongoBackend) DestroyDataSource(ctx context.Context) {
 	}
 }
 
-func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (r mongoBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error) {
 	var documents []interface{}
 	for _, record := range records {
 		documents = append(documents, r.recordToDocument(resource, record))
@@ -83,7 +83,7 @@ func (r mongoBackend) recordToDocument(resource *model.Resource, record *model.R
 	return data
 }
 
-func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error) {
 	for _, record := range records {
 		var filter = bson.M{}
 		var update = bson.M{}
@@ -116,7 +116,7 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 	return records, nil
 }
 
-func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
+func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, error) {
 	res := r.getCollection(resource).FindOne(ctx, bson.M{
 		"id": id,
 	})
@@ -142,7 +142,7 @@ func (r mongoBackend) GetRecord(ctx context.Context, resource *model.Resource, i
 	return record, nil
 }
 
-func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string]interface{}) (*model.Record, errors.ServiceError) {
+func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string]interface{}) (*model.Record, error) {
 	var record = new(model.Record)
 	record.Properties = make(map[string]*structpb.Value)
 
@@ -162,7 +162,7 @@ func (r mongoBackend) documentToRecord(resource *model.Resource, data map[string
 	return record, nil
 }
 
-func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
+func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) error {
 	var ids = util.ArrayMap(records, func(record *model.Record) string {
 		return util.GetRecordId(record)
 	})
@@ -181,7 +181,7 @@ func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (r mongoBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, _ chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
+func (r mongoBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, _ chan<- *model.Record) ([]*model.Record, uint32, error) {
 	var filter bson.M = nil
 
 	if params.Query != nil {
@@ -237,15 +237,15 @@ func (r mongoBackend) expressionToMongoFilter(expression *model.BooleanExpressio
 	return filter
 }
 
-func (r mongoBackend) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError) {
+func (r mongoBackend) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, error) {
 	return nil, errors.UnsupportedOperation
 }
 
-func (r mongoBackend) PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError) {
+func (r mongoBackend) PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, error) {
 	return nil, errors.UnsupportedOperation
 }
 
-func (r mongoBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) errors.ServiceError {
+func (r mongoBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) error {
 	for _, step := range params.MigrationPlan.Steps {
 		switch step.Kind.(type) {
 		case *model.ResourceMigrationStep_CreateResource:
@@ -260,19 +260,19 @@ func (r mongoBackend) UpgradeResource(ctx context.Context, params abs.UpgradeRes
 	return nil
 }
 
-func (r mongoBackend) BeginTransaction(ctx context.Context, readOnly bool) (transactionKey string, serviceError errors.ServiceError) {
+func (r mongoBackend) BeginTransaction(ctx context.Context, readOnly bool) (transactionKey string, serviceError error) {
 	return "", nil
 }
 
-func (r mongoBackend) CommitTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+func (r mongoBackend) CommitTransaction(ctx context.Context) (serviceError error) {
 	return nil
 }
 
-func (r mongoBackend) RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+func (r mongoBackend) RollbackTransaction(ctx context.Context) (serviceError error) {
 	return nil
 }
 
-func (r mongoBackend) IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError errors.ServiceError) {
+func (r mongoBackend) IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError error) {
 	return true, nil
 }
 

@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -24,7 +23,7 @@ type OpenApiDocPrepareConfig struct {
 	Resources  []string
 }
 
-func (s *OpenApiBuilder) PrepareDoc(ctx context.Context, config OpenApiDocPrepareConfig) (*openapi3.T, errors.ServiceError) {
+func (s *OpenApiBuilder) PrepareDoc(ctx context.Context, config OpenApiDocPrepareConfig) (*openapi3.T, error) {
 	var doc = s.GetBaseDocCopy()
 
 	list, _ := s.ResourceService.List(util.WithSystemContext(ctx))

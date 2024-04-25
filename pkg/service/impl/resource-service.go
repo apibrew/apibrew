@@ -114,7 +114,7 @@ func (r *resourceService) GetSchema() *abs.Schema {
 	return &r.schema
 }
 
-func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError) {
+func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, error) {
 	r.mu.Lock()
 	defer func() {
 		r.mu.Unlock()
@@ -124,7 +124,7 @@ func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, reso
 
 	for _, resource := range resources {
 		var existingResource *model.Resource
-		var err errors.ServiceError
+		var err error
 
 		if prepareFromDataSource {
 			existingResource, err = r.backendProviderService.PrepareResourceFromEntity(ctx, "system", resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
@@ -154,7 +154,7 @@ func (r *resourceService) PrepareResourceMigrationPlan(ctx context.Context, reso
 	return result, nil
 }
 
-func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError {
+func (r *resourceService) reloadSchema(ctx context.Context) error {
 	ctx = annotations.SetWithContext(ctx, annotations.UseJoinTable, "true") // O(1)
 	records, _, err := r.backendProviderService.ListRecords(ctx, resources.ResourceResource, abs.ListRecordParams{
 		Limit: 1000000,
@@ -194,7 +194,7 @@ func (r *resourceService) reloadSchema(ctx context.Context) errors.ServiceError 
 	return nil
 }
 
-func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (err errors.ServiceError) {
+func (r *resourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (err error) {
 	r.mu.Lock()
 	defer func() {
 		r.mu.Unlock()
@@ -323,7 +323,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	return nil
 }
 
-func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (res *model.Resource, err errors.ServiceError) {
+func (r *resourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (res *model.Resource, err error) {
 	r.mu.Lock()
 	defer func() {
 		r.mu.Unlock()
@@ -371,16 +371,18 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	result, err := r.backendProviderService.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
 
-	if err != nil && err.Code() == model.ErrorCode_UNIQUE_VIOLATION {
+	var serr = errors.FromServiceError(err)
+
+	if err != nil && serr.Code() == model.ErrorCode_UNIQUE_VIOLATION {
 		return nil, errors.AlreadyExistsError.WithMessage(fmt.Sprintf("resource is already exists: " + resource.Name))
 	}
 
-	if err != nil && err.Code() == model.ErrorCode_RECORD_VALIDATION_ERROR {
-		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util.GetErrorFields(err))
+	if err != nil && serr.Code() == model.ErrorCode_RECORD_VALIDATION_ERROR {
+		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(serr.GetDetails()).WithErrorFields(util.GetErrorFields(err))
 	}
 
-	if err != nil && err.Code() == model.ErrorCode_REFERENCE_VIOLATION {
-		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(err.GetDetails()).WithErrorFields(util.GetErrorFields(err))
+	if err != nil && serr.Code() == model.ErrorCode_REFERENCE_VIOLATION {
+		return nil, errors.ResourceValidationError.WithMessage(err.Error()).WithDetails(serr.GetDetails()).WithErrorFields(util.GetErrorFields(err))
 	}
 
 	if err != nil {
@@ -470,7 +472,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 	return resource, nil
 }
 
-func (r *resourceService) GetResourceByName(ctx context.Context, namespace string, resourceName string) (*model.Resource, errors.ServiceError) {
+func (r *resourceService) GetResourceByName(ctx context.Context, namespace string, resourceName string) (*model.Resource, error) {
 	if namespace == "" {
 		namespace = "default"
 	}
@@ -497,7 +499,7 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 	return nil, errors.ResourceNotFoundError.WithDetails("Namespace: " + namespace + " resourceName: " + resourceName)
 }
 
-func (r *resourceService) GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, errors.ServiceError) {
+func (r *resourceService) GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, error) {
 	return r.GetResourceByName(ctx, "system", resourceName)
 }
 
@@ -591,7 +593,7 @@ func (r *resourceService) migrateResource(resource *model.Resource) {
 	}
 }
 
-func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
+func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) error {
 	r.mu.Lock()
 	defer func() {
 		r.mu.Unlock()
@@ -677,7 +679,7 @@ func (r *resourceService) mustReloadResources() {
 	}
 }
 
-func (r *resourceService) mustModifyResource(resource *model.Resource) errors.ServiceError {
+func (r *resourceService) mustModifyResource(resource *model.Resource) error {
 	if resource.Namespace == "system" {
 		return errors.LogicalError.WithMessage("actions on system resource is not allowed")
 	}
@@ -685,7 +687,7 @@ func (r *resourceService) mustModifyResource(resource *model.Resource) errors.Se
 	return nil
 }
 
-func (r *resourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
+func (r *resourceService) List(ctx context.Context) ([]*model.Resource, error) {
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
 		Operation: resource_model.PermissionOperation_READ,
@@ -706,7 +708,7 @@ func (r *resourceService) List(ctx context.Context) ([]*model.Resource, errors.S
 	return filteredResources, nil
 }
 
-func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError) {
+func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, error) {
 	for _, item := range r.schema.Resources {
 		if item.Id != "" && item.Id == id {
 
@@ -749,7 +751,7 @@ func (r *resourceService) mapPropertiesByType(resource *model.Resource) map[mode
 	return result
 }
 
-func (r *resourceService) validateMigration(ctx context.Context, resource *model.Resource, plan *model.ResourceMigrationPlan) errors.ServiceError {
+func (r *resourceService) validateMigration(ctx context.Context, resource *model.Resource, plan *model.ResourceMigrationPlan) error {
 	log.Print(plan)
 
 	return nil

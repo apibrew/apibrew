@@ -16,7 +16,7 @@ import (
 type resourceMigrationService struct {
 }
 
-func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingResource *model.Resource, resource *model.Resource) (*model.ResourceMigrationPlan, errors.ServiceError) {
+func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingResource *model.Resource, resource *model.Resource) (*model.ResourceMigrationPlan, error) {
 	if existingResource == nil && resource == nil {
 		return nil, errors.LogicalError.WithDetails("Both existing resource and resource cannot be nil at the same time")
 	}
@@ -56,17 +56,17 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 		resource.Properties,
 		util.IsSameIdentifiedResourceProperty,
 		util.IsSameResourceProperty,
-		func(prop *model.ResourceProperty) errors.ServiceError { // new
+		func(prop *model.ResourceProperty) error { // new
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_CreateProperty{CreateProperty: &model.ResourceMigrationCreateProperty{
 				Property: prop.Name,
 			}}})
 
 			return nil
-		}, func(e, u *model.ResourceProperty) errors.ServiceError { // update
+		}, func(e, u *model.ResourceProperty) error { // update
 			plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, u, e, "")...)
 
 			return nil
-		}, func(prop *model.ResourceProperty) errors.ServiceError { // delete
+		}, func(prop *model.ResourceProperty) error { // delete
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteProperty{DeleteProperty: &model.ResourceMigrationDeleteProperty{
 				ExistingProperty: prop.Name,
 			}}})
@@ -83,30 +83,30 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 		func(a, b *model.ResourceSubType) bool {
 			return false // to check properties always
 		},
-		func(subType *model.ResourceSubType) errors.ServiceError { // new
+		func(subType *model.ResourceSubType) error { // new
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_CreateSubType{CreateSubType: &model.ResourceMigrationCreateSubType{
 				Name: subType.Name,
 			}}})
 
 			return nil
-		}, func(e, u *model.ResourceSubType) errors.ServiceError { // update
+		}, func(e, u *model.ResourceSubType) error { // update
 			// check properties
 			_ = util.ArrayDiffer(e.Properties,
 				u.Properties,
 				util.IsSameIdentifiedResourceProperty,
 				util.IsSameResourceProperty,
-				func(prop *model.ResourceProperty) errors.ServiceError { // new
+				func(prop *model.ResourceProperty) error { // new
 					plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_CreateProperty{CreateProperty: &model.ResourceMigrationCreateProperty{
 						Property: prop.Name,
 						SubType:  u.Name,
 					}}})
 
 					return nil
-				}, func(ep, up *model.ResourceProperty) errors.ServiceError { // update
+				}, func(ep, up *model.ResourceProperty) error { // update
 					plan.Steps = append(plan.Steps, r.preparePlanStepsForUpdateResourceProperty(resource, existingResource, up, ep, u.Name)...)
 
 					return nil
-				}, func(prop *model.ResourceProperty) errors.ServiceError { // delete
+				}, func(prop *model.ResourceProperty) error { // delete
 					plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteProperty{DeleteProperty: &model.ResourceMigrationDeleteProperty{
 						ExistingProperty: prop.Name,
 						SubType:          u.Name,
@@ -116,7 +116,7 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 				})
 
 			return nil
-		}, func(subType *model.ResourceSubType) errors.ServiceError { // delete
+		}, func(subType *model.ResourceSubType) error { // delete
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteSubType{DeleteSubType: &model.ResourceMigrationDeleteSubType{
 				Name: subType.Name,
 			}}})
@@ -129,16 +129,16 @@ func (r *resourceMigrationService) PreparePlan(ctx context.Context, existingReso
 		resource.Indexes,
 		util.IsSameIdentifiedResourceIndex,
 		util.IsSameResourceIndex,
-		func(prop *model.ResourceIndex) errors.ServiceError { // new
+		func(prop *model.ResourceIndex) error { // new
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_CreateIndex{CreateIndex: &model.ResourceMigrationCreateIndex{
 				Index: uint32(util.GetArrayIndex(resource.Indexes, prop, util.IsSameResourceIndex)),
 			}}})
 
 			return nil
-		}, func(e, u *model.ResourceIndex) errors.ServiceError { // update
+		}, func(e, u *model.ResourceIndex) error { // update
 			log.Fatal("Not implemented, not possible")
 			return nil
-		}, func(prop *model.ResourceIndex) errors.ServiceError { // delete
+		}, func(prop *model.ResourceIndex) error { // delete
 			plan.Steps = append(plan.Steps, &model.ResourceMigrationStep{Kind: &model.ResourceMigrationStep_DeleteIndex{DeleteIndex: &model.ResourceMigrationDeleteIndex{
 				ExistingIndex: uint32(util.GetArrayIndex(existingResource.Indexes, prop, util.IsSameResourceIndex)),
 			}}})

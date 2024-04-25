@@ -16,11 +16,11 @@ import (
 )
 
 type postgreSqlBackendOptions struct {
-	handleDbError func(ctx context.Context, err error) errors.ServiceError
+	handleDbError func(ctx context.Context, err error) error
 	dataSource    *resource_model.DataSource
 }
 
-func (p *postgreSqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
+func (p *postgreSqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) error) {
 	p.handleDbError = f
 }
 
@@ -30,7 +30,7 @@ func (p postgreSqlBackendOptions) GetResourceMigrationBuilderConstructor() helpe
 	}
 }
 
-func (p postgreSqlBackendOptions) HandleError(err error) (errors.ServiceError, bool) {
+func (p postgreSqlBackendOptions) HandleError(err error) (error, bool) {
 	if pqErr, ok := err.(*pq.Error); ok {
 		return p.handlePqErr(pqErr), true
 	}
@@ -50,7 +50,7 @@ func (p postgreSqlBackendOptions) GetDefaultCatalog() string {
 	return "public"
 }
 
-func (p postgreSqlBackendOptions) handlePqErr(err *pq.Error) errors.ServiceError {
+func (p postgreSqlBackendOptions) handlePqErr(err *pq.Error) error {
 	switch err.Code {
 	case "28000":
 		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message).WithDetails(err.Detail)
@@ -91,7 +91,7 @@ func (p *postgreSqlBackendOptions) GetFullTableName(sourceConfig *model.Resource
 	return def
 }
 
-func (p *postgreSqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
+func (p *postgreSqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, error) {
 	if packedVal == nil || packedVal.AsInterface() == nil {
 		return nil, nil
 	}

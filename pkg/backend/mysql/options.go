@@ -18,10 +18,10 @@ import (
 
 type mysqlBackendOptions struct {
 	dataSource    *resource_model.DataSource
-	handleDbError func(ctx context.Context, err error) errors.ServiceError
+	handleDbError func(ctx context.Context, err error) error
 }
 
-func (p *mysqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) errors.ServiceError) {
+func (p *mysqlBackendOptions) UseDbHandleError(f func(ctx context.Context, err error) error) {
 	p.handleDbError = f
 }
 
@@ -31,7 +31,7 @@ func (p mysqlBackendOptions) GetResourceMigrationBuilderConstructor() helper.Res
 	}
 }
 
-func (p mysqlBackendOptions) HandleError(err error) (errors.ServiceError, bool) {
+func (p mysqlBackendOptions) HandleError(err error) (error, bool) {
 	if pqErr, ok := err.(*mysql.MySQLError); ok {
 		return p.handlePqErr(pqErr), true
 	}
@@ -51,7 +51,7 @@ func (p mysqlBackendOptions) GetDefaultCatalog() string {
 	return "public"
 }
 
-func (p mysqlBackendOptions) handlePqErr(err *mysql.MySQLError) errors.ServiceError {
+func (p mysqlBackendOptions) handlePqErr(err *mysql.MySQLError) error {
 	switch err.Error() {
 	case "28000":
 		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message)
@@ -92,7 +92,7 @@ func (p *mysqlBackendOptions) GetFullTableName(sourceConfig *model.ResourceSourc
 	return def
 }
 
-func (p *mysqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, errors.ServiceError) {
+func (p *mysqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, error) {
 	if packedVal == nil {
 		return nil, nil
 	}

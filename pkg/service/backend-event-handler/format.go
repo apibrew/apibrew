@@ -1,4 +1,4 @@
-package logging
+package backend_event_handler
 
 import (
 	"fmt"

@@ -2,9 +2,9 @@ package client
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
+	"github.com/apibrew/apibrew/pkg/service/backend-event-handler"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
@@ -14,7 +14,7 @@ type pollExtension struct {
 	client                        *client
 	functions                     map[string]ExternalFunction
 	registeredExtensions          []*resource_model.Extension
-	extensionEventSelectorMatcher *helper.ExtensionEventSelectorMatcher
+	extensionEventSelectorMatcher *backend_event_handler.ExtensionEventSelectorMatcher
 }
 
 func (e *pollExtension) PrepareCall(extension *resource_model.Extension) resource_model.ExternalCall {
@@ -109,6 +109,6 @@ func (d *client) NewPollExtension() Extension {
 		client:                        d,
 		serviceKey:                    "golang-ext",
 		functions:                     make(map[string]ExternalFunction),
-		extensionEventSelectorMatcher: &helper.ExtensionEventSelectorMatcher{},
+		extensionEventSelectorMatcher: &backend_event_handler.ExtensionEventSelectorMatcher{},
 	}
 }

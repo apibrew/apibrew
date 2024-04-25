@@ -1,7 +1,5 @@
 package util
 
-import "github.com/apibrew/apibrew/pkg/errors"
-
 func Coalesce[T interface{}](val ...*T) *T {
 	for _, item := range val {
 		if item != nil {
@@ -12,7 +10,7 @@ func Coalesce[T interface{}](val ...*T) *T {
 	return nil
 }
 
-func CoalesceThen[T interface{}](fn func(val *T) errors.ServiceError, val ...*T) errors.ServiceError {
+func CoalesceThen[T interface{}](fn func(val *T) error, val ...*T) error {
 	for _, item := range val {
 		if item != nil {
 			return fn(item)

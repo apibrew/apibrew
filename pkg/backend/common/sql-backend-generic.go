@@ -2,7 +2,6 @@ package common
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,7 +20,7 @@ func (p *sqlBackend) DestroyDataSource(ctx context.Context) {
 	}
 }
 
-func (p *sqlBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
+func (p *sqlBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err error) {
 	conn, err := p.acquireConnection(ctx)
 
 	if err != nil {

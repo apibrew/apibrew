@@ -19,7 +19,7 @@ type recordResolver struct {
 	paths           []string
 }
 
-func (r *recordResolver) resolveReferences(ctx context.Context) errors.ServiceError {
+func (r *recordResolver) resolveReferences(ctx context.Context) error {
 	var pathMap = make(map[string]bool)
 
 	for _, path := range r.paths {
@@ -36,7 +36,7 @@ func (r *recordResolver) resolveReferences(ctx context.Context) errors.ServiceEr
 
 }
 
-func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) errors.ServiceError {
+func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) error {
 	for _, prop := range properties {
 		var newPath = path + "." + prop.Name
 
@@ -253,7 +253,7 @@ func (r *recordResolver) getTypeProperties(typeRef string) []*model.ResourceProp
 	return properties
 }
 
-func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) errors.ServiceError {
+func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) error {
 	for _, prop := range properties {
 		var newPath = path + "." + prop.Name
 
@@ -386,7 +386,7 @@ func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path 
 	return nil
 }
 
-func (r *recordResolver) checkReferences(ctx context.Context) errors.ServiceError {
+func (r *recordResolver) checkReferences(ctx context.Context) error {
 	var pathMap = make(map[string]bool)
 
 	for _, path := range r.paths {

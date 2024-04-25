@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
@@ -15,78 +14,78 @@ import (
 
 type AuthenticationService interface {
 	Init(config *model.AppConfig)
-	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm, minimizeToken bool) (*model.Token, errors.ServiceError)
-	AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, errors.ServiceError)
-	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, errors.ServiceError)
-	GetToken(ctx context.Context) (*jwt_model.UserDetails, errors.ServiceError)
-	ParseAndVerifyToken(token string) (*jwt_model.UserDetails, errors.ServiceError)
+	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm, minimizeToken bool) (*model.Token, error)
+	AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, error)
+	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, error)
+	GetToken(ctx context.Context) (*jwt_model.UserDetails, error)
+	ParseAndVerifyToken(token string) (*jwt_model.UserDetails, error)
 	AuthenticationDisabled() bool
 }
 
 type AuthorizationService interface {
-	CheckRecordAccess(ctx context.Context, params CheckRecordAccessParams) errors.ServiceError
-	CheckRecordAccessWithRecordSelector(ctx context.Context, params CheckRecordAccessParams) (*resource_model.BooleanExpression, errors.ServiceError)
-	CheckIsExtensionController(ctx context.Context) errors.ServiceError
+	CheckRecordAccess(ctx context.Context, params CheckRecordAccessParams) error
+	CheckRecordAccessWithRecordSelector(ctx context.Context, params CheckRecordAccessParams) (*resource_model.BooleanExpression, error)
+	CheckIsExtensionController(ctx context.Context) error
 }
 
 type BackendProviderService interface {
 	abs.BackendRecordsInterface
 	abs.BackendActionExecutor
-	DestroyDataSource(ctx context.Context, dataSourceName string) errors.ServiceError
-	ListEntities(ctx context.Context, dataSourceId string) ([]*model.DataSourceCatalog, errors.ServiceError)
-	PrepareResourceFromEntity(ctx context.Context, dataSourceName string, catalog, entity string) (*model.Resource, errors.ServiceError)
-	UpgradeResource(ctx context.Context, dataSourceName string, params abs.UpgradeResourceParams) errors.ServiceError
-	GetStatus(ctx context.Context, dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
+	DestroyDataSource(ctx context.Context, dataSourceName string) error
+	ListEntities(ctx context.Context, dataSourceId string) ([]*model.DataSourceCatalog, error)
+	PrepareResourceFromEntity(ctx context.Context, dataSourceName string, catalog, entity string) (*model.Resource, error)
+	UpgradeResource(ctx context.Context, dataSourceName string, params abs.UpgradeResourceParams) error
+	GetStatus(ctx context.Context, dataSourceId string) (connectionAlreadyInitiated bool, testConnection bool, err error)
 	Init(config *model.AppConfig)
 	SetSchema(schema *abs.Schema)
 }
 
 type DataSourceService interface {
 	Init(config *model.AppConfig)
-	ListEntities(ctx context.Context, id string) ([]*model.DataSourceCatalog, errors.ServiceError)
-	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
-	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, catalog, entity string) (*model.Resource, errors.ServiceError)
-	Delete(ctx context.Context, ids []string) errors.ServiceError
+	ListEntities(ctx context.Context, id string) ([]*model.DataSourceCatalog, error)
+	GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err error)
+	PrepareResourceFromEntity(ctx context.Context, dataSourceId string, catalog, entity string) (*model.Resource, error)
+	Delete(ctx context.Context, ids []string) error
 }
 
 type RecordService interface {
 	Init(config *model.AppConfig)
-	PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError)
-	GetRecord(ctx context.Context, namespace, resourceName, id string, references []string) (*model.Record, errors.ServiceError)
-	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (*model.Record, errors.ServiceError)
-	ResolveReferences(ctx context.Context, resource *model.Resource, records []*model.Record, referencesToResolve []string) errors.ServiceError
-	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
-	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, errors.ServiceError)
-	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
-	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, errors.ServiceError)
-	Get(ctx context.Context, params RecordGetParams) (*model.Record, errors.ServiceError)
-	Delete(ctx context.Context, params RecordDeleteParams) errors.ServiceError
-	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (*model.Record, errors.ServiceError)
+	PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, error)
+	GetRecord(ctx context.Context, namespace, resourceName, id string, references []string) (*model.Record, error)
+	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (*model.Record, error)
+	ResolveReferences(ctx context.Context, resource *model.Resource, records []*model.Record, referencesToResolve []string) error
+	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, error)
+	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, error)
+	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, error)
+	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, error)
+	Get(ctx context.Context, params RecordGetParams) (*model.Record, error)
+	Delete(ctx context.Context, params RecordDeleteParams) error
+	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (*model.Record, error)
 }
 
 type ResourceService interface {
 	Init(config *model.AppConfig)
-	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
-	GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, errors.ServiceError)
-	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
-	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
-	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
-	List(ctx context.Context) ([]*model.Resource, errors.ServiceError)
-	Get(ctx context.Context, id string) (*model.Resource, errors.ServiceError)
+	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, error)
+	GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, error)
+	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, error)
+	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error
+	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) error
+	List(ctx context.Context) ([]*model.Resource, error)
+	Get(ctx context.Context, id string) (*model.Resource, error)
 	GetSchema() *abs.Schema
-	PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, errors.ServiceError)
+	PrepareResourceMigrationPlan(ctx context.Context, resources []*model.Resource, prepareFromDataSource bool) ([]*model.ResourceMigrationPlan, error)
 	LocateReferences(resource *model.Resource, resolve []string) []string
 	LocateLocalReferences(resource *model.Resource) []string
 	LocateResourceByReference(resource *model.Resource, reference *model.Reference) *model.Resource
 }
 
 type ResourceMigrationService interface {
-	PreparePlan(ctx context.Context, existingResource *model.Resource, resource *model.Resource) (*model.ResourceMigrationPlan, errors.ServiceError)
+	PreparePlan(ctx context.Context, existingResource *model.Resource, resource *model.Resource) (*model.ResourceMigrationPlan, error)
 }
 
 type MetricsService interface {
 	Init(config *model.AppConfig)
-	GetMetrics(req MetricsRequest) ([]MetricsResponseItem, errors.ServiceError)
+	GetMetrics(req MetricsRequest) ([]MetricsResponseItem, error)
 }
 
 type AuditService interface {
@@ -98,19 +97,19 @@ type StatsService interface {
 }
 
 type WatchService interface {
-	Watch(ctx context.Context, params WatchParams) (<-chan *model.Event, errors.ServiceError)
-	WatchResource(ctx context.Context, params WatchParams) (<-chan *model.Event, errors.ServiceError)
+	Watch(ctx context.Context, params WatchParams) (<-chan *model.Event, error)
+	WatchResource(ctx context.Context, params WatchParams) (<-chan *model.Event, error)
 }
 
 type EventChannelService interface {
-	Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, errors.ServiceError)
-	PollEvents(ctx context.Context, channelKey string) (chan *model.Event, errors.ServiceError)
-	WriteEvent(ctx context.Context, proto *model.Event) errors.ServiceError
+	Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, error)
+	PollEvents(ctx context.Context, channelKey string) (chan *model.Event, error)
+	WriteEvent(ctx context.Context, proto *model.Event) error
 	Init(config *model.AppConfig)
 }
 
 type ExternalService interface {
-	Call(ctx context.Context, all resource_model.ExternalCall, event *model.Event) (*model.Event, errors.ServiceError)
+	Call(ctx context.Context, all resource_model.ExternalCall, event *model.Event) (*model.Event, error)
 }
 
 type ExtensionService interface {

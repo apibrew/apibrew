@@ -2,7 +2,6 @@ package impl
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -40,7 +39,7 @@ func (a *auditService) prepareHandler() backend_event_handler.Handler {
 	}
 }
 
-func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.Event, error) {
 	log.Debug("Handled by audit-handler")
 
 	if event.Action == model.Event_GET || event.Action == model.Event_LIST || event.Action == model.Event_OPERATE {

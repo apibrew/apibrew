@@ -13,13 +13,13 @@ import (
 	"strings"
 )
 
-func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams) errors.ServiceError {
+func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams) error {
 	hp := p.options.GetResourceMigrationBuilderConstructor()(ctx, runner, p.schema, params, params.ForceMigration)
 
 	return helper.ResourceMigrateTableViaResourceMigrationBuilder(hp, params.MigrationPlan, params.ForceMigration)
 }
 
-func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runner helper.QueryRunner, catalog, entity string) (resource *model.Resource, err errors.ServiceError) {
+func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runner helper.QueryRunner, catalog, entity string) (resource *model.Resource, err error) {
 	if catalog == "" {
 		catalog = p.options.GetDefaultCatalog()
 	}
@@ -75,7 +75,7 @@ func (p *sqlBackend) resourcePrepareResourceFromEntity(ctx context.Context, runn
 	return
 }
 
-func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helper.QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
+func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helper.QueryRunner, catalog string, entity string, resource *model.Resource) error {
 	rows, sqlErr := runner.QueryContext(ctx, p.options.GetSql("prepare-properties"), catalog, entity)
 	err := p.handleDbError(ctx, sqlErr)
 
@@ -154,7 +154,7 @@ func (p *sqlBackend) resourcePrepareProperties(ctx context.Context, runner helpe
 	return err
 }
 
-func (p *sqlBackend) resourcePrepareIndexes(ctx context.Context, runner helper.QueryRunner, catalog string, entity string, resource *model.Resource) errors.ServiceError {
+func (p *sqlBackend) resourcePrepareIndexes(ctx context.Context, runner helper.QueryRunner, catalog string, entity string, resource *model.Resource) error {
 	rows, sqlErr := runner.QueryContext(ctx, p.options.GetSql("prepare-indexes"), catalog, entity)
 	err := p.handleDbError(ctx, sqlErr)
 

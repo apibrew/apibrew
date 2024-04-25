@@ -6,14 +6,16 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func ToStatusError(err errors.ServiceError) error {
+func ToStatusError(err error) error {
 	if err == nil {
 		return nil
 	}
 
-	st := status.New(err.GetGrpcErrorCode(), err.Error())
+	var serr = errors.FromServiceError(err)
 
-	st, _ = st.WithDetails(err.ProtoError())
+	st := status.New(serr.GetGrpcErrorCode(), err.Error())
+
+	st, _ = st.WithDetails(serr.ProtoError())
 
 	return st.Err()
 }

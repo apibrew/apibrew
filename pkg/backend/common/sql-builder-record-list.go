@@ -59,7 +59,7 @@ type recordLister struct {
 	propertyNameMap   map[string]*model.ResourceProperty
 }
 
-func (r *recordLister) Prepare() errors.ServiceError {
+func (r *recordLister) Prepare() error {
 	r.logger = log.WithFields(logging.CtxFields(r.ctx))
 	r.tableName = r.backend.getFullTableName(r.resource.SourceConfig)
 	r.tableAlias = "t"
@@ -105,7 +105,7 @@ func (r *recordLister) Prepare() errors.ServiceError {
 	return nil
 }
 
-func (r *recordLister) prepareAggregation() errors.ServiceError {
+func (r *recordLister) prepareAggregation() error {
 	r.colList = nil
 
 	if len(r.aggregation.Grouping) > 0 {
@@ -178,7 +178,7 @@ func (r *recordLister) prepareAggregation() errors.ServiceError {
 	return nil
 }
 
-func (r *recordLister) prepareSorting() errors.ServiceError {
+func (r *recordLister) prepareSorting() error {
 	var orderBy []string
 
 	for _, item := range r.sorting.Items {
@@ -195,7 +195,7 @@ func (r *recordLister) prepareSorting() errors.ServiceError {
 	return nil
 }
 
-func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.ServiceError) {
+func (r *recordLister) Exec() (result []*model.Record, total uint32, err error) {
 	if err := r.Prepare(); err != nil {
 		return nil, 0, err
 	}
@@ -274,7 +274,7 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err errors.
 	return
 }
 
-func (r *recordLister) ExecCount() (total uint32, err errors.ServiceError) {
+func (r *recordLister) ExecCount() (total uint32, err error) {
 	countBuilder := r.builder.Copy()
 	countBuilder.Select("count(*)")
 	countBuilder.Limit(1)
@@ -342,7 +342,7 @@ func (r *recordLister) quote(path string) string {
 	return r.backend.options.Quote(path)
 }
 
-func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.ServiceError {
+func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) error {
 	var rowScanFields []any
 	var propertyPointers = make(map[string]interface{})
 
@@ -374,7 +374,7 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 		return r.backend.handleDbError(r.ctx, err)
 	}
 
-	var serviceErr errors.ServiceError
+	var serviceErr error
 
 	record.Properties, serviceErr = r.mapRecordProperties(util.GetRecordId(record), r.resource, "t_", propertyPointers)
 	if serviceErr != nil {
@@ -384,7 +384,7 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) errors.S
 	return nil
 }
 
-func (r *recordLister) mapRecordProperties(recordId string, resource *model.Resource, pathPrefix string, propertyPointers map[string]interface{}) (map[string]*structpb.Value, errors.ServiceError) {
+func (r *recordLister) mapRecordProperties(recordId string, resource *model.Resource, pathPrefix string, propertyPointers map[string]interface{}) (map[string]*structpb.Value, error) {
 	properties := make(map[string]*structpb.Value)
 
 	for _, cd := range r.colList {
@@ -474,13 +474,13 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 	return properties, nil
 }
 
-func (r *recordLister) applyCondition(resource *model.Resource, query *model.BooleanExpression) (string, errors.ServiceError) {
+func (r *recordLister) applyCondition(resource *model.Resource, query *model.BooleanExpression) (string, error) {
 	if and, ok := query.Expression.(*model.BooleanExpression_And); ok {
 		if len(and.And.Expressions) == 0 {
 			return "", nil
 		}
 
-		expressions, err := util.ArrayMapWithError(and.And.Expressions, func(t *model.BooleanExpression) (string, errors.ServiceError) {
+		expressions, err := util.ArrayMapWithError(and.And.Expressions, func(t *model.BooleanExpression) (string, error) {
 			return r.applyCondition(resource, t)
 		})
 		if err != nil {
@@ -494,7 +494,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 			return "", nil
 		}
 
-		expressions, err := util.ArrayMapWithError(and.Or.Expressions, func(t *model.BooleanExpression) (string, errors.ServiceError) {
+		expressions, err := util.ArrayMapWithError(and.Or.Expressions, func(t *model.BooleanExpression) (string, error) {
 			return r.applyCondition(resource, t)
 		})
 		if err != nil {
@@ -580,7 +580,7 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	return "", errors.LogicalError.WithDetails("Unknown boolean expression type: " + query.String())
 }
 
-func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model.PairExpression) (string, string, errors.ServiceError) {
+func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model.PairExpression) (string, string, error) {
 	var left string
 	var right string
 	var property *model.ResourceProperty
@@ -650,7 +650,7 @@ func (r *recordLister) applyValue(value *structpb.Value) string {
 	}
 }
 
-func (r *recordLister) applyExpression(resource *model.Resource, query *model.Expression) (string, errors.ServiceError) {
+func (r *recordLister) applyExpression(resource *model.Resource, query *model.Expression) (string, error) {
 	if query.Expression == nil {
 		return "", errors.PropertyNotFoundError.WithDetails("expression is empty")
 	}
@@ -678,7 +678,7 @@ func (r *recordLister) prepareCols() []string {
 	return cols
 }
 
-func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) (result []*model.Record, total uint32, err errors.ServiceError) {
+func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) (result []*model.Record, total uint32, err error) {
 	return (&recordLister{
 		ctx:               ctx,
 		runner:            runner,
@@ -694,7 +694,7 @@ func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, 
 	}).Exec()
 }
 
-func DbDecode(propertyType model.ResourceProperty_Type, val interface{}) (interface{}, errors.ServiceError) {
+func DbDecode(propertyType model.ResourceProperty_Type, val interface{}) (interface{}, error) {
 	if propertyType == model.ResourceProperty_STRUCT || propertyType == model.ResourceProperty_OBJECT || propertyType == model.ResourceProperty_MAP || propertyType == model.ResourceProperty_LIST {
 		var data = new(interface{})
 		err2 := json.Unmarshal([]byte(val.(string)), data)

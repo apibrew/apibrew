@@ -2,7 +2,6 @@ package impl
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -17,7 +16,7 @@ type dataSourceService struct {
 	backendProviderService service.BackendProviderService
 }
 
-func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]*model.DataSourceCatalog, errors.ServiceError) {
+func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]*model.DataSourceCatalog, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("req", id).Debug("Begin data-source ListEntities")
 	defer logger.Debug("End data-source ListEntities")
@@ -25,7 +24,7 @@ func (d *dataSourceService) ListEntities(ctx context.Context, id string) ([]*mod
 	return d.backendProviderService.ListEntities(ctx, id)
 }
 
-func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
+func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectionAlreadyInitiated bool, testConnection bool, err error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("id", id).Debug("Begin data-source GetStatus")
 	defer logger.Debug("End data-source GetStatus")
@@ -33,7 +32,7 @@ func (d *dataSourceService) GetStatus(ctx context.Context, id string) (connectio
 	return d.backendProviderService.GetStatus(ctx, id)
 }
 
-func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id string, catalog, entity string) (*model.Resource, errors.ServiceError) {
+func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id string, catalog, entity string) (*model.Resource, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("id", id).WithField("entity", entity).Debug("Begin data-source PrepareResourceFromEntity")
 	defer logger.Debug("End data-source PrepareResourceFromEntity")
@@ -63,7 +62,7 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 	return resource, nil
 }
 
-func (d *dataSourceService) Delete(ctx context.Context, ids []string) errors.ServiceError {
+func (d *dataSourceService) Delete(ctx context.Context, ids []string) error {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	logger.WithField("ids", ids).Debug("Begin data-source Delete_")
 	defer logger.Debug("End data-source Delete_")

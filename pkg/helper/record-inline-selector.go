@@ -13,7 +13,7 @@ import (
 type RecordInlineSelector struct {
 }
 
-func (s RecordInlineSelector) SelectRecords(ctx context.Context, resource *model.Resource, records *[]*model.Record, selector *resource_model.BooleanExpression) ([]*model.Record, errors.ServiceError) {
+func (s RecordInlineSelector) SelectRecords(ctx context.Context, resource *model.Resource, records *[]*model.Record, selector *resource_model.BooleanExpression) ([]*model.Record, error) {
 	var result []*model.Record
 
 	for _, record := range *records {
@@ -29,7 +29,7 @@ func (s RecordInlineSelector) SelectRecords(ctx context.Context, resource *model
 	return result, nil
 }
 
-func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *model.Resource, record *model.Record, selector *resource_model.BooleanExpression) (bool, errors.ServiceError) {
+func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *model.Resource, record *model.Record, selector *resource_model.BooleanExpression) (bool, error) {
 	if selector.And != nil {
 		for _, expression := range selector.And {
 			if ok, err := s.EvaluateRecord(ctx, resource, record, &expression); !ok || err != nil {
@@ -75,7 +75,7 @@ func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *mode
 	return false, errors.UnsupportedOperation.WithDetails("Unknown boolean expression")
 }
 
-func (s RecordInlineSelector) resolve(resource *model.Resource, record *model.Record, than *resource_model.PairExpression) (unstructured.Any, unstructured.Any, *model.ResourceProperty, errors.ServiceError) {
+func (s RecordInlineSelector) resolve(resource *model.Resource, record *model.Record, than *resource_model.PairExpression) (unstructured.Any, unstructured.Any, *model.ResourceProperty, error) {
 	namedProps := util.GetNamedMap(resource.Properties)
 
 	var left unstructured.Any

@@ -1,8 +1,6 @@
 package util
 
-import "github.com/apibrew/apibrew/pkg/errors"
-
-func ArrayDiffer[T interface{}](existing []T, updated []T, hasSameId func(a, b T) bool, isEqual func(a, b T) bool, onNew func(rec T) errors.ServiceError, onUpdate func(e, u T) errors.ServiceError, onDelete func(rec T) errors.ServiceError) errors.ServiceError {
+func ArrayDiffer[T interface{}](existing []T, updated []T, hasSameId func(a, b T) bool, isEqual func(a, b T) bool, onNew func(rec T) error, onUpdate func(e, u T) error, onDelete func(rec T) error) error {
 	// fixme do not match already matched items
 	var passedToUpdated []T
 

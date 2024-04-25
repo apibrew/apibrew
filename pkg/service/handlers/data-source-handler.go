@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -19,7 +18,7 @@ func (h *dataSourceHandler) Register(eventHandler backend_event_handler.BackendE
 	eventHandler.RegisterHandler(prepareStdHandler(101, model.Event_DELETE, h.AfterDelete, resources.DataSourceResource))
 }
 
-func (h *dataSourceHandler) AfterUpdate(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *dataSourceHandler) AfterUpdate(ctx context.Context, event *model.Event) (*model.Event, error) {
 	for _, dataSource := range event.Records {
 		err := h.backendProviderService.DestroyDataSource(ctx, util.GetRecordId(dataSource))
 
@@ -31,7 +30,7 @@ func (h *dataSourceHandler) AfterUpdate(ctx context.Context, event *model.Event)
 	return event, nil
 }
 
-func (h *dataSourceHandler) AfterDelete(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *dataSourceHandler) AfterDelete(ctx context.Context, event *model.Event) (*model.Event, error) {
 	for _, record := range event.Records {
 		err := h.backendProviderService.DestroyDataSource(ctx, util.GetRecordId(record))
 

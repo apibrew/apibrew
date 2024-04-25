@@ -16,7 +16,7 @@ type txData struct {
 	cancel context.CancelFunc
 }
 
-func (p *sqlBackend) BeginTransaction(ctx context.Context, readOnly bool) (string, errors.ServiceError) {
+func (p *sqlBackend) BeginTransaction(ctx context.Context, readOnly bool) (string, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("begin transaction readonly=%v", readOnly)
@@ -72,7 +72,7 @@ func (p *sqlBackend) BeginTransaction(ctx context.Context, readOnly bool) (strin
 	return transactionKey, nil
 }
 
-func (p *sqlBackend) CommitTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+func (p *sqlBackend) CommitTransaction(ctx context.Context) (serviceError error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("CommitTransaction")
@@ -99,7 +99,7 @@ func (p *sqlBackend) CommitTransaction(ctx context.Context) (serviceError errors
 	return p.handleDbError(ctx, err)
 }
 
-func (p *sqlBackend) RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+func (p *sqlBackend) RollbackTransaction(ctx context.Context) (serviceError error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("RollbackTransaction")
@@ -126,7 +126,7 @@ func (p *sqlBackend) RollbackTransaction(ctx context.Context) (serviceError erro
 	return p.handleDbError(ctx, err)
 }
 
-func (p *sqlBackend) IsTransactionAlive(_ context.Context) (isAlive bool, serviceError errors.ServiceError) {
+func (p *sqlBackend) IsTransactionAlive(_ context.Context) (isAlive bool, serviceError error) {
 	//TODO implement me
 	panic("implement me")
 }

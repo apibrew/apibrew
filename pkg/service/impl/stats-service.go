@@ -61,7 +61,7 @@ func (a *statsService) prepareHandler() backend_event_handler.Handler {
 	}
 }
 
-func (s *statsService) handle(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (s *statsService) handle(ctx context.Context, event *model.Event) (*model.Event, error) {
 	if util.IsSystemContext(ctx) {
 		return event, nil
 	}

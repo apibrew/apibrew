@@ -3,7 +3,6 @@ package helper
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 )
@@ -17,12 +16,12 @@ type ResourceMigrationBuilder interface {
 	DeleteProperty(prop *model.ResourceProperty) ResourceMigrationBuilder
 	AddIndex(prop *model.ResourceIndex) ResourceMigrationBuilder
 	DeleteIndex(prop *model.ResourceIndex) ResourceMigrationBuilder
-	Exec() errors.ServiceError
+	Exec() error
 }
 
 type ResourceMigrationBuilderConstructor func(ctx context.Context, runner QueryRunner, schema *abs.Schema, params abs.UpgradeResourceParams, forceMigration bool) ResourceMigrationBuilder
 
-func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder, migrationPlan *model.ResourceMigrationPlan, forceMigration bool) errors.ServiceError {
+func ResourceMigrateTableViaResourceMigrationBuilder(hp ResourceMigrationBuilder, migrationPlan *model.ResourceMigrationPlan, forceMigration bool) error {
 	var currentPropertyMap = util.GetNamedMap(migrationPlan.CurrentResource.Properties)
 	var existingPropertyMap = util.GetNamedMap(migrationPlan.ExistingResource.Properties)
 

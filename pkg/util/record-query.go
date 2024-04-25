@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func PrepareQueryFromFilters(resource *model.Resource, filters map[string]string) (*model.BooleanExpression, errors.ServiceError) {
+func PrepareQueryFromFilters(resource *model.Resource, filters map[string]string) (*model.BooleanExpression, error) {
 	var criteria []*model.BooleanExpression
 	for _, property := range resource.Properties {
 		if filters[property.Name] != "" {
@@ -82,7 +82,7 @@ func deStringifyPropertyValue(actualValue string, property *model.ResourceProper
 	}
 }
 
-func PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, errors.ServiceError) {
+func PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, error) {
 	var criteria []*model.BooleanExpression
 	for _, property := range resource.Properties {
 		if queryMap[property.Name] != "" {

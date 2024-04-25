@@ -39,7 +39,7 @@ func (e *eventChannelService) Init(config *model.AppConfig) {
 	}
 }
 
-func (e *eventChannelService) WriteEvent(ctx context.Context, event *model.Event) errors.ServiceError {
+func (e *eventChannelService) WriteEvent(ctx context.Context, event *model.Event) error {
 	if err := e.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (e *eventChannelService) WriteEvent(ctx context.Context, event *model.Event
 	return nil
 }
 
-func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string) (chan *model.Event, errors.ServiceError) {
+func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string) (chan *model.Event, error) {
 	log.Infof("Polling events for channel: %v", channelKey)
 	if err := e.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 	return out, nil
 }
 
-func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, errors.ServiceError) {
+func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, error) {
 	eventChan := e.ensureChannel(channelKey)
 
 	var handler chan *model.Event

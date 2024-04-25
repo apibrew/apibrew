@@ -72,7 +72,7 @@ func (p *sqlBackend) queryLogger(transactionKey, dataSourceName string, runner h
 	return queryLoggerStruct{transactionKey: transactionKey, dataSourceName: dataSourceName, delegate: runner}
 }
 
-func (p *sqlBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx helper.QueryRunner) errors.ServiceError) errors.ServiceError {
+func (p *sqlBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx helper.QueryRunner) error) error {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	transactionKey := ctx.Value(abs.TransactionContextKey)

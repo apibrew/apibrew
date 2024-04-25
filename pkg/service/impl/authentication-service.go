@@ -31,7 +31,7 @@ func (s *authenticationService) AuthenticationDisabled() bool {
 	return s.DisableAuthentication
 }
 
-func (s *authenticationService) Authenticate(ctx context.Context, username string, password string, term model.TokenTerm, minimizeToken bool) (*model.Token, errors.ServiceError) {
+func (s *authenticationService) Authenticate(ctx context.Context, username string, password string, term model.TokenTerm, minimizeToken bool) (*model.Token, error) {
 	if s.DisableAuthentication {
 		return &model.Token{
 			Term:       term,
@@ -57,7 +57,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 	return s.prepareToken(systemCtx, term, user, minimizeToken)
 }
 
-func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
+func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, error) {
 	if s.DisableAuthentication {
 		return &model.Token{
 			Term:       term,
@@ -83,7 +83,7 @@ func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context,
 	return s.prepareToken(systemCtx, term, user, false)
 }
 
-func (s *authenticationService) GetToken(ctx context.Context) (*jwt_model.UserDetails, errors.ServiceError) {
+func (s *authenticationService) GetToken(ctx context.Context) (*jwt_model.UserDetails, error) {
 	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
 
 	if userDetails == nil {
@@ -93,7 +93,7 @@ func (s *authenticationService) GetToken(ctx context.Context) (*jwt_model.UserDe
 	return userDetails, nil
 }
 
-func (s *authenticationService) prepareToken(ctx context.Context, term model.TokenTerm, user *resource_model.User, minimizeToken bool) (*model.Token, errors.ServiceError) {
+func (s *authenticationService) prepareToken(ctx context.Context, term model.TokenTerm, user *resource_model.User, minimizeToken bool) (*model.Token, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 	// Prepare token
 	expiration := s.ExpirationFromTerm(term)
@@ -132,7 +132,7 @@ func (s *authenticationService) prepareToken(ctx context.Context, term model.Tok
 	}, nil
 }
 
-func (s *authenticationService) RenewToken(ctx context.Context, oldToken string, term model.TokenTerm) (*model.Token, errors.ServiceError) {
+func (s *authenticationService) RenewToken(ctx context.Context, oldToken string, term model.TokenTerm) (*model.Token, error) {
 	userDetails, err := jwt_model.JwtVerifyAndUnpackUserDetails(*s.publicKey, oldToken)
 
 	if err != nil {
@@ -150,7 +150,7 @@ func (s *authenticationService) RenewToken(ctx context.Context, oldToken string,
 	return s.prepareToken(systemCtx, term, user, false)
 }
 
-func (s *authenticationService) ParseAndVerifyToken(token string) (*jwt_model.UserDetails, errors.ServiceError) {
+func (s *authenticationService) ParseAndVerifyToken(token string) (*jwt_model.UserDetails, error) {
 	return jwt_model.JwtVerifyAndUnpackUserDetails(*s.publicKey, token)
 }
 
@@ -158,7 +158,7 @@ type RequestWithToken interface {
 	GetToken() string
 }
 
-func (s *authenticationService) LocateUser(ctx context.Context, username, password string) (*resource_model.User, errors.ServiceError) {
+func (s *authenticationService) LocateUser(ctx context.Context, username, password string) (*resource_model.User, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Debugf("Locating user: %s", username)
@@ -178,7 +178,7 @@ func (s *authenticationService) LocateUser(ctx context.Context, username, passwo
 	return user, nil
 }
 
-func (s *authenticationService) FindUser(ctx context.Context, username string) (*resource_model.User, errors.ServiceError) {
+func (s *authenticationService) FindUser(ctx context.Context, username string) (*resource_model.User, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Debug("FindUser with username: ", username)
@@ -249,7 +249,7 @@ func (s *authenticationService) ExpirationFromTerm(term model.TokenTerm) time.Ti
 	}
 }
 
-func (s *authenticationService) collectUserPermissions(ctx context.Context, user *resource_model.User) ([]*resource_model.Permission, errors.ServiceError) {
+func (s *authenticationService) collectUserPermissions(ctx context.Context, user *resource_model.User) ([]*resource_model.Permission, error) {
 	var result []*resource_model.Permission
 
 	var userRecord = resource_model.UserMapperInstance.ToRecord(user)

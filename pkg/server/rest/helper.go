@@ -36,7 +36,7 @@ func (s ServiceCaller) Writer(writer http.ResponseWriter) ServiceCaller {
 	return s
 }
 
-func (s ServiceCaller) Respond(result interface{}, serviceError errors.ServiceError) {
+func (s ServiceCaller) Respond(result interface{}, serviceError error) {
 	s.writer.Header().Set("Content-Type", "application/json")
 
 	isSuccess := serviceError == nil
@@ -56,10 +56,12 @@ func (s ServiceCaller) Respond(result interface{}, serviceError errors.ServiceEr
 	_, _ = s.writer.Write(body)
 }
 
-func handleServiceError(writer http.ResponseWriter, err errors.ServiceError) {
-	writer.WriteHeader(errorCodeHttpStatusMap[err.ProtoError().GetCode()])
+func handleServiceError(writer http.ResponseWriter, err error) {
+	serr := errors.FromServiceError(err)
 
-	body, xerr := protojson.Marshal(err.ProtoError())
+	writer.WriteHeader(errorCodeHttpStatusMap[serr.ProtoError().GetCode()])
+
+	body, xerr := protojson.Marshal(serr.ProtoError())
 
 	if xerr != nil {
 		log.Error(xerr)
@@ -70,7 +72,7 @@ func handleServiceError(writer http.ResponseWriter, err errors.ServiceError) {
 }
 
 func handleError(writer http.ResponseWriter, err error) {
-	if serr, ok := err.(errors.ServiceError); ok {
+	if serr, ok := err.(error); ok {
 		handleServiceError(writer, serr)
 		return
 	} else {

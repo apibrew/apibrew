@@ -12,7 +12,7 @@ import (
 	"runtime/debug"
 )
 
-func (p *sqlBackend) handleDbError(ctx context.Context, err error) errors.ServiceError {
+func (p *sqlBackend) handleDbError(ctx context.Context, err error) error {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	if err == nil {

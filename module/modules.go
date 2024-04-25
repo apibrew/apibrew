@@ -8,6 +8,7 @@ package module
 
 import (
 	"github.com/apibrew/apibrew/pkg/service/impl"
+	module2 "github.com/apibrew/metrics/pkg"
 	module1 "github.com/apibrew/nano/pkg"
 )
 
@@ -17,4 +18,5 @@ var Modules = map[string]string{
 
 func RegisterModules(app *impl.App) {
 	app.RegisterModule(module1.NewModule)
+	app.RegisterModule(module2.NewModule)
 }

@@ -21,7 +21,7 @@ type metricService struct {
 	serviceId        string
 }
 
-func (m *metricService) GetMetrics(req service.MetricsRequest) ([]service.MetricsResponseItem, errors.ServiceError) {
+func (m *metricService) GetMetrics(req service.MetricsRequest) ([]service.MetricsResponseItem, error) {
 	var query = `from(bucket:"apibrew")
 					|> range(start: -100m)
 					|> filter(fn: (r) => r._measurement == "` + m.serviceId + `.RecordService" and r._field == "count")

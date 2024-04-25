@@ -19,13 +19,13 @@ type resourceMigrationBuilder struct {
 	runner         helper.QueryRunner
 	ctx            context.Context
 	options        postgreSqlBackendOptions
-	handleDbError  func(ctx context.Context, err error) errors.ServiceError
-	execs          []func() errors.ServiceError
+	handleDbError  func(ctx context.Context, err error) error
+	execs          []func() error
 	tableName      string
 	schema         *abs.Schema
 }
 
-func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource) (string, errors.ServiceError) {
+func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, params abs.UpgradeResourceParams, resource *model.Resource) (string, error) {
 	var uniqueStr = ""
 
 	if index.Unique {
@@ -83,7 +83,7 @@ func (r *resourceMigrationBuilder) prepareIndexName(index *model.ResourceIndex, 
 	return indexName
 }
 
-func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) (string, errors.ServiceError) {
+func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource *model.Resource, property *model.ResourceProperty, schema abs.Schema) (string, error) {
 	uniqModifier := ""
 	nullModifier := "NULL"
 	if property.Required {
@@ -174,7 +174,7 @@ func (r *resourceMigrationBuilder) definePrimaryKeyColumn(resource *model.Resour
 	}
 }
 
-func (r *resourceMigrationBuilder) resourceCreateTable(resource *model.Resource) errors.ServiceError {
+func (r *resourceMigrationBuilder) resourceCreateTable(resource *model.Resource) error {
 	if resource.SourceConfig.Catalog != "" {
 		_, err := r.runner.Exec(fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", r.options.Quote(resource.SourceConfig.Catalog)))
 
@@ -196,7 +196,7 @@ func (r *resourceMigrationBuilder) resourceCreateTable(resource *model.Resource)
 }
 
 func (r *resourceMigrationBuilder) AddResource(resource *model.Resource) helper.ResourceMigrationBuilder {
-	r.execs = append(r.execs, func() errors.ServiceError {
+	r.execs = append(r.execs, func() error {
 		return r.resourceCreateTable(resource)
 	})
 
@@ -208,7 +208,7 @@ func (r *resourceMigrationBuilder) UpdateResource(existing, updated *model.Resou
 }
 
 func (r *resourceMigrationBuilder) DeleteResource(resource *model.Resource) helper.ResourceMigrationBuilder {
-	r.execs = append(r.execs, func() errors.ServiceError {
+	r.execs = append(r.execs, func() error {
 		s := "DROP TABLE " + r.options.GetFullTableName(r.params.MigrationPlan.CurrentResource.SourceConfig)
 
 		if r.forceMigration {
@@ -224,7 +224,7 @@ func (r *resourceMigrationBuilder) DeleteResource(resource *model.Resource) help
 }
 
 func (r *resourceMigrationBuilder) AddProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
-	r.execs = append(r.execs, func() errors.ServiceError {
+	r.execs = append(r.execs, func() error {
 		refPart, serviceErr := r.prepareResourceTableColumnDefinition(r.params.MigrationPlan.CurrentResource, prop, *r.schema)
 
 		if serviceErr != nil {
@@ -242,7 +242,7 @@ func (r *resourceMigrationBuilder) AddProperty(prop *model.ResourceProperty) hel
 }
 
 func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prevProperty, property *model.ResourceProperty) helper.ResourceMigrationBuilder {
-	r.execs = append(r.execs, func() errors.ServiceError {
+	r.execs = append(r.execs, func() error {
 		var sqlPrefix = fmt.Sprintf("ALTER TABLE %s ", r.tableName)
 		var sqlParts []string
 		changes := 0
@@ -334,7 +334,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 }
 
 func (r *resourceMigrationBuilder) DeleteProperty(prop *model.ResourceProperty) helper.ResourceMigrationBuilder {
-	r.execs = append(r.execs, func() errors.ServiceError {
+	r.execs = append(r.execs, func() error {
 		sql := fmt.Sprintf("ALTER TABLE %s DROP COLUMN \"%s\"", r.tableName, prop.Name)
 
 		_, sqlError := r.runner.ExecContext(r.ctx, sql)
@@ -346,8 +346,8 @@ func (r *resourceMigrationBuilder) DeleteProperty(prop *model.ResourceProperty) 
 }
 
 func (r *resourceMigrationBuilder) AddIndex(prop *model.ResourceIndex) helper.ResourceMigrationBuilder {
-	r.execs = append(r.execs, func() errors.ServiceError {
-		var err errors.ServiceError
+	r.execs = append(r.execs, func() error {
+		var err error
 		var sql string
 		if annotations.Get(prop, annotations.SourceDef) != "" {
 			sql = annotations.Get(prop, annotations.SourceDef)
@@ -366,7 +366,7 @@ func (r *resourceMigrationBuilder) AddIndex(prop *model.ResourceIndex) helper.Re
 }
 
 func (r *resourceMigrationBuilder) DeleteIndex(index *model.ResourceIndex) helper.ResourceMigrationBuilder {
-	r.execs = append(r.execs, func() errors.ServiceError {
+	r.execs = append(r.execs, func() error {
 		var indexName = r.prepareIndexName(index, r.params.MigrationPlan.CurrentResource)
 
 		sql := fmt.Sprintf("DROP INDEX %s(\"%s\")", r.tableName, indexName)
@@ -378,7 +378,7 @@ func (r *resourceMigrationBuilder) DeleteIndex(index *model.ResourceIndex) helpe
 	return r
 }
 
-func (r *resourceMigrationBuilder) Exec() errors.ServiceError {
+func (r *resourceMigrationBuilder) Exec() error {
 	for _, exec := range r.execs {
 		err := exec()
 

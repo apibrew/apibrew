@@ -21,27 +21,27 @@ type api struct {
 }
 
 type InterfaceRecordService interface {
-	Create(ctx context.Context, params service.RecordCreateParams) ([]*model.Record, errors.ServiceError)
-	Update(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError)
-	Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError)
-	Delete(ctx context.Context, params service.RecordDeleteParams) errors.ServiceError
-	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (*model.Record, errors.ServiceError)
-	List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, errors.ServiceError)
+	Create(ctx context.Context, params service.RecordCreateParams) ([]*model.Record, error)
+	Update(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, error)
+	Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, error)
+	Delete(ctx context.Context, params service.RecordDeleteParams) error
+	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (*model.Record, error)
+	List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error)
 }
 
 type InterfaceResourceService interface {
-	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError)
-	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError)
-	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError
-	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError
-	List(ctx context.Context) ([]*model.Resource, errors.ServiceError)
+	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, error)
+	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, error)
+	Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error
+	Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) error
+	List(ctx context.Context) ([]*model.Resource, error)
 }
 
-func (a api) Create(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+func (a api) Create(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, error) {
 	return a.save(ctx, Create, record)
 }
 
-func (a api) checkType(record unstructured.Unstructured) errors.ServiceError {
+func (a api) checkType(record unstructured.Unstructured) error {
 	if _, ok := record["type"]; !ok {
 		return errors.RecordValidationError.WithMessage("type field is required")
 	}
@@ -53,15 +53,15 @@ func (a api) checkType(record unstructured.Unstructured) errors.ServiceError {
 	return nil
 }
 
-func (a api) Update(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+func (a api) Update(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, error) {
 	return a.save(ctx, Update, record)
 }
 
-func (a api) Apply(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+func (a api) Apply(ctx context.Context, record unstructured.Unstructured) (unstructured.Unstructured, error) {
 	return a.save(ctx, Apply, record)
 }
 
-func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured.Unstructured) (unstructured.Unstructured, error) {
 	if err := a.checkType(recordObj); err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 	return processedRecordObj, nil
 }
 
-func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, params LoadParams) (unstructured.Unstructured, errors.ServiceError) {
+func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, params LoadParams) (unstructured.Unstructured, error) {
 	if err := a.checkType(recordObj); err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, para
 	return processedRecordObj, nil
 }
 
-func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) errors.ServiceError {
+func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) error {
 	if err := a.checkType(recordObj); err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 	}
 
 	if recordObj["id"] == nil {
-		var err errors.ServiceError
+		var err error
 		recordObj, err = a.Load(ctx, recordObj, LoadParams{})
 
 		if err != nil {
@@ -192,7 +192,7 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 	})
 }
 
-func (a api) List(ctx context.Context, params ListParams) (RecordListResult, errors.ServiceError) {
+func (a api) List(ctx context.Context, params ListParams) (RecordListResult, error) {
 	var resourceIdentity = util.ParseType(params.Type)
 
 	var query *model.BooleanExpression
@@ -275,7 +275,7 @@ func (a api) List(ctx context.Context, params ListParams) (RecordListResult, err
 	}, nil
 }
 
-func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructured.Unstructured) (unstructured.Unstructured, errors.ServiceError) {
+func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructured.Unstructured) (unstructured.Unstructured, error) {
 	record, err := unstructured.ToRecord(body)
 
 	if err != nil {
@@ -335,7 +335,7 @@ func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructu
 	return processedRecordObj, nil
 }
 
-func (a api) GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, errors.ServiceError) {
+func (a api) GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, error) {
 	var namespace = "default"
 	var resourceName string
 
@@ -359,7 +359,7 @@ func (a api) GetResourceByType(ctx context.Context, typeName string) (*resource_
 	return extramappings.ResourceTo(resource), nil
 }
 
-func (a api) deleteResource(ctx context.Context, obj unstructured.Unstructured) errors.ServiceError {
+func (a api) deleteResource(ctx context.Context, obj unstructured.Unstructured) error {
 	if obj["id"] == nil {
 		return errors.RecordValidationError.WithMessage("id field is required")
 	}
@@ -372,7 +372,7 @@ func (a api) deleteResource(ctx context.Context, obj unstructured.Unstructured) 
 	return a.resourceService.Delete(ctx, []string{id}, true, false)
 }
 
-func (a api) listResource(ctx context.Context, params ListParams) (RecordListResult, errors.ServiceError) {
+func (a api) listResource(ctx context.Context, params ListParams) (RecordListResult, error) {
 	list, err := a.resourceService.List(ctx)
 
 	if err != nil {

@@ -23,7 +23,7 @@ func (r *redisBackend) SetSchema(schema *abs.Schema) {
 	r.schema = schema
 }
 
-func (r redisBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError) {
+func (r redisBackend) GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err error) {
 	ping := r.rdb.Ping(ctx)
 
 	log.Print(ping)
@@ -35,7 +35,7 @@ func (r redisBackend) DestroyDataSource(ctx context.Context) {
 
 }
 
-func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error) {
 	for _, record := range records {
 		data, err := proto.Marshal(record)
 
@@ -57,7 +57,7 @@ func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, 
 	return records, nil
 }
 
-func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError) {
+func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error) {
 	for _, record := range records {
 		data, err := proto.Marshal(record)
 
@@ -79,7 +79,7 @@ func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 	return records, nil
 }
 
-func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError) {
+func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, error) {
 	recData, err := r.rdb.Get(ctx, r.getKey(resource, id)).Bytes()
 
 	if err != nil {
@@ -97,7 +97,7 @@ func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, i
 	return record, nil
 }
 
-func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) errors.ServiceError {
+func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) error {
 	var ids = util.ArrayMap(records, func(record *model.Record) string {
 		return util.GetRecordId(record)
 	})
@@ -115,35 +115,35 @@ func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (r redisBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError) {
+func (r redisBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, error) {
 	return nil, 0, errors.UnsupportedOperation
 }
 
-func (r redisBackend) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError) {
+func (r redisBackend) ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, error) {
 	return nil, errors.UnsupportedOperation
 }
 
-func (r redisBackend) PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError) {
+func (r redisBackend) PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, error) {
 	return nil, errors.UnsupportedOperation
 }
 
-func (r redisBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) errors.ServiceError {
+func (r redisBackend) UpgradeResource(ctx context.Context, params abs.UpgradeResourceParams) error {
 	return nil
 }
 
-func (r redisBackend) BeginTransaction(ctx context.Context, readOnly bool) (transactionKey string, serviceError errors.ServiceError) {
+func (r redisBackend) BeginTransaction(ctx context.Context, readOnly bool) (transactionKey string, serviceError error) {
 	return "", nil
 }
 
-func (r redisBackend) CommitTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+func (r redisBackend) CommitTransaction(ctx context.Context) (serviceError error) {
 	return nil
 }
 
-func (r redisBackend) RollbackTransaction(ctx context.Context) (serviceError errors.ServiceError) {
+func (r redisBackend) RollbackTransaction(ctx context.Context) (serviceError error) {
 	return nil
 }
 
-func (r redisBackend) IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError errors.ServiceError) {
+func (r redisBackend) IsTransactionAlive(ctx context.Context) (isAlive bool, serviceError error) {
 	return true, nil
 }
 
@@ -151,7 +151,7 @@ func (r redisBackend) getKey(resource *model.Resource, recordId string) string {
 	return resource.SourceConfig.Catalog + "/" + resource.SourceConfig.Entity + "/" + recordId
 }
 
-func (r redisBackend) handleError(err error) errors.ServiceError {
+func (r redisBackend) handleError(err error) error {
 	if redisErr, ok := err.(redis.Error); ok {
 		if redisErr.Error() == "redis: nil" {
 			return errors.RecordNotFoundError

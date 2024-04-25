@@ -2,7 +2,6 @@ package abs
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 )
@@ -16,26 +15,26 @@ type Backend interface {
 }
 
 type BackendActionExecutor interface {
-	ExecuteAction(ctx context.Context, resource *model.Resource, rec *model.Record, actionName string, input unstructured.Any) (unstructured.Unstructured, errors.ServiceError)
+	ExecuteAction(ctx context.Context, resource *model.Resource, rec *model.Record, actionName string, input unstructured.Any) (unstructured.Unstructured, error)
 }
 
 type BackendGenericInterface interface {
-	GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err errors.ServiceError)
+	GetStatus(ctx context.Context) (connectionAlreadyInitiated bool, testConnection bool, err error)
 	DestroyDataSource(ctx context.Context)
 }
 
 type BackendRecordsInterface interface {
-	AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError)
-	UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, errors.ServiceError)
-	GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, errors.ServiceError)
-	DeleteRecords(ctx context.Context, resource *model.Resource, ids []*model.Record) errors.ServiceError
-	ListRecords(ctx context.Context, resource *model.Resource, params ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, errors.ServiceError)
+	AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error)
+	UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error)
+	GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, error)
+	DeleteRecords(ctx context.Context, resource *model.Resource, ids []*model.Record) error
+	ListRecords(ctx context.Context, resource *model.Resource, params ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, error)
 }
 
 type BackendSchemaInterface interface {
-	ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, errors.ServiceError)
-	PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, errors.ServiceError)
-	UpgradeResource(ctx context.Context, params UpgradeResourceParams) errors.ServiceError
+	ListEntities(ctx context.Context) ([]*model.DataSourceCatalog, error)
+	PrepareResourceFromEntity(ctx context.Context, catalog, entity string) (*model.Resource, error)
+	UpgradeResource(ctx context.Context, params UpgradeResourceParams) error
 }
 
 type ListRecordParams struct {

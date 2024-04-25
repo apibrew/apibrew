@@ -97,7 +97,7 @@ func (app *App) GetBackendProviderService() service.BackendProviderService {
 func (app *App) Init() <-chan interface{} {
 	app.authorizationService = NewAuthorizationService()
 
-	app.backendEventHandler = backend_event_handler.NewBackendEventHandler(app.authorizationService)
+	app.backendEventHandler = backend_event_handler.NewBackendEventHandler()
 
 	app.backendProviderService = NewBackendProviderService(app.backendEventHandler)
 	app.resourceMigrationService = NewResourceMigrationService()

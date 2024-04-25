@@ -3,12 +3,11 @@ package common
 import (
 	"context"
 	"database/sql"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	log "github.com/sirupsen/logrus"
 )
 
-func (p *sqlBackend) acquireConnection(ctx context.Context) (*sql.DB, errors.ServiceError) {
+func (p *sqlBackend) acquireConnection(ctx context.Context) (*sql.DB, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	if p.connection == nil {

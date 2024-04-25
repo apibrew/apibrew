@@ -20,7 +20,7 @@ type watchService struct {
 	resourceService      service.ResourceService
 }
 
-func (w watchService) WatchResource(ctx context.Context, params service.WatchParams) (<-chan *model.Event, errors.ServiceError) {
+func (w watchService) WatchResource(ctx context.Context, params service.WatchParams) (<-chan *model.Event, error) {
 	if params.Selector == nil {
 		return nil, errors.RecordValidationError.WithMessage("selector is required")
 	}
@@ -66,7 +66,7 @@ func (w watchService) WatchResource(ctx context.Context, params service.WatchPar
 	return w.watch(ctx, params)
 }
 
-func (w watchService) Watch(ctx context.Context, params service.WatchParams) (<-chan *model.Event, errors.ServiceError) {
+func (w watchService) Watch(ctx context.Context, params service.WatchParams) (<-chan *model.Event, error) {
 	if err := w.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (w watchService) Watch(ctx context.Context, params service.WatchParams) (<-
 	return w.watch(ctx, params)
 }
 
-func (w watchService) watch(ctx context.Context, p service.WatchParams) (<-chan *model.Event, errors.ServiceError) {
+func (w watchService) watch(ctx context.Context, p service.WatchParams) (<-chan *model.Event, error) {
 	if p.BufferSize < 0 || p.BufferSize > 1000 {
 		p.BufferSize = 100
 	}
@@ -85,7 +85,7 @@ func (w watchService) watch(ctx context.Context, p service.WatchParams) (<-chan 
 	watchHandler := backend_event_handler.Handler{
 		Id:   "watch-handler-" + watchHandlerId,
 		Name: "watch-handler-" + watchHandlerId,
-		Fn: func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+		Fn: func(ctx context.Context, event *model.Event) (*model.Event, error) {
 			if ctx.Err() != nil {
 				return event, nil
 			}

@@ -38,7 +38,6 @@ type server struct {
 	keyFile           string
 	container         service.Container
 	docsApi           Api
-	metricsApi        Api
 	healthApi         Api
 	recordApi         Api
 	resourceApi       Api
@@ -177,7 +176,6 @@ func (s *server) configureRoutes() {
 
 	s.recordApi.ConfigureRouter(r)
 	s.resourceApi.ConfigureRouter(r)
-	s.metricsApi.ConfigureRouter(r)
 	s.versionApi.ConfigureRouter(r)
 	s.healthApi.ConfigureRouter(r)
 	s.eventChannelApi.ConfigureRouter(r)
@@ -249,7 +247,6 @@ func NewServer(container service.Container, config *model.AppConfig) Server {
 		docsApi:           docs.NewApi(container.GetResourceService(), container.GetRecordService()),
 		recordApi:         NewRecordApi(container),
 		resourceApi:       NewResourceApi(container),
-		metricsApi:        NewMetricsApi(container.GetMetricsService()),
 		versionApi:        NewVersionApi(),
 		healthApi:         NewHealthApi(),
 		eventChannelApi:   NewEventChannelApi(container),

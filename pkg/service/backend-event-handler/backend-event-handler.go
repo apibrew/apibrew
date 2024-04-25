@@ -3,12 +3,8 @@ package backend_event_handler
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/errors"
-	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
-	"github.com/apibrew/apibrew/pkg/resources"
-	"github.com/apibrew/apibrew/pkg/service"
-	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"sort"
@@ -16,17 +12,16 @@ import (
 
 type backendEventHandler struct {
 	handlers                      []Handler
-	authorizationService          service.AuthorizationService
-	extensionEventSelectorMatcher *helper.ExtensionEventSelectorMatcher
+	extensionEventSelectorMatcher *ExtensionEventSelectorMatcher
 }
 
-func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.Event) (*model.Event, errors.ServiceError) {
+func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.Event) (*model.Event, error) {
 	nextEvent := originalEvent
 
-	var handlers = b.filterHandlersForEvent(ctx, nextEvent)
+	var handlers = b.filterHandlersForEvent(nextEvent)
 
 	if len(handlers) == 0 || (len(handlers) == 1 && handlers[0].Id == "audit-handler") {
-		log.Tracef("No handlers found for event: %s", logging.ShortEventInfo(nextEvent))
+		log.Tracef("No handlers found for event: %s", ShortEventInfo(nextEvent))
 		return nextEvent, errors.LogicalError.WithDetails("No handlers found for event")
 	}
 
@@ -43,7 +38,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 				// wait for until current request to be done
 				<-ctx.Done()
 
-				logger.Debugf("Calling handler[%d sync: %v]: %s - %s", localHandler.Order, localHandler.Sync, localHandler.Name, logging.ShortEventInfo(nextEvent))
+				logger.Debugf("Calling handler[%d sync: %v]: %s - %s", localHandler.Order, localHandler.Sync, localHandler.Name, ShortEventInfo(nextEvent))
 				logger.Tracef("Processing event[body]: %s", nextEvent)
 
 				_, err := localHandler.Fn(util.NewContextWithValues(context.TODO(), ctx), nextEvent)
@@ -53,7 +48,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 				}
 			}(handler)
 		} else {
-			logger.Debugf("Calling handler[%d sync: %v]: %s - %s", handler.Order, handler.Sync, handler.Name, logging.ShortEventInfo(nextEvent))
+			logger.Debugf("Calling handler[%d sync: %v]: %s - %s", handler.Order, handler.Sync, handler.Name, ShortEventInfo(nextEvent))
 			logger.Tracef("Processing event[body]: %s", nextEvent)
 
 			nextEvent.Sync = true
@@ -64,7 +59,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 				return nil, err
 			}
 
-			logger.Debugf("Handler responded: %s - %s", handler.Name, logging.ShortEventInfo(result))
+			logger.Debugf("Handler responded: %s - %s", handler.Name, ShortEventInfo(result))
 			logger.Tracef("Handler responded: %s", result)
 
 			if result != nil && result.Error != nil {
@@ -94,7 +89,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 
 		}
 	}
-	logger.Debugf("Finished handler chain - %s", logging.ShortEventInfo(nextEvent))
+	logger.Debugf("Finished handler chain - %s", ShortEventInfo(nextEvent))
 	logger.Tracef("Processed event: %s", nextEvent)
 
 	return nextEvent, nil
@@ -119,27 +114,10 @@ func (b *backendEventHandler) UnRegisterHandler(handler Handler) {
 	log.Debugf("Unregister handler[not found]: %s [%v]", handler.Id, handler)
 }
 
-func (b *backendEventHandler) filterHandlersForEvent(ctx context.Context, incoming *model.Event) []Handler {
+func (b *backendEventHandler) filterHandlersForEvent(incoming *model.Event) []Handler {
 	var result []Handler
 
 	for _, handler := range b.handlers {
-		// disable external handlers for audit log
-		if !handler.Internal && incoming.Resource.Namespace == resources.AuditLogResource.Namespace && incoming.Resource.Name == resources.AuditLogResource.Name {
-			continue
-		}
-
-		if !handler.Internal && annotations.IsEnabled(annotations.FromCtx(ctx), annotations.BypassExtensions) {
-			// check if extension controller
-			err := b.authorizationService.CheckIsExtensionController(ctx)
-
-			if err != nil {
-				log.Error(err)
-			} else {
-				log.Debugf("Handler bypassed: %s [%v]", handler.Id, handler)
-				continue
-			}
-		}
-
 		if b.extensionEventSelectorMatcher.SelectorMatches(incoming, handler.Selector) {
 			log.Tracef("Handler matches: %s [%v]", handler.Id, handler)
 			result = append(result, handler)
@@ -149,12 +127,12 @@ func (b *backendEventHandler) filterHandlersForEvent(ctx context.Context, incomi
 	return result
 }
 
-func NewBackendEventHandler(authorizationService service.AuthorizationService) BackendEventHandler {
-	return &backendEventHandler{authorizationService: authorizationService, extensionEventSelectorMatcher: &helper.ExtensionEventSelectorMatcher{}}
+func NewBackendEventHandler() BackendEventHandler {
+	return &backendEventHandler{extensionEventSelectorMatcher: &ExtensionEventSelectorMatcher{}}
 }
 
 type BackendEventHandler interface {
 	RegisterHandler(handler Handler)
 	UnRegisterHandler(handler Handler)
-	Handle(ctx context.Context, incoming *model.Event) (*model.Event, errors.ServiceError)
+	Handle(ctx context.Context, incoming *model.Event) (*model.Event, error)
 }

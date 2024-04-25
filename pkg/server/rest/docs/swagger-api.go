@@ -77,16 +77,18 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 	})
 }
 
-func (s *swaggerApi) writeDocResult(w http.ResponseWriter, serviceErr errors.ServiceError, doc *openapi3.T) {
-	if serviceErr != nil {
-		http.Error(w, serviceErr.GetFullMessage(), 500)
+func (s *swaggerApi) writeDocResult(w http.ResponseWriter, err error, doc *openapi3.T) {
+	serr := errors.FromServiceError(err)
+
+	if serr != nil {
+		http.Error(w, serr.GetFullMessage(), 500)
 		return
 	}
 
 	data, err := doc.MarshalJSON()
 
 	if err != nil {
-		http.Error(w, serviceErr.GetFullMessage(), 400)
+		http.Error(w, serr.GetFullMessage(), 400)
 		return
 	}
 

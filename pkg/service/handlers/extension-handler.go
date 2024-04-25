@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -19,7 +18,7 @@ func (h *extensionHandler) Register(eventHandler backend_event_handler.BackendEv
 	eventHandler.RegisterHandler(prepareStdHandler(101, model.Event_DELETE, h.AfterChange, resources.ExtensionResource))
 }
 
-func (h *extensionHandler) AfterChange(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *extensionHandler) AfterChange(ctx context.Context, event *model.Event) (*model.Event, error) {
 
 	go h.extensionService.Reload()
 

@@ -14,7 +14,7 @@ type clientResourceService struct {
 	client Client
 }
 
-func (c clientResourceService) GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, errors.ServiceError) {
+func (c clientResourceService) GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, error) {
 	res, err := c.client.GetResourceByName(ctx, namespace, resource)
 
 	if err != nil {
@@ -24,7 +24,7 @@ func (c clientResourceService) GetResourceByName(ctx context.Context, namespace,
 	return res, nil
 }
 
-func (c clientResourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, errors.ServiceError) {
+func (c clientResourceService) Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, error) {
 	if err := c.client.CreateResource(ctx, resource, doMigration, forceMigration); err != nil {
 		return nil, errors.FromGrpcError(err)
 	}
@@ -32,7 +32,7 @@ func (c clientResourceService) Create(ctx context.Context, resource *model.Resou
 	return c.GetResourceByName(ctx, resource.Namespace, resource.Name)
 }
 
-func (c clientResourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) errors.ServiceError {
+func (c clientResourceService) Update(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) error {
 	if err := c.client.UpdateResource(ctx, resource, doMigration, forceMigration); err != nil {
 		return errors.FromGrpcError(err)
 	}
@@ -40,7 +40,7 @@ func (c clientResourceService) Update(ctx context.Context, resource *model.Resou
 	return nil
 }
 
-func (c clientResourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) errors.ServiceError {
+func (c clientResourceService) Delete(ctx context.Context, ids []string, doMigration bool, forceMigration bool) error {
 	for _, id := range ids {
 		if err := c.client.DeleteResource(ctx, id, doMigration, forceMigration); err != nil {
 			return errors.FromGrpcError(err)
@@ -50,7 +50,7 @@ func (c clientResourceService) Delete(ctx context.Context, ids []string, doMigra
 	return nil
 }
 
-func (c clientResourceService) List(ctx context.Context) ([]*model.Resource, errors.ServiceError) {
+func (c clientResourceService) List(ctx context.Context) ([]*model.Resource, error) {
 	res, err := c.client.ListResources(ctx)
 
 	if err != nil {
@@ -64,7 +64,7 @@ type clientRecordService struct {
 	client Client
 }
 
-func (c clientRecordService) Create(ctx context.Context, params service.RecordCreateParams) ([]*model.Record, errors.ServiceError) {
+func (c clientRecordService) Create(ctx context.Context, params service.RecordCreateParams) ([]*model.Record, error) {
 	var result []*model.Record
 
 	for _, record := range params.Records {
@@ -80,7 +80,7 @@ func (c clientRecordService) Create(ctx context.Context, params service.RecordCr
 	return result, nil
 }
 
-func (c clientRecordService) Update(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
+func (c clientRecordService) Update(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, error) {
 	var result []*model.Record
 
 	for _, record := range params.Records {
@@ -96,7 +96,7 @@ func (c clientRecordService) Update(ctx context.Context, params service.RecordUp
 	return result, nil
 }
 
-func (c clientRecordService) Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, errors.ServiceError) {
+func (c clientRecordService) Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, error) {
 	var result []*model.Record
 
 	for _, record := range params.Records {
@@ -112,7 +112,7 @@ func (c clientRecordService) Apply(ctx context.Context, params service.RecordUpd
 	return result, nil
 }
 
-func (c clientRecordService) Delete(ctx context.Context, params service.RecordDeleteParams) errors.ServiceError {
+func (c clientRecordService) Delete(ctx context.Context, params service.RecordDeleteParams) error {
 	for _, id := range params.Ids {
 		if err := c.client.DeleteRecord(ctx, params.Namespace, params.Resource, util.IdRecord(id)); err != nil {
 			return errors.FromGrpcError(err)
@@ -122,11 +122,11 @@ func (c clientRecordService) Delete(ctx context.Context, params service.RecordDe
 	return nil
 }
 
-func (c clientRecordService) Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (*model.Record, errors.ServiceError) {
+func (c clientRecordService) Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (*model.Record, error) {
 	panic("implement me")
 }
 
-func (c clientRecordService) List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, errors.ServiceError) {
+func (c clientRecordService) List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
 	res, total, err := c.client.ListRecords(ctx, params)
 
 	if err != nil {

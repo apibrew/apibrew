@@ -112,7 +112,7 @@ func (m module) initTestExecutionListeners() {
 	})
 }
 
-func (m module) handleTestCase(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (m module) handleTestCase(ctx context.Context, event *model.Event) (*model.Event, error) {
 	for idx, record := range event.Records {
 		testCase := TestCaseMapperInstance.FromRecord(record)
 
@@ -138,7 +138,7 @@ func (m module) handleTestCase(ctx context.Context, event *model.Event) (*model.
 	return event, nil
 }
 
-func (m module) handleTestExecution(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (m module) handleTestExecution(ctx context.Context, event *model.Event) (*model.Event, error) {
 	var recordsToDelete []string
 
 	defer func() {
@@ -173,7 +173,7 @@ func (m module) handleTestExecution(ctx context.Context, event *model.Event) (*m
 	return event, nil
 }
 
-func (m module) executeTest(ctx context.Context, record *model.Record) (errors.ServiceError, bool) {
+func (m module) executeTest(ctx context.Context, record *model.Record) (error, bool) {
 	// locating records
 	// locating test execution
 
@@ -192,7 +192,7 @@ func (m module) executeTest(ctx context.Context, record *model.Record) (errors.S
 	return m.executeTestCase(ctx, testExecution, variableMap), testExecution.Stored
 }
 
-func (m module) executeTestCase(ctx context.Context, execution *TestExecution, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeTestCase(ctx context.Context, execution *TestExecution, variableMap *map[string]interface{}) error {
 	m.log(execution, "Executing test case '%s'", execution.TestCase.Name)
 	// executing steps
 	m.log(execution, "Executing test case steps begin '%s'", execution.TestCase.Name)
@@ -239,7 +239,7 @@ func (m module) executeTestCase(ctx context.Context, execution *TestExecution, v
 	return nil
 }
 
-func (m module) executeStep(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeStep(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) error {
 	switch step.Operation {
 	case TestCaseOperation_CREATE:
 		return m.executeCreate(ctx, execution, step, variableMap)
@@ -260,7 +260,7 @@ func (m module) executeStep(ctx context.Context, execution *TestExecution, step 
 	return nil
 }
 
-func (m module) executeAssertion(ctx context.Context, execution *TestExecution, step TestCaseTestCaseAssertion, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeAssertion(ctx context.Context, execution *TestExecution, step TestCaseTestCaseAssertion, variableMap *map[string]interface{}) error {
 
 	left, err := m.resolveValue(step.Left, variableMap)
 
@@ -284,7 +284,7 @@ func (m module) executeAssertion(ctx context.Context, execution *TestExecution, 
 			return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed: %v == %v", left, right))
 		}
 	case TestCaseAssertionType_EXPECTERROR:
-		if serr, ok := (*variableMap)["error"].(errors.ServiceError); ok {
+		if serr, ok := (*variableMap)["error"].(error); ok {
 			if step.ErrorCode != nil && *step.ErrorCode != serr.Code().String() {
 				return errors.RecordValidationError.WithMessage(fmt.Sprintf("Assertion failed for error code: %v != %v", util.DePointer(step.ErrorCode, ""), serr.Code().String()))
 			}
@@ -301,7 +301,7 @@ func (m module) executeAssertion(ctx context.Context, execution *TestExecution, 
 	return nil
 }
 
-func (m module) resolveValue(value interface{}, variableMap *map[string]interface{}) (interface{}, errors.ServiceError) {
+func (m module) resolveValue(value interface{}, variableMap *map[string]interface{}) (interface{}, error) {
 	if ptr, ok := value.(*interface{}); ok {
 		if ptr == nil {
 			return nil, nil
@@ -350,7 +350,7 @@ func (m module) resolveValue(value interface{}, variableMap *map[string]interfac
 	return valueStr, nil
 }
 
-func (m module) executeCreate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeCreate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) error {
 	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
 
 	if err != nil {
@@ -366,7 +366,7 @@ func (m module) executeCreate(ctx context.Context, execution *TestExecution, ste
 	return err
 }
 
-func (m module) executeUpdate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeUpdate(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) error {
 	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
 
 	if err != nil {
@@ -382,7 +382,7 @@ func (m module) executeUpdate(ctx context.Context, execution *TestExecution, ste
 	return err
 }
 
-func (m module) executeDelete(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeDelete(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) error {
 	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
 
 	if err != nil {
@@ -392,7 +392,7 @@ func (m module) executeDelete(ctx context.Context, execution *TestExecution, ste
 	return m.apiInterface.Delete(ctx, (payload).(unstructured.Unstructured))
 }
 
-func (m module) executeGet(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeGet(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) error {
 	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
 
 	if err != nil {
@@ -408,7 +408,7 @@ func (m module) executeGet(ctx context.Context, execution *TestExecution, step T
 	return err
 }
 
-func (m module) executeApply(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeApply(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) error {
 	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
 
 	if err != nil {
@@ -424,11 +424,11 @@ func (m module) executeApply(ctx context.Context, execution *TestExecution, step
 	return err
 }
 
-func (m module) executeNano(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeNano(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) error {
 	panic("not implement me")
 }
 
-func (m module) executeList(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) errors.ServiceError {
+func (m module) executeList(ctx context.Context, execution *TestExecution, step TestCaseTestCaseStep, variableMap *map[string]interface{}) error {
 	payload, err := m.resolveValue(*step.Payload.(*interface{}), variableMap)
 
 	if err != nil {
@@ -483,7 +483,7 @@ func (m module) executeList(ctx context.Context, execution *TestExecution, step 
 	return err
 }
 
-func (m module) evaluate(expr string, variableMap *map[string]interface{}) (interface{}, errors.ServiceError) {
+func (m module) evaluate(expr string, variableMap *map[string]interface{}) (interface{}, error) {
 	// it is recursively evulating the string
 	// e.g.
 	// $test_case_result.id => It will return the id of the test case result

@@ -23,16 +23,16 @@ type EntityListResult[T Entity] struct {
 }
 
 type Repository[T Entity] interface {
-	Create(ctx context.Context, entity T) (T, errors.ServiceError)
-	Update(ctx context.Context, entity T) (T, errors.ServiceError)
-	Apply(ctx context.Context, entity T) (T, errors.ServiceError)
-	Load(ctx context.Context, entity T, params LoadParams) (T, errors.ServiceError)
-	Delete(ctx context.Context, entity T) errors.ServiceError
-	List(ctx context.Context, params ListParams) (EntityListResult[T], errors.ServiceError)
-	GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, errors.ServiceError)
+	Create(ctx context.Context, entity T) (T, error)
+	Update(ctx context.Context, entity T) (T, error)
+	Apply(ctx context.Context, entity T) (T, error)
+	Load(ctx context.Context, entity T, params LoadParams) (T, error)
+	Delete(ctx context.Context, entity T) error
+	List(ctx context.Context, params ListParams) (EntityListResult[T], error)
+	GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, error)
 }
 
-func (r repository[T]) Create(ctx context.Context, entity T) (T, errors.ServiceError) {
+func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
 	result, err := r.api.Create(ctx, r.mapper.ToUnstructured(entity))
 
 	if err != nil {
@@ -48,7 +48,7 @@ func (r repository[T]) Create(ctx context.Context, entity T) (T, errors.ServiceE
 	return r.mapper.FromRecord(record), nil
 }
 
-func (r repository[T]) Update(ctx context.Context, entity T) (T, errors.ServiceError) {
+func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
 	result, err := r.api.Update(ctx, r.mapper.ToUnstructured(entity))
 
 	if err != nil {
@@ -64,7 +64,7 @@ func (r repository[T]) Update(ctx context.Context, entity T) (T, errors.ServiceE
 	return r.mapper.FromRecord(record), nil
 }
 
-func (r repository[T]) Apply(ctx context.Context, entity T) (T, errors.ServiceError) {
+func (r repository[T]) Apply(ctx context.Context, entity T) (T, error) {
 	result, err := r.api.Apply(ctx, r.mapper.ToUnstructured(entity))
 
 	if err != nil {
@@ -80,7 +80,7 @@ func (r repository[T]) Apply(ctx context.Context, entity T) (T, errors.ServiceEr
 	return r.mapper.FromRecord(record), nil
 }
 
-func (r repository[T]) Load(ctx context.Context, entity T, params LoadParams) (T, errors.ServiceError) {
+func (r repository[T]) Load(ctx context.Context, entity T, params LoadParams) (T, error) {
 	result, err := r.api.Load(ctx, r.mapper.ToUnstructured(entity), params)
 
 	if err != nil {
@@ -96,11 +96,11 @@ func (r repository[T]) Load(ctx context.Context, entity T, params LoadParams) (T
 	return r.mapper.FromRecord(record), nil
 }
 
-func (r repository[T]) Delete(ctx context.Context, entity T) errors.ServiceError {
+func (r repository[T]) Delete(ctx context.Context, entity T) error {
 	return r.api.Delete(ctx, r.mapper.ToUnstructured(entity))
 }
 
-func (r repository[T]) List(ctx context.Context, params ListParams) (EntityListResult[T], errors.ServiceError) {
+func (r repository[T]) List(ctx context.Context, params ListParams) (EntityListResult[T], error) {
 	result, err := r.api.List(ctx, params)
 
 	if err != nil {
@@ -123,7 +123,7 @@ func (r repository[T]) List(ctx context.Context, params ListParams) (EntityListR
 	return EntityListResult[T]{Total: result.Total, Content: records}, nil
 }
 
-func (r repository[T]) GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, errors.ServiceError) {
+func (r repository[T]) GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, error) {
 	return r.api.GetResourceByType(ctx, typeName)
 }
 

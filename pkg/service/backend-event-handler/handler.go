@@ -2,13 +2,12 @@ package backend_event_handler
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 )
 
 const NaturalOrder = 100
 
-type HandlerFunc func(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError)
+type HandlerFunc func(ctx context.Context, event *model.Event) (*model.Event, error)
 
 type Handler struct {
 	Id         string

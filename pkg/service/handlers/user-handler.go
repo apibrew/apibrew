@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service/backend-event-handler"
@@ -22,7 +21,7 @@ func (h *userHandler) Register(eventHandler backend_event_handler.BackendEventHa
 	eventHandler.RegisterHandler(prepareStdHandler(101, model.Event_GET, h.AfterGet, resources.UserResource))
 }
 
-func (h *userHandler) BeforeCreate(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *userHandler) BeforeCreate(ctx context.Context, event *model.Event) (*model.Event, error) {
 	for _, user := range event.Records {
 		if user.Properties["password"] != nil && user.Properties["password"].GetStringValue() != "" {
 			hashStr, err := util.EncodeKey(user.Properties["password"].GetStringValue())
@@ -38,7 +37,7 @@ func (h *userHandler) BeforeCreate(ctx context.Context, event *model.Event) (*mo
 	return event, nil
 }
 
-func (h *userHandler) AfterList(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *userHandler) AfterList(ctx context.Context, event *model.Event) (*model.Event, error) {
 	if !util.IsSystemContext(ctx) {
 		h.cleanPasswords(event.Records)
 	}
@@ -46,7 +45,7 @@ func (h *userHandler) AfterList(ctx context.Context, event *model.Event) (*model
 	return event, nil
 }
 
-func (h *userHandler) AfterCreate(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *userHandler) AfterCreate(ctx context.Context, event *model.Event) (*model.Event, error) {
 	if !util.IsSystemContext(ctx) {
 		h.cleanPasswords(event.Records)
 	}
@@ -54,7 +53,7 @@ func (h *userHandler) AfterCreate(ctx context.Context, event *model.Event) (*mod
 	return event, nil
 }
 
-func (h *userHandler) BeforeUpdate(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *userHandler) BeforeUpdate(ctx context.Context, event *model.Event) (*model.Event, error) {
 	for _, user := range event.Records {
 		if user.Properties["password"] != nil && user.Properties["password"].GetStringValue() != "" {
 			hashStr, err := util.EncodeKey(user.Properties["password"].GetStringValue())
@@ -70,7 +69,7 @@ func (h *userHandler) BeforeUpdate(ctx context.Context, event *model.Event) (*mo
 	return event, nil
 }
 
-func (h *userHandler) AfterUpdate(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *userHandler) AfterUpdate(ctx context.Context, event *model.Event) (*model.Event, error) {
 	if !util.IsSystemContext(ctx) {
 		h.cleanPasswords(event.Records)
 	}
@@ -78,7 +77,7 @@ func (h *userHandler) AfterUpdate(ctx context.Context, event *model.Event) (*mod
 	return event, nil
 }
 
-func (h *userHandler) AfterGet(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (h *userHandler) AfterGet(ctx context.Context, event *model.Event) (*model.Event, error) {
 	if event.Records == nil || len(event.Records) == 0 {
 		return event, nil
 	}

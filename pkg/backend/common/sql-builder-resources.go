@@ -3,11 +3,10 @@ package common
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/backend/helper"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 )
 
-func (p *sqlBackend) resourceListEntities(ctx context.Context, runner helper.QueryRunner) (result []*model.DataSourceCatalog, err errors.ServiceError) {
+func (p *sqlBackend) resourceListEntities(ctx context.Context, runner helper.QueryRunner) (result []*model.DataSourceCatalog, err error) {
 	rows, sqlErr := runner.QueryContext(ctx, `
 select table_schema, table_name, false
 from information_schema.tables

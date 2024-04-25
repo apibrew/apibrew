@@ -21,7 +21,7 @@ type authorizationService struct {
 	recordInlineSelector *helper.RecordInlineSelector
 }
 
-func (a *authorizationService) CheckIsExtensionController(ctx context.Context) errors.ServiceError {
+func (a *authorizationService) CheckIsExtensionController(ctx context.Context) error {
 	exp, err := a.CheckRecordAccessWithRecordSelector(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ExtensionResource,
 		Operation: resource_model.PermissionOperation_FULL,
@@ -38,13 +38,13 @@ func (a *authorizationService) CheckIsExtensionController(ctx context.Context) e
 	return nil
 }
 
-func (a *authorizationService) CheckRecordAccess(ctx context.Context, params service.CheckRecordAccessParams) errors.ServiceError {
+func (a *authorizationService) CheckRecordAccess(ctx context.Context, params service.CheckRecordAccessParams) error {
 	_, err := a.CheckRecordAccessWithRecordSelector(ctx, params)
 
 	return err
 }
 
-func (a *authorizationService) CheckRecordAccessWithRecordSelector(ctx context.Context, params service.CheckRecordAccessParams) (*resource_model.BooleanExpression, errors.ServiceError) {
+func (a *authorizationService) CheckRecordAccessWithRecordSelector(ctx context.Context, params service.CheckRecordAccessParams) (*resource_model.BooleanExpression, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	if util.IsSystemContext(ctx) {

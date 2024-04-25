@@ -1,6 +1,7 @@
 package docs
 
 import (
+	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/generator/templates/typescript"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -26,7 +27,8 @@ func (s *typescriptTypesApi) ConfigureRouter(r *mux.Router) {
 		var pkg = "model"
 
 		if err != nil {
-			http.Error(w, err.GetFullMessage(), 500)
+			serr := errors.FromServiceError(err)
+			http.Error(w, serr.GetFullMessage(), 500)
 			return
 		}
 

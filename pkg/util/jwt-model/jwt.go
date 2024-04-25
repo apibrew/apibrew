@@ -20,7 +20,7 @@ type JwtUserDetailsSignParams struct {
 	Issuer      string
 }
 
-func JwtUserDetailsSign(params JwtUserDetailsSignParams, minimizeToken bool) (string, errors.ServiceError) {
+func JwtUserDetailsSign(params JwtUserDetailsSignParams, minimizeToken bool) (string, error) {
 	jit, err := uuid.NewRandom()
 
 	if err != nil {
@@ -201,7 +201,7 @@ func scopeToPermission(scope string) *resource_model.Permission {
 	return result
 }
 
-func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*UserDetails, errors.ServiceError) {
+func JwtVerifyAndUnpackUserDetails(key rsa.PublicKey, tokenContent string) (*UserDetails, error) {
 	claims := new(JwtUserClaims)
 
 	_, err := jwt.ParseWithClaims(tokenContent, claims, func(token *jwt.Token) (interface{}, error) {

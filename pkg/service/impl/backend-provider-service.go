@@ -32,7 +32,7 @@ func (b *backendProviderService) SetSchema(schema *abs.Schema) {
 	b.schema = schema
 }
 
-func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) errors.ServiceError {
+func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceId string) error {
 	bck, err := b.getBackendByDataSourceId(ctx, dataSourceId)
 
 	if err != nil {
@@ -49,7 +49,7 @@ func (b *backendProviderService) DestroyBackend(ctx context.Context, dataSourceI
 	return nil
 }
 
-func (b *backendProviderService) getBackendByDataSourceId(ctx context.Context, dataSourceId string) (abs.Backend, errors.ServiceError) {
+func (b *backendProviderService) getBackendByDataSourceId(ctx context.Context, dataSourceId string) (abs.Backend, error) {
 	if b.backendMap[dataSourceId] != nil {
 		return b.backendMap[dataSourceId], nil
 	}
@@ -68,7 +68,7 @@ func (b *backendProviderService) getBackendByDataSourceId(ctx context.Context, d
 	}
 }
 
-func (b *backendProviderService) getBackendByResource(ctx context.Context, resource *model.Resource) (abs.Backend, errors.ServiceError) {
+func (b *backendProviderService) getBackendByResource(ctx context.Context, resource *model.Resource) (abs.Backend, error) {
 	if resource.Virtual {
 		return nil, errors.LogicalError.WithMessage("Cannot get backend for virtual resource")
 	}
@@ -76,7 +76,7 @@ func (b *backendProviderService) getBackendByResource(ctx context.Context, resou
 	return b.getBackendByDataSourceName(ctx, resource.SourceConfig.DataSource)
 }
 
-func (b *backendProviderService) getBackendByDataSourceName(ctx context.Context, dataSourceName string) (abs.Backend, errors.ServiceError) {
+func (b *backendProviderService) getBackendByDataSourceName(ctx context.Context, dataSourceName string) (abs.Backend, error) {
 	if b.backendMap[dataSourceName] != nil {
 		return b.backendMap[dataSourceName], nil
 	}
@@ -185,7 +185,7 @@ func (b *backendProviderService) prepareActualHandler() backend_event_handler.Ha
 	}
 }
 
-func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *model.Event) (*model.Event, errors.ServiceError) {
+func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *model.Event) (*model.Event, error) {
 	// if resource is virtual, do not handle it
 	if event.Resource.Virtual {
 		return event, nil

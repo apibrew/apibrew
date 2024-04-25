@@ -354,7 +354,7 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 	var recordSelector *model.BooleanExpression
 
 	if len(filters) > 0 {
-		var err errors.ServiceError
+		var err error
 		recordSelector, err = util.PrepareQuery(resource, filters)
 
 		if err != nil {

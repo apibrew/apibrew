@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func ValidateResource(resource *model.Resource) errors.ServiceError {
+func ValidateResource(resource *model.Resource) error {
 	var errorFields []*model.ErrorField
 
 	if resource.Name == "" {
