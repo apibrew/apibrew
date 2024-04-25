@@ -2,12 +2,8 @@ module github.com/apibrew/apibrew
 
 go 1.20
 
-replace github.com/apibrew/metrics => ../metrics
-replace github.com/apibrew/nano => ../nano
-
 require (
-	github.com/apibrew/metrics v0.0.0-00010101000000-000000000000
-	github.com/apibrew/nano v1.0.15
+	github.com/apibrew/nano v1.0.14
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-redis/redis v6.15.9+incompatible
