@@ -1,5 +1,7 @@
 package service
 
+import "github.com/apibrew/apibrew/pkg/model"
+
 type Container interface {
 	GetRecordService() RecordService
 	GetEventChannelService() EventChannelService
@@ -11,5 +13,7 @@ type Container interface {
 	GetDataSourceService() DataSourceService
 	GetWatchService() WatchService
 	GetExtensionService() ExtensionService
+	GetBackendProviderService() BackendProviderService
 	GetBackendEventHandler() interface{}
+	GetAppConfig() *model.AppConfig
 }

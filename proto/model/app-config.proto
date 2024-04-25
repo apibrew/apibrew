@@ -79,6 +79,11 @@ enum LogFormat {
   JSON = 1;
 }
 
+message ModuleConfig {
+  bool disabled = 1;
+  map<string, string> options = 2;
+}
+
 message AppConfig {
   string host = 1;
   int32 port = 2;
@@ -98,4 +103,5 @@ message AppConfig {
   EventChannelConfig eventChannelConfig = 16;
   LoggingConfig loggingConfig = 17;
   bool enablePprof = 18;
+  map<string, ModuleConfig> modules = 19;
 }

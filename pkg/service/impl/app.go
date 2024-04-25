@@ -35,6 +35,10 @@ type App struct {
 	init                     bool
 }
 
+func (app *App) GetAppConfig() *model.AppConfig {
+	return app.config
+}
+
 func (app *App) GetBackendEventHandler() interface{} {
 	return app.backendEventHandler
 }
@@ -85,6 +89,9 @@ func (app *App) GetAuditService() service.AuditService {
 
 func (app *App) GetStatsService() service.StatsService {
 	return app.statsService
+}
+func (app *App) GetBackendProviderService() service.BackendProviderService {
+	return app.backendProviderService
 }
 
 func (app *App) Init() <-chan interface{} {
