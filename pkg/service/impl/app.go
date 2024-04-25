@@ -28,7 +28,6 @@ type App struct {
 	backendEventHandler      backend_event_handler.BackendEventHandler
 	extensionService         service.ExtensionService
 	eventChannelService      service.EventChannelService
-	metricsService           service.MetricsService
 	auditService             service.AuditService
 	statsService             service.StatsService
 	modules                  []service.Module
@@ -79,10 +78,6 @@ func (app *App) GetExtensionService() service.ExtensionService {
 	return app.extensionService
 }
 
-func (app *App) GetMetricsService() service.MetricsService {
-	return app.metricsService
-}
-
 func (app *App) GetAuditService() service.AuditService {
 	return app.auditService
 }
@@ -113,7 +108,6 @@ func (app *App) Init() <-chan interface{} {
 	app.stdHandler = handlers.NewStdHandler(app.backendEventHandler, app.backendProviderService, app.extensionService)
 	app.watchService = NewWatchService(app.backendEventHandler, app.authorizationService, app.resourceService)
 	app.authenticationService = NewAuthenticationService(app.recordService)
-	app.metricsService = NewMetricService(app.recordService, app.resourceService)
 	app.auditService = NewAuditService(app.backendEventHandler, app.recordService)
 	app.statsService = NewStatsService(app.backendEventHandler)
 
@@ -139,7 +133,6 @@ func (app *App) initServices() {
 	app.recordService.Init(app.config)
 	app.dataSourceService.Init(app.config)
 	app.authenticationService.Init(app.config)
-	app.metricsService.Init(app.config)
 	app.extensionService.Init(app.config)
 	app.eventChannelService.Init(app.config)
 	app.auditService.Init(app.config)

@@ -8,7 +8,6 @@ type Container interface {
 	GetAuthenticationService() AuthenticationService
 	GetAuthorizationService() AuthorizationService
 	GetResourceService() ResourceService
-	GetMetricsService() MetricsService
 	GetResourceMigrationService() ResourceMigrationService
 	GetDataSourceService() DataSourceService
 	GetWatchService() WatchService

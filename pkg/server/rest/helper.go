@@ -72,7 +72,7 @@ func handleServiceError(writer http.ResponseWriter, err error) {
 }
 
 func handleError(writer http.ResponseWriter, err error) {
-	if serr, ok := err.(error); ok {
+	if serr, ok := err.(errors.ServiceError); ok {
 		handleServiceError(writer, serr)
 		return
 	} else {

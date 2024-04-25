@@ -59,14 +59,6 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		return nil, 0, err
 	}
 
-	// begin metrics
-	defer metrics.IncrCounterWithLabels([]string{"RecordService"}, 1, []metrics.Label{
-		{Name: "operation", Value: "List"},
-		{Name: "resource", Value: params.Resource},
-		{Name: "namespace", Value: params.Namespace},
-	})
-	// end metrics
-
 	if params.UseHistory {
 		if !annotations.IsEnabled(resource, annotations.KeepHistory) {
 			return nil, 0, errors.LogicalError.WithDetails("History is not enabled on resource")
