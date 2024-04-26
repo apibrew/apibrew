@@ -22,6 +22,10 @@ message PairExpression {
   Expression right = 2;
 }
 
+message Filters {
+  map<string, google.protobuf.Value> filters = 1;
+}
+
 message RegexMatchExpression {
   string pattern = 1;
   Expression expression = 2;
@@ -45,5 +49,6 @@ message BooleanExpression {
 
     // other
     RegexMatchExpression regexMatch = 11;
+    Filters filters = 12;
   }
 }

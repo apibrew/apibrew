@@ -44,6 +44,10 @@ func BooleanExpressionFromProto(exp *model.BooleanExpression) resource_model.Boo
 			result.LessThanOrEqual = util.Pointer(PairExpressionFromProto(exp.GetLessThanOrEqual()))
 		}
 
+		if exp.GetIn() != nil {
+			result.LessThanOrEqual = util.Pointer(PairExpressionFromProto(exp.GetIn()))
+		}
+
 		if exp.GetRegexMatch() != nil {
 			result.RegexMatch = util.Pointer(RegexMatchExpressionFromProto(exp.GetRegexMatch()))
 		}
@@ -141,6 +145,12 @@ func BooleanExpressionToProto(exp resource_model.BooleanExpression) *model.Boole
 	if exp.LessThanOrEqual != nil {
 		result.Expression = &model.BooleanExpression_LessThanOrEqual{
 			LessThanOrEqual: PairExpressionToProto(*exp.LessThanOrEqual),
+		}
+	}
+
+	if exp.In != nil {
+		result.Expression = &model.BooleanExpression_In{
+			In: PairExpressionToProto(*exp.In),
 		}
 	}
 
