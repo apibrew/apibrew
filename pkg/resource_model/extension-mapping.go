@@ -595,6 +595,30 @@ func (m *BooleanExpressionMapper) ToProperties(booleanExpression *BooleanExpress
 		properties["isNull"] = var_IsNull_mapped
 	}
 
+	var_Filters := booleanExpression.Filters
+
+	if var_Filters != nil {
+		var var_Filters_mapped *structpb.Value
+
+		var var_Filters_st *structpb.Struct = new(structpb.Struct)
+		var_Filters_st.Fields = make(map[string]*structpb.Value)
+		for key, value := range var_Filters {
+
+			var_1x := value
+			var var_1x_mapped *structpb.Value
+
+			var var_1x_err error
+			var_1x_mapped, var_1x_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_1x)
+			if var_1x_err != nil {
+				panic(var_1x_err)
+			}
+
+			var_Filters_st.Fields[key] = var_1x_mapped
+		}
+		var_Filters_mapped = structpb.NewStructValue(var_Filters_st)
+		properties["filters"] = var_Filters_mapped
+	}
+
 	var_RegexMatch := booleanExpression.RegexMatch
 
 	if var_RegexMatch != nil {
@@ -711,6 +735,20 @@ func (m *BooleanExpressionMapper) FromProperties(properties map[string]*structpb
 		var_IsNull_mapped := mappedValue
 
 		s.IsNull = var_IsNull_mapped
+	}
+	if properties["filters"] != nil && properties["filters"].AsInterface() != nil {
+
+		var_Filters := properties["filters"]
+		var_Filters_mapped := make(map[string]interface{})
+		for k, v := range var_Filters.GetStructValue().Fields {
+
+			var_3x := v
+			var_3x_mapped := unstructured.FromValue(var_3x)
+
+			var_Filters_mapped[k] = var_3x_mapped
+		}
+
+		s.Filters = var_Filters_mapped
 	}
 	if properties["regexMatch"] != nil && properties["regexMatch"].AsInterface() != nil {
 
@@ -835,6 +873,25 @@ func (m *BooleanExpressionMapper) ToUnstructured(booleanExpression *BooleanExpre
 
 		var_IsNull_mapped = ExpressionMapperInstance.ToUnstructured(var_IsNull)
 		properties["isNull"] = var_IsNull_mapped
+	}
+
+	var_Filters := booleanExpression.Filters
+
+	if var_Filters != nil {
+		var var_Filters_mapped interface{}
+
+		var var_Filters_st map[string]interface{} = make(map[string]interface{})
+		for key, value := range var_Filters {
+
+			var_1x := value
+			var var_1x_mapped interface{}
+
+			var_1x_mapped = var_1x
+
+			var_Filters_st[key] = var_1x_mapped
+		}
+		var_Filters_mapped = var_Filters_st
+		properties["filters"] = var_Filters_mapped
 	}
 
 	var_RegexMatch := booleanExpression.RegexMatch

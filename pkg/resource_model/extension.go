@@ -62,17 +62,18 @@ func (s Extension) GetAnnotations() map[string]string {
 }
 
 type BooleanExpression struct {
-	And                []BooleanExpression   `json:"and,omitempty"`
-	Or                 []BooleanExpression   `json:"or,omitempty"`
-	Not                *BooleanExpression    `json:"not,omitempty"`
-	Equal              *PairExpression       `json:"equal,omitempty"`
-	LessThan           *PairExpression       `json:"lessThan,omitempty"`
-	GreaterThan        *PairExpression       `json:"greaterThan,omitempty"`
-	LessThanOrEqual    *PairExpression       `json:"lessThanOrEqual,omitempty"`
-	GreaterThanOrEqual *PairExpression       `json:"greaterThanOrEqual,omitempty"`
-	In                 *PairExpression       `json:"in,omitempty"`
-	IsNull             *Expression           `json:"isNull,omitempty"`
-	RegexMatch         *RegexMatchExpression `json:"regexMatch,omitempty"`
+	And                []BooleanExpression    `json:"and,omitempty"`
+	Or                 []BooleanExpression    `json:"or,omitempty"`
+	Not                *BooleanExpression     `json:"not,omitempty"`
+	Equal              *PairExpression        `json:"equal,omitempty"`
+	LessThan           *PairExpression        `json:"lessThan,omitempty"`
+	GreaterThan        *PairExpression        `json:"greaterThan,omitempty"`
+	LessThanOrEqual    *PairExpression        `json:"lessThanOrEqual,omitempty"`
+	GreaterThanOrEqual *PairExpression        `json:"greaterThanOrEqual,omitempty"`
+	In                 *PairExpression        `json:"in,omitempty"`
+	IsNull             *Expression            `json:"isNull,omitempty"`
+	Filters            map[string]interface{} `json:"filters,omitempty"`
+	RegexMatch         *RegexMatchExpression  `json:"regexMatch,omitempty"`
 }
 
 func (s BooleanExpression) GetAnd() []BooleanExpression {
@@ -104,6 +105,9 @@ func (s BooleanExpression) GetIn() *PairExpression {
 }
 func (s BooleanExpression) GetIsNull() *Expression {
 	return s.IsNull
+}
+func (s BooleanExpression) GetFilters() map[string]interface{} {
+	return s.Filters
 }
 func (s BooleanExpression) GetRegexMatch() *RegexMatchExpression {
 	return s.RegexMatch

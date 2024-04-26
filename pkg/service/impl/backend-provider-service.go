@@ -89,7 +89,7 @@ func (b *backendProviderService) getBackendByDataSourceName(ctx context.Context,
 		return b.getSystemBackend(ctx), nil
 	} else {
 		systemCtx := util.WithSystemContext(context.TODO())
-		query, err := util.PrepareQuery(resources.DataSourceResource, map[string]string{
+		query, err := util.PrepareQuery(resources.DataSourceResource, map[string]interface{}{
 			"name": dataSourceName,
 		})
 

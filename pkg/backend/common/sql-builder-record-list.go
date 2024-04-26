@@ -569,6 +569,32 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 		return fmt.Sprintf("%s in (%s)", left, right), nil
 	}
 
+	if query.Filters != nil {
+		if len(query.Filters) == 0 {
+			return "", nil
+		}
+
+		var filters []string
+
+		for key, val := range query.Filters {
+			if val.GetListValue() != nil {
+				var c []string
+				for _, val := range val.GetListValue().Values {
+					c = append(c, r.val(val.AsInterface()))
+				}
+				if len(c) > 0 {
+					filters = append(filters, fmt.Sprintf("%s in (%s)", r.quote(key), strings.Join(c, ",")))
+				} else {
+					filters = append(filters, "false")
+				}
+			} else {
+				filters = append(filters, fmt.Sprintf("%s = %s", r.quote(key), r.val(val.AsInterface())))
+			}
+		}
+
+		return r.builder.And(filters...), nil
+	}
+
 	if _, ok := query.Expression.(*model.BooleanExpression_RegexMatch); ok {
 		panic("not implemented")
 	}
@@ -578,6 +604,10 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 	}
 
 	return "", errors.LogicalError.WithDetails("Unknown boolean expression type: " + query.String())
+}
+
+func (r *recordLister) val(val interface{}) string {
+	return r.builder.Var(val)
 }
 
 func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model.PairExpression) (string, string, error) {
@@ -642,11 +672,11 @@ func (r *recordLister) applyValue(value *structpb.Value) string {
 		list := value.GetListValue()
 		var c []string
 		for _, val := range list.Values {
-			c = append(c, r.builder.Var(val.AsInterface()))
+			c = append(c, r.val(val.AsInterface()))
 		}
 		return strings.Join(c, ",")
 	} else {
-		return r.builder.Var(value.AsInterface())
+		return r.val(value.AsInterface())
 	}
 }
 

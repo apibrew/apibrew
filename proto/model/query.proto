@@ -49,6 +49,6 @@ message BooleanExpression {
 
     // other
     RegexMatchExpression regexMatch = 11;
-    Filters filters = 12;
   }
+  map<string, google.protobuf.Value> filters = 12;
 }

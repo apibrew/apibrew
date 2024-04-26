@@ -31,7 +31,7 @@ type ListParams struct {
 	Offset            uint64                            `json:"offset,omitempty"`
 	UseHistory        bool                              `json:"useHistory,omitempty"`
 	ResolveReferences []string                          `json:"resolveReferences,omitempty"`
-	Filters           map[string]string                 `json:"filters,omitempty"`
+	Filters           map[string]interface{}            `json:"filters,omitempty"`
 	Aggregation       *Aggregation                      `json:"aggregation,omitempty"`
 	Sorting           []SortingItem                     `json:"sorting,omitempty"`
 }

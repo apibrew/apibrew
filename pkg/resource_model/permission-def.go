@@ -48,7 +48,7 @@ var PermissionResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-04-23T02:32:16+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-04-27T02:09:19+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -57,7 +57,7 @@ var PermissionResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-04-23T02:32:16+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-04-27T02:09:19+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -132,6 +132,14 @@ var PermissionResource = &model.Resource{
 					TypeRef: util.Pointer("Expression"),
 				},
 				{
+					Name: "filters",
+					Type: model.ResourceProperty_MAP,
+					Item: &model.ResourceProperty{
+						Name: "",
+						Type: model.ResourceProperty_OBJECT,
+					},
+				},
+				{
 					Name:    "regexMatch",
 					Type:    model.ResourceProperty_STRUCT,
 					TypeRef: util.Pointer("RegexMatchExpression"),
@@ -178,8 +186,8 @@ var PermissionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"EnableAudit":  "true",
 				"OpenApiGroup": "meta",
+				"EnableAudit":  "true",
 			},
 		},
 		{
@@ -230,7 +238,7 @@ var PermissionResource = &model.Resource{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
 			TypeRef:      util.Pointer("AuditData"),
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-04-23T02:32:16+04:00"), "updatedOn": structpb.NewStringValue("2024-04-23T02:32:16+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedOn": structpb.NewStringValue("2024-04-27T02:09:19+04:00"), "createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-04-27T02:09:19+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

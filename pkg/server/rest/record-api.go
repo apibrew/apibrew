@@ -125,8 +125,8 @@ func (r *recordApi) handleRecordList(writer http.ResponseWriter, request *http.R
 	respondSuccess(writer, result)
 }
 
-func (r *recordApi) makeFilters(request *http.Request) map[string]string {
-	filters := make(map[string]string)
+func (r *recordApi) makeFilters(request *http.Request) map[string]interface{} {
+	filters := make(map[string]interface{})
 
 	for key := range request.URL.Query() {
 		if key == "limit" || key == "offset" || key == "resolve-references" || key == "useHistory" {

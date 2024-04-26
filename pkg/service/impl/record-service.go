@@ -29,7 +29,7 @@ type recordService struct {
 	backendEventHandler    backend_event_handler.BackendEventHandler
 }
 
-func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, error) {
+func (r *recordService) PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, error) {
 	return util.PrepareQuery(resource, queryMap)
 }
 
@@ -73,7 +73,17 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	if params.Query == nil && params.Filters != nil {
 		var err error
 
-		params.Query, err = util.PrepareQueryFromFilters(resource, params.Filters)
+		var filters map[string]interface{}
+
+		if params.Filters != nil {
+			filters = make(map[string]interface{})
+
+			for k, v := range params.Filters {
+				filters[k] = v
+			}
+		}
+
+		params.Query, err = util.PrepareQuery(resource, params.Filters)
 
 		if err != nil {
 			return nil, 0, err
@@ -605,7 +615,7 @@ func (r *recordService) FindBy(ctx context.Context, namespace, resourceName, pro
 		return nil, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", namespace, resourceName))
 	}
 
-	queryMap := make(map[string]string)
+	queryMap := make(map[string]interface{})
 
 	queryMap[propertyName] = value
 

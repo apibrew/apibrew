@@ -47,7 +47,7 @@ message ListRecordRequest {
   string token = 1;
   string namespace = 2;
   string resource = 3;
-  map<string, string> filters = 4;
+  map<string, google.protobuf.Value> filters = 4;
   uint32 limit = 5;
   uint64 offset = 6;
   bool useHistory = 7;

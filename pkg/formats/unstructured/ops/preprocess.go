@@ -250,7 +250,7 @@ func (p *preprocessor) runPreprocessExtend(un unstructured.Unstructured) (unstru
 		namespace = "ui" //default
 	}
 
-	var filters = make(map[string]string)
+	var filters = make(map[string]interface{})
 
 	if extend["$match"] != nil {
 		match := extend["$match"].(unstructured.Unstructured)

@@ -123,6 +123,11 @@ var BooleanExpression = &model.ResourceSubType{
 			TypeRef: util.Pointer(Expression.Name),
 		},
 		{
+			Name: "filters",
+			Type: model.ResourceProperty_MAP,
+			Item: &model.ResourceProperty{Type: model.ResourceProperty_OBJECT},
+		},
+		{
 			Name:    "regexMatch",
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(RegexMatchExpression.Name),

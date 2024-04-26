@@ -147,7 +147,7 @@ type SelectedRecordsResult struct {
 }
 
 func (s *SelectorFlags) readSelectData3(ctx context.Context, resource *model.Resource) (SelectedRecordData, error) {
-	var filters = make(map[string]string)
+	var filters = make(map[string]interface{})
 
 	for _, filter := range s.Filters {
 		filterKey, filterValue := parseFilter(filter)

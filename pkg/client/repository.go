@@ -62,10 +62,20 @@ func (r repository[T]) Get(ctx context.Context, id string) (T, error) {
 }
 
 func (r repository[T]) Find(ctx context.Context, params FindParams) ([]T, uint32, error) {
+	var filters map[string]interface{}
+
+	if params.Filters != nil {
+		filters = make(map[string]interface{})
+
+		for k, v := range params.Filters {
+			filters[k] = v
+		}
+	}
+
 	listParams := service.RecordListParams{
 		Namespace:         r.mapper.ResourceIdentity().Namespace,
 		Resource:          r.mapper.ResourceIdentity().Name,
-		Filters:           params.Filters,
+		Filters:           filters,
 		Limit:             params.Limit,
 		Offset:            params.Offset,
 		UseHistory:        params.UseHistory,

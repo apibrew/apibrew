@@ -48,6 +48,13 @@ func BooleanExpressionFromProto(exp *model.BooleanExpression) resource_model.Boo
 			result.LessThanOrEqual = util.Pointer(PairExpressionFromProto(exp.GetIn()))
 		}
 
+		if exp.GetFilters() != nil {
+			result.Filters = make(map[string]interface{})
+			for key, value := range exp.GetFilters() {
+				result.Filters[key] = unstructured.FromValue(value)
+			}
+		}
+
 		if exp.GetRegexMatch() != nil {
 			result.RegexMatch = util.Pointer(RegexMatchExpressionFromProto(exp.GetRegexMatch()))
 		}
@@ -151,6 +158,18 @@ func BooleanExpressionToProto(exp resource_model.BooleanExpression) *model.Boole
 	if exp.In != nil {
 		result.Expression = &model.BooleanExpression_In{
 			In: PairExpressionToProto(*exp.In),
+		}
+	}
+
+	if exp.Filters != nil {
+		for key, value := range exp.Filters {
+			val, err := unstructured.ToValue(value)
+
+			if err != nil {
+				panic(err)
+			}
+
+			result.Filters[key] = val
 		}
 	}
 

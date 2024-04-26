@@ -18,10 +18,20 @@ type recordServer struct {
 }
 
 func (r *recordServer) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
+	var filters map[string]interface{}
+
+	if request.Filters != nil {
+		filters = make(map[string]interface{})
+
+		for k, v := range request.Filters {
+			filters[k] = v
+		}
+	}
+
 	records, total, err := r.service.List(annotations.WithContext(ctx, request), service.RecordListParams{
 		Namespace:         request.Namespace,
 		Resource:          request.Resource,
-		Filters:           request.Filters,
+		Filters:           filters,
 		Limit:             request.Limit,
 		Offset:            request.Offset,
 		UseHistory:        request.UseHistory,

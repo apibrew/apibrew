@@ -49,7 +49,7 @@ type DataSourceService interface {
 
 type RecordService interface {
 	Init(config *model.AppConfig)
-	PrepareQuery(resource *model.Resource, queryMap map[string]string) (*model.BooleanExpression, error)
+	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, error)
 	GetRecord(ctx context.Context, namespace, resourceName, id string, references []string) (*model.Record, error)
 	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (*model.Record, error)
 	ResolveReferences(ctx context.Context, resource *model.Resource, records []*model.Record, referencesToResolve []string) error
@@ -139,7 +139,7 @@ type RecordListParams struct {
 	ResolveReferences []string
 	ResultChan        chan<- *model.Record
 	PackRecords       bool
-	Filters           map[string]string
+	Filters           map[string]interface{}
 	Aggregation       *model.Aggregation
 	Sorting           *model.Sorting
 }
@@ -150,10 +150,22 @@ type RecordLoadParams struct {
 }
 
 func (p RecordListParams) ToRequest() *stub.ListRecordRequest {
+	var filters = make(map[string]*structpb.Value)
+
+	for k, v := range p.Filters {
+		val, err := unstructured.ToValue(v)
+
+		if err != nil {
+			panic(err)
+		}
+
+		filters[k] = val
+	}
+
 	return &stub.ListRecordRequest{
 		Namespace:         p.Namespace,
 		Resource:          p.Resource,
-		Filters:           p.Filters,
+		Filters:           filters,
 		Limit:             p.Limit,
 		Offset:            p.Offset,
 		UseHistory:        p.UseHistory,
