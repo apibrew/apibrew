@@ -36,6 +36,11 @@ func TestSortingInjection(t *testing.T) {
 		},
 	})
 
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	_, err = apiInterface.Create(setup.Ctx, unstructured.Unstructured{
 		"type":   "TestSortingInjectionRecord",
 		"name":   "Item1",
