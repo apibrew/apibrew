@@ -122,8 +122,14 @@ func (c clientRecordService) Delete(ctx context.Context, params service.RecordDe
 	return nil
 }
 
-func (c clientRecordService) Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (*model.Record, error) {
-	panic("implement me")
+func (c clientRecordService) Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, loadParams service.RecordLoadParams) (*model.Record, error) {
+	res, err := c.client.LoadRecord(ctx, namespace, name, properties, loadParams)
+
+	if err != nil {
+		return nil, errors.FromGrpcError(err)
+	}
+
+	return res, nil
 }
 
 func (c clientRecordService) List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {

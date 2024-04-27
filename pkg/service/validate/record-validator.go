@@ -81,6 +81,9 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 		}
 
 		for key := range record.Properties {
+			if key == "type" {
+				continue
+			}
 			if !resourcePropertyExists[key] {
 				fieldErrors = append(fieldErrors, &model.ErrorField{
 					RecordId: util.GetRecordId(record),

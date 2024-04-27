@@ -10,6 +10,13 @@ type ResourceIdentity struct {
 	Name      string
 }
 
+func (r ResourceIdentity) Type() string {
+	if r.Namespace == "" || r.Namespace == "default" {
+		return r.Name
+	}
+	return r.Namespace + "/" + r.Name
+}
+
 type EntityMapper[Entity interface{}] interface {
 	New() Entity
 	ResourceIdentity() ResourceIdentity

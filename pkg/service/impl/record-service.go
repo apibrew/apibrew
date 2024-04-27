@@ -50,6 +50,10 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 		return nil, 0, errors.ResourceNotFoundError.WithDetails(fmt.Sprintf("%s/%s", params.Namespace, params.Resource))
 	}
 
+	if err := validate.RecordListParams(resource, r.resourceService.GetSchema().ResourcePropertyPaths[resource.Namespace+"/"+resource.Name], params); err != nil {
+		return nil, 0, err
+	}
+
 	exp, err := r.authorizationService.CheckRecordAccessWithRecordSelector(ctx, service.CheckRecordAccessParams{
 		Resource:  resource,
 		Operation: resource_model.PermissionOperation_READ,

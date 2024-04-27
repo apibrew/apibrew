@@ -35,7 +35,6 @@ message ResourceMigrationDeleteProperty {
 message ResourceMigrationUpdateProperty {
   string existingProperty = 1;
   string property = 2;
-  repeated string changedFields = 3;
   string subType = 4;
 }
 

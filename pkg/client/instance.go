@@ -4,11 +4,13 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 	"time"
 )
@@ -29,6 +31,23 @@ type client struct {
 	watchClient          stub.WatchClient
 	eventChannelClient   stub.EventChannelClient
 	token                string
+}
+
+func (d *client) LoadRecord(ctx context.Context, namespace string, resource string, properties map[string]*structpb.Value, params service.RecordLoadParams) (*model.Record, error) {
+	resp, err := d.recordClient.Load(ctx, &stub.LoadRecordRequest{
+		Token:             d.token,
+		Namespace:         namespace,
+		Resource:          resource,
+		Properties:        properties,
+		ResolveReferences: params.ResolveReferences,
+		Annotations:       annotations.FromCtx(ctx).GetAnnotations(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Record, nil
 }
 
 func (d *client) CreateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error {

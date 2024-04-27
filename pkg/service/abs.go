@@ -170,6 +170,7 @@ func (p RecordListParams) ToRequest() *stub.ListRecordRequest {
 		Offset:            p.Offset,
 		UseHistory:        p.UseHistory,
 		ResolveReferences: p.ResolveReferences,
+		Annotations:       nil,
 	}
 }
 

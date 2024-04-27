@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type ApplyInterface interface {
@@ -25,6 +26,7 @@ type Client interface {
 	DeleteRecord(ctx context.Context, namespace string, name string, record *model.Record) error
 	ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
 	GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error)
+	LoadRecord(ctx context.Context, namespace string, resource string, properties map[string]*structpb.Value, params service.RecordLoadParams) (*model.Record, error)
 	ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error)
 	ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error
 

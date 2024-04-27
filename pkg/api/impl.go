@@ -68,8 +68,6 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
 
-	delete(recordObj, "type")
-
 	var record *model.Record
 	record, err2 := unstructured.ToRecord(recordObj)
 
@@ -77,7 +75,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		return nil, errors.RecordValidationError.WithMessage(err2.Error())
 	}
 
-	if resourceIdentity.Namespace == resources.ResourceResource.Namespace && resourceIdentity.Name == resources.ResourceResource.Name {
+	if resourceIdentity.Name == "resource" || resourceIdentity.Namespace == resources.ResourceResource.Namespace && resourceIdentity.Name == resources.ResourceResource.Name {
 		return a.saveResource(ctx, saveMode, recordObj)
 	}
 
@@ -133,8 +131,6 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, para
 
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
 
-	delete(recordObj, "type")
-
 	properties, err2 := unstructured.ToProperties(recordObj)
 
 	if err2 != nil {
@@ -160,6 +156,8 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, para
 		return nil, errors.RecordValidationError.WithMessage(err2.Error())
 	}
 
+	processedRecordObj["type"] = resourceIdentity.Type()
+
 	return processedRecordObj, nil
 }
 
@@ -169,8 +167,6 @@ func (a api) Delete(ctx context.Context, recordObj unstructured.Unstructured) er
 	}
 
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
-
-	delete(recordObj, "type")
 
 	if resourceIdentity.Namespace == resources.ResourceResource.Namespace && resourceIdentity.Name == resources.ResourceResource.Name {
 		return a.deleteResource(ctx, recordObj)
@@ -265,6 +261,8 @@ func (a api) List(ctx context.Context, params ListParams) (RecordListResult, err
 		if err2 != nil {
 			return RecordListResult{}, errors.RecordValidationError.WithMessage(err2.Error())
 		}
+
+		recordObj["type"] = resourceIdentity.Type()
 
 		result = append(result, recordObj)
 	}

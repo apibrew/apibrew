@@ -89,26 +89,34 @@ func ValidateResource(resource *model.Resource) error {
 func ValidateResourceProperties(resource *model.Resource, path string, depth int, properties []*model.ResourceProperty, wrapped bool) []*model.ErrorField {
 	var errorFields []*model.ErrorField
 	for i, prop := range properties {
+		if prop.Name == "type" {
+			errorFields = append(errorFields, &model.ErrorField{
+				Property: path + "Name{index:" + strconv.Itoa(i) + "}",
+				Message:  "property name 'type' is reserved",
+				Value:    nil,
+			})
+		}
+
 		propertyPrefix := prop.Name + "."
 
 		if path != "" {
 			propertyPrefix = path + propertyPrefix
 		}
 
-		if !wrapped {
-			if prop.Name == "" {
-				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
-					Message:  "should not be blank",
-					Value:    nil,
-				})
-			} else if !NamePattern.MatchString(prop.Name) {
-				errorFields = append(errorFields, &model.ErrorField{
-					Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
-					Message:  "should match pattern " + NamePattern.String(),
-					Value:    structpb.NewStringValue(prop.Name),
-				})
-			}
+		if prop.Name == "" && !wrapped {
+			errorFields = append(errorFields, &model.ErrorField{
+				Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
+				Message:  "should not be blank",
+				Value:    nil,
+			})
+		}
+
+		if prop.Name != "" && !NamePattern.MatchString(prop.Name) {
+			errorFields = append(errorFields, &model.ErrorField{
+				Property: propertyPrefix + "Name{index:" + strconv.Itoa(i) + "}",
+				Message:  "should match pattern " + NamePattern.String(),
+				Value:    structpb.NewStringValue(prop.Name),
+			})
 		}
 
 		if prop.Type == model.ResourceProperty_ENUM {

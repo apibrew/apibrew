@@ -7,10 +7,10 @@ import (
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
 	"github.com/apibrew/apibrew/pkg/service"
-	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
+	reflect "reflect"
 )
 
 type resourceMigrationService struct {
@@ -215,45 +215,39 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResource(resource, e
 func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(resource, existingResource *model.Resource, resourceProperty, existingResourceProperty *model.ResourceProperty, subType string) []*model.ResourceMigrationStep {
 	var steps []*model.ResourceMigrationStep
 
-	resourcePropertyRecord := mapping.ResourcePropertyToRecord(resourceProperty, resource)
-	existingResourcePropertyRecord := mapping.ResourcePropertyToRecord(existingResourceProperty, existingResource)
+	var changed bool
 
-	var changedFields []string
+	changed = changed || resourceProperty.Type != existingResourceProperty.Type
+	changed = changed || resourceProperty.Required != existingResourceProperty.Required
 
-	if resourceProperty.Name != existingResourceProperty.Name {
-		changedFields = append(changedFields, "name")
-	}
+	changed = changed || resourceProperty.Unique != existingResourceProperty.Unique
+	changed = changed || resourceProperty.DefaultValue != existingResourceProperty.DefaultValue
+	changed = changed || resourceProperty.Virtual != existingResourceProperty.Virtual
+	changed = changed || resourceProperty.Primary != existingResourceProperty.Primary
+	changed = changed || reflect.DeepEqual(resourceProperty.Annotations, existingResourceProperty.Annotations)
 
-	for _, prop := range resources.ResourcePropertyProperties {
-		var oldValue = resourcePropertyRecord.Properties[prop.Name].AsInterface()
-		var newValue = existingResourcePropertyRecord.Properties[prop.Name].AsInterface()
-
-		if annotations.IsEnabled(prop, annotations.SpecialProperty) {
-			continue
-		}
-		if oldValue == nil && newValue == nil {
-			continue
-		}
-
-		if prop.Name == "description" || prop.Name == "title" || prop.Name == "exampleValue" || prop.Name == "immutable" {
-			continue
-		}
-
-		if prop.Name == "defaultValue" { // todo checkme
-			continue
-		}
-
-		if !proto.Equal(resourcePropertyRecord.Properties[prop.Name], existingResourcePropertyRecord.Properties[prop.Name]) {
-			changedFields = append(changedFields, prop.Name)
+	if resourceProperty.Type != model.ResourceProperty_REFERENCE {
+		if (resourceProperty.Reference != nil) != (existingResourceProperty.Reference != nil) {
+			changed = true
+		} else if (resourceProperty.Reference != nil) && (existingResourceProperty.Reference != nil) {
+			changed = changed || resourceProperty.Reference.Resource != existingResourceProperty.Reference.Resource
+			changed = changed || resourceProperty.Reference.Namespace != existingResourceProperty.Reference.Namespace
 		}
 	}
 
-	if len(changedFields) > 0 {
+	if resourceProperty.Type == model.ResourceProperty_STRING {
+		changed = changed || resourceProperty.Length != existingResourceProperty.Length
+	}
+
+	if resourceProperty.Type == model.ResourceProperty_STRUCT {
+		changed = changed || resourceProperty.TypeRef != existingResourceProperty.TypeRef
+	}
+
+	if changed {
 		steps = append(steps, &model.ResourceMigrationStep{
 			Kind: &model.ResourceMigrationStep_UpdateProperty{UpdateProperty: &model.ResourceMigrationUpdateProperty{
 				ExistingProperty: existingResourceProperty.Name,
 				Property:         resourceProperty.Name,
-				ChangedFields:    changedFields,
 				SubType:          subType,
 			}},
 		})

@@ -29,6 +29,7 @@ service Record {
 
   rpc Delete (DeleteRecordRequest)   returns (DeleteRecordResponse) {}
 
+  rpc Load (LoadRecordRequest) returns (LoadRecordResponse) {}
   rpc List (ListRecordRequest) returns (ListRecordResponse) {}
 
   rpc Search (SearchRecordRequest) returns (SearchRecordResponse) {}
@@ -41,6 +42,21 @@ service Record {
   rpc WriteStream (stream model.Record) returns (WriteStreamResponse) {}
 
   rpc Get (GetRecordRequest) returns (GetRecordResponse) {}
+}
+
+message LoadRecordRequest {
+  string token = 1;
+  string namespace = 2;
+  string resource = 3;
+
+  map<string, google.protobuf.Value> properties = 4;
+  repeated string resolveReferences = 8;
+
+  map<string, string> annotations = 103;
+}
+
+message LoadRecordResponse {
+  model.Record record = 1;
 }
 
 message ListRecordRequest {

@@ -162,6 +162,7 @@ func BooleanExpressionToProto(exp resource_model.BooleanExpression) *model.Boole
 	}
 
 	if exp.Filters != nil {
+		result.Filters = make(map[string]*structpb.Value)
 		for key, value := range exp.Filters {
 			val, err := unstructured.ToValue(value)
 

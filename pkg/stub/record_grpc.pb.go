@@ -25,6 +25,7 @@ const (
 	Record_Apply_FullMethodName       = "/stub.Record/Apply"
 	Record_UpdateMulti_FullMethodName = "/stub.Record/UpdateMulti"
 	Record_Delete_FullMethodName      = "/stub.Record/Delete"
+	Record_Load_FullMethodName        = "/stub.Record/Load"
 	Record_List_FullMethodName        = "/stub.Record/List"
 	Record_Search_FullMethodName      = "/stub.Record/Search"
 	Record_ReadStream_FullMethodName  = "/stub.Record/ReadStream"
@@ -42,6 +43,7 @@ type RecordClient interface {
 	// Not implemented yet
 	UpdateMulti(ctx context.Context, in *UpdateMultiRecordRequest, opts ...grpc.CallOption) (*UpdateMultiRecordResponse, error)
 	Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error)
+	Load(ctx context.Context, in *LoadRecordRequest, opts ...grpc.CallOption) (*LoadRecordResponse, error)
 	List(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordResponse, error)
 	Search(ctx context.Context, in *SearchRecordRequest, opts ...grpc.CallOption) (*SearchRecordResponse, error)
 	ReadStream(ctx context.Context, in *ReadStreamRequest, opts ...grpc.CallOption) (Record_ReadStreamClient, error)
@@ -97,6 +99,15 @@ func (c *recordClient) UpdateMulti(ctx context.Context, in *UpdateMultiRecordReq
 func (c *recordClient) Delete(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
 	out := new(DeleteRecordResponse)
 	err := c.cc.Invoke(ctx, Record_Delete_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *recordClient) Load(ctx context.Context, in *LoadRecordRequest, opts ...grpc.CallOption) (*LoadRecordResponse, error) {
+	out := new(LoadRecordResponse)
+	err := c.cc.Invoke(ctx, Record_Load_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -206,6 +217,7 @@ type RecordServer interface {
 	// Not implemented yet
 	UpdateMulti(context.Context, *UpdateMultiRecordRequest) (*UpdateMultiRecordResponse, error)
 	Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error)
+	Load(context.Context, *LoadRecordRequest) (*LoadRecordResponse, error)
 	List(context.Context, *ListRecordRequest) (*ListRecordResponse, error)
 	Search(context.Context, *SearchRecordRequest) (*SearchRecordResponse, error)
 	ReadStream(*ReadStreamRequest, Record_ReadStreamServer) error
@@ -233,6 +245,9 @@ func (UnimplementedRecordServer) UpdateMulti(context.Context, *UpdateMultiRecord
 }
 func (UnimplementedRecordServer) Delete(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedRecordServer) Load(context.Context, *LoadRecordRequest) (*LoadRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Load not implemented")
 }
 func (UnimplementedRecordServer) List(context.Context, *ListRecordRequest) (*ListRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
@@ -348,6 +363,24 @@ func _Record_Delete_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RecordServer).Delete(ctx, req.(*DeleteRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Record_Load_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoadRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordServer).Load(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Record_Load_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordServer).Load(ctx, req.(*LoadRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -479,6 +512,10 @@ var Record_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _Record_Delete_Handler,
+		},
+		{
+			MethodName: "Load",
+			Handler:    _Record_Load_Handler,
 		},
 		{
 			MethodName: "List",

@@ -538,6 +538,7 @@ func (r *resourceService) Init(config *model.AppConfig) {
 func (r *resourceService) prepareSchemaMappings() {
 	r.schema.ResourceByNamespaceSlashName = make(map[string]*model.Resource)
 	r.schema.ResourceBySlug = make(map[string]*model.Resource)
+	r.schema.ResourcePropertyPaths = make(map[string]map[string]bool)
 	r.schema.ResourcePropertiesByType = make(map[string]map[model.ResourceProperty_Type][]abs.PropertyWithPath)
 	for _, resource := range r.schema.Resources {
 		r.registerResourceToSchema(resource)
@@ -550,6 +551,10 @@ func (r *resourceService) registerResourceToSchema(resource *model.Resource) {
 	r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
 
 	r.schema.ResourceBySlug[util.ResourceRestPath(resource)] = resource
+
+	r.schema.ResourcePropertyPaths[resource.Namespace+"/"+resource.Name] = make(map[string]bool)
+
+	r.schema.ResourcePropertyPaths[resource.Namespace+"/"+resource.Name] = util.ResourcePropertyPaths(resource)
 
 	log.Debugf("Registered resource to schema: %s/%s", resource.Namespace, resource.Name)
 }

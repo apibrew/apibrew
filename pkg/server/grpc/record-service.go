@@ -17,6 +17,17 @@ type recordServer struct {
 	authenticationService service.AuthenticationService
 }
 
+func (r *recordServer) Load(ctx context.Context, request *stub.LoadRecordRequest) (*stub.LoadRecordResponse, error) {
+	record, err := r.service.Load(annotations.WithContext(ctx, request), request.Namespace, request.Resource, request.Properties, service.RecordLoadParams{
+		ResolveReferences: request.ResolveReferences,
+	})
+
+	return &stub.LoadRecordResponse{
+		Record: record,
+	}, util.ToStatusError(err)
+
+}
+
 func (r *recordServer) List(ctx context.Context, request *stub.ListRecordRequest) (*stub.ListRecordResponse, error) {
 	var filters map[string]interface{}
 

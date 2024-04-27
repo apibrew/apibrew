@@ -165,11 +165,17 @@ func (r *recordLister) prepareAggregation() error {
 			propType = model.ResourceProperty_FLOAT64
 		}
 
+		var inDef = "t." + r.quote(item.Property)
+
+		if strings.Contains(item.Property, ".") {
+			inDef = "t_" + strings.ReplaceAll(item.Property, ".", "->")
+		}
+
 		r.colList = append(r.colList, colDetails{
 			resource:     r.resource,
 			colName:      item.Name,
 			path:         "t_" + item.Name,
-			def:          fmt.Sprintf("%s(%s)", fnName, "t."+r.quote(item.Property)),
+			def:          fmt.Sprintf("%s(%s)", fnName, inDef),
 			alias:        r.quote("t_" + item.Property),
 			required:     true,
 			propertyType: propType,
@@ -182,12 +188,18 @@ func (r *recordLister) prepareSorting() error {
 	var orderBy []string
 
 	for _, item := range r.sorting.Items {
-		var prop = r.propertyNameMap[item.Property]
-		if prop == nil {
-			return errors.RecordValidationError.WithDetails("Sorting property not exists: " + item.Property)
+		var sortingCol = "t." + r.quote(item.Property)
+
+		if strings.Contains(item.Property, ".") {
+			parts := strings.Split(item.Property, ".")
+			sortingCol = "t." + r.quote(parts[0])
+
+			for _, part := range parts[1:] {
+				sortingCol += fmt.Sprintf("->'%s'", part)
+			}
 		}
 
-		orderBy = append(orderBy, fmt.Sprintf("%s %s", r.quote("t_"+item.Property), item.Direction))
+		orderBy = append(orderBy, fmt.Sprintf("%s %s", sortingCol, item.Direction))
 	}
 
 	r.builder.OrderBy(orderBy...)

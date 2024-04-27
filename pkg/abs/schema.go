@@ -14,4 +14,5 @@ type Schema struct {
 	ResourceByNamespaceSlashName map[string]*model.Resource
 	ResourceBySlug               map[string]*model.Resource
 	ResourcePropertiesByType     map[string]map[model.ResourceProperty_Type][]PropertyWithPath
+	ResourcePropertyPaths        map[string]map[string]bool
 }

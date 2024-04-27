@@ -288,7 +288,9 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		// fixme Default Value Modification logic
 
 		if property.Type == model.ResourceProperty_REFERENCE {
-			if prevProperty.Reference == nil && property.Reference != nil {
+			prevCascace := annotations.IsEnabled(prevProperty, annotations.CascadeReference)
+			cascade := annotations.IsEnabled(property, annotations.CascadeReference)
+			if prevProperty.Reference != property.Reference || prevCascace != cascade {
 				referenceNamespace := property.Reference.Namespace
 				if referenceNamespace == "" {
 					referenceNamespace = resource.Namespace
@@ -303,12 +305,15 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 					return errors.ReferenceViolation.WithDetails("Referenced resource not exists with name: " + referenceNamespace + "/" + property.Reference.Resource)
 				}
 
+				var fkName = r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity + "_" + property.Name + "_fk")
+
 				if !referencedResource.Virtual {
 					sqlParts = append(
 						sqlParts,
 						fmt.Sprintf(
-							"ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause,
-							r.options.Quote(r.params.MigrationPlan.CurrentResource.SourceConfig.Entity+"_"+property.Name+"_fk"),
+							"DROP CONSTRAINT IF EXISTS %s, ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause,
+							fkName,
+							fkName,
 							r.options.Quote(property.Name),
 							r.options.GetFullTableName(referencedResource.SourceConfig),
 							r.options.Quote("id"),

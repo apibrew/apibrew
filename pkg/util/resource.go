@@ -177,6 +177,49 @@ func ResourceWalkProperties(resource *model.Resource, callback func(path string,
 	}
 }
 
+func ResourcePropertyPaths(resource *model.Resource) map[string]bool {
+	return resourcePropertyPaths(resource, resource.Properties, "$.", 0)
+}
+
+func resourcePropertyPaths(resource *model.Resource, properties []*model.ResourceProperty, parentPath string, depth int) map[string]bool {
+	var result = make(map[string]bool)
+
+	if depth > 5 {
+		return result
+	}
+
+	resourceWalkPropertiesRecursive(resource, "$", properties, false, func(_ string, property *model.ResourceProperty) {
+		if property.Name != "" {
+			result[parentPath+property.Name] = true
+		}
+
+		if property.Type == model.ResourceProperty_STRUCT {
+			subResult := resourceSubTypePropertyPaths(resource, *property.TypeRef, "", depth+1)
+
+			for subPath := range subResult {
+				result[parentPath+property.Name+"."+subPath] = true
+			}
+		}
+	})
+
+	return result
+}
+
+func resourceSubTypePropertyPaths(resource *model.Resource, subTypeName string, parentPath string, depth int) map[string]bool {
+	// locating type
+
+	var properties []*model.ResourceProperty
+
+	for _, subType := range resource.Types {
+		if subType.Name == subTypeName {
+			properties = subType.Properties
+			break
+		}
+	}
+
+	return resourcePropertyPaths(resource, properties, parentPath, depth)
+}
+
 func resourceWalkPropertiesRecursive(resource *model.Resource, path string, properties []*model.ResourceProperty, isCollectionItem bool, callback func(path string, property *model.ResourceProperty)) {
 	for _, property := range properties {
 		var newName = path
