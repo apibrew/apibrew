@@ -67,7 +67,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 	uniqModifier := ""
 	nullModifier := "NULL"
 	if property.Required {
-		nullModifier = "NOT NULL"
+		nullModifier = "NOT NULL "
 	}
 	if property.Unique {
 		uniqModifier = "UNIQUE"
@@ -93,12 +93,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 		}
 	}
 
-	if property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
-		propertyType := types.ByResourcePropertyType(property.Type)
-		val, _ := propertyType.UnPack(property.DefaultValue)
-
-		def = append(def, fmt.Sprintf("DEFAULT '%s'", val))
-	} else if property.Required {
+	if property.Required {
 		propertyType := types.ByResourcePropertyType(property.Type)
 		def = append(def, fmt.Sprintf("DEFAULT '%s'", propertyType.Default()))
 	}

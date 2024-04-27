@@ -131,12 +131,7 @@ func (r *resourceMigrationBuilder) prepareResourceTableColumnDefinition(resource
 		}
 	}
 
-	if property.Type != model.ResourceProperty_REFERENCE && property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
-		propertyType := types.ByResourcePropertyType(property.Type)
-		val, _ := propertyType.UnPack(property.DefaultValue)
-
-		def = append(def, fmt.Sprintf("DEFAULT '%v'", val))
-	} else if property.Required {
+	if property.Required {
 		propertyType := types.ByResourcePropertyType(property.Type)
 		if types.IsPrimitive(property.Type) && !types.IsTimeType(property.Type) {
 			def = append(def, fmt.Sprintf("DEFAULT '%v'", propertyType.Default()))
@@ -245,9 +240,9 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 	r.execs = append(r.execs, func() error {
 		var sqlPrefix = fmt.Sprintf("ALTER TABLE %s ", r.tableName)
 		var sqlParts []string
+		var preSql string
 		changes := 0
 		if r.options.GetSqlTypeFromProperty(prevProperty.Type, prevProperty.Length) != r.options.GetSqlTypeFromProperty(property.Type, property.Length) {
-
 			sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
 			if property.Annotations != nil && property.Annotations[annotations.SQLType] != "" {
@@ -264,15 +259,9 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		}
 
 		if !prevProperty.Required && property.Required {
+			preSql = fmt.Sprintf("UPDATE %s SET %s = '%v' WHERE %s IS NULL", r.tableName, r.options.Quote(property.Name), types.ByResourcePropertyType(property.Type).Default(), r.options.Quote(property.Name))
 			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", r.options.Quote(property.Name)))
 			changes++
-
-			if property.DefaultValue == nil || property.DefaultValue.AsInterface() == nil {
-				propertyType := types.ByResourcePropertyType(property.Type)
-				if types.IsPrimitive(property.Type) && !types.IsTimeType(property.Type) {
-					sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DEFAULT '%v'", r.options.Quote(property.Name), propertyType.Default()))
-				}
-			}
 		}
 
 		if prevProperty.Unique && !property.Unique {
@@ -328,7 +317,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 			return nil
 		}
 
-		sql := sqlPrefix + "\n" + strings.Join(sqlParts, ",\n")
+		sql := preSql + ";" + sqlPrefix + "\n" + strings.Join(sqlParts, ",\n")
 
 		_, sqlError := r.runner.ExecContext(r.ctx, sql)
 

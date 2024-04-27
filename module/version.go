@@ -1,4 +1,4 @@
 package module
 
-const Version = "v1.3.91"
+const Version = "v1.3.92"
 
