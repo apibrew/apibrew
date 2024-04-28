@@ -17,6 +17,10 @@ func (r ResourceIdentity) Type() string {
 	return r.Namespace + "/" + r.Name
 }
 
+func GetType(resource *model.Resource) string {
+	return ResourceIdentity{Namespace: resource.Namespace, Name: resource.Name}.Type()
+}
+
 type EntityMapper[Entity interface{}] interface {
 	New() Entity
 	ResourceIdentity() ResourceIdentity

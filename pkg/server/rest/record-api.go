@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/api"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
@@ -150,7 +151,7 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	(*record)["type"] = resource.Namespace + "/" + resource.Name
+	(*record)["type"] = abs.GetType(resource)
 
 	result, serviceErr := r.api.Create(r.prepareContext(request), *record)
 
@@ -180,7 +181,7 @@ func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	(*record)["type"] = resource.Namespace + "/" + resource.Name
+	(*record)["type"] = abs.GetType(resource)
 
 	result, serviceErr := r.api.Apply(r.prepareContext(request), *record)
 
@@ -238,7 +239,7 @@ func (r *recordApi) handleRecordLoad(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	(*record)["type"] = resource.Namespace + "/" + resource.Name
+	(*record)["type"] = abs.GetType(resource)
 
 	resolveReferences := request.URL.Query().Get("resolve-references")
 
@@ -272,7 +273,9 @@ func (r *recordApi) handleRecordUpdate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	(*record)["type"] = resource.Namespace + "/" + resource.Name
+	(*record)["id"] = vars["id"]
+
+	(*record)["type"] = abs.GetType(resource)
 
 	result, serviceErr := r.api.Update(r.prepareContext(request), *record)
 
@@ -302,6 +305,7 @@ func (r *recordApi) handleRecordDelete(writer http.ResponseWriter, request *http
 
 	ServiceResponder().
 		Writer(writer).
+		SuccessStatus(204).
 		Respond(nil, serviceErr)
 }
 

@@ -27,11 +27,18 @@ func ServiceResponder() ServiceCaller {
 }
 
 type ServiceCaller struct {
-	writer http.ResponseWriter
+	writer        http.ResponseWriter
+	successStatus int
 }
 
 func (s ServiceCaller) Writer(writer http.ResponseWriter) ServiceCaller {
 	s.writer = writer
+
+	return s
+}
+
+func (s ServiceCaller) SuccessStatus(status int) ServiceCaller {
+	s.successStatus = status
 
 	return s
 }
@@ -44,7 +51,11 @@ func (s ServiceCaller) Respond(result interface{}, serviceError error) {
 		handleServiceError(s.writer, serviceError)
 		return
 	} else {
-		s.writer.WriteHeader(200)
+		var status = s.successStatus
+		if status == 0 {
+			status = 200
+		}
+		s.writer.WriteHeader(status)
 	}
 
 	body, err := json.Marshal(result)
