@@ -4,6 +4,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -19,6 +20,7 @@ func PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*m
 			val, err := unstructured.ToValue(queryMap[property.Name])
 
 			if err != nil {
+				log.Error("error converting value: "+property.Name, queryMap[property.Name])
 				return nil, errors.RecordValidationError.WithDetails("error converting value: " + property.Name)
 			}
 
