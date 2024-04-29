@@ -343,6 +343,10 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	if resource.SourceConfig.Entity == "" {
 		resource.SourceConfig.Entity = util.ToSnakeCase(resource.Name)
+
+		if resource.Namespace != "default" && resource.Namespace != "" {
+			resource.SourceConfig.Entity = util.ToSnakeCase(resource.Namespace) + "_" + util.ToSnakeCase(resource.Name)
+		}
 	}
 
 	if err := validate.ValidateResource(resource); err != nil {
