@@ -77,16 +77,6 @@ func (r *recordService) List(ctx context.Context, params service.RecordListParam
 	if params.Query == nil && params.Filters != nil {
 		var err error
 
-		var filters map[string]interface{}
-
-		if params.Filters != nil {
-			filters = make(map[string]interface{})
-
-			for k, v := range params.Filters {
-				filters[k] = v
-			}
-		}
-
 		params.Query, err = util.PrepareQuery(resource, params.Filters)
 
 		if err != nil {

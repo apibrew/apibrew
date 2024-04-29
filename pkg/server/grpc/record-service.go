@@ -35,7 +35,7 @@ func (r *recordServer) List(ctx context.Context, request *stub.ListRecordRequest
 		filters = make(map[string]interface{})
 
 		for k, v := range request.Filters {
-			filters[k] = v
+			filters[k] = v.AsInterface()
 		}
 	}
 
