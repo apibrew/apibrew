@@ -573,6 +573,30 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 		return fmt.Sprintf("%s <= %s", left, right), nil
 	}
 
+	if equ, ok := query.Expression.(*model.BooleanExpression_Like); ok {
+		left, right, err := r.applyExpressionPair(resource, equ.Like)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s like %s", left, "'%' || "+right+" || '%'"), nil
+	}
+
+	if equ, ok := query.Expression.(*model.BooleanExpression_Ilike); ok {
+		left, right, err := r.applyExpressionPair(resource, equ.Ilike)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("lower(%s) like lower(%s)", left, "'%' || "+right+" || '%'"), nil
+	}
+
+	if equ, ok := query.Expression.(*model.BooleanExpression_Regex); ok {
+		left, right, err := r.applyExpressionPair(resource, equ.Regex)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s ~ %s", left, right), nil
+	}
+
 	if equ, ok := query.Expression.(*model.BooleanExpression_In); ok {
 		left, right, err := r.applyExpressionPair(resource, equ.In)
 		if err != nil {
@@ -605,10 +629,6 @@ func (r *recordLister) applyCondition(resource *model.Resource, query *model.Boo
 		}
 
 		return r.builder.And(filters...), nil
-	}
-
-	if _, ok := query.Expression.(*model.BooleanExpression_RegexMatch); ok {
-		panic("not implemented")
 	}
 
 	if query.Expression == nil {

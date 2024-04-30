@@ -71,9 +71,11 @@ type BooleanExpression struct {
 	LessThanOrEqual    *PairExpression        `json:"lessThanOrEqual,omitempty"`
 	GreaterThanOrEqual *PairExpression        `json:"greaterThanOrEqual,omitempty"`
 	In                 *PairExpression        `json:"in,omitempty"`
+	Like               *PairExpression        `json:"like,omitempty"`
+	Ilike              *PairExpression        `json:"ilike,omitempty"`
+	Regex              *PairExpression        `json:"regex,omitempty"`
 	IsNull             *Expression            `json:"isNull,omitempty"`
 	Filters            map[string]interface{} `json:"filters,omitempty"`
-	RegexMatch         *RegexMatchExpression  `json:"regexMatch,omitempty"`
 }
 
 func (s BooleanExpression) GetAnd() []BooleanExpression {
@@ -103,14 +105,20 @@ func (s BooleanExpression) GetGreaterThanOrEqual() *PairExpression {
 func (s BooleanExpression) GetIn() *PairExpression {
 	return s.In
 }
+func (s BooleanExpression) GetLike() *PairExpression {
+	return s.Like
+}
+func (s BooleanExpression) GetIlike() *PairExpression {
+	return s.Ilike
+}
+func (s BooleanExpression) GetRegex() *PairExpression {
+	return s.Regex
+}
 func (s BooleanExpression) GetIsNull() *Expression {
 	return s.IsNull
 }
 func (s BooleanExpression) GetFilters() map[string]interface{} {
 	return s.Filters
-}
-func (s BooleanExpression) GetRegexMatch() *RegexMatchExpression {
-	return s.RegexMatch
 }
 
 type PairExpression struct {
@@ -123,18 +131,6 @@ func (s PairExpression) GetLeft() *Expression {
 }
 func (s PairExpression) GetRight() *Expression {
 	return s.Right
-}
-
-type RegexMatchExpression struct {
-	Pattern    *string     `json:"pattern,omitempty"`
-	Expression *Expression `json:"expression,omitempty"`
-}
-
-func (s RegexMatchExpression) GetPattern() *string {
-	return s.Pattern
-}
-func (s RegexMatchExpression) GetExpression() *Expression {
-	return s.Expression
 }
 
 type Expression struct {

@@ -22,7 +22,6 @@ var PermissionResource = &model.Resource{
 		special.AuditDataSubType,
 		sub_types.BooleanExpression,
 		sub_types.PairExpression,
-		sub_types.RegexMatchExpression,
 		sub_types.Expression,
 	},
 	Properties: []*model.ResourceProperty{

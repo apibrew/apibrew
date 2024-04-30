@@ -108,8 +108,32 @@ func BooleanExpression(resource *model.Resource, propertyPathMap map[string]bool
 			}
 		}
 
+		if exp.GetLike() != nil {
+			if err := PairExpression(resource, propertyPathMap, exp.GetLike()); err != nil {
+				return err
+			}
+		}
+
+		if exp.GetIlike() != nil {
+			if err := PairExpression(resource, propertyPathMap, exp.GetIlike()); err != nil {
+				return err
+			}
+		}
+
+		if exp.GetLessThanOrEqual() != nil {
+			if err := PairExpression(resource, propertyPathMap, exp.GetLessThanOrEqual()); err != nil {
+				return err
+			}
+		}
+
 		if exp.GetIn() != nil {
 			if err := PairExpression(resource, propertyPathMap, exp.GetIn()); err != nil {
+				return err
+			}
+		}
+
+		if exp.GetRegex() != nil {
+			if err := PairExpression(resource, propertyPathMap, exp.GetRegex()); err != nil {
 				return err
 			}
 		}
@@ -119,12 +143,6 @@ func BooleanExpression(resource *model.Resource, propertyPathMap map[string]bool
 				if !propertyPathMap["$."+k] {
 					return errors.RecordValidationError.WithDetails(fmt.Sprintf("Filter %s is not a valid property path", k))
 				}
-			}
-		}
-
-		if exp.GetRegexMatch() != nil {
-			if err := RegexMatchExpression(resource, propertyPathMap, exp.GetRegexMatch()); err != nil {
-				return err
 			}
 		}
 	}
@@ -172,8 +190,4 @@ func Expression(resource *model.Resource, pathMap map[string]bool, exp *model.Ex
 	}
 
 	return nil
-}
-
-func RegexMatchExpression(resource *model.Resource, pathMap map[string]bool, regex *model.RegexMatchExpression) error {
-	return errors.RecordValidationError.WithDetails("RegexMatchExpression is not implemented")
 }

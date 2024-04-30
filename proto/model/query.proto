@@ -26,11 +26,6 @@ message Filters {
   map<string, google.protobuf.Value> filters = 1;
 }
 
-message RegexMatchExpression {
-  string pattern = 1;
-  Expression expression = 2;
-}
-
 message BooleanExpression {
   oneof expression {
     // logical expressions
@@ -46,9 +41,9 @@ message BooleanExpression {
     PairExpression greaterThanOrEqual = 8;
     PairExpression in = 9;
     Expression isNull = 10;
-
-    // other
-    RegexMatchExpression regexMatch = 11;
+    PairExpression like = 13;
+    PairExpression ilike = 14;
+    PairExpression regex = 11;
   }
   map<string, google.protobuf.Value> filters = 12;
 }

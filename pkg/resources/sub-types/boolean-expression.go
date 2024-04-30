@@ -25,24 +25,6 @@ var PairExpression = &model.ResourceSubType{
 	},
 }
 
-var RegexMatchExpression = &model.ResourceSubType{
-	Name: "RegexMatchExpression",
-	Annotations: map[string]string{
-		annotations.CommonType: annotations.Enabled,
-	},
-	Properties: []*model.ResourceProperty{
-		{
-			Name: "pattern",
-			Type: model.ResourceProperty_STRING,
-		},
-		{
-			Name:    "expression",
-			Type:    model.ResourceProperty_STRUCT,
-			TypeRef: util.Pointer(Expression.Name),
-		},
-	},
-}
-
 var Expression = &model.ResourceSubType{
 	Name: "Expression",
 	Annotations: map[string]string{
@@ -118,6 +100,21 @@ var BooleanExpression = &model.ResourceSubType{
 			TypeRef: util.Pointer(PairExpression.Name),
 		},
 		{
+			Name:    "like",
+			Type:    model.ResourceProperty_STRUCT,
+			TypeRef: util.Pointer(PairExpression.Name),
+		},
+		{
+			Name:    "ilike",
+			Type:    model.ResourceProperty_STRUCT,
+			TypeRef: util.Pointer(PairExpression.Name),
+		},
+		{
+			Name:    "regex",
+			Type:    model.ResourceProperty_STRUCT,
+			TypeRef: util.Pointer(PairExpression.Name),
+		},
+		{
 			Name:    "isNull",
 			Type:    model.ResourceProperty_STRUCT,
 			TypeRef: util.Pointer(Expression.Name),
@@ -126,11 +123,6 @@ var BooleanExpression = &model.ResourceSubType{
 			Name: "filters",
 			Type: model.ResourceProperty_MAP,
 			Item: &model.ResourceProperty{Type: model.ResourceProperty_OBJECT},
-		},
-		{
-			Name:    "regexMatch",
-			Type:    model.ResourceProperty_STRUCT,
-			TypeRef: util.Pointer(RegexMatchExpression.Name),
 		},
 	},
 }

@@ -44,6 +44,18 @@ func BooleanExpressionFromProto(exp *model.BooleanExpression) resource_model.Boo
 			result.LessThanOrEqual = util.Pointer(PairExpressionFromProto(exp.GetLessThanOrEqual()))
 		}
 
+		if exp.GetLike() != nil {
+			result.Like = util.Pointer(PairExpressionFromProto(exp.GetLike()))
+		}
+
+		if exp.GetIlike() != nil {
+			result.Ilike = util.Pointer(PairExpressionFromProto(exp.GetIlike()))
+		}
+
+		if exp.GetRegex() != nil {
+			result.Regex = util.Pointer(PairExpressionFromProto(exp.GetRegex()))
+		}
+
 		if exp.GetIn() != nil {
 			result.LessThanOrEqual = util.Pointer(PairExpressionFromProto(exp.GetIn()))
 		}
@@ -53,10 +65,6 @@ func BooleanExpressionFromProto(exp *model.BooleanExpression) resource_model.Boo
 			for key, value := range exp.GetFilters() {
 				result.Filters[key] = unstructured.FromValue(value)
 			}
-		}
-
-		if exp.GetRegexMatch() != nil {
-			result.RegexMatch = util.Pointer(RegexMatchExpressionFromProto(exp.GetRegexMatch()))
 		}
 	}
 
@@ -87,15 +95,6 @@ func ExpressionFromProto(exp *model.Expression) resource_model.Expression {
 	if exp.GetValue() != nil {
 		result.Value = unstructured.FromValue(exp.GetValue())
 	}
-
-	return result
-}
-
-func RegexMatchExpressionFromProto(match *model.RegexMatchExpression) resource_model.RegexMatchExpression {
-	var result = resource_model.RegexMatchExpression{}
-
-	result.Pattern = util.Pointer(match.GetPattern())
-	result.Expression = util.Pointer(ExpressionFromProto(match.GetExpression()))
 
 	return result
 }
@@ -161,6 +160,24 @@ func BooleanExpressionToProto(exp resource_model.BooleanExpression) *model.Boole
 		}
 	}
 
+	if exp.Like != nil {
+		result.Expression = &model.BooleanExpression_Like{
+			Like: PairExpressionToProto(*exp.Like),
+		}
+	}
+
+	if exp.Ilike != nil {
+		result.Expression = &model.BooleanExpression_Ilike{
+			Ilike: PairExpressionToProto(*exp.Ilike),
+		}
+	}
+
+	if exp.Regex != nil {
+		result.Expression = &model.BooleanExpression_Regex{
+			Regex: PairExpressionToProto(*exp.Regex),
+		}
+	}
+
 	if exp.Filters != nil {
 		result.Filters = make(map[string]*structpb.Value)
 		for key, value := range exp.Filters {
@@ -172,24 +189,6 @@ func BooleanExpressionToProto(exp resource_model.BooleanExpression) *model.Boole
 
 			result.Filters[key] = val
 		}
-	}
-
-	if exp.RegexMatch != nil {
-		result.Expression = &model.BooleanExpression_RegexMatch{
-			RegexMatch: RegexMatchExpressionToProto(*exp.RegexMatch),
-		}
-	}
-
-	return result
-}
-
-func RegexMatchExpressionToProto(expression resource_model.RegexMatchExpression) *model.RegexMatchExpression {
-	var result = new(model.RegexMatchExpression)
-
-	result.Pattern = util.DePointer(expression.Pattern, "")
-
-	if expression.Expression != nil {
-		result.Expression = ExpressionToProto(*expression.Expression)
 	}
 
 	return result

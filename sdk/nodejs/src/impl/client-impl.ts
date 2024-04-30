@@ -208,6 +208,8 @@ export class ClientImpl implements Client {
 
     public async authenticateWithToken(token: string): Promise<void> {
         this.tokenStorage.set(ACCESS_TOKEN, token);
+        this.tokenStorage.set(REFRESH_TOKEN, token);
+        return this.refreshToken()
     }
 
     public async authenticateWithUsernameAndPassword(username: string, password: string): Promise<void> {

@@ -586,6 +586,33 @@ func (m *BooleanExpressionMapper) ToProperties(booleanExpression *BooleanExpress
 		properties["in"] = var_In_mapped
 	}
 
+	var_Like := booleanExpression.Like
+
+	if var_Like != nil {
+		var var_Like_mapped *structpb.Value
+
+		var_Like_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_Like)})
+		properties["like"] = var_Like_mapped
+	}
+
+	var_Ilike := booleanExpression.Ilike
+
+	if var_Ilike != nil {
+		var var_Ilike_mapped *structpb.Value
+
+		var_Ilike_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_Ilike)})
+		properties["ilike"] = var_Ilike_mapped
+	}
+
+	var_Regex := booleanExpression.Regex
+
+	if var_Regex != nil {
+		var var_Regex_mapped *structpb.Value
+
+		var_Regex_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PairExpressionMapperInstance.ToProperties(var_Regex)})
+		properties["regex"] = var_Regex_mapped
+	}
+
 	var_IsNull := booleanExpression.IsNull
 
 	if var_IsNull != nil {
@@ -617,15 +644,6 @@ func (m *BooleanExpressionMapper) ToProperties(booleanExpression *BooleanExpress
 		}
 		var_Filters_mapped = structpb.NewStructValue(var_Filters_st)
 		properties["filters"] = var_Filters_mapped
-	}
-
-	var_RegexMatch := booleanExpression.RegexMatch
-
-	if var_RegexMatch != nil {
-		var var_RegexMatch_mapped *structpb.Value
-
-		var_RegexMatch_mapped = structpb.NewStructValue(&structpb.Struct{Fields: RegexMatchExpressionMapperInstance.ToProperties(var_RegexMatch)})
-		properties["regexMatch"] = var_RegexMatch_mapped
 	}
 	return properties
 }
@@ -727,6 +745,33 @@ func (m *BooleanExpressionMapper) FromProperties(properties map[string]*structpb
 
 		s.In = var_In_mapped
 	}
+	if properties["like"] != nil && properties["like"].AsInterface() != nil {
+
+		var_Like := properties["like"]
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_Like.GetStructValue().Fields)
+
+		var_Like_mapped := mappedValue
+
+		s.Like = var_Like_mapped
+	}
+	if properties["ilike"] != nil && properties["ilike"].AsInterface() != nil {
+
+		var_Ilike := properties["ilike"]
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_Ilike.GetStructValue().Fields)
+
+		var_Ilike_mapped := mappedValue
+
+		s.Ilike = var_Ilike_mapped
+	}
+	if properties["regex"] != nil && properties["regex"].AsInterface() != nil {
+
+		var_Regex := properties["regex"]
+		var mappedValue = PairExpressionMapperInstance.FromProperties(var_Regex.GetStructValue().Fields)
+
+		var_Regex_mapped := mappedValue
+
+		s.Regex = var_Regex_mapped
+	}
 	if properties["isNull"] != nil && properties["isNull"].AsInterface() != nil {
 
 		var_IsNull := properties["isNull"]
@@ -749,15 +794,6 @@ func (m *BooleanExpressionMapper) FromProperties(properties map[string]*structpb
 		}
 
 		s.Filters = var_Filters_mapped
-	}
-	if properties["regexMatch"] != nil && properties["regexMatch"].AsInterface() != nil {
-
-		var_RegexMatch := properties["regexMatch"]
-		var mappedValue = RegexMatchExpressionMapperInstance.FromProperties(var_RegexMatch.GetStructValue().Fields)
-
-		var_RegexMatch_mapped := mappedValue
-
-		s.RegexMatch = var_RegexMatch_mapped
 	}
 	return s
 }
@@ -866,6 +902,33 @@ func (m *BooleanExpressionMapper) ToUnstructured(booleanExpression *BooleanExpre
 		properties["in"] = var_In_mapped
 	}
 
+	var_Like := booleanExpression.Like
+
+	if var_Like != nil {
+		var var_Like_mapped interface{}
+
+		var_Like_mapped = PairExpressionMapperInstance.ToUnstructured(var_Like)
+		properties["like"] = var_Like_mapped
+	}
+
+	var_Ilike := booleanExpression.Ilike
+
+	if var_Ilike != nil {
+		var var_Ilike_mapped interface{}
+
+		var_Ilike_mapped = PairExpressionMapperInstance.ToUnstructured(var_Ilike)
+		properties["ilike"] = var_Ilike_mapped
+	}
+
+	var_Regex := booleanExpression.Regex
+
+	if var_Regex != nil {
+		var var_Regex_mapped interface{}
+
+		var_Regex_mapped = PairExpressionMapperInstance.ToUnstructured(var_Regex)
+		properties["regex"] = var_Regex_mapped
+	}
+
 	var_IsNull := booleanExpression.IsNull
 
 	if var_IsNull != nil {
@@ -892,15 +955,6 @@ func (m *BooleanExpressionMapper) ToUnstructured(booleanExpression *BooleanExpre
 		}
 		var_Filters_mapped = var_Filters_st
 		properties["filters"] = var_Filters_mapped
-	}
-
-	var_RegexMatch := booleanExpression.RegexMatch
-
-	if var_RegexMatch != nil {
-		var var_RegexMatch_mapped interface{}
-
-		var_RegexMatch_mapped = RegexMatchExpressionMapperInstance.ToUnstructured(var_RegexMatch)
-		properties["regexMatch"] = var_RegexMatch_mapped
 	}
 
 	return properties
@@ -991,105 +1045,6 @@ func (m *PairExpressionMapper) ToUnstructured(pairExpression *PairExpression) un
 
 		var_Right_mapped = ExpressionMapperInstance.ToUnstructured(var_Right)
 		properties["right"] = var_Right_mapped
-	}
-
-	return properties
-}
-
-type RegexMatchExpressionMapper struct {
-}
-
-func NewRegexMatchExpressionMapper() *RegexMatchExpressionMapper {
-	return &RegexMatchExpressionMapper{}
-}
-
-var RegexMatchExpressionMapperInstance = NewRegexMatchExpressionMapper()
-
-func (m *RegexMatchExpressionMapper) New() *RegexMatchExpression {
-	return &RegexMatchExpression{}
-}
-
-func (m *RegexMatchExpressionMapper) ResourceIdentity() abs.ResourceIdentity {
-	return abs.ResourceIdentity{
-		Namespace: "system",
-		Name:      "Extension",
-	}
-}
-
-func (m *RegexMatchExpressionMapper) ToProperties(regexMatchExpression *RegexMatchExpression) map[string]*structpb.Value {
-	var properties = make(map[string]*structpb.Value)
-
-	var_Pattern := regexMatchExpression.Pattern
-
-	if var_Pattern != nil {
-		var var_Pattern_mapped *structpb.Value
-
-		var var_Pattern_err error
-		var_Pattern_mapped, var_Pattern_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Pattern)
-		if var_Pattern_err != nil {
-			panic(var_Pattern_err)
-		}
-		properties["pattern"] = var_Pattern_mapped
-	}
-
-	var_Expression := regexMatchExpression.Expression
-
-	if var_Expression != nil {
-		var var_Expression_mapped *structpb.Value
-
-		var_Expression_mapped = structpb.NewStructValue(&structpb.Struct{Fields: ExpressionMapperInstance.ToProperties(var_Expression)})
-		properties["expression"] = var_Expression_mapped
-	}
-	return properties
-}
-
-func (m *RegexMatchExpressionMapper) FromProperties(properties map[string]*structpb.Value) *RegexMatchExpression {
-	var s = m.New()
-	if properties["pattern"] != nil && properties["pattern"].AsInterface() != nil {
-
-		var_Pattern := properties["pattern"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Pattern)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_Pattern_mapped := new(string)
-		*var_Pattern_mapped = val.(string)
-
-		s.Pattern = var_Pattern_mapped
-	}
-	if properties["expression"] != nil && properties["expression"].AsInterface() != nil {
-
-		var_Expression := properties["expression"]
-		var mappedValue = ExpressionMapperInstance.FromProperties(var_Expression.GetStructValue().Fields)
-
-		var_Expression_mapped := mappedValue
-
-		s.Expression = var_Expression_mapped
-	}
-	return s
-}
-
-func (m *RegexMatchExpressionMapper) ToUnstructured(regexMatchExpression *RegexMatchExpression) unstructured.Unstructured {
-	var properties unstructured.Unstructured = make(unstructured.Unstructured)
-
-	var_Pattern := regexMatchExpression.Pattern
-
-	if var_Pattern != nil {
-		var var_Pattern_mapped interface{}
-
-		var_Pattern_mapped = *var_Pattern
-		properties["pattern"] = var_Pattern_mapped
-	}
-
-	var_Expression := regexMatchExpression.Expression
-
-	if var_Expression != nil {
-		var var_Expression_mapped interface{}
-
-		var_Expression_mapped = ExpressionMapperInstance.ToUnstructured(var_Expression)
-		properties["expression"] = var_Expression_mapped
 	}
 
 	return properties
