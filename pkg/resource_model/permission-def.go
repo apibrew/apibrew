@@ -48,7 +48,7 @@ var PermissionResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-04-30T13:07:33+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-05-03T21:23:19+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -57,7 +57,7 @@ var PermissionResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-04-30T13:07:33+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-05-03T21:23:19+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -177,8 +177,8 @@ var PermissionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "meta",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "meta",
 			},
 		},
 		{
@@ -229,7 +229,7 @@ var PermissionResource = &model.Resource{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
 			TypeRef:      util.Pointer("AuditData"),
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-04-30T13:07:33+04:00"), "updatedOn": structpb.NewStringValue("2024-04-30T13:07:33+04:00"), "createdBy": structpb.NewStringValue("admin")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-05-03T21:23:19+04:00"), "updatedOn": structpb.NewStringValue("2024-05-03T21:23:19+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

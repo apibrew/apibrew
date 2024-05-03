@@ -2,7 +2,6 @@ package abs
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 )
 
@@ -12,10 +11,6 @@ type Backend interface {
 	BackendSchemaInterface
 
 	SetSchema(schema *Schema)
-}
-
-type BackendActionExecutor interface {
-	ExecuteAction(ctx context.Context, resource *model.Resource, rec *model.Record, actionName string, input unstructured.Any) (unstructured.Unstructured, error)
 }
 
 type BackendGenericInterface interface {

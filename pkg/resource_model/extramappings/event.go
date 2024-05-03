@@ -1,7 +1,6 @@
 package extramappings
 
 import (
-	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -17,12 +16,6 @@ func EventToProto(result *resource_model.Event) *model.Event {
 	event.Action = model.Event_Action(model.Event_Action_value[string(result.Action)])
 	if result.Time != nil {
 		event.Time = timestamppb.New(*result.Time)
-	}
-	if result.ActionDescription != nil {
-		event.ActionDescription = *result.ActionDescription
-	}
-	if result.ActionSummary != nil {
-		event.ActionSummary = *result.ActionSummary
 	}
 	event.Annotations = result.Annotations
 	if result.Finalizes != nil {
@@ -58,21 +51,6 @@ func EventToProto(result *resource_model.Event) *model.Event {
 	}
 
 	event.Total = uint64(util.DePointer(result.Total, 0))
-	event.ActionName = util.DePointer(result.ActionName, "")
-	if result.Input != nil {
-		var err error
-		event.Input, err = unstructured.ToValue(result.Input)
-		if err != nil {
-			panic(err)
-		}
-	}
-	if result.Output != nil {
-		var err error
-		event.Output, err = unstructured.ToValue(result.Output)
-		if err != nil {
-			panic(err)
-		}
-	}
 
 	return event
 }
@@ -85,8 +63,6 @@ func EventFromProto(event *model.Event) *resource_model.Event {
 		extensionEvent.Time = new(time.Time)
 		*extensionEvent.Time = event.Time.AsTime()
 	}
-	extensionEvent.ActionDescription = &event.ActionDescription
-	extensionEvent.ActionSummary = &event.ActionSummary
 	extensionEvent.Annotations = event.Annotations
 	extensionEvent.Finalizes = &event.Finalizes
 	extensionEvent.Sync = &event.Sync
@@ -120,13 +96,6 @@ func EventFromProto(event *model.Event) *resource_model.Event {
 	}
 
 	extensionEvent.Total = util.Pointer(int64(event.Total))
-	extensionEvent.ActionName = util.Pointer(event.ActionName)
-	if event.Input != nil {
-		extensionEvent.Input = unstructured.FromValue(event.Input)
-	}
-	if event.Input != nil {
-		extensionEvent.Output = unstructured.FromValue(event.Input)
-	}
 
 	return extensionEvent
 }

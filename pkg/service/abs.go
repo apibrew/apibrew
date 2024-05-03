@@ -29,7 +29,6 @@ type AuthorizationService interface {
 
 type BackendProviderService interface {
 	abs.BackendRecordsInterface
-	abs.BackendActionExecutor
 	DestroyDataSource(ctx context.Context, dataSourceName string) error
 	ListEntities(ctx context.Context, dataSourceId string) ([]*model.DataSourceCatalog, error)
 	PrepareResourceFromEntity(ctx context.Context, dataSourceName string, catalog, entity string) (*model.Resource, error)
@@ -213,14 +212,6 @@ type RecordDeleteParams struct {
 	Namespace string
 	Resource  string
 	Ids       []string
-}
-
-type ExecuteActionParams struct {
-	Namespace  string
-	Resource   string
-	Id         string
-	ActionName string
-	Input      unstructured.Unstructured
 }
 
 func (p RecordDeleteParams) ToRequest() *stub.DeleteRecordRequest {

@@ -199,14 +199,6 @@ var ExtensionResource = &model.Resource{
 					TypeRef: util.Pointer("RecordSearchParams"),
 				},
 				{
-					Name: "actionSummary",
-					Type: model.ResourceProperty_STRING,
-				},
-				{
-					Name: "actionDescription",
-					Type: model.ResourceProperty_STRING,
-				},
-				{
 					Name: "resource",
 					Type: model.ResourceProperty_REFERENCE,
 					Reference: &model.Reference{
@@ -238,18 +230,6 @@ var ExtensionResource = &model.Resource{
 				{
 					Name: "total",
 					Type: model.ResourceProperty_INT64,
-				},
-				{
-					Name: "actionName",
-					Type: model.ResourceProperty_STRING,
-				},
-				{
-					Name: "input",
-					Type: model.ResourceProperty_OBJECT,
-				},
-				{
-					Name: "output",
-					Type: model.ResourceProperty_OBJECT,
 				},
 				special.AnnotationsProperty,
 				{

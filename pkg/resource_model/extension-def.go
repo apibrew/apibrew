@@ -103,8 +103,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
@@ -123,8 +123,8 @@ var ExtensionResource = &model.Resource{
 			},
 
 			Annotations: map[string]string{
-				"OpenApiGroup": "internal",
 				"EnableAudit":  "true",
+				"OpenApiGroup": "internal",
 			},
 		},
 		{
@@ -175,7 +175,7 @@ var ExtensionResource = &model.Resource{
 					Name:         "createdOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
 					Immutable:    true,
-					ExampleValue: structpb.NewStringValue("2024-04-30T13:07:33+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-05-03T21:23:19+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -184,7 +184,7 @@ var ExtensionResource = &model.Resource{
 				{
 					Name:         "updatedOn",
 					Type:         model.ResourceProperty_TIMESTAMP,
-					ExampleValue: structpb.NewStringValue("2024-04-30T13:07:33+04:00"),
+					ExampleValue: structpb.NewStringValue("2024-05-03T21:23:19+04:00"),
 
 					Annotations: map[string]string{
 						"SpecialProperty": "true",
@@ -394,14 +394,6 @@ var ExtensionResource = &model.Resource{
 					TypeRef: util.Pointer("RecordSearchParams"),
 				},
 				{
-					Name: "actionSummary",
-					Type: model.ResourceProperty_STRING,
-				},
-				{
-					Name: "actionDescription",
-					Type: model.ResourceProperty_STRING,
-				},
-				{
 					Name:      "resource",
 					Type:      model.ResourceProperty_REFERENCE,
 					Reference: &model.Reference{Resource: "Resource", Namespace: ""},
@@ -430,18 +422,6 @@ var ExtensionResource = &model.Resource{
 				{
 					Name: "total",
 					Type: model.ResourceProperty_INT64,
-				},
-				{
-					Name: "actionName",
-					Type: model.ResourceProperty_STRING,
-				},
-				{
-					Name: "input",
-					Type: model.ResourceProperty_OBJECT,
-				},
-				{
-					Name: "output",
-					Type: model.ResourceProperty_OBJECT,
 				},
 				{
 					Name: "annotations",
@@ -552,7 +532,7 @@ var ExtensionResource = &model.Resource{
 			Name:         "auditData",
 			Type:         model.ResourceProperty_STRUCT,
 			TypeRef:      util.Pointer("AuditData"),
-			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-04-30T13:07:33+04:00"), "updatedOn": structpb.NewStringValue("2024-04-30T13:07:33+04:00")}}),
+			ExampleValue: structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{"createdBy": structpb.NewStringValue("admin"), "updatedBy": structpb.NewStringValue("admin"), "createdOn": structpb.NewStringValue("2024-05-03T21:23:19+04:00"), "updatedOn": structpb.NewStringValue("2024-05-03T21:23:19+04:00")}}),
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",

@@ -265,17 +265,12 @@ type Event struct {
 	Id                 string              `json:"id,omitempty"`
 	Action             ExtensionAction     `json:"action,omitempty"`
 	RecordSearchParams *RecordSearchParams `json:"recordSearchParams,omitempty"`
-	ActionSummary      *string             `json:"actionSummary,omitempty"`
-	ActionDescription  *string             `json:"actionDescription,omitempty"`
 	Resource           *Resource           `json:"resource,omitempty"`
 	Records            []*Record           `json:"records,omitempty"`
 	Finalizes          *bool               `json:"finalizes,omitempty"`
 	Sync               *bool               `json:"sync,omitempty"`
 	Time               *time.Time          `json:"time,omitempty"`
 	Total              *int64              `json:"total,omitempty"`
-	ActionName         *string             `json:"actionName,omitempty"`
-	Input              interface{}         `json:"input,omitempty"`
-	Output             interface{}         `json:"output,omitempty"`
 	Annotations        map[string]string   `json:"annotations,omitempty"`
 	Error              *Error              `json:"error,omitempty"`
 }
@@ -288,12 +283,6 @@ func (s Event) GetAction() ExtensionAction {
 }
 func (s Event) GetRecordSearchParams() *RecordSearchParams {
 	return s.RecordSearchParams
-}
-func (s Event) GetActionSummary() *string {
-	return s.ActionSummary
-}
-func (s Event) GetActionDescription() *string {
-	return s.ActionDescription
 }
 func (s Event) GetResource() *Resource {
 	return s.Resource
@@ -312,15 +301,6 @@ func (s Event) GetTime() *time.Time {
 }
 func (s Event) GetTotal() *int64 {
 	return s.Total
-}
-func (s Event) GetActionName() *string {
-	return s.ActionName
-}
-func (s Event) GetInput() interface{} {
-	return s.Input
-}
-func (s Event) GetOutput() interface{} {
-	return s.Output
 }
 func (s Event) GetAnnotations() map[string]string {
 	return s.Annotations

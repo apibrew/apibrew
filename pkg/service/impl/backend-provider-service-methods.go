@@ -4,12 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/errors"
-	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -117,33 +114,6 @@ func (b backendProviderService) ListRecords(ctx context.Context, resource *model
 	}
 
 	return endEvent.Records, uint32(endEvent.Total), nil
-}
-
-func (b backendProviderService) ExecuteAction(ctx context.Context, resource *model.Resource, rec *model.Record, actionName string, input unstructured.Any) (unstructured.Unstructured, error) {
-	inputVal, ierr := unstructured.ToValue(input)
-
-	if ierr != nil {
-		log.Error(ierr)
-		return nil, errors.InternalError.WithDetails(ierr.Error())
-	}
-
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
-		Action:     model.Event_OPERATE,
-		Resource:   resource,
-		Records:    []*model.Record{rec},
-		ActionName: actionName,
-		Input:      inputVal,
-	}))
-
-	if err != nil {
-		return nil, err
-	}
-
-	if endEvent == nil {
-		return nil, nil
-	}
-
-	return unstructured.FromStructValue(endEvent.Output.GetStructValue()), nil
 }
 
 func (b backendProviderService) PrepareInternalEvent(ctx context.Context, event *model.Event) *model.Event {
