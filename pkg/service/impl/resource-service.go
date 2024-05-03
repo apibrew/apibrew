@@ -24,7 +24,7 @@ type resourceService struct {
 	backendProviderService   service.BackendProviderService
 	schema                   abs.Schema
 	resourceMigrationService service.ResourceMigrationService
-	mu                       sync.Mutex
+	mu                       sync.RWMutex
 	authorizationService     service.AuthorizationService
 }
 
@@ -111,6 +111,9 @@ func (r *resourceService) LocateLocalReferences(resource *model.Resource) []stri
 }
 
 func (r *resourceService) GetSchema() *abs.Schema {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
 	return &r.schema
 }
 
