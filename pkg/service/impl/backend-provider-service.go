@@ -3,10 +3,6 @@ package impl
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/backend/mongo"
-	"github.com/apibrew/apibrew/pkg/backend/mysql"
-	"github.com/apibrew/apibrew/pkg/backend/postgres"
-	"github.com/apibrew/apibrew/pkg/backend/redis"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -21,11 +17,16 @@ import (
 
 type backendProviderService struct {
 	systemDataSource *resource_model.DataSource
+	backendTypeMap   map[string]abs.BackendType
 	backendMap       map[string]abs.Backend
 	backendIdMap     map[string]string
 	backendNameMap   map[string]string
 	schema           *abs.Schema
 	eventHandler     backend_event_handler.BackendEventHandler
+}
+
+func (b *backendProviderService) RegisterBackend(backend abs.BackendType) {
+	b.backendTypeMap[backend.Name] = backend
 }
 
 func (b *backendProviderService) SetSchema(schema *abs.Schema) {
@@ -137,19 +138,14 @@ func (b *backendProviderService) getBackend(dataSource *resource_model.DataSourc
 	return instance
 }
 
-func (b *backendProviderService) getBackendConstructor(backend resource_model.DataSourceBackend) abs.BackendConstructor {
-	switch backend {
-	case resource_model.DataSourceBackend_POSTGRESQL:
-		return postgres.NewPostgresResourceServiceBackend
-	case resource_model.DataSourceBackend_MYSQL:
-		return mysql.NewMysqlResourceServiceBackend
-	case resource_model.DataSourceBackend_MONGODB:
-		return mongo.NewMongoResourceServiceBackend
-	case resource_model.DataSourceBackend_REDIS:
-		return redis.NewRedisResourceServiceBackend
+func (b *backendProviderService) getBackendConstructor(backend string) abs.BackendConstructor {
+	backendType, ok := b.backendTypeMap[backend]
+
+	if !ok {
+		panic("Not implemented backend: " + string(backend))
 	}
 
-	panic("Not implemented backend: " + string(backend))
+	return backendType.Constructor
 }
 
 func (b *backendProviderService) Init(config *model.AppConfig) {
@@ -249,6 +245,7 @@ func NewBackendProviderService(eventHandler backend_event_handler.BackendEventHa
 		backendMap:     make(map[string]abs.Backend),
 		backendIdMap:   make(map[string]string),
 		backendNameMap: make(map[string]string),
+		backendTypeMap: make(map[string]abs.BackendType),
 		eventHandler:   eventHandler,
 	}
 }

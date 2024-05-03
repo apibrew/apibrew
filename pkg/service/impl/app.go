@@ -2,7 +2,9 @@ package impl
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
+	"github.com/apibrew/apibrew/pkg/backend/postgres"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/executor"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -111,6 +113,8 @@ func (app *App) Init() <-chan interface{} {
 	app.auditService = NewAuditService(app.backendEventHandler, app.recordService)
 	app.statsService = NewStatsService(app.backendEventHandler)
 
+	app.setupBackends()
+
 	initSignal := make(chan interface{})
 	go func() {
 		app.initServices()
@@ -178,4 +182,11 @@ func (app *App) RegisterModule(moduleConstructor service.ModuleConstructor) {
 	if app.init {
 		md.Init()
 	}
+}
+
+func (app *App) setupBackends() {
+	app.backendProviderService.RegisterBackend(abs.BackendType{
+		Name:        "POSTGRESQL",
+		Constructor: postgres.NewPostgresResourceServiceBackend,
+	})
 }

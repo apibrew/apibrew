@@ -98,7 +98,7 @@ var AuditLogResource = &model.Resource{
 	Immutable: true,
 
 	Annotations: map[string]string{
-		"OpenApiGroup":     "internal",
 		"BypassExtensions": "true",
+		"OpenApiGroup":     "internal",
 	},
 }

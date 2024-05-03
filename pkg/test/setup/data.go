@@ -7,7 +7,7 @@ import (
 )
 
 var SystemDataSource = &resource_model.DataSource{
-	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Backend: "POSTGRESQL",
 	Name:    "system",
 	Options: map[string]string{
 		"username":       "dh_test",
@@ -20,7 +20,7 @@ var SystemDataSource = &resource_model.DataSource{
 }
 
 var DefaultDataSource = &resource_model.DataSource{
-	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Backend: "POSTGRESQL",
 	Name:    "default",
 	Options: map[string]string{
 		"username":       "dh_test",
@@ -33,7 +33,7 @@ var DefaultDataSource = &resource_model.DataSource{
 }
 
 var DhTest = &resource_model.DataSource{
-	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Backend: "POSTGRESQL",
 	Name:    "dh-test",
 	Options: map[string]string{
 		"username":       "dh_test",
@@ -46,7 +46,7 @@ var DhTest = &resource_model.DataSource{
 }
 
 var DhTestWrongPassword = &resource_model.DataSource{
-	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Backend: "POSTGRESQL",
 	Name:    "data-source-1-wrong",
 	Options: map[string]string{
 		"username":       "dh_test",
@@ -59,7 +59,7 @@ var DhTestWrongPassword = &resource_model.DataSource{
 }
 
 var DataSourceDhTest = &resource_model.DataSource{
-	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Backend: "POSTGRESQL",
 	Name:    "data-source-test",
 	Options: map[string]string{
 		"username":       "dh_test",
@@ -72,7 +72,7 @@ var DataSourceDhTest = &resource_model.DataSource{
 }
 
 var DataSource1 = &resource_model.DataSource{
-	Backend: resource_model.DataSourceBackend_POSTGRESQL,
+	Backend: "POSTGRESQL",
 	Name:    "data-source-1",
 	Options: map[string]string{
 		"username":       "dh_test",

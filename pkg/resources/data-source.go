@@ -41,15 +41,8 @@ var DataSourceResource = &model.Resource{
 		},
 		{
 			Name:     "backend",
-			Type:     model.ResourceProperty_ENUM,
+			Type:     model.ResourceProperty_STRING,
 			Required: true,
-			EnumValues: []string{
-				"POSTGRESQL",
-				"MYSQL",
-				"MONGODB",
-				"REDIS",
-				"SQLITE",
-			},
 		},
 		{
 			Name:     "options",

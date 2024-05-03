@@ -60,4 +60,9 @@ type DataSource interface {
 	GetName() string
 }
 
+type BackendType struct {
+	Name        string
+	Constructor BackendConstructor
+}
+
 type BackendConstructor func(dataSourceRecord DataSource) Backend
