@@ -2,6 +2,10 @@ module github.com/apibrew/apibrew
 
 go 1.20
 
+replace (
+	github.com/apibrew/nano => ../nano
+)
+
 require (
 	github.com/apibrew/metrics v1.0.17
 	github.com/apibrew/nano v1.0.24
