@@ -245,6 +245,7 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	}
 
 	resourceRecords := []*model.Record{mapping.ResourceToRecord(resource)}
+	existingResourceRecords := []*model.Record{mapping.ResourceToRecord(existingResource)}
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
@@ -267,6 +268,15 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 	if _, err = r.backendProviderService.UpdateRecords(ctx, resources.ResourceResource, resourceRecords); err != nil {
 		return err
 	}
+
+	defer func() {
+		if err != nil {
+			log.Print("Reverting updated records for resource: " + resource.Name + " with id: " + util.GetRecordId(resourceRecords[0]) + " due to error: " + err.Error() + " ...")
+			if _, err := r.backendProviderService.UpdateRecords(util.WithSystemContext(context.TODO()), resources.ResourceResource, existingResourceRecords); err != nil {
+				log.Error(err)
+			}
+		}
+	}()
 
 	// prepare local migration plan
 	plan, err := r.resourceMigrationService.PreparePlan(ctx, existingResource, resource)

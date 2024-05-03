@@ -242,6 +242,9 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		var sqlParts []string
 		var preSql string
 		changes := 0
+
+		quotedCol := r.options.Quote(property.Name)
+
 		if r.options.GetSqlTypeFromProperty(prevProperty.Type, prevProperty.Length) != r.options.GetSqlTypeFromProperty(property.Type, property.Length) {
 			sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
 
@@ -249,18 +252,18 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 				sqlType = property.Annotations[annotations.SQLType]
 			}
 
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s", r.options.Quote(property.Name), sqlType))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s TYPE %s USING %s::%s", quotedCol, sqlType, quotedCol, sqlType))
 			changes++
 		}
 
 		if prevProperty.Required && !property.Required {
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", r.options.Quote(property.Name)))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s DROP NOT NULL", quotedCol))
 			changes++
 		}
 
 		if !prevProperty.Required && property.Required {
-			preSql = fmt.Sprintf("UPDATE %s SET %s = '%v' WHERE %s IS NULL", r.tableName, r.options.Quote(property.Name), types.ByResourcePropertyType(property.Type).Default(), r.options.Quote(property.Name))
-			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", r.options.Quote(property.Name)))
+			preSql = fmt.Sprintf("UPDATE %s SET %s = '%v' WHERE %s IS NULL", r.tableName, quotedCol, types.ByResourcePropertyType(property.Type).Default(), r.options.Quote(property.Name))
+			sqlParts = append(sqlParts, fmt.Sprintf("ALTER COLUMN %s SET NOT NULL", quotedCol))
 			changes++
 		}
 
