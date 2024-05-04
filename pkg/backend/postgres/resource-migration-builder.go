@@ -243,7 +243,8 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		var preSql string
 		changes := 0
 
-		quotedCol := r.options.Quote(property.Name)
+		quotedCol := r.options.Quote(prevProperty.Name)
+		newQuotedCol := r.options.Quote(property.Name)
 
 		if r.options.GetSqlTypeFromProperty(prevProperty.Type, prevProperty.Length) != r.options.GetSqlTypeFromProperty(property.Type, property.Length) {
 			sqlType := r.options.GetSqlTypeFromProperty(property.Type, property.Length)
@@ -268,7 +269,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 		}
 
 		if prevProperty.Unique && !property.Unique {
-			sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT IF EXISTS %s", r.options.Quote(property.Name+"_uniq")))
+			sqlParts = append(sqlParts, fmt.Sprintf("DROP CONSTRAINT IF EXISTS %s", r.options.Quote(prevProperty.Name+"_uniq")))
 			changes++
 		}
 
@@ -306,7 +307,7 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 							"DROP CONSTRAINT IF EXISTS %s, ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s) "+refClause,
 							fkName,
 							fkName,
-							r.options.Quote(property.Name),
+							r.options.Quote(prevProperty.Name),
 							r.options.GetFullTableName(referencedResource.SourceConfig),
 							r.options.Quote("id"),
 						),
@@ -314,6 +315,11 @@ func (r *resourceMigrationBuilder) UpdateProperty(resource *model.Resource, prev
 					changes++
 				}
 			}
+		}
+
+		if prevProperty.Name != property.Name {
+			sqlParts = append(sqlParts, fmt.Sprintf("RENAME COLUMN %s TO %s", quotedCol, newQuotedCol))
+			changes++
 		}
 
 		if changes == 0 {
