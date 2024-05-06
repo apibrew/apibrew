@@ -71,6 +71,9 @@ func (d *client) UpdateResource(ctx context.Context, resource *model.Resource, m
 
 	return err
 }
+func (d *client) Watch(ctx context.Context, request *stub.WatchRequest) (stub.Watch_WatchClient, error) {
+	return d.watchClient.Watch(ctx, request)
+}
 
 func (d *client) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
 	resp, err := d.watchClient.Watch(ctx, &stub.WatchRequest{

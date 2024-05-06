@@ -5,6 +5,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/stub"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -38,6 +39,7 @@ type Client interface {
 	CreateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error
 	UpdateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error
 
+	Watch(ctx context.Context, request *stub.WatchRequest) (stub.Watch_WatchClient, error)
 	PollEvents(ctx context.Context, key string) (<-chan *model.Event, error)
 	WriteEvent(ctx context.Context, key string, event *model.Event) error
 }

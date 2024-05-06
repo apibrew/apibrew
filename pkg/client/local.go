@@ -5,12 +5,18 @@ import (
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
+	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type localClient struct {
 	container service.Container
+}
+
+func (l localClient) Watch(ctx context.Context, request *stub.WatchRequest) (stub.Watch_WatchClient, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (l localClient) LoadRecord(ctx context.Context, namespace string, resource string, properties map[string]*structpb.Value, params service.RecordLoadParams) (*model.Record, error) {
