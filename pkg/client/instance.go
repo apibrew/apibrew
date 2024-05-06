@@ -72,6 +72,7 @@ func (d *client) UpdateResource(ctx context.Context, resource *model.Resource, m
 	return err
 }
 func (d *client) Watch(ctx context.Context, request *stub.WatchRequest) (stub.Watch_WatchClient, error) {
+	request.Token = d.token
 	return d.watchClient.Watch(ctx, request)
 }
 
