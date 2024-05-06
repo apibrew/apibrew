@@ -8,13 +8,13 @@ package module
 
 import (
 	"github.com/apibrew/apibrew/pkg/service/impl"
-	module1 "github.com/apibrew/metrics/pkg"
-	module2 "github.com/apibrew/nano/pkg"
+	module2 "github.com/apibrew/metrics/pkg"
+	module1 "github.com/apibrew/nano/pkg"
 )
 
 var Modules = map[string]string{
-	"github.com/apibrew/nano/pkg":    "v1.0.24",
 	"github.com/apibrew/metrics/pkg": "v1.0.17",
+	"github.com/apibrew/nano/pkg":    "v1.0.32",
 }
 
 func RegisterModules(app *impl.App) {

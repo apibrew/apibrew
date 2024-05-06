@@ -51,10 +51,8 @@ github.com/andybalholm/brotli v1.0.2/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu
 github.com/andybalholm/brotli v1.0.3/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/apibrew/metrics v1.0.17 h1:prlEqfu2E0sGHz+dempVgvZuAqJ0hVRnv0fJm3gqWUM=
 github.com/apibrew/metrics v1.0.17/go.mod h1:dpYHJM4v6bsusBJwprnjHsxySn8X+OACJQyUNWzmAaY=
-github.com/apibrew/nano v1.0.19 h1:jI5BMjpC10cWkrJYkf45RSnvdFqQAez7zonrO2xNfKA=
-github.com/apibrew/nano v1.0.19/go.mod h1:tUzX+DLgDV7Q355xgYussUK+HqLH8Cjn4aFtL9MX9LU=
-github.com/apibrew/nano v1.0.24 h1:XS11jLvnWVJm/5fBpE5yavVhDKbb66Fa7yZYOEqfIws=
-github.com/apibrew/nano v1.0.24/go.mod h1:tUzX+DLgDV7Q355xgYussUK+HqLH8Cjn4aFtL9MX9LU=
+github.com/apibrew/nano v1.0.32 h1:a9G3/xmM+za3RprxX5qD9qm0nPf40vuS65aMc7N5G8k=
+github.com/apibrew/nano v1.0.32/go.mod h1:tUzX+DLgDV7Q355xgYussUK+HqLH8Cjn4aFtL9MX9LU=
 github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6iT90AvPUL1NNfNw=
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aws/aws-sdk-go v1.50.19 h1:YSIDKRSkh/TW0RPWoocdLqtC/T5W6IGBVhFs6P7Qcac=
