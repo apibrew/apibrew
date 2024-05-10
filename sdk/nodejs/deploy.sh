@@ -1,3 +1,4 @@
+rm -rf dist
 tsc || exit 1
 
 npm version patch
