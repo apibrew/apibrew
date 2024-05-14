@@ -94,6 +94,8 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 
 			resource := extramappings.ResourceFrom(resourceModel)
 
+			e.fixResource(resource)
+
 			err = e.ResourceHandler(resource)
 
 			if err != nil {
@@ -213,6 +215,22 @@ func (e *Executor) InitSystemOnly() {
 		dhClient: e.Client,
 		writer:   &writer.Writer{},
 	}
+}
+
+func (e *Executor) fixResource(resource *model.Resource) {
+	var namedTypes = util.GetNamedMap(resource.Types)
+
+	util.ResourceWalkProperties(resource, func(path string, prop *model.ResourceProperty) {
+		if prop.Type == model.ResourceProperty_STRUCT {
+			if util.DePointer(prop.TypeRef, "") == "$property" {
+				if namedTypes["Property"] == nil {
+					resource.Types = append(resource.Types, resources2.PropertyType)
+					namedTypes = util.GetNamedMap(resource.Types)
+				}
+				prop.TypeRef = util.Pointer("Property")
+			}
+		}
+	})
 }
 
 type OverrideConfig struct {

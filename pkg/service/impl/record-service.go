@@ -285,7 +285,6 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 	var result []*model.Record
 
 	for _, record := range params.Records {
-
 		// locate existing record
 		var existingRecord *model.Record
 
@@ -305,7 +304,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 				Query:     qb.FromProperties(resource, identifierProps),
 			})
 
-			if err != nil {
+			if serr != nil {
 				return nil, serr
 			}
 
@@ -315,6 +314,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 		}
 
 		if existingRecord == nil {
+			log.Println("Record not found, creating new record", record.Properties)
 			records, err := r.CreateWithResource(ctx, resource, service.RecordCreateParams{
 				Namespace: resource.Namespace,
 				Resource:  resource.Name,
@@ -327,6 +327,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 
 			result = append(result, records...)
 		} else {
+			log.Println("Record found, updating record", record.Properties)
 			if annotations.IsEnabled(annotations.FromCtx(ctx), annotations.IgnoreIfExists) {
 				result = append(result, record)
 				continue
@@ -337,7 +338,8 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 			}
 
 			if util.IsSameRecord(existingRecord, record) {
-				return params.Records, nil
+				result = append(result, record)
+				continue
 			}
 
 			records, err := r.UpdateWithResource(ctx, resource, service.RecordUpdateParams{

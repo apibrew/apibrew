@@ -141,10 +141,24 @@ func (r *recordApi) makeFilters(request *http.Request) map[string]interface{} {
 func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	resource := r.resourceService.GetSchema().ResourceBySlug[vars["resourceSlug"]]
+	var namedProps = util.GetNamedMap(resource.Properties)
 
 	record := new(unstructured.Unstructured)
 
-	err := parseRequestMessage(request, record)
+	var err error
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		if _, ok := namedProps["input"]; ok {
+			*record = make(unstructured.Unstructured)
+			var input = make(unstructured.Unstructured)
+			(*record)["input"] = input
+
+			err = parseRequestMessage(request, &input)
+		} else {
+			err = parseRequestMessage(request, record)
+		}
+	} else {
+		err = parseRequestMessage(request, record)
+	}
 
 	if err != nil {
 		handleError(writer, err)
@@ -160,7 +174,15 @@ func (r *recordApi) handleRecordCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	respondSuccess(writer, result)
+	if annotations.IsEnabled(resource, annotations.ActionApi) {
+		if _, ok := namedProps["output"]; ok {
+			respondSuccess(writer, result["output"])
+		} else {
+			respondSuccess(writer, result)
+		}
+	} else {
+		respondSuccess(writer, result)
+	}
 }
 
 func (r *recordApi) handleRecordApply(writer http.ResponseWriter, request *http.Request) {
