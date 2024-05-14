@@ -134,7 +134,7 @@ func (s *OpenApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 			if strings.HasPrefix(path, "/{resourceActionPath}") {
 				applyTemplate(pathData, resource)
 
-				path = strings.ReplaceAll(path, "/{resourceActionPath}", "/"+getResourceFQN(resource))
+				path = strings.ReplaceAll(path, "/{resourceActionPath}", "/"+util.ResourceRestPath(resource))
 
 				doc.Paths[path] = pathData
 			}
@@ -144,7 +144,7 @@ func (s *OpenApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 			if strings.HasPrefix(path, "/{resourceRestPath}") {
 				applyTemplate(pathData, resource)
 
-				path = strings.ReplaceAll(path, "/{resourceRestPath}", "/"+getResourceFQN(resource))
+				path = strings.ReplaceAll(path, "/{resourceRestPath}", "/"+util.ResourceRestPath(resource))
 
 				doc.Paths[path] = pathData
 			}
@@ -165,8 +165,8 @@ func (s *OpenApiBuilder) appendResourceApis(doc *openapi3.T, resource *model.Res
 			}
 		}
 
-		doc.Paths["/"+getResourceFQN(resource)].Get.Parameters = append(doc.Paths["/"+getResourceFQN(resource)].Get.Parameters, filterParameters...)
-		doc.Paths["/"+getResourceFQN(resource)+"/_watch"].Get.Parameters = filterParameters
+		doc.Paths["/"+util.ResourceRestPath(resource)].Get.Parameters = append(doc.Paths["/"+util.ResourceRestPath(resource)].Get.Parameters, filterParameters...)
+		doc.Paths["/"+util.ResourceRestPath(resource)+"/_watch"].Get.Parameters = filterParameters
 	}
 
 }
@@ -206,7 +206,7 @@ func applyTemplate[T templateCandidate](data T, resource *model.Resource) {
 
 	schemaName := util.ResourceJsonSchemaName(resource)
 
-	str = strings.ReplaceAll(str, "{resourceRestPath}", getResourceFQN(resource))
+	str = strings.ReplaceAll(str, "{resourceRestPath}", util.ResourceRestPath(resource))
 	str = strings.ReplaceAll(str, "{tag}", tag)
 	str = strings.ReplaceAll(str, "{schemaName}", schemaName)
 	str = strings.ReplaceAll(str, "{name}", resource.Name)
