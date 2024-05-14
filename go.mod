@@ -1,9 +1,5 @@
 module github.com/apibrew/apibrew
 
-replace (
-	github.com/apibrew/nano => ../nano
-)
-
 go 1.20
 
 require (
