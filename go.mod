@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/apibrew/metrics v1.0.17
-	github.com/apibrew/nano v1.0.34
+	github.com/apibrew/nano v1.3.85
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-redis/redis v6.15.9+incompatible
@@ -47,7 +47,6 @@ require (
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.50.19 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/clarkmcc/go-typescript v0.7.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
