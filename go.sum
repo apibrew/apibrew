@@ -51,12 +51,8 @@ github.com/andybalholm/brotli v1.0.2/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu
 github.com/andybalholm/brotli v1.0.3/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/apibrew/metrics v1.0.17 h1:prlEqfu2E0sGHz+dempVgvZuAqJ0hVRnv0fJm3gqWUM=
 github.com/apibrew/metrics v1.0.17/go.mod h1:dpYHJM4v6bsusBJwprnjHsxySn8X+OACJQyUNWzmAaY=
-github.com/apibrew/nano v1.0.32 h1:a9G3/xmM+za3RprxX5qD9qm0nPf40vuS65aMc7N5G8k=
-github.com/apibrew/nano v1.0.32/go.mod h1:tUzX+DLgDV7Q355xgYussUK+HqLH8Cjn4aFtL9MX9LU=
-github.com/apibrew/nano v1.0.33 h1:QcubAk4XCP83CVx8h9ZGs185FzzNPreKAczNrZwBG2M=
-github.com/apibrew/nano v1.0.33/go.mod h1:drOkzSZl/VuG4qBO5AT+QQxA0hA6TuqRlhejN+XTLqs=
-github.com/apibrew/nano v1.0.34 h1:Y7ddCDOLfZ3Op16m+407yBELEFZ9CE9kNW+ESH7IwCY=
-github.com/apibrew/nano v1.0.34/go.mod h1:OuKdqc8GTi3lkV6Sugyj9pRAL6/z+v4B5xVPKMyup4o=
+github.com/apibrew/nano v1.3.85 h1:uGRI0KaPyzS6uhsKXxRtHH5q9uUUB7RrUlrOZjVzrtI=
+github.com/apibrew/nano v1.3.85/go.mod h1:1dJtFfKbzlxJ/S8YO0r6Y/xefdbwww16M1BxQlxvOVY=
 github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6iT90AvPUL1NNfNw=
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aws/aws-sdk-go v1.50.19 h1:YSIDKRSkh/TW0RPWoocdLqtC/T5W6IGBVhFs6P7Qcac=
@@ -78,8 +74,6 @@ github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMn
 github.com/chzyer/test v0.0.0-20210722231415-061457976a23/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
-github.com/clarkmcc/go-typescript v0.7.0 h1:3nVeaPYyTCWjX6Lf8GoEOTxME2bM5tLuWmwhSZ86uxg=
-github.com/clarkmcc/go-typescript v0.7.0/go.mod h1:IZ/nzoVeydAmyfX7l6Jmp8lJDOEnae3jffoXwP4UyYg=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/cncf/udpa/go v0.0.0-20200629203442-efcf912fb354/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
