@@ -14,7 +14,7 @@ import (
 type AuthenticationService interface {
 	Init(config *model.AppConfig)
 	Authenticate(ctx context.Context, username string, password string, term model.TokenTerm, minimizeToken bool) (*model.Token, error)
-	AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, error)
+	AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm, minimizeToken bool) (*model.Token, error)
 	RenewToken(ctx context.Context, token string, term model.TokenTerm) (*model.Token, error)
 	GetToken(ctx context.Context) (*jwt_model.UserDetails, error)
 	ParseAndVerifyToken(token string) (*jwt_model.UserDetails, error)

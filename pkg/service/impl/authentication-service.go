@@ -57,7 +57,7 @@ func (s *authenticationService) Authenticate(ctx context.Context, username strin
 	return s.prepareToken(systemCtx, term, user, minimizeToken)
 }
 
-func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm) (*model.Token, error) {
+func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context, username string, term model.TokenTerm, minimizeToken bool) (*model.Token, error) {
 	if s.DisableAuthentication {
 		return &model.Token{
 			Term:       term,
@@ -80,7 +80,7 @@ func (s *authenticationService) AuthenticateWithoutPassword(ctx context.Context,
 		return nil, errors.AuthenticationFailedError
 	}
 
-	return s.prepareToken(systemCtx, term, user, false)
+	return s.prepareToken(systemCtx, term, user, minimizeToken)
 }
 
 func (s *authenticationService) GetToken(ctx context.Context) (*jwt_model.UserDetails, error) {
