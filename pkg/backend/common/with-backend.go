@@ -4,9 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/backend/helper"
-	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	log "github.com/sirupsen/logrus"
 )
@@ -14,7 +12,6 @@ import (
 type queryLoggerStruct struct {
 	delegate       helper.QueryRunner
 	dataSourceName string
-	transactionKey string
 }
 
 func (q queryLoggerStruct) logQuery(ctx context.Context, query string, args ...any) {
@@ -32,7 +29,7 @@ func (q queryLoggerStruct) logQuery(ctx context.Context, query string, args ...a
 		argsToPrint = append(argsToPrint, str)
 	}
 
-	logger.Debugf("Log SQL[%s/%s]: %s ; Bind Params: %v", q.dataSourceName, q.transactionKey, query, argsToPrint)
+	logger.Debugf("Log SQL[%s]: %s ; Bind Params: %v", q.dataSourceName, query, argsToPrint)
 }
 
 func (q queryLoggerStruct) QueryRow(query string, args ...any) *sql.Row {
@@ -65,27 +62,12 @@ func (q queryLoggerStruct) QueryContext(ctx context.Context, query string, args 
 	return q.delegate.QueryContext(ctx, query, args...)
 }
 
-func (p *sqlBackend) queryLogger(transactionKey, dataSourceName string, runner helper.QueryRunner) helper.QueryRunner {
-	if transactionKey == "" {
-		transactionKey = "default"
-	}
-	return queryLoggerStruct{transactionKey: transactionKey, dataSourceName: dataSourceName, delegate: runner}
+func (p *sqlBackend) queryLogger(dataSourceName string, runner helper.QueryRunner) helper.QueryRunner {
+	return queryLoggerStruct{dataSourceName: dataSourceName, delegate: runner}
 }
 
 func (p *sqlBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx helper.QueryRunner) error) error {
 	logger := log.WithFields(logging.CtxFields(ctx))
-
-	transactionKey := ctx.Value(abs.TransactionContextKey)
-
-	if transactionKey != nil {
-		txDataInstance := p.transactionMap[transactionKey.(string)]
-
-		if txDataInstance == nil {
-			return errors.LogicalError.WithDetails(fmt.Sprintf("Transaction not found: %s / %s", p.dataSourceName, transactionKey.(string)))
-		}
-
-		return fn(p.queryLogger(transactionKey.(string), p.dataSourceName, txDataInstance.tx))
-	}
 
 	logger.Tracef("begin transaction readonly=%v", readOnly)
 	conn, serviceErr := p.acquireConnection(ctx)
@@ -107,7 +89,7 @@ func (p *sqlBackend) withBackend(ctx context.Context, readOnly bool, fn func(tx 
 		_ = tx.Rollback()
 	}(tx)
 
-	serviceErr = fn(p.queryLogger("", p.dataSourceName, tx))
+	serviceErr = fn(p.queryLogger(p.dataSourceName, tx))
 
 	if serviceErr != nil {
 		logger.Errorf("Rollback: %s", serviceErr)

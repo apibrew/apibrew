@@ -89,7 +89,7 @@ func ValidateResource(resource *model.Resource) error {
 func ValidateResourceProperties(resource *model.Resource, path string, depth int, properties []*model.ResourceProperty, wrapped bool) []*model.ErrorField {
 	var errorFields []*model.ErrorField
 	for i, prop := range properties {
-		if prop.Name == "type" {
+		if depth == 0 && prop.Name == "type" {
 			errorFields = append(errorFields, &model.ErrorField{
 				Property: path + "Name{index:" + strconv.Itoa(i) + "}",
 				Message:  "property name 'type' is reserved",

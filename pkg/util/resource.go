@@ -135,6 +135,16 @@ func NormalizeResource(resource *model.Resource) {
 	if resource.Types == nil {
 		resource.Types = make([]*model.ResourceSubType, 0)
 	}
+
+	for _, prop := range resource.Properties {
+		if prop.Annotations == nil {
+			prop.Annotations = make(map[string]string)
+		}
+
+		if annotations.Get(prop, annotations.SourceMatchKey) == "" {
+			annotations.Set(prop, annotations.SourceMatchKey, RandomHex(6))
+		}
+	}
 }
 
 func HasResourceSinglePrimaryProp(resource *model.Resource) bool {

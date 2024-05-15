@@ -57,9 +57,13 @@ func (p postgreSqlBackendOptions) handlePqErr(err *pq.Error) error {
 	case "28P01":
 		return errors.BackendConnectionAuthenticationError.WithMessage(err.Message).WithDetails(err.Detail)
 	case "23505":
-		return errors.UniqueViolation.WithDetails(err.Message).WithDetails(err.Detail)
+		return errors.UniqueViolation.WithMessage(err.Message).WithDetails(err.Detail)
 	case "23503":
-		return errors.ReferenceViolation.WithDetails(err.Message).WithDetails(err.Detail)
+		return errors.ReferenceViolation.WithMessage(err.Message).WithDetails(err.Detail)
+	case "22P02":
+		return errors.ResourceValidationError.WithMessage(err.Message).WithDetails(err.Detail)
+	case "42846":
+		return errors.ResourceValidationError.WithMessage(err.Message).WithDetails(err.Detail)
 	default:
 		return errors.InternalError.WithMessage(err.Message).WithDetails(err.Detail)
 	}

@@ -2331,32 +2331,6 @@ func (m *EventMapper) ToProperties(event *Event) map[string]*structpb.Value {
 		properties["recordSearchParams"] = var_RecordSearchParams_mapped
 	}
 
-	var_ActionSummary := event.ActionSummary
-
-	if var_ActionSummary != nil {
-		var var_ActionSummary_mapped *structpb.Value
-
-		var var_ActionSummary_err error
-		var_ActionSummary_mapped, var_ActionSummary_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ActionSummary)
-		if var_ActionSummary_err != nil {
-			panic(var_ActionSummary_err)
-		}
-		properties["actionSummary"] = var_ActionSummary_mapped
-	}
-
-	var_ActionDescription := event.ActionDescription
-
-	if var_ActionDescription != nil {
-		var var_ActionDescription_mapped *structpb.Value
-
-		var var_ActionDescription_err error
-		var_ActionDescription_mapped, var_ActionDescription_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ActionDescription)
-		if var_ActionDescription_err != nil {
-			panic(var_ActionDescription_err)
-		}
-		properties["actionDescription"] = var_ActionDescription_mapped
-	}
-
 	var_Resource := event.Resource
 
 	if var_Resource != nil {
@@ -2437,45 +2411,6 @@ func (m *EventMapper) ToProperties(event *Event) map[string]*structpb.Value {
 		properties["total"] = var_Total_mapped
 	}
 
-	var_ActionName := event.ActionName
-
-	if var_ActionName != nil {
-		var var_ActionName_mapped *structpb.Value
-
-		var var_ActionName_err error
-		var_ActionName_mapped, var_ActionName_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_ActionName)
-		if var_ActionName_err != nil {
-			panic(var_ActionName_err)
-		}
-		properties["actionName"] = var_ActionName_mapped
-	}
-
-	var_Input := event.Input
-
-	if var_Input != nil {
-		var var_Input_mapped *structpb.Value
-
-		var var_Input_err error
-		var_Input_mapped, var_Input_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Input)
-		if var_Input_err != nil {
-			panic(var_Input_err)
-		}
-		properties["input"] = var_Input_mapped
-	}
-
-	var_Output := event.Output
-
-	if var_Output != nil {
-		var var_Output_mapped *structpb.Value
-
-		var var_Output_err error
-		var_Output_mapped, var_Output_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Output)
-		if var_Output_err != nil {
-			panic(var_Output_err)
-		}
-		properties["output"] = var_Output_mapped
-	}
-
 	var_Annotations := event.Annotations
 
 	if var_Annotations != nil {
@@ -2541,34 +2476,6 @@ func (m *EventMapper) FromProperties(properties map[string]*structpb.Value) *Eve
 		var_RecordSearchParams_mapped := mappedValue
 
 		s.RecordSearchParams = var_RecordSearchParams_mapped
-	}
-	if properties["actionSummary"] != nil && properties["actionSummary"].AsInterface() != nil {
-
-		var_ActionSummary := properties["actionSummary"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ActionSummary)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_ActionSummary_mapped := new(string)
-		*var_ActionSummary_mapped = val.(string)
-
-		s.ActionSummary = var_ActionSummary_mapped
-	}
-	if properties["actionDescription"] != nil && properties["actionDescription"].AsInterface() != nil {
-
-		var_ActionDescription := properties["actionDescription"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ActionDescription)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_ActionDescription_mapped := new(string)
-		*var_ActionDescription_mapped = val.(string)
-
-		s.ActionDescription = var_ActionDescription_mapped
 	}
 	if properties["resource"] != nil && properties["resource"].AsInterface() != nil {
 
@@ -2647,36 +2554,6 @@ func (m *EventMapper) FromProperties(properties map[string]*structpb.Value) *Eve
 
 		s.Total = var_Total_mapped
 	}
-	if properties["actionName"] != nil && properties["actionName"].AsInterface() != nil {
-
-		var_ActionName := properties["actionName"]
-		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_ActionName)
-
-		if err != nil {
-			panic(err)
-		}
-
-		var_ActionName_mapped := new(string)
-		*var_ActionName_mapped = val.(string)
-
-		s.ActionName = var_ActionName_mapped
-	}
-	if properties["input"] != nil && properties["input"].AsInterface() != nil {
-
-		var_Input := properties["input"]
-		var_Input_mapped := new(interface{})
-		*var_Input_mapped = unstructured.FromValue(var_Input)
-
-		s.Input = var_Input_mapped
-	}
-	if properties["output"] != nil && properties["output"].AsInterface() != nil {
-
-		var_Output := properties["output"]
-		var_Output_mapped := new(interface{})
-		*var_Output_mapped = unstructured.FromValue(var_Output)
-
-		s.Output = var_Output_mapped
-	}
 	if properties["annotations"] != nil && properties["annotations"].AsInterface() != nil {
 
 		var_Annotations := properties["annotations"]
@@ -2733,24 +2610,6 @@ func (m *EventMapper) ToUnstructured(event *Event) unstructured.Unstructured {
 
 		var_RecordSearchParams_mapped = RecordSearchParamsMapperInstance.ToUnstructured(var_RecordSearchParams)
 		properties["recordSearchParams"] = var_RecordSearchParams_mapped
-	}
-
-	var_ActionSummary := event.ActionSummary
-
-	if var_ActionSummary != nil {
-		var var_ActionSummary_mapped interface{}
-
-		var_ActionSummary_mapped = *var_ActionSummary
-		properties["actionSummary"] = var_ActionSummary_mapped
-	}
-
-	var_ActionDescription := event.ActionDescription
-
-	if var_ActionDescription != nil {
-		var var_ActionDescription_mapped interface{}
-
-		var_ActionDescription_mapped = *var_ActionDescription
-		properties["actionDescription"] = var_ActionDescription_mapped
 	}
 
 	var_Resource := event.Resource
@@ -2815,33 +2674,6 @@ func (m *EventMapper) ToUnstructured(event *Event) unstructured.Unstructured {
 
 		var_Total_mapped = *var_Total
 		properties["total"] = var_Total_mapped
-	}
-
-	var_ActionName := event.ActionName
-
-	if var_ActionName != nil {
-		var var_ActionName_mapped interface{}
-
-		var_ActionName_mapped = *var_ActionName
-		properties["actionName"] = var_ActionName_mapped
-	}
-
-	var_Input := event.Input
-
-	if var_Input != nil {
-		var var_Input_mapped interface{}
-
-		var_Input_mapped = var_Input
-		properties["input"] = var_Input_mapped
-	}
-
-	var_Output := event.Output
-
-	if var_Output != nil {
-		var var_Output_mapped interface{}
-
-		var_Output_mapped = var_Output
-		properties["output"] = var_Output_mapped
 	}
 
 	var_Annotations := event.Annotations

@@ -32,6 +32,10 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 				exists = true
 			}
 
+			if packedVal.AsInterface() == nil {
+				packedVal = nil
+			}
+
 			propertyType := types.ByResourcePropertyType(property.Type)
 
 			if packedVal != nil {

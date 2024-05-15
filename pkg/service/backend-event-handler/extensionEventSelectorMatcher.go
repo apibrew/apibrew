@@ -3,6 +3,7 @@ package backend_event_handler
 import (
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -11,6 +12,11 @@ type ExtensionEventSelectorMatcher struct {
 }
 
 func (b *ExtensionEventSelectorMatcher) SelectorMatches(incoming *model.Event, selector *model.EventSelector) bool {
+	if incoming.Shallow && !selector.Shallow {
+		log.Tracef("Event is shallow, but selector is not")
+		return false
+	}
+
 	if selector == nil {
 		return true
 	}

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "target": "es5",
-    "module": "ES6",
+    "module": "ESNext",
     "lib": ["es2017", "es7", "es6"],
     "declaration": true,
     "outDir": "dist",

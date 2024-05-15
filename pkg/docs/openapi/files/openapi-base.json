@@ -442,6 +442,44 @@
         ]
       }
     },
+    "/{resourceActionPath}": {
+      "summary": "{title}",
+      "post": {
+        "description": "Execute {title}",
+        "operationId": "create{schemaName}",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Executed item"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "{title} - Execute",
+        "tags": [
+          "{tag}"
+        ]
+      }
+    },
     "/{resourceRestPath}": {
       "get": {
         "description": "List {title}. This endpoint is used to list all the {title}.",

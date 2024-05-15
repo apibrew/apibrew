@@ -110,7 +110,7 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]*stru
 	var var_Backend_mapped *structpb.Value
 
 	var var_Backend_err error
-	var_Backend_mapped, var_Backend_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Backend))
+	var_Backend_mapped, var_Backend_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Backend)
 	if var_Backend_err != nil {
 		panic(var_Backend_err)
 	}
@@ -207,7 +207,13 @@ func (m *DataSourceMapper) FromProperties(properties map[string]*structpb.Value)
 	if properties["backend"] != nil && properties["backend"].AsInterface() != nil {
 
 		var_Backend := properties["backend"]
-		var_Backend_mapped := (DataSourceBackend)(var_Backend.GetStringValue())
+		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Backend)
+
+		if err != nil {
+			panic(err)
+		}
+
+		var_Backend_mapped := val.(string)
 
 		s.Backend = var_Backend_mapped
 	}
@@ -281,7 +287,7 @@ func (m *DataSourceMapper) ToUnstructured(dataSource *DataSource) unstructured.U
 
 	var var_Backend_mapped interface{}
 
-	var_Backend_mapped = string(var_Backend)
+	var_Backend_mapped = var_Backend
 	properties["backend"] = var_Backend_mapped
 
 	var_Options := dataSource.Options

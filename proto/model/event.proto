@@ -32,8 +32,6 @@ message Event {
     model.Sorting sorting = 10;
   }
   Action action = 2;
-  string actionSummary = 3;
-  string actionDescription = 4;
 
   model.Resource resource = 5;
   /*
@@ -60,9 +58,7 @@ message Event {
   google.protobuf.Timestamp time = 11;
 
   uint64 total = 12;
-  string actionName = 13;
-  google.protobuf.Value input = 14;
-  google.protobuf.Value output = 15;
+  bool shallow = 13;
 
   /*
     Request annotations
@@ -82,6 +78,7 @@ message EventSelector {
   model.BooleanExpression recordSelector = 2;
   repeated string namespaces = 3;
   repeated string resources = 4;
+  bool shallow = 5;
 
   /*
     star means all

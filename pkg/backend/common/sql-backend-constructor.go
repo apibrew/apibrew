@@ -9,16 +9,13 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"google.golang.org/protobuf/types/known/structpb"
-	"sync"
 )
 
 type sqlBackend struct {
 	connection     *sql.DB
-	transactionMap map[string]*txData
 	dataSourceName string
 	options        SqlBackendOptions
 	schema         *abs.Schema
-	mu             sync.Mutex
 }
 
 func (p *sqlBackend) SetSchema(schema *abs.Schema) {
@@ -46,7 +43,6 @@ func NewSqlBackend(dataSource abs.DataSource, options SqlBackendOptions) abs.Bac
 	backend := &sqlBackend{
 		options:        options,
 		dataSourceName: dataSource.GetName(),
-		transactionMap: make(map[string]*txData),
 	}
 
 	options.UseDbHandleError(backend.handleDbError)
