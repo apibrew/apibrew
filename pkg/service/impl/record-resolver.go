@@ -88,6 +88,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 				// get referenced records
 				list, _, err := r.recordService.List(ctx, service.RecordListParams{
+					Limit:     10000,
 					Namespace: prop.Reference.Namespace,
 					Resource:  prop.Reference.Resource,
 					Query: util.QueryInExpression(prop.BackReference.Property, structpb.NewListValue(&structpb.ListValue{
@@ -156,6 +157,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 				}
 
 				list, _, err := r.recordService.List(ctx, service.RecordListParams{
+					Limit:             10000,
 					Namespace:         prop.Reference.Namespace,
 					Resource:          prop.Reference.Resource,
 					Query:             query,
@@ -338,6 +340,7 @@ func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path 
 			}
 
 			_, count, err := r.recordService.List(ctx, service.RecordListParams{
+				Limit:             10000,
 				Namespace:         prop.Reference.Namespace,
 				Resource:          prop.Reference.Resource,
 				Query:             query,
