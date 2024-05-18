@@ -60,7 +60,7 @@ func RunServer(configPath string) {
 
 	app.SetConfig(appConfig)
 
-	app.Init()
+	initSig := app.Init()
 
 	module.RegisterModules(app)
 
@@ -87,6 +87,8 @@ func RunServer(configPath string) {
 	grpcServer.Init()
 	restServer := rest.NewServer(app, appConfig)
 	restServer.Init()
+
+	<-initSig
 
 	go grpcServer.Serve(grpcl)
 	go restServer.ServeHttp(httpl)
