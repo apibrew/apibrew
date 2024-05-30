@@ -3,8 +3,8 @@ module github.com/apibrew/apibrew
 go 1.20
 
 require (
-	github.com/apibrew/metrics v1.0.17
-	github.com/apibrew/nano v1.0.34
+	github.com/apibrew/metrics v1.0.18
+	github.com/apibrew/nano v1.0.36
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.1.0
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/go-redis/redis v6.15.9+incompatible
