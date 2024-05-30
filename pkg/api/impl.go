@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -21,12 +22,12 @@ type api struct {
 }
 
 type InterfaceRecordService interface {
-	Create(ctx context.Context, params service.RecordCreateParams) ([]*model.Record, error)
-	Update(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, error)
-	Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, error)
+	Create(ctx context.Context, params service.RecordCreateParams) ([]abs.RecordLike, error)
+	Update(ctx context.Context, params service.RecordUpdateParams) ([]abs.RecordLike, error)
+	Apply(ctx context.Context, params service.RecordUpdateParams) ([]abs.RecordLike, error)
 	Delete(ctx context.Context, params service.RecordDeleteParams) error
-	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (*model.Record, error)
-	List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error)
+	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (abs.RecordLike, error)
+	List(ctx context.Context, params service.RecordListParams) ([]abs.RecordLike, uint32, error)
 }
 
 type InterfaceResourceService interface {
@@ -68,7 +69,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
 
-	var record *model.Record
+	var record abs.RecordLike
 	record, err2 := unstructured.ToRecord(recordObj)
 
 	if err2 != nil {
@@ -84,7 +85,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		result, err := a.recordService.Create(ctx, service.RecordCreateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
-			Records:   []*model.Record{record},
+			Records:   []abs.RecordLike{record},
 		})
 
 		if err != nil {
@@ -95,7 +96,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		result, err := a.recordService.Update(ctx, service.RecordUpdateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
-			Records:   []*model.Record{record},
+			Records:   []abs.RecordLike{record},
 		})
 
 		if err != nil {
@@ -106,7 +107,7 @@ func (a api) save(ctx context.Context, saveMode SaveMode, recordObj unstructured
 		result, err := a.recordService.Apply(ctx, service.RecordUpdateParams{
 			Namespace: resourceIdentity.Namespace,
 			Resource:  resourceIdentity.Name,
-			Records:   []*model.Record{record},
+			Records:   []abs.RecordLike{record},
 		})
 
 		if err != nil {
@@ -280,7 +281,7 @@ func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructu
 		return nil, errors.ResourceValidationError.WithMessage(err.Error())
 	}
 
-	if err = validate.Records(resources.ResourceResource, []*model.Record{record}, false); err != nil {
+	if err = validate.Records(resources.ResourceResource, []abs.RecordLike{record}, false); err != nil {
 		return nil, errors.ResourceValidationError.WithMessage(err.Error())
 	}
 

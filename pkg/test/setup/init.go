@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/system"
@@ -13,12 +14,9 @@ func prepareInitData() *model.AppConfig {
 		Port:                  17981,
 		DisableAuthentication: false,
 		DisableCache:          true,
-		SystemDataSource:      resource_model.DataSourceMapperInstance.ToRecord(prepareSystemDataSource()),
+		SystemDataSource:      abs.RecordLikeAsRecord(resource_model.DataSourceMapperInstance.ToRecord(prepareSystemDataSource())),
 		InitResources:         prepareInitResources(),
 		InitRecords:           prepareInitRecords(),
-		//ApplyPaths: []string{
-		//	"../../tests/*.yml",
-		//},
 	}
 }
 
@@ -27,14 +25,14 @@ func prepareInitRecords() []*model.InitRecord {
 		{
 			Namespace: resources.NamespaceResource.Namespace,
 			Resource:  resources.NamespaceResource.Name,
-			Record: resource_model.NamespaceMapperInstance.ToRecord(&resource_model.Namespace{
+			Record: abs.RecordLikeAsRecord(resource_model.NamespaceMapperInstance.ToRecord(&resource_model.Namespace{
 				Name: "default",
-			}),
+			})),
 		},
 		{
 			Namespace: resources.RoleResource.Namespace,
 			Resource:  resources.RoleResource.Name,
-			Record: resource_model.RoleMapperInstance.ToRecord(&resource_model.Role{
+			Record: abs.RecordLikeAsRecord(resource_model.RoleMapperInstance.ToRecord(&resource_model.Role{
 				Name: "root",
 				Permissions: []*resource_model.Permission{
 					{
@@ -42,12 +40,12 @@ func prepareInitRecords() []*model.InitRecord {
 						Permit:    resource_model.PermissionPermit_ALLOW,
 					},
 				},
-			}),
+			})),
 		},
 		{
 			Namespace: resources.RoleResource.Namespace,
 			Resource:  resources.RoleResource.Name,
-			Record: resource_model.RoleMapperInstance.ToRecord(&resource_model.Role{
+			Record: abs.RecordLikeAsRecord(resource_model.RoleMapperInstance.ToRecord(&resource_model.Role{
 				Name: "test_user",
 				Permissions: []*resource_model.Permission{
 					{
@@ -69,17 +67,17 @@ func prepareInitRecords() []*model.InitRecord {
 						Permit:    resource_model.PermissionPermit_ALLOW,
 					},
 				},
-			}),
+			})),
 		},
 		{
 			Namespace: resources.DataSourceResource.Namespace,
 			Resource:  resources.DataSourceResource.Name,
-			Record:    resource_model.DataSourceMapperInstance.ToRecord(DefaultDataSource),
+			Record:    abs.RecordLikeAsRecord(resource_model.DataSourceMapperInstance.ToRecord(DefaultDataSource)),
 		},
 		{
 			Namespace: resources.UserResource.Namespace,
 			Resource:  resources.UserResource.Name,
-			Record: resource_model.UserMapperInstance.ToRecord(&resource_model.User{
+			Record: abs.RecordLikeAsRecord(resource_model.UserMapperInstance.ToRecord(&resource_model.User{
 				Username: "admin",
 				Password: strPointer("admin"),
 				Roles: []*resource_model.Role{
@@ -87,12 +85,12 @@ func prepareInitRecords() []*model.InitRecord {
 						Name: "root",
 					},
 				},
-			}),
+			})),
 		},
 		{
 			Namespace: resources.UserResource.Namespace,
 			Resource:  resources.UserResource.Name,
-			Record: resource_model.UserMapperInstance.ToRecord(&resource_model.User{
+			Record: abs.RecordLikeAsRecord(resource_model.UserMapperInstance.ToRecord(&resource_model.User{
 				Username: "dh_test",
 				Password: strPointer("dh_test"),
 				Roles: []*resource_model.Role{
@@ -100,7 +98,7 @@ func prepareInitRecords() []*model.InitRecord {
 						Name: "test_user",
 					},
 				},
-			}),
+			})),
 		},
 	}
 }

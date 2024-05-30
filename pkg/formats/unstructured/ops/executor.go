@@ -3,6 +3,7 @@ package ops
 import (
 	"context"
 	"errors"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/formats/writer"
@@ -28,7 +29,7 @@ type Executor struct {
 	Type                string
 
 	ResourceHandler func(resource *model.Resource) error
-	RecordHandler   func(namespace string, resource string, record *model.Record) error
+	RecordHandler   func(namespace string, resource string, record abs.RecordLike) error
 }
 
 func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
@@ -86,7 +87,7 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 				return err
 			}
 
-			if err = validate.Records(resources2.ResourceResource, []*model.Record{record}, false); err != nil {
+			if err = validate.Records(resources2.ResourceResource, []abs.RecordLike{record}, false); err != nil {
 				return err
 			}
 
@@ -116,18 +117,14 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 				return errors.New("Resource not set: " + namespace + "/" + resourceName)
 			}
 
-			var record = new(model.Record)
-
-			err = unstructured.ToProtoMessage(unstructured.Unstructured{
-				"properties": body,
-			}, record)
+			record, err := unstructured.ToRecord(body)
 
 			if err != nil {
 				return err
 			}
 
 			// fix type BYTES
-			for key, value := range record.Properties {
+			for key, value := range record.GetProperties() {
 				var property = e.resourcePropertyMap[namespace+"/"+resourceName+"/"+key]
 
 				if property == nil {
@@ -150,7 +147,7 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 									return err
 								}
 
-								record.Properties[key] = fileContentStr
+								record.GetProperties()[key] = fileContentStr
 							}
 						}
 					}

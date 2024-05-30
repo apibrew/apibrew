@@ -2,6 +2,7 @@ package unstructured
 
 import (
 	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -69,10 +70,10 @@ func FromProtoMessage(u Unstructured, msg proto.Message) error {
 	return nil
 }
 
-func FromRecord(record *model.Record) (Unstructured, error) {
+func FromRecord(record abs.RecordLike) (Unstructured, error) {
 	var result = new(Unstructured)
 
-	b, err := jsonMo.Marshal(record)
+	b, err := jsonMo.Marshal(abs.RecordLikeAsRecord(record))
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +98,7 @@ var jsonUMo = protojson.UnmarshalOptions{
 	Resolver:       nil,
 }
 
-func ToRecord(u Unstructured) (*model.Record, error) {
+func ToRecord(u Unstructured) (abs.RecordLike, error) {
 	record := &model.Record{}
 	properties, err := ToProperties(u)
 

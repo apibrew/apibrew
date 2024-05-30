@@ -122,8 +122,8 @@ func runNanoCode(ctx context.Context, path string) error {
 		return err
 	}
 
-	if result.Properties["output"] != nil {
-		var output = result.Properties["output"].AsInterface()
+	if result.GetProperties()["output"] != nil {
+		var output = result.GetProperties()["output"].AsInterface()
 
 		data, err := json.Marshal(output)
 

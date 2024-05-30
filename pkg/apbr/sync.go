@@ -52,8 +52,12 @@ var syncCmd = &cobra.Command{
 			if err := syncPull(cmd.Context(), api, configItems, path); err != nil {
 				return err
 			}
+		} else if mode == "push-plan" {
+			if err := syncPush(cmd.Context(), api, configItems, path, false); err != nil {
+				return err
+			}
 		} else if mode == "push" {
-			if err := syncPush(cmd.Context(), api, configItems, path); err != nil {
+			if err := syncPush(cmd.Context(), api, configItems, path, true); err != nil {
 				return err
 			}
 		} else {
@@ -224,9 +228,9 @@ func storeNanoCode(resourcePath string, data unstructured.Unstructured, fileName
 	return nil
 }
 
-func syncPush(ctx context.Context, apiInterface api.Interface, configItems []SyncConfigItem, path string) error {
+func syncPush(ctx context.Context, apiInterface api.Interface, configItems []SyncConfigItem, path string, execute bool) error {
 	for _, item := range configItems {
-		if err := syncPushItem(ctx, apiInterface, item, path); err != nil {
+		if err := syncPushItem(ctx, apiInterface, item, path, execute); err != nil {
 			return err
 		}
 	}
@@ -234,7 +238,7 @@ func syncPush(ctx context.Context, apiInterface api.Interface, configItems []Syn
 	return nil
 }
 
-func syncPushItem(ctx context.Context, apiInterface api.Interface, item SyncConfigItem, path string) error {
+func syncPushItem(ctx context.Context, apiInterface api.Interface, item SyncConfigItem, path string, execute bool) error {
 	return nil
 }
 

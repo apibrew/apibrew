@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -19,12 +20,12 @@ func (l localClient) Watch(ctx context.Context, request *stub.WatchRequest) (stu
 	panic("implement me")
 }
 
-func (l localClient) LoadRecord(ctx context.Context, namespace string, resource string, properties map[string]*structpb.Value, params service.RecordLoadParams) (*model.Record, error) {
+func (l localClient) LoadRecord(ctx context.Context, namespace string, resource string, properties map[string]*structpb.Value, params service.RecordLoadParams) (abs.RecordLike, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l localClient) DeleteRecord(ctx context.Context, namespace string, name string, record *model.Record) error {
+func (l localClient) DeleteRecord(ctx context.Context, namespace string, name string, record abs.RecordLike) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -39,7 +40,7 @@ func (l localClient) UpdateResource(ctx context.Context, resource *model.Resourc
 	panic("implement me")
 }
 
-func (l localClient) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error {
+func (l localClient) ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []abs.RecordLike)) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -67,7 +68,7 @@ func (l localClient) DeleteResource(ctx context.Context, id string, doMigration 
 	panic("implement me")
 }
 
-func (l localClient) ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
+func (l localClient) ListRecords(ctx context.Context, params service.RecordListParams) ([]abs.RecordLike, uint32, error) {
 	return l.container.GetRecordService().List(ctx, params)
 }
 
@@ -75,7 +76,7 @@ func (l localClient) GetResourceByName(ctx context.Context, namespace string, ge
 	return l.container.GetResourceService().GetResourceByName(ctx, namespace, getType)
 }
 
-func (l localClient) ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error {
+func (l localClient) ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan abs.RecordLike) error {
 	panic("Unsupported")
 }
 
@@ -91,11 +92,11 @@ func (l localClient) UpdateTokenFromContext(ctx context.Context) {
 	panic("Unsupported")
 }
 
-func (l localClient) ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (l localClient) ApplyRecord(ctx context.Context, namespace string, resource string, record abs.RecordLike) (abs.RecordLike, error) {
 	resp, err := l.container.GetRecordService().Apply(ctx, service.RecordUpdateParams{
 		Namespace: namespace,
 		Resource:  resource,
-		Records:   []*model.Record{record},
+		Records:   []abs.RecordLike{record},
 	})
 
 	if err != nil {
@@ -105,11 +106,11 @@ func (l localClient) ApplyRecord(ctx context.Context, namespace string, resource
 	return resp[0], err
 }
 
-func (l localClient) CreateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (l localClient) CreateRecord(ctx context.Context, namespace string, resource string, record abs.RecordLike) (abs.RecordLike, error) {
 	resp, err := l.container.GetRecordService().Create(ctx, service.RecordCreateParams{
 		Namespace: namespace,
 		Resource:  resource,
-		Records:   []*model.Record{record},
+		Records:   []abs.RecordLike{record},
 	})
 
 	if err != nil {
@@ -119,11 +120,11 @@ func (l localClient) CreateRecord(ctx context.Context, namespace string, resourc
 	return resp[0], err
 }
 
-func (l localClient) UpdateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error) {
+func (l localClient) UpdateRecord(ctx context.Context, namespace string, resource string, record abs.RecordLike) (abs.RecordLike, error) {
 	resp, err := l.container.GetRecordService().Update(ctx, service.RecordUpdateParams{
 		Namespace: namespace,
 		Resource:  resource,
-		Records:   []*model.Record{record},
+		Records:   []abs.RecordLike{record},
 	})
 
 	if err != nil {
@@ -133,7 +134,7 @@ func (l localClient) UpdateRecord(ctx context.Context, namespace string, resourc
 	return resp[0], err
 }
 
-func (l localClient) GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error) {
+func (l localClient) GetRecord(ctx context.Context, namespace string, resource string, id string) (abs.RecordLike, error) {
 	return l.container.GetRecordService().Get(ctx, service.RecordGetParams{
 		Namespace: namespace,
 		Resource:  resource,
@@ -141,7 +142,7 @@ func (l localClient) GetRecord(ctx context.Context, namespace string, resource s
 	})
 }
 
-func (l localClient) FindRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
+func (l localClient) FindRecords(ctx context.Context, params service.RecordListParams) ([]abs.RecordLike, uint32, error) {
 	return l.container.GetRecordService().List(ctx, params)
 }
 

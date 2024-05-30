@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -17,12 +17,12 @@ func TestNanoPersonCreate(t *testing.T) {
 		return
 	}
 
-	record1 := new(model.Record)
+	record1 := abs.NewRecordLike()
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"firstName": "Taleh",
 	})
 
-	record1.Properties = st.GetFields()
+	abs.UpdateRecordsProperties(record1, st.GetFields())
 
 	if err != nil {
 		t.Error(err)
@@ -31,7 +31,7 @@ func TestNanoPersonCreate(t *testing.T) {
 
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "Person",
-		Records:  []*model.Record{record1},
+		Records:  abs.RecordLikeAsRecords([]abs.RecordLike{record1}),
 	})
 
 	if err != nil {
@@ -59,12 +59,12 @@ func TestNanoPersonPreventDelete(t *testing.T) {
 		return
 	}
 
-	record1 := new(model.Record)
+	record1 := abs.NewRecordLike()
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"firstName": "PreventDelete",
 	})
 
-	record1.Properties = st.GetFields()
+	abs.UpdateRecordsProperties(record1, st.GetFields())
 
 	if err != nil {
 		t.Error(err)
@@ -73,7 +73,7 @@ func TestNanoPersonPreventDelete(t *testing.T) {
 
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "Person",
-		Records:  []*model.Record{record1},
+		Records:  abs.RecordLikeAsRecords([]abs.RecordLike{record1}),
 	})
 
 	if err != nil {
@@ -93,12 +93,12 @@ func TestPersonBindCreate(t *testing.T) {
 		return
 	}
 
-	record1 := new(model.Record)
+	record1 := abs.NewRecordLike()
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"name": "Taleh Ibrahimli",
 	})
 
-	record1.Properties = st.GetFields()
+	abs.UpdateRecordsProperties(record1, st.GetFields())
 
 	if err != nil {
 		t.Error(err)
@@ -107,7 +107,7 @@ func TestPersonBindCreate(t *testing.T) {
 
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "Human",
-		Records:  []*model.Record{record1},
+		Records:  abs.RecordLikeAsRecords([]abs.RecordLike{record1}),
 	})
 
 	if err != nil {
@@ -136,12 +136,12 @@ func TestPersonBindUpdate(t *testing.T) {
 		return
 	}
 
-	record1 := new(model.Record)
+	record1 := abs.NewRecordLike()
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"name": "Taleh Ibrahimli",
 	})
 
-	record1.Properties = st.GetFields()
+	abs.UpdateRecordsProperties(record1, st.GetFields())
 
 	if err != nil {
 		t.Error(err)
@@ -150,7 +150,7 @@ func TestPersonBindUpdate(t *testing.T) {
 
 	resp1, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "Human",
-		Records:  []*model.Record{record1},
+		Records:  abs.RecordLikeAsRecords([]abs.RecordLike{record1}),
 	})
 
 	if err != nil {
@@ -158,22 +158,22 @@ func TestPersonBindUpdate(t *testing.T) {
 		return
 	}
 
-	record2 := new(model.Record)
+	record2 := abs.NewRecordLike()
 	st2, err := structpb.NewStruct(map[string]interface{}{
 		"id":   util.GetRecordId(resp1.Record),
 		"name": "Talehx Ibrahimlix",
 	})
 
-	record2.Properties = st2.GetFields()
-
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
+	abs.UpdateRecordsProperties(record2, st2.GetFields())
+
 	res2, err := recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Resource: "Human",
-		Records:  []*model.Record{record2},
+		Records:  abs.RecordLikeAsRecords([]abs.RecordLike{record2}),
 	})
 
 	if err != nil {

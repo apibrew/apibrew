@@ -51,8 +51,6 @@ type recordLister struct {
 	ResolveReferences []string
 	logger            *log.Entry
 	builder           *sqlbuilder.SelectBuilder
-	resultChan        chan<- *model.Record
-	packRecords       bool
 	backend           *sqlBackend
 	aggregation       *model.Aggregation
 	sorting           *model.Sorting
@@ -89,7 +87,7 @@ func (r *recordLister) Prepare() error {
 		r.Limit = 100
 	}
 
-	if r.Limit > 10000 && r.resultChan == nil {
+	if r.Limit > 10000 {
 		r.Limit = 10000
 	}
 
@@ -207,7 +205,7 @@ func (r *recordLister) prepareSorting() error {
 	return nil
 }
 
-func (r *recordLister) Exec() (result []*model.Record, total uint32, err error) {
+func (r *recordLister) Exec() (result []abs.RecordLike, total uint32, err error) {
 	if err := r.Prepare(); err != nil {
 		return nil, 0, err
 	}
@@ -259,28 +257,14 @@ func (r *recordLister) Exec() (result []*model.Record, total uint32, err error) 
 		default:
 		}
 
-		record := new(model.Record)
+		record := abs.NewRecordLike()
 
 		err = r.scanRecord(record, rows)
 		if err != nil {
 			return
 		}
 
-		if r.resultChan != nil {
-			r.resultChan <- record
-		} else {
-			result = append(result, record)
-		}
-
-		if r.packRecords {
-			for _, prop := range r.resource.Properties {
-				if helper.IsPropertyOmitted(prop) {
-					continue
-				}
-				record.PropertiesPacked = append(record.PropertiesPacked, record.Properties[prop.Name])
-			}
-			record.Properties = nil
-		}
+		result = append(result, record)
 	}
 
 	return
@@ -354,7 +338,7 @@ func (r *recordLister) quote(path string) string {
 	return r.backend.options.Quote(path)
 }
 
-func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) error {
+func (r *recordLister) scanRecord(record abs.RecordLike, rows *sql.Rows) error {
 	var rowScanFields []any
 	var propertyPointers = make(map[string]interface{})
 
@@ -386,12 +370,12 @@ func (r *recordLister) scanRecord(record *model.Record, rows *sql.Rows) error {
 		return r.backend.handleDbError(r.ctx, err)
 	}
 
-	var serviceErr error
-
-	record.Properties, serviceErr = r.mapRecordProperties(util.GetRecordId(record), r.resource, "t_", propertyPointers)
+	properties, serviceErr := r.mapRecordProperties(util.GetRecordId(record), r.resource, "t_", propertyPointers)
 	if serviceErr != nil {
 		return serviceErr
 	}
+
+	abs.UpdateRecordsProperties(record, properties)
 
 	return nil
 }
@@ -740,7 +724,7 @@ func (r *recordLister) prepareCols() []string {
 	return cols
 }
 
-func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) (result []*model.Record, total uint32, err error) {
+func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, params abs.ListRecordParams) (result []abs.RecordLike, total uint32, err error) {
 	return (&recordLister{
 		ctx:               ctx,
 		runner:            runner,
@@ -751,7 +735,6 @@ func (p *sqlBackend) recordList(ctx context.Context, runner helper.QueryRunner, 
 		Limit:             params.Limit,
 		Offset:            params.Offset,
 		ResolveReferences: params.ResolveReferences,
-		resultChan:        resultChan,
 		backend:           p,
 	}).Exec()
 }

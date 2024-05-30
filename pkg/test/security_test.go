@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -18,11 +19,11 @@ func TestDhTestUserCannotCreateUser(t *testing.T) {
 	record, err := recordClient.Apply(userDhTestCtx, &stub.ApplyRecordRequest{
 		Namespace: resources.UserResource.Namespace,
 		Resource:  resources.UserResource.Name,
-		Records: []*model.Record{
+		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
 			resource_model.UserMapperInstance.ToRecord(&resource_model.User{
 				Username: "test123",
 			}),
-		},
+		}),
 	})
 
 	if record != nil && record.Records != nil && len(record.Records) > 0 {

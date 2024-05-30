@@ -18,7 +18,7 @@ import (
 	"strings"
 )
 
-func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []*model.Record, ignoreIfExists bool, schema *abs.Schema) error {
+func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, records []abs.RecordLike, ignoreIfExists bool, schema *abs.Schema) error {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	query := fmt.Sprintf("INSERT INTO %s", p.getFullTableName(resource.SourceConfig))
@@ -34,7 +34,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 		var row []string
 
 		for _, property := range resource.Properties {
-			packedVal, exists := record.Properties[property.Name]
+			packedVal, exists := record.GetProperties()[property.Name]
 
 			if helper.IsPropertyOmitted(property) {
 				continue
@@ -158,8 +158,8 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 	}
 }
 
-func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record *model.Record, argPlaceHolder func(value interface{}) string) (string, error) {
-	identifierProps, err := util.RecordIdentifierProperties(resource, record.Properties)
+func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record abs.RecordLike, argPlaceHolder func(value interface{}) string) (string, error) {
+	identifierProps, err := util.RecordIdentifierProperties(resource, record.GetProperties())
 	namedProps := util.GetNamedMap(resource.Properties)
 	if util.HasResourceSinglePrimaryProp(resource) {
 		idProp := util.GetResourceSinglePrimaryProp(resource)
@@ -201,7 +201,7 @@ func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record *
 	}
 }
 
-func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, record *model.Record, checkVersion bool, schema *abs.Schema) error {
+func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, record abs.RecordLike, checkVersion bool, schema *abs.Schema) error {
 	updateBuilder := sqlbuilder.Update(p.getFullTableName(resource.SourceConfig))
 	updateBuilder.SetFlavor(p.options.GetFlavor())
 
@@ -227,7 +227,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			continue
 		}
 
-		packedVal, exists := record.Properties[property.Name]
+		packedVal, exists := record.GetProperties()[property.Name]
 
 		if !exists {
 			continue
@@ -286,7 +286,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 	return nil
 }
 
-func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, id string, resolveReferences []string) (*model.Record, error) {
+func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, resource *model.Resource, id string, resolveReferences []string) (abs.RecordLike, error) {
 	list, total, err := p.recordList(ctx, runner, resource, abs.ListRecordParams{
 		Query: &model.BooleanExpression{
 			Expression: &model.BooleanExpression_Equal{
@@ -299,7 +299,7 @@ func (p *sqlBackend) readRecord(ctx context.Context, runner helper.QueryRunner, 
 		Limit:             1,
 		Offset:            0,
 		ResolveReferences: resolveReferences,
-	}, nil)
+	})
 
 	if err != nil {
 		return nil, err

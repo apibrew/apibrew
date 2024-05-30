@@ -40,7 +40,7 @@ func EventToProto(result *resource_model.Event) *model.Event {
 	}
 	event.Records = util.ArrayMapX(result.Records, func(t *resource_model.Record) *model.Record {
 		return &model.Record{
-			Properties: resource_model.RecordMapperInstance.ToRecord(t).Properties["properties"].GetStructValue().Fields,
+			Properties: resource_model.RecordMapperInstance.ToRecord(t).GetProperties()["properties"].GetStructValue().Fields,
 		}
 	})
 
@@ -83,8 +83,8 @@ func EventFromProto(event *model.Event) *resource_model.Event {
 	extensionEvent.Records = util.ArrayMapX(event.Records, func(item *model.Record) *resource_model.Record {
 		return resource_model.RecordMapperInstance.FromRecord(&model.Record{
 			Properties: map[string]*structpb.Value{
-				"id":         item.Properties["id"],
-				"properties": structpb.NewStructValue(&structpb.Struct{Fields: item.Properties}),
+				"id":         item.GetProperties()["id"],
+				"properties": structpb.NewStructValue(&structpb.Struct{Fields: item.GetProperties()}),
 			},
 		})
 	})

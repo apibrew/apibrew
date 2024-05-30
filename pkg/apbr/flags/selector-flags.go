@@ -3,6 +3,7 @@ package flags
 import (
 	"context"
 	"errors"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -138,7 +139,7 @@ func parseFilter(filter string) (string, string) {
 type SelectedRecordData struct {
 	Total    uint32
 	Resource *model.Resource
-	Records  []*model.Record
+	Records  []abs.RecordLike
 }
 
 type SelectedRecordsResult struct {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -254,7 +255,7 @@ func (s *authenticationService) collectUserPermissions(ctx context.Context, user
 
 	var userRecord = resource_model.UserMapperInstance.ToRecord(user)
 
-	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []*model.Record{userRecord}, []string{
+	err := s.recordService.ResolveReferences(ctx, resources.UserResource, []abs.RecordLike{userRecord}, []string{
 		"$.roles[]",
 		"$.permissions[]",
 		"$.permissions[].namespace",

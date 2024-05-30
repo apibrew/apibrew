@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"encoding/json"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/ext"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
@@ -19,15 +20,15 @@ import (
 	"testing"
 )
 
-var simpleVirtualResourceRecords = []*model.Record{
-	{
+var simpleVirtualResourceRecords = []abs.RecordLike{
+	&model.Record{
 		Properties: map[string]*structpb.Value{
 			"id":          structpb.NewStringValue("5429846c-a309-11ed-a8fc-0242ac120002"),
 			"name":        structpb.NewStringValue("rec-1"),
 			"description": structpb.NewStringValue("rec-1-desc"),
 		},
 	},
-	{
+	&model.Record{
 		Properties: map[string]*structpb.Value{
 			"id":          structpb.NewStringValue("54298994-a309-11ed-a8fc-0242ac120002"),
 			"name":        structpb.NewStringValue("rec-2"),
@@ -64,7 +65,7 @@ func (t TestFunctionBackend) FunctionCall(ctx context.Context, request *ext.Func
 	log.Println(request.Event)
 
 	event := request.Event
-	event.Records = simpleVirtualResourceRecords
+	event.Records = abs.RecordLikeAsRecords(simpleVirtualResourceRecords)
 	event.Total = uint64(len(simpleVirtualResourceRecords))
 
 	return &ext.FunctionCallResponse{
@@ -187,22 +188,22 @@ func TestListResourceWithFunctionCallExtension(t *testing.T) {
 		return
 	}
 
-	if resp.Content[0].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[0].Properties["name"].GetStringValue() {
+	if resp.Content[0].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[0].GetProperties()["name"].GetStringValue() {
 		t.Error("record[0].name does not match")
 		return
 	}
 
-	if resp.Content[1].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[1].Properties["name"].GetStringValue() {
+	if resp.Content[1].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[1].GetProperties()["name"].GetStringValue() {
 		t.Error("record[1].name does not match")
 		return
 	}
 
-	if resp.Content[0].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[0].Properties["description"].GetStringValue() {
+	if resp.Content[0].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[0].GetProperties()["description"].GetStringValue() {
 		t.Error("record[0].description does not match")
 		return
 	}
 
-	if resp.Content[1].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[1].Properties["description"].GetStringValue() {
+	if resp.Content[1].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[1].GetProperties()["description"].GetStringValue() {
 		t.Error("record[1].description does not match")
 		return
 	}
@@ -260,22 +261,22 @@ func TestListResourceWithHttpExtension(t *testing.T) {
 		return
 	}
 
-	if resp.Content[0].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[0].Properties["name"].GetStringValue() {
+	if resp.Content[0].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[0].GetProperties()["name"].GetStringValue() {
 		t.Error("record[0].name does not match")
 		return
 	}
 
-	if resp.Content[1].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[1].Properties["name"].GetStringValue() {
+	if resp.Content[1].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[1].GetProperties()["name"].GetStringValue() {
 		t.Error("record[1].name does not match")
 		return
 	}
 
-	if resp.Content[0].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[0].Properties["description"].GetStringValue() {
+	if resp.Content[0].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[0].GetProperties()["description"].GetStringValue() {
 		t.Error("record[0].description does not match")
 		return
 	}
 
-	if resp.Content[1].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[1].Properties["description"].GetStringValue() {
+	if resp.Content[1].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[1].GetProperties()["description"].GetStringValue() {
 		t.Error("record[1].description does not match")
 		return
 	}

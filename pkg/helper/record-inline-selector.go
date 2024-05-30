@@ -2,6 +2,7 @@ package helper
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -13,8 +14,8 @@ import (
 type RecordInlineSelector struct {
 }
 
-func (s RecordInlineSelector) SelectRecords(ctx context.Context, resource *model.Resource, records *[]*model.Record, selector *resource_model.BooleanExpression) ([]*model.Record, error) {
-	var result []*model.Record
+func (s RecordInlineSelector) SelectRecords(ctx context.Context, resource *model.Resource, records *[]abs.RecordLike, selector *resource_model.BooleanExpression) ([]abs.RecordLike, error) {
+	var result []abs.RecordLike
 
 	for _, record := range *records {
 		ok, err := s.EvaluateRecord(ctx, resource, record, selector)
@@ -29,7 +30,7 @@ func (s RecordInlineSelector) SelectRecords(ctx context.Context, resource *model
 	return result, nil
 }
 
-func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *model.Resource, record *model.Record, selector *resource_model.BooleanExpression) (bool, error) {
+func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *model.Resource, record abs.RecordLike, selector *resource_model.BooleanExpression) (bool, error) {
 	if selector.And != nil {
 		for _, expression := range selector.And {
 			if ok, err := s.EvaluateRecord(ctx, resource, record, &expression); !ok || err != nil {
@@ -75,7 +76,7 @@ func (s RecordInlineSelector) EvaluateRecord(ctx context.Context, resource *mode
 	return false, errors.UnsupportedOperation.WithDetails("Unknown boolean expression")
 }
 
-func (s RecordInlineSelector) resolve(resource *model.Resource, record *model.Record, than *resource_model.PairExpression) (unstructured.Any, unstructured.Any, *model.ResourceProperty, error) {
+func (s RecordInlineSelector) resolve(resource *model.Resource, record abs.RecordLike, than *resource_model.PairExpression) (unstructured.Any, unstructured.Any, *model.ResourceProperty, error) {
 	namedProps := util.GetNamedMap(resource.Properties)
 
 	var left unstructured.Any
@@ -89,7 +90,7 @@ func (s RecordInlineSelector) resolve(resource *model.Resource, record *model.Re
 			return nil, nil, nil, errors.PropertyNotFoundError.WithDetails("Property not found: " + *than.Left.Property)
 		}
 
-		left = unstructured.FromValue(record.Properties[*than.Left.Property])
+		left = unstructured.FromValue(record.GetProperties()[*than.Left.Property])
 	} else {
 		left = than.Left.Value
 	}
@@ -101,7 +102,7 @@ func (s RecordInlineSelector) resolve(resource *model.Resource, record *model.Re
 			return nil, nil, nil, errors.PropertyNotFoundError.WithDetails("Property not found: " + *than.Left.Property)
 		}
 
-		right = unstructured.FromValue(record.Properties[*than.Right.Property])
+		right = unstructured.FromValue(record.GetProperties()[*than.Right.Property])
 	} else {
 		right = than.Right.Value
 	}

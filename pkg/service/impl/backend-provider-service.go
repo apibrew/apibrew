@@ -101,7 +101,7 @@ func (b *backendProviderService) getBackendByDataSourceName(ctx context.Context,
 		records, _, err := b.getSystemBackend(ctx).ListRecords(systemCtx, resources.DataSourceResource, abs.ListRecordParams{
 			Query: query,
 			Limit: 1,
-		}, nil)
+		})
 
 		if err != nil {
 			return nil, err
@@ -195,15 +195,15 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 
 	switch event.Action {
 	case model.Event_CREATE:
-		result, err := bck.AddRecords(ctx, event.Resource, event.Records)
+		result, err := bck.AddRecords(ctx, event.Resource, abs.RecordLikeAsRecords2(event.Records))
 
-		event.Records = result
+		event.Records = abs.RecordLikeAsRecords(result)
 
 		return event, err
 	case model.Event_UPDATE:
-		result, err := bck.UpdateRecords(ctx, event.Resource, event.Records)
+		result, err := bck.UpdateRecords(ctx, event.Resource, abs.RecordLikeAsRecords2(event.Records))
 
-		event.Records = result
+		event.Records = abs.RecordLikeAsRecords(result)
 
 		return event, err
 	case model.Event_GET:
@@ -214,12 +214,12 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 				return nil, err
 			}
 
-			event.Records[i] = result
+			event.Records[i] = abs.RecordLikeAsRecord(result)
 		}
 
 		return event, err
 	case model.Event_DELETE:
-		err = bck.DeleteRecords(ctx, event.Resource, event.Records)
+		err = bck.DeleteRecords(ctx, event.Resource, abs.RecordLikeAsRecords2(event.Records))
 		return event, err
 	case model.Event_LIST:
 		result, total, err := bck.ListRecords(ctx, event.Resource, abs.ListRecordParams{
@@ -229,9 +229,9 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 			ResolveReferences: event.RecordSearchParams.ResolveReferences,
 			Aggregation:       event.RecordSearchParams.Aggregation,
 			Sorting:           event.RecordSearchParams.Sorting,
-		}, nil)
+		})
 
-		event.Records = result
+		event.Records = abs.RecordLikeAsRecords(result)
 		event.Total = uint64(total)
 
 		return event, err

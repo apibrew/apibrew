@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service/backend-event-handler"
@@ -39,7 +40,7 @@ func (h *userHandler) BeforeCreate(ctx context.Context, event *model.Event) (*mo
 
 func (h *userHandler) AfterList(ctx context.Context, event *model.Event) (*model.Event, error) {
 	if !util.IsSystemContext(ctx) {
-		h.cleanPasswords(event.Records)
+		h.cleanPasswords(abs.RecordLikeAsRecords2(event.Records))
 	}
 
 	return event, nil
@@ -47,7 +48,7 @@ func (h *userHandler) AfterList(ctx context.Context, event *model.Event) (*model
 
 func (h *userHandler) AfterCreate(ctx context.Context, event *model.Event) (*model.Event, error) {
 	if !util.IsSystemContext(ctx) {
-		h.cleanPasswords(event.Records)
+		h.cleanPasswords(abs.RecordLikeAsRecords2(event.Records))
 	}
 
 	return event, nil
@@ -71,7 +72,7 @@ func (h *userHandler) BeforeUpdate(ctx context.Context, event *model.Event) (*mo
 
 func (h *userHandler) AfterUpdate(ctx context.Context, event *model.Event) (*model.Event, error) {
 	if !util.IsSystemContext(ctx) {
-		h.cleanPasswords(event.Records)
+		h.cleanPasswords(abs.RecordLikeAsRecords2(event.Records))
 	}
 
 	return event, nil
@@ -83,14 +84,14 @@ func (h *userHandler) AfterGet(ctx context.Context, event *model.Event) (*model.
 	}
 
 	if !util.IsSystemContext(ctx) {
-		h.cleanPasswords([]*model.Record{event.Records[0]})
+		h.cleanPasswords([]abs.RecordLike{event.Records[0]})
 	}
 
 	return event, nil
 }
 
-func (h *userHandler) cleanPasswords(users []*model.Record) {
+func (h *userHandler) cleanPasswords(users []abs.RecordLike) {
 	for _, user := range users {
-		delete(user.Properties, "password")
+		delete(user.GetProperties(), "password")
 	}
 }

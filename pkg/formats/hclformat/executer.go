@@ -190,7 +190,7 @@ func (e *executor) ApplyBlock(ctx context.Context, block *hcl.Block) error {
 	return errors.New("Unknown block: " + block.Type)
 }
 
-func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource, parseLabels bool) (*model.Record, error) {
+func (e *executor) parseBlockToRecord(block *hcl.Block, resource *model.Resource, parseLabels bool) (abs.RecordLike, error) {
 	var record = &model.Record{
 		Properties: make(map[string]*structpb.Value),
 	}

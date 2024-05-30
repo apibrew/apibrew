@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/types"
@@ -10,29 +11,29 @@ import (
 	"unicode"
 )
 
-func CheckTwoRecordEquals(t *testing.T, resource *model.Resource, a *model.Record, b *model.Record) {
+func CheckTwoRecordEquals(t *testing.T, resource *model.Resource, a abs.RecordLike, b abs.RecordLike) {
 	for _, prop := range resource.Properties {
 		if annotations.IsEnabled(prop, annotations.SpecialProperty) {
 			continue
 		}
 
-		if (a.Properties[prop.Name] != nil) != (b.Properties[prop.Name] != nil) {
-			t.Errorf("[%s]; different: %v <=> %v", prop.Name, a.Properties[prop.Name], b.Properties[prop.Name])
+		if (a.GetProperties()[prop.Name] != nil) != (b.GetProperties()[prop.Name] != nil) {
+			t.Errorf("[%s]; different: %v <=> %v", prop.Name, a.GetProperties()[prop.Name], b.GetProperties()[prop.Name])
 		}
 
-		if (a.Properties[prop.Name] == nil) && (b.Properties[prop.Name] == nil) {
+		if (a.GetProperties()[prop.Name] == nil) && (b.GetProperties()[prop.Name] == nil) {
 			continue
 		}
 
 		typeHelper := types.ByResourcePropertyType(prop.Type)
 
-		va, err := typeHelper.UnPack(a.Properties[prop.Name])
+		va, err := typeHelper.UnPack(a.GetProperties()[prop.Name])
 
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		vb, err := typeHelper.UnPack(b.Properties[prop.Name])
+		vb, err := typeHelper.UnPack(b.GetProperties()[prop.Name])
 
 		if err != nil {
 			t.Error(err)

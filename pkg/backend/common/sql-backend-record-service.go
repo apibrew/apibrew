@@ -14,12 +14,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (p *sqlBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) (result []*model.Record, total uint32, err error) {
+func (p *sqlBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams) (result []abs.RecordLike, total uint32, err error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	logger.Tracef("Begin listing: %s/%s", resource.Namespace, resource.Name)
 	err = p.withBackend(ctx, true, func(tx helper.QueryRunner) error {
-		result, total, err = p.recordList(ctx, tx, resource, params, resultChan)
+		result, total, err = p.recordList(ctx, tx, resource, params)
 
 		return err
 	})
@@ -28,7 +28,7 @@ func (p *sqlBackend) ListRecords(ctx context.Context, resource *model.Resource, 
 	return
 }
 
-func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error) {
+func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
 	logger := log.WithFields(logging.CtxFields(ctx))
 
 	var err error
@@ -71,7 +71,7 @@ func (p *sqlBackend) AddRecords(ctx context.Context, resource *model.Resource, r
 	return records, nil
 }
 
-func (p *sqlBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error) {
+func (p *sqlBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
 	err := p.withBackend(ctx, false, func(tx helper.QueryRunner) error {
 		for _, record := range records {
 			err := p.recordUpdate(ctx, tx, resource, record, annotations.IsEnabledOnCtx(ctx, annotations.CheckVersion), p.schema)
@@ -91,8 +91,8 @@ func (p *sqlBackend) UpdateRecords(ctx context.Context, resource *model.Resource
 	return records, nil
 }
 
-func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, error) {
-	var record *model.Record = nil
+func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (abs.RecordLike, error) {
+	var record abs.RecordLike = nil
 	err := p.withBackend(ctx, true, func(tx helper.QueryRunner) error {
 		var err error
 		record, err = p.readRecord(ctx, tx, resource, id, resolveReferences)
@@ -111,8 +111,8 @@ func (p *sqlBackend) GetRecord(ctx context.Context, resource *model.Resource, id
 	return record, err
 }
 
-func (p *sqlBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []*model.Record) error {
-	var ids = util.ArrayMap(records, func(record *model.Record) string {
+func (p *sqlBackend) DeleteRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) error {
+	var ids = util.ArrayMap(records, func(record abs.RecordLike) string {
 		return util.GetRecordId(record)
 	})
 	logger := log.WithFields(logging.CtxFields(ctx))

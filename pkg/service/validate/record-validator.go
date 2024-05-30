@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) error {
+func Records(resource abs.ResourceLike, list []abs.RecordLike, isUpdate bool) error {
 	var fieldErrors []*model.ErrorField
 
 	var resourcePropertyExists = make(map[string]bool)
@@ -25,7 +25,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 	for _, record := range list {
 		for _, property := range resource.GetProperties() {
 
-			packedVal, exists := record.Properties[property.Name]
+			packedVal, exists := record.GetProperties()[property.Name]
 
 			if !exists && property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
 				packedVal = property.DefaultValue
@@ -55,7 +55,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "wrong type: " + err.Error(),
-						Value:    record.Properties[property.Name],
+						Value:    record.GetProperties()[property.Name],
 					})
 					continue
 				}
@@ -69,7 +69,7 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "required",
-						Value:    record.Properties[property.Name],
+						Value:    record.GetProperties()[property.Name],
 					})
 				}
 
@@ -78,13 +78,13 @@ func Records(resource abs.ResourceLike, list []*model.Record, isUpdate bool) err
 						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "required",
-						Value:    record.Properties[property.Name],
+						Value:    record.GetProperties()[property.Name],
 					})
 				}
 			}
 		}
 
-		for key := range record.Properties {
+		for key := range record.GetProperties() {
 			if key == "type" {
 				continue
 			}

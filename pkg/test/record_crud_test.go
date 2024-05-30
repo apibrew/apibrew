@@ -1,6 +1,7 @@
 package test
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
@@ -13,11 +14,11 @@ import (
 )
 
 func TestComplexPayload1Fail(t *testing.T) {
-	record1 := new(model.Record)
+	record1 := abs.NewRecordLike()
 
 	_, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: setup.RichResource1.Name,
-		Records:  []*model.Record{record1},
+		Records:  abs.RecordLikeAsRecords([]abs.RecordLike{record1}),
 	})
 
 	if err == nil {
@@ -37,7 +38,7 @@ func TestComplexPayload1Fail(t *testing.T) {
 }
 
 func TestComplexPayload1Success(t *testing.T) {
-	record1 := new(model.Record)
+	record1 := abs.NewRecordLike()
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"bool":   true,
 		"bytes":  "YXNk",
@@ -56,7 +57,7 @@ func TestComplexPayload1Success(t *testing.T) {
 		"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
 	})
 
-	record1.Properties = st.GetFields()
+	abs.UpdateRecordsProperties(record1, st.GetFields())
 
 	if err != nil {
 		t.Error(err)
@@ -65,7 +66,7 @@ func TestComplexPayload1Success(t *testing.T) {
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Token:    "",
 		Resource: setup.RichResource1.Name,
-		Records:  []*model.Record{record1},
+		Records:  abs.RecordLikeAsRecords([]abs.RecordLike{record1}),
 	})
 
 	if err != nil {
@@ -85,7 +86,7 @@ func TestComplexPayload1Success(t *testing.T) {
 
 	for _, property := range setup.RichResource1.Properties {
 		propertyType := types.ByResourcePropertyType(property.Type)
-		val1, _ := propertyType.UnPack(record1.Properties[property.Name])
+		val1, _ := propertyType.UnPack(record1.GetProperties()[property.Name])
 		val2, _ := propertyType.UnPack(getRes.Record.Properties[property.Name])
 
 		if !propertyType.Equals(val1, val2) {
@@ -97,7 +98,7 @@ func TestComplexPayload1Success(t *testing.T) {
 
 func TestComplexPayload1Success1(t *testing.T) {
 
-	record1 := new(model.Record)
+	record1 := abs.NewRecordLike()
 	st, err := structpb.NewStruct(map[string]interface{}{
 		"bool":   true,
 		"bytes":  "YXNk",
@@ -116,7 +117,7 @@ func TestComplexPayload1Success1(t *testing.T) {
 		"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
 	})
 
-	record1.Properties = st.GetFields()
+	abs.UpdateRecordsProperties(record1, st.GetFields())
 
 	if err != nil {
 		t.Error(err)

@@ -2,9 +2,9 @@ package api
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 )
 
@@ -12,8 +12,8 @@ type Entity interface {
 }
 
 type Mapper[T Entity] interface {
-	ToRecord(user T) *model.Record
-	FromRecord(record *model.Record) T
+	ToRecord(user T) abs.RecordLike
+	FromRecord(record abs.RecordLike) T
 	ToUnstructured(user T) unstructured.Unstructured
 }
 

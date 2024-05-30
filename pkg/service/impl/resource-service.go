@@ -165,9 +165,9 @@ func (r *resourceService) reloadSchema(ctx context.Context) error {
 			"dataSource",
 			"namespace",
 		},
-	}, nil)
+	})
 
-	r.schema.Resources = mapping.MapFromRecord(records, mapping.ResourceFromRecord)
+	r.schema.Resources = mapping.MapFromRecord(abs.RecordLikeAsRecords(records), mapping.ResourceFromRecord)
 
 	if err != nil {
 		return err
@@ -175,10 +175,6 @@ func (r *resourceService) reloadSchema(ctx context.Context) error {
 
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
 	r.prepareSchemaMappings()
-
-	if err != nil {
-		return err
-	}
 
 	if log.GetLevel() == log.TraceLevel {
 		// trace all resources
@@ -247,8 +243,8 @@ func (r *resourceService) Update(ctx context.Context, resource *model.Resource, 
 		return err
 	}
 
-	resourceRecords := []*model.Record{mapping.ResourceToRecord(resource)}
-	existingResourceRecords := []*model.Record{mapping.ResourceToRecord(existingResource)}
+	resourceRecords := []abs.RecordLike{mapping.ResourceToRecord(resource)}
+	existingResourceRecords := []abs.RecordLike{mapping.ResourceToRecord(existingResource)}
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
@@ -376,7 +372,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 		Resource:  resources.ResourceResource,
-		Records:   &[]*model.Record{resourceRecord},
+		Records:   &[]abs.RecordLike{resourceRecord},
 		Operation: resource_model.PermissionOperation_CREATE,
 	}); err != nil {
 		return nil, err
@@ -386,7 +382,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 
 	InitRecord(ctx, resources.ResourceResource, resourceRecord)
 
-	result, err := r.backendProviderService.AddRecords(txCtx, resources.ResourceResource, []*model.Record{resourceRecord})
+	result, err := r.backendProviderService.AddRecords(txCtx, resources.ResourceResource, []abs.RecordLike{resourceRecord})
 
 	var serr = errors.FromServiceError(err)
 
@@ -427,7 +423,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
-	insertedResource := mapping.ResourceFromRecord(insertedRecord)
+	insertedResource := mapping.ResourceFromRecord(abs.RecordLikeAsRecord(insertedRecord))
 
 	if !insertedResource.Virtual && insertedResource.SourceConfig.DataSource == "" {
 		return nil, errors.ResourceValidationError.WithMessage("DataSource not found with name: " + resource.SourceConfig.DataSource)
@@ -639,23 +635,21 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			return err
 		}
 
-		if err != nil {
-			return err
-		}
+		var records = []abs.RecordLike{&model.Record{
+			Properties: map[string]*structpb.Value{
+				"id": structpb.NewStringValue(resourceId),
+			},
+		}}
 
 		if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-			Resource: resources.ResourceResource,
-			Records: &[]*model.Record{{
-				Properties: map[string]*structpb.Value{
-					"id": structpb.NewStringValue(resourceId),
-				},
-			}},
+			Resource:  resources.ResourceResource,
+			Records:   &records,
 			Operation: resource_model.PermissionOperation_DELETE,
 		}); err != nil {
 			return err
 		}
 
-		err = r.backendProviderService.DeleteRecords(ctx, resources.ResourceResource, []*model.Record{util.IdRecord(resourceId)})
+		err = r.backendProviderService.DeleteRecords(ctx, resources.ResourceResource, []abs.RecordLike{util.IdRecord(resourceId)})
 
 		if err != nil {
 			return err
@@ -734,15 +728,15 @@ func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, 
 	for _, item := range r.schema.Resources {
 		if item.Id != "" && item.Id == id {
 
-			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
-				Resource: resources.ResourceResource,
-				Records: &[]*model.Record{
-					{
-						Properties: map[string]*structpb.Value{
-							"id": structpb.NewStringValue(id),
-						},
-					},
+			var records = []abs.RecordLike{&model.Record{
+				Properties: map[string]*structpb.Value{
+					"id": structpb.NewStringValue(id),
 				},
+			}}
+
+			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
+				Resource:  resources.ResourceResource,
+				Records:   &records,
 				Operation: resource_model.PermissionOperation_READ,
 			}); err != nil {
 				if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{

@@ -24,8 +24,8 @@ func GetType(resource *model.Resource) string {
 type EntityMapper[Entity interface{}] interface {
 	New() Entity
 	ResourceIdentity() ResourceIdentity
-	ToRecord(entity Entity) *model.Record
-	FromRecord(record *model.Record) Entity
+	ToRecord(entity Entity) RecordLike
+	FromRecord(record RecordLike) Entity
 	ToProperties(entity Entity) map[string]*structpb.Value
 	FromProperties(properties map[string]*structpb.Value) Entity
 }

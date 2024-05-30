@@ -37,14 +37,14 @@ func (m *DataSourceMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *DataSourceMapper) ToRecord(dataSource *DataSource) *model.Record {
+func (m *DataSourceMapper) ToRecord(dataSource *DataSource) abs.RecordLike {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(dataSource)
 	return rec
 }
 
-func (m *DataSourceMapper) FromRecord(record *model.Record) *DataSource {
-	return m.FromProperties(record.Properties)
+func (m *DataSourceMapper) FromRecord(record abs.RecordLike) *DataSource {
+	return m.FromProperties(record.GetProperties())
 }
 
 func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]*structpb.Value {

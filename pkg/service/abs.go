@@ -50,16 +50,16 @@ type DataSourceService interface {
 type RecordService interface {
 	Init(config *model.AppConfig)
 	PrepareQuery(resource *model.Resource, queryMap map[string]interface{}) (*model.BooleanExpression, error)
-	GetRecord(ctx context.Context, namespace, resourceName, id string, references []string) (*model.Record, error)
-	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (*model.Record, error)
-	ResolveReferences(ctx context.Context, resource *model.Resource, records []*model.Record, referencesToResolve []string) error
-	List(ctx context.Context, params RecordListParams) ([]*model.Record, uint32, error)
-	Create(ctx context.Context, params RecordCreateParams) ([]*model.Record, error)
-	Update(ctx context.Context, params RecordUpdateParams) ([]*model.Record, error)
-	Apply(ctx context.Context, params RecordUpdateParams) ([]*model.Record, error)
-	Get(ctx context.Context, params RecordGetParams) (*model.Record, error)
+	GetRecord(ctx context.Context, namespace, resourceName, id string, references []string) (abs.RecordLike, error)
+	FindBy(ctx context.Context, namespace, resourceName, propertyName string, value string) (abs.RecordLike, error)
+	ResolveReferences(ctx context.Context, resource *model.Resource, records []abs.RecordLike, referencesToResolve []string) error
+	List(ctx context.Context, params RecordListParams) ([]abs.RecordLike, uint32, error)
+	Create(ctx context.Context, params RecordCreateParams) ([]abs.RecordLike, error)
+	Update(ctx context.Context, params RecordUpdateParams) ([]abs.RecordLike, error)
+	Apply(ctx context.Context, params RecordUpdateParams) ([]abs.RecordLike, error)
+	Get(ctx context.Context, params RecordGetParams) (abs.RecordLike, error)
 	Delete(ctx context.Context, params RecordDeleteParams) error
-	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (*model.Record, error)
+	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (abs.RecordLike, error)
 }
 
 type ResourceService interface {
@@ -115,7 +115,7 @@ type ExtensionService interface {
 
 type CheckRecordAccessParams struct {
 	Resource  *model.Resource
-	Records   *[]*model.Record
+	Records   *[]abs.RecordLike
 	Operation resource_model.PermissionOperation
 }
 
@@ -137,7 +137,6 @@ type RecordListParams struct {
 	Offset            uint64
 	UseHistory        bool
 	ResolveReferences []string
-	ResultChan        chan<- *model.Record
 	PackRecords       bool
 	Filters           map[string]interface{}
 	Aggregation       *model.Aggregation
@@ -177,28 +176,28 @@ func (p RecordListParams) ToRequest() *stub.ListRecordRequest {
 type RecordCreateParams struct {
 	Namespace string
 	Resource  string
-	Records   []*model.Record
+	Records   []abs.RecordLike
 }
 
 func (p RecordCreateParams) ToRequest() *stub.CreateRecordRequest {
 	return &stub.CreateRecordRequest{
 		Namespace: p.Namespace,
 		Resource:  p.Resource,
-		Records:   p.Records,
+		Records:   abs.RecordLikeAsRecords(p.Records),
 	}
 }
 
 type RecordUpdateParams struct {
 	Namespace string
 	Resource  string
-	Records   []*model.Record
+	Records   []abs.RecordLike
 }
 
 func (p RecordUpdateParams) ToRequest() *stub.UpdateRecordRequest {
 	return &stub.UpdateRecordRequest{
 		Namespace: p.Namespace,
 		Resource:  p.Resource,
-		Records:   p.Records,
+		Records:   abs.RecordLikeAsRecords(p.Records),
 	}
 }
 

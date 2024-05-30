@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -85,7 +86,7 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 			_, err := a.recordService.Create(util.WithSystemContext(ctx), service.RecordCreateParams{
 				Namespace: resources.AuditLogResource.Namespace,
 				Resource:  resources.AuditLogResource.Name,
-				Records:   []*model.Record{resource_model.AuditLogMapperInstance.ToRecord(auditLog)},
+				Records:   []abs.RecordLike{resource_model.AuditLogMapperInstance.ToRecord(auditLog)},
 			})
 
 			if err != nil {

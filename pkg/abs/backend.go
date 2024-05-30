@@ -19,11 +19,11 @@ type BackendGenericInterface interface {
 }
 
 type BackendRecordsInterface interface {
-	AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error)
-	UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error)
-	GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, error)
-	DeleteRecords(ctx context.Context, resource *model.Resource, ids []*model.Record) error
-	ListRecords(ctx context.Context, resource *model.Resource, params ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, error)
+	AddRecords(ctx context.Context, resource *model.Resource, records []RecordLike) ([]RecordLike, error)
+	UpdateRecords(ctx context.Context, resource *model.Resource, records []RecordLike) ([]RecordLike, error)
+	GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (RecordLike, error)
+	DeleteRecords(ctx context.Context, resource *model.Resource, ids []RecordLike) error
+	ListRecords(ctx context.Context, resource *model.Resource, params ListRecordParams) ([]RecordLike, uint32, error)
 }
 
 type BackendSchemaInterface interface {

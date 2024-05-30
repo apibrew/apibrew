@@ -1,6 +1,7 @@
 package test
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/stub"
@@ -49,14 +50,14 @@ func TestResourceCreateRecordWithHistory(t *testing.T) {
 
 	createResp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "paper",
-		Records: []*model.Record{
-			{
+		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
+			&model.Record{
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-paper"),
 					"description": structpb.NewStringValue("descp-1"),
 				},
 			},
-		},
+		}),
 	})
 
 	if err != nil {

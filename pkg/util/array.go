@@ -7,9 +7,11 @@ func ArrayPrepend[T interface{}](arr []*T, elem *T) []*T {
 	return append([]*T{elem}, arr...)
 }
 
-func ArrayFirst[T interface{}](arr []*T) *T {
+func ArrayFirst[T interface{}](arr []T) T {
+	var nilValue T
+
 	if len(arr) == 0 {
-		return nil
+		return nilValue
 	}
 
 	return arr[0]

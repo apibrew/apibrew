@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
@@ -81,7 +82,7 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 }
 
 func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
-	var records []*model.Record
+	var records []abs.RecordLike
 	for i := 0; i < 30; i += 3 {
 		var properties = make(map[string]*structpb.Value, 3)
 
@@ -98,7 +99,7 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 
 	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: subCase.resource.Name,
-		Records:  records,
+		Records:  abs.RecordLikeAsRecords(records),
 	})
 
 	if err != nil {
@@ -116,9 +117,9 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 		createdRecordValue1, _ := propertyType.UnPack(createdRecord.Properties[subCase.resource.Properties[1].Name])
 		createdRecordValue2, _ := propertyType.UnPack(createdRecord.Properties[subCase.resource.Properties[2].Name])
 
-		recordValue0, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[0].Name])
-		recordValue1, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[1].Name])
-		recordValue2, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[2].Name])
+		recordValue0, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[0].Name])
+		recordValue1, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[1].Name])
+		recordValue2, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[2].Name])
 
 		if !propertyType.Equals(createdRecordValue0, recordValue0) {
 			t.Errorf("values are different: %s <=> %s", createdRecordValue0, recordValue0)
@@ -135,7 +136,7 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 }
 
 func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
-	var records []*model.Record
+	var records []abs.RecordLike
 	for i := 0; i < 30; i += 3 {
 		var properties = make(map[string]*structpb.Value, 3)
 		typ := types.ByResourcePropertyType(subCase.recordType)
@@ -157,7 +158,7 @@ func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testin
 
 	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: subCase.resource.Name,
-		Records:  records,
+		Records:  abs.RecordLikeAsRecords(records),
 	})
 
 	if err != nil {
@@ -175,9 +176,9 @@ func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testin
 		createdRecordValue1, _ := propertyType.UnPack(createdRecord.Properties[subCase.resource.Properties[1].Name])
 		createdRecordValue2, _ := propertyType.UnPack(createdRecord.Properties[subCase.resource.Properties[2].Name])
 
-		recordValue0, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[0].Name])
-		recordValue1, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[1].Name])
-		recordValue2, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[2].Name])
+		recordValue0, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[0].Name])
+		recordValue1, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[1].Name])
+		recordValue2, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[2].Name])
 
 		if !propertyType.Equals(createdRecordValue0, recordValue0) {
 			t.Errorf("values are different: %s <=> %s", createdRecordValue0, recordValue0)
@@ -194,7 +195,7 @@ func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testin
 }
 
 func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
-	var records []*model.Record
+	var records []abs.RecordLike
 	for i := 0; i < 30; i += 3 {
 		var properties = make(map[string]*structpb.Value, 3)
 
@@ -211,7 +212,7 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 
 	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: subCase.resource.Name,
-		Records:  records,
+		Records:  abs.RecordLikeAsRecords(records),
 	})
 
 	if err != nil {
@@ -224,18 +225,18 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 	for i := 0; i < len(resp.Records); i++ {
 		createdRecord := resp.Records[i]
 		record := records[i]
-		record.Properties["id"] = createdRecord.Properties["id"]
+		record.GetProperties()["id"] = createdRecord.Properties["id"]
 	}
 
 	for _, record := range records {
-		record.Properties[subCase.resource.Properties[0].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
-		record.Properties[subCase.resource.Properties[1].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
-		record.Properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+		record.GetProperties()[subCase.resource.Properties[0].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+		record.GetProperties()[subCase.resource.Properties[1].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+		record.GetProperties()[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
 	}
 
 	updateResp, err := recordClient.Update(ctx, &stub.UpdateRecordRequest{
 		Resource: subCase.resource.Name,
-		Records:  records,
+		Records:  abs.RecordLikeAsRecords(records),
 	})
 
 	if err != nil {
@@ -251,9 +252,9 @@ func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subC
 		createdRecordValue1, _ := propertyType.UnPack(updatedRecord.Properties[subCase.resource.Properties[1].Name])
 		createdRecordValue2, _ := propertyType.UnPack(updatedRecord.Properties[subCase.resource.Properties[2].Name])
 
-		recordValue0, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[0].Name])
-		recordValue1, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[1].Name])
-		recordValue2, _ := propertyType.UnPack(record.Properties[subCase.resource.Properties[2].Name])
+		recordValue0, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[0].Name])
+		recordValue1, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[1].Name])
+		recordValue2, _ := propertyType.UnPack(record.GetProperties()[subCase.resource.Properties[2].Name])
 
 		if !propertyType.Equals(createdRecordValue0, recordValue0) {
 			t.Errorf("values are different: %s <=> %s", createdRecordValue0, recordValue0)
@@ -274,7 +275,7 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 		return
 	}
 
-	var records []*model.Record
+	var records []abs.RecordLike
 	for i := 0; i < 30; i += 3 {
 		var properties = make(map[string]*structpb.Value, 3)
 
@@ -291,7 +292,7 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 
 	_, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
 		Resource: subCase.resource.Name,
-		Records:  records,
+		Records:  abs.RecordLikeAsRecords(records),
 	})
 
 	if err == nil {

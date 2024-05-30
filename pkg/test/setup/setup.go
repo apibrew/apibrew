@@ -68,7 +68,7 @@ func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 		createRes, err := RecordClient.Create(ctx, &stub.CreateRecordRequest{
 			Namespace: resources.DataSourceResource.Namespace,
 			Resource:  resources.DataSourceResource.Name,
-			Records:   util.ArrayMap(RecordsForCreate, resource_model.DataSourceMapperInstance.ToRecord),
+			Records:   abs.RecordLikeAsRecords(util.ArrayMap(RecordsForCreate, resource_model.DataSourceMapperInstance.ToRecord)),
 		})
 
 		if err != nil {

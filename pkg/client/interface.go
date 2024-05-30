@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/api"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -64,8 +65,8 @@ type clientRecordService struct {
 	client Client
 }
 
-func (c clientRecordService) Create(ctx context.Context, params service.RecordCreateParams) ([]*model.Record, error) {
-	var result []*model.Record
+func (c clientRecordService) Create(ctx context.Context, params service.RecordCreateParams) ([]abs.RecordLike, error) {
+	var result []abs.RecordLike
 
 	for _, record := range params.Records {
 		created, err := c.client.CreateRecord(ctx, params.Namespace, params.Resource, record)
@@ -80,8 +81,8 @@ func (c clientRecordService) Create(ctx context.Context, params service.RecordCr
 	return result, nil
 }
 
-func (c clientRecordService) Update(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, error) {
-	var result []*model.Record
+func (c clientRecordService) Update(ctx context.Context, params service.RecordUpdateParams) ([]abs.RecordLike, error) {
+	var result []abs.RecordLike
 
 	for _, record := range params.Records {
 		updated, err := c.client.UpdateRecord(ctx, params.Namespace, params.Resource, record)
@@ -96,8 +97,8 @@ func (c clientRecordService) Update(ctx context.Context, params service.RecordUp
 	return result, nil
 }
 
-func (c clientRecordService) Apply(ctx context.Context, params service.RecordUpdateParams) ([]*model.Record, error) {
-	var result []*model.Record
+func (c clientRecordService) Apply(ctx context.Context, params service.RecordUpdateParams) ([]abs.RecordLike, error) {
+	var result []abs.RecordLike
 
 	for _, record := range params.Records {
 		applied, err := c.client.ApplyRecord(ctx, params.Namespace, params.Resource, record)
@@ -122,7 +123,7 @@ func (c clientRecordService) Delete(ctx context.Context, params service.RecordDe
 	return nil
 }
 
-func (c clientRecordService) Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, loadParams service.RecordLoadParams) (*model.Record, error) {
+func (c clientRecordService) Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, loadParams service.RecordLoadParams) (abs.RecordLike, error) {
 	res, err := c.client.LoadRecord(ctx, namespace, name, properties, loadParams)
 
 	if err != nil {
@@ -132,7 +133,7 @@ func (c clientRecordService) Load(ctx context.Context, namespace string, name st
 	return res, nil
 }
 
-func (c clientRecordService) List(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error) {
+func (c clientRecordService) List(ctx context.Context, params service.RecordListParams) ([]abs.RecordLike, uint32, error) {
 	res, total, err := c.client.ListRecords(ctx, params)
 
 	if err != nil {

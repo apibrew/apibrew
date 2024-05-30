@@ -18,7 +18,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 	//			return
 	//		}
 	//
-	//		var records = util.ArrayMap(list.Content, func(record *model.Record) *model.Record {
+	//		var records = util.ArrayMap(list.Content, func(record abs.RecordLike) abs.RecordLike {
 	//
 	//			return record
 	//		})
@@ -34,7 +34,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 	//
 	//		_, err = recordClient.Delete_(setup.Ctx, &stub.DeleteRecordRequest{
 	//			Resource: resource2.Name,
-	//			Ids: util.ArrayMap(list.Content, func(record *model.Record) string {
+	//			Ids: util.ArrayMap(list.Content, func(record abs.RecordLike) string {
 	//				return record.Id
 	//			}),
 	//		})
@@ -103,7 +103,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //			return
 //		}
 //
-//		var records = util.ArrayMap(list.Content, func(record *model.Record) *model.Record {
+//		var records = util.ArrayMap(list.Content, func(record abs.RecordLike) abs.RecordLike {
 //			record.resource = resource2.Name
 //
 //			return record
@@ -125,7 +125,7 @@ func TestResourceMigration_CrunchbaseMigration(t *testing.T) {
 //		_, err = container.recordService.Delete_(ctx, &stub.DeleteRecordRequest{
 //			Token:    "test-token",
 //			resource: resource2.Name,
-//			Ids: util.ArrayMap(list.Content, func(record *model.Record) string {
+//			Ids: util.ArrayMap(list.Content, func(record abs.RecordLike) string {
 //				return record.Id
 //			}),
 //		})

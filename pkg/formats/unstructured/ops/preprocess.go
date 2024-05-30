@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/jsonformat"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
@@ -376,7 +377,7 @@ func (p *preprocessor) checkSyntax(cfPath string, un unstructured.Unstructured) 
 			return err
 		}
 
-		err = validate.Records(subType, []*model.Record{record}, false)
+		err = validate.Records(subType, []abs.RecordLike{record}, false)
 
 		// recover syntax as it needs to be persisted
 		un["$syntax"] = syntax

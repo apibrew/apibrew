@@ -3,6 +3,7 @@ package executor
 import (
 	"context"
 	"errors"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/reader"
@@ -32,7 +33,7 @@ type Executor struct {
 	mode               Mode
 	Type               string
 	CollectedResources []*model.Resource
-	CollectedRecords   []*model.Record
+	CollectedRecords   []abs.RecordLike
 }
 
 func (a *Executor) Apply(ctx context.Context, inputFilePath string, format string) error {
@@ -44,7 +45,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 
 	unstructuredExecutor := &ops.Executor{
 		Client: a.client,
-		RecordHandler: func(namespace string, resource string, record *model.Record) error {
+		RecordHandler: func(namespace string, resource string, record abs.RecordLike) error {
 			if a.mode == APPLY {
 				appliedRecord, err := a.client.ApplyRecord(ctx, namespace, resource, record)
 
@@ -52,7 +53,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 					return err
 				}
 
-				record.Properties = appliedRecord.Properties
+				abs.UpdateRecordsProperties(record, appliedRecord.GetProperties())
 				return err
 			} else if a.mode == CREATE {
 				appliedRecord, err := a.client.CreateRecord(ctx, namespace, resource, record)
@@ -61,7 +62,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 					return err
 				}
 
-				record.Properties = appliedRecord.Properties
+				abs.UpdateRecordsProperties(record, appliedRecord.GetProperties())
 				return err
 			} else if a.mode == UPDATE {
 				appliedRecord, err := a.client.UpdateRecord(ctx, namespace, resource, record)
@@ -70,7 +71,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 					return err
 				}
 
-				record.Properties = appliedRecord.Properties
+				abs.UpdateRecordsProperties(record, appliedRecord.GetProperties())
 				return err
 			} else if a.mode == DELETE {
 				return a.client.DeleteRecord(ctx, namespace, resource, record) // fixme locate id if not exists

@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	log "github.com/sirupsen/logrus"
@@ -12,13 +13,13 @@ import (
 
 type PropertyAccessor struct {
 	Property *model.ResourceProperty
-	Get      func(record *model.Record) interface{}
-	Set      func(record *model.Record, val interface{})
+	Get      func(record abs.RecordLike) interface{}
+	Set      func(record abs.RecordLike, val interface{})
 }
 
-func IsSameRecord(existing, updated *model.Record) bool {
-	for key := range updated.Properties {
-		if !proto.Equal(updated.Properties[key], existing.Properties[key]) {
+func IsSameRecord(existing, updated abs.RecordLike) bool {
+	for key := range updated.GetProperties() {
+		if !proto.Equal(updated.GetProperties()[key], existing.GetProperties()[key]) {
 			return false
 		}
 	}
@@ -165,7 +166,7 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 	return nil, false
 }
 
-func RecordMatchIdentifiableProperties(resource *model.Resource, record *model.Record, properties map[string]*structpb.Value) (bool, error) {
+func RecordMatchIdentifiableProperties(resource *model.Resource, record abs.RecordLike, properties map[string]*structpb.Value) (bool, error) {
 	idProps, err := RecordIdentifierProperties(resource, properties)
 
 	if err != nil {
@@ -181,7 +182,7 @@ func RecordMatchIdentifiableProperties(resource *model.Resource, record *model.R
 			//matches, err := RecordMatchIdentifiableProperties(prop.Reference, record, val.GetStructValue().Fields)
 			//return true, nil // fixme
 		} else {
-			if !proto.Equal(record.Properties[key], val) {
+			if !proto.Equal(record.GetProperties()[key], val) {
 				return false, nil
 			}
 		}
@@ -239,7 +240,7 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 	}
 }
 
-func IdRecord(id string) *model.Record {
+func IdRecord(id string) abs.RecordLike {
 	return &model.Record{
 		Properties: map[string]*structpb.Value{
 			"id": structpb.NewStringValue(id),
@@ -247,16 +248,16 @@ func IdRecord(id string) *model.Record {
 	}
 }
 
-func GetRecordId(record *model.Record) string {
+func GetRecordId(record abs.RecordLike) string {
 	if record == nil {
 		return ""
 	}
 
-	if record.Properties == nil {
+	if record.GetProperties() == nil {
 		return ""
 	}
 
-	if id, ok := record.Properties["id"]; ok {
+	if id, ok := record.GetProperties()["id"]; ok {
 		return id.GetStringValue()
 	}
 

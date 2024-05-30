@@ -2,31 +2,29 @@ package impl
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	jwt_model "github.com/apibrew/apibrew/pkg/util/jwt-model"
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
-func InitRecord(ctx context.Context, resource *model.Resource, record *model.Record) {
+func InitRecord(ctx context.Context, resource *model.Resource, record abs.RecordLike) {
 	now := time.Now()
 	recordNewId := uuid.Must(uuid.NewRandom())
-	if record.Properties == nil {
-		record.Properties = make(map[string]*structpb.Value)
-	}
+	//if record.Properties == nil {
+	//	record.Properties = make(map[string]*structpb.Value)
+	//}
 
 	if util.HasResourceSinglePrimaryProp(resource) {
 		idProp := util.GetResourceSinglePrimaryProp(resource)
 		if idProp.Type == model.ResourceProperty_UUID {
-			if record.Properties[idProp.Name] == nil || !util.IsSystemContext(ctx) {
-				record.Properties[idProp.Name] = structpb.NewStringValue(recordNewId.String())
-			} else {
-				log.Println("FOUNDxxx")
+			if record.GetProperties()[idProp.Name] == nil || !util.IsSystemContext(ctx) {
+				record.GetProperties()[idProp.Name] = structpb.NewStringValue(recordNewId.String())
 			}
 		}
 	}
@@ -46,7 +44,7 @@ func InitRecord(ctx context.Context, resource *model.Resource, record *model.Rec
 	}
 }
 
-func PrepareUpdateForRecord(ctx context.Context, resource *model.Resource, record *model.Record) {
+func PrepareUpdateForRecord(ctx context.Context, resource *model.Resource, record abs.RecordLike) {
 	ah := &helper.RecordSpecialColumnHelper{
 		Resource: resource,
 		Record:   record,

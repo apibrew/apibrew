@@ -95,7 +95,7 @@ func (h handler[Entity]) prepareProcessFunc(processFunc RecordProcessFunc[Entity
 				return nil, err
 			}
 
-			processedRecords[i] = h.mapper.ToRecord(processedRecord)
+			processedRecords[i] = abs.RecordLikeAsRecord(h.mapper.ToRecord(processedRecord))
 		}
 
 		req.Records = processedRecords
@@ -112,9 +112,9 @@ func (h handler[Entity]) Fire(ctx context.Context, action string, payload Entity
 	rec := h.mapper.ToRecord(payload)
 	ri := h.mapper.ResourceIdentity()
 
-	rec.Properties["action"] = structpb.NewStringValue(action)
+	rec.GetProperties()["action"] = structpb.NewStringValue(action)
 
-	_, err := h.dhClient.CreateRecord(ctx, ri.Namespace, ri.Name, rec)
+	_, err := h.dhClient.CreateRecord(ctx, ri.Namespace, ri.Name, abs.RecordLikeAsRecord(rec))
 
 	if err != nil {
 		log.Error("Error while firing event: ", err)

@@ -37,14 +37,14 @@ func (m *RoleMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *RoleMapper) ToRecord(role *Role) *model.Record {
+func (m *RoleMapper) ToRecord(role *Role) abs.RecordLike {
 	var rec = &model.Record{}
 	rec.Properties = m.ToProperties(role)
 	return rec
 }
 
-func (m *RoleMapper) FromRecord(record *model.Record) *Role {
-	return m.FromProperties(record.Properties)
+func (m *RoleMapper) FromRecord(record abs.RecordLike) *Role {
+	return m.FromProperties(record.GetProperties())
 }
 
 func (m *RoleMapper) ToProperties(role *Role) map[string]*structpb.Value {

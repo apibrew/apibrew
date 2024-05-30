@@ -1,6 +1,7 @@
 package test
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
@@ -102,8 +103,8 @@ func TestResourceReferenceViolation(t *testing.T) {
 
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "book",
-		Records: []*model.Record{
-			{
+		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
+			&model.Record{
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-book"),
 					"description": structpb.NewStringValue("descp-1"),
@@ -112,7 +113,7 @@ func TestResourceReferenceViolation(t *testing.T) {
 					}),
 				},
 			},
-		},
+		}),
 	})
 
 	if err == nil {
@@ -154,14 +155,14 @@ func TestResourceReferenceSuccess(t *testing.T) {
 
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "author",
-		Records: []*model.Record{
-			{
+		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
+			&model.Record{
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-author"),
 					"description": structpb.NewStringValue("descp-1"),
 				},
 			},
-		},
+		}),
 	})
 
 	if err != nil {
@@ -171,8 +172,8 @@ func TestResourceReferenceSuccess(t *testing.T) {
 
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "book",
-		Records: []*model.Record{
-			{
+		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
+			&model.Record{
 				Properties: map[string]*structpb.Value{
 					"name":        structpb.NewStringValue("test-book"),
 					"description": structpb.NewStringValue("descp-1"),
@@ -181,7 +182,7 @@ func TestResourceReferenceSuccess(t *testing.T) {
 					}),
 				},
 			},
-		},
+		}),
 	})
 
 	if err != nil {

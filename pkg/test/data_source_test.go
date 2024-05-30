@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/stub"
@@ -57,7 +57,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Records:   abs.RecordLikeAsRecords([]abs.RecordLike{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)}),
 	})
 
 	if err != nil {
@@ -92,7 +92,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 //	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 //		Namespace: resources.DataSourceResource.Namespace,
 //		Resource:  resources.DataSourceResource.Name,
-//		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+//		Records:   []abs.RecordLike{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
 //	})
 //
 //	if err != nil {
@@ -151,7 +151,7 @@ func TestUpdateDataSource(t *testing.T) {
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Records:   abs.RecordLikeAsRecords([]abs.RecordLike{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)}),
 	})
 
 	if err != nil {
@@ -176,9 +176,9 @@ func TestUpdateDataSource(t *testing.T) {
 	res, err := recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records: []*model.Record{
+		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
 			resource_model.DataSourceMapperInstance.ToRecord(newDataSource),
-		},
+		}),
 	})
 
 	if err != nil {
@@ -267,7 +267,7 @@ func TestUpdateRecordstatus(t *testing.T) {
 	resp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)},
+		Records:   abs.RecordLikeAsRecords([]abs.RecordLike{resource_model.DataSourceMapperInstance.ToRecord(newDataSource)}),
 	})
 
 	if err != nil {
@@ -293,7 +293,7 @@ func TestUpdateRecordstatus(t *testing.T) {
 	_, _ = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
+		Records:   abs.RecordLikeAsRecords([]abs.RecordLike{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)}),
 	})
 
 	checkNewCreatedRecordStatusPasswordWrong(createdDataSource1, t)
@@ -311,7 +311,7 @@ func TestUpdateRecordstatus(t *testing.T) {
 	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Namespace: resources.DataSourceResource.Namespace,
 		Resource:  resources.DataSourceResource.Name,
-		Records:   []*model.Record{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)},
+		Records:   abs.RecordLikeAsRecords([]abs.RecordLike{resource_model.DataSourceMapperInstance.ToRecord(createdDataSource1)}),
 	})
 
 	if err != nil {

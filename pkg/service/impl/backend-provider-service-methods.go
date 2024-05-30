@@ -24,11 +24,11 @@ func (b backendProviderService) DestroyDataSource(ctx context.Context, dataSourc
 	return b.DestroyBackend(ctx, dataSourceId)
 }
 
-func (b backendProviderService) AddRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error) {
+func (b backendProviderService) AddRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_CREATE,
 		Resource: resource,
-		Records:  records,
+		Records:  abs.RecordLikeAsRecords(records),
 	}))
 
 	if err != nil {
@@ -39,14 +39,14 @@ func (b backendProviderService) AddRecords(ctx context.Context, resource *model.
 		return nil, nil
 	}
 
-	return endEvent.Records, nil
+	return abs.RecordLikeAsRecords2(endEvent.Records), nil
 }
 
-func (b backendProviderService) UpdateRecords(ctx context.Context, resource *model.Resource, records []*model.Record) ([]*model.Record, error) {
+func (b backendProviderService) UpdateRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_UPDATE,
 		Resource: resource,
-		Records:  records,
+		Records:  abs.RecordLikeAsRecords(records),
 	}))
 
 	if err != nil {
@@ -57,14 +57,14 @@ func (b backendProviderService) UpdateRecords(ctx context.Context, resource *mod
 		return nil, nil
 	}
 
-	return endEvent.Records, nil
+	return abs.RecordLikeAsRecords2(endEvent.Records), nil
 }
 
-func (b backendProviderService) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (*model.Record, error) {
+func (b backendProviderService) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (abs.RecordLike, error) {
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_GET,
 		Resource: resource,
-		Records:  []*model.Record{util.IdRecord(id)},
+		Records:  []*model.Record{abs.RecordLikeAsRecord(util.IdRecord(id))},
 		RecordSearchParams: &model.Event_RecordSearchParams{
 			ResolveReferences: resolveReferences,
 		},
@@ -85,17 +85,17 @@ func (b backendProviderService) GetRecord(ctx context.Context, resource *model.R
 	return endEvent.Records[0], nil
 }
 
-func (b backendProviderService) DeleteRecords(ctx context.Context, resource *model.Resource, list []*model.Record) error {
+func (b backendProviderService) DeleteRecords(ctx context.Context, resource *model.Resource, list []abs.RecordLike) error {
 	_, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_DELETE,
 		Resource: resource,
-		Records:  list,
+		Records:  abs.RecordLikeAsRecords(list),
 	}))
 
 	return err
 }
 
-func (b backendProviderService) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- *model.Record) ([]*model.Record, uint32, error) {
+func (b backendProviderService) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams) ([]abs.RecordLike, uint32, error) {
 	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
 		Action:   model.Event_LIST,
 		Resource: resource,
@@ -113,7 +113,7 @@ func (b backendProviderService) ListRecords(ctx context.Context, resource *model
 		return nil, 0, err
 	}
 
-	return endEvent.Records, uint32(endEvent.Total), nil
+	return abs.RecordLikeAsRecords2(endEvent.Records), uint32(endEvent.Total), nil
 }
 
 func (b backendProviderService) PrepareInternalEvent(ctx context.Context, event *model.Event) *model.Event {

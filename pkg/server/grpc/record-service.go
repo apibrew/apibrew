@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
@@ -23,7 +24,7 @@ func (r *recordServer) Load(ctx context.Context, request *stub.LoadRecordRequest
 	})
 
 	return &stub.LoadRecordResponse{
-		Record: record,
+		Record: abs.RecordLikeAsRecord(record),
 	}, util.ToStatusError(err)
 
 }
@@ -50,7 +51,7 @@ func (r *recordServer) List(ctx context.Context, request *stub.ListRecordRequest
 	})
 
 	return &stub.ListRecordResponse{
-		Content: records,
+		Content: abs.RecordLikeAsRecords(records),
 		Total:   total,
 	}, util.ToStatusError(err)
 }
@@ -68,7 +69,7 @@ func (r *recordServer) Search(ctx context.Context, request *stub.SearchRecordReq
 	})
 
 	return &stub.SearchRecordResponse{
-		Content: records,
+		Content: abs.RecordLikeAsRecords(records),
 		Total:   total,
 	}, util.ToStatusError(err)
 }
@@ -121,7 +122,6 @@ func (r *recordServer) ReadStream(request *stub.ReadStreamRequest, resp stub.Rec
 		UseHistory:        request.UseHistory,
 		ResolveReferences: request.ResolveReferences,
 		PackRecords:       request.PackRecords,
-		ResultChan:        resultChan,
 	})
 
 	if err != nil {
@@ -135,12 +135,12 @@ func (r *recordServer) Create(ctx context.Context, request *stub.CreateRecordReq
 	records, err := r.service.Create(annotations.WithContext(ctx, request), service.RecordCreateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
-		Records:   util.ArrayPrepend(request.Records, request.Record),
+		Records:   abs.RecordLikeAsRecords2(util.ArrayPrepend(request.Records, request.Record)),
 	})
 
 	return &stub.CreateRecordResponse{
-		Record:  util.ArrayFirst(records),
-		Records: records,
+		Record:  abs.RecordLikeAsRecord(util.ArrayFirst(records)),
+		Records: abs.RecordLikeAsRecords(records),
 	}, util.ToStatusError(err)
 }
 
@@ -148,12 +148,12 @@ func (r *recordServer) Update(ctx context.Context, request *stub.UpdateRecordReq
 	records, err := r.service.Update(annotations.WithContext(ctx, request), service.RecordUpdateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
-		Records:   util.ArrayPrepend(request.Records, request.Record),
+		Records:   abs.RecordLikeAsRecords2(util.ArrayPrepend(request.Records, request.Record)),
 	})
 
 	return &stub.UpdateRecordResponse{
-		Record:  util.ArrayFirst(records),
-		Records: records,
+		Record:  abs.RecordLikeAsRecord(util.ArrayFirst(records)),
+		Records: abs.RecordLikeAsRecords(records),
 	}, util.ToStatusError(err)
 }
 
@@ -161,12 +161,12 @@ func (r *recordServer) Apply(ctx context.Context, request *stub.ApplyRecordReque
 	records, err := r.service.Apply(annotations.WithContext(ctx, request), service.RecordUpdateParams{
 		Namespace: request.Namespace,
 		Resource:  request.Resource,
-		Records:   util.ArrayPrepend(request.Records, request.Record),
+		Records:   abs.RecordLikeAsRecords2(util.ArrayPrepend(request.Records, request.Record)),
 	})
 
 	return &stub.ApplyRecordResponse{
-		Record:  util.ArrayFirst(records),
-		Records: records,
+		Record:  abs.RecordLikeAsRecord(util.ArrayFirst(records)),
+		Records: abs.RecordLikeAsRecords(records),
 	}, util.ToStatusError(err)
 }
 
@@ -178,7 +178,7 @@ func (r *recordServer) Get(ctx context.Context, request *stub.GetRecordRequest) 
 	})
 
 	return &stub.GetRecordResponse{
-		Record: record,
+		Record: abs.RecordLikeAsRecord(record),
 	}, util.ToStatusError(err)
 }
 

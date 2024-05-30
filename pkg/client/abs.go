@@ -22,19 +22,19 @@ type Client interface {
 	UpdateTokenFromContext(ctx context.Context)
 
 	// record
-	CreateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
-	UpdateRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
-	DeleteRecord(ctx context.Context, namespace string, name string, record *model.Record) error
-	ApplyRecord(ctx context.Context, namespace string, resource string, record *model.Record) (*model.Record, error)
-	GetRecord(ctx context.Context, namespace string, resource string, id string) (*model.Record, error)
-	LoadRecord(ctx context.Context, namespace string, resource string, properties map[string]*structpb.Value, params service.RecordLoadParams) (*model.Record, error)
-	ListRecords(ctx context.Context, params service.RecordListParams) ([]*model.Record, uint32, error)
-	ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []*model.Record)) error
+	CreateRecord(ctx context.Context, namespace string, resource string, record abs.RecordLike) (abs.RecordLike, error)
+	UpdateRecord(ctx context.Context, namespace string, resource string, record abs.RecordLike) (abs.RecordLike, error)
+	DeleteRecord(ctx context.Context, namespace string, name string, record abs.RecordLike) error
+	ApplyRecord(ctx context.Context, namespace string, resource string, record abs.RecordLike) (abs.RecordLike, error)
+	GetRecord(ctx context.Context, namespace string, resource string, id string) (abs.RecordLike, error)
+	LoadRecord(ctx context.Context, namespace string, resource string, properties map[string]*structpb.Value, params service.RecordLoadParams) (abs.RecordLike, error)
+	ListRecords(ctx context.Context, params service.RecordListParams) ([]abs.RecordLike, uint32, error)
+	ListenRecords(ctx context.Context, namespace string, resource string, consumer func(records []abs.RecordLike)) error
 
 	// resource
 	GetResourceByName(ctx context.Context, namespace string, resourceName string) (*model.Resource, error)
 	ListResources(ctx context.Context) ([]*model.Resource, error)
-	ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan *model.Record) error
+	ReadRecordStream(ctx context.Context, params service.RecordListParams, recordsChan chan abs.RecordLike) error
 	DeleteResource(ctx context.Context, id string, doMigration bool, forceMigration bool) error
 	CreateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error
 	UpdateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error

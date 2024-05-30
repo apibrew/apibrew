@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/stub"
@@ -19,9 +19,9 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 	res, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
-		Records: []*model.Record{
+		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
 			resource_model.NamespaceMapperInstance.ToRecord(namespace1),
-		},
+		}),
 	})
 
 	if err != nil {
@@ -54,9 +54,9 @@ func TestNamespaceNameShouldNotBeUpdated(t *testing.T) {
 	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{
 		Namespace: resources.NamespaceResource.Namespace,
 		Resource:  resources.NamespaceResource.Name,
-		Records: []*model.Record{
+		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
 			resource_model.NamespaceMapperInstance.ToRecord(namespace1),
-		},
+		}),
 	})
 
 	if err != nil {

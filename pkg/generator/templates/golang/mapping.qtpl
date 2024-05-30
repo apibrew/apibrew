@@ -105,13 +105,13 @@ func (m *{%s typeName %}Mapper) ResourceIdentity() abs.ResourceIdentity {
 }
 
 {% if typeName == resource.Name %}
-func (m *{%s typeName %}Mapper) ToRecord({%= GoVarName(typeName)%} *{%s typeName %}) *model.Record {
+func (m *{%s typeName %}Mapper) ToRecord({%= GoVarName(typeName)%} *{%s typeName %}) abs.NewRecordLike() {
     var rec = &model.Record{}
     rec.Properties = m.ToProperties({%= GoVarName(typeName)%})
     return rec
 }
 
-func (m *{%s typeName %}Mapper) FromRecord(record *model.Record) *{%s typeName %}  {
+func (m *{%s typeName %}Mapper) FromRecord(record abs.NewRecordLike()) *{%s typeName %}  {
     return m.FromProperties(record.Properties)
 }
 {% endif %}
