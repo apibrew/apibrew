@@ -153,7 +153,7 @@ func FromGrpcError(err error) ServiceError {
 
 	var details = st.Details()
 
-	if details == nil || len(details) == 0 {
+	if len(details) == 0 {
 		return NewServiceError(model.ErrorCode_UNKNOWN_ERROR, err.Error(), codes.Unknown)
 	}
 

@@ -37,7 +37,7 @@ func (r redisBackend) DestroyDataSource(ctx context.Context) {
 
 func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
 	for _, record := range records {
-		data, err := proto.Marshal(record)
+		data, err := proto.Marshal(abs.RecordLikeAsRecord(record))
 
 		if err != nil {
 			log.Warn(err)
@@ -59,7 +59,7 @@ func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, 
 
 func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
 	for _, record := range records {
-		data, err := proto.Marshal(record)
+		data, err := proto.Marshal(abs.RecordLikeAsRecord(record))
 
 		if err != nil {
 			log.Warn(err)
@@ -88,7 +88,7 @@ func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, i
 
 	var record = abs.NewRecordLike()
 
-	err = proto.Unmarshal(recData, record)
+	err = proto.Unmarshal(recData, abs.RecordLikeAsRecord(record))
 
 	if err != nil {
 		return nil, r.handleError(err)
@@ -115,7 +115,7 @@ func (r redisBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (r redisBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, resultChan chan<- abs.RecordLike) ([]abs.RecordLike, uint32, error) {
+func (r redisBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams) ([]abs.RecordLike, uint32, error) {
 	return nil, 0, errors.UnsupportedOperation
 }
 

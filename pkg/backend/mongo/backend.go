@@ -73,7 +73,7 @@ func (r mongoBackend) recordToDocument(resource *model.Resource, record abs.Reco
 	var data = bson.M{}
 
 	for _, prop := range resource.Properties {
-		val, exists := record.Properties[prop.Name]
+		val, exists := record.GetProperties()[prop.Name]
 
 		if exists {
 			data[prop.Name] = val.AsInterface()
@@ -92,14 +92,14 @@ func (r mongoBackend) UpdateRecords(ctx context.Context, resource *model.Resourc
 
 		for _, prop := range resource.Properties {
 			if prop.Primary {
-				if record.Properties[prop.Name] == nil {
+				if record.GetProperties()[prop.Name] == nil {
 					filter[prop.Name] = nil
 				} else {
-					filter[prop.Name] = record.Properties[prop.Name].AsInterface()
+					filter[prop.Name] = record.GetProperties()[prop.Name].AsInterface()
 				}
 			}
 
-			val, exists := record.Properties[prop.Name]
+			val, exists := record.GetProperties()[prop.Name]
 
 			if exists {
 				set[prop.Name] = val.AsInterface()
@@ -180,7 +180,7 @@ func (r mongoBackend) DeleteRecords(ctx context.Context, resource *model.Resourc
 	return nil
 }
 
-func (r mongoBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams, _ chan<- abs.RecordLike) ([]abs.RecordLike, uint32, error) {
+func (r mongoBackend) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams) ([]abs.RecordLike, uint32, error) {
 	var filter bson.M = nil
 
 	if params.Query != nil {
