@@ -1,6 +1,7 @@
 package backend_event_handler
 
 import (
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	log "github.com/sirupsen/logrus"
@@ -11,7 +12,7 @@ import (
 type ExtensionEventSelectorMatcher struct {
 }
 
-func (b *ExtensionEventSelectorMatcher) SelectorMatches(incoming *model.Event, selector *model.EventSelector) bool {
+func (b *ExtensionEventSelectorMatcher) SelectorMatches(incoming *core.Event, selector *core.EventSelector) bool {
 	if incoming.Shallow && !selector.Shallow {
 		log.Tracef("Event is shallow, but selector is not")
 		return false
@@ -38,7 +39,7 @@ func (b *ExtensionEventSelectorMatcher) SelectorMatches(incoming *model.Event, s
 	if len(selector.Actions) > 0 {
 		var found = false
 		for _, action := range selector.Actions {
-			if action == incoming.Action {
+			if int(action) == int(incoming.Action) {
 				found = true
 				break
 			}
@@ -100,7 +101,7 @@ func (b *ExtensionEventSelectorMatcher) SelectorMatches(incoming *model.Event, s
 	return true
 }
 
-func (b *ExtensionEventSelectorMatcher) recordSelectorMatches(incoming *model.Event, selector *model.BooleanExpression) bool {
+func (b *ExtensionEventSelectorMatcher) recordSelectorMatches(incoming *core.Event, selector *model.BooleanExpression) bool {
 	if selector == nil {
 		return true
 	}
@@ -153,12 +154,12 @@ func (b *ExtensionEventSelectorMatcher) recordSelectorMatches(incoming *model.Ev
 	return true
 }
 
-func (b *ExtensionEventSelectorMatcher) resolve(incoming *model.Event, left *model.Expression) *structpb.Value {
+func (b *ExtensionEventSelectorMatcher) resolve(incoming *core.Event, left *model.Expression) *structpb.Value {
 	if left.GetProperty() != "" {
 		if len(incoming.Records) == 0 {
 			return nil
 		}
-		return incoming.Records[0].Properties[left.GetProperty()]
+		return incoming.Records[0].GetProperties()[left.GetProperty()]
 	}
 
 	if left.GetValue() != nil {

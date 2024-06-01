@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/helper"
 	"github.com/apibrew/apibrew/pkg/logging"
@@ -744,10 +745,10 @@ func (r *recordService) initHandlers() {
 		Id:   "record-validation-handler",
 		Name: "record-validation-handler",
 		Fn:   r.validateRecordHandler,
-		Selector: &model.EventSelector{
-			Actions: []model.Event_Action{
-				model.Event_CREATE,
-				model.Event_UPDATE,
+		Selector: &core.EventSelector{
+			Actions: []core.Event_Action{
+				core.Event_CREATE,
+				core.Event_UPDATE,
 			},
 		},
 		Order:    50,
@@ -760,10 +761,10 @@ func (r *recordService) initHandlers() {
 		Id:   "record-reference-check-handler",
 		Name: "record-reference-check-handler",
 		Fn:   r.referenceCheckHandler,
-		Selector: &model.EventSelector{
-			Actions: []model.Event_Action{
-				model.Event_CREATE,
-				model.Event_UPDATE,
+		Selector: &core.EventSelector{
+			Actions: []core.Event_Action{
+				core.Event_CREATE,
+				core.Event_UPDATE,
 			},
 		},
 		Order:    51,
@@ -846,17 +847,17 @@ func (r *recordService) checkReferences(ctx context.Context, resource *model.Res
 	return rr.checkReferences(ctx)
 }
 
-func (r *recordService) validateRecordHandler(ctx context.Context, event *model.Event) (*model.Event, error) {
-	if err := validate.Records(event.Resource, abs.RecordLikeAsRecords2(event.Records), event.Action == model.Event_UPDATE); err != nil {
+func (r *recordService) validateRecordHandler(ctx context.Context, event *core.Event) (*core.Event, error) {
+	if err := validate.Records(event.Resource, event.Records, event.Action == core.Event_UPDATE); err != nil {
 		return nil, err
 	}
 
 	return event, nil
 }
 
-func (r *recordService) referenceCheckHandler(ctx context.Context, event *model.Event) (*model.Event, error) {
+func (r *recordService) referenceCheckHandler(ctx context.Context, event *core.Event) (*core.Event, error) {
 	if event.Resource.CheckReferences {
-		if err := r.checkReferences(ctx, event.Resource, abs.RecordLikeAsRecords2(event.Records)); err != nil {
+		if err := r.checkReferences(ctx, event.Resource, event.Records); err != nil {
 			return nil, err
 		}
 	}

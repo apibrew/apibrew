@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -25,10 +26,10 @@ func (b backendProviderService) DestroyDataSource(ctx context.Context, dataSourc
 }
 
 func (b backendProviderService) AddRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
-		Action:   model.Event_CREATE,
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &core.Event{
+		Action:   core.Event_CREATE,
 		Resource: resource,
-		Records:  abs.RecordLikeAsRecords(records),
+		Records:  records,
 	}))
 
 	if err != nil {
@@ -39,14 +40,14 @@ func (b backendProviderService) AddRecords(ctx context.Context, resource *model.
 		return nil, nil
 	}
 
-	return abs.RecordLikeAsRecords2(endEvent.Records), nil
+	return endEvent.Records, nil
 }
 
 func (b backendProviderService) UpdateRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
-		Action:   model.Event_UPDATE,
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &core.Event{
+		Action:   core.Event_UPDATE,
 		Resource: resource,
-		Records:  abs.RecordLikeAsRecords(records),
+		Records:  records,
 	}))
 
 	if err != nil {
@@ -57,14 +58,14 @@ func (b backendProviderService) UpdateRecords(ctx context.Context, resource *mod
 		return nil, nil
 	}
 
-	return abs.RecordLikeAsRecords2(endEvent.Records), nil
+	return endEvent.Records, nil
 }
 
 func (b backendProviderService) GetRecord(ctx context.Context, resource *model.Resource, id string, resolveReferences []string) (abs.RecordLike, error) {
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
-		Action:   model.Event_GET,
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &core.Event{
+		Action:   core.Event_GET,
 		Resource: resource,
-		Records:  []*model.Record{abs.RecordLikeAsRecord(util.IdRecord(id))},
+		Records:  []abs.RecordLike{util.IdRecord(id)},
 		RecordSearchParams: &model.Event_RecordSearchParams{
 			ResolveReferences: resolveReferences,
 		},
@@ -86,18 +87,18 @@ func (b backendProviderService) GetRecord(ctx context.Context, resource *model.R
 }
 
 func (b backendProviderService) DeleteRecords(ctx context.Context, resource *model.Resource, list []abs.RecordLike) error {
-	_, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
-		Action:   model.Event_DELETE,
+	_, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &core.Event{
+		Action:   core.Event_DELETE,
 		Resource: resource,
-		Records:  abs.RecordLikeAsRecords(list),
+		Records:  list,
 	}))
 
 	return err
 }
 
 func (b backendProviderService) ListRecords(ctx context.Context, resource *model.Resource, params abs.ListRecordParams) ([]abs.RecordLike, uint32, error) {
-	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &model.Event{
-		Action:   model.Event_LIST,
+	endEvent, err := b.eventHandler.Handle(ctx, b.PrepareInternalEvent(ctx, &core.Event{
+		Action:   core.Event_LIST,
 		Resource: resource,
 		RecordSearchParams: &model.Event_RecordSearchParams{
 			Query:             params.Query,
@@ -113,10 +114,10 @@ func (b backendProviderService) ListRecords(ctx context.Context, resource *model
 		return nil, 0, err
 	}
 
-	return abs.RecordLikeAsRecords2(endEvent.Records), uint32(endEvent.Total), nil
+	return endEvent.Records, uint32(endEvent.Total), nil
 }
 
-func (b backendProviderService) PrepareInternalEvent(ctx context.Context, event *model.Event) *model.Event {
+func (b backendProviderService) PrepareInternalEvent(ctx context.Context, event *core.Event) *core.Event {
 	event.Id = fmt.Sprintf("internal-event-%s-%s-%s-%s", event.Resource.Namespace, event.Resource.Name, event.Action, util.RandomHex(6))
 	event.Time = timestamppb.Now()
 	event.Annotations = annotations.FromCtx(annotations.WithContext(ctx, event.Resource)).GetAnnotations()

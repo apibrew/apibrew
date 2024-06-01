@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
@@ -32,7 +33,7 @@ func (e *eventChannelGrpcService) Poll(req *stub.EventPollRequest, srv stub.Even
 	}
 
 	for message := range out {
-		err := srv.Send(message)
+		err := srv.Send(message.ToProtoEvent())
 
 		if err != nil {
 			cancel()
@@ -45,7 +46,7 @@ func (e *eventChannelGrpcService) Poll(req *stub.EventPollRequest, srv stub.Even
 }
 
 func (e *eventChannelGrpcService) Write(ctx context.Context, req *stub.EventWriteRequest) (*stub.EventWriteResponse, error) {
-	err := e.eventChannelService.WriteEvent(ctx, req.Event)
+	err := e.eventChannelService.WriteEvent(ctx, core.FromProtoEvent(req.Event))
 
 	if err != nil {
 		log.Error(err)

@@ -1,6 +1,8 @@
 package extramappings
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/util"
@@ -9,11 +11,11 @@ import (
 	"time"
 )
 
-func EventToProto(result *resource_model.Event) *model.Event {
-	var event = new(model.Event)
+func EventToProto(result *resource_model.Event) *core.Event {
+	var event = new(core.Event)
 
 	event.Id = result.Id
-	event.Action = model.Event_Action(model.Event_Action_value[string(result.Action)])
+	event.Action = core.Event_Action(model.Event_Action_value[string(result.Action)])
 	if result.Time != nil {
 		event.Time = timestamppb.New(*result.Time)
 	}
@@ -38,7 +40,7 @@ func EventToProto(result *resource_model.Event) *model.Event {
 			ResolveReferences: result.RecordSearchParams.ResolveReferences,
 		}
 	}
-	event.Records = util.ArrayMapX(result.Records, func(t *resource_model.Record) *model.Record {
+	event.Records = util.ArrayMapX(result.Records, func(t *resource_model.Record) abs.RecordLike {
 		return &model.Record{
 			Properties: resource_model.RecordMapperInstance.ToRecord(t).GetProperties()["properties"].GetStructValue().Fields,
 		}
@@ -55,7 +57,7 @@ func EventToProto(result *resource_model.Event) *model.Event {
 	return event
 }
 
-func EventFromProto(event *model.Event) *resource_model.Event {
+func EventFromProto(event *core.Event) *resource_model.Event {
 	extensionEvent := new(resource_model.Event)
 	extensionEvent.Id = event.Id
 	extensionEvent.Action = resource_model.ExtensionAction(model.Event_Action_name[int32(event.Action)])
@@ -80,7 +82,7 @@ func EventFromProto(event *model.Event) *resource_model.Event {
 			ResolveReferences: event.RecordSearchParams.ResolveReferences,
 		}
 	}
-	extensionEvent.Records = util.ArrayMapX(event.Records, func(item *model.Record) *resource_model.Record {
+	extensionEvent.Records = util.ArrayMapX(event.Records, func(item abs.RecordLike) *resource_model.Record {
 		return resource_model.RecordMapperInstance.FromRecord(&model.Record{
 			Properties: map[string]*structpb.Value{
 				"id":         item.GetProperties()["id"],

@@ -2,12 +2,12 @@ package backend_event_handler
 
 import (
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/util"
 	"strings"
 )
 
-func ShortEventInfo(event *model.Event) string {
+func ShortEventInfo(event *core.Event) string {
 	var ids []string
 
 	if event == nil {

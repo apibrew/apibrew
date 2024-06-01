@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/service/backend-event-handler"
@@ -57,10 +58,10 @@ func (e *pollExtension) Run(ctx context.Context) error {
 	return nil
 }
 
-func (e *pollExtension) prepareExtSelector(extension *resource_model.Extension) *model.EventSelector {
-	return &model.EventSelector{
-		Actions: util.ArrayMap(extension.Selector.Actions, func(s resource_model.EventAction) model.Event_Action {
-			return model.Event_Action(model.Event_Action_value[string(s)])
+func (e *pollExtension) prepareExtSelector(extension *resource_model.Extension) *core.EventSelector {
+	return &core.EventSelector{
+		Actions: util.ArrayMap(extension.Selector.Actions, func(s resource_model.EventAction) core.Event_Action {
+			return core.Event_Action(model.Event_Action_value[string(s)])
 		}),
 		RecordSelector: nil,
 		Namespaces:     extension.Selector.Namespaces,
@@ -70,7 +71,7 @@ func (e *pollExtension) prepareExtSelector(extension *resource_model.Extension) 
 	}
 }
 
-func (e *pollExtension) processEvent(originalEvent *model.Event) {
+func (e *pollExtension) processEvent(originalEvent *core.Event) {
 	var processedEvent = originalEvent
 
 	for _, ext := range e.registeredExtensions {

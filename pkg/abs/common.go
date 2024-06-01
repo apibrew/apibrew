@@ -61,3 +61,12 @@ func NewRecordLike() RecordLike {
 		Properties: make(map[string]*structpb.Value),
 	}
 }
+
+func NewRecordLikeWithProperties(properties map[string]*structpb.Value) RecordLike {
+	if properties == nil {
+		properties = make(map[string]*structpb.Value)
+	}
+	return &model.Record{
+		Properties: properties,
+	}
+}

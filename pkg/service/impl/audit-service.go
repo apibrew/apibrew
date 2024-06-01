@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -29,7 +30,7 @@ func (a *auditService) prepareHandler() backend_event_handler.Handler {
 		Id:   "audit-handler",
 		Name: "audit-handler",
 		Fn:   a.handle,
-		Selector: &model.EventSelector{
+		Selector: &core.EventSelector{
 			Annotations: map[string]string{
 				annotations.EnableAudit: annotations.Enabled,
 			},
@@ -40,10 +41,10 @@ func (a *auditService) prepareHandler() backend_event_handler.Handler {
 	}
 }
 
-func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.Event, error) {
+func (a *auditService) handle(ctx context.Context, event *core.Event) (*core.Event, error) {
 	log.Debug("Handled by audit-handler")
 
-	if event.Action == model.Event_GET || event.Action == model.Event_LIST || event.Action == model.Event_OPERATE {
+	if event.Action == core.Event_GET || event.Action == core.Event_LIST || event.Action == core.Event_OPERATE {
 		return event, nil
 	}
 
@@ -68,15 +69,15 @@ func (a *auditService) handle(ctx context.Context, event *model.Event) (*model.E
 
 	if event.Records != nil && len(event.Records) > 0 {
 		for _, record := range event.Records {
-			if record.Properties["id"] == nil {
+			if record.GetProperties()["id"] == nil {
 				log.Warnf("Audit log cannot be created for record %s as it does not have an id", util.GetRecordId(record))
 				continue
 			}
-			auditLog.RecordId = record.Properties["id"].GetStringValue()
+			auditLog.RecordId = record.GetProperties()["id"].GetStringValue()
 			var propertiesMap = make(map[string]interface{})
 
-			if record.Properties != nil {
-				for key, value := range record.Properties {
+			if record.GetProperties() != nil {
+				for key, value := range record.GetProperties() {
 					propertiesMap[key] = value.AsInterface()
 				}
 			}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/ext"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -28,7 +29,7 @@ type externalService struct {
 	eventChannelService service.EventChannelService
 }
 
-func (e *externalService) Call(ctx context.Context, call resource_model.ExternalCall, event *model.Event) (*model.Event, error) {
+func (e *externalService) Call(ctx context.Context, call resource_model.ExternalCall, event *core.Event) (*core.Event, error) {
 	userDetails := jwt_model.GetUserDetailsFromContext(ctx)
 
 	if event.Annotations == nil {
@@ -52,7 +53,7 @@ func (e *externalService) Call(ctx context.Context, call resource_model.External
 	}
 }
 
-func (e *externalService) CallFunction(ctx context.Context, call *resource_model.FunctionCall, event *model.Event) (*model.Event, error) {
+func (e *externalService) CallFunction(ctx context.Context, call *resource_model.FunctionCall, event *core.Event) (*core.Event, error) {
 	if e.functionClientMap[call.Host+"/"+call.FunctionName] == nil {
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -82,7 +83,7 @@ func (e *externalService) CallFunction(ctx context.Context, call *resource_model
 
 	result, err := functionService.FunctionCall(ctx, &ext.FunctionCallRequest{
 		Name:  call.FunctionName,
-		Event: event,
+		Event: event.ToProtoEvent(),
 	})
 
 	if err != nil {
@@ -97,10 +98,10 @@ func (e *externalService) CallFunction(ctx context.Context, call *resource_model
 
 	log.Print(result)
 
-	return result.Event, nil
+	return core.FromProtoEvent(result.Event), nil
 }
 
-func (e *externalService) CallHttp(ctx context.Context, call *resource_model.HttpCall, event *model.Event) (*model.Event, error) {
+func (e *externalService) CallHttp(ctx context.Context, call *resource_model.HttpCall, event *core.Event) (*core.Event, error) {
 	body, err := json.Marshal(extramappings.EventFromProto(event))
 
 	if err != nil {
@@ -159,7 +160,7 @@ func (e *externalService) CallHttp(ctx context.Context, call *resource_model.Htt
 	return extramappings.EventToProto(result), nil
 }
 
-func (e *externalService) reportHttpError(responseData []byte) (*model.Event, error) {
+func (e *externalService) reportHttpError(responseData []byte) (*core.Event, error) {
 	var responseError = &model.Error{}
 
 	err := protojson.Unmarshal(responseData, responseError)
@@ -171,7 +172,7 @@ func (e *externalService) reportHttpError(responseData []byte) (*model.Event, er
 	return nil, errors.RecordValidationError.WithDetails(responseError.Message)
 }
 
-func (e *externalService) CallChannel(ctx context.Context, call *resource_model.ChannelCall, event *model.Event) (*model.Event, error) {
+func (e *externalService) CallChannel(ctx context.Context, call *resource_model.ChannelCall, event *core.Event) (*core.Event, error) {
 	return e.eventChannelService.Exec(ctx, call.ChannelKey, event)
 }
 

@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
 	log "github.com/sirupsen/logrus"
@@ -12,8 +12,8 @@ import (
 	"strconv"
 )
 
-type RecordProcessFunc[Entity interface{}] func(ctx context.Context, event *model.Event, instance Entity) (Entity, error)
-type LambdaProcessFunc[Entity interface{}] func(ctx context.Context, event *model.Event, instance Entity) error
+type RecordProcessFunc[Entity interface{}] func(ctx context.Context, event *core.Event, instance Entity) (Entity, error)
+type LambdaProcessFunc[Entity interface{}] func(ctx context.Context, event *core.Event, instance Entity) error
 
 type Handler[Entity interface{}] interface {
 	Name(string) Handler[Entity]
@@ -84,9 +84,9 @@ func (h handler[Entity]) handle(processFunc RecordProcessFunc[Entity]) {
 	h.ext.RegisterFunction(h.prepareName(), h.prepareProcessFunc(processFunc))
 }
 
-func (h handler[Entity]) prepareProcessFunc(processFunc RecordProcessFunc[Entity]) func(ctx context.Context, req *model.Event) (*model.Event, error) {
-	return func(ctx context.Context, req *model.Event) (*model.Event, error) {
-		processedRecords := make([]*model.Record, len(req.Records))
+func (h handler[Entity]) prepareProcessFunc(processFunc RecordProcessFunc[Entity]) func(ctx context.Context, req *core.Event) (*core.Event, error) {
+	return func(ctx context.Context, req *core.Event) (*core.Event, error) {
+		processedRecords := make([]abs.RecordLike, len(req.Records))
 
 		for i, record := range req.Records {
 			processedRecord, err := processFunc(ctx, req, h.mapper.FromRecord(record))
@@ -123,11 +123,11 @@ func (h handler[Entity]) Fire(ctx context.Context, action string, payload Entity
 	return err
 }
 
-func (h handler[Entity]) prepareLambdaProcessFunc(action string, processFunc LambdaProcessFunc[Entity]) func(ctx context.Context, req *model.Event) (*model.Event, error) {
-	return func(ctx context.Context, req *model.Event) (*model.Event, error) {
+func (h handler[Entity]) prepareLambdaProcessFunc(action string, processFunc LambdaProcessFunc[Entity]) func(ctx context.Context, req *core.Event) (*core.Event, error) {
+	return func(ctx context.Context, req *core.Event) (*core.Event, error) {
 
 		for _, record := range req.Records {
-			if record.Properties["action"] == nil || record.Properties["action"].GetStringValue() != action { // @todo this logic should be in server side
+			if record.GetProperties()["action"] == nil || record.GetProperties()["action"].GetStringValue() != action { // @todo this logic should be in server side
 				continue
 			}
 			err := processFunc(ctx, req, h.mapper.FromRecord(record))

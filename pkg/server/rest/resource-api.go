@@ -2,7 +2,7 @@ package rest
 
 import (
 	"encoding/json"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resource_model/extramappings"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -145,11 +145,11 @@ func (r *resourceApi) handleResourceDelete(writer http.ResponseWriter, request *
 
 func (r *resourceApi) handleResourceWatch(writer http.ResponseWriter, request *http.Request) {
 	res, err := r.watchService.WatchResource(request.Context(), service.WatchParams{
-		Selector: &model.EventSelector{
-			Actions: []model.Event_Action{
-				model.Event_CREATE,
-				model.Event_UPDATE,
-				model.Event_DELETE,
+		Selector: &core.EventSelector{
+			Actions: []core.Event_Action{
+				core.Event_CREATE,
+				core.Event_UPDATE,
+				core.Event_DELETE,
 			},
 			Namespaces: []string{resources.ResourceResource.Namespace},
 			Resources:  []string{resources.ResourceResource.Name},

@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
 	log "github.com/sirupsen/logrus"
@@ -26,7 +27,7 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchSer
 	}()
 
 	out, err := w.watchService.Watch(localCtx, service.WatchParams{
-		Selector:   req.Selector,
+		Selector:   core.FromProtoEventSelector(req.Selector),
 		BufferSize: 500,
 	})
 
@@ -35,7 +36,7 @@ func (w *watchGrpcService) Watch(req *stub.WatchRequest, res stub.Watch_WatchSer
 	}
 
 	for message := range out {
-		err := res.Send(message)
+		err := res.Send(message.ToProtoEvent())
 
 		if err != nil {
 			cancel()

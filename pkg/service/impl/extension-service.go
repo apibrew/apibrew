@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -89,9 +90,9 @@ func (d *extensionService) prepareExtensionHandler(extension *resource_model.Ext
 	return backend_event_handler.Handler{
 		Id:   "extension-" + extension.Id.String(),
 		Name: "extension-" + extension.Name,
-		Selector: &model.EventSelector{
-			Actions: util.ArrayMap(extension.Selector.Actions, func(s resource_model.EventAction) model.Event_Action {
-				return model.Event_Action(model.Event_Action_value[string(s)])
+		Selector: &core.EventSelector{
+			Actions: util.ArrayMap(extension.Selector.Actions, func(s resource_model.EventAction) core.Event_Action {
+				return core.Event_Action(core.Event_Action_value[string(s)])
 			}),
 			RecordSelector: nil,
 			Namespaces:     extension.Selector.Namespaces,
@@ -103,7 +104,7 @@ func (d *extensionService) prepareExtensionHandler(extension *resource_model.Ext
 		Finalizes: extension.Finalizes,
 		Sync:      extension.Sync,
 		Responds:  extension.Responds,
-		Fn: func(ctx context.Context, event *model.Event) (*model.Event, error) {
+		Fn: func(ctx context.Context, event *core.Event) (*core.Event, error) {
 			if event.Annotations == nil {
 				event.Annotations = make(map[string]string)
 			}

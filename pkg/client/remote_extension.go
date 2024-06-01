@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/ext"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
@@ -58,13 +59,13 @@ func (e *remoteExtension) FunctionCall(ctx context.Context, req *ext.FunctionCal
 		return nil, status.Error(codes.NotFound, "External function not found: "+req.Name)
 	}
 
-	result, err := e.functions[req.Name](ctx, req.Event)
+	result, err := e.functions[req.Name](ctx, core.FromProtoEvent(req.Event))
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &ext.FunctionCallResponse{Event: result}, nil
+	return &ext.FunctionCallResponse{Event: result.ToProtoEvent()}, nil
 }
 
 func (e *remoteExtension) Run(ctx context.Context) error {

@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -13,7 +14,7 @@ import (
 
 type eventSignal struct {
 	ctx     context.Context
-	handler chan *model.Event
+	handler chan *core.Event
 }
 
 type eventChannelService struct {
@@ -39,7 +40,7 @@ func (e *eventChannelService) Init(config *model.AppConfig) {
 	}
 }
 
-func (e *eventChannelService) WriteEvent(ctx context.Context, event *model.Event) error {
+func (e *eventChannelService) WriteEvent(ctx context.Context, event *core.Event) error {
 	if err := e.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return err
 	}
@@ -58,14 +59,14 @@ func (e *eventChannelService) WriteEvent(ctx context.Context, event *model.Event
 	return nil
 }
 
-func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string) (chan *model.Event, error) {
+func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string) (chan *core.Event, error) {
 	log.Infof("Polling events for channel: %v", channelKey)
 	if err := e.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return nil, err
 	}
 
 	eventChan := e.ensureChannel(channelKey)
-	out := make(chan *model.Event, 100)
+	out := make(chan *core.Event, 100)
 
 	go func() {
 		for {
@@ -80,7 +81,7 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 				}
 			case <-time.After(3 * time.Second):
 				log.Tracef("Heartbeat message sent to channel: %v", channelKey)
-				out <- &model.Event{
+				out <- &core.Event{
 					Id:   "heartbeat-message",
 					Time: timestamppb.Now(),
 				}
@@ -93,10 +94,10 @@ func (e *eventChannelService) PollEvents(ctx context.Context, channelKey string)
 	return out, nil
 }
 
-func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, error) {
+func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event *core.Event) (*core.Event, error) {
 	eventChan := e.ensureChannel(channelKey)
 
-	var handler chan *model.Event
+	var handler chan *core.Event
 
 	cctx, cancel := context.WithTimeout(ctx, time.Duration(e.config.MaxWaitTimeMs)*time.Millisecond)
 
@@ -104,7 +105,7 @@ func (e *eventChannelService) Exec(ctx context.Context, channelKey string, event
 	defer releaseEvent(e, event.Id)
 
 	if event.Sync {
-		handler = make(chan *model.Event)
+		handler = make(chan *core.Event)
 		e.eventSignalMap.Store(event.Id, eventSignal{ctx: cctx, handler: handler})
 	}
 
@@ -133,15 +134,15 @@ func releaseEvent(e *eventChannelService, eventId string) {
 	e.eventSignalMap.Delete(eventId)
 }
 
-func (e *eventChannelService) ensureChannel(key string) chan *model.Event {
+func (e *eventChannelService) ensureChannel(key string) chan *core.Event {
 	value, ok := e.channelChans.Load(key)
 
-	var ch chan *model.Event
+	var ch chan *core.Event
 	if !ok || value == nil {
-		ch = make(chan *model.Event, 100)
+		ch = make(chan *core.Event, 100)
 		e.channelChans.Store(key, ch)
 	} else {
-		ch = value.(chan *model.Event)
+		ch = value.(chan *core.Event)
 	}
 
 	return ch

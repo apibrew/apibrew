@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
@@ -91,19 +92,19 @@ type StatsService interface {
 }
 
 type WatchService interface {
-	Watch(ctx context.Context, params WatchParams) (<-chan *model.Event, error)
-	WatchResource(ctx context.Context, params WatchParams) (<-chan *model.Event, error)
+	Watch(ctx context.Context, params WatchParams) (<-chan *core.Event, error)
+	WatchResource(ctx context.Context, params WatchParams) (<-chan *core.Event, error)
 }
 
 type EventChannelService interface {
-	Exec(ctx context.Context, channelKey string, event *model.Event) (*model.Event, error)
-	PollEvents(ctx context.Context, channelKey string) (chan *model.Event, error)
-	WriteEvent(ctx context.Context, proto *model.Event) error
+	Exec(ctx context.Context, channelKey string, event *core.Event) (*core.Event, error)
+	PollEvents(ctx context.Context, channelKey string) (chan *core.Event, error)
+	WriteEvent(ctx context.Context, proto *core.Event) error
 	Init(config *model.AppConfig)
 }
 
 type ExternalService interface {
-	Call(ctx context.Context, all resource_model.ExternalCall, event *model.Event) (*model.Event, error)
+	Call(ctx context.Context, all resource_model.ExternalCall, event *core.Event) (*core.Event, error)
 }
 
 type ExtensionService interface {
@@ -120,12 +121,12 @@ type CheckRecordAccessParams struct {
 }
 
 type WatchParams struct {
-	Selector   *model.EventSelector
+	Selector   *core.EventSelector
 	BufferSize int
 }
 
 type WatchResourceParams struct {
-	Selector   *model.EventSelector
+	Selector   *core.EventSelector
 	BufferSize int
 }
 

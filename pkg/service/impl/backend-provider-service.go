@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -163,13 +164,13 @@ func (b *backendProviderService) prepareActualHandler() backend_event_handler.Ha
 		Id:   "actualHandler",
 		Name: "actualHandler",
 		Fn:   b.actualHandlerFn,
-		Selector: &model.EventSelector{
-			Actions: []model.Event_Action{
-				model.Event_CREATE,
-				model.Event_UPDATE,
-				model.Event_DELETE,
-				model.Event_GET,
-				model.Event_LIST,
+		Selector: &core.EventSelector{
+			Actions: []core.Event_Action{
+				core.Event_CREATE,
+				core.Event_UPDATE,
+				core.Event_DELETE,
+				core.Event_GET,
+				core.Event_LIST,
 				// OPERATE is not allowed to be handled by actualHandler
 			},
 		},
@@ -181,7 +182,7 @@ func (b *backendProviderService) prepareActualHandler() backend_event_handler.Ha
 	}
 }
 
-func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *model.Event) (*model.Event, error) {
+func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *core.Event) (*core.Event, error) {
 	// if resource is virtual, do not handle it
 	if event.Resource.Virtual {
 		return event, nil
@@ -194,21 +195,21 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 	}
 
 	switch event.Action {
-	case model.Event_CREATE:
-		result, err := bck.AddRecords(ctx, event.Resource, abs.RecordLikeAsRecords2(event.Records))
+	case core.Event_CREATE:
+		result, err := bck.AddRecords(ctx, event.Resource, event.Records)
 
-		event.Records = abs.RecordLikeAsRecords(result)
-
-		return event, err
-	case model.Event_UPDATE:
-		result, err := bck.UpdateRecords(ctx, event.Resource, abs.RecordLikeAsRecords2(event.Records))
-
-		event.Records = abs.RecordLikeAsRecords(result)
+		event.Records = result
 
 		return event, err
-	case model.Event_GET:
+	case core.Event_UPDATE:
+		result, err := bck.UpdateRecords(ctx, event.Resource, event.Records)
+
+		event.Records = result
+
+		return event, err
+	case core.Event_GET:
 		for i, record := range event.Records {
-			result, err := bck.GetRecord(ctx, event.Resource, record.Properties["id"].GetStringValue(), event.RecordSearchParams.ResolveReferences)
+			result, err := bck.GetRecord(ctx, event.Resource, record.GetProperties()["id"].GetStringValue(), event.RecordSearchParams.ResolveReferences)
 
 			if err != nil {
 				return nil, err
@@ -218,10 +219,10 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 		}
 
 		return event, err
-	case model.Event_DELETE:
-		err = bck.DeleteRecords(ctx, event.Resource, abs.RecordLikeAsRecords2(event.Records))
+	case core.Event_DELETE:
+		err = bck.DeleteRecords(ctx, event.Resource, event.Records)
 		return event, err
-	case model.Event_LIST:
+	case core.Event_LIST:
 		result, total, err := bck.ListRecords(ctx, event.Resource, abs.ListRecordParams{
 			Query:             event.RecordSearchParams.Query,
 			Limit:             event.RecordSearchParams.Limit,
@@ -231,7 +232,7 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *mod
 			Sorting:           event.RecordSearchParams.Sorting,
 		})
 
-		event.Records = abs.RecordLikeAsRecords(result)
+		event.Records = result
 		event.Total = uint64(total)
 
 		return event, err

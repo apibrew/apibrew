@@ -38,14 +38,16 @@ func MapToArray[T interface{}](arr map[string]T) []MapEntry[T] {
 	return list
 }
 
-func ArrayMapX[T interface{}, R interface{}](arr []*T, mapper func(*T) *R) []*R {
-	var list = make([]*R, 0)
+func ArrayMapX[T interface{}, R interface{}](arr []T, mapper func(T) R) []R {
+	var list = make([]R, 0)
+
+	var defaultValue R
 
 	for _, item := range arr {
 		if arr != nil {
 			list = append(list, mapper(item))
 		} else {
-			list = append(list, nil)
+			list = append(list, defaultValue)
 		}
 	}
 

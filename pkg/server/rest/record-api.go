@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/api"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -390,11 +391,11 @@ func (r *recordApi) handleRecordWatch(writer http.ResponseWriter, request *http.
 	}
 
 	res, err := r.watchService.WatchResource(r.prepareContext(request), service.WatchParams{
-		Selector: &model.EventSelector{
-			Actions: []model.Event_Action{
-				model.Event_CREATE,
-				model.Event_UPDATE,
-				model.Event_DELETE,
+		Selector: &core.EventSelector{
+			Actions: []core.Event_Action{
+				core.Event_CREATE,
+				core.Event_UPDATE,
+				core.Event_DELETE,
 			},
 			Namespaces:     []string{resource.Namespace},
 			Resources:      []string{resource.Name},

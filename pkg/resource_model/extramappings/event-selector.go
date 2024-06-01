@@ -1,17 +1,18 @@
 package extramappings
 
 import (
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/util"
 )
 
-func EventSelectorToProto(result resource_model.EventSelector) *model.EventSelector {
-	var eventSelector = new(model.EventSelector)
+func EventSelectorToProto(result resource_model.EventSelector) *core.EventSelector {
+	var eventSelector = new(core.EventSelector)
 
 	eventSelector.Ids = result.Ids
-	eventSelector.Actions = util.ArrayMap(result.Actions, func(t resource_model.EventAction) model.Event_Action {
-		return model.Event_Action(model.Event_Action_value[string(t)])
+	eventSelector.Actions = util.ArrayMap(result.Actions, func(t resource_model.EventAction) core.Event_Action {
+		return core.Event_Action(model.Event_Action_value[string(t)])
 	})
 
 	eventSelector.Annotations = result.Annotations

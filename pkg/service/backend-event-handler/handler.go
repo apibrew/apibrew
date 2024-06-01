@@ -2,18 +2,18 @@ package backend_event_handler
 
 import (
 	"context"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/core"
 )
 
 const NaturalOrder = 100
 
-type HandlerFunc func(ctx context.Context, event *model.Event) (*model.Event, error)
+type HandlerFunc func(ctx context.Context, event *core.Event) (*core.Event, error)
 
 type Handler struct {
 	Id         string
 	Name       string
 	Fn         HandlerFunc
-	Selector   *model.EventSelector
+	Selector   *core.EventSelector
 	Order      int
 	Finalizes  bool
 	Sync       bool

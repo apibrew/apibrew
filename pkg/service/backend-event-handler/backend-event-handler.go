@@ -2,9 +2,9 @@ package backend_event_handler
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/logging"
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"sort"
@@ -15,7 +15,7 @@ type backendEventHandler struct {
 	extensionEventSelectorMatcher *ExtensionEventSelectorMatcher
 }
 
-func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.Event) (*model.Event, error) {
+func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *core.Event) (*core.Event, error) {
 	nextEvent := originalEvent
 
 	var handlers = b.filterHandlersForEvent(nextEvent)
@@ -39,7 +39,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 				<-ctx.Done()
 
 				logger.Debugf("Calling handler[%d sync: %v]: %s - %s", localHandler.Order, localHandler.Sync, localHandler.Name, ShortEventInfo(nextEvent))
-				logger.Tracef("Processing event[body]: %s", nextEvent)
+				logger.Tracef("Processing event[body]: %v", nextEvent)
 
 				_, err := localHandler.Fn(util.NewContextWithValues(context.TODO(), ctx), nextEvent)
 
@@ -49,7 +49,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 			}(handler)
 		} else {
 			logger.Debugf("Calling handler[%d sync: %v]: %s - %s", handler.Order, handler.Sync, handler.Name, ShortEventInfo(nextEvent))
-			logger.Tracef("Processing event[body]: %s", nextEvent)
+			logger.Tracef("Processing event[body]: %v", nextEvent)
 
 			nextEvent.Sync = true
 			result, err := handler.Fn(ctx, nextEvent)
@@ -60,7 +60,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 			}
 
 			logger.Debugf("Handler responded: %s - %s", handler.Name, ShortEventInfo(result))
-			logger.Tracef("Handler responded: %s", result)
+			logger.Tracef("Handler responded: %v", result)
 
 			if result != nil && result.Error != nil {
 				logger.Warnf("Handler [%s] responded with error: %v", handler.Name, result.Error)
@@ -90,7 +90,7 @@ func (b *backendEventHandler) Handle(ctx context.Context, originalEvent *model.E
 		}
 	}
 	logger.Debugf("Finished handler chain - %s", ShortEventInfo(nextEvent))
-	logger.Tracef("Processed event: %s", nextEvent)
+	logger.Tracef("Processed event: %v", nextEvent)
 
 	return nextEvent, nil
 }
@@ -114,7 +114,7 @@ func (b *backendEventHandler) UnRegisterHandler(handler Handler) {
 	log.Debugf("Unregister handler[not found]: %s [%v]", handler.Id, handler)
 }
 
-func (b *backendEventHandler) filterHandlersForEvent(incoming *model.Event) []Handler {
+func (b *backendEventHandler) filterHandlersForEvent(incoming *core.Event) []Handler {
 	var result []Handler
 
 	for _, handler := range b.handlers {
@@ -134,5 +134,5 @@ func NewBackendEventHandler() BackendEventHandler {
 type BackendEventHandler interface {
 	RegisterHandler(handler Handler)
 	UnRegisterHandler(handler Handler)
-	Handle(ctx context.Context, incoming *model.Event) (*model.Event, error)
+	Handle(ctx context.Context, incoming *core.Event) (*core.Event, error)
 }

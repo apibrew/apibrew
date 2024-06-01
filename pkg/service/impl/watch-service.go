@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
@@ -20,7 +21,7 @@ type watchService struct {
 	resourceService      service.ResourceService
 }
 
-func (w watchService) WatchResource(ctx context.Context, params service.WatchParams) (<-chan *model.Event, error) {
+func (w watchService) WatchResource(ctx context.Context, params service.WatchParams) (<-chan *core.Event, error) {
 	if params.Selector == nil {
 		return nil, errors.RecordValidationError.WithMessage("selector is required")
 	}
@@ -66,7 +67,7 @@ func (w watchService) WatchResource(ctx context.Context, params service.WatchPar
 	return w.watch(ctx, params)
 }
 
-func (w watchService) Watch(ctx context.Context, params service.WatchParams) (<-chan *model.Event, error) {
+func (w watchService) Watch(ctx context.Context, params service.WatchParams) (<-chan *core.Event, error) {
 	if err := w.authorizationService.CheckIsExtensionController(ctx); err != nil {
 		return nil, err
 	}
@@ -74,18 +75,18 @@ func (w watchService) Watch(ctx context.Context, params service.WatchParams) (<-
 	return w.watch(ctx, params)
 }
 
-func (w watchService) watch(ctx context.Context, p service.WatchParams) (<-chan *model.Event, error) {
+func (w watchService) watch(ctx context.Context, p service.WatchParams) (<-chan *core.Event, error) {
 	if p.BufferSize < 0 || p.BufferSize > 1000 {
 		p.BufferSize = 100
 	}
 
-	out := make(chan *model.Event, p.BufferSize)
-	result := make(chan *model.Event, p.BufferSize)
+	out := make(chan *core.Event, p.BufferSize)
+	result := make(chan *core.Event, p.BufferSize)
 	watchHandlerId := util.RandomHex(6)
 	watchHandler := backend_event_handler.Handler{
 		Id:   "watch-handler-" + watchHandlerId,
 		Name: "watch-handler-" + watchHandlerId,
-		Fn: func(ctx context.Context, event *model.Event) (*model.Event, error) {
+		Fn: func(ctx context.Context, event *core.Event) (*core.Event, error) {
 			if ctx.Err() != nil {
 				return event, nil
 			}
@@ -107,7 +108,7 @@ func (w watchService) watch(ctx context.Context, p service.WatchParams) (<-chan 
 				result <- event
 			case <-time.After(3 * time.Second):
 				log.Tracef("Heartbeat message sent to watcher: %v", watchHandlerId)
-				result <- &model.Event{
+				result <- &core.Event{
 					Id:   "heartbeat-message",
 					Time: timestamppb.Now(),
 				}

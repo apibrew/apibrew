@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"fmt"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resources"
@@ -61,7 +62,7 @@ func (a *statsService) prepareHandler() backend_event_handler.Handler {
 	}
 }
 
-func (s *statsService) handle(ctx context.Context, event *model.Event) (*model.Event, error) {
+func (s *statsService) handle(ctx context.Context, event *core.Event) (*core.Event, error) {
 	if util.IsSystemContext(ctx) {
 		return event, nil
 	}
@@ -83,7 +84,7 @@ func (s *statsService) handle(ctx context.Context, event *model.Event) (*model.E
 	// checking limitations
 
 	if s.limitations != nil && s.limitations.Enabled {
-		if event.Action == model.Event_CREATE {
+		if event.Action == core.Event_CREATE {
 			var globalCount = handleError(s.redisClient.Get(globalLevelKey + ":count").Int64())
 			if globalCount > 0 && globalCount >= int64(s.limitations.MaxRecordCount) {
 				return nil, errors.RateLimitError.WithDetails(fmt.Sprintf("MaxRecordCount exceeded: %d", s.limitations.MaxRecordCount))
@@ -117,11 +118,11 @@ func (s *statsService) handle(ctx context.Context, event *model.Event) (*model.E
 		s.redisClient.Expire(key+":rate:"+nowMinute, time.Minute)
 	}
 
-	if event.Action == model.Event_CREATE {
+	if event.Action == core.Event_CREATE {
 		s.redisClient.IncrBy(resourceLevelKey+":count", int64(len(event.Records)))
 		s.redisClient.IncrBy(namespaceLevelKey+":count", int64(len(event.Records)))
 		s.redisClient.IncrBy(globalLevelKey+":count", int64(len(event.Records)))
-	} else if event.Action == model.Event_DELETE {
+	} else if event.Action == core.Event_DELETE {
 		s.redisClient.DecrBy(resourceLevelKey+":count", int64(len(event.Records)))
 		s.redisClient.DecrBy(namespaceLevelKey+":count", int64(len(event.Records)))
 		s.redisClient.DecrBy(globalLevelKey+":count", int64(len(event.Records)))

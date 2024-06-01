@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/stub"
@@ -40,8 +41,8 @@ type Client interface {
 	UpdateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error
 
 	Watch(ctx context.Context, request *stub.WatchRequest) (stub.Watch_WatchClient, error)
-	PollEvents(ctx context.Context, key string) (<-chan *model.Event, error)
-	WriteEvent(ctx context.Context, key string, event *model.Event) error
+	PollEvents(ctx context.Context, key string) (<-chan *core.Event, error)
+	WriteEvent(ctx context.Context, key string, event *core.Event) error
 }
 
 type Repository[Entity interface{}] interface {

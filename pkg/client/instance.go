@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/annotations"
@@ -319,9 +320,9 @@ func (d *client) DeleteRecord(ctx context.Context, namespace string, name string
 	return err
 }
 
-func (d *client) PollEvents(ctx context.Context, channelKey string) (<-chan *model.Event, error) {
+func (d *client) PollEvents(ctx context.Context, channelKey string) (<-chan *core.Event, error) {
 	log.Infof("Polling events for channel: %v", channelKey)
-	var eventChan = make(chan *model.Event, 1000)
+	var eventChan = make(chan *core.Event, 1000)
 
 	go func() {
 		for ctx.Err() == nil {
@@ -357,7 +358,7 @@ func (d *client) PollEvents(ctx context.Context, channelKey string) (<-chan *mod
 				default:
 				}
 
-				eventChan <- event
+				eventChan <- core.FromProtoEvent(event)
 			}
 		}
 
@@ -367,10 +368,10 @@ func (d *client) PollEvents(ctx context.Context, channelKey string) (<-chan *mod
 	return eventChan, nil
 }
 
-func (d *client) WriteEvent(ctx context.Context, key string, event *model.Event) error {
+func (d *client) WriteEvent(ctx context.Context, key string, event *core.Event) error {
 	_, err := d.eventChannelClient.Write(ctx, &stub.EventWriteRequest{
 		Token: d.token,
-		Event: event,
+		Event: event.ToProtoEvent(),
 	})
 
 	return err

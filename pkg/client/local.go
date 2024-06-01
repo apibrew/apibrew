@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
+	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -55,11 +56,11 @@ func (l localClient) NewPollExtension() Extension {
 	panic("implement me")
 }
 
-func (l localClient) PollEvents(ctx context.Context, key string) (<-chan *model.Event, error) {
+func (l localClient) PollEvents(ctx context.Context, key string) (<-chan *core.Event, error) {
 	panic("implement me")
 }
 
-func (l localClient) WriteEvent(ctx context.Context, key string, event *model.Event) error {
+func (l localClient) WriteEvent(ctx context.Context, key string, event *core.Event) error {
 	panic("implement me")
 }
 
