@@ -1,13 +1,14 @@
 package mapping
 
 import (
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 )
 
-func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.Resource) *model.Record {
+func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.Resource) abs.RecordLike {
 	properties := make(map[string]*structpb.Value)
 
 	if property.Title != nil {
@@ -19,7 +20,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	properties["type"] = structpb.NewStringValue(property.Type.String())
 
 	if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
-		properties["item"] = structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(property.Item, resource).Properties})
+		properties["item"] = structpb.NewStructValue(&structpb.Struct{Fields: ResourcePropertyToRecord(property.Item, resource).GetProperties()})
 	}
 
 	if property.Type == model.ResourceProperty_STRUCT {
@@ -66,7 +67,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 	}
 }
 
-func ResourcePropertyFromRecord(propertyName string, record *model.Record) *model.ResourceProperty {
+func ResourcePropertyFromRecord(propertyName string, record abs.RecordLike) *model.ResourceProperty {
 	if record == nil {
 		return nil
 	}
@@ -74,22 +75,22 @@ func ResourcePropertyFromRecord(propertyName string, record *model.Record) *mode
 	var reference *model.Reference
 	var backReference *model.BackReference
 
-	if record.Properties["reference"] != nil {
+	if record.GetProperties()["reference"] != nil {
 		reference = &model.Reference{}
-		if record.Properties["reference"].GetStructValue() != nil {
-			var referenceProperties = record.Properties["reference"].GetStructValue().GetFields()
+		if record.GetProperties()["reference"].GetStructValue() != nil {
+			var referenceProperties = record.GetProperties()["reference"].GetStructValue().GetFields()
 			reference.Resource = referenceProperties["resource"].GetStructValue().GetFields()["name"].GetStringValue()
 			if referenceProperties["resource"].GetStructValue().GetFields()["namespace"] != nil && referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue() != nil {
 				reference.Namespace = referenceProperties["resource"].GetStructValue().GetFields()["namespace"].GetStructValue().GetFields()["name"].GetStringValue()
 			}
 
-			if record.Properties["backReference"] != nil && record.Properties["backReference"].GetStringValue() != "" {
+			if record.GetProperties()["backReference"] != nil && record.GetProperties()["backReference"].GetStringValue() != "" {
 				backReference = &model.BackReference{
-					Property: record.Properties["backReference"].GetStringValue(),
+					Property: record.GetProperties()["backReference"].GetStringValue(),
 				}
 			}
 		} else {
-			var referenceParts = strings.Split(record.Properties["reference"].GetStringValue(), "/")
+			var referenceParts = strings.Split(record.GetProperties()["reference"].GetStringValue(), "/")
 
 			if len(referenceParts) == 1 {
 				reference.Resource = referenceParts[0]
@@ -102,9 +103,9 @@ func ResourcePropertyFromRecord(propertyName string, record *model.Record) *mode
 
 			// reference.Cascade //todo implement it
 
-			if record.Properties["backReference"] != nil && record.Properties["backReference"].GetStringValue() != "" {
+			if record.GetProperties()["backReference"] != nil && record.GetProperties()["backReference"].GetStringValue() != "" {
 				backReference = &model.BackReference{
-					Property: record.Properties["backReference"].GetStringValue(),
+					Property: record.GetProperties()["backReference"].GetStringValue(),
 				}
 			}
 		}
@@ -112,53 +113,54 @@ func ResourcePropertyFromRecord(propertyName string, record *model.Record) *mode
 
 	var resourceProperty = &model.ResourceProperty{
 		Name:          propertyName,
-		Type:          model.ResourceProperty_Type(model.ResourceProperty_Type_value[strings.ToUpper(record.Properties["type"].GetStringValue())]),
-		Required:      record.Properties["required"].GetBoolValue(),
-		Length:        uint32(record.Properties["length"].GetNumberValue()),
-		Unique:        record.Properties["unique"].GetBoolValue(),
-		Primary:       record.Properties["primary"].GetBoolValue(),
-		Immutable:     record.Properties["immutable"].GetBoolValue(),
-		DefaultValue:  record.Properties["defaultValue"],
-		ExampleValue:  record.Properties["exampleValue"],
+		Type:          model.ResourceProperty_Type(model.ResourceProperty_Type_value[strings.ToUpper(record.GetProperties()["type"].GetStringValue())]),
+		Required:      record.GetProperties()["required"].GetBoolValue(),
+		Length:        uint32(record.GetProperties()["length"].GetNumberValue()),
+		Unique:        record.GetProperties()["unique"].GetBoolValue(),
+		Primary:       record.GetProperties()["primary"].GetBoolValue(),
+		Immutable:     record.GetProperties()["immutable"].GetBoolValue(),
+		DefaultValue:  record.GetProperties()["defaultValue"],
+		ExampleValue:  record.GetProperties()["exampleValue"],
 		Reference:     reference,
 		BackReference: backReference,
-		Annotations: convertMap(record.Properties["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
+		Annotations: convertMap(record.GetProperties()["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
 		}),
 	}
 
-	if record.Properties["virtual"] != nil {
-		resourceProperty.Virtual = record.Properties["virtual"].GetBoolValue()
+	if record.GetProperties()["virtual"] != nil {
+		resourceProperty.Virtual = record.GetProperties()["virtual"].GetBoolValue()
 	}
 
-	if record.Properties["title"] != nil {
+	if record.GetProperties()["title"] != nil {
 		resourceProperty.Title = new(string)
-		*resourceProperty.Title = record.Properties["title"].GetStringValue()
+		*resourceProperty.Title = record.GetProperties()["title"].GetStringValue()
 	}
 
-	if record.Properties["description"] != nil {
+	if record.GetProperties()["description"] != nil {
 		resourceProperty.Description = new(string)
-		*resourceProperty.Description = record.Properties["description"].GetStringValue()
+		*resourceProperty.Description = record.GetProperties()["description"].GetStringValue()
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_LIST || resourceProperty.Type == model.ResourceProperty_MAP {
 		resourceProperty.Item = ResourcePropertyFromRecord("", &model.Record{
-			Properties: record.Properties["item"].GetStructValue().GetFields(),
+			Properties: record.GetProperties()["item"].GetStructValue().GetFields(),
 		})
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_STRUCT {
 		resourceProperty.TypeRef = new(string)
-		*resourceProperty.TypeRef = record.Properties["typeRef"].GetStringValue()
+		*resourceProperty.TypeRef = record.GetProperties()["typeRef"].GetStringValue()
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_ENUM {
-		resourceProperty.EnumValues = util.ArrayMap(record.Properties["enumValues"].GetListValue().GetValues(), func(v *structpb.Value) string {
+		resourceProperty.EnumValues = util.ArrayMap(record.GetProperties()["enumValues"].GetListValue().GetValues(), func(v *structpb.Value) string {
 			return v.GetStringValue()
 		})
 	}
 
-	MapSpecialColumnsFromRecord(resourceProperty, &record.Properties)
+	var properties = record.GetProperties()
+	MapSpecialColumnsFromRecord(resourceProperty, &properties)
 
 	return resourceProperty
 }

@@ -1,13 +1,13 @@
 package mapping
 
 import (
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func MapToRecord[T proto.Message](list []T, mapper func(T) *model.Record) []*model.Record {
-	var result []*model.Record
+func MapToRecord[T proto.Message](list []T, mapper func(T) abs.RecordLike) []abs.RecordLike {
+	var result []abs.RecordLike
 
 	for _, item := range list {
 		result = append(result, mapper(item))
@@ -16,7 +16,7 @@ func MapToRecord[T proto.Message](list []T, mapper func(T) *model.Record) []*mod
 	return result
 }
 
-func MapFromRecord[T proto.Message](list []*model.Record, mapper func(*model.Record) T) []T {
+func MapFromRecord[T proto.Message](list []abs.RecordLike, mapper func(abs.RecordLike) T) []T {
 	var result []T
 
 	for _, item := range list {
@@ -26,11 +26,11 @@ func MapFromRecord[T proto.Message](list []*model.Record, mapper func(*model.Rec
 	return result
 }
 
-func MessageToRecord(message proto.Message) *model.Record {
+func MessageToRecord(message proto.Message) abs.RecordLike {
 	return nil
 }
 
-func MessageFromRecord(resource, namespace string, record *model.Record) proto.Message {
+func MessageFromRecord(resource, namespace string, record abs.RecordLike) proto.Message {
 	return nil
 }
 

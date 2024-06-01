@@ -215,7 +215,7 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *cor
 				return nil, err
 			}
 
-			event.Records[i] = abs.RecordLikeAsRecord(result)
+			event.Records[i] = result
 		}
 
 		return event, err

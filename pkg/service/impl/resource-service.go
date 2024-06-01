@@ -167,7 +167,7 @@ func (r *resourceService) reloadSchema(ctx context.Context) error {
 		},
 	})
 
-	r.schema.Resources = mapping.MapFromRecord(abs.RecordLikeAsRecords(records), mapping.ResourceFromRecord)
+	r.schema.Resources = mapping.MapFromRecord(records, mapping.ResourceFromRecord)
 
 	if err != nil {
 		return err
@@ -423,7 +423,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		return nil, err
 	}
 
-	insertedResource := mapping.ResourceFromRecord(abs.RecordLikeAsRecord(insertedRecord))
+	insertedResource := mapping.ResourceFromRecord(insertedRecord)
 
 	if !insertedResource.Virtual && insertedResource.SourceConfig.DataSource == "" {
 		return nil, errors.ResourceValidationError.WithMessage("DataSource not found with name: " + resource.SourceConfig.DataSource)
