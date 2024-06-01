@@ -3,7 +3,6 @@ package unstructured
 import (
 	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/model"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -99,16 +98,13 @@ var jsonUMo = protojson.UnmarshalOptions{
 }
 
 func ToRecord(u Unstructured) (abs.RecordLike, error) {
-	record := &model.Record{}
 	properties, err := ToProperties(u)
 
 	if err != nil {
 		return nil, err
 	}
 
-	record.Properties = properties
-
-	return record, nil
+	return abs.NewRecordLike().WithProperties(properties), nil
 }
 
 func ToProperties(u Unstructured) (map[string]*structpb.Value, error) {

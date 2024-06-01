@@ -50,7 +50,7 @@ func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 	for _, cd := range Records {
 		found := false
 		for _, dso := range listDataSourceResp.Content {
-			ds := resource_model.DataSourceMapperInstance.FromRecord(dso)
+			ds := resource_model.DataSourceMapperInstance.FromRecord(abs.RecordAsRecordLike(dso))
 
 			if cd.Name == ds.Name {
 				found = true
@@ -82,7 +82,7 @@ func SetupRecords(ctx context.Context, Records []*resource_model.DataSource) {
 
 			found := false
 			for _, dsr := range createRes.Records {
-				ds := resource_model.DataSourceMapperInstance.FromRecord(dsr)
+				ds := resource_model.DataSourceMapperInstance.FromRecord(abs.RecordAsRecordLike(dsr))
 
 				if cd.Name == ds.Name {
 					found = true

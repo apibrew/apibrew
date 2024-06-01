@@ -77,7 +77,7 @@ func TestComplexPayload1Success(t *testing.T) {
 	getRes, err := recordClient.Get(setup.Ctx, &stub.GetRecordRequest{
 		Token:    "",
 		Resource: setup.RichResource1.Name,
-		Id:       util.GetRecordId(res.Records[0]),
+		Id:       util.GetRecordId(abs.RecordAsRecordLike(res.Records[0])),
 	})
 
 	if err != nil {
@@ -86,7 +86,7 @@ func TestComplexPayload1Success(t *testing.T) {
 
 	for _, property := range setup.RichResource1.Properties {
 		propertyType := types.ByResourcePropertyType(property.Type)
-		val1, _ := propertyType.UnPack(record1.GetProperties()[property.Name])
+		val1, _ := propertyType.UnPack(record1.GetStructProperty(property.Name))
 		val2, _ := propertyType.UnPack(getRes.Record.Properties[property.Name])
 
 		if !propertyType.Equals(val1, val2) {

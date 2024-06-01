@@ -183,10 +183,10 @@ func (r *recordService) CreateWithResource(ctx context.Context, resource *model.
 	if len(defaultValueMap) > 0 {
 		for _, record := range params.Records {
 			for key, value := range defaultValueMap {
-				_, exists := record.GetProperties()[key]
+				exists := record.HasProperty(key)
 
 				if !exists {
-					record.GetProperties()[key] = value
+					record.SetStructProperty(key, value)
 				}
 			}
 		}
@@ -290,7 +290,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 		var existingRecord abs.RecordLike
 
 		if !resource.Virtual {
-			identifierProps, err := util.RecordIdentifierProperties(resource, record.GetProperties())
+			identifierProps, err := util.RecordIdentifierProperties(resource, record.ToStruct().GetFields())
 
 			if err != nil {
 				return nil, errors.RecordValidationError.WithMessage(err.Error())
@@ -315,7 +315,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 		}
 
 		if existingRecord == nil {
-			log.Println("Record not found, creating new record", record.GetProperties())
+			log.Println("Record not found, creating new record", record)
 			records, err := r.CreateWithResource(ctx, resource, service.RecordCreateParams{
 				Namespace: resource.Namespace,
 				Resource:  resource.Name,
@@ -328,15 +328,13 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 
 			result = append(result, records...)
 		} else {
-			log.Println("Record found, updating record", record.GetProperties())
+			log.Println("Record found, updating record", record)
 			if annotations.IsEnabled(annotations.FromCtx(ctx), annotations.IgnoreIfExists) {
 				result = append(result, record)
 				continue
 			}
 
-			if record.GetProperties() != nil && existingRecord.GetProperties() != nil {
-				record.GetProperties()["id"] = existingRecord.GetProperties()["id"]
-			}
+			record.SetStructProperty("id", existingRecord.GetStructProperty("id"))
 
 			if util.IsSameRecord(existingRecord, record) {
 				result = append(result, record)
@@ -453,7 +451,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 					var ids []string
 
 					for _, record := range records {
-						getter, _ := util.RecordPropertyAccessorByPath(record.GetProperties(), refProp.Path)
+						getter, _ := util.RecordPropertyAccessorByPath(record.ToStruct().GetFields(), refProp.Path)
 
 						if getter == nil {
 							continue
@@ -474,9 +472,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 									"id": structpb.NewStringValue(util.GetRecordId(record)),
 								}})
 
-								backRefNewRecords = append(backRefNewRecords, &model.Record{
-									Properties: st.Fields,
-								})
+								backRefNewRecords = append(backRefNewRecords, abs.NewRecordLikeWithProperties(st.Fields))
 							}
 						}
 					}
@@ -786,7 +782,7 @@ func (r *recordService) initRecords(config *model.AppConfig) {
 		_, err := r.Apply(subCtx, service.RecordUpdateParams{
 			Namespace: initRecord.Namespace,
 			Resource:  initRecord.Resource,
-			Records:   []abs.RecordLike{initRecord.Record},
+			Records:   []abs.RecordLike{abs.RecordAsRecordLike(initRecord.Record)},
 		})
 
 		if err != nil {

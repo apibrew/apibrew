@@ -38,13 +38,11 @@ func (m *ExtensionMapper) ResourceIdentity() abs.ResourceIdentity {
 }
 
 func (m *ExtensionMapper) ToRecord(extension *Extension) abs.RecordLike {
-	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(extension)
-	return rec
+	return abs.NewRecordLikeWithProperties(m.ToProperties(extension))
 }
 
 func (m *ExtensionMapper) FromRecord(record abs.RecordLike) *Extension {
-	return m.FromProperties(record.GetProperties())
+	return m.FromProperties(record.ToStruct().GetFields())
 }
 
 func (m *ExtensionMapper) ToProperties(extension *Extension) map[string]*structpb.Value {

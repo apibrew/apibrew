@@ -159,7 +159,7 @@ func (b *ExtensionEventSelectorMatcher) resolve(incoming *core.Event, left *mode
 		if len(incoming.Records) == 0 {
 			return nil
 		}
-		return incoming.Records[0].GetProperties()[left.GetProperty()]
+		return incoming.Records[0].GetStructProperty(left.GetProperty())
 	}
 
 	if left.GetValue() != nil {

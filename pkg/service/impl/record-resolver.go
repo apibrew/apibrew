@@ -8,6 +8,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 )
@@ -29,15 +30,20 @@ func (r *recordResolver) resolveReferences(ctx context.Context) error {
 
 	var recordValues = util.ArrayToMap(r.records, func(record abs.RecordLike) string {
 		return util.GetRecordId(record)
-	}, func(t abs.RecordLike) *structpb.Value {
-		return structpb.NewStructValue(&structpb.Struct{Fields: t.GetProperties()})
+	}, func(t abs.RecordLike) abs.RecordLike {
+		return t
 	})
 
-	return r._recordListWalkOperator(ctx, "$", r.resource.Properties, recordValues, pathMap)
+	err := r._recordListWalkOperator(ctx, "$", r.resource.Properties, recordValues, pathMap)
 
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]*structpb.Value, pathsToOperate map[string]bool) error {
+func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path string, properties []*model.ResourceProperty, recordValueMap map[string]abs.RecordLike, pathsToOperate map[string]bool) error {
 	for _, prop := range properties {
 		var newPath = path + "." + prop.Name
 
@@ -55,8 +61,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 		var subValues = make(map[string]*structpb.Value, len(recordValueMap))
 
 		for recordId, value := range recordValueMap {
-			valueSt := value.GetStructValue()
-			subValues[recordId] = valueSt.Fields[prop.Name]
+			subValues[recordId] = value.GetStructProperty(prop.Name)
 		}
 
 		if len(recordValueMap) == 0 {
@@ -84,7 +89,16 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 			if prop.BackReference != nil {
 				var ids []string
 				for _, record := range r.records {
-					ids = append(ids, util.GetRecordId(record))
+					recordId := util.GetRecordId(record)
+					if recordId == "" {
+						continue
+					}
+					ids = append(ids, recordId)
+				}
+
+				if len(ids) == 0 {
+					log.Debug("No records to resolve references")
+					continue
 				}
 
 				// get referenced records
@@ -106,14 +120,14 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 				for id := range subValues {
 					subValues[id] = structpb.NewListValue(&structpb.ListValue{})
-					recordValueMap[id].GetStructValue().Fields[prop.Name] = subValues[id]
+					recordValueMap[id].SetStructProperty(prop.Name, subValues[id])
 				}
 
 				for _, record := range list {
-					actualReference := record.GetProperties()[prop.BackReference.Property].GetStructValue()
+					actualReference := record.GetStructProperty(prop.BackReference.Property).GetStructValue()
 					var id = actualReference.Fields["id"].GetStringValue()
 
-					subValues[id].GetListValue().Values = append(subValues[id].GetListValue().Values, structpb.NewStructValue(&structpb.Struct{Fields: record.GetProperties()}))
+					subValues[id].GetListValue().Values = append(subValues[id].GetListValue().Values, structpb.NewStructValue(record.ToStruct()))
 					referenceRecords = append(referenceRecords, record)
 				}
 			} else {
@@ -176,7 +190,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 					if referenceValue.GetListValue() != nil {
 						subValues[recordId] = structpb.NewListValue(&structpb.ListValue{})
-						recordValueMap[recordId].GetStructValue().Fields[prop.Name] = subValues[recordId]
+						recordValueMap[recordId].SetStructProperty(prop.Name, subValues[recordId])
 
 						for _, subRefValue := range referenceValue.GetListValue().Values {
 							for _, item := range list {
@@ -187,7 +201,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 								}
 
 								if matches {
-									subValues[recordId].GetListValue().Values = append(subValues[recordId].GetListValue().Values, structpb.NewStructValue(&structpb.Struct{Fields: item.GetProperties()}))
+									subValues[recordId].GetListValue().Values = append(subValues[recordId].GetListValue().Values, structpb.NewStructValue(item.ToStruct()))
 									referenceRecords = append(referenceRecords, item)
 								}
 							}
@@ -201,8 +215,8 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 							}
 
 							if matches {
-								subValues[recordId] = structpb.NewStructValue(&structpb.Struct{Fields: item.GetProperties()})
-								recordValueMap[recordId].GetStructValue().Fields[prop.Name] = subValues[recordId]
+								subValues[recordId] = structpb.NewStructValue(item.ToStruct())
+								recordValueMap[recordId].SetStructProperty(prop.Name, subValues[recordId])
 								referenceRecords = append(referenceRecords, item)
 								break
 							}
@@ -360,11 +374,13 @@ func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path 
 
 		if len(pathToOperateNextReference) > 0 {
 			if prop.Type == model.ResourceProperty_STRUCT {
-				err := r._recordListWalkOperator(ctx, newPath, r.getTypeProperties(*prop.TypeRef), subValues, pathToOperateNextReferenceMap)
-
-				if err != nil {
-					return err
-				}
+				log.Println("Not implemented")
+				//err := r._recordListWalkOperator(ctx, newPath, r.getTypeProperties(*prop.TypeRef), subValues, pathToOperateNextReferenceMap)
+				//err := nil
+				//
+				//if err != nil {
+				//	return err
+				//}
 			}
 
 			if prop.Type == model.ResourceProperty_REFERENCE {
@@ -400,7 +416,7 @@ func (r *recordResolver) checkReferences(ctx context.Context) error {
 	var recordValues = util.ArrayToMap(r.records, func(record abs.RecordLike) string {
 		return util.GetRecordId(record)
 	}, func(t abs.RecordLike) *structpb.Value {
-		return structpb.NewStructValue(&structpb.Struct{Fields: t.GetProperties()})
+		return structpb.NewStructValue(t.ToStruct())
 	})
 
 	return r._recordListWalkCheckOperator(ctx, "$", r.resource.Properties, recordValues, pathMap)

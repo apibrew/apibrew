@@ -23,8 +23,8 @@ func InitRecord(ctx context.Context, resource *model.Resource, record abs.Record
 	if util.HasResourceSinglePrimaryProp(resource) {
 		idProp := util.GetResourceSinglePrimaryProp(resource)
 		if idProp.Type == model.ResourceProperty_UUID {
-			if record.GetProperties()[idProp.Name] == nil || !util.IsSystemContext(ctx) {
-				record.GetProperties()[idProp.Name] = structpb.NewStringValue(recordNewId.String())
+			if !record.HasProperty(idProp.Name) || !util.IsSystemContext(ctx) {
+				record.SetStructProperty(idProp.Name, structpb.NewStringValue(recordNewId.String()))
 			}
 		}
 	}

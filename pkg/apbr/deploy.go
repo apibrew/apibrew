@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -132,27 +131,23 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 
 	var record abs.RecordLike
 	if !override {
-		record, err = GetClient().CreateRecord(ctx, "nano", "Code", &model.Record{
-			Properties: map[string]*structpb.Value{
-				"name":          structpb.NewStringValue(name),
-				"content":       structpb.NewStringValue(content),
-				"language":      structpb.NewStringValue(language),
-				"contentFormat": structpb.NewStringValue(contentFormat),
-			},
-		})
+		record, err = GetClient().CreateRecord(ctx, "nano", "Code", abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+			"name":          structpb.NewStringValue(name),
+			"content":       structpb.NewStringValue(content),
+			"language":      structpb.NewStringValue(language),
+			"contentFormat": structpb.NewStringValue(contentFormat),
+		}))
 
 		if err != nil {
 			return err
 		}
 	} else {
-		record, err = GetClient().ApplyRecord(ctx, "nano", "Code", &model.Record{
-			Properties: map[string]*structpb.Value{
-				"name":          structpb.NewStringValue(name),
-				"content":       structpb.NewStringValue(content),
-				"language":      structpb.NewStringValue(language),
-				"contentFormat": structpb.NewStringValue(contentFormat),
-			},
-		})
+		record, err = GetClient().ApplyRecord(ctx, "nano", "Code", abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+			"name":          structpb.NewStringValue(name),
+			"content":       structpb.NewStringValue(content),
+			"language":      structpb.NewStringValue(language),
+			"contentFormat": structpb.NewStringValue(contentFormat),
+		}))
 
 		if err != nil {
 			return err

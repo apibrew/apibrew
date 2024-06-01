@@ -38,13 +38,11 @@ func (m *PermissionMapper) ResourceIdentity() abs.ResourceIdentity {
 }
 
 func (m *PermissionMapper) ToRecord(permission *Permission) abs.RecordLike {
-	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(permission)
-	return rec
+	return abs.NewRecordLikeWithProperties(m.ToProperties(permission))
 }
 
 func (m *PermissionMapper) FromRecord(record abs.RecordLike) *Permission {
-	return m.FromProperties(record.GetProperties())
+	return m.FromProperties(record.ToStruct().GetFields())
 }
 
 func (m *PermissionMapper) ToProperties(permission *Permission) map[string]*structpb.Value {

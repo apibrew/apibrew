@@ -53,7 +53,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 					return err
 				}
 
-				abs.UpdateRecordsProperties(record, appliedRecord.GetProperties())
+				record.Merge(appliedRecord)
 				return err
 			} else if a.mode == CREATE {
 				appliedRecord, err := a.client.CreateRecord(ctx, namespace, resource, record)
@@ -62,7 +62,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 					return err
 				}
 
-				abs.UpdateRecordsProperties(record, appliedRecord.GetProperties())
+				record.Merge(appliedRecord)
 				return err
 			} else if a.mode == UPDATE {
 				appliedRecord, err := a.client.UpdateRecord(ctx, namespace, resource, record)
@@ -71,7 +71,7 @@ func (a *Executor) Apply(ctx context.Context, inputFilePath string, format strin
 					return err
 				}
 
-				abs.UpdateRecordsProperties(record, appliedRecord.GetProperties())
+				record.Merge(appliedRecord)
 				return err
 			} else if a.mode == DELETE {
 				return a.client.DeleteRecord(ctx, namespace, resource, record) // fixme locate id if not exists

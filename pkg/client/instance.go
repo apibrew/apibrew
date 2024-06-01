@@ -49,7 +49,7 @@ func (d *client) LoadRecord(ctx context.Context, namespace string, resource stri
 		return nil, err
 	}
 
-	return resp.Record, nil
+	return abs.RecordAsRecordLike(resp.Record), nil
 }
 
 func (d *client) CreateResource(ctx context.Context, resource *model.Resource, migration bool, force bool) error {
@@ -182,7 +182,7 @@ func (d *client) ReadRecordStream(ctx context.Context, params service.RecordList
 				break
 			}
 
-			recordsChan <- record
+			recordsChan <- abs.RecordAsRecordLike(record)
 
 			select {
 			case <-ctx.Done():
@@ -208,7 +208,7 @@ func (d *client) CreateRecord(ctx context.Context, namespace string, resource st
 		return nil, err
 	}
 
-	return resp.Records[0], nil
+	return abs.RecordAsRecordLike(resp.Records[0]), nil
 }
 
 func (d *client) UpdateRecord(ctx context.Context, namespace string, resource string, record abs.RecordLike) (abs.RecordLike, error) {
@@ -223,7 +223,7 @@ func (d *client) UpdateRecord(ctx context.Context, namespace string, resource st
 		return nil, err
 	}
 
-	return resp.Records[0], nil
+	return abs.RecordAsRecordLike(resp.Records[0]), nil
 }
 
 func (d *client) ApplyRecord(ctx context.Context, namespace string, resource string, record abs.RecordLike) (abs.RecordLike, error) {
@@ -238,7 +238,7 @@ func (d *client) ApplyRecord(ctx context.Context, namespace string, resource str
 		return nil, err
 	}
 
-	return resp.Records[0], nil
+	return abs.RecordAsRecordLike(resp.Records[0]), nil
 }
 
 func (d *client) GetRecord(ctx context.Context, namespace string, resource string, id string) (abs.RecordLike, error) {
@@ -253,7 +253,7 @@ func (d *client) GetRecord(ctx context.Context, namespace string, resource strin
 		return nil, err
 	}
 
-	return resp.Record, nil
+	return abs.RecordAsRecordLike(resp.Record), nil
 }
 
 func (d *client) ListRecords(ctx context.Context, params service.RecordListParams) ([]abs.RecordLike, uint32, error) {
@@ -314,7 +314,7 @@ func (d *client) DeleteRecord(ctx context.Context, namespace string, name string
 		Token:     d.token,
 		Namespace: namespace,
 		Resource:  name,
-		Ids:       []string{record.GetProperties()["id"].GetStringValue()},
+		Ids:       []string{record.GetStructProperty("id").GetStringValue()},
 	})
 
 	return err

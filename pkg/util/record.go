@@ -18,13 +18,11 @@ type PropertyAccessor struct {
 }
 
 func IsSameRecord(existing, updated abs.RecordLike) bool {
-	for key := range updated.GetProperties() {
-		if !proto.Equal(updated.GetProperties()[key], existing.GetProperties()[key]) {
-			return false
-		}
+	if existing == nil || updated == nil {
+		return false
 	}
 
-	return true
+	return existing.EqualTo(updated)
 }
 
 func RecordIdentifierProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, error) {
@@ -182,7 +180,7 @@ func RecordMatchIdentifiableProperties(resource *model.Resource, record abs.Reco
 			//matches, err := RecordMatchIdentifiableProperties(prop.Reference, record, val.GetStructValue().Fields)
 			//return true, nil // fixme
 		} else {
-			if !proto.Equal(record.GetProperties()[key], val) {
+			if !proto.Equal(record.GetStructProperty(key), val) {
 				return false, nil
 			}
 		}
@@ -241,11 +239,7 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 }
 
 func IdRecord(id string) abs.RecordLike {
-	return &model.Record{
-		Properties: map[string]*structpb.Value{
-			"id": structpb.NewStringValue(id),
-		},
-	}
+	return abs.NewRecordLike().WithStringProperty("id", id)
 }
 
 func GetRecordId(record abs.RecordLike) string {
@@ -253,13 +247,5 @@ func GetRecordId(record abs.RecordLike) string {
 		return ""
 	}
 
-	if record.GetProperties() == nil {
-		return ""
-	}
-
-	if id, ok := record.GetProperties()["id"]; ok {
-		return id.GetStringValue()
-	}
-
-	return ""
+	return record.GetStringProperty("id")
 }

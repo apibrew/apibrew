@@ -90,7 +90,7 @@ func (s RecordInlineSelector) resolve(resource *model.Resource, record abs.Recor
 			return nil, nil, nil, errors.PropertyNotFoundError.WithDetails("Property not found: " + *than.Left.Property)
 		}
 
-		left = unstructured.FromValue(record.GetProperties()[*than.Left.Property])
+		left = unstructured.FromValue(record.GetStructProperty(*than.Left.Property))
 	} else {
 		left = than.Left.Value
 	}
@@ -102,7 +102,7 @@ func (s RecordInlineSelector) resolve(resource *model.Resource, record abs.Recor
 			return nil, nil, nil, errors.PropertyNotFoundError.WithDetails("Property not found: " + *than.Left.Property)
 		}
 
-		right = unstructured.FromValue(record.GetProperties()[*than.Right.Property])
+		right = unstructured.FromValue(record.GetStructProperty(*than.Right.Property))
 	} else {
 		right = than.Right.Value
 	}

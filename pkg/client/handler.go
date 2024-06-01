@@ -95,7 +95,7 @@ func (h handler[Entity]) prepareProcessFunc(processFunc RecordProcessFunc[Entity
 				return nil, err
 			}
 
-			processedRecords[i] = abs.RecordLikeAsRecord(h.mapper.ToRecord(processedRecord))
+			processedRecords[i] = h.mapper.ToRecord(processedRecord)
 		}
 
 		req.Records = processedRecords
@@ -112,9 +112,9 @@ func (h handler[Entity]) Fire(ctx context.Context, action string, payload Entity
 	rec := h.mapper.ToRecord(payload)
 	ri := h.mapper.ResourceIdentity()
 
-	rec.GetProperties()["action"] = structpb.NewStringValue(action)
+	rec.SetStructProperty("action", structpb.NewStringValue(action))
 
-	_, err := h.dhClient.CreateRecord(ctx, ri.Namespace, ri.Name, abs.RecordLikeAsRecord(rec))
+	_, err := h.dhClient.CreateRecord(ctx, ri.Namespace, ri.Name, rec)
 
 	if err != nil {
 		log.Error("Error while firing event: ", err)
@@ -127,7 +127,7 @@ func (h handler[Entity]) prepareLambdaProcessFunc(action string, processFunc Lam
 	return func(ctx context.Context, req *core.Event) (*core.Event, error) {
 
 		for _, record := range req.Records {
-			if record.GetProperties()["action"] == nil || record.GetProperties()["action"].GetStringValue() != action { // @todo this logic should be in server side
+			if record.GetStructProperty("action") == nil || record.GetStructProperty("action").GetStringValue() != action { // @todo this logic should be in server side
 				continue
 			}
 			err := processFunc(ctx, req, h.mapper.FromRecord(record))

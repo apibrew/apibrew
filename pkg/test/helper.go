@@ -17,23 +17,23 @@ func CheckTwoRecordEquals(t *testing.T, resource *model.Resource, a abs.RecordLi
 			continue
 		}
 
-		if (a.GetProperties()[prop.Name] != nil) != (b.GetProperties()[prop.Name] != nil) {
-			t.Errorf("[%s]; different: %v <=> %v", prop.Name, a.GetProperties()[prop.Name], b.GetProperties()[prop.Name])
+		if (a.GetStructProperty(prop.Name) != nil) != (b.GetStructProperty(prop.Name) != nil) {
+			t.Errorf("[%s]; different: %v <=> %v", prop.Name, a.GetStructProperty(prop.Name), b.GetStructProperty(prop.Name))
 		}
 
-		if (a.GetProperties()[prop.Name] == nil) && (b.GetProperties()[prop.Name] == nil) {
+		if (a.GetStructProperty(prop.Name) == nil) && (b.GetStructProperty(prop.Name) == nil) {
 			continue
 		}
 
 		typeHelper := types.ByResourcePropertyType(prop.Type)
 
-		va, err := typeHelper.UnPack(a.GetProperties()[prop.Name])
+		va, err := typeHelper.UnPack(a.GetStructProperty(prop.Name))
 
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		vb, err := typeHelper.UnPack(b.GetProperties()[prop.Name])
+		vb, err := typeHelper.UnPack(b.GetStructProperty(prop.Name))
 
 		if err != nil {
 			t.Error(err)

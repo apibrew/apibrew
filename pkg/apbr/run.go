@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/structpb"
 	"os"
@@ -110,20 +110,18 @@ func runNanoCode(ctx context.Context, path string) error {
 		content = string(contentBytes)
 	}
 
-	result, err := GetClient().CreateRecord(ctx, "nano", "Script", &model.Record{
-		Properties: map[string]*structpb.Value{
-			"source":        structpb.NewStringValue(content),
-			"language":      structpb.NewStringValue(language),
-			"contentFormat": structpb.NewStringValue(contentFormat),
-		},
-	})
+	result, err := GetClient().CreateRecord(ctx, "nano", "Script", abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+		"source":        structpb.NewStringValue(content),
+		"language":      structpb.NewStringValue(language),
+		"contentFormat": structpb.NewStringValue(contentFormat),
+	}))
 
 	if err != nil {
 		return err
 	}
 
-	if result.GetProperties()["output"] != nil {
-		var output = result.GetProperties()["output"].AsInterface()
+	if result.HasProperty("output") {
+		var output = result.GetStructProperty("output").AsInterface()
 
 		data, err := json.Marshal(output)
 

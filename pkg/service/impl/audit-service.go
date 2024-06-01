@@ -69,17 +69,15 @@ func (a *auditService) handle(ctx context.Context, event *core.Event) (*core.Eve
 
 	if event.Records != nil && len(event.Records) > 0 {
 		for _, record := range event.Records {
-			if record.GetProperties()["id"] == nil {
+			if record.GetStructProperty("id") == nil {
 				log.Warnf("Audit log cannot be created for record %s as it does not have an id", util.GetRecordId(record))
 				continue
 			}
-			auditLog.RecordId = record.GetProperties()["id"].GetStringValue()
+			auditLog.RecordId = record.GetStructProperty("id").GetStringValue()
 			var propertiesMap = make(map[string]interface{})
 
-			if record.GetProperties() != nil {
-				for key, value := range record.GetProperties() {
-					propertiesMap[key] = value.AsInterface()
-				}
+			for _, key := range record.Keys() {
+				propertiesMap[key] = record.AsInterface(key)
 			}
 
 			auditLog.Properties = propertiesMap

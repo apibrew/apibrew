@@ -38,13 +38,11 @@ func (m *NamespaceMapper) ResourceIdentity() abs.ResourceIdentity {
 }
 
 func (m *NamespaceMapper) ToRecord(namespace *Namespace) abs.RecordLike {
-	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(namespace)
-	return rec
+	return abs.NewRecordLikeWithProperties(m.ToProperties(namespace))
 }
 
 func (m *NamespaceMapper) FromRecord(record abs.RecordLike) *Namespace {
-	return m.FromProperties(record.GetProperties())
+	return m.FromProperties(record.ToStruct().GetFields())
 }
 
 func (m *NamespaceMapper) ToProperties(namespace *Namespace) map[string]*structpb.Value {

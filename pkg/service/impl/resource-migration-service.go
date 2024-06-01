@@ -196,7 +196,7 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResource(resource, e
 		if prop.Name == "properties" {
 			continue
 		}
-		if !proto.Equal(resourceRecord.GetProperties()[prop.Name], existingResourceRecord.GetProperties()[prop.Name]) {
+		if !proto.Equal(resourceRecord.GetStructProperty(prop.Name), existingResourceRecord.GetStructProperty(prop.Name)) {
 			changedFields = append(changedFields, prop.Name)
 		}
 	}

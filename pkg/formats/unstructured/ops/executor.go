@@ -124,7 +124,8 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 			}
 
 			// fix type BYTES
-			for key, value := range record.GetProperties() {
+			for _, key := range record.Keys() {
+				value := record.GetStructProperty(key)
 				var property = e.resourcePropertyMap[namespace+"/"+resourceName+"/"+key]
 
 				if property == nil {
@@ -147,7 +148,7 @@ func (e *Executor) RestoreItem(in unstructured.Unstructured) error {
 									return err
 								}
 
-								record.GetProperties()[key] = fileContentStr
+								record.SetStructProperty(key, fileContentStr)
 							}
 						}
 					}

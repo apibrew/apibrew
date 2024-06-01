@@ -635,11 +635,9 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			return err
 		}
 
-		var records = []abs.RecordLike{&model.Record{
-			Properties: map[string]*structpb.Value{
-				"id": structpb.NewStringValue(resourceId),
-			},
-		}}
+		var records = []abs.RecordLike{abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+			"id": structpb.NewStringValue(resourceId),
+		})}
 
 		if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 			Resource:  resources.ResourceResource,
@@ -728,11 +726,7 @@ func (r *resourceService) Get(ctx context.Context, id string) (*model.Resource, 
 	for _, item := range r.schema.Resources {
 		if item.Id != "" && item.Id == id {
 
-			var records = []abs.RecordLike{&model.Record{
-				Properties: map[string]*structpb.Value{
-					"id": structpb.NewStringValue(id),
-				},
-			}}
+			var records = []abs.RecordLike{abs.NewRecordLike().WithStringProperty("id", id)}
 
 			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
 				Resource:  resources.ResourceResource,

@@ -25,7 +25,9 @@ func Records(resource abs.ResourceLike, list []abs.RecordLike, isUpdate bool) er
 	for _, record := range list {
 		for _, property := range resource.GetProperties() {
 
-			packedVal, exists := record.GetProperties()[property.Name]
+			exists := record.HasProperty(property.Name)
+
+			packedVal := record.GetStructProperty(property.Name)
 
 			if !exists && property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
 				packedVal = property.DefaultValue
@@ -55,7 +57,7 @@ func Records(resource abs.ResourceLike, list []abs.RecordLike, isUpdate bool) er
 						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "wrong type: " + err.Error(),
-						Value:    record.GetProperties()[property.Name],
+						Value:    record.GetStructProperty(property.Name),
 					})
 					continue
 				}
@@ -69,7 +71,7 @@ func Records(resource abs.ResourceLike, list []abs.RecordLike, isUpdate bool) er
 						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "required",
-						Value:    record.GetProperties()[property.Name],
+						Value:    record.GetStructProperty(property.Name),
 					})
 				}
 
@@ -78,13 +80,13 @@ func Records(resource abs.ResourceLike, list []abs.RecordLike, isUpdate bool) er
 						RecordId: util.GetRecordId(record),
 						Property: property.Name,
 						Message:  "required",
-						Value:    record.GetProperties()[property.Name],
+						Value:    record.GetStructProperty(property.Name),
 					})
 				}
 			}
 		}
 
-		for key := range record.GetProperties() {
+		for _, key := range record.Keys() {
 			if key == "type" {
 				continue
 			}

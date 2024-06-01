@@ -34,7 +34,8 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 		var row []string
 
 		for _, property := range resource.Properties {
-			packedVal, exists := record.GetProperties()[property.Name]
+			exists := record.HasProperty(property.Name)
+			packedVal := record.GetStructProperty(property.Name)
 
 			if helper.IsPropertyOmitted(property) {
 				continue
@@ -159,7 +160,7 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 }
 
 func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record abs.RecordLike, argPlaceHolder func(value interface{}) string) (string, error) {
-	identifierProps, err := util.RecordIdentifierProperties(resource, record.GetProperties())
+	identifierProps, err := util.RecordIdentifierProperties(resource, record.ToStruct().GetFields())
 	namedProps := util.GetNamedMap(resource.Properties)
 	if util.HasResourceSinglePrimaryProp(resource) {
 		idProp := util.GetResourceSinglePrimaryProp(resource)
@@ -227,7 +228,8 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 			continue
 		}
 
-		packedVal, exists := record.GetProperties()[property.Name]
+		exists := record.HasProperty(property.Name)
+		packedVal := record.GetStructProperty(property.Name)
 
 		if !exists {
 			continue

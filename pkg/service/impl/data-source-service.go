@@ -47,14 +47,14 @@ func (d *dataSourceService) PrepareResourceFromEntity(ctx context.Context, id st
 		return nil, err
 	}
 
-	resource, err := d.backendProviderService.PrepareResourceFromEntity(ctx, dsRecord.GetProperties()["name"].GetStringValue(), catalog, entity)
+	resource, err := d.backendProviderService.PrepareResourceFromEntity(ctx, dsRecord.GetStructProperty("name").GetStringValue(), catalog, entity)
 
 	if err != nil {
 		return nil, err
 	}
 
 	resource.SourceConfig = &model.ResourceSourceConfig{
-		DataSource: dsRecord.GetProperties()["name"].GetStringValue(),
+		DataSource: dsRecord.GetStructProperty("name").GetStringValue(),
 		Catalog:    catalog,
 		Entity:     entity,
 	}

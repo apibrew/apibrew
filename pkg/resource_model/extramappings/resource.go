@@ -1,7 +1,6 @@
 package extramappings
 
 import (
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources/mapping"
@@ -20,5 +19,5 @@ func ResourceFrom(resource *resource_model.Resource) *model.Resource {
 		return nil
 	}
 	resourceRec := resource_model.ResourceMapperInstance.ToRecord(resource)
-	return mapping.ResourceFromRecord(abs.RecordLikeAsRecord(resourceRec))
+	return mapping.ResourceFromRecord(resourceRec)
 }

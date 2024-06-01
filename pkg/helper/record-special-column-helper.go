@@ -24,19 +24,19 @@ func (h RecordSpecialColumnHelper) IsVersionEnabled() bool {
 }
 
 func (h RecordSpecialColumnHelper) IncreaseVersion() {
-	h.Record.GetProperties()["version"] = structpb.NewNumberValue(h.Record.GetProperties()["version"].GetNumberValue() + 1)
+	h.Record.SetStructProperty("version", structpb.NewNumberValue(h.Record.GetStructProperty("version").GetNumberValue()+1))
 }
 
 func (h RecordSpecialColumnHelper) InitVersion() {
-	h.Record.GetProperties()["version"] = structpb.NewNumberValue(1)
+	h.Record.SetStructProperty("version", structpb.NewNumberValue(1))
 }
 
 func (h RecordSpecialColumnHelper) GetCreatedOn() *timestamppb.Timestamp {
-	if h.Record.GetProperties()["auditData"] == nil {
+	if h.Record.GetStructProperty("auditData") == nil {
 		return nil
 	}
 
-	val, err := types.TimestampType.UnPack(h.Record.GetProperties()["auditData"].GetStructValue().GetFields()["createdOn"])
+	val, err := types.TimestampType.UnPack(h.Record.GetStructProperty("auditData").GetStructValue().GetFields()["createdOn"])
 
 	if err != nil {
 		panic(err)
@@ -47,7 +47,7 @@ func (h RecordSpecialColumnHelper) GetCreatedOn() *timestamppb.Timestamp {
 
 func (h RecordSpecialColumnHelper) SetCreatedOn(createdOn *timestamppb.Timestamp) {
 	if createdOn == nil {
-		delete(h.Record.GetProperties(), "auditData")
+		h.Record.DeleteProperty("createdOn")
 	}
 
 	val, err := types.TimestampType.Pack(createdOn.AsTime())
@@ -58,35 +58,35 @@ func (h RecordSpecialColumnHelper) SetCreatedOn(createdOn *timestamppb.Timestamp
 
 	h.ensureAuditData()
 
-	h.Record.GetProperties()["auditData"].GetStructValue().Fields["createdOn"] = val
+	h.Record.GetStructProperty("auditData").GetStructValue().Fields["createdOn"] = val
 }
 
 func (h RecordSpecialColumnHelper) ensureAuditData() {
-	if h.Record.GetProperties()["auditData"] == nil || h.Record.GetProperties()["auditData"].AsInterface() == nil {
-		h.Record.GetProperties()["auditData"] = structpb.NewStructValue(&structpb.Struct{
+	if h.Record.GetStructProperty("auditData") == nil || h.Record.GetStructProperty("auditData").AsInterface() == nil {
+		h.Record.SetStructProperty("auditData", structpb.NewStructValue(&structpb.Struct{
 			Fields: map[string]*structpb.Value{},
-		})
+		}))
 	}
 }
 
 func (h RecordSpecialColumnHelper) GetCreatedBy() *string {
-	if h.Record.GetProperties()["auditData"] == nil || h.Record.GetProperties()["auditData"].AsInterface() == nil {
+	if h.Record.GetStructProperty("auditData") == nil || h.Record.GetStructProperty("auditData").AsInterface() == nil {
 		return nil
 	}
 
-	val := h.Record.GetProperties()["auditData"].GetStructValue().Fields["createdBy"].GetStringValue()
+	val := h.Record.GetStructProperty("auditData").GetStructValue().Fields["createdBy"].GetStringValue()
 	return &val
 }
 
 func (h RecordSpecialColumnHelper) SetCreatedBy(createdBy string) {
 	h.ensureAuditData()
 
-	h.Record.GetProperties()["auditData"].GetStructValue().Fields["createdBy"] = structpb.NewStringValue(createdBy)
+	h.Record.GetStructProperty("auditData").GetStructValue().Fields["createdBy"] = structpb.NewStringValue(createdBy)
 }
 
 func (h RecordSpecialColumnHelper) SetUpdatedOn(updatedOn *timestamppb.Timestamp) {
 	if updatedOn == nil {
-		delete(h.Record.GetProperties()["auditData"].GetStructValue().Fields, "updatedOn")
+		delete(h.Record.GetStructProperty("auditData").GetStructValue().Fields, "updatedOn")
 	}
 
 	val, err := types.TimestampType.Pack(updatedOn.AsTime())
@@ -97,24 +97,24 @@ func (h RecordSpecialColumnHelper) SetUpdatedOn(updatedOn *timestamppb.Timestamp
 
 	h.ensureAuditData()
 
-	h.Record.GetProperties()["auditData"].GetStructValue().Fields["updatedOn"] = val
+	h.Record.GetStructProperty("auditData").GetStructValue().Fields["updatedOn"] = val
 }
 
 func (h RecordSpecialColumnHelper) SetId(id string) {
-	h.Record.GetProperties()["id"] = structpb.NewStringValue(id)
+	h.Record.SetStructProperty("id", structpb.NewStringValue(id))
 }
 
 func (h RecordSpecialColumnHelper) SetUpdatedBy(updatedBy string) {
 
 	h.ensureAuditData()
 
-	h.Record.GetProperties()["auditData"].GetStructValue().Fields["updatedBy"] = structpb.NewStringValue(updatedBy)
+	h.Record.GetStructProperty("auditData").GetStructValue().Fields["updatedBy"] = structpb.NewStringValue(updatedBy)
 }
 
 func (h RecordSpecialColumnHelper) GetVersion() uint32 {
-	if h.Record.GetProperties()["version"] == nil {
+	if h.Record.GetStructProperty("version") == nil {
 		return 0
 	}
 
-	return uint32(h.Record.GetProperties()["version"].GetNumberValue())
+	return uint32(h.Record.GetStructProperty("version").GetNumberValue())
 }

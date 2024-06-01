@@ -31,7 +31,7 @@ func TestDhTestUserCannotCreateUser(t *testing.T) {
 			Namespace: resources.UserResource.Namespace,
 			Resource:  resources.UserResource.Name,
 			Ids: []string{
-				util.GetRecordId(record.Records[0]),
+				util.GetRecordId(abs.RecordAsRecordLike(record.Records[0])),
 			},
 		})
 

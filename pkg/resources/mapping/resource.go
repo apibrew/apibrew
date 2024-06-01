@@ -46,7 +46,7 @@ func ResourceToRecord(resource *model.Resource) abs.RecordLike {
 	var propertiesStruct = make(map[string]*structpb.Value)
 	for _, property := range resource.Properties {
 		propertyRecord := ResourcePropertyToRecord(property, resource)
-		propertiesStruct[property.Name] = structpb.NewStructValue(&structpb.Struct{Fields: propertyRecord.GetProperties()})
+		propertiesStruct[property.Name] = structpb.NewStructValue(propertyRecord.ToStruct())
 	}
 	properties["properties"] = structpb.NewStructValue(&structpb.Struct{Fields: propertiesStruct})
 
@@ -68,9 +68,7 @@ func ResourceToRecord(resource *model.Resource) abs.RecordLike {
 		properties["id"] = structpb.NewStringValue(resource.Id)
 	}
 
-	return &model.Record{
-		Properties: properties,
-	}
+	return abs.NewRecordLikeWithProperties(properties)
 }
 
 func ResourceFromRecord(record abs.RecordLike) *model.Resource {
@@ -78,31 +76,31 @@ func ResourceFromRecord(record abs.RecordLike) *model.Resource {
 		return nil
 	}
 
-	var namespace = record.GetProperties()["namespace"].GetStructValue().GetFields()["name"].GetStringValue()
+	var namespace = record.GetStructProperty("namespace").GetStructValue().GetFields()["name"].GetStringValue()
 
 	var resource = &model.Resource{
-		Id:              record.GetProperties()["id"].GetStringValue(),
-		Name:            record.GetProperties()["name"].GetStringValue(),
+		Id:              record.GetStructProperty("id").GetStringValue(),
+		Name:            record.GetStructProperty("name").GetStringValue(),
 		Namespace:       namespace,
-		Virtual:         record.GetProperties()["virtual"].GetBoolValue(),
-		Abstract:        record.GetProperties()["abstract"].GetBoolValue(),
-		Immutable:       record.GetProperties()["immutable"].GetBoolValue(),
-		CheckReferences: record.GetProperties()["checkReferences"].GetBoolValue(),
+		Virtual:         record.GetStructProperty("virtual").GetBoolValue(),
+		Abstract:        record.GetStructProperty("abstract").GetBoolValue(),
+		Immutable:       record.GetStructProperty("immutable").GetBoolValue(),
+		CheckReferences: record.GetStructProperty("checkReferences").GetBoolValue(),
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: record.GetProperties()["dataSource"].GetStructValue().GetFields()["name"].GetStringValue(),
-			Entity:     record.GetProperties()["entity"].GetStringValue(),
-			Catalog:    record.GetProperties()["catalog"].GetStringValue(),
+			DataSource: record.GetStructProperty("dataSource").GetStructValue().GetFields()["name"].GetStringValue(),
+			Entity:     record.GetStructProperty("entity").GetStringValue(),
+			Catalog:    record.GetStructProperty("catalog").GetStringValue(),
 		},
-		Properties: util.ArrayMap(util.MapToArray(record.GetProperties()["properties"].GetStructValue().Fields), func(t util.MapEntry[*structpb.Value]) *model.ResourceProperty {
-			return ResourcePropertyFromRecord(t.Key, &model.Record{Properties: t.Val.GetStructValue().Fields})
+		Properties: util.ArrayMap(util.MapToArray(record.GetStructProperty("properties").GetStructValue().Fields), func(t util.MapEntry[*structpb.Value]) *model.ResourceProperty {
+			return ResourcePropertyFromRecord(t.Key, abs.NewRecordLikeWithProperties(t.Val.GetStructValue().Fields))
 		}),
-		Annotations: convertMap(record.GetProperties()["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
+		Annotations: convertMap(record.GetStructProperty("annotations").GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
 		}),
 	}
 
-	if record.GetProperties()["indexes"] != nil {
-		list := record.GetProperties()["indexes"].GetListValue()
+	if record.HasProperty("indexes") {
+		list := record.GetStructProperty("indexes").GetListValue()
 
 		resource.Indexes = make([]*model.ResourceIndex, 0)
 
@@ -111,8 +109,8 @@ func ResourceFromRecord(record abs.RecordLike) *model.Resource {
 		}
 	}
 
-	if record.GetProperties()["types"] != nil {
-		list := record.GetProperties()["types"].GetListValue()
+	if record.HasProperty("types") {
+		list := record.GetStructProperty("types").GetListValue()
 
 		resource.Types = make([]*model.ResourceSubType, 0)
 
@@ -121,17 +119,17 @@ func ResourceFromRecord(record abs.RecordLike) *model.Resource {
 		}
 	}
 
-	if record.GetProperties()["title"] != nil {
+	if record.HasProperty("title") {
 		resource.Title = new(string)
-		*resource.Title = record.GetProperties()["title"].GetStringValue()
+		*resource.Title = record.GetStructProperty("title").GetStringValue()
 	}
 
-	if record.GetProperties()["description"] != nil {
+	if record.HasProperty("description") {
 		resource.Description = new(string)
-		*resource.Description = record.GetProperties()["description"].GetStringValue()
+		*resource.Description = record.GetStructProperty("description").GetStringValue()
 	}
 
-	var properties = record.GetProperties()
+	var properties = record.ToStruct().GetFields()
 	MapSpecialColumnsFromRecord(resource, &properties)
 
 	return resource
@@ -202,7 +200,7 @@ func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
 	rt := &model.ResourceSubType{
 		Name: st.GetFields()["name"].GetStringValue(),
 		Properties: util.ArrayMap(util.MapToArray(st.GetFields()["properties"].GetStructValue().Fields), func(t util.MapEntry[*structpb.Value]) *model.ResourceProperty {
-			return ResourcePropertyFromRecord(t.Key, &model.Record{Properties: t.Val.GetStructValue().Fields})
+			return ResourcePropertyFromRecord(t.Key, abs.NewRecordLikeWithProperties(t.Val.GetStructValue().Fields))
 		}),
 	}
 
@@ -221,7 +219,7 @@ func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubTyp
 	var propertiesStruct = make(map[string]*structpb.Value)
 	for _, property := range subType.Properties {
 		propertyRecord := ResourcePropertyToRecord(property, resource)
-		propertiesStruct[property.Name] = structpb.NewStructValue(&structpb.Struct{Fields: propertyRecord.GetProperties()})
+		propertiesStruct[property.Name] = structpb.NewStructValue(propertyRecord.ToStruct())
 	}
 
 	return structpb.NewStructValue(&structpb.Struct{

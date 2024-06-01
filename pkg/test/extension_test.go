@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/ext"
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/stub"
 	"github.com/apibrew/apibrew/pkg/test/setup"
@@ -21,20 +20,16 @@ import (
 )
 
 var simpleVirtualResourceRecords = []abs.RecordLike{
-	&model.Record{
-		Properties: map[string]*structpb.Value{
-			"id":          structpb.NewStringValue("5429846c-a309-11ed-a8fc-0242ac120002"),
-			"name":        structpb.NewStringValue("rec-1"),
-			"description": structpb.NewStringValue("rec-1-desc"),
-		},
-	},
-	&model.Record{
-		Properties: map[string]*structpb.Value{
-			"id":          structpb.NewStringValue("54298994-a309-11ed-a8fc-0242ac120002"),
-			"name":        structpb.NewStringValue("rec-2"),
-			"description": structpb.NewStringValue("rec-2-desc"),
-		},
-	},
+	abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+		"id":          structpb.NewStringValue("5429846c-a309-11ed-a8fc-0242ac120002"),
+		"name":        structpb.NewStringValue("rec-1"),
+		"description": structpb.NewStringValue("rec-1-desc"),
+	}),
+	abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+		"id":          structpb.NewStringValue("54298994-a309-11ed-a8fc-0242ac120002"),
+		"name":        structpb.NewStringValue("rec-2"),
+		"description": structpb.NewStringValue("rec-2-desc"),
+	}),
 }
 
 var simpleVirtualResourceRecords2 = []*resource_model.Record{
@@ -178,32 +173,32 @@ func TestListResourceWithFunctionCallExtension(t *testing.T) {
 		return
 	}
 
-	if util.GetRecordId(resp.Content[0]) != util.GetRecordId(simpleVirtualResourceRecords[0]) {
+	if util.GetRecordId(abs.RecordAsRecordLike(resp.Content[0])) != util.GetRecordId(simpleVirtualResourceRecords[0]) {
 		t.Error("record[0].id does not match")
 		return
 	}
 
-	if util.GetRecordId(resp.Content[1]) != util.GetRecordId(simpleVirtualResourceRecords[1]) {
+	if util.GetRecordId(abs.RecordAsRecordLike(resp.Content[1])) != util.GetRecordId(simpleVirtualResourceRecords[1]) {
 		t.Error("record[1].id does not match")
 		return
 	}
 
-	if resp.Content[0].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[0].GetProperties()["name"].GetStringValue() {
+	if resp.Content[0].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[0].GetStructProperty("name").GetStringValue() {
 		t.Error("record[0].name does not match")
 		return
 	}
 
-	if resp.Content[1].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[1].GetProperties()["name"].GetStringValue() {
+	if resp.Content[1].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[1].GetStructProperty("name").GetStringValue() {
 		t.Error("record[1].name does not match")
 		return
 	}
 
-	if resp.Content[0].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[0].GetProperties()["description"].GetStringValue() {
+	if resp.Content[0].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[0].GetStructProperty("description").GetStringValue() {
 		t.Error("record[0].description does not match")
 		return
 	}
 
-	if resp.Content[1].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[1].GetProperties()["description"].GetStringValue() {
+	if resp.Content[1].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[1].GetStructProperty("description").GetStringValue() {
 		t.Error("record[1].description does not match")
 		return
 	}
@@ -251,32 +246,32 @@ func TestListResourceWithHttpExtension(t *testing.T) {
 		return
 	}
 
-	if util.GetRecordId(resp.Content[0]) != util.GetRecordId(simpleVirtualResourceRecords[0]) {
+	if util.GetRecordId(abs.RecordAsRecordLike(resp.Content[0])) != util.GetRecordId(simpleVirtualResourceRecords[0]) {
 		t.Error("record[0].id does not match")
 		return
 	}
 
-	if util.GetRecordId(resp.Content[1]) != util.GetRecordId(simpleVirtualResourceRecords[1]) {
+	if util.GetRecordId(abs.RecordAsRecordLike(resp.Content[1])) != util.GetRecordId(simpleVirtualResourceRecords[1]) {
 		t.Error("record[1].id does not match")
 		return
 	}
 
-	if resp.Content[0].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[0].GetProperties()["name"].GetStringValue() {
+	if resp.Content[0].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[0].GetStructProperty("name").GetStringValue() {
 		t.Error("record[0].name does not match")
 		return
 	}
 
-	if resp.Content[1].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[1].GetProperties()["name"].GetStringValue() {
+	if resp.Content[1].Properties["name"].GetStringValue() != simpleVirtualResourceRecords[1].GetStructProperty("name").GetStringValue() {
 		t.Error("record[1].name does not match")
 		return
 	}
 
-	if resp.Content[0].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[0].GetProperties()["description"].GetStringValue() {
+	if resp.Content[0].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[0].GetStructProperty("description").GetStringValue() {
 		t.Error("record[0].description does not match")
 		return
 	}
 
-	if resp.Content[1].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[1].GetProperties()["description"].GetStringValue() {
+	if resp.Content[1].Properties["description"].GetStringValue() != simpleVirtualResourceRecords[1].GetStructProperty("description").GetStringValue() {
 		t.Error("record[1].description does not match")
 		return
 	}

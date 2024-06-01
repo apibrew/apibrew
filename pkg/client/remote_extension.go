@@ -2,9 +2,9 @@ package client
 
 import (
 	"context"
+	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/core"
 	"github.com/apibrew/apibrew/pkg/ext"
-	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/resources"
 	"github.com/apibrew/apibrew/pkg/service"
@@ -109,11 +109,9 @@ func (e *remoteExtension) Run(ctx context.Context) error {
 
 				if !found {
 					log.Warn("Removing orphaned remoteExtension: ", exr.Id)
-					err = e.client.DeleteRecord(ctx, resources.ExtensionResource.Namespace, resources.ExtensionResource.Name, &model.Record{
-						Properties: map[string]*structpb.Value{
-							"id": structpb.NewStringValue(exr.Id.String()),
-						},
-					})
+					err = e.client.DeleteRecord(ctx, resources.ExtensionResource.Namespace, resources.ExtensionResource.Name, abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+						"id": structpb.NewStringValue(exr.Id.String()),
+					}))
 
 					if err != nil {
 						return err

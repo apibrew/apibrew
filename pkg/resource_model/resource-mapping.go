@@ -38,13 +38,11 @@ func (m *ResourceMapper) ResourceIdentity() abs.ResourceIdentity {
 }
 
 func (m *ResourceMapper) ToRecord(resource *Resource) abs.RecordLike {
-	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(resource)
-	return rec
+	return abs.NewRecordLikeWithProperties(m.ToProperties(resource))
 }
 
 func (m *ResourceMapper) FromRecord(record abs.RecordLike) *Resource {
-	return m.FromProperties(record.GetProperties())
+	return m.FromProperties(record.ToStruct().GetFields())
 }
 
 func (m *ResourceMapper) ToProperties(resource *Resource) map[string]*structpb.Value {

@@ -28,7 +28,7 @@ func TestCreateAndReadDataSource(t *testing.T) {
 		return
 	}
 
-	CheckTwoRecordEquals(t, resources.DataSourceResource, resource_model.DataSourceMapperInstance.ToRecord(setup.DataSource1), res2.Record)
+	CheckTwoRecordEquals(t, resources.DataSourceResource, resource_model.DataSourceMapperInstance.ToRecord(setup.DataSource1), abs.RecordAsRecordLike(res2.Record))
 }
 
 func TestCreateRecordstatusTest(t *testing.T) {
@@ -66,7 +66,7 @@ func TestCreateRecordstatusTest(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(util.GetRecordId(resp.Records[0]))
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(abs.RecordAsRecordLike(resp.Records[0])))
 
 	checkNewCreatedRecordStatus(newDataSource, t)
 }
@@ -160,7 +160,7 @@ func TestUpdateDataSource(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(util.GetRecordId(resp.Records[0]))
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(abs.RecordAsRecordLike(resp.Records[0])))
 
 	checkNewCreatedRecordStatus(newDataSource, t)
 
@@ -190,7 +190,7 @@ func TestUpdateDataSource(t *testing.T) {
 		t.Error("Invalid datasource length on update response", len(res.Records))
 	}
 
-	updatedParams := resource_model.DataSourceMapperInstance.FromRecord(res.Records[0])
+	updatedParams := resource_model.DataSourceMapperInstance.FromRecord(abs.RecordAsRecordLike(res.Records[0]))
 
 	if updatedParams.Options["username"] != "dhtest2" {
 		t.Error("username is not updated")
@@ -215,7 +215,7 @@ func TestUpdateDataSource(t *testing.T) {
 		return
 	}
 
-	getParams := resource_model.DataSourceMapperInstance.FromRecord(getRes.Record).Options
+	getParams := resource_model.DataSourceMapperInstance.FromRecord(abs.RecordAsRecordLike(getRes.Record)).Options
 
 	if getParams["username"] != "dhtest2" {
 		t.Error("username is not updated")
@@ -229,7 +229,7 @@ func TestUpdateDataSource(t *testing.T) {
 		t.Error("Version is wrong")
 	}
 
-	checkNewCreatedRecordStatusPasswordWrong(resource_model.DataSourceMapperInstance.FromRecord(getRes.Record), t)
+	checkNewCreatedRecordStatusPasswordWrong(resource_model.DataSourceMapperInstance.FromRecord(abs.RecordAsRecordLike(getRes.Record)), t)
 }
 
 func TestUpdateRecordstatus(t *testing.T) {
@@ -276,8 +276,8 @@ func TestUpdateRecordstatus(t *testing.T) {
 	}
 
 	newDataSource.Id = new(uuid.UUID)
-	*newDataSource.Id = uuid.MustParse(util.GetRecordId(resp.Records[0]))
-	createdDataSource1 := resource_model.DataSourceMapperInstance.FromRecord(resp.Records[0])
+	*newDataSource.Id = uuid.MustParse(util.GetRecordId(abs.RecordAsRecordLike(resp.Records[0])))
+	createdDataSource1 := resource_model.DataSourceMapperInstance.FromRecord(abs.RecordAsRecordLike(resp.Records[0]))
 
 	checkNewCreatedRecordStatusPasswordWrong(newDataSource, t)
 

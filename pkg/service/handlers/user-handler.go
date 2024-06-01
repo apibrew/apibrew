@@ -24,14 +24,14 @@ func (h *userHandler) Register(eventHandler backend_event_handler.BackendEventHa
 
 func (h *userHandler) BeforeCreate(ctx context.Context, event *core.Event) (*core.Event, error) {
 	for _, user := range event.Records {
-		if user.GetProperties()["password"] != nil && user.GetProperties()["password"].GetStringValue() != "" {
-			hashStr, err := util.EncodeKey(user.GetProperties()["password"].GetStringValue())
+		if user.HasProperty("password") && user.GetStructProperty("password").GetStringValue() != "" {
+			hashStr, err := util.EncodeKey(user.GetStructProperty("password").GetStringValue())
 
 			if err != nil {
 				panic(err)
 			}
 
-			user.GetProperties()["password"] = structpb.NewStringValue(hashStr)
+			user.SetStructProperty("password", structpb.NewStringValue(hashStr))
 		}
 	}
 
@@ -56,14 +56,14 @@ func (h *userHandler) AfterCreate(ctx context.Context, event *core.Event) (*core
 
 func (h *userHandler) BeforeUpdate(ctx context.Context, event *core.Event) (*core.Event, error) {
 	for _, user := range event.Records {
-		if user.GetProperties()["password"] != nil && user.GetProperties()["password"].GetStringValue() != "" {
-			hashStr, err := util.EncodeKey(user.GetProperties()["password"].GetStringValue())
+		if user.HasProperty("password") && user.GetStructProperty("password").GetStringValue() != "" {
+			hashStr, err := util.EncodeKey(user.GetStructProperty("password").GetStringValue())
 
 			if err != nil {
 				panic(err)
 			}
 
-			user.GetProperties()["password"] = structpb.NewStringValue(hashStr)
+			user.SetStructProperty("password", structpb.NewStringValue(hashStr))
 		}
 	}
 
@@ -92,6 +92,6 @@ func (h *userHandler) AfterGet(ctx context.Context, event *core.Event) (*core.Ev
 
 func (h *userHandler) cleanPasswords(users []abs.RecordLike) {
 	for _, user := range users {
-		delete(user.GetProperties(), "password")
+		user.DeleteProperty("password")
 	}
 }

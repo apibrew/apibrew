@@ -150,7 +150,7 @@ func (b *backendProviderService) getBackendConstructor(backend string) abs.Backe
 }
 
 func (b *backendProviderService) Init(config *model.AppConfig) {
-	b.systemDataSource = resource_model.DataSourceMapperInstance.FromRecord(config.SystemDataSource)
+	b.systemDataSource = resource_model.DataSourceMapperInstance.FromRecord(abs.RecordAsRecordLike(config.SystemDataSource))
 
 	id := uuid.New()
 	b.systemDataSource.Id = &id
@@ -209,7 +209,7 @@ func (b *backendProviderService) actualHandlerFn(ctx context.Context, event *cor
 		return event, err
 	case core.Event_GET:
 		for i, record := range event.Records {
-			result, err := bck.GetRecord(ctx, event.Resource, record.GetProperties()["id"].GetStringValue(), event.RecordSearchParams.ResolveReferences)
+			result, err := bck.GetRecord(ctx, event.Resource, record.GetStructProperty("id").GetStringValue(), event.RecordSearchParams.ResolveReferences)
 
 			if err != nil {
 				return nil, err

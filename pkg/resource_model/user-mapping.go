@@ -38,13 +38,11 @@ func (m *UserMapper) ResourceIdentity() abs.ResourceIdentity {
 }
 
 func (m *UserMapper) ToRecord(user *User) abs.RecordLike {
-	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(user)
-	return rec
+	return abs.NewRecordLikeWithProperties(m.ToProperties(user))
 }
 
 func (m *UserMapper) FromRecord(record abs.RecordLike) *User {
-	return m.FromProperties(record.GetProperties())
+	return m.FromProperties(record.ToStruct().GetFields())
 }
 
 func (m *UserMapper) ToProperties(user *User) map[string]*structpb.Value {

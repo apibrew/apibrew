@@ -2,16 +2,151 @@ package abs
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
-
-type RecordLike interface {
-	GetProperties() map[string]*structpb.Value
-}
 
 type ResourceLike interface {
 	GetProperties() []*model.ResourceProperty
 	GetTypes() []*model.ResourceSubType
+}
+
+type RecordLike interface {
+	//GetProperties() map[string]*structpb.Value
+	Keys() []string
+	GetStructProperty(key string) *structpb.Value
+	SetStructProperty(key string, value *structpb.Value) RecordLike
+	WithProperties(properties map[string]*structpb.Value) RecordLike
+	WithStringProperty(key string, value string) RecordLike
+	EqualTo(updated RecordLike) bool
+	HasProperty(key string) bool
+	GetStringProperty(s string) string
+	ToStruct() *structpb.Struct
+	DeleteProperty(s string)
+	Merge(appliedRecord RecordLike) RecordLike
+	AsInterface(key string) interface{}
+}
+
+type record map[string]interface{}
+
+func (r *record) AsInterface(key string) interface{} {
+	return (*r)[key].(*structpb.Value).AsInterface()
+}
+
+func (r *record) Merge(appliedRecord RecordLike) RecordLike {
+	for _, key := range appliedRecord.Keys() {
+		r.SetStructProperty(key, appliedRecord.GetStructProperty(key))
+	}
+
+	return r
+}
+
+func (r *record) DeleteProperty(s string) {
+	delete(*r, s)
+}
+
+func (r *record) ToStruct() *structpb.Struct {
+	var result = make(map[string]*structpb.Value)
+
+	for key, value := range *r {
+		result[key] = value.(*structpb.Value)
+	}
+
+	return &structpb.Struct{Fields: result}
+}
+
+func (r *record) GetStringProperty(s string) string {
+	val, ok := (*r)[s].(*structpb.Value)
+
+	if !ok {
+		return ""
+	}
+
+	return val.GetStringValue()
+}
+
+func (r *record) HasProperty(key string) bool {
+	_, ok := (*r)[key]
+
+	return ok
+}
+
+func (r *record) EqualTo(updated RecordLike) bool {
+	if updated == nil {
+		return false
+	}
+
+	if len(*r) != len(updated.Keys()) {
+		return false
+	}
+
+	for key, value := range *r {
+		if updated.GetStructProperty(key) == nil {
+			return false
+		}
+
+		if value != updated.GetStructProperty(key) {
+			if !proto.Equal(updated.GetStructProperty(key), r.GetStructProperty(key)) {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func (r *record) Keys() []string {
+	var result = make([]string, 0, len(*r))
+
+	for key := range *r {
+		result = append(result, key)
+	}
+
+	return result
+}
+
+func (r *record) GetStructProperty(key string) *structpb.Value {
+	value, ok := (*r)[key]
+
+	if !ok {
+		return nil
+	}
+
+	if value == nil {
+		return nil
+	}
+
+	return value.(*structpb.Value)
+}
+
+func (r *record) SetStructProperty(key string, value *structpb.Value) RecordLike {
+	(*r)[key] = value
+
+	return r
+}
+
+func (r *record) GetProperties() map[string]*structpb.Value {
+	var result = make(map[string]*structpb.Value)
+
+	for key, value := range *r {
+		result[key] = value.(*structpb.Value)
+	}
+
+	return result
+}
+
+func (r *record) WithProperties(properties map[string]*structpb.Value) RecordLike {
+	for key, value := range properties {
+		(*r)[key] = value
+	}
+
+	return r
+}
+
+func (r *record) WithStringProperty(key string, value string) RecordLike {
+	(*r)[key] = structpb.NewStringValue(value)
+
+	return r
 }
 
 func RecordLikeAsRecord(record RecordLike) *model.Record {
@@ -19,15 +154,23 @@ func RecordLikeAsRecord(record RecordLike) *model.Record {
 		return nil
 	}
 
-	var properties = record.GetProperties()
+	var properties = make(map[string]*structpb.Value)
 
-	if properties == nil {
-		properties = make(map[string]*structpb.Value)
+	for _, key := range record.Keys() {
+		properties[key] = record.GetStructProperty(key)
 	}
 
 	return &model.Record{
 		Properties: properties,
 	}
+}
+
+func RecordAsRecordLike(record *model.Record) RecordLike {
+	if record == nil {
+		return nil
+	}
+
+	return NewRecordLikeWithProperties(record.Properties)
 }
 
 func RecordLikeAsRecords(record []RecordLike) []*model.Record {
@@ -44,7 +187,7 @@ func RecordLikeAsRecords2(record []*model.Record) []RecordLike {
 	records := make([]RecordLike, 0, len(record))
 
 	for _, r := range record {
-		records = append(records, RecordLikeAsRecord(r))
+		records = append(records, NewRecordLike().WithProperties(r.Properties))
 	}
 
 	return records
@@ -52,21 +195,24 @@ func RecordLikeAsRecords2(record []*model.Record) []RecordLike {
 
 func UpdateRecordsProperties(record RecordLike, properties map[string]*structpb.Value) {
 	for key, value := range properties {
-		record.GetProperties()[key] = value
+		record.SetStructProperty(key, value)
 	}
 }
 
 func NewRecordLike() RecordLike {
-	return &model.Record{
-		Properties: make(map[string]*structpb.Value),
-	}
+	var result = make(record)
+
+	return &result
 }
 
 func NewRecordLikeWithProperties(properties map[string]*structpb.Value) RecordLike {
 	if properties == nil {
 		properties = make(map[string]*structpb.Value)
 	}
-	return &model.Record{
-		Properties: properties,
-	}
+
+	result := make(record)
+
+	result.WithProperties(properties)
+
+	return &result
 }
