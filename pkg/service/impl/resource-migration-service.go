@@ -10,7 +10,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
-	reflect "reflect"
 )
 
 type resourceMigrationService struct {
@@ -224,7 +223,16 @@ func (r *resourceMigrationService) preparePlanStepsForUpdateResourceProperty(res
 	changed = changed || resourceProperty.DefaultValue != existingResourceProperty.DefaultValue
 	changed = changed || resourceProperty.Virtual != existingResourceProperty.Virtual
 	changed = changed || resourceProperty.Primary != existingResourceProperty.Primary
-	changed = changed || reflect.DeepEqual(resourceProperty.Annotations, existingResourceProperty.Annotations)
+	if len(resourceProperty.Annotations) != len(existingResourceProperty.Annotations) {
+		changed = true
+	}
+
+	for key, value := range resourceProperty.Annotations {
+		if existingResourceProperty.Annotations[key] != value {
+			changed = true
+			break
+		}
+	}
 
 	if resourceProperty.Type != model.ResourceProperty_REFERENCE {
 		if (resourceProperty.Reference != nil) != (existingResourceProperty.Reference != nil) {

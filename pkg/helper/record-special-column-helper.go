@@ -36,7 +36,13 @@ func (h RecordSpecialColumnHelper) GetCreatedOn() *timestamppb.Timestamp {
 		return nil
 	}
 
-	val, err := types.TimestampType.UnPack(h.Record.GetStructProperty("auditData").GetStructValue().GetFields()["createdOn"])
+	createdOnVal, ok := h.Record.GetStructProperty("auditData").GetStructValue().GetFields()["createdOn"]
+
+	if !ok {
+		return nil
+	}
+
+	val, err := types.TimestampType.UnPack(createdOnVal)
 
 	if err != nil {
 		panic(err)

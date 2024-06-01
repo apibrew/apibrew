@@ -73,7 +73,8 @@ func (r mongoBackend) recordToDocument(resource *model.Resource, record abs.Reco
 	var data = bson.M{}
 
 	for _, prop := range resource.Properties {
-		val, exists := record.GetProperties()[prop.Name]
+		exists := record.HasProperty(prop.Name)
+		val := record.GetStructProperty(prop.Name)
 
 		if exists {
 			data[prop.Name] = val.AsInterface()

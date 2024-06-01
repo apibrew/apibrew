@@ -120,7 +120,6 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 				for id := range subValues {
 					subValues[id] = structpb.NewListValue(&structpb.ListValue{})
-					recordValueMap[id].SetStructProperty(prop.Name, subValues[id])
 				}
 
 				for _, record := range list {
@@ -129,6 +128,10 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 					subValues[id].GetListValue().Values = append(subValues[id].GetListValue().Values, structpb.NewStructValue(record.ToStruct()))
 					referenceRecords = append(referenceRecords, record)
+				}
+
+				for id := range subValues {
+					recordValueMap[id].SetStructProperty(prop.Name, subValues[id])
 				}
 			} else {
 				var referencedResource = r.resourceService.LocateResourceByReference(r.resource, prop.Reference)
@@ -190,7 +193,6 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 					if referenceValue.GetListValue() != nil {
 						subValues[recordId] = structpb.NewListValue(&structpb.ListValue{})
-						recordValueMap[recordId].SetStructProperty(prop.Name, subValues[recordId])
 
 						for _, subRefValue := range referenceValue.GetListValue().Values {
 							for _, item := range list {
@@ -206,6 +208,8 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 								}
 							}
 						}
+
+						recordValueMap[recordId].SetStructProperty(prop.Name, subValues[recordId])
 					} else if referenceValue.GetStructValue() != nil {
 						for _, item := range list {
 							matches, err := util.RecordMatchIdentifiableProperties(referencedResource, item, referenceValue.GetStructValue().Fields)

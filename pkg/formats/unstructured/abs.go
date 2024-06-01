@@ -70,20 +70,7 @@ func FromProtoMessage(u Unstructured, msg proto.Message) error {
 }
 
 func FromRecord(record abs.RecordLike) (Unstructured, error) {
-	var result = new(Unstructured)
-
-	b, err := jsonMo.Marshal(abs.RecordLikeAsRecord(record))
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(b, result)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return (*result)["properties"].(Unstructured), nil
+	return record.Self(), nil
 }
 
 var jsonMo = protojson.MarshalOptions{
@@ -98,13 +85,7 @@ var jsonUMo = protojson.UnmarshalOptions{
 }
 
 func ToRecord(u Unstructured) (abs.RecordLike, error) {
-	properties, err := ToProperties(u)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return abs.NewRecordLike().WithProperties(properties), nil
+	return abs.NewRecordLikeFromProperties(u), nil
 }
 
 func ToProperties(u Unstructured) (map[string]*structpb.Value, error) {
